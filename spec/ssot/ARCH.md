@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r10 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r11 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -73,7 +73,7 @@
   - World generation is local and seeded; it does not require an LLM or external API call.
   - Keep supported old catalog versions available when needed by saves, or provide an explicit tested migration.
 - ARCH-11 [o] The browser save repository uses localStorage for the web demo.
-  - The game in play (one active world, one recoverable previous checkpoint), small settings, and a save manifest; parked game slots keep their checkpoint envelopes in IndexedDB (→SAVE-14), never as a fallback for the game in play; export/import files stay the portable copy.
+  - The game in play's active checkpoint, small settings, and a save manifest live in localStorage; its recoverable previous checkpoint and parked game slots keep their envelopes in IndexedDB (→SAVE-3, →SAVE-14); export/import files stay the portable copy.
   - Namespace application keys; do not clear unrelated origin storage.
   - UI-thread adapters own localStorage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
   - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
@@ -83,20 +83,20 @@
   - Large checkpoints use a pinned pure-JavaScript Brotli codec in the background codec worker; lazy-load it only when needed. Bound decoder output and window allocation before growth; preserve the existing content-security policy.
   - Checksum detects accidental corruption; it is not proof that a client-authored result is honest.
   - Export the envelope as a portable `.haeram-save.json` file; Flutter can decode the same format.
-- ARCH-13 [o] Checkpoint writes use two slots and a last-step manifest update.
+- ARCH-13 [o] Checkpoint writes keep the committed checkpoint as the previous copy, then write the active copy, then update the manifest (→SAVE-3).
   - Build and validate the complete candidate checkpoint in a background codec worker before touching the inactive slot; the simulation and UI never wait for it.
-  - Write the inactive slot; verify the stored candidate; update the manifest; then acknowledge the committed generation.
-  - Keep the previously committed slot until a newer checkpoint commits successfully.
+  - Copy the committed checkpoint to IndexedDB and verify it; write the candidate to the active localStorage key and verify it; update the manifest; then acknowledge the committed generation.
+  - Keep the previously committed checkpoint loadable until a newer checkpoint commits successfully.
   - On quota/write errors retain the last committed save, preserve recoverable in-memory state, offer export/retry, and do not report success.
   - Autosave committed decisions at once and automatic progression in the background at a bounded interval (→SAVE-8), never per simulation step or animation frame; expose when the game was last saved.
   - On load validate the manifest and selected slot; use the compatible previous checkpoint for recovery, explaining the recovered generation.
   - Missing/invalid manifests require deterministic validated-slot recovery; invalid saves are never replaced with a fresh world automatically.
 - ARCH-14 [o] Storage and longevity must pass an early measurement gate.
-  - Initial budget: at most 1.5 MiB per checkpoint and 3.5 MiB total application localStorage usage, conservatively accounting for key/value UTF-16 size.
+  - Budget: at most 3 MiB per checkpoint and 3.5 MiB total application localStorage usage, conservatively accounting for key/value UTF-16 size (→SAVE-4).
   - Catch actual quota failures even when estimated usage is below budget; do not assume other applications or browser modes leave the full quota available.
   - Measure representative eight-country worlds at founding, a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
   - A 100-season capacity claim requires a passing recorded benchmark.
-  - If the budget fails, optimize encoding and settle the open history-detail policy; do not silently prune agreed history or substitute IndexedDB/cloud storage.
+  - If the budget fails, optimize encoding and settle the open history-detail policy; do not silently prune agreed history or move the active checkpoint to IndexedDB/cloud storage.
 - ARCH-15 [o] Persist game facts and history, not rendering noise.
   - Persist current world state, settled fixtures, season standings/honors, meaningful club/personnel/economic decisions, and the player's club career records.
   - Use compact IDs, shared dictionaries, and aggregate rows; do not save React stores, event subscriptions, per-frame coordinates, or repeated whole-player objects.
@@ -203,6 +203,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r11 261019 ARCH-11✎ previous checkpoint in localStorage→in IndexedDB beside parked slots; ARCH-13✎ two-slot write→previous copy, active copy, manifest; ARCH-14✎ budget 1.5→3 MiB per checkpoint (total 3.5 MiB), budget failure never moves the active checkpoint
 - r10 261017 ARCH-12✎ gzip/base64-only description→SAVE-2 adaptive gzip/Brotli with bounded pure-JavaScript worker codec; security policy unchanged
 - r9 261012 ARCH-13✎ candidate built and validated before the slot→in a background codec worker nobody waits for; autosave at settled fixture/period boundaries→decisions at once, automatic progression at a bounded interval (→SAVE-8)
 - r8 261012 ARCH-23✎ one serial `pnpm run verify` job→parallel jobs (checks, browser tests per browser with WebKit in two shards, benchmarks)

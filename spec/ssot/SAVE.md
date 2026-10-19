@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r47 | Define the browser-demo rules for browser persistence and protocol.
+> r48 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -7,8 +7,11 @@
   - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes; otherwise write brotli-bmp127, quality 11/window 24, using a pinned pure-JavaScript worker implementation.
   - brotli-bmp127 uses fixed 64-character base-63198 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header (docs/SAVE-FORMAT.md). Payload is opaque verbatim text; padding/range/length checks precede decompression.
   - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
-- SAVE-3 [o] One active world and previous checkpoint use keys haeram-soccor:slot:a/b and haeram-soccor:manifest; manifest switches only after validated candidate write/readback.
-- SAVE-4 [o] Maximum encoded checkpoint is 1.5 MiB conservative UTF-16; total namespaced use <=3.5 MiB. Imports cap file at 4 MiB and decompressed JSON at 16 MiB.
+- SAVE-3 [o] The game in play keeps one active checkpoint in localStorage (haeram-soccor:slot:a) and its previous committed checkpoint in IndexedDB (database haeram-soccor, store checkpoints, key previous); haeram-soccor:manifest names the committed generation. ← one large checkpoint fits a 5 MiB origin with room, two copies of it would not
+  - a commit copies the currently committed checkpoint to IndexedDB and reads it back equal, then writes the validated candidate to the active key and reads it back, and only then switches the manifest; a failure at any step leaves the committed generation loadable.
+  - load takes the manifest's generation, else the newest valid of the active key and the IndexedDB previous copy; the previous copy is the recovery predecessor.
+  - IndexedDB unavailable ⇒ the active and previous checkpoints use localStorage keys slot:a/b while both fit the total budget, otherwise the game commits without a previous copy and says so once (→WEB-66).
+- SAVE-4 [o] Maximum encoded checkpoint is 3 MiB conservative UTF-16, for the active and the previous copy alike; total namespaced localStorage use ≤ 3.5 MiB. Imports cap the file at 8 MiB and decompressed JSON at 32 MiB.
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
   - the explicitly bounded legacy-gameplay reset at the new-career feature release follows →SAVE-18; it is not general permission to clear data on a validation error.
 - SAVE-6 [o] Exclusive Web Lock owns writing; read-only tabs are notified and queue for the lock, so when the writing tab closes a read-only tab reloads the latest checkpoint and becomes the writer. Commands carry session/request/expected revision; duplicates return the stored acknowledgment or fail stale without repeated effects.
@@ -26,11 +29,11 @@
 
 - SAVE-12 [o] Browser checkpoint storage uses an injected worker validator; compression and world-schema validation remain in the worker codec path. Existing codec/repository imports preserve their public save API, and compatibility errors remain typed across the bridge.
 
-- SAVE-13 [o] Lossless compact encoding must retain the complete canonical career and support existing compact checkpoints. The baseline and active-management 100-season profiles, including a settled active round after the century, must remain within →SAVE-4 without pruning records or raising budgets. Invalid compact metadata fails before activation.
+- SAVE-13 [o] Lossless compact encoding must retain the complete canonical career and support existing compact checkpoints. The baseline and active-management 100-season profiles, including a settled active round after the century, must remain within →SAVE-4 without pruning records. Invalid compact metadata fails before activation.
 
   - Career representation version 3 may group people for compression only with a validated complete permutation restoring the exact original registry order before activation; version 1/2 readers and all literal/reference semantics remain supported. Version-three optional career profiles use bounded sparse scalar columns and exact presence runs; every stored scalar and nested career array survives, while invalid dimensions, presence runs or future metadata cannot activate.
 
-- SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps the active two-slot checkpoint (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play needs the synchronous two-slot store; parked games are export envelopes the browser keeps
+- SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps its active checkpoint and previous copy (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play needs the synchronous localStorage copy; parked games are export envelopes the browser keeps
   - switching parks the game in play first: its committed checkpoint is written to IndexedDB and read back equal before the next game is activated through the import path (→SAVE-5, →SAVE-10), so a failed switch leaves the game in play untouched.
   - only the writer tab (→SAVE-6) switches, starts, imports or deletes games.
   - a save present without an index (earlier versions) becomes slot 1.
@@ -77,6 +80,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r48 261019 SAVE-3✎ two localStorage slots a/b→one active localStorage checkpoint plus the previous copy in IndexedDB (slots a/b only without IndexedDB); SAVE-4✎ checkpoint 1.5→3 MiB, import file 4→8 MiB, decompressed 16→32 MiB, total 3.5 MiB unchanged; SAVE-13✎ without raising budgets→budgets per SAVE-4; SAVE-14✎ two-slot wording→active plus previous copy
 - r47 261019 SAVE-21✎ open→preserve supported careers and add only missing shirts through validated writer activation; SAVE-22✎ open→retain actual playback appearance and disclose missing historical kits; gameplay boundary and storage limits unchanged
 - r46 261019 SAVE-20+ applied identities and fixture kit choices round-trip; SAVE-21/22+ open supported-career identity adoption and historical playback appearance; SAVE-19 boundary unchanged
 - r45 261019 SAVE-10✎ current rules 3.0.0→4.0.0, accepted checkpoints 3.0.0→4.0.0; SAVE-18✎ active rules 3.0.0→historical boundary; SAVE-19+ rules 4.0.0 grid-engine boundary, legacy through 3.0.0 cleared, new persisted facts within the budget

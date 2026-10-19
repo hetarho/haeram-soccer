@@ -272,3 +272,27 @@
 | 컴플리트 포워드 | 버티기·연결·침투·슛을 모두 함 |
 
 역할 출처: Spielverlagerung 역할 사전, Coaches' Voice, FM Scout(Football Manager 정의는 게임 관례이며 분석계 합의가 아님).
+
+## 40칸 격자 기준값 (`docs/match-baselines-40.json`)
+
+MATCH-14의 40칸(세로 5레인 × 가로 8띠, 105×68 m)에 맞춰 다시 묶은 칸별 기준값이다. 엔진 판단표의 출발점이자 보정 목표이며, 숫자를 손으로 옮기지 말고 이 파일을 그대로 쓴다.
+
+- 만드는 법: StatsBomb 공개 데이터 EPL 2015/16 380경기의 칸별 이벤트 수(12×8, 10야드 칸)를 겹치는 면적 비율로 40칸에 나눠 담았다. 좌우 대칭 칸끼리 평균했다. xT는 Karun Singh 공개 12×8 격자(EPL 2017/18)를 면적 평균했다.
+- "행동 한 번"의 정의: 패스 + 5 m 이상 운반 + 드리블 돌파 + 슛 + 걷어내기.
+- 칸 키: `<lane>.<band>`
+  - lane: `leftWide`, `leftHalf`, `central`, `rightHalf`, `rightWide`
+  - band: `ownGoalArea`, `ownBox`, `defensiveThird`, `ownMiddle`, `oppMiddle`, `frontOfBox`, `box`, `goalArea`
+- 칸 필드:
+  - `share`: 전체 행동 중 이 칸 비율
+  - `pass` / `carry` / `takeOn` / `shot` / `clearance`: 행동 한 번이 각 행동일 확률
+  - `crossOfPasses`: 패스 중 크로스 비율
+  - `passCompletion`: 패스 성공률
+  - `forward` / `lateral` / `back`: 패스 방향 비율(±45°)
+  - `lostPer100`: 행동 100번당 공을 잃은 횟수
+  - `takeOnSuccess`: 드리블 돌파 성공률
+  - `goalPerShot` / `xgPerShot`: 슛 30개 미만 칸은 `null`
+  - `shots`: 표본 슛 수
+  - `xT`: 칸의 위협도
+- `positionProfiles`: 포지션별 패스 성향
+  - 포지션: GK, CB, FB(풀백·윙백), DM, CM, AM, W(윙어·측면 미드), ST
+  - 필드: 앞/옆/뒤 패스 비율, 성공률, 롱패스 비율, 크로스 비율, 패스당 돌파, 돌파 성공률, 패스당 전진 운반, 평균 패스 길이(야드)

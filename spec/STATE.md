@@ -78,7 +78,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 10 | 10 | - | 2 |
+| ARCH | 11 | 10 | ARCH-11✎ ARCH-13✎ ARCH-14✎ | 2 |
 | WEB | 91 | 89 | WEB-22✎ WEB-23✎ WEB-24✎ WEB-32✎ WEB-40✎ WEB-44✎ WEB-50✎ WEB-53✎ WEB-59✎ WEB-68✎ WEB-84+ WEB-85+ WEB-2✎ WEB-15✎ WEB-39✎ WEB-49✎ WEB-71✎ WEB-86+ WEB-87+ WEB-88+ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 0 | all | 0 |
@@ -89,7 +89,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 14 | 13 | HIST-8✎ HIST-16+ | 0 |
-| SAVE | 47 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ SAVE-20+ SAVE-21+ SAVE-22+ SAVE-21✎ SAVE-22✎ | 0 |
+| SAVE | 48 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ SAVE-20+ SAVE-21+ SAVE-22+ SAVE-21✎ SAVE-22✎ SAVE-3✎ SAVE-4✎ SAVE-13✎ SAVE-14✎ | 0 |
 | PLAYER | 9 | 8 | PLAYER-1✎ PLAYER-2✎ PLAYER-5✎ PLAYER-6✎ PLAYER-9✎ PLAYER-15✎ PLAYER-17✎ PLAYER-19✎ PLAYER-20✎ | 0 |
 
 ## tasks
@@ -109,6 +109,8 @@
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
+- 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
 - 261019 KIT r2 and SAVE r47: all identity policies settled; 1-3 colours/default two, eight patterns, six crests/three kit drafts, warned manual clashes, explicit palette reuse, frozen recorded playback and supported-career preservation.
 - 261019 update-ssot KIT SAVE start: settle all club-identity-and-kits product policies.
 - 261019 club-identity-and-kits converted: KIT r1 owns identity/kit policy; WEB r91 adds shared editor, pitch preview and pre-match choice; SAVE r46 preserves applied designs, with adoption/history policies open.
@@ -127,5 +129,3 @@
 - 261019 ideation match-engine-rebuild ready: grid engine (5 lanes × 8 bands), per-touch time, real-data decision tables, fouls/set pieces/cards/subs/injuries with era rules, new statistics and maps; baselines in docs/MATCH-BASELINES.md.
 - 261019 ideation match-engine-rebuild start
 - 261017 T179 done p6k2: CI38970812465 passes all jobs; local1018unit/15contract/545browser with4 existing skips; docs and raw benchmark evidence synchronized, no gameplay changes.
-- 261017 implement-task T179 start p6k2; full local verification running against the unchanged successful CI source.
-- 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
