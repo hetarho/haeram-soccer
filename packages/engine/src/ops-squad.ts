@@ -2,7 +2,7 @@ import { registrationRoom } from './registration';
 import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
 import { addEvent, clubOf, makePlayer, overall } from './world';
-import { hash, integer, random, ratio } from './primitives';
+import { hash, integer, random, scaleBy } from './primitives';
 import {
   declineContract,
   divisionFor,
@@ -126,8 +126,7 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
     // his ability suits (→CLUB-25). A free agent has no club to ask a fee.
     p.wage = marketWageAt(own.country, year, own.tier, p);
     const value = marketValueAt(own.country, year, divisionFor(own.country, overall(p)), p);
-    const share = (multiplier: number) =>
-      i === 0 ? '0' : ratio(value, BigInt(Math.round(multiplier * 1000)), 1000n);
+    const share = (multiplier: number) => (i === 0 ? '0' : scaleBy(value, multiplier, 1000n));
     return {
       player: p,
       fee: share(feeMultiplier),
