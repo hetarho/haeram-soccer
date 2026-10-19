@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h8t4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T09:45Z | 2026-10-19T09:45Z | T214 |
+| h8t4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T09:45Z | 2026-10-19T09:45Z | - |
 
 ## inbox
 - 261019 decided T214: the slot a red-card rebalance fills → the defender or midfielder comes on into the sent-off player's empty slot and the most advanced forward leaves, so the shape loses a forward rather than a defender (alt: the substitute takes the forward's slot as design §8.1's general rule says, leaving the back line short)
