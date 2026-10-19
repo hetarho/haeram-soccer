@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r45 | Define the browser-demo rules for browser persistence and protocol.
+> r46 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -59,6 +59,13 @@
   - a legacy file import is refused with its required rules; future or unrecognized incompatible files/slots still follow →SAVE-5/11.
   - a 4.0.0 career persists the current season's post-match material, the season heat maps, the spatial counter and discipline totals, current bans and every club's unavailable list, within →SAVE-4 and a passing 100-season benchmark (→HIST-9).
 
+- SAVE-20 [o] A game's saved state reproduces its applied club representative colours, crest compositions and home/away/third shirts (→KIT-1/2/3/11), including custom colours and patterns, and an explicit own-shirt selection for its named forthcoming fixture (→KIT-6).
+  - Reload, slot parking/restoration and export/import recover the same designs and applicable fixture choice; do not reroll another colour, emblem or pattern on read.
+  - Identity apply and an explicit fixture-level kit choice are owner decisions under →SAVE-8. Unapplied editor drafts remain session UI work under →WEB-74/86.
+  - Existing writer ownership, validation, recoverable-save protection and lossless storage budgets remain →SAVE-4/5/6/11/13. Invalid identity data cannot overwrite a good career.
+- SAVE-21 [?] Missing identity data in an otherwise supported career: recommend preserving its existing visible crest and founding colour and adding reproducible default shirts without changing retained gameplay facts (→KIT-15). This does not permit converting or resetting a career outside →SAVE-19.
+- SAVE-22 [?] Retained playback appearance follows →KIT-12; if historical designs are retained, preserve the actual crest, outfield-shirt and goalkeeper appearance with that playback through save/export/import, within existing playback lifetimes and storage limits. Do not fabricate an older kit when it was never recorded.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
@@ -66,6 +73,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r46 261019 SAVE-20+ applied identities and fixture kit choices round-trip; SAVE-21/22+ open supported-career identity adoption and historical playback appearance; SAVE-19 boundary unchanged
 - r45 261019 SAVE-10✎ current rules 3.0.0→4.0.0, accepted checkpoints 3.0.0→4.0.0; SAVE-18✎ active rules 3.0.0→historical boundary; SAVE-19+ rules 4.0.0 grid-engine boundary, legacy through 3.0.0 cleared, new persisted facts within the budget
 - r44 261017 SAVE-13✎ v3 profile rows→bounded sparse scalar columns/presence runs; exact facts, original registry order and v1/v2 readers unchanged
 - r43 261017 SAVE-13✎ career v2 rows→v3 grouped rows with exact registry-order restoration; v1/v2 readers, facts and budgets unchanged

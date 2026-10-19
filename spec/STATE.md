@@ -73,14 +73,15 @@
 | navigation-and-records | converted@261015 |
 | expert-proposal-review | converted@261016 |
 | match-engine-rebuild | converted@261019 |
-| club-identity-and-kits | open@261019 |
+| club-identity-and-kits | converted@261019 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 10 | 10 | - | 2 |
-| WEB | 90 | 89 | WEB-22✎ WEB-23✎ WEB-24✎ WEB-32✎ WEB-40✎ WEB-44✎ WEB-50✎ WEB-53✎ WEB-59✎ WEB-68✎ WEB-84+ WEB-85+ | 0 |
+| WEB | 91 | 89 | WEB-22✎ WEB-23✎ WEB-24✎ WEB-32✎ WEB-40✎ WEB-44✎ WEB-50✎ WEB-53✎ WEB-59✎ WEB-68✎ WEB-84+ WEB-85+ WEB-2✎ WEB-15✎ WEB-39✎ WEB-49✎ WEB-71✎ WEB-86+ WEB-87+ WEB-88+ | 0 |
 | WORLD | 6 | 6 | - | 0 |
+| KIT | 1 | 0 | all | 8 |
 | CLUB | 42 | 41 | CLUB-6✎ CLUB-23✎ CLUB-45+ | 0 |
 | MATCH | 11 | 9 | MATCH-1✎ MATCH-2✎ MATCH-3✎ MATCH-5✎ MATCH-6✎ MATCH-8✎ MATCH-9✎ MATCH-11✎ MATCH-12✎ MATCH-13✎ MATCH-14+ MATCH-15+ MATCH-16+ MATCH-17+ MATCH-18+ MATCH-19+ MATCH-20+ MATCH-21+ MATCH-22+ MATCH-23+ MATCH-24+ MATCH-25+ MATCH-26+ | 1 |
 | LEAGUE | 10 | 9 | LEAGUE-15+ | 0 |
@@ -88,7 +89,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 14 | 13 | HIST-8✎ HIST-16+ | 0 |
-| SAVE | 45 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ | 0 |
+| SAVE | 46 | 44 | SAVE-10✎ SAVE-18✎ SAVE-19+ SAVE-20+ SAVE-21+ SAVE-22+ | 2 |
 | PLAYER | 9 | 8 | PLAYER-1✎ PLAYER-2✎ PLAYER-5✎ PLAYER-6✎ PLAYER-9✎ PLAYER-15✎ PLAYER-17✎ PLAYER-19✎ PLAYER-20✎ | 0 |
 
 ## tasks
@@ -103,11 +104,13 @@
 
 ## next
 - match-engine-rebuild planned across MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45 → create-task for all of them; measure the grid engine's cost early (it decides MATCH-22's own-league path and MATCH-26).
-- Continue ideation club-identity-and-kits: core scope is settled; propose SSOT conversion, with initial catalogues, clash handling, historical appearance and existing-career adoption to refine.
+- Review KIT r1, WEB r91 and SAVE r46 identity/kit specifications; resolve the marked KIT/SAVE product policies before create-task for the affected identity work.
 - Review prior autonomous decisions and optional review-code/doc-review proposals in inbox; latest report reports/261017-p6k2.md.
 - External deployment configuration, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 club-identity-and-kits converted: KIT r1 owns identity/kit policy; WEB r91 adds shared editor, pitch preview and pre-match choice; SAVE r46 preserves applied designs, with adoption/history policies open.
+- 261019 create-ssot club-identity-and-kits start; isolate identity/kit policies from WEB presentation and SAVE persistence.
 - 261019 ideation club-identity-and-kits continue: adopt shirt colour/pattern editing and automatically distinguished goalkeeper colours for v1.
 - 261019 ideation club-identity-and-kits continue: adopt preset-first crests with optional shape, field-pattern and emblem composition.
 - 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
@@ -126,5 +129,3 @@
 - 261017 T178 done p6k2: both complete century profiles, active23, retained cross-season commitments, canonical replay and era probe pass at unchanged 6df81fa source; max checkpoint1564446/total3129404.
 - 261017 implement-task T178 start p6k2: reconcile successful fixed-source full-century CI artifacts.
 - 261017 T199 done p6k2: final-source CI 38970812465 passes complete careers and production codecs; active round23 checkpoint 1564446 bytes within unchanged limits.
-- 261017 implement-task T199 resumed p6k2; owner authorized remaining tasks in autopilot and main pushes.
-- 261017 SAVE r44/create-task: T199 v3 profiles use sparse scalar columns and bounded presence runs to cover century-active23; T178/T179 final source gates remain required.

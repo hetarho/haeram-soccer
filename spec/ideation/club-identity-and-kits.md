@@ -1,5 +1,5 @@
 # IDEATION club-identity-and-kits
-> st:open@261019 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
+> st:converted@261019 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
 
 ## vision
 - Problem: founding exposes one colour, while the resulting crest adds an automatically chosen second colour, shape, field pattern and emblem. Owners cannot deliberately design the identity they later see.
@@ -45,9 +45,9 @@
 - v1 unresolved scope: final pattern/template catalogues, shirt colour roles, design-change effect timing, historical appearance, opponent generation and existing-career adoption.
 
 ## domains
-- CLUB: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes.
-- WEB: founding/editor flow, crest catalogue and colour-region controls, pattern catalogue, previews, visible match pairing and clash legibility; revisit WEB-2, WEB-49 and WEB-50.
-- SAVE: preservation of selected designs across reload/export/import, adoption by existing careers and any historical-kit retention policy.
+- KIT: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes →KIT
+- WEB: founding/editor flow, colour-region controls, previews and visible match pairing; WEB-2/15/39/49/50/71 and WEB-86/87/88 →WEB
+- SAVE: preservation of applied designs and fixture choices, supported-career adoption and historical-kit retention; SAVE-20/21/22 →SAVE
 
 ## open
 - Which ready-made crest templates, component choices and kit patterns belong in the initial catalogues?

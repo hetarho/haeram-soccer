@@ -1,9 +1,9 @@
 # WEB Browser game delivery
-> r90 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r91 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
-- WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, colors, seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
+- WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, club identity and home/away/third shirts (→KIT-1/2/3), seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
 - WEB-5 [o] Time progression has automatic and manual modes, with automatic selected for a new game. The owner can switch modes, subject to →WEB-76.
@@ -36,7 +36,11 @@
 
 - WEB-14 [o] The business view groups facilities, sponsors and campaigns into compact selectable panels with current cash/fixed-cost context; the ticket price and the investment rows are rows of the 방향 board (→WEB-60). The complete actual ledger remains an explicit detail sheet; budget alerts and bounded local-support recovery stay actionable.
 
-- WEB-15 [o] Founding is a compact mobile screen with club name, country and difficulty level (쉬움 selected first, each level stating its cash and its squad against the league), a recommended generous start, and one create action. The basic screen, including recovery/import tools and footer, fits 360x740 and390x844 without document scrolling across supported browser/platform font metrics. Text remains readable and primary touch targets stay at least44CSSpx; no overflow masking is allowed. Colors and reproducible seed are explicit advanced settings; opened, they scroll within the content region so every control stays reachable (→WEB-63). The screen names the slot it fills and, when another slot holds a game, returns to the slot screen. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
+- WEB-15 [o] Founding is a compact mobile screen with club name, country and difficulty level (쉬움 selected first, each level stating its cash and its squad against the league), a recommended generous start, and one create action.
+  - The basic screen, including recovery/import tools and footer, fits 360x740 and 390x844 without document scrolling across supported browser/platform font metrics. Text remains readable and primary touch targets stay at least 44 CSS px; no overflow masking is allowed.
+  - A compact club-design summary shows the selected crest and offers 꾸미기 before founding; the editor provides the colour, crest and shirt controls with the pitch preview (→WEB-86/87).
+  - The reproducible seed remains an explicit advanced setting. Expanded settings and the design editor scroll inside their content region so every control stays reachable (→WEB-63).
+  - The screen names the slot it fills and, when another slot holds a game, returns to the slot screen. Existing save hydration shows loading instead of a new-club form; invalid existing saves retain recovery/export paths.
   - a 구단 방향 row offers 기본 방향, selected at first, and the presets (→ECON-22), each option stating its idea and the rows it fills; the picker sits beside the club name so the basic screen still fits; the club starts with the one chosen, changeable at any time on the 방향 board (→WEB-60). ← the owner sets where the club is going from the first day, a preset counting as a choice
 
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
@@ -105,11 +109,12 @@
   - Match scores, time, team identity and the pitch lead the observation view. Home uses a compact season-progress strip, the stadium's actual stage (→WEB-11), season figures and the next fixture.
   - Typography uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Compact supporting text is at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
   - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
-- WEB-39 [o] 구단 운영 holds the club's resources and applied policies in page tabs 운영 방침, 시설, 재정, 후원, kept at /direction?view= with the existing strategy/build/finance/sponsor identifiers; strategy is omitted. Older /business addresses and facility/marketing values still reach the corresponding view.
+- WEB-39 [o] 구단 운영 holds the club's resources, applied policies and identity in page tabs 운영 방침, 시설, 재정, 후원 and 구단 디자인. Existing /direction?view= strategy/build/finance/sponsor identifiers retain their meaning; strategy is omitted. Older /business addresses and facility/marketing values still reach the corresponding view.
   - 운영 방침 is the department-first board (→WEB-60); a contextual policy entry opens the relevant department in a sheet over its task (→WEB-77), while direct board navigation remains available.
   - 시설 presents the three existing facility parts (→ECON-32): stadium steps/capacity/demand, expansion or rebuild cost, days, upkeep and capacity impact; training ground and academy levels/effects; active works and completion timing.
   - 재정 presents cash projections, fixed costs/runway, ledger/currency notes, owner contributions and unsettled campaigns from before rules 1.19 (→ECON-7).
   - 후원 presents every sponsor slot, contract/end/offers and who signs under the sponsor-contract responsibility (→ECON-8/21, →WEB-45).
+  - 구단 디자인 opens the authoritative representative-colour, crest and home/away/third editor (→WEB-86).
   - Inspecting a choice never commits it; explicit apply or the named commit submits the engine command.
 
 - WEB-40 [o] Squad, recruitment, manager and staff belong to 선수단 (→WEB-43). League and cups are competition destinations, while our club's season review belongs to records (→WEB-54).
@@ -182,17 +187,13 @@
 - WEB-48 [o] A transfer window opening is routine club business, not a celebration: an ordinary event card with the window, its deadline and what it allows, and "이적시장 보기" or "확인". Celebrations belong to achievements (→WEB-52).
 - WEB-46 [o] Motion: screens slide in from the side of the chosen tab; panels, cards and list items rise in with short staggers when inserted or shown; dialogs and event/outcome cards animate both in and out on every close path; changed state values pop, while a selected tab or segment changes without a pop; HUD cash counts toward its new value and flashes its direction. Automatic ticks never replay entrances, and reduced motion lands every state immediately. ← a pop on a pressed tab or segment crashed WebKit's page process when they were switched in a row
 
-- WEB-49 [o] Every club has a crest: shield shape, field pattern, primary and secondary colour and an emblem, derived from the world seed and club ID.
-  | part | values |
-  |---|---|
-  | shape | 6 |
-  | pattern | 10 |
-  | colours | 24-colour palette, 360 ordered pairs whose contrast ratio is at least 1.8 |
-  | emblem | 20 |
-  - 432,000 combinations; clubs are assigned in stable ID order with probing so no two clubs share colour pair and pattern while the world holds fewer than 3,600 clubs. ← low-contrast pairs hide the pattern and make crests look alike
-  - the player club keeps its founding colour as primary.
-  - crests and colours appear wherever clubs are named: HUD, home fixture, event cards, standings, round results, fixture notebook, match scoreboard and pitch kits (the away kit switches to its secondary colour when the primaries clash).
+- WEB-49 [o] Every club's crest and representative colours follow its applied identity (→KIT-1/2/11), including the owner's chosen template or component composition.
+  - Show that crest wherever the club is named: HUD, home fixture, event cards, standings, round results, fixture notebook, team sheets, game slots and the match scoreboard.
+  - Pitch shirts use the fixture's selected home/away/third designs and automatic goalkeeper colours (→KIT-6/8), including their patterns; a crest-derived single colour is not the shirt design.
+  - Show selected-kit swatches beside team labels in the match view. Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player marker to its team.
+  - Appearance in historical playback follows →KIT-12; a new crest edit must not silently contradict the chosen historical policy.
 - WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones) and the clock buttons; minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen (tap or the corner button pauses); the latest event; live charts; and two actions.
+  - Outfield players visibly wear the selected shirt colours and pattern at the actual observation scale, with readable numbers and team outlines; a patterned legend beside solid-colour players does not satisfy →WEB-49.
   - the scoreboard shows red cards and added time (45+n, 90+n); the latest event reads as spatial commentary (→MATCH-24) and names substitutions and injuries.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "다음 경기 관전" after it ends.
@@ -284,6 +285,7 @@
   | manager/staff appointment and renewal | 선수단 › 감독 / 스태프 |
   | every direction/investment row, presets and saved configurations | 구단 운영 › 운영 방침; contextual access to its department editor through →WEB-77 |
   | facilities, sponsor contracts and finance actions | 구단 운영 › 시설 / 후원 / 재정 |
+  | representative colours, crest and home/away/third shirt designs | 구단 운영 › 구단 디자인 (→WEB-86); founding uses the same editing flow |
   | business responsibility and observation stops | the central responsibility screen (→WEB-45) |
   | progression mode and background play | clock controls (→WEB-5/18) and background settings (→WEB-64) |
   - Event/remedy/player actions close their originating sheet and open the correct task or authoritative department sheet, optionally with a proposed value; only explicit commit changes facts. Training owner actions are never described as residing in the staff directory.
@@ -350,16 +352,33 @@
 - WEB-84 [o] An own match of the current season opens its post-match material (→MATCH-25) from the final analysis and from the fixture lists: shot map, heat maps by player and side, pass network and tactical report, each on the 1.9:1 pitch with the cells' names on touch. After the season close those matches say their maps are not kept and point to the players' season heat maps. ← grounds for manager and signing decisions without filling the save
 - WEB-85 [o] Preparation shows the manager's bench and set-piece and penalty takers with the lineup (→CLUB-6), and unavailable players with their injury or ban; the era's substitute rule is named (→MATCH-20).
 
+- WEB-86 [o] One club-design editor is available before founding and under 구단 운영 › 구단 디자인 afterwards.
+  - Start with ready-made crest previews and their visible 1–3 colour controls; directly label the region changed by each control. 직접 꾸미기 continues from the chosen design and exposes shape, background pattern and emblem choices (→KIT-2).
+  - Home, away and third have separate shirt previews and colour/pattern controls. Make the representative-colour defaults and independent alternate palettes clear (→KIT-1); do not add shorts/socks or goalkeeper customisation (→KIT-3/8).
+  - Changes are drafts until explicit use at founding or 적용 in a career. 취소 restores the design present on editor entry; a failed apply retains the draft and the last applied identity with an actionable error.
+  - Ordinary detours retain the editor draft within that game session under →WEB-74. Another slot or a new game never inherits it. Read-only ownership explains unavailable apply without hiding the design.
+  - Colour controls have names and values, visible keyboard focus and an accessible selected state; the crest and shirt previews update while choosing, before the owner commits. Keep the phone scroll, target-size and contrast rules (→WEB-17/38/63).
+- WEB-87 [o] The design editor previews both a large crest/shirt sample and its actual appearance at match-observation scale on grass.
+  - Switch the own preview between home/away/third; include an opposing side and automatic goalkeeper colours so the selected pairing can be assessed.
+  - Offer light and dark opponent examples, clearly identified as previews. They do not create a real fixture, progress the calendar or imply a simulated score.
+  - Pattern placement and colours agree between the sample, the pitch preview and match observation. Coarse stripes/checks, player numbers and team outlines remain readable on supported phone sizes.
+- WEB-88 [o] Match preparation names the forthcoming fixture and its automatically selected shirts, with an optional home/away/third selector for the own side (→KIT-6).
+  - Preview both teams and goalkeeper colours before committing a fixture-level choice; clash warnings and confirmation rules follow →KIT-7.
+  - A selected design is not silently repainted into another palette. If the forthcoming fixture changes before commit, refresh its context rather than applying the old choice to a different match.
+  - A historical or already settled match offers no kit-changing action. Skipping preparation keeps automatic selection and the existing watch/play-through paths.
+
 ## flow
 - Play: validated input → deterministic outcome → recorded facts → visible feedback.
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
 - Policy: task → authoritative department sheet → review/apply that department → retained task; other departments' drafts remain unapplied.
+- Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## constraints
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r91 261019 WEB-2✎ single colour→club identity/three shirts; WEB-15✎ advanced colour field→visible design entry/editor; WEB-39/71✎ four operations tabs→+authoritative club-design tab; WEB-49✎ derived two-colour crests/single-colour kits→KIT-owned crests/patterned shirts; WEB-50✎ solid player colours→selected shirt patterns; WEB-86/87/88+ shared editor, pitch preview and pre-match kit choice
 - r90 261019 WEB-22✎ +new spatial counters, fouls, cards, corners, offsides, substitutions, material link; WEB-23✎ goals→+red cards, substitutions, 45+n/90+n; WEB-24✎ +spatial counters and discipline; WEB-32✎ 4 s a minute→on average, automatic pacing; WEB-40✎ +discipline table in 선수 기록; WEB-44✎ injured→injured and suspended, fewer than 14 fit→available; WEB-50✎ +red cards, added time, spatial commentary, substitutions and injuries; WEB-53✎ +cell map and tags; WEB-59✎ 14→16 attributes, +cards, bans, season heat maps; WEB-68✎ +injury/ban badges and the yellow warning; WEB-84+ post-match material screens; WEB-85+ bench and takers in preparation
 - r89 261017 WEB-18✎ packed phone clock→date/settings above full-width mode/actions to preserve readable shared controls
 - r88 261017 WEB-50✎ phone pitch fills remaining height→fixed 1.9:1 pitch on every screen
