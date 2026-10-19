@@ -157,7 +157,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
-- 261019 T213 done on wip/w6pm (unmerged, batch checks pending): cards, second yellow, reds with ten men, dissent; 90 grid tests pass.
+- 261019 T213 done (w6pm): cards, second yellow, reds with ten men, dissent; batch checks pass (1119 unit, 19 contract, build).
 - 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
 - 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.
 - 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.
@@ -177,4 +177,3 @@
 - 261019 T202 done
 - 261019 T201 done
 - 261019 T200 done
-- 261019 create-task SAVE HIST WEB MATCH done (r5c2): no new task; T210 offside by the target at the pass, T226 season PPDA by MATCH-13 over advanced matches, T231 refuses to overwrite without a verified previous copy, T229/T220 appearances by minutes > 0; todo bases SAVE@49 HIST@15 WEB@92 MATCH@12.
