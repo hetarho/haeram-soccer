@@ -17,7 +17,6 @@
 | - |
 
 ## inbox
-- 261019 suggest T213: implemented and pushed on branch wip/w6pm (commit f9c4ba8; 90 grid tests pass, batch checks not run) because the owner's 18:00 stop came first → run the batch checks there, merge to main, then T214 (alt: redo from the task)
 - 261019 decided T211 T212: the first uncalibrated grid engine gave about 8 goals a match → global placeholders `shotScale` 0.05 and `crossScale` 4 in `DECISION_CONFIG` so the plausibility bands hold until calibration (alt: leave the bands red until T215 | tune the cell baselines now)
 - 261019 decided T211: runtime criterion 15 ms per match is unmet (about 87 ms after caching shared shape values) → task closed with the criterion left open in its result and handed to T224 (alt: keep T211 open | cut `moveAll` frequency at the cost of movement fidelity)
 - 261019 decided - : the 18:00 stop requested by the owner → every verified batch went to main, unfinished work would go to wip/w6pm (alt: push WIP to main | push nothing)
@@ -103,7 +102,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T213 | Cards in the match | MATCH | T212 | todo |
 | T214 | Substitutions by the manager and in-match injuries | MATCH STAFF CLUB | T213 | todo |
 | T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | todo |
 | T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
@@ -155,10 +153,11 @@
 
 ## next
 - Browser journeys set aside by the owner (261019): main e2e is red since the 261017 UI design commits (tests/e2e call `selectOption` on the custom Select); do not wait on or fix them unless asked.
-- T213 is implemented on branch wip/w6pm (batch checks and the merge to main are open) — merge it first, then implement-task T214, then T215–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T212 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- implement-task T214, then T215–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T213 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T213 done on wip/w6pm (unmerged, batch checks pending): cards, second yellow, reds with ten men, dissent; 90 grid tests pass.
 - 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
 - 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.
 - 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.

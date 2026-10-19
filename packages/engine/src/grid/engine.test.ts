@@ -52,7 +52,14 @@ describe('grid engine', () => {
         expect(team[3]!).toBeLessThanOrEqual(team[2]!);
         expect(team[5]!).toBeLessThanOrEqual(team[4]!);
         expect(team[1]!).toBeLessThanOrEqual(team[0]!);
-        expect(lines.every((p) => p.metrics[10] === 90)).toBe(true);
+        const sentOff = new Set(
+          (record.incidents ?? [])
+            .filter((x) => x.kind === 'red' || x.kind === 'secondYellow')
+            .map((x) => x.player),
+        );
+        expect(
+          lines.every((p) => (sentOff.has(p.id) ? p.metrics[10]! <= 90 : p.metrics[10] === 90)),
+        ).toBe(true);
         expect(team[10]).toBe(90);
       }
       expect(record.metrics[0]![11]! + record.metrics[1]![11]!).toBe(90);
