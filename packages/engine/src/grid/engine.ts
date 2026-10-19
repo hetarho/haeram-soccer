@@ -26,6 +26,7 @@ import {
 import { Tally } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
+import { attackFrame, type Point } from './pitch';
 import { createState, kickOff, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 
@@ -65,6 +66,7 @@ export interface GridResult {
 type Ref = [0 | 1, number];
 const other = (side: 0 | 1) => (1 - side) as 0 | 1;
 const PERIOD_SECONDS = 45 * 60;
+const af = (side: 0 | 1, p: readonly [number, number]): Point => attackFrame(side, p);
 
 export function playGrid(setup: GridSetup): GridResult {
   const s: GridState = createState(setup);
@@ -88,6 +90,7 @@ export function playGrid(setup: GridSetup): GridResult {
     const gp = s.players[side][idx]!;
     if (at) gp.pos = [at[0], at[1]];
     if (s.possession !== side || !s.owner) {
+      if (s.owner) tally.regain(side, idx, af(side, gp.pos));
       s.lastRegain = { side, at: s.elapsed };
       s.lastLoss = { side: other(side), at: s.elapsed };
       s.possessionSince = s.elapsed;
@@ -108,6 +111,20 @@ export function playGrid(setup: GridSetup): GridResult {
   function applyShot(side: 0 | 1, o: Extract<Outcome, { kind: 'shot' }>) {
     const shooter = o.shooter ?? 0;
     tally.shot(side, shooter, o.recordedXg, o.result);
+    const passer =
+      lastPasser &&
+      lastPasser[0] === side &&
+      lastPasser[1] !== shooter &&
+      !(prevBeat && prevBeat[0] === side && prevBeat[1] === shooter)
+        ? lastPasser[1]
+        : undefined;
+    tally.shotDetail(side, shooter, {
+      from: af(side, s.players[side][shooter]!.pos),
+      xg: o.xg,
+      recordedXg: o.recordedXg,
+      goal: o.result === 'goal',
+      passer,
+    });
     const foe = other(side);
     if (o.result === 'goal') {
       s.score[side]++;
@@ -154,11 +171,11 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         return;
       case 'intercepted':
-        tally.interception(foe, o.by);
+        tally.interception(foe, o.by, af(foe, o.at));
         setOwner(foe, o.by, o.at);
         return;
       case 'tackled':
-        tally.tackle(foe, o.by);
+        tally.tackle(foe, o.by, af(foe, s.ball));
         setOwner(foe, o.by, [s.ball[0], s.ball[1]]);
         return;
       case 'loose':
@@ -168,6 +185,7 @@ export function playGrid(setup: GridSetup): GridResult {
         pending = classifyOut(o);
         return;
       case 'foul':
+        tally.foul(foe, o.by, idx);
         pending = foulRestart(s, side, o.at);
         return;
       case 'held':
@@ -200,9 +218,17 @@ export function playGrid(setup: GridSetup): GridResult {
             spot: [spot[0], spot[1]],
             dead: RESTART_CONFIG.dead.offside,
           };
-          tally.pass(side, idx, false);
+          tally.passEvent(side, idx, {
+            from: af(side, s.players[side][idx]!.pos),
+            to: af(side, spot),
+            ok: false,
+            kind: d.kind === 'through' ? 'through' : 'short',
+          });
+          tally.offside(side, d.target);
           return { key: d.kind ?? 'short', outcome: 'offside' };
         }
+        const from = af(side, s.players[side][idx]!.pos);
+        const to = af(side, s.players[side][d.target]!.pos);
         const o = resolvePass(
           s,
           side,
@@ -213,21 +239,30 @@ export function playGrid(setup: GridSetup): GridResult {
           d.lineBreaking ?? false,
           r,
         );
-        tally.pass(side, idx, o.kind === 'complete');
+        tally.passEvent(side, idx, {
+          from,
+          to,
+          ok: o.kind === 'complete',
+          kind: d.kind ?? 'short',
+          lineBreaking: d.lineBreaking,
+        });
         apply(side, idx, o);
         return { key: d.kind ?? 'short', outcome: o };
       }
       case 'cross': {
+        const from = af(side, s.players[side][idx]!.pos);
         const o = resolveCross(s, side, idx, tags, ctx, r);
-        tally.pass(side, idx, o.kind === 'shot');
+        tally.passEvent(side, idx, { from, to: from, ok: o.kind === 'shot', kind: 'cross' });
         if (o.kind === 'shot') lastPasser = [side, idx];
         apply(side, idx, o);
         return { key: 'cross', outcome: o };
       }
       case 'cutBack': {
         if (d.target === undefined) break;
+        const from = af(side, s.players[side][idx]!.pos);
+        const to = af(side, s.players[side][d.target]!.pos);
         const o = resolveCutBack(s, side, idx, d.target, r);
-        tally.pass(side, idx, o.kind === 'complete');
+        tally.passEvent(side, idx, { from, to, ok: o.kind === 'complete', kind: 'cutBack' });
         apply(side, idx, o);
         if (o.kind === 'complete') {
           const shot = resolveShot(s, side, d.target, computeTags(s, side, d.target), ctx, r, {
@@ -239,9 +274,12 @@ export function playGrid(setup: GridSetup): GridResult {
         return { key: 'cutBack', outcome: o };
       }
       case 'takeOn': {
+        const from = af(side, s.players[side][idx]!.pos);
         const o = resolveTakeOn(s, side, idx, tags, r);
+        tally.takeOnAttempt(side, idx);
         if (o.kind === 'complete') {
           tally.dribble(side, idx);
+          tally.carryEvent(side, idx, from, af(side, o.to));
           justBeat = [side, idx];
         }
         apply(side, idx, o);
@@ -266,7 +304,9 @@ export function playGrid(setup: GridSetup): GridResult {
         break;
     }
     const to = d.point ?? [s.ball[0], s.ball[1]];
+    const from = af(side, s.players[side][idx]!.pos);
     const o = resolveCarry(s, side, idx, tags, [to[0], to[1]], r);
+    if (o.kind === 'complete') tally.carryEvent(side, idx, from, af(side, o.to));
     apply(side, idx, o);
     return { key: 'carry', outcome: o };
   }
@@ -296,10 +336,23 @@ export function playGrid(setup: GridSetup): GridResult {
           tally.pass(rs.side, res.taker, true);
         else if (res.kind !== 'shot' && res.kind !== 'penalty' && res.kind !== 'cross')
           tally.pass(rs.side, res.taker, false);
-        if (res.kind === 'cross') tally.pass(rs.side, res.taker, res.outcome.kind === 'shot');
+        if (res.kind === 'cross') {
+          const spot = af(rs.side, rs.spot);
+          tally.passEvent(rs.side, res.taker, {
+            from: spot,
+            to: spot,
+            ok: res.outcome.kind === 'shot',
+            kind: 'cross',
+          });
+        }
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        tally.restart(
+          rs.side,
+          rs.kind,
+          res.kind === 'penalty' && res.outcome.kind === 'shot' && res.outcome.result === 'goal',
+        );
         dt = rs.dead + secondsOf(kind);
         label = rs.kind;
         outcomeLabel = res.outcome.kind;

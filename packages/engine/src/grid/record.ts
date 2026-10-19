@@ -1,7 +1,9 @@
 /** The only place a grid match is counted: team and player metrics, goals, xG and possession (→MATCH-11, MATCH-13). */
-import { emptyPlayerDetail, emptyTeamDetail } from '../../../contracts/src/detail';
+import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/src/detail';
 import type { MatchRecord } from '../../../contracts/src/types';
 import { zeroMetrics } from '../primitives';
+import { CELL_BASELINES } from './baselines';
+import { bandOf, cellOf, inBox, type Point } from './pitch';
 import type { GridSetup } from './setup';
 import type { GridState } from './state';
 
@@ -24,6 +26,9 @@ export class Tally {
   private readonly lines: [number[][], number[][]];
   private readonly xg: [number, number] = [0, 0];
   private readonly held: [number, number] = [0, 0];
+  /** Team (TD) and player (PD) advanced counters (→MATCH-13). */
+  private readonly td: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
+  private readonly pd: [number[][], number[][]];
   readonly highlights: MatchRecord['highlights'] = [];
 
   constructor(private readonly setup: GridSetup) {
@@ -31,6 +36,137 @@ export class Tally {
       setup.rosters[0].map(() => zeroMetrics()),
       setup.rosters[1].map(() => zeroMetrics()),
     ];
+    this.pd = [
+      setup.rosters[0].map(() => emptyPlayerDetail()),
+      setup.rosters[1].map(() => emptyPlayerDetail()),
+    ];
+  }
+
+  /** Bumps a team counter and, when the player has the same counter, his. */
+  private count(
+    side: 0 | 1,
+    idx: number | undefined,
+    team: number | undefined,
+    player: number | undefined,
+    n = 1,
+  ) {
+    if (team !== undefined) this.td[side][team]! += n;
+    if (idx !== undefined && player !== undefined) this.pd[side][idx]![player]! += n;
+  }
+
+  /**
+   * A pass, cross or cut-back by `idx`. Points are in the passer's attack frame: the pass starts at
+   * `from` and reaches `to`; `ok` when a teammate got it.
+   */
+  passEvent(
+    side: 0 | 1,
+    idx: number,
+    e: {
+      from: Point;
+      to: Point;
+      ok: boolean;
+      kind: 'short' | 'long' | 'switch' | 'through' | 'cross' | 'cutBack';
+      lineBreaking?: boolean;
+    },
+  ): void {
+    this.pass(side, idx, e.ok);
+    const start = bandOf(e.from[0]);
+    const end = bandOf(e.to[0]);
+    if (e.from[0] < 70) this.count(side, undefined, TD.buildUpPasses, undefined);
+    else {
+      this.count(side, idx, TD.finalThirdPasses, PD.finalThirdPasses);
+      if (e.ok) this.count(side, idx, TD.finalThirdCompleted, PD.finalThirdCompleted);
+    }
+    if (e.kind === 'cross') {
+      this.count(side, idx, TD.crosses, PD.crosses);
+      if (e.ok) this.count(side, idx, TD.crossesCompleted, PD.crossesCompleted);
+    }
+    if (e.kind === 'cutBack') this.count(side, idx, TD.cutBacks, PD.cutBacks);
+    if (e.kind === 'through') {
+      this.count(side, idx, TD.throughBalls, PD.throughBalls);
+      if (e.ok) this.count(side, idx, TD.throughBallsCompleted, PD.throughBallsCompleted);
+    }
+    if (!e.ok) return;
+    if (end > start) this.count(side, idx, TD.progressivePasses, PD.progressivePasses);
+    if (e.lineBreaking) this.count(side, idx, TD.lineBreakingPasses, PD.lineBreakingPasses);
+    this.movement(side, idx, e.from, e.to);
+  }
+
+  /** What a completed pass or carry gains: box and front-of-box entries and expected threat. */
+  private movement(side: 0 | 1, idx: number, from: Point, to: Point): void {
+    if (inBox(to) && !inBox(from)) this.count(side, idx, TD.boxEntries, PD.boxEntries);
+    if (bandOf(to[0]) === 5 && bandOf(from[0]) < 5)
+      this.count(side, idx, TD.frontOfBoxEntries, PD.frontOfBoxEntries);
+    const gain = Math.round(
+      Math.max(0, CELL_BASELINES[cellOf(to)]!.xT - CELL_BASELINES[cellOf(from)]!.xT) * 1000,
+    );
+    if (gain > 0) this.count(side, idx, TD.xtAdded, PD.xtAdded, gain);
+  }
+
+  /** A carry or successful take-on from `from` to `to` (attack frame). */
+  carryEvent(side: 0 | 1, idx: number, from: Point, to: Point): void {
+    if (bandOf(to[0]) > bandOf(from[0]))
+      this.count(side, idx, TD.progressiveCarries, PD.progressiveCarries);
+    this.movement(side, idx, from, to);
+  }
+
+  /** A take-on attempt, won or not (the won ones also count as dribbles). */
+  takeOnAttempt(side: 0 | 1, idx: number): void {
+    this.count(side, idx, TD.takeOns, PD.takeOns);
+  }
+
+  /** The ball won by `(side, idx)` at `at` (his attack frame): a high turnover from x ≥ 70. */
+  regain(side: 0 | 1, idx: number, at: Point): void {
+    if (at[0] >= 70) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
+  }
+
+  /**
+   * A shot from `from` (shooter's attack frame) with the chance's xG; `passer` is the player whose
+   * completed pass set it up, who earns the key pass and the shot's xA.
+   */
+  shotDetail(
+    side: 0 | 1,
+    idx: number,
+    e: { from: Point; xg: number; recordedXg: number; goal: boolean; passer?: number },
+  ): void {
+    this.count(side, idx, undefined, PD.xg, Math.round(e.recordedXg * 100));
+    if (inBox(e.from)) this.count(side, undefined, TD.boxShots, undefined);
+    const big = e.xg >= 0.3;
+    if (big) {
+      this.count(side, undefined, TD.bigChances, undefined);
+      if (e.goal) this.count(side, undefined, TD.bigChancesScored, undefined);
+    }
+    if (e.passer !== undefined) {
+      this.count(side, e.passer, TD.keyPasses, PD.keyPasses);
+      this.count(side, e.passer, undefined, PD.xa, Math.round(e.recordedXg * 100));
+      if (big) this.count(side, e.passer, undefined, PD.bigChancesCreated);
+    }
+  }
+
+  restart(
+    side: 0 | 1,
+    kind:
+      'kickoff' | 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'indirectFreeKick' | 'penalty',
+    scored = false,
+  ): void {
+    if (kind === 'corner') this.count(side, undefined, TD.corners, undefined);
+    if (kind === 'throwIn') this.count(side, undefined, TD.throwIns, undefined);
+    if (kind === 'goalKick') this.count(side, undefined, TD.goalKicks, undefined);
+    if (kind === 'freeKick' || kind === 'indirectFreeKick')
+      this.count(side, undefined, TD.freeKicks, undefined);
+    if (kind === 'penalty') {
+      this.count(side, undefined, TD.penalties, undefined);
+      if (scored) this.count(side, undefined, TD.penaltiesScored, undefined);
+    }
+  }
+
+  foul(foulerSide: 0 | 1, fouler: number, fouled: number): void {
+    this.count(foulerSide, fouler, TD.fouls, PD.fouls);
+    this.count((1 - foulerSide) as 0 | 1, fouled, undefined, PD.foulsWon);
+  }
+
+  offside(side: 0 | 1, target: number): void {
+    this.count(side, target, TD.offsides, PD.offsides);
   }
 
   private add(side: 0 | 1, idx: number, metric: number, n = 1) {
@@ -54,12 +190,15 @@ export class Tally {
     this.xg[side] += recordedXg;
   }
 
-  tackle(side: 0 | 1, idx: number): void {
+  /** A tackle or interception at `at` (the winner's attack frame); from x ≥ 35 it is a press action (PPDA). */
+  tackle(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.tackles);
+    if (at && at[0] >= 35) this.count(side, undefined, TD.pressActions, undefined);
   }
 
-  interception(side: 0 | 1, idx: number): void {
+  interception(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.interceptions);
+    if (at && at[0] >= 35) this.count(side, undefined, TD.pressActions, undefined);
   }
 
   dribble(side: 0 | 1, idx: number): void {
@@ -121,7 +260,7 @@ export class Tally {
           players.push({
             id: setup.rosters[side][idx]!.id,
             metrics: line,
-            detail: emptyPlayerDetail(),
+            detail: this.pd[side][idx]!,
           });
           lineCounts[side]++;
         });
@@ -130,7 +269,7 @@ export class Tally {
       players,
       highlights: this.highlights,
       xg: [Math.round(this.xg[0] * 100) / 100, Math.round(this.xg[1] * 100) / 100],
-      detail: [emptyTeamDetail(), emptyTeamDetail()],
+      detail: this.td,
       ...(setup.recordPlayers ? { lineCounts } : {}),
     };
   }

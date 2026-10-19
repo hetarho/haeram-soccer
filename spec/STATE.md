@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T212 |
+| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T213 |
 
 ## inbox
 - 261019 decided T203 T204: owner asked for parallel work until 18:00 while the engine chain is declared serial → ran T203 (apps/web packing) and T204 (engine/grid, new files) side by side in separate worktrees since their touches are disjoint and T204 uses nothing of T203 (alt: strictly serial | also start identity tasks T234+ early)
@@ -100,7 +100,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T212 | Advanced and spatial counters | MATCH | T211 | todo |
 | T213 | Cards in the match | MATCH | T212 | todo |
 | T214 | Substitutions by the manager and in-match injuries | MATCH STAFF CLUB | T213 | todo |
 | T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | todo |
@@ -157,6 +156,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
 - 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.
 - 261019 T210 done (w6pm): restarts, offside, fouls to free kicks/penalties and every set piece with dead times; 66 grid tests pass.
 - 261019 T209 done (w6pm): open-play duels and the xG model (pass, cross, cut-back, take-on, carry, hold-up, clearance, aerial, shot, penalty); 56 grid tests pass.

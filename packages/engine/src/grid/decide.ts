@@ -41,6 +41,8 @@ export const DECISION_CONFIG = {
   shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
   shotScale: 0.05,
+  /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
+  crossScale: 4,
   tactic: {
     possession: { pass: 1.1, takeOn: 0.9, shotBand5: 0.8 },
     counter: { shotInCounter: 1.1 },
@@ -118,7 +120,8 @@ export function actionMix(
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
   mix.takeOn *= clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]);
-  const crossFactor = clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]);
+  const crossFactor =
+    clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) * C.crossScale;
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
   mix.shot *= C.shotLine[line] * C.shotScale;
