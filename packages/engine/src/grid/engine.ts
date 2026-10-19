@@ -2,6 +2,7 @@
 import type { MatchRecord } from '../../../contracts/src/types';
 import { choosePass, decide, type Decision } from './decide';
 import { computeTags } from './tags';
+import { cardForFoul, dissentAt } from './discipline';
 import {
   looseWinner,
   resolveCarry,
@@ -27,7 +28,7 @@ import { Tally } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, type Point } from './pitch';
-import { createState, kickOff, type GridState } from './state';
+import { createState, enterSlot, kickOff, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
@@ -153,6 +154,42 @@ export function playGrid(setup: GridSetup): GridResult {
     }
   }
 
+  /** Shows a card: a caution is remembered; a second yellow or a red sends the player off and his side plays a man short. */
+  function applyCard(
+    side: 0 | 1,
+    idx: number,
+    card: 'yellow' | 'secondYellow' | 'red',
+    reason: 'reckless' | 'tactical' | 'dissent' | 'dogso' | 'serious',
+  ) {
+    const gp = s.players[side][idx]!;
+    tally.card(side, idx, card);
+    credits[s.period - 1]! += ADDED_CONFIG.credits.card;
+    const cap = s.period === 2 ? 90 : 45;
+    const base = Math.floor(s.t / 60) + 1 + (s.period === 2 ? 45 : 0);
+    tally.incidents.push({
+      minute: minute(),
+      ...(base > cap ? { added: base - cap } : {}),
+      side,
+      kind: card,
+      player: gp.player.id,
+      reason,
+    });
+    if (card === 'yellow') {
+      gp.yellow = true;
+      return;
+    }
+    gp.sentOff = true;
+    gp.onPitch = false;
+    gp.offAt = s.elapsed;
+    if (gp.slot === 0) {
+      // The outfield player with the best reflexes takes the gloves.
+      const keeper = s.players[side]
+        .filter((p) => p.onPitch && !p.sentOff && p.slot > 0)
+        .sort((a, b) => b.player.attrs.reflexes - a.player.attrs.reflexes)[0];
+      if (keeper) enterSlot(s, keeper, 0);
+    }
+  }
+
   /** Applies any outcome of the player `(side, idx)` on the ball. */
   function apply(side: 0 | 1, idx: number, o: Outcome) {
     const foe = other(side);
@@ -187,6 +224,19 @@ export function playGrid(setup: GridSetup): GridResult {
       case 'foul':
         tally.foul(foe, o.by, idx);
         pending = foulRestart(s, side, o.at);
+        {
+          const verdict = cardForFoul(
+            s,
+            foe,
+            o.by,
+            { at: o.at, inBox: pending.kind === 'penalty' },
+            r,
+          );
+          if (verdict.card !== 'none') {
+            applyCard(foe, o.by, verdict.card, verdict.reason ?? 'reckless');
+            pending.dead += RESTART_CONFIG.dead.card;
+          }
+        }
         return;
       case 'held':
         if (o.by !== undefined) setOwner(foe, o.by, s.players[foe][o.by]!.pos);
@@ -393,6 +443,11 @@ export function playGrid(setup: GridSetup): GridResult {
       const [lo, hi] = ADDED_CONFIG.bounds[period - 1]!;
       const extra = Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
       if (s.t >= PERIOD_SECONDS + extra * 60) {
+        // Dissent is drawn once per side at the end of each period.
+        for (const side of [0, 1] as const) {
+          const d = dissentAt(s, side, r);
+          if (d) applyCard(side, d.player, d.card, 'dissent');
+        }
         added.push(extra);
         break;
       }

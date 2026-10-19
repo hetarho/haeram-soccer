@@ -1,6 +1,6 @@
 /** The only place a grid match is counted: team and player metrics, goals, xG and possession (→MATCH-11, MATCH-13). */
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/src/detail';
-import type { MatchRecord } from '../../../contracts/src/types';
+import type { Incident, MatchRecord } from '../../../contracts/src/types';
 import { zeroMetrics } from '../primitives';
 import { CELL_BASELINES } from './baselines';
 import { bandOf, cellOf, inBox, type Point } from './pitch';
@@ -30,6 +30,7 @@ export class Tally {
   private readonly td: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
   private readonly pd: [number[][], number[][]];
   readonly highlights: MatchRecord['highlights'] = [];
+  readonly incidents: Incident[] = [];
 
   constructor(private readonly setup: GridSetup) {
     this.lines = [
@@ -160,6 +161,17 @@ export class Tally {
     }
   }
 
+  /** A card shown to `idx`; a second yellow counts one yellow and one red. */
+  card(side: 0 | 1, idx: number, kind: 'yellow' | 'secondYellow' | 'red'): void {
+    if (kind !== 'red') this.count(side, idx, TD.yellowCards, PD.yellowCards);
+    if (kind !== 'yellow') this.count(side, idx, TD.redCards, PD.redCards);
+  }
+
+  /** Minutes a player was on the pitch (a sent-off player's end is set by the engine). */
+  minutesOf(side: 0 | 1, idx: number, minutes: number): void {
+    this.lines[side][idx]![M.minutes] = minutes;
+  }
+
   foul(foulerSide: 0 | 1, fouler: number, fouled: number): void {
     this.count(foulerSide, fouler, TD.fouls, PD.fouls);
     this.count((1 - foulerSide) as 0 | 1, fouled, undefined, PD.foulsWon);
@@ -230,14 +242,19 @@ export class Tally {
 
   finish(
     state: GridState,
-  ): Pick<MatchRecord, 'metrics' | 'players' | 'highlights' | 'xg' | 'detail' | 'lineCounts'> {
+  ): Pick<
+    MatchRecord,
+    'metrics' | 'players' | 'highlights' | 'xg' | 'detail' | 'lineCounts' | 'incidents'
+  > {
     const { setup } = this;
     // Starters play the whole match until substitutions and cards exist (T213, T214).
     const sides = [0, 1] as const;
     const played = sides.map((side) =>
       this.lines[side].map((line, idx) => {
         const gp = state.players[side][idx]!;
-        if (idx < 11 && !gp.sentOff) line[M.minutes] = 90;
+        if (idx < 11)
+          line[M.minutes] =
+            gp.sentOff && gp.offAt !== undefined ? Math.min(90, Math.round(gp.offAt / 60)) : 90;
         return idx < 11;
       }),
     );
@@ -268,6 +285,7 @@ export class Tally {
       metrics,
       players,
       highlights: this.highlights,
+      ...(this.incidents.length ? { incidents: this.incidents } : {}),
       xg: [Math.round(this.xg[0] * 100) / 100, Math.round(this.xg[1] * 100) / 100],
       detail: this.td,
       ...(setup.recordPlayers ? { lineCounts } : {}),

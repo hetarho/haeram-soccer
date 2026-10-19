@@ -498,7 +498,9 @@ export function resolveTakeOn(
   const p = clamp((CELL_BASELINES[tags.cell]!.takeOnSuccess ?? 0.5) + edge * T.skill, T.min, T.max);
   if (r() < p) return { kind: 'complete', to: back(side, past), receiver: idx };
   const u = r();
-  if (u < T.fail.tackle) return { kind: 'tackled', by: foe.idx };
+  // A booked defender is more careful: 0.6 of his foul share stays, the rest becomes a clean tackle.
+  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1);
+  if (u < T.fail.tackle + (T.fail.foul - foulShare)) return { kind: 'tackled', by: foe.idx };
   if (u < T.fail.tackle + T.fail.foul)
     return { kind: 'foul', by: foe.idx, at: [me.pos[0], me.pos[1]] };
   const at: [number, number] = [me.pos[0], me.pos[1]];
@@ -522,7 +524,8 @@ export function resolveCarry(
     const edge = skill(s, foe.gp.side, foe.gp.idx, 'tackling') - skill(s, side, idx, 'dribbling');
     const p = clamp(lost * K.lostScale * (1 + edge * K.skill), K.min, K.max);
     if (r() < p) {
-      if (r() < K.foul) return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
+      if (r() < K.foul * (foe.gp.yellow ? 0.6 : 1))
+        return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
       return { kind: 'tackled', by: foe.gp.idx };
     }
   }
