@@ -1,17 +1,20 @@
 import { Select } from './Select';
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { kindLabel, seasonName } from './format';
 import {
+  archivedTimeline,
   divisionName,
   formFor,
   leagueFixtures,
+  leagueOverviewModel,
   leagueRules,
   leagueTimeline,
   orderIds,
   ownLeagueIds,
   rankChange,
+  rankHistoryYears,
   RESULT_POINTS,
   sameMembers,
 } from './league';
@@ -221,56 +224,32 @@ export function ZoneLegend({
 }
 
 export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: () => void }) {
-  const ids = ownLeagueIds(w),
-    sorted = orderIds(ids, w.tables),
-    own = w.clubs.find((c) => c.id === w.playerClub)!;
-  const t = w.tables[w.playerClub],
-    rules = leagueRules(w, ids),
-    timeline = leagueTimeline(w, ids),
-    change = rankChange(timeline, w.playerClub);
-  const rank = sorted.indexOf(w.playerClub) + 1,
-    fixtures = leagueFixtures(w, ids),
-    form = formFor(fixtures, w.playerClub);
-  const threshold = rules?.automatic || 1,
-    inside = rank <= threshold,
-    targetId = sorted[inside ? Math.min(threshold, sorted.length - 1) : threshold - 1];
-  const target = targetId ? w.tables[targetId] : undefined,
-    gap = target ? Math.abs(t.points - target.points) : 0;
-  const relegationId = rules?.relegation ? sorted[sorted.length - rules.relegation] : undefined;
-  const cushion = relegationId ? t.points - w.tables[relegationId].points : undefined;
+  const {
+    ids,
+    sorted,
+    table: t,
+    rules,
+    change,
+    rank,
+    form,
+    threshold,
+    inside,
+    gap,
+    cushion,
+    streak,
+    lastMatch,
+    ownGoals,
+    opponentGoals,
+    matchPoints,
+    before,
+    after,
+  } = useMemo(() => leagueOverviewModel(w), [w]);
+  const own = w.clubs.find((c) => c.id === w.playerClub)!;
   const next = nextOwnFixture(w);
   const rivalId = next && (next.home === w.playerClub ? next.away : next.home),
     rival = w.clubs.find((c) => c.id === rivalId),
     rivalTable = rivalId && w.tables[rivalId];
   const leagueGame = next?.kind === 'league' || next?.kind === 'lower';
-  const last = form.at(-1),
-    streak = last ? [...form].reverse().findIndex((result) => result !== last) : 0;
-  const streakLength = streak < 0 ? form.length : streak;
-  const lastMatch = fixtures
-    .filter((f) => f.score && (f.home === w.playerClub || f.away === w.playerClub))
-    .sort((a, b) => a.round - b.round)
-    .at(-1);
-  const ownGoals =
-    lastMatch && (lastMatch.home === w.playerClub ? lastMatch.score!.home : lastMatch.score!.away);
-  const opponentGoals =
-    lastMatch && (lastMatch.home === w.playerClub ? lastMatch.score!.away : lastMatch.score!.home);
-  const matchPoints =
-    ownGoals === undefined || opponentGoals === undefined
-      ? 0
-      : ownGoals > opponentGoals
-        ? RESULT_POINTS.win
-        : ownGoals === opponentGoals
-          ? RESULT_POINTS.draw
-          : RESULT_POINTS.loss;
-  const before =
-    lastMatch &&
-    timeline
-      .filter((r) => r.round < lastMatch.round)
-      .at(-1)
-      ?.rows.find((r) => r.id === w.playerClub);
-  const after =
-    lastMatch &&
-    timeline.find((r) => r.round === lastMatch.round)?.rows.find((r) => r.id === w.playerClub);
   return (
     <section className={s.overview} aria-label="우리 팀 리그 현황">
       <div className={s.overviewTitle}>
@@ -366,8 +345,8 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
           </strong>
           <small>
             {form.length
-              ? streakLength > 1
-                ? `최근 ${streakLength}경기 연속 ${last === '승' ? '승리' : last === '패' ? '패배' : '무승부'}`
+              ? streak.length > 1
+                ? `최근 ${streak.length}경기 연속 ${streak.result === '승' ? '승리' : streak.result === '패' ? '패배' : '무승부'}`
                 : `최근 ${form.length}경기 ${form.filter((r) => r === '승').length}승 ${form.filter((r) => r === '무').length}무 ${form.filter((r) => r === '패').length}패`
               : '첫 승리로 흐름을 만들어보세요'}
           </small>
@@ -467,58 +446,30 @@ export function RankChart({
 
 export function RankHistoryGraph({
   w,
-  ids = ownLeagueIds(w),
+  ids: shown,
   year: pinned,
 }: {
   w: World;
+  /** The league's clubs; our own league by default. */
   ids?: string[];
   /** One closed season, drawn from its kept snapshots without the season list. */
   year?: number;
 }) {
-  const ownLeague = sameMembers(ids, ownLeagueIds(w));
-  const years =
-    pinned !== undefined
-      ? [pinned]
-      : [
-          w.year,
-          ...new Set(
-            (w.rankHistory || [])
-              .filter(
-                (snapshot) =>
-                  ownLeague &&
-                  snapshot.year < w.year &&
-                  snapshot.round > 0 &&
-                  snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
-              )
-              .map((snapshot) => snapshot.year),
-          ),
-        ].sort((a, b) => b - a);
+  const ids = useMemo(() => shown ?? ownLeagueIds(w), [w, shown]);
+  const ownLeague = useMemo(() => sameMembers(ids, ownLeagueIds(w)), [w, ids]);
+  const years = useMemo(
+    () => (pinned !== undefined ? [pinned] : rankHistoryYears(w, ids)),
+    [w, ids, pinned],
+  );
   const [selectedYear, setSelectedYear] = useState<number>(),
     [selectedComparison, setChoice] = useState('nearby');
   const year =
     pinned ?? (selectedYear !== undefined && years.includes(selectedYear) ? selectedYear : w.year);
-  const archived = (w.rankHistory || []).filter(
-    (snapshot) =>
-      snapshot.year === year &&
-      snapshot.round > 0 &&
-      snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
+  const archived = useMemo(
+    () => (year === w.year ? undefined : archivedTimeline(w, year)),
+    [w, year],
   );
-  const timeline =
-    year === w.year
-      ? leagueTimeline(w, ids)
-      : archived
-          .map((snapshot) => ({
-            year: snapshot.year,
-            round: snapshot.round,
-            rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
-              id: w.clubs[index].id,
-              rank: i + 1,
-              points,
-              gf,
-              ga,
-            })),
-          }))
-          .sort((a, b) => a.round - b.round);
+  const timeline = useMemo(() => archived ?? leagueTimeline(w, ids), [archived, w, ids]);
   const graphIds = year === w.year ? ids : timeline[0]?.rows.map((row) => row.id) || [];
   const sorted =
     year === w.year ? orderIds(ids, w.tables) : timeline.at(-1)?.rows.map((row) => row.id) || [];
@@ -544,7 +495,7 @@ export function RankHistoryGraph({
           <h3>시즌 순위 추이</h3>
           <span>
             {seasonName(year)}
-            {year !== w.year && archived[0]
+            {archived?.[0]
               ? ` · 당시 ${divisionName(home, archived[0].tier, archived[0].group)}`
               : ''}{' '}
             · 위로 올라갈수록 높은 순위

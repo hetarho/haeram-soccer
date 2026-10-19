@@ -153,27 +153,66 @@ export function sameMembers(a: string[], b: string[]): boolean {
   return members.size === new Set(b).size && b.every((id) => members.has(id));
 }
 
+/** A kept round of our league: its ranked rows and the division we played it in. */
+export interface ArchivedRound extends LeagueRound {
+  tier: number;
+  group: number;
+}
+
+/** The standings our league kept after each played round of `year`, in round order. */
+export function archivedTimeline(w: World, year: number): ArchivedRound[] {
+  return (w.rankHistory || [])
+    .filter(
+      (snapshot) =>
+        snapshot.year === year &&
+        snapshot.round > 0 &&
+        snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
+    )
+    .map((snapshot) => ({
+      year: snapshot.year,
+      round: snapshot.round,
+      tier: snapshot.tier,
+      group: snapshot.group,
+      rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
+        id: w.clubs[index].id,
+        rank: i + 1,
+        points,
+        gf,
+        ga,
+      })),
+    }))
+    .sort((a, b) => a.round - b.round);
+}
+
+/**
+ * The seasons a rank history of `ids` can show, newest first: this one, then for our own league
+ * every earlier season that kept its rounds.
+ */
+export function rankHistoryYears(w: World, ids: string[]): number[] {
+  const ownLeague = sameMembers(ids, ownLeagueIds(w));
+  return [
+    w.year,
+    ...new Set(
+      (w.rankHistory || [])
+        .filter(
+          (snapshot) =>
+            ownLeague &&
+            snapshot.year < w.year &&
+            snapshot.round > 0 &&
+            snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
+        )
+        .map((snapshot) => snapshot.year),
+    ),
+  ].sort((a, b) => b - a);
+}
+
 export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
-  const stored = (w.rankHistory || []).filter(
-    (snapshot) =>
-      snapshot.year === w.year &&
-      snapshot.round > 0 &&
-      sameMembers(
-        ids,
-        snapshot.rows.map((row) => w.clubs[row[0]]?.id).filter((id): id is string => !!id),
-      ),
+  const savedRounds = archivedTimeline(w, w.year).filter((round) =>
+    sameMembers(
+      ids,
+      round.rows.map((row) => row.id),
+    ),
   );
-  const savedRounds = stored.map((snapshot) => ({
-    year: snapshot.year,
-    round: snapshot.round,
-    rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
-      id: w.clubs[index].id,
-      rank: i + 1,
-      points,
-      gf,
-      ga,
-    })),
-  }));
 
   // Scores are the source of truth for older saves and leagues without saved snapshots.
   const fixtures = leagueFixtures(w, ids)
@@ -238,6 +277,74 @@ export function formFor(fixtures: Fixture[], id: string): ('승' | '무' | '패'
       const other = f.home === id ? f.score!.away : f.score!.home;
       return own > other ? '승' : own < other ? '패' : '무';
     });
+}
+
+/**
+ * Our club's race in its league for the overview: the rank and its change, the points to the
+ * automatic-promotion line (or to first place in a division without one) and above the
+ * relegation line, the current run of results and the last league match's points.
+ */
+export function leagueOverviewModel(w: World) {
+  const ids = ownLeagueIds(w),
+    sorted = orderIds(ids, w.tables),
+    table = w.tables[w.playerClub],
+    rules = leagueRules(w, ids),
+    timeline = leagueTimeline(w, ids),
+    fixtures = leagueFixtures(w, ids),
+    form = formFor(fixtures, w.playerClub);
+  const rank = sorted.indexOf(w.playerClub) + 1;
+  const threshold = rules?.automatic || 1,
+    inside = rank <= threshold,
+    // Inside the line the chaser just below it, outside the last club on it.
+    targetId = sorted[inside ? Math.min(threshold, sorted.length - 1) : threshold - 1],
+    target = targetId ? w.tables[targetId] : undefined;
+  const relegationId = rules?.relegation ? sorted[sorted.length - rules.relegation] : undefined;
+  const last = form.at(-1),
+    run = last ? [...form].reverse().findIndex((result) => result !== last) : 0;
+  const lastMatch = fixtures
+    .filter((f) => f.score && (f.home === w.playerClub || f.away === w.playerClub))
+    .sort((a, b) => a.round - b.round)
+    .at(-1);
+  const ownGoals =
+    lastMatch && (lastMatch.home === w.playerClub ? lastMatch.score!.home : lastMatch.score!.away);
+  const opponentGoals =
+    lastMatch && (lastMatch.home === w.playerClub ? lastMatch.score!.away : lastMatch.score!.home);
+  return {
+    ids,
+    sorted,
+    table,
+    rules,
+    timeline,
+    form,
+    rank,
+    change: rankChange(timeline, w.playerClub),
+    threshold,
+    inside,
+    gap: target ? Math.abs(table.points - target.points) : 0,
+    cushion: relegationId ? table.points - w.tables[relegationId].points : undefined,
+    /** The latest result and how many matches in a row (of the last five) ended that way. */
+    streak: { result: last, length: run < 0 ? form.length : run },
+    lastMatch,
+    ownGoals,
+    opponentGoals,
+    matchPoints:
+      ownGoals === undefined || opponentGoals === undefined
+        ? 0
+        : ownGoals > opponentGoals
+          ? RESULT_POINTS.win
+          : ownGoals === opponentGoals
+            ? RESULT_POINTS.draw
+            : RESULT_POINTS.loss,
+    before:
+      lastMatch &&
+      timeline
+        .filter((r) => r.round < lastMatch.round)
+        .at(-1)
+        ?.rows.find((r) => r.id === w.playerClub),
+    after:
+      lastMatch &&
+      timeline.find((r) => r.round === lastMatch.round)?.rows.find((r) => r.id === w.playerClub),
+  };
 }
 
 /**
