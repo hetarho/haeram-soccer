@@ -223,6 +223,9 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     page,
     browser,
   }) => {
+    // Half a season is simulated here before the page opens; with the own league on the grid
+    // engine (T218) that alone takes about 22 s on CI, so slow CI browsers need longer.
+    test.slow();
     const { exportedCareer } = await import('./career-fixtures');
     const { advanceToNextEvent } = await import('../../packages/engine/src/next-event');
     const w = fixture();

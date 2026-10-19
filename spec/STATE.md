@@ -96,6 +96,10 @@
 - 261020 decided T218 MATCH-20: the scorer table now counts substitutes who came on, but `validateWorld` demanded exactly 11 appearances a side per fixture → 11–16 per match (five substitutes at most in any era), goals still exact (alt: count only the starters | keep each fixture's line count beside the table)
 - 261020 suggest T218 ARCH-28: entry JS/CSS is 256,906 gzip bytes on T218's tree (7c4ed73 257,529; limit 256,000), over since T217 made the entry reach `grid/playback.ts` through motion.ts → re-measure after syncing with refactor-261019 and, if still over, a lightweight fix that keeps `MATCH_MOTION_CONFIG`/`motionTraits` out of the grid modules the entry pulls in, before the benchmark job runs
 - 261020 suggest T218 MATCH-23: in a fresh ENG amateur league on the grid the leading scorers reach 34–47 league goals in 30 matches (best club 87 goals; league 2.77 a match) → check the per-player goal spread at lower tiers alongside the grid tactic-balance task
+- 261020 decided T271 ARCH-30 MATCH-22: dda59a3's red unit and journey checks were T218's own-league grid cost, not a hang — feature-replay ran past its own 240 s limit (282 s on CI; T218 raised only the config's) and the promise-reload mediation and joint contract authority journeys spend 22–28 s on CI simulating half a season or 35 rounds in Node before the page opens → feature-replay is one case per career (new on the config's 300 s, retained 480 s for its 133 s locally) and both journeys take `test.slow()` like the other season-simulating journeys (alt: `OWN_LEAGUE_ENGINE = 'summary'` ahead of T224 | fixtures that simulate less); T224 revisits these limits
+- 261020 decided T271 SAVE-2 ARCH-12: the century checksum mismatch was the pinned brotli encoder, not the data — upstream compress.c's `encodeWithDictionary` fed its FINISH loop no input and copied every chunk to one offset, so a stream ended after the first meta-block (T218's 16.1 MB century kept 13.9 MB) → `patches/brotli@2.1.0.patch` fixes both sites in the compiled `build/encode.js`; the output equals Node's native brotli and is unchanged for inputs that fit one meta-block (alt: rebuild encode.js with emsdk | a codec that writes several streams)
+- 261020 parked T271 SAVE-4 ARCH-14: with the codec fixed the baseline century checkpoint is 2,382,236 B against the code's 1,572,864 B (total 4,764,984 of 3,670,016; rules 3 was 1,404,316) because T218's own grid matches keep about 10 incidents and 13.6 lines each and the club played 25% more of them, so `pnpm run benchmark` stays red until SAVE-4's 3 MiB active copy (T231) and the rules-4 benchmark (T232) land, and the job now takes about 4 h on CI; needs: schedule T231/T232 ahead of T219–T230 (create-task deps) or accept a red benchmark job until then
+- 261020 suggest T271 -: report both compress.c bugs upstream to foliojs/brotli.js (FINISH must keep the unconsumed input; later chunks go after `output_buffer_size`) and drop the compiled-code hunk once a fixed release is pinned
 
 ## ideation
 | id | st |
@@ -170,7 +174,7 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
-| T271 | Fix CI failure | ARCH | - | todo |
+| T271 | Fix CI failure | ARCH | - | blocked@261020 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -180,9 +184,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T271
+- decide parked T271 (benchmark storage budget: T231/T232 first, or a red benchmark job until then); then implement-task T219
 
 ## log
+- 261020 T271 blocked: fixed the pinned brotli encoder that cut the century checkpoint after its first meta-block (checksum mismatch), split feature-replay per career and gave the two Node-heavy journeys `test.slow()`; the benchmark now fails the 1.5 MiB checkpoint budget at 2,382,236 B (parked: T231/T232).
 - 261020 fix e2e live-state: wait for the run to leave 8월 1일 instead of the transient 8월 3일, which a late x2 step skips by carrying its owed days (red since 5659b91, Firefox then Chromium). The 57d81a3 benchmark miss is runner speed, not a lane: same engine and century save, EPYC 7763 ran the storage benchmark 1.6× slower than the 9V45 that passed b477308 (century load 3.4 s there, 5 s limit).
 - 261020 create-architecture ARCH r13: ARCH-30✎ tasks never run browser specs (per-task e2e took too long); Chromium journeys only in the batch run right before a push to main, which confirms e2e acceptance items.
 - 261020 T218 done (v7m3): own matches and own-league fixtures play the grid engine; observed ones carry `buildFrames` frames under the contract `MatchEvent`/`MatchFrame`, rosters with the bench; duel chain and motion.ts removed; scorers count substitutes (11–16 appearances a match); golden regenerated; 1123 unit, 19 contract and every Chromium journey pass.
@@ -202,5 +207,3 @@
 - 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
 - 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.
 - 261019 T213 done (w6pm): cards, second yellow, reds with ten men, dissent; batch checks pass (1119 unit, 19 contract, build).
-- 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
-- 261019 T211 done (w6pm): the grid match loop `playGrid` with records and trace; 73 grid tests pass; runtime criterion (15 ms) not met — about 80–140 ms a match, left to T224; shot volume placeholder `shotScale` for T215.

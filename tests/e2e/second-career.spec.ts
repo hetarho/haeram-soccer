@@ -195,6 +195,9 @@ test('coach-only dismissal preserves the playing contract through reload', async
 for (const contracts of ['direct', 'delegated'] as const)
   for (const staff of ['direct', 'delegated'] as const)
     test(`joint contract authority ${contracts}/${staff} remains atomic`, async ({ page }) => {
+      // 35 rounds are simulated here before the page opens; with the own league on the grid
+      // engine (T218) that alone takes about 23 s on CI, so slow CI browsers need longer.
+      test.slow();
       const { secondCareerFixture, exportedCareer } = await import('./career-fixtures');
       const { importResponsibilityCareer } = await import('./responsibility-fixtures');
       const { operate, advanceRound } = await import('../../packages/engine/src/index');
