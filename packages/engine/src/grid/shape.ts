@@ -100,8 +100,20 @@ function pressers(s: GridState, side: 0 | 1): number[] {
   return out;
 }
 
+/** Values every player of a side shares in one step, computed once per side (a pure speed-up of `targetOf`). */
+interface ShapeCache {
+  offside: [number?, number?];
+  pressers: [number[]?, number[]?];
+  defence: [number?, number?];
+}
+
 /** A player's target in the engine frame. */
-export function targetOf(s: GridState, side: 0 | 1, idx: number): [number, number] {
+export function targetOf(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+): [number, number] {
   const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
   const cfg = SHAPE_CONFIG.tactic[tactic];
@@ -113,7 +125,7 @@ export function targetOf(s: GridState, side: 0 | 1, idx: number): [number, numbe
   };
   if (own === 'GK') {
     const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
-    const df = lineX(s, side, 'DF');
+    const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
     const high = sweeper && df >= 40;
     let x = 4 + (b[0] - MID) * SHAPE_CONFIG.keeperPull;
     if (high) x += SHAPE_CONFIG.sweeperStep * (df - 20);
@@ -136,10 +148,11 @@ export function targetOf(s: GridState, side: 0 | 1, idx: number): [number, numbe
   x += (b[0] - MID) * cfg.compact;
   y += (b[1] - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
-    x = Math.min(x, offsideLine(s, (1 - side) as 0 | 1) - 0.5);
+    const foe = (1 - side) as 0 | 1;
+    x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
     return back([x, y]);
   }
-  if (pressers(s, side).includes(idx)) {
+  if ((cache.pressers[side] ??= pressers(s, side)).includes(idx)) {
     const goalSide = b[0] - 1.2;
     return back([
       own === 'DF' ? clamp(goalSide, cfg.line[0], cfg.line[1]) : Math.max(0, goalSide),
@@ -176,10 +189,11 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
 /** Every on-pitch player but the carrier takes a step toward his target. */
 export function moveAll(s: GridState, dt: number): void {
   const moves: [GridPlayer, [number, number]][] = [];
+  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       if (!active(gp) || (s.owner && s.owner[0] === side && s.owner[1] === gp.idx)) continue;
-      moves.push([gp, targetOf(s, side, gp.idx)]);
+      moves.push([gp, targetOf(s, side, gp.idx, cache)]);
     }
   for (const [gp, target] of moves) {
     const dx = target[0] - gp.pos[0],
