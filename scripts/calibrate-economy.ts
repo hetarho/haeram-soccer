@@ -42,6 +42,8 @@ import {
   facilityInvestmentPreview,
   fanFollowing,
   gateProjection,
+  INCOME_KINDS,
+  isIncomeKind,
   marketWageUnits,
   FACILITY_PARTS,
   partCostUnits,
@@ -52,6 +54,7 @@ import {
   ownLeagueClubs,
   quote,
   rating,
+  readGateDetail,
   MARKET_CONFIG,
 } from '../packages/engine/src/index';
 import { country, footballIndex } from '../packages/catalogs/src/index';
@@ -120,24 +123,16 @@ function sourceOf(kind: string): Source {
   if (kind === 'support') return 'owner';
   return 'other';
 }
-const INCOME_KINDS = new Set([
-  'league-share',
-  'league-merit',
-  'parachute',
-  'cup-prize',
-  'cup-honor',
-  'europe-prize',
-  'europe-honor',
-  'match-bonus',
-  'gate',
-  'campaign-result',
-  'tour',
-  'transfer-out',
-  'free-transfer-compensation',
-  'support',
-  'care:friendly',
-]);
-const isIncome = (kind: string) => INCOME_KINDS.has(kind) || kind.startsWith('sponsor:');
+/** Ends the run with exit code 1: a measure that cannot be read would skew its band unnoticed. */
+function fail(message: string): never {
+  console.error(message);
+  process.exit(1);
+}
+// Every engine income kind has its source; only the friendly's takings count as other turnover.
+// Any other `sponsor:` kind is commercial, so the table's kinds are all there is to check.
+for (const kind of INCOME_KINDS)
+  if (sourceOf(kind) === 'other' && kind !== 'care:friendly')
+    fail(`income kind ${kind} has no source in sourceOf`);
 
 interface Season {
   year: number;
@@ -335,12 +330,15 @@ function playCareer(
     for (const event of w.events.slice(firstEvent)) {
       if (event.year !== year || !event.amount) continue;
       const amount = Number(event.amount) / unit;
-      if (isIncome(event.kind)) sources[sourceOf(event.kind)] += amount;
+      if (isIncomeKind(event.kind)) sources[sourceOf(event.kind)] += amount;
       if (event.kind === 'facility') facilitySpend += amount;
       if (event.kind === 'gate') {
-        const match = event.detail.match(/관중 (\d+)명/),
-          id = event.detail.split(' · ').at(-1)!;
-        if (match && leagueIds.has(id)) attendance.push(Number(match[1]));
+        const gate = readGateDetail(event.detail);
+        if (!gate)
+          fail(
+            `gate event ${event.year} round ${event.round}: unreadable detail "${event.detail}"`,
+          );
+        if (leagueIds.has(gate.matchId)) attendance.push(gate.attendance);
       }
     }
     career.seasons.push({

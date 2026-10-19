@@ -29,6 +29,21 @@ import { credit, debit } from './transactions';
 import { CAMPAIGNS } from './ops-commercial';
 import { EXCLUSIVE_MARKETING, exclusiveSponsor, sponsorAnnual } from './sponsors';
 
+/**
+ * A home gate's ledger detail: the crowd, the league scale when it is not 1 and the match. Saved
+ * events and the news feed keep this text, so `readGateDetail` reads it back.
+ */
+export function gateDetail(attendance: number, scale: number, matchId: string) {
+  return `관중 ${attendance}명 · 티켓과 구단 상품${scale !== 1 ? ` · 시즌 46경기 기준 ×${scale.toFixed(2)}` : ''} · ${matchId}`;
+}
+const GATE_DETAIL = /^관중 (\d+)명 · 티켓과 구단 상품(?: · 시즌 46경기 기준 ×\d+\.\d{2})? · (.+)$/;
+/** The crowd and match a `gateDetail` text names, or undefined for any other text. */
+export function readGateDetail(
+  detail: string,
+): { attendance: number; matchId: string } | undefined {
+  const match = GATE_DETAIL.exec(detail);
+  return match ? { attendance: Number(match[1]), matchId: match[2]! } : undefined;
+}
 export function gate(w: World, m: MatchRecord) {
   if (m.home !== w.playerClub && m.away !== w.playerClub) return;
   const bonus = matchBonus(w, m);
@@ -53,13 +68,7 @@ export function gate(w: World, m: MatchRecord) {
   const scale = isLeagueMatch(m.kind) ? projection.leagueFactor : 1;
   const income = footballQuote(c.country, w.year, attendance * projection.perFan * scale);
   credit(w, income);
-  addEvent(
-    w,
-    'gate',
-    '홈 경기의 수입',
-    `관중 ${attendance}명 · 티켓과 구단 상품${scale !== 1 ? ` · 시즌 46경기 기준 ×${scale.toFixed(2)}` : ''} · ${m.id}`,
-    income,
-  );
+  addEvent(w, 'gate', '홈 경기의 수입', gateDetail(attendance, scale, m.id), income);
   const cost = quote(
     c.country,
     w.year,

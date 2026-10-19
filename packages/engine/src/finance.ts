@@ -461,6 +461,11 @@ const incomeKinds: Record<string, string> = {
   support: '구단주 추가 출자',
   'care:friendly': '친선 경기',
 };
+/** Every income ledger kind (→ECON-10), each sponsor slot's among them. */
+export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
+/** Whether an entry of this kind is income: a named income kind or any sponsor slot's. */
+export const isIncomeKind = (kind: string) =>
+  Object.hasOwn(incomeKinds, kind) || kind.startsWith('sponsor:');
 const expenseKinds: Record<string, string> = {
   'operating-cost': '급여·시설 유지',
   'operating-expenses': '운영 경비',
