@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| r5c2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T05:11Z | 2026-10-19T05:11Z | - |
 
 ## inbox
 - 261019 decided WEB-47 T226: season PPDA when only some matches carry advanced counters → MATCH-13 PPDA over those matches with how many counted; the marked approximation only for a season with none (alt: approximation for the whole season once one match lacks counters | show both figures)
