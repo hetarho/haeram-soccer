@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PD, TD } from '../../contracts/src/detail';
+import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
 import { validateWorld } from '../../contracts/src/index';
 import type { Tactic, World } from '../../contracts/src/types';
 import { advanceRound, createWorld } from './index';
@@ -27,7 +27,8 @@ describe('advanced match counters', () => {
     expect(w.ownMatches.length).toBeGreaterThan(40);
     for (const m of w.ownMatches) {
       expect(m.detail).toBeDefined();
-      expect(m.players.every((p) => p.detail?.length === 9)).toBe(true);
+      expect(m.detail!.every((side) => side.length === TEAM_DETAIL_SIZE)).toBe(true);
+      expect(m.players.every((p) => p.detail?.length === PLAYER_DETAIL_SIZE)).toBe(true);
     }
     validateWorld(w);
   });

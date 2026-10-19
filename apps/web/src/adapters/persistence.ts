@@ -47,8 +47,7 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
   };
   return JSON.stringify(e);
 }
-/** Header checks, payload decoding and checksum verification for rules in `supported`. */
-export async function readCheckpoint(
+async function readCheckpoint(
   raw: string,
   supported: readonly string[],
   validateExpandedWorld = false,

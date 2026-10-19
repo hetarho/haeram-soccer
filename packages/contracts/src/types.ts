@@ -530,6 +530,8 @@ export interface Fixture {
   country: string;
   groupKey: string;
   score?: Score;
+  /** Kicks scored in the shoot-out of a knockout fixture decided on penalties (→MATCH-6). */
+  shootout?: Score;
 }
 export interface TableRow {
   played: number;
@@ -579,6 +581,34 @@ export interface Highlight {
   player: string;
   action: string;
 }
+/** A card, substitution or injury of a rules 4.0.0 match, in time order (→MATCH-3, →MATCH-19). */
+export interface Incident {
+  /** Match minute 1–120; added time counts as the period's last minute. */
+  minute: number;
+  /** n of 45+n, 90+n, 105+n or 120+n. */
+  added?: number;
+  side: 0 | 1;
+  kind: 'yellow' | 'secondYellow' | 'red' | 'sub' | 'injury';
+  /** Player ID; for a substitution the player who left. */
+  player: string;
+  /** For a substitution, the substitute who came on. */
+  other?: string;
+  reason?: 'reckless' | 'tactical' | 'dissent' | 'dogso' | 'serious' | 'violent';
+}
+/**
+ * Post-match material of an own current-season match (→MATCH-25), kept until the season close
+ * (→MATCH-5). Flat integer rows; the layouts are docs/MATCH-ENGINE-DESIGN.md §9.4.
+ */
+export interface MatchMaterial {
+  /** Per shot 7 ints: side, line index in `players`, x×10, y×10, xG×100, outcome, header. */
+  shots: number[];
+  /** Own side: 40 cell touch counts per own line, then the own side total, then the opponent's. */
+  heat: number[];
+  /** Own side: [avgX×10, avgY×10, touches] per own line, then [from, to, completed] per pair. */
+  network: number[];
+  /** Per side 30 ints of the tactical report. */
+  report: number[];
+}
 export interface MatchRecord extends Fixture {
   score: Score;
   metrics: [Metrics, Metrics];
@@ -590,6 +620,18 @@ export interface MatchRecord extends Fixture {
   xg?: [number, number];
   /** Advanced counters, home then away, following TD (contracts/detail.ts); from rules 1.6.0. */
   detail?: [Metrics, Metrics];
+  /** Cards, substitutions and injuries in time order; from rules 4.0.0. */
+  incidents?: Incident[];
+  /** Player lines per side in `players`, home lines first. */
+  lineCounts?: [number, number];
+  /** Added minutes per period played: [first, second], or four with extra time. */
+  added?: number[];
+  /** The 90-minute score when extra time was played (→MATCH-6). */
+  regulation?: Score;
+  /** Kicks scored in a shoot-out. */
+  shootout?: Score;
+  /** Own current-season matches only (→MATCH-25). */
+  material?: MatchMaterial;
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
@@ -769,6 +811,8 @@ export interface SeasonArchive {
   eloRange?: [number, number, number, number];
   /** The own country's cup and every continental knockout but the Super Cup. */
   brackets?: BracketArchive[];
+  /** Own player ID → his 40 cell touch counts over the season's own matches (→MATCH-5). */
+  heat?: Record<string, number[]>;
 }
 /** A finished knockout from its first round of 32 clubs or fewer to the final; clubs index `clubs`. */
 export interface BracketArchive {
@@ -1065,6 +1109,31 @@ export interface World {
   /** The day the club went bankrupt: the career is over and nothing advances (→ECON-24). */
   bankrupt?: { year: number; round: number; day: number };
   receiptIds: string[];
+  /** Yellow cards, bans and NPC injuries of every club (→MATCH-19, →LEAGUE-15); from rules 4.0.0. */
+  discipline?: DisciplineState;
+}
+/** The competition a card counts in: the league, one domestic cup, or Europe (→MATCH-19). */
+export type CompetitionKey = 'league' | `cup:${string}` | 'europe';
+/** A suspension: matches still to serve in `scope`; domestic covers the league and every cup. */
+export interface Ban {
+  player: string;
+  club: string;
+  matches: number;
+  scope: 'domestic' | CompetitionKey;
+  reason: NonNullable<Incident['reason']> | 'secondYellow' | 'yellows';
+}
+/** An NPC player out injured until that date (→LEAGUE-15). */
+export interface Unavailable {
+  player: string;
+  club: string;
+  until: { year: number; day: number };
+}
+export interface DisciplineState {
+  year: number;
+  /** Player ID → competition → yellow cards this season. */
+  yellows: Record<string, Partial<Record<CompetitionKey, number>>>;
+  bans: Ban[];
+  out: Unavailable[];
 }
 export interface Founding {
   country: CountryCode;

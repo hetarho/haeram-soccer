@@ -206,6 +206,7 @@ const fixture = z.object({
   country: text,
   groupKey: text,
   score: score.optional(),
+  shootout: score.optional(),
 });
 const table = z.object({
   played: number,
@@ -278,24 +279,57 @@ const scorerSeason = z.object({
     )
     .max(47),
 });
-const match = fixture.extend({
-  score,
-  metrics: z.tuple([metrics, metrics]),
-  players: z.array(z.object({ id, metrics, detail: playerDetail.optional() })).max(60),
-  highlights: z
-    .array(
-      z.object({
-        minute: number,
-        side: z.union([z.literal(0), z.literal(1)]),
-        player: text,
-        action: text,
-      }),
-    )
-    .max(100),
-  tactics: z.tuple([tactic, tactic]),
-  xg: z.tuple([z.number().finite().min(0).max(50), z.number().finite().min(0).max(50)]).optional(),
-  detail: z.tuple([teamDetail, teamDetail]).optional(),
+const addedMinutes = z.number().int().min(0).max(15);
+const lineCount = z.number().int().min(0).max(30);
+/** A card, substitution or injury of a rules 4.0.0 match (→MATCH-3, →MATCH-19). */
+const incident = z.strictObject({
+  minute: z.number().int().min(1).max(130),
+  added: addedMinutes.optional(),
+  side: z.union([z.literal(0), z.literal(1)]),
+  kind: z.enum(['yellow', 'secondYellow', 'red', 'sub', 'injury']),
+  player: id,
+  other: id.optional(),
+  reason: z.enum(['reckless', 'tactical', 'dissent', 'dogso', 'serious', 'violent']).optional(),
 });
+/** One flat row of post-match material (→MATCH-25): bounded non-negative integers. */
+const materialRow = (max: number) => z.array(z.number().int().min(0).max(100000)).max(max);
+const match = fixture
+  .extend({
+    score,
+    metrics: z.tuple([metrics, metrics]),
+    players: z.array(z.object({ id, metrics, detail: playerDetail.optional() })).max(60),
+    highlights: z
+      .array(
+        z.object({
+          minute: number,
+          side: z.union([z.literal(0), z.literal(1)]),
+          player: text,
+          action: text,
+        }),
+      )
+      .max(100),
+    tactics: z.tuple([tactic, tactic]),
+    xg: z
+      .tuple([z.number().finite().min(0).max(50), z.number().finite().min(0).max(50)])
+      .optional(),
+    detail: z.tuple([teamDetail, teamDetail]).optional(),
+    incidents: z.array(incident).max(120).optional(),
+    lineCounts: z.tuple([lineCount, lineCount]).optional(),
+    added: z
+      .array(addedMinutes)
+      .refine((periods) => periods.length === 2 || periods.length === 4)
+      .optional(),
+    regulation: score.optional(),
+    material: z
+      .strictObject({
+        shots: materialRow(7 * 80),
+        heat: materialRow(40 * 34),
+        network: materialRow(3 * 30 + 3 * 300),
+        report: materialRow(60),
+      })
+      .optional(),
+  })
+  .refine((m) => !m.lineCounts || m.lineCounts[0] + m.lineCounts[1] === m.players.length);
 const event = z.object({
   year: number,
   round: number,
@@ -418,6 +452,7 @@ const archive = z.object({
     )
     .optional(),
   brackets: z.array(bracket).max(8).optional(),
+  heat: z.record(id, z.array(z.number().int().min(0).max(1000000)).length(40)).optional(),
 });
 const knockoutRound = z.strictObject({
   label: text,
@@ -692,6 +727,44 @@ const personCareer = z.strictObject({
     .optional(),
 });
 export const personCareerSchema = personCareer;
+const competitionKey = z.union([
+  z.literal(['league', 'europe']),
+  z.templateLiteral(['cup:', z.string().min(1).max(90)]),
+]);
+/** Yellow cards, bans and NPC injuries of every club (→MATCH-19, →LEAGUE-15). */
+const discipline = z.strictObject({
+  year: z.number().int(),
+  yellows: z.record(id, z.partialRecord(competitionKey, z.number().int().min(0).max(60))),
+  bans: z
+    .array(
+      z.strictObject({
+        player: id,
+        club: id,
+        matches: z.number().int().min(1).max(10),
+        scope: z.union([z.literal('domestic'), competitionKey]),
+        reason: z.enum([
+          'reckless',
+          'tactical',
+          'dissent',
+          'dogso',
+          'serious',
+          'violent',
+          'secondYellow',
+          'yellows',
+        ]),
+      }),
+    )
+    .max(5000),
+  out: z
+    .array(
+      z.strictObject({
+        player: id,
+        club: id,
+        until: z.strictObject({ year: z.number().int(), day: z.number().int().min(0).max(800) }),
+      }),
+    )
+    .max(20000),
+});
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -963,10 +1036,17 @@ const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   receiptIds: z.array(id).max(200),
+  discipline: discipline.optional(),
 });
+/** The record's player lines of one side: all of them unless `lineCounts` splits home from away. */
+function sideLines(m: World['ownMatches'][number], side: 0 | 1) {
+  if (!m.lineCounts) return m.players;
+  return side === 0 ? m.players.slice(0, m.lineCounts[0]) : m.players.slice(m.lineCounts[0]);
+}
 /**
  * Advanced counters exist for every saved player or for none, and never exceed the counters they
- * refine: each shot has at most one key pass, completions never exceed attempts.
+ * refine: each shot has at most one key pass, completions never exceed attempts. With every own
+ * line saved (`lineCounts`, or the eleven of the duel chain) the own players add up to the side.
  */
 function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
   const withDetail = m.players.filter((p) => p.detail).length;
@@ -985,24 +1065,35 @@ function detailConsistent(m: World['ownMatches'][number], side: 0 | 1) {
       t[TD.finalThirdPasses] > row[2] ||
       t[TD.progressivePasses] > row[3] ||
       t[TD.takeOns] < row[8] ||
-      t[TD.buildUpPasses] > row[2]
+      t[TD.buildUpPasses] > row[2] ||
+      t[TD.crossesCompleted] > t[TD.crosses] ||
+      t[TD.throughBallsCompleted] > t[TD.throughBalls] ||
+      t[TD.penaltiesScored] > t[TD.penalties]
     )
       return false;
   }
-  let keyPasses = 0;
   for (const p of m.players) {
     const d = p.detail!;
-    keyPasses += d[PD.keyPasses];
     if (
       d[PD.finalThirdCompleted] > d[PD.finalThirdPasses] ||
       d[PD.bigChancesCreated] > d[PD.keyPasses] ||
       d[PD.takeOns] < p.metrics[8] ||
       d[PD.xg] > 80 * p.metrics[4] ||
-      d[PD.xa] > 80 * d[PD.keyPasses]
+      d[PD.xa] > 80 * d[PD.keyPasses] ||
+      d[PD.crossesCompleted] > d[PD.crosses] ||
+      d[PD.throughBallsCompleted] > d[PD.throughBalls]
     )
       return false;
   }
-  return m.players.length !== 11 || keyPasses === m.detail[side][TD.keyPasses];
+  if (!m.lineCounts && m.players.length !== 11) return true;
+  const own = sideLines(m, side),
+    team = m.detail[side],
+    sum = (index: number) => own.reduce((n, p) => n + p.detail![index], 0);
+  return (
+    sum(PD.keyPasses) === team[TD.keyPasses] &&
+    sum(PD.yellowCards) === team[TD.yellowCards] &&
+    sum(PD.redCards) === team[TD.redCards]
+  );
 }
 /** Catalog facts a load needs to bring older rules forward; contracts never import catalogs (→ARCH-4). */
 export interface LoadCatalog {
@@ -1507,7 +1598,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     if (
       m.metrics[0][0] !== m.score.home ||
       m.metrics[1][0] !== m.score.away ||
-      m.players.reduce((n, p) => n + p.metrics[0], 0) !== m.metrics[side][0] ||
+      sideLines(m, side).reduce((n, p) => n + p.metrics[0], 0) !== m.metrics[side][0] ||
       m.metrics.some((row) => row[3] > row[2] || row[5] > row[4])
     )
       throw new Error('경기 지표 손상');

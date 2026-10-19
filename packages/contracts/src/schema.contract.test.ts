@@ -9,7 +9,8 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
 import { validateWorld, type LoadCatalog } from './schema';
 import type { LedgerKind, Sponsor, SponsorContract, World } from './types';
-import { createWorld } from '../../engine/src/index';
+import { PD, TD } from './detail';
+import { createWorld, simulateSeason } from '../../engine/src/index';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 it('round trips exact monetary strings without losing integer precision', () => {
   const facts = {
@@ -249,6 +250,105 @@ describe('rules 3.0.0 (→SAVE-10, →SAVE-16)', () => {
     twice.players[0].traits = ['leader', 'leader'];
     expect(() => validateWorld(twice)).toThrow();
     expect(validateWorld(structuredClone(w)).id).toBe(w.id);
+  });
+});
+
+describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
+  // One played season: a closed archive and the own matches of the duel chain to extend.
+  const season = world();
+  simulateSeason(season);
+  const played = () => {
+    const w = structuredClone(season);
+    const m = w.ownMatches.at(-1)!;
+    return { w, m, side: m.home === w.playerClub ? (0 as const) : (1 as const) };
+  };
+  it('round-trips incidents, line counts, added time, shoot-outs, material, discipline and season heat', () => {
+    const { w, m, side } = played();
+    const other = side === 0 ? 1 : 0,
+      [booked, replaced] = m.players;
+    m.incidents = [
+      { minute: 34, side, kind: 'yellow', player: booked.id, reason: 'reckless' },
+      { minute: 61, side, kind: 'sub', player: replaced.id, other: 'synthetic:substitute' },
+      { minute: 90, added: 3, side: other, kind: 'injury', player: 'synthetic:opponent' },
+    ];
+    m.lineCounts = side === 0 ? [m.players.length, 0] : [0, m.players.length];
+    m.added = [2, 5, 1, 2];
+    m.regulation = { home: 1, away: 1 };
+    m.shootout = { home: 4, away: 3 };
+    m.material = {
+      shots: [side, 0, 820, 340, 12, 1, 0],
+      heat: Array.from({ length: 120 }, (_, i) => i % 7),
+      network: [500, 300, 20, 0, 1, 4],
+      report: Array<number>(60).fill(2),
+    };
+    booked.detail![PD.yellowCards] = 1;
+    booked.detail![PD.crosses] = 3;
+    booked.detail![PD.crossesCompleted] = 1;
+    const team = m.detail![side];
+    team[TD.yellowCards] = 1;
+    team[TD.crosses] = 5;
+    team[TD.crossesCompleted] = 2;
+    team[TD.penalties] = 1;
+    team[TD.penaltiesScored] = 1;
+    w.fixtures[0].shootout = { home: 5, away: 4 };
+    w.discipline = {
+      year: w.year,
+      yellows: { [booked.id]: { league: 4, 'cup:ENG': 1 } },
+      bans: [
+        { player: booked.id, club: w.playerClub, matches: 1, scope: 'domestic', reason: 'yellows' },
+        { player: replaced.id, club: w.playerClub, matches: 3, scope: 'europe', reason: 'violent' },
+      ],
+      out: [{ player: 'synthetic:opponent', club: m.away, until: { year: w.year, day: 40 } }],
+    };
+    w.history[0].heat = { [booked.id]: Array.from({ length: 40 }, (_, i) => i * 3) };
+    expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
+    const loose = structuredClone(w);
+    loose.discipline!.yellows[booked.id] = { friendly: 1 } as never;
+    expect(() => validateWorld(loose)).toThrow();
+    const shortHeat = structuredClone(w);
+    shortHeat.history[0].heat![booked.id] = [1, 2, 3];
+    expect(() => validateWorld(shortHeat)).toThrow();
+  });
+  it('refuses completions above attempts in the new counters', () => {
+    for (const mutate of [
+      (m: World['ownMatches'][number], side: 0 | 1) => {
+        m.detail![side][TD.crossesCompleted] = m.detail![side][TD.crosses] + 1;
+      },
+      (m: World['ownMatches'][number], side: 0 | 1) => {
+        m.detail![side][TD.throughBallsCompleted] = m.detail![side][TD.throughBalls] + 1;
+      },
+      (m: World['ownMatches'][number], side: 0 | 1) => {
+        m.detail![side][TD.penaltiesScored] = m.detail![side][TD.penalties] + 1;
+      },
+      (m: World['ownMatches'][number]) => {
+        m.players[0].detail![PD.throughBallsCompleted] = 1;
+      },
+      (m: World['ownMatches'][number]) => {
+        m.players[0].detail![PD.crossesCompleted] = 1;
+      },
+      // Every own line is saved, so the players' cards must add up to the side's.
+      (m: World['ownMatches'][number]) => {
+        m.players[0].detail![PD.redCards] = 1;
+      },
+    ]) {
+      const { w, m, side } = played();
+      mutate(m, side);
+      expect(() => validateWorld(w)).toThrow();
+    }
+  });
+  it('refuses line counts that do not add up to the player lines', () => {
+    const { w, m } = played();
+    m.lineCounts = [5, 0];
+    expect(() => validateWorld(w)).toThrow();
+    m.lineCounts = [m.players.length, 31];
+    expect(() => validateWorld(w)).toThrow();
+  });
+  it('refuses an incident of unknown kind', () => {
+    const { w, m, side } = played();
+    m.incidents = [{ minute: 12, side, kind: 'penalty' as never, player: m.players[0].id }];
+    expect(() => validateWorld(w)).toThrow();
+    m.incidents = [{ minute: 131, side, kind: 'yellow', player: m.players[0].id }];
+    expect(() => validateWorld(w)).toThrow();
   });
 });
 

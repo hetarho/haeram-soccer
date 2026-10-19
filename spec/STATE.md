@@ -98,7 +98,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T202 | Match, discipline and archive contracts for rules 4.0.0 | MATCH HIST LEAGUE SAVE | T201 | doing@261019.k3w8 |
 | T203 | Lossless packing of the new match facts and season heat maps | SAVE HIST MATCH | T202 | todo |
 | T204 | Grid pitch: 40 named cells, geometry and baselines | MATCH | T203 | todo |
 | T205 | Grid setup and state: rosters, bench, takers, era rules, skills | MATCH CLUB STAFF | T204 | todo |
@@ -160,10 +159,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 
 ## next
-- implement-task T202, then T203–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- implement-task T203, then T204–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T202 done
 - 261019 T201 done
 - 261019 T200 done
 - 261019 create-task SAVE HIST WEB MATCH done (r5c2): no new task; T210 offside by the target at the pass, T226 season PPDA by MATCH-13 over advanced matches, T231 refuses to overwrite without a verified previous copy, T229/T220 appearances by minutes > 0; todo bases SAVE@49 HIST@15 WEB@92 MATCH@12.
