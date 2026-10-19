@@ -18,6 +18,9 @@
 | v7m3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-19T13:18Z | 2026-10-19T13:18Z | - |
 
 ## inbox
+- 261019 decided review/outside-t216-t255-261019: which findings of the side review to adopt while T216–T255 run → adopt the P1 and P2 findings whose fix stays outside every T216–T255 touch and the grid, contracts, adapters and runtime modules and changes no SSOT rule, contract, save format or migration: F1–F5 and F7–F14; F6 and every P3 stay [?] (alt: P1 only, leaving the duplicated rules to drift during the rebuild | P3 dead-code and formatting cleanups too, which adds visible text changes and no protection) — the P2s are drift risks the rebuild will lean on, and each fix is file-disjoint from the open tasks
+- 261019 parked review/outside-t216-t255-261019: F6 — the ECON-33 runway check exists six times with two formulas (floored per-round cost × runway in signings, contracts and staff; cash × SEASON_ROUNDS / annual in recruitment and investment); unifying moves outcomes at the limit, so the owner picks the intended arithmetic (update-ssot ECON-33) before a task
+- 261019 suggest T258: after main's settings-sheet fix the entry measures 254,413 of ARCH-28's 256,000 B gzip (1,587 B headroom at b4c85ee); run T258 before T225–T255 add entry UI, or the CI benchmark turns red again
 - 261019 decided T215: 9 of 10 set-piece crosses found nobody in the box (cross completion 6%, defenders 1% of goals) → a set-piece scene for corners and free kicks crossed into the box: the five best headers go up and one waits at the edge, the defenders mark them goal-side and hold the six-yard line with one left upfield, and the men who went up hold 8 s for the second ball (MATCH-18 "delivered into the box for aerial duels and second balls") (alt: raise cross success alone, which leaves set-piece, headed and defender goals red | update-ssot a set-piece rule first)
 - 261019 decided T215: back lines never entered their own box (each tactic's line floor of 18–30 m), so box shots were unmarked (0.156 xG a shot) → the line drops to 4 m goal-side of a ball played behind it, never deeper than 6 m (alt: lower every tactic's line floor | keep the floor and cut box xG with a stronger pressure factor)
 - 261019 decided T215: about 80% of fouls came in the fouled side's attacking 40 m, so free kicks near the box were about 8 a team → 8% of 50/50s outside the boxes end in a foul, and a defender in his own third keeps 30% of his fouls on a carrier (alt: fewer take-on and carry fouls everywhere, which leaves the fouls band short | leave the final-third free kicks)
@@ -113,6 +116,11 @@
 | SAVE | 49 | 49 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
+## review
+| id | st |
+|---|---|
+| outside-t216-t255-261019 | converted@261019 |
+
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
@@ -156,6 +164,19 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
+| T258 | Load the team sheet on demand and drop dead progress-control styles | ARCH | - | todo |
+| T259 | Show every open bid on the recruitment desk | ARCH | - | todo |
+| T260 | One tested home for the policy dial steps | ARCH | - | todo |
+| T261 | One tab list and one address-synced tab hook | ARCH | - | todo |
+| T262 | One set of league-table rules in the UI | ARCH | - | todo |
+| T263 | Tested models behind the league overview and rank history | ARCH | - | todo |
+| T264 | One helper scales money by a decimal factor | ARCH | - | todo |
+| T265 | The economy calibration reads the engine's income kinds and gate facts | ARCH | - | todo |
+| T266 | Playing-coach events show wages in the app's money notation | ARCH | - | todo |
+| T267 | Break same-day ties without the runtime's collation | ARCH | - | todo |
+| T268 | Tests for valuation, cash movements and currency conversion | ARCH | - | todo |
+| T269 | Split the club news builder and pin the texts it reads | ARCH | - | todo |
+| T270 | The preview server sends the production header set | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -166,9 +187,12 @@
 ## next
 - Browser journeys: every e2e job is green on 93cd68d (261019); the benchmark job's browser step failed from T256 (the removed pause button, then the entry JS/CSS at 256,377 of 256,000 gzip bytes) until the 261019 fixes. The CI benchmark job takes about 70 minutes.
 - T216 (strength curve, explore 3h) next, re-running `scripts/grid-bands.ts` after it (T215 left goals 2.85 and headed goals 19.6% near the top of their bands); then T217–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
-- Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
+- Parallel refactor batch beside T216–T255 (review/outside-t216-t255-261019): implement-task T258 first (entry headroom 1,587 B), then lanes ui-entry-desk T258–T260, ui-league-tabs T261–T263, engine-money T264–T266, engine-checks T267–T269 and lane-less T270 via manage-work; touches are disjoint from each other and from T216–T255. Also review prior autonomous decisions in inbox (reports/261017-p6k2.md), incl. LEAGUE-13/WEB-3 and the parked ECON-33 runway arithmetic; deployment, hall of fame and Flutter remain future work.
 
 ## log
+- 261019 create-task review/outside-t216-t255-261019: T258–T270, four lanes of three (ui-entry-desk, ui-league-tabs, engine-money, engine-checks) plus lane-less T270; review converted.
+- 261019 review-code outside-t216-t255-261019 ready: 23 findings (1 P1, 13 P2, 9 P3); P1/P2 adopted except F6 (parked); typecheck, lint, 1132 unit tests pass at f10d7ba.
+- 261019 review-code outside-t216-t255-261019 start (v7m3 side review: code outside T216–T255 touches, for a parallel refactor batch)
 - 261019 fix web: drop the duplicate lazy settings wrapper that 049879b added in ProgressControls beside 83ffc27's; the entry overage began at da97fe0, hidden by the T256 script break.
 - 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
@@ -186,7 +210,3 @@
 - 261019 T206 done (w6pm): off-ball shape, pressing, marking, runs and movement with a grid test kit; 29 grid tests pass.
 - 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
 - 261019 T205 done (w6pm): `prepareMatch` extracted bit-identically; grid setup (era rules, bench, takers, bends) and state (kick-off positions, skill function) added; full unit suite 1042 pass.
-- 261019 T204 done (w6pm): grid pitch (40 cells, geometry, Korean cell names) and the 40-cell baselines module with a byte-identical JSON copy; 9 tests, typecheck and lint pass.
-- 261019 T257 done: current season list shows 진행 중; publication checks pass (1023 unit, 19 contract, 184 distinct Chromium journeys across full run and fixed-case reruns, type/lint/format/catalog/build). T256 test adapters handle styled selects and simultaneous event cards; ready for main push and CI.
-- 261019 T257 doing (u6k2): release verification found the current season row missing its WEB-54 status; restore the visible marker without changing record data.
-- 261019 T256 publish start: owner requested commit/push; integrate origin/main T200–T202 before ARCH-30 batch verification.
