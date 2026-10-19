@@ -78,7 +78,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 11 | 11 | - | 2 |
+| ARCH | 12 | 12 | - | 2 |
 | WEB | 92 | 91 | WEB-47✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
@@ -164,6 +164,8 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 create-task ARCH r12 done: no new task; T218 T225 T230 T254 browser checks on Chromium only, T233 gate uses the ARCH-30 batch checks + CI instead of a local `pnpm run verify`, todo bases ARCH@12.
+- 261019 update-ssot ARCH r12 done: ARCH-30 verification tiers — task checks per task, batch checks before a code push, CI read once per push.
 - 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE tidied (rev unchanged): long decisions structured, SAVE-10 retired transforms replaced by current rules/history references, stale references and copied skeleton prose removed; IDs/statuses and all chg lines preserved.
 - 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE start: structure long decisions, replace duplicated contracts with owner references and remove retired prose; policy revisions already recorded.
 - 261019 update-ssot SAVE r49 HIST r15 WEB r92 MATCH r12 done: verified predecessor or refuse overwrite, actual appearances, conditional PPDA and ball-relative offside; task contracts await create-task.
@@ -182,5 +184,3 @@
 - 261019 WEB r90 match theatre/analysis/profile/squad/league/preparation for the grid engine; HIST r14 spatial and discipline totals, map lifetime; SAVE r45 rules 4.0.0 boundary; ideation match-engine-rebuild converted.
 - 261019 STAFF r34 styles in the grid engine and substitution habits; CLUB r42 bench/takers, in-match injuries for everyone, suspensions; LEAGUE r10 NPC injuries/suspensions and discipline table.
 - 261019 PLAYER r9: 16 attributes with 판단력/침착성 in OVR weights, roles and traits as decision tendencies, mental ageing; MATCH r11 constraint: earlier careers follow SAVE-19 (not converted).
-- 261019 MATCH r10: grid decision engine (40 cells, tags, decision tables, off-ball movement), per-touch halves with added time, fouls/set pieces/offside, cards and suspensions, era substitutions, in-match injuries, engine paths with a 125% season budget, real-football bands, commentary and post-match material; MATCH-26 open.
-- 261019 update-ssot MATCH start (ideation/match-engine-rebuild)

@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r11 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r12 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -184,12 +184,21 @@
 - ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the strategy library, the game-slot index), an account profile later. ← strategies and games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
+- ARCH-30 [o] Verification runs in three tiers; no single task runs the whole suite. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute
+  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --changed "$HAERAM_DIFF_BASE" --passWithNoTests`.
+  - a task that changes UI, a browser journey, storage or the worker also runs `pnpm run build` and only the `tests/e2e` specs covering that change, on Chromium only: `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium` with those spec paths.
+  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
+  - batch, once before a push that carries code (a work-group unit's `work integrate --verify`, a standalone session's push): `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build`, then every journey on Chromium with `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.
+  - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `docs/` or Markdown starts no CI and needs no wait.
+  - a work group maps task → `--task-verify`, batch → `--verify`, and omits `--group-verify`: CI is the group gate.
+  - `pnpm run verify` is the one-go local equivalent of CI: it runs when CI is unavailable, or in a storage or release gate task that needs local raw reports alongside the benchmarks (→ARCH-22).
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
+- Verification: task checks per task → batch checks before a code push → CI on every browser after it (→ARCH-30).
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
 
@@ -202,6 +211,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r12 261019 ARCH-30+ verification tiers: task (typecheck/lint/format, changed-file unit tests, covering Chromium specs) / batch before a code push (CI checks job + Chromium journeys) / CI read once per push; a task no longer runs `pnpm run verify`
 - r11 261019 ARCH-11✎ previous checkpoint in localStorage→in IndexedDB beside parked slots; ARCH-13✎ two-slot write→previous copy, active copy, manifest; ARCH-14✎ budget 1.5→3 MiB per checkpoint (total 3.5 MiB), budget failure never moves the active checkpoint
 - r10 261017 ARCH-12✎ gzip/base64-only description→SAVE-2 adaptive gzip/Brotli with bounded pure-JavaScript worker codec; security policy unchanged
 - r9 261012 ARCH-13✎ candidate built and validated before the slot→in a background codec worker nobody waits for; autosave at settled fixture/period boundaries→decisions at once, automatic progression at a bounded interval (→SAVE-8)
