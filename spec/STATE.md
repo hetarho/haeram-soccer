@@ -100,7 +100,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T203 | Lossless packing of the new match facts and season heat maps | SAVE HIST MATCH | T202 | todo |
 | T206 | Off-the-ball shape, pressing, marking, runs and movement | MATCH PLAYER STAFF | T205 | todo |
 | T207 | Per-touch tags | MATCH | T206 | todo |
 | T208 | Decision tables: action mix and target choice | MATCH PLAYER STAFF | T207 | todo |
@@ -164,6 +163,7 @@
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T203 done (w6pm): lossless packing of rules 4 match facts and season heat maps in four optional streams; adapters tests 105 pass.
 - 261019 T205 done (w6pm): `prepareMatch` extracted bit-identically; grid setup (era rules, bench, takers, bends) and state (kick-off positions, skill function) added; full unit suite 1042 pass.
 - 261019 T204 done (w6pm): grid pitch (40 cells, geometry, Korean cell names) and the 40-cell baselines module with a byte-identical JSON copy; 9 tests, typecheck and lint pass.
 - 261019 T257 done: current season list shows 진행 중; publication checks pass (1023 unit, 19 contract, 184 distinct Chromium journeys across full run and fixed-case reruns, type/lint/format/catalog/build). T256 test adapters handle styled selects and simultaneous event cards; ready for main push and CI.
