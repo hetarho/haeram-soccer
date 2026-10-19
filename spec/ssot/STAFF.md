@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r33 | Define the browser-demo rules for manager demands and personality.
+> r34 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -44,6 +44,7 @@
   - candidates fit their school: youth/flexibility/pride bands positional 50–80/15–45/60–95, gegenpress 55–85/25–55/45–80 (ages 34–58), counter 40–65/45–80/50–90, organizer 40–65/25–55/40–75, motivator 45–75/50–85/35–70, developer 70–90/40–75/25–60, firefighter 35–55/55–90/45–80 with level 55–85 and ages 50–64 (a veteran at or past his prime, OVR = POT), data head coach 50–80/60–90/25–50 (ages 32–48); other levels 45–85. The draws keep their order, so names, ids and philosophies stay put; the founding manager and interims are unbanded.
   - no manager renews himself: on 1 April the owner is reminded of a contract ending at the close (연봉 · 계약금 · term) and may renew while the manager is not interim, at quote(120 + ability) a year with a 10% fee, for 1–5 seasons (the firefighter 1); with the manager post delegated the staff decide (→STAFF-18); an unrenewed manager leaves at the close (interim, departure choice). The reminder settles when he renews, leaves or is replaced.
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
+  - in the grid engine a style's effects act as bends of its side's decision tables and duels in the same direction (→MATCH-16): pass and possession points toward short passing and completion, shots points toward shooting choices, opponent build-up and final-third points against the opponent's passes there, opponent-chance points against the opponent's shot creation; they are re-measured with →MATCH-2's calibration.
 
 - STAFF-15 [o] The coaching departments are run by the owner or, when staff appointments are delegated (→WEB-45), by the staff under 코치 기조, a row of the 스태프 area (→ECON-25) the owner sets regardless of responsibility. ← the owner decides what a good hire is, not every contract
   | 코치 기조 | the staff hire |
@@ -109,10 +110,10 @@
   | 게겐프레싱 | 체력, 태클 | 활동량, 태클러 |
   | 실리 역습 | 속도, 위치선정 | 스피드스터, 라인 브레이커 |
   | 수비 조직가 | 위치선정, 공중볼 | 공중 장악, 태클러 |
-  | 동기부여형 | 체력 | 리더, 활동량 |
+  | 동기부여형 | 체력, 침착성 | 리더, 활동량 |
   | 육성형 | 패스, 드리블 | 테크니션, 플레이메이커 |
   | 소방수 | 몸싸움, 태클 | 리더, 공중 장악 |
-  | 데이터 헤드코치 | 시야, 위치선정 | 라인 브레이커, 빌드업 |
+  | 데이터 헤드코치 | 판단력, 위치선정 | 라인 브레이커, 빌드업 |
   - his school factor is 0.8, +0.1 for each preferred attribute at 65 or more, +0.1 for each preferred play trait he carries, +0.1 under a 육성형 manager when aged 21 or under, at most 1.3; under the founding manager or an interim it is 1.0 for everyone.
 - STAFF-22 [o] A side plays the formation of its applied tactic (→STAFF-4), and every slot asks a role (→PLAYER-5): ← 감독이 원하는 포지션 is a slot of his formation
   | tactic | formation | slots |
@@ -122,6 +123,18 @@
   | counter | 4-4-2 | GK 슈팅 스토퍼; LB 수비형 풀백, CB 스토퍼, CB 커버형 센터백, RB 수비형 풀백; LM 와이드 미드필더, CM 박스투박스, CM 딥라잉 플레이메이커, RM 와이드 미드필더; ST 타겟맨, ST 포처 |
   | balanced | 3-5-2 | GK 슈팅 스토퍼; CB 스토퍼, CB 커버형 센터백, CB 볼 플레잉 디펜더; LWB 수비형 윙백, DM 앵커, CM 박스투박스, CM 메짤라, RWB 공격형 윙백; ST 타겟맨, ST 포처 |
   - a tactic change changes the formation at once and costs no adaptation; only a new manager does (→PLAYER-13).
+  - every slot also has its place in the formation's shape for each phase — in possession, out of possession, transition — which its role's habit moves (→MATCH-17).
+- STAFF-45 [o] A manager substitutes by his style and selection trait (→MATCH-20); the founding manager and an interim follow the default. ← a manager's character shows in the match, not only in the lineup
+  | manager | substitutes |
+  |---|---|
+  | default | injuries at once; then a starter past excess fatigue 15 from the 60th minute; the remaining changes after the 70th |
+  | 게겐프레싱, rotation trait | tired pressers earlier, from the 55th minute and at half-time |
+  | 실리 역습, 수비 조직가 | ahead late, a defender or a ball-winner for an attacker; behind, the default |
+  | 소방수, 동기부여형 | behind at half-time or after the 60th, an attacker for a midfielder or defender |
+  | 육성형, youth trait | prefers a player aged 21 or under among equal options; level or ahead late, gives one minutes |
+  | 데이터 헤드코치 | by fatigue numbers alone, at the 60th, 70th and 80th minutes |
+  | stable trait | later than his style: 10 minutes after each threshold |
+  - a red card makes any manager rebalance at the next stoppage: a midfielder or defender in for an attacker when the side is down to ten and level or ahead.
 - STAFF-23 [o] Suitable players from any club can naturally choose a coaching career after retirement, based on coaching aptitude (→PLAYER-21), without an own-club service threshold. A playing-coach route can start before playing retirement (→STAFF-31).
   - the owner may encourage an own player toward coaching during →STAFF-29's retirement window. Encouragement does not guarantee career entry, an aptitude increase or employment.
   - an entrant becomes a coaching candidate as the same person, retaining actual age and playing history (→HIST-14, →WORLD-10); playing fame and OVR do not guarantee coaching ability.
@@ -252,6 +265,7 @@
 - Follow →ARCH-1 and the owned rules of other domains; no private backend is required for local play.
 
 ## chg
+- r34 261019 STAFF-14✎ +styles bend decision tables and duels in the grid engine, re-measured; STAFF-21✎ 동기부여형 체력→체력/침착성, 데이터 헤드코치 시야/위치선정→판단력/위치선정; STAFF-22✎ +each slot's place in the formation's shape per phase; STAFF-45+ substitution habits by style and selection trait
 - r33 261016 STAFF-11✎ traits +closer (속전속결, the 단장's); STAFF-13✎ +window-close call-ups skip readiness and the promotion floor; STAFF-20✎ negotiator his only trait→negotiator, closer or none, setting how he bids (→CLUB-41)
 - r32 261016 STAFF-17/27/28✎ candidate admission/contract transitions open→additional retained coaching/manager candidates, expired NPC coaches return to job search, employed coaches eligible for promotion/recruitment with 1.5× current coach wage compensation
 - r31 261016 STAFF-27/28/40/42✎ specialty mapping/school open→ordered GK/youth/assistant/fitness/defense/attack and STAFF-44, market transitions remain open; STAFF-44+ longest actual mentor school, recent mentor breaks ties, ordinary generation only without recorded school
