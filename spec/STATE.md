@@ -171,6 +171,7 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
+| T271 | Fix CI failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -180,8 +181,7 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- inspect work board for remaining tasks
-- T218 put the owner's matches and the own league on the grid (frames, commentary and 45+n/90+n in the theatre; motion.ts and the duel chain gone). Still unplanned: the grid tactic-balance task the T216 inbox suggests (press beats every other tactic at equal strength); until then `calibration.test.ts` skips the grid's equal-side draw case and `build.test.ts` three tactic tradeoff cases. T216 left the grid's skills spread around the match level (`STRENGTH_CONFIG`); re-run `scripts/calibrate.ts --engine grid` and `scripts/grid-bands.ts` after any change to tactics or duels. A season now takes about 10 s locally (1.8 s before T218; vitest limit 300 s, the unit suite about 8 min) and entry JS/CSS is 256,906 of 256,000 gzip bytes (inbox). Then T219–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the grid match (about 38 ms now) down toward the 15 ms criterion of T211; T215 holds all 37 MATCH-23 bands (docs/CALIBRATION.md `격자 엔진 분포 (T215)`). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- implement-task T271
 
 ## log
 - 261020 fix e2e live-state: wait for the run to leave 8월 1일 instead of the transient 8월 3일, which a late x2 step skips by carrying its owed days (red since 5659b91, Firefox then Chromium). The 57d81a3 benchmark miss is runner speed, not a lane: same engine and century save, EPYC 7763 ran the storage benchmark 1.6× slower than the 9V45 that passed b477308 (century load 3.4 s there, 5 s limit).
