@@ -8,6 +8,8 @@ import {
   transferOffers,
 } from '../../../../packages/engine/src/index';
 import { base64, pack, unbase64, unpack } from './packing';
+import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
+import type { World } from '../../../../packages/contracts/src/types';
 import { packBitColumns } from './bitpacking';
 import { packCareerRows } from './careerPacking';
 
@@ -130,6 +132,164 @@ describe('lossless career stream compaction', () => {
     expect(packed.matchActorColumns?.playerWidth).toBe(1);
     expect(packed.statWidth).toBe(12);
     expect(canonical(unpack(packed))).toBe(canonical(w));
+  });
+
+  it('round-trips rules 4 match facts losslessly', () => {
+    const w = career();
+    const [first, second] = w.ownMatches;
+    const side = first.home === w.playerClub ? 0 : 1;
+    const [booked, replaced] = first.players;
+    first.incidents = [
+      { minute: 34, side, kind: 'yellow', player: booked.id, reason: 'reckless' },
+      { minute: 61, side, kind: 'sub', player: replaced.id, other: 'synthetic:substitute' },
+      { minute: 90, added: 0, side: 1, kind: 'injury', player: 'synthetic:opponent' },
+      {
+        minute: 105,
+        added: 3,
+        side: 0,
+        kind: 'secondYellow',
+        player: booked.id,
+        reason: 'dissent',
+      },
+    ];
+    first.lineCounts = side === 0 ? [first.players.length, 0] : [0, first.players.length];
+    first.added = [2, 5, 1, 2];
+    first.regulation = { home: 1, away: 1 };
+    first.shootout = { home: 4, away: 3 };
+    first.material = {
+      shots: [side, 0, 820, 340, 12, 1, 0, side, 3, 100, 900, 55, 0, 1],
+      heat: Array.from({ length: 123 }, (_, i) => (i * 7) % 11),
+      network: [500, 300, 20, 0, 1, 4],
+      report: Array<number>(60).fill(2),
+    };
+    second.added = [3, 4];
+    second.incidents = [];
+    second.material = { shots: [], heat: [], network: [], report: [] };
+    second.shootout = { home: 0, away: 0 };
+    const packed = pack(w);
+    const restored = unpack(JSON.parse(JSON.stringify(packed)));
+    expect(canonical(restored)).toBe(canonical(w));
+    expect(restored.ownMatches[1].incidents).toEqual([]);
+    expect(restored.ownMatches[1].added).toEqual([3, 4]);
+    expect(restored.ownMatches[1].shootout).toEqual({ home: 0, away: 0 });
+    expect(restored.ownMatches[1].material).toEqual({
+      shots: [],
+      heat: [],
+      network: [],
+      report: [],
+    });
+    expect(restored.ownMatches[1]).not.toHaveProperty('regulation');
+  });
+
+  it('keeps the widened team and player detail indexes through the match detail stream', () => {
+    const w = career();
+    const m = w.ownMatches[0];
+    expect(m.detail![0]).toHaveLength(TEAM_DETAIL_SIZE);
+    expect(m.players[0].detail).toHaveLength(PLAYER_DETAIL_SIZE);
+    m.detail![0][TEAM_DETAIL_SIZE - 1] = 9;
+    m.detail![1][TEAM_DETAIL_SIZE - 1] = 4;
+    m.players[0].detail![PLAYER_DETAIL_SIZE - 1] = 7;
+    const restored = unpack(JSON.parse(JSON.stringify(pack(w))));
+    expect(restored.ownMatches[0].detail![0][TEAM_DETAIL_SIZE - 1]).toBe(9);
+    expect(restored.ownMatches[0].detail![1][TEAM_DETAIL_SIZE - 1]).toBe(4);
+    expect(restored.ownMatches[0].players[0].detail![PLAYER_DETAIL_SIZE - 1]).toBe(7);
+    expect(canonical(restored)).toBe(canonical(w));
+  });
+
+  it('round-trips records with substitutes and their incidents', () => {
+    const w = career();
+    const m = w.ownMatches[0];
+    const extra = structuredClone(m.players.slice(0, 3)).map((p, i) => ({
+      ...p,
+      id: `synthetic:bench:${i}`,
+    }));
+    m.players.push(...extra);
+    for (const other of w.ownMatches.slice(1)) other.players = other.players.slice(0, 11);
+    const side = m.home === w.playerClub ? 0 : 1;
+    m.lineCounts = side === 0 ? [m.players.length, 0] : [0, m.players.length];
+    m.incidents = extra.map((p, i) => ({
+      minute: 60 + i,
+      side: side as 0 | 1,
+      kind: 'sub' as const,
+      player: m.players[i].id,
+      other: p.id,
+    }));
+    const packed = pack(w);
+    expect(packed.statWidth).toBe(12);
+    expect(packed.matchActorColumns?.playerWidth).toBe(1);
+    expect(canonical(unpack(JSON.parse(JSON.stringify(packed))))).toBe(canonical(w));
+  });
+
+  it('round-trips season heat maps losslessly', () => {
+    const w = career();
+    const [a, b] = [w.ownMatches[0].players[0].id, w.ownMatches[0].players[1].id];
+    const season = (year: number, heat?: Record<string, number[]>): World['history'][number] =>
+      ({
+        year,
+        cash: '0',
+        currency: 'EUR',
+        income: '0',
+        expense: '0',
+        fans: 0,
+        rating: 0,
+        manager: '',
+        metrics: w.ownMatches[0].metrics[0],
+        standings: [[1, 2, 3, 4, 5, 6]],
+        champions: [],
+        europe: [],
+        ...(heat ? { heat } : {}),
+      }) as unknown as World['history'][number];
+    w.history = [
+      season(2001, {
+        [a]: Array.from({ length: 40 }, (_, i) => i * 3),
+        [b]: Array<number>(40).fill(0),
+      }),
+      season(2002),
+      season(2003, {}),
+      season(2004, { [a]: Array.from({ length: 40 }, (_, i) => 2 ** 20 + i) }),
+    ];
+    const packed = pack(w);
+    expect(packed.world.history.every((h) => !('heat' in h))).toBe(true);
+    const restored = unpack(JSON.parse(JSON.stringify(packed)));
+    expect(canonical(restored)).toBe(canonical(w));
+    expect(restored.history[1]).not.toHaveProperty('heat');
+    expect(restored.history[2].heat).toEqual({});
+    expect(restored.history[3].heat![a][39]).toBe(2 ** 20 + 39);
+  });
+
+  it('keeps records without the new fields byte-identical to before', () => {
+    const w = career();
+    for (const m of w.ownMatches) {
+      delete m.incidents;
+      delete m.lineCounts;
+      delete m.added;
+      delete m.regulation;
+      delete m.shootout;
+      delete m.material;
+    }
+    for (const h of w.history) delete h.heat;
+    const packed = pack(w);
+    for (const key of ['matchExtras', 'matchIncidents', 'matchMaterial', 'seasonHeat'])
+      expect(packed).not.toHaveProperty(key);
+    expect(JSON.stringify(packed)).not.toContain('heat":');
+    expect(canonical(unpack(JSON.parse(JSON.stringify(packed))))).toBe(canonical(w));
+  });
+
+  it('rejects damaged rules 4 fact streams', () => {
+    const w = career();
+    const m = w.ownMatches[0];
+    m.added = [1, 2];
+    m.incidents = [{ minute: 5, side: 0, kind: 'yellow', player: m.players[0].id }];
+    const source = pack(w);
+    const orphan = structuredClone(source);
+    delete orphan.matchExtras;
+    expect(() => unpack(orphan)).toThrow('부가 기록');
+    const noIncidents = structuredClone(source);
+    delete noIncidents.matchIncidents;
+    expect(() => unpack(noIncidents)).toThrow();
+    const truncated = structuredClone(source);
+    truncated.matchIncidents!.rows = packBitColumns([], 7);
+    expect(() => unpack(truncated)).toThrow();
   });
 
   it('falls back to full safe integers when the signed difference would exceed their range', () => {

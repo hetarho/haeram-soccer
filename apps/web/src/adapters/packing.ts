@@ -9,6 +9,8 @@ import type {
   StandingSnapshot,
   GoalScorerSeason,
   Event,
+  Incident,
+  MatchMaterial,
 } from '../../../../packages/contracts/src/types';
 // Lossless archive encoding. Statistics use unsigned LEB128, never a fixed-width truncation.
 export function base64(bytes: Uint8Array) {
@@ -20,6 +22,12 @@ export function base64(bytes: Uint8Array) {
 export function unbase64(s: string) {
   if (!/^[A-Za-z0-9+/]*={0,2}$/.test(s)) throw new Error('잘못된 Base64');
   return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+}
+/** A season archive without its heat map, which has its own stream. */
+function withoutHeat<T extends { heat?: unknown }>(season: T): T {
+  const copy = { ...season };
+  delete copy.heat;
+  return copy;
 }
 function integers(values: number[], width: number) {
   const count = values.length / width;
@@ -102,6 +110,19 @@ function readDeltaColumns(source: ReturnType<typeof reader>, width: number) {
     done: source.done,
   };
 }
+const INCIDENT_KINDS: Incident['kind'][] = ['yellow', 'secondYellow', 'red', 'sub', 'injury'];
+const INCIDENT_REASONS: NonNullable<Incident['reason']>[] = [
+  'reckless',
+  'tactical',
+  'dissent',
+  'dogso',
+  'serious',
+  'violent',
+];
+const MATERIAL_KEYS = ['shots', 'heat', 'network', 'report'] as const;
+/** Columns of one matchExtras row; flag bits are documented in docs/SAVE-FORMAT.md. */
+const EXTRAS_WIDTH = 11;
+const HEAT_CELLS = 40;
 type Tuple = (number | number[] | number[][])[];
 interface Packed {
   format: 'compact1';
@@ -127,6 +148,22 @@ interface Packed {
    * one row per saved player of a flagged match, each in its own bit-column stream.
    */
   matchDetail?: { flags: string; teams: BitColumns; players: BitColumns };
+  /**
+   * Rules 4.0.0 own-match facts. `matchExtras` holds one width-11 row per match
+   * `[flags, lc0, lc1, a0, a1, a2, a3, regH, regA, soH, soA]`; `matchIncidents` a count per match
+   * and the width-7 incident rows; `matchMaterial` the lengths and bit columns of the arrays.
+   */
+  matchExtras?: string;
+  matchIncidents?: { counts: string; rows: BitColumns };
+  matchMaterial?: {
+    lengths: string;
+    shots: BitColumns;
+    heat: BitColumns;
+    network: BitColumns;
+    report: BitColumns;
+  };
+  /** Per season 0 (no archived heat) or players + 1, then rows `[playerRef, 40 cells]`. */
+  seasonHeat?: { counts: string; rows: BitColumns };
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -287,6 +324,84 @@ export function pack(w: World): Packed {
   const bracketRounds = w.history.map((h) => (h.brackets || []).flatMap((b) => b.rounds));
   const bracketRows = bracketRounds.flat().flatMap((round) => round.ties);
   if (bracketRows.some((row) => row.length !== 7)) throw new Error('대진 기록 압축 차원 손상');
+  const extras: number[] = [];
+  const incidentCounts: number[] = [];
+  const incidentRows: number[] = [];
+  const material: Record<(typeof MATERIAL_KEYS)[number], number[]> = {
+    shots: [],
+    heat: [],
+    network: [],
+    report: [],
+  };
+  const materialLengths: number[] = [];
+  const hasIncidents = w.ownMatches.some((m) => m.incidents !== undefined);
+  const hasMaterial = w.ownMatches.some((m) => m.material !== undefined);
+  let hasExtras = hasIncidents || hasMaterial;
+  for (const m of w.ownMatches) {
+    let flags = 0;
+    const row = Array<number>(EXTRAS_WIDTH).fill(0);
+    if (m.lineCounts) {
+      flags |= 1;
+      row[1] = m.lineCounts[0];
+      row[2] = m.lineCounts[1];
+    }
+    if (m.added) {
+      if (m.added.length !== 2 && m.added.length !== 4) throw new Error('추가 시간 압축 차원 손상');
+      flags |= m.added.length === 4 ? 2 | 4 : 2;
+      m.added.forEach((n, i) => (row[3 + i] = n));
+    }
+    if (m.regulation) {
+      flags |= 8;
+      row[7] = m.regulation.home;
+      row[8] = m.regulation.away;
+    }
+    if (m.shootout) {
+      flags |= 16;
+      row[9] = m.shootout.home;
+      row[10] = m.shootout.away;
+    }
+    if (m.incidents) flags |= 32;
+    if (m.material) flags |= 64;
+    if (flags & 31) hasExtras = true;
+    row[0] = flags;
+    extras.push(...row);
+    if (hasIncidents) incidentCounts.push(m.incidents?.length ?? 0);
+    for (const incident of m.incidents ?? []) {
+      const kind = INCIDENT_KINDS.indexOf(incident.kind);
+      const reason = incident.reason === undefined ? -1 : INCIDENT_REASONS.indexOf(incident.reason);
+      if (kind < 0 || (incident.reason !== undefined && reason < 0))
+        throw new Error('경기 사건 압축 형식 손상');
+      incidentRows.push(
+        incident.minute,
+        incident.added === undefined ? 0 : incident.added + 1,
+        incident.side,
+        kind,
+        id(incident.player),
+        incident.other === undefined ? 0 : id(incident.other) + 1,
+        reason + 1,
+      );
+    }
+    if (m.material) {
+      for (const key of MATERIAL_KEYS) {
+        materialLengths.push(m.material[key].length);
+        material[key].push(...m.material[key]);
+      }
+    }
+  }
+  const heatCounts: number[] = [];
+  const heatRows: number[] = [];
+  for (const h of w.history) {
+    if (!h.heat) {
+      heatCounts.push(0);
+      continue;
+    }
+    const players = Object.keys(h.heat);
+    heatCounts.push(players.length + 1);
+    for (const player of players) {
+      if (h.heat[player].length !== HEAT_CELLS) throw new Error('시즌 열지도 압축 차원 손상');
+      heatRows.push(id(player), ...h.heat[player]);
+    }
+  }
   const careers =
     w.people === undefined
       ? undefined
@@ -314,7 +429,7 @@ export function pack(w: World): Packed {
           }
         : {}),
       history: w.history.map((h) => ({
-        ...h,
+        ...withoutHeat(h),
         standings: [],
         europe: h.europe.map((e) => ({
           ...e,
@@ -360,6 +475,34 @@ export function pack(w: World): Packed {
             flags: integers(detailFlags, 1),
             teams: packBitColumns(teamDetails, TEAM_DETAIL_SIZE, 'planes'),
             players: packBitColumns(playerDetails, PLAYER_DETAIL_SIZE, 'planes'),
+          },
+        }
+      : {}),
+    ...(hasExtras ? { matchExtras: integers(extras, EXTRAS_WIDTH) } : {}),
+    ...(hasIncidents
+      ? {
+          matchIncidents: {
+            counts: integers(incidentCounts, 1),
+            rows: packBitColumns(incidentRows, 7, 'planes'),
+          },
+        }
+      : {}),
+    ...(hasMaterial
+      ? {
+          matchMaterial: {
+            lengths: integers(materialLengths, MATERIAL_KEYS.length),
+            shots: packBitColumns(material.shots, 1),
+            heat: packBitColumns(material.heat, 1),
+            network: packBitColumns(material.network, 1),
+            report: packBitColumns(material.report, 1),
+          },
+        }
+      : {}),
+    ...(heatCounts.some(Boolean)
+      ? {
+          seasonHeat: {
+            counts: integers(heatCounts, 1),
+            rows: packBitColumns(heatRows, HEAT_CELLS + 1, 'planes'),
           },
         }
       : {}),
@@ -604,8 +747,80 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   const detailFlags = detail && reader(detail.flags, 1),
     teamDetails = detail && readBitColumns(detail.teams, TEAM_DETAIL_SIZE),
     playerDetails = detail && readBitColumns(detail.players, PLAYER_DETAIL_SIZE);
+  const facts = p.matchExtras;
+  if (
+    (facts !== undefined && typeof facts !== 'string') ||
+    (facts === undefined && (p.matchIncidents !== undefined || p.matchMaterial !== undefined))
+  )
+    throw new Error('경기 부가 기록 압축 데이터 손상');
+  const extraStream = facts === undefined ? undefined : reader(facts, EXTRAS_WIDTH);
+  if (extraStream && extraStream.rows !== packedMatches.length)
+    throw new Error('경기 부가 기록 압축 차원 손상');
+  const incidentData = p.matchIncidents;
+  if (
+    incidentData !== undefined &&
+    (!incidentData || typeof incidentData !== 'object' || typeof incidentData.counts !== 'string')
+  )
+    throw new Error('경기 사건 압축 데이터 손상');
+  const incidentCounts = incidentData && reader(incidentData.counts, 1);
+  if (incidentCounts && incidentCounts.rows !== packedMatches.length)
+    throw new Error('경기 사건 압축 차원 손상');
+  const incidentStream = incidentData && readBitColumns(incidentData.rows, 7);
+  const materialData = p.matchMaterial;
+  if (
+    materialData !== undefined &&
+    (!materialData || typeof materialData !== 'object' || typeof materialData.lengths !== 'string')
+  )
+    throw new Error('경기 자료 압축 데이터 손상');
+  const materialLengths = materialData && reader(materialData.lengths, MATERIAL_KEYS.length);
+  const materialStreams =
+    materialData && MATERIAL_KEYS.map((key) => readBitColumns(materialData[key], 1));
   const matches = packedMatches.map((t) => {
     const xgRow = xgStream?.take(3);
+    const extraRow = extraStream?.take(EXTRAS_WIDTH);
+    const flags = extraRow?.[0] ?? 0;
+    const incidentCount = incidentCounts?.take(1)[0] ?? 0;
+    if (
+      flags > 127 ||
+      (flags & 4 && !(flags & 2)) ||
+      (flags & 32 && !incidentStream) ||
+      (flags & 64 && !materialStreams) ||
+      (!(flags & 32) && incidentCount !== 0) ||
+      incidentCount > 120 ||
+      (extraRow &&
+        ((!(flags & 1) && (extraRow[1] || extraRow[2])) ||
+          (!(flags & 2) && (extraRow[3] || extraRow[4])) ||
+          (!(flags & 4) && (extraRow[5] || extraRow[6])) ||
+          (!(flags & 8) && (extraRow[7] || extraRow[8])) ||
+          (!(flags & 16) && (extraRow[9] || extraRow[10]))))
+    )
+      throw new Error('경기 부가 기록 표시 손상');
+    const incidents = !(flags & 32)
+      ? undefined
+      : Array.from({ length: incidentCount }, (): Incident => {
+          const r = incidentStream!.take(7);
+          const kind = INCIDENT_KINDS[r[3]];
+          if (!kind || r[2] > 1 || r[6] > INCIDENT_REASONS.length)
+            throw new Error('경기 사건 압축 형식 손상');
+          return {
+            minute: r[0],
+            ...(r[1] ? { added: r[1] - 1 } : {}),
+            side: r[2] as 0 | 1,
+            kind,
+            player: str(r[4]),
+            ...(r[5] ? { other: str(r[5] - 1) } : {}),
+            ...(r[6] ? { reason: INCIDENT_REASONS[r[6] - 1] } : {}),
+          };
+        });
+    let materialValue: MatchMaterial | undefined;
+    if (flags & 64) {
+      const lengths = materialLengths!.take(MATERIAL_KEYS.length);
+      if (lengths.some((n) => n > 1_000_000)) throw new Error('경기 자료 압축 차원 손상');
+      materialValue = {} as MatchMaterial;
+      MATERIAL_KEYS.forEach(
+        (key, i) => (materialValue![key] = materialStreams![i].take(lengths[i])),
+      );
+    }
     const detailed = detailFlags?.take(1)[0] ?? 0;
     if (detailed !== 0 && detailed !== 1) throw new Error('경기 고급 지표 표시 손상');
     const takeMetrics = () => {
@@ -644,9 +859,20 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
             detail: [teamDetails!.take(TEAM_DETAIL_SIZE), teamDetails!.take(TEAM_DETAIL_SIZE)],
           }
         : {}),
+      ...(incidents ? { incidents } : {}),
+      ...(flags & 1 ? { lineCounts: [extraRow![1], extraRow![2]] } : {}),
+      ...(flags & 2 ? { added: extraRow!.slice(3, flags & 4 ? 7 : 5) } : {}),
+      ...(flags & 8 ? { regulation: { home: extraRow![7], away: extraRow![8] } } : {}),
+      ...(flags & 16 ? { shootout: { home: extraRow![9], away: extraRow![10] } } : {}),
+      ...(materialValue ? { material: materialValue } : {}),
     } as MatchRecord;
   });
   xgStream?.done();
+  extraStream?.done();
+  incidentCounts?.done();
+  incidentStream?.done();
+  materialLengths?.done();
+  for (const stream of materialStreams ?? []) stream.done();
   detailFlags?.done();
   teamDetails?.done();
   playerDetails?.done();
@@ -718,11 +944,32 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     details.done();
   }
   const brackets = unpackBrackets(p);
+  const heatData = p.seasonHeat;
+  if (
+    heatData !== undefined &&
+    (!heatData || typeof heatData !== 'object' || typeof heatData.counts !== 'string')
+  )
+    throw new Error('시즌 열지도 압축 데이터 손상');
+  const heatCounts = heatData && reader(heatData.counts, 1);
+  if (heatCounts && heatCounts.rows !== p.world.history.length)
+    throw new Error('시즌 열지도 압축 차원 손상');
+  const heatRows = heatData && readBitColumns(heatData.rows, HEAT_CELLS + 1);
   const history = p.world.history.map((h, i) => {
     const count = p.counts[i];
     if (!Number.isInteger(count) || count < 0 || count > 1000) throw new Error('시즌 통계 손상');
+    const heatPlayers = heatCounts?.take(1)[0] ?? 0;
+    if (heatPlayers > 1001) throw new Error('시즌 열지도 압축 차원 손상');
+    let heat: Record<string, number[]> | undefined;
+    if (heatPlayers) {
+      heat = {};
+      for (let n = 1; n < heatPlayers; n++) {
+        const row = heatRows!.take(HEAT_CELLS + 1);
+        heat[str(row[0])] = row.slice(1);
+      }
+    }
     return {
       ...h,
+      ...(heat ? { heat } : {}),
       ...(h.brackets ? { brackets: brackets![i] } : {}),
       standings: Array.from({ length: count }, () => standings.take(6)),
       europe: h.europe.map((e, j) => {
@@ -743,6 +990,8 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   });
   stats.done();
   standings.done();
+  heatCounts?.done();
+  heatRows?.done();
   let rankHistory: StandingSnapshot[] | undefined;
   if (p.world.rankHistory !== undefined) {
     if (
