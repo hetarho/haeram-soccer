@@ -15,9 +15,12 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h8t4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T09:45Z | 2026-10-19T09:45Z | - |
+| h8t4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T09:45Z | 2026-10-19T10:06Z | T215 |
 
 ## inbox
+- 261019 decided T215: lowering the xG intercept `SHOT_CONFIG.a` fitted xG per shot but moved per-chance xG off the real values (0.23 near the spot) → keep the xG model, add grid-only levers instead: `DECISION_CONFIG.shotBox` (shoot in the box band rather than carry into the goal area) and `SHOT_CONFIG.saveShare` (half the shared model's saves go wide) (alt: lower `SHOT_CONFIG.a` | change the shared `targetChance` in match.ts, which the probabilistic path also uses)
+- 261019 decided T215: penalties came at 1.35 a match once fouls tripled → `DUEL_CONFIG.boxFoul` 0.3, a defender in his own box keeps 30% of his foul share (alt: fewer fouls everywhere, which leaves the fouls band short)
+- 261019 decided -: the 20:00 stop requested by the owner → T214 verified and on main; T215 (an explore task with about 3 h of its timebox left) goes to wip/h8t4 (alt: push WIP to main | stop without pushing)
 - 261019 decided T214: the slot a red-card rebalance fills → the defender or midfielder comes on into the sent-off player's empty slot and the most advanced forward leaves, so the shape loses a forward rather than a defender (alt: the substitute takes the forward's slot as design §8.1's general rule says, leaving the back line short)
 - 261019 decided T214: a substitute who comes on in added time has 0 regulation minutes, and T220/T229 count appearances by minutes > 0 → anyone who played is credited at least 1 minute (alt: leave 0 and lose the appearance | count added time in minutes)
 - 261019 decided T214: one draw per action for injuries → one match-stream draw against the summed hazard of the players on the pitch, picking the player in proportion (alt: one draw per player per action, about 22 times the draws for the same rates)
@@ -106,7 +109,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | todo |
+| T215 | Calibrate the grid engine to real-football distributions (explore 4h) | MATCH | T214 | doing@261019.h8t4 |
 | T216 | Calibrate the grid engine's strength curve (explore 3h) | MATCH | T215 | todo |
 | T217 | Playback frames and Korean commentary from the grid trace | MATCH WEB | T216 | todo |
 | T218 | Switch the owner's matches to the grid engine and its playback | MATCH WEB | T217 | todo |
@@ -156,10 +159,11 @@
 
 ## next
 - Browser journeys set aside by the owner (261019): main e2e is red since the 261017 UI design commits (tests/e2e call `selectOption` on the custom Select); do not wait on or fix them unless asked.
-- implement-task T215, then T216–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
+- continue T215 from wip/h8t4 (about 3 h of its 4 h timebox left; docs/CALIBRATION.md lists the failing bands), then T216–T233 in dep order using docs/MATCH-ENGINE-DESIGN.md (one task per session; ARCH-30 task checks per task, batch checks before a code push); T203–T214 are done (grid pitch, setup/state, shape, tags, decisions, duels/xG, restarts, `playGrid` loop with records and counters, cards, substitutions and injuries). T224 must bring the 87 ms grid match down toward the 15 ms criterion of T211; T215/T216 retune the placeholders `DECISION_CONFIG.shotScale` 0.05 and `crossScale` 4, pass completion (66% vs about 80%) and offsides (about 12 a match). T233 and its CI precede T234–T255 (docs/CLUB-IDENTITY-CONTRACT.md).
 - Review prior autonomous decisions/proposals in inbox (reports/261017-p6k2.md), including the unresolved LEAGUE-13/WEB-3 difficulty targets; external deployment, optional hall of fame and Flutter remain separate future work.
 
 ## log
+- 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 15/37 MATCH-23 bands hold (7 at the start); about 1 h of the 4 h timebox used.
 - 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.
 - 261019 T213 done (w6pm): cards, second yellow, reds with ten men, dissent; batch checks pass (1119 unit, 19 contract, build).
 - 261019 T212 done (w6pm): TD/PD advanced counters wired into the grid loop; 84 grid tests pass; perf: shared shape values cached per step (about 87 ms a match, 15 ms target still open for T224).
@@ -179,5 +183,3 @@
 - 261019 T256 doing (u6k2), start 21a903fe721d: implement speed-only observation and stable mediation preview; WEB r93 consumed into T256, future WEB task bases reviewed; T225 preserves the speed-only controls.
 - 261019 update-ssot WEB start: speed-only live observation and stable recruitment mediation previews; standalone user-assigned UI fixes (T256).
 - 261019 T202 done
-- 261019 T201 done
-- 261019 T200 done
