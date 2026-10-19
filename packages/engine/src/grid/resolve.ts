@@ -52,7 +52,7 @@ export const DUEL_CONFIG = {
     pressure: 0.015,
     min: 0.25,
     max: 0.97,
-    lost: { intercepted: 0.15, loose: 0.6, out: 0.25 },
+    lost: { intercepted: 0.1, loose: 0.7, out: 0.2 },
   },
   cross: {
     base: 0.45,
@@ -67,13 +67,13 @@ export const DUEL_CONFIG = {
   takeOn: {
     skill: 1 / 285,
     min: 0.2,
-    max: 0.75,
+    max: 0.65,
     fail: { tackle: 0.35, foul: 0.55, loose: 0.1 },
     /** Metres beyond the defender a won take-on ends: always the middle of this range, no draw. */
     past: [5, 8],
   },
   /** A defender in his own box keeps this share of his fouls; the rest become clean tackles (T215). */
-  boxFoul: 0.3,
+  boxFoul: 0.2,
   carry: { lostScale: 3, skill: 1 / 120, min: 0.01, max: 0.35, foul: 0.8 },
   holdUp: { base: 0.6, skill: 1 / 150, min: 0.3, max: 0.85 },
   aerial: { skill: 1 / 150, base: 0.5, min: 0.15, max: 0.85 },
@@ -87,7 +87,7 @@ export const SHOT_CONFIG = {
   c: 1.6,
   header: 0.55,
   cutBack: 1.25,
-  pressure: 0.3,
+  pressure: 0.5,
   freeKickWall: 0.6,
   onTargetSkill: 1 / 250,
   /** Share of the shared on-target model's saves the grid keeps; the rest go wide (T215). */
@@ -466,7 +466,7 @@ export function resolveCutBack(
 }
 
 /** The nearest opponent ahead of the carrier within the pressure radius. */
-function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
+export function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
   const c = attackFrame(side, s.players[side][idx]!.pos);
   let best: GridPlayer | undefined,
     d: number = TAG_CONFIG.pressureRadius;

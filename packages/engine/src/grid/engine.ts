@@ -4,6 +4,7 @@ import { choosePass, decide, DECISION_CONFIG, type Decision } from './decide';
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
+  inFront,
   looseWinner,
   resolveCarry,
   resolveClearance,
@@ -376,12 +377,14 @@ export function playGrid(setup: GridSetup): GridResult {
       }
       case 'takeOn': {
         const from = attackFrame(side, s.players[side][idx]!.pos);
+        // With nobody in front to beat it is a carry, not a take-on (MATCH-13).
+        const opposed = inFront(s, side, idx) !== undefined;
         const o = resolveTakeOn(s, side, idx, tags, r);
-        tally.takeOnAttempt(side, idx);
+        if (opposed) tally.takeOnAttempt(side, idx);
         if (o.kind === 'complete') {
-          tally.dribble(side, idx);
+          if (opposed) tally.dribble(side, idx);
           tally.carryEvent(side, idx, from, attackFrame(side, o.to));
-          justBeat = [side, idx];
+          if (opposed) justBeat = [side, idx];
         }
         apply(side, idx, o);
         return { key: 'takeOn', outcome: o };

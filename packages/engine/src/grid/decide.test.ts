@@ -8,6 +8,7 @@ import {
   chooseCarry,
   choosePass,
   decide,
+  DECISION_CONFIG,
   keeperDistribution,
   passOptions,
   passProbabilities,
@@ -126,7 +127,7 @@ describe('grid decisions', () => {
     expect(cut).toBe(2);
   });
 
-  it("reproduces the cell's pass direction mix when every target scores the same", () => {
+  it("reproduces the cell's pass direction mix, back passes weighted, when every target scores the same", () => {
     const sc = scene(CM, centre(4, 2));
     sc.me.player.traits = [];
     const c = centre(4, 2);
@@ -144,9 +145,14 @@ describe('grid decisions', () => {
     const share: Record<string, number> = { forward: 0, lateral: 0, back: 0 };
     options.forEach((o, i) => (share[o.direction] += probabilities[i]!));
     const baseline = CELL_BASELINES[tags.cell]!;
-    const total = baseline.forward + baseline.lateral + baseline.back;
+    const weight = {
+      forward: baseline.forward,
+      lateral: baseline.lateral,
+      back: baseline.back * DECISION_CONFIG.pass.backPrior,
+    };
+    const total = weight.forward + weight.lateral + weight.back;
     for (const dir of ['forward', 'lateral', 'back'] as const)
-      expect(Math.abs(share[dir]! - baseline[dir] / total), dir).toBeLessThan(0.05);
+      expect(Math.abs(share[dir]! - weight[dir] / total), dir).toBeLessThan(0.05);
   });
 
   const choiceScene = (decisions: number, composure = 60) => {

@@ -14,8 +14,8 @@ export interface CardVerdict {
 export const CARD_CONFIG = {
   yellow: 0.14,
   tacticalYellow: 0.6,
-  bookedYellow: 0.05,
-  dogsoRed: 0.1,
+  bookedYellow: 0.03,
+  dogsoRed: 0.06,
   dogsoRedInBox: 0.04,
   seriousRed: 0.003,
   dissentYellow: 0.06,

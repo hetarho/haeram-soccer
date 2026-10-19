@@ -35,16 +35,16 @@ export interface Decision {
 export const DECISION_CONFIG = {
   holdUp: { base: 0.03, backToGoal: 0.15 },
   cutBackShare: 0.1,
-  takeOnPerPass: 0.07,
+  takeOnPerPass: 0.06,
   crossShare: 0.025,
   factorRange: [0.2, 3],
   shotLine: { GK: 0, DF: 0.6, MF: 1, FW: 1.25 },
   /** Global shot-volume scale; the first uncalibrated engine produced about 25 shots a side (T215 settles it). */
-  shotScale: 0.07,
+  shotScale: 0.08,
   /** Global open-play cross scale: the cells' own cross shares gave under one cross a side (T215 settles it). */
   crossScale: 7,
   /** Extra shot weight in the box band, so a carrier shoots there instead of carrying into the goal area (T215). */
-  shotBox: 4,
+  shotBox: 3,
   tactic: {
     possession: { pass: 1.1, takeOn: 0.9, shotBand5: 0.8 },
     counter: { shotInCounter: 1.1 },
@@ -70,6 +70,8 @@ export const DECISION_CONFIG = {
     switch: 30,
     tau: { scale: 1, decisions: 80, composure: 150, range: [0.4, 2.5] },
     backBias: 3,
+    /** Weight of backward options in every pass choice; the threat gain alone kept back passes near 9% (T215). */
+    backPrior: 2,
   },
   carry: { headings: [0, -30, 30, -90, 90], length: [6, 6], pressure: 0.5, margin: 0.5 },
   keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
@@ -297,7 +299,7 @@ export function passOptions(
       Math.max(0, dist - P.tooFar) / 10 +
       through;
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
-    if (dir === 'back' && opts.backBias) prior *= opts.backBias;
+    if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1);
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'

@@ -65,7 +65,7 @@ export const RESTART_CONFIG = {
   throwFree: 3,
   kickoffBackBias: 10,
   offside: {
-    base: 0.08,
+    base: 0.05,
     decisions: 200,
     linebreaker: 0.1,
     highLine: 0.05,
