@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| w6pm | hq-dev1-pve2-vm2 | autopilot | 2026-10-19T07:33Z | 2026-10-19T07:33Z | T213 |
 
 ## inbox
 - 261019 decided T211 T212: the first uncalibrated grid engine gave about 8 goals a match → global placeholders `shotScale` 0.05 and `crossScale` 4 in `DECISION_CONFIG` so the plausibility bands hold until calibration (alt: leave the bands red until T215 | tune the cell baselines now)
@@ -179,13 +178,3 @@
 - 261019 T201 done
 - 261019 T200 done
 - 261019 create-task SAVE HIST WEB MATCH done (r5c2): no new task; T210 offside by the target at the pass, T226 season PPDA by MATCH-13 over advanced matches, T231 refuses to overwrite without a verified previous copy, T229/T220 appearances by minutes > 0; todo bases SAVE@49 HIST@15 WEB@92 MATCH@12.
-- 261019 create-task ARCH r12 done: no new task; T218 T225 T230 T254 browser checks on Chromium only, T233 gate uses the ARCH-30 batch checks + CI instead of a local `pnpm run verify`, todo bases ARCH@12.
-- 261019 update-ssot ARCH r12 done: ARCH-30 verification tiers — task checks per task, batch checks before a code push, CI read once per push.
-- 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE tidied (rev unchanged): long decisions structured, SAVE-10 retired transforms replaced by current rules/history references, stale references and copied skeleton prose removed; IDs/statuses and all chg lines preserved.
-- 261019 doc-review ARCH WEB WORLD CLUB MATCH LEAGUE STAFF ECON EURO HIST SAVE start: structure long decisions, replace duplicated contracts with owner references and remove retired prose; policy revisions already recorded.
-- 261019 update-ssot SAVE r49 HIST r15 WEB r92 MATCH r12 done: verified predecessor or refuse overwrite, actual appearances, conditional PPDA and ball-relative offside; task contracts await create-task.
-- 261019 update-ssot SAVE HIST WEB MATCH start: resolve adopted doc-review conflicts; then tidy SSOT wording with decision IDs and history preserved.
-- 261019 create-task KIT WEB SAVE done: T234–T255 (22 small tasks), explicit DTO/geometry/command/codec/UI contracts, cases and targeted commands; consume KIT r2, WEB r91 and SAVE r46–47 identity deltas, preserve completed grid planning through T233.
-- 261019 create-task grid engine rebuild: T200–T233 (34 tasks, 4 explore) from MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r45/r48, ARCH r11; SAVE r46–47 and WEB r91 identity deltas stay pending for the identity tasks (T240+).
-- 261019 SAVE r48 ARCH r11: previous checkpoint in IndexedDB, active localStorage checkpoint up to 3 MiB (import 8 MiB, inflate 32 MiB) for the grid engine's larger records (owner choice).
-- 261019 create-task MATCH PLAYER STAFF CLUB LEAGUE WEB HIST SAVE start (grid engine rebuild)
