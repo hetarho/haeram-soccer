@@ -27,13 +27,13 @@
     }
   ],
   "provenance": {
-    "date": "2026-10-20T16:34:36.736Z",
+    "date": "2026-10-20T17:24:20.541Z",
     "source": {
-      "gitHead": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
+      "gitHead": "87c089d479ffc36c7ac8cce141740932637be110",
       "gitDirty": true,
       "fingerprint": {
         "algorithm": "sha256",
-        "sha256": "5ec5bf6c2aa185ca0b25c56adb9995a32bdd92619ca0dc8aacb46953705ad86f",
+        "sha256": "2217f7385f0cedca7e34d4edc8a6d472b4c80becc44705b62272a8c2dce8c033",
         "files": 332,
         "scope": [
           "packages",
@@ -247,12 +247,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.017396,
-        "meanMs": 0.0179739,
-        "p90Ms": 0.0218125,
-        "minMs": 0.015875,
-        "maxMs": 0.024062,
-        "totalMs": 0.215687
+        "medianMs": 0.016198,
+        "meanMs": 0.0170035,
+        "p90Ms": 0.0186665,
+        "minMs": 0.0138955,
+        "maxMs": 0.028375,
+        "totalMs": 0.204042
       },
       {
         "id": "preparation.grid",
@@ -260,12 +260,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.580563,
-        "meanMs": 0.893786,
-        "p90Ms": 0.654375,
-        "minMs": 0.551083,
-        "maxMs": 4.31504,
-        "totalMs": 10.7254
+        "medianMs": 0.514084,
+        "meanMs": 0.538979,
+        "p90Ms": 0.58477,
+        "minMs": 0.461,
+        "maxMs": 0.79225,
+        "totalMs": 6.46775
       },
       {
         "id": "fixture.summary",
@@ -273,12 +273,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.260438,
-        "meanMs": 0.422679,
-        "p90Ms": 0.476,
-        "minMs": 0.169021,
-        "maxMs": 1.87225,
-        "totalMs": 5.07215
+        "medianMs": 0.165625,
+        "meanMs": 0.17633,
+        "p90Ms": 0.233166,
+        "minMs": 0.13027,
+        "maxMs": 0.245958,
+        "totalMs": 2.11596
       },
       {
         "id": "fixture.summary-lines",
@@ -286,12 +286,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.260886,
-        "meanMs": 0.36497,
-        "p90Ms": 0.620834,
-        "minMs": 0.122645,
-        "maxMs": 1.20187,
-        "totalMs": 4.37964
+        "medianMs": 0.135,
+        "meanMs": 0.137545,
+        "p90Ms": 0.152105,
+        "minMs": 0.1145,
+        "maxMs": 0.177958,
+        "totalMs": 1.65054
       },
       {
         "id": "fixture.grid",
@@ -299,12 +299,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 152.538,
-        "meanMs": 155.533,
-        "p90Ms": 216.205,
-        "minMs": 75.8708,
-        "maxMs": 254.721,
-        "totalMs": 1866.39
+        "medianMs": 37.9316,
+        "meanMs": 38.2566,
+        "p90Ms": 40.9011,
+        "minMs": 33.9079,
+        "maxMs": 48.8582,
+        "totalMs": 459.08
       },
       {
         "id": "observation.grid",
@@ -312,12 +312,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 309.592,
-        "meanMs": 307.465,
-        "p90Ms": 380.5,
-        "minMs": 225.233,
-        "maxMs": 384.525,
-        "totalMs": 3689.58
+        "medianMs": 64.2182,
+        "meanMs": 65.421,
+        "p90Ms": 69.8985,
+        "minMs": 58.4095,
+        "maxMs": 81.9533,
+        "totalMs": 785.052
       },
       {
         "id": "observation.frames",
@@ -325,12 +325,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 65.9704,
-        "meanMs": 72.0324,
-        "p90Ms": 114.538,
-        "minMs": 14.6247,
-        "maxMs": 198.058,
-        "totalMs": 864.389
+        "medianMs": 14.7017,
+        "meanMs": 15.9934,
+        "p90Ms": 20.3865,
+        "minMs": 13.5595,
+        "maxMs": 22.413,
+        "totalMs": 191.921
       },
       {
         "id": "settlement.npc",
@@ -338,12 +338,12 @@
         "samples": 24,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.024021,
-        "meanMs": 0.105354,
-        "p90Ms": 0.078875,
-        "minMs": 0.0035,
-        "maxMs": 1.88208,
-        "totalMs": 2.5285
+        "medianMs": 0.0219795,
+        "meanMs": 0.110108,
+        "p90Ms": 0.069625,
+        "minMs": 0.003291,
+        "maxMs": 2.01092,
+        "totalMs": 2.64259
       },
       {
         "id": "settlement.own",
@@ -351,12 +351,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.717541,
-        "meanMs": 4.69358,
-        "p90Ms": 18.3923,
-        "minMs": 0.480833,
-        "maxMs": 23.5157,
-        "totalMs": 56.323
+        "medianMs": 0.601,
+        "meanMs": 0.807931,
+        "p90Ms": 1.85004,
+        "minMs": 0.408875,
+        "maxMs": 2.39096,
+        "totalMs": 9.69517
       },
       {
         "id": "season.baseline",
@@ -364,12 +364,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 12887,
-        "meanMs": 12887,
-        "p90Ms": 12887,
-        "minMs": 12887,
-        "maxMs": 12887,
-        "totalMs": 12887
+        "medianMs": 3282.07,
+        "meanMs": 3282.07,
+        "p90Ms": 3282.07,
+        "minMs": 3282.07,
+        "maxMs": 3282.07,
+        "totalMs": 3282.07
       },
       {
         "id": "codec.encode",
@@ -377,12 +377,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 324.129,
-        "meanMs": 324.129,
-        "p90Ms": 413.193,
-        "minMs": 235.064,
-        "maxMs": 413.193,
-        "totalMs": 648.257
+        "medianMs": 75.7457,
+        "meanMs": 75.7457,
+        "p90Ms": 85.8617,
+        "minMs": 65.6297,
+        "maxMs": 85.8617,
+        "totalMs": 151.491
       },
       {
         "id": "codec.decode",
@@ -390,12 +390,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 397.965,
-        "meanMs": 397.965,
-        "p90Ms": 471.293,
-        "minMs": 324.637,
-        "maxMs": 471.293,
-        "totalMs": 795.93
+        "medianMs": 98.2448,
+        "meanMs": 98.2448,
+        "p90Ms": 108.261,
+        "minMs": 88.2286,
+        "maxMs": 108.261,
+        "totalMs": 196.49
       },
       {
         "id": "season.active-management",
@@ -403,12 +403,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 12164.2,
-        "meanMs": 12164.2,
-        "p90Ms": 12164.2,
-        "minMs": 12164.2,
-        "maxMs": 12164.2,
-        "totalMs": 12164.2
+        "medianMs": 3312.11,
+        "meanMs": 3312.11,
+        "p90Ms": 3312.11,
+        "minMs": 3312.11,
+        "maxMs": 3312.11,
+        "totalMs": 3312.11
       }
     ],
     "categories": {
@@ -417,7 +417,7 @@
           "preparation.summary",
           "preparation.grid"
         ],
-        "totalMs": 10.9411
+        "totalMs": 6.67179
       },
       "computation": {
         "components": [
@@ -425,41 +425,41 @@
           "fixture.summary-lines",
           "fixture.grid"
         ],
-        "totalMs": 1875.85
+        "totalMs": 462.846
       },
       "observation": {
         "components": [
           "observation.grid",
           "observation.frames"
         ],
-        "totalMs": 4553.97
+        "totalMs": 976.973
       },
       "settlement": {
         "components": [
           "settlement.npc",
           "settlement.own"
         ],
-        "totalMs": 58.8515
+        "totalMs": 12.3378
       },
       "season": {
         "components": [
           "season.baseline",
           "season.active-management"
         ],
-        "totalMs": 25051.3
+        "totalMs": 6594.18
       },
       "codec": {
         "components": [
           "codec.encode",
           "codec.decode"
         ],
-        "totalMs": 1444.19
+        "totalMs": 347.981
       }
     }
   },
   "memory": {
-    "peakHeapBytes": 192276504,
-    "peakRssBytes": 369590272
+    "peakHeapBytes": 207832872,
+    "peakRssBytes": 428802048
   },
   "seasons": [
     {
@@ -467,14 +467,18 @@
       "seed": "release-century-baseline",
       "seasons": 1,
       "year": 1951,
-      "checkpointChars": 66601
+      "checkpointChars": 66601,
+      "checkpointBytes": 133242,
+      "withinCheckpointLimit": true
     },
     {
       "profile": "active-management",
       "seed": "release-century-active-management",
       "seasons": 1,
       "year": 1951,
-      "checkpointChars": 68023
+      "checkpointChars": 68023,
+      "checkpointBytes": 136086,
+      "withinCheckpointLimit": true
     }
   ],
   "parity": {
@@ -485,13 +489,13 @@
       "performance": 1
     },
     "provenance": {
-      "date": "2026-10-20T16:34:36.736Z",
+      "date": "2026-10-20T17:24:20.541Z",
       "source": {
-        "gitHead": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
+        "gitHead": "87c089d479ffc36c7ac8cce141740932637be110",
         "gitDirty": true,
         "fingerprint": {
           "algorithm": "sha256",
-          "sha256": "5ec5bf6c2aa185ca0b25c56adb9995a32bdd92619ca0dc8aacb46953705ad86f",
+          "sha256": "2217f7385f0cedca7e34d4edc8a6d472b4c80becc44705b62272a8c2dce8c033",
           "files": 332,
           "scope": [
             "packages",
@@ -4031,6 +4035,142 @@
         }
       ]
     },
+    "outcomeCurve": {
+      "reference": {
+        "status": "measured",
+        "missing": 0,
+        "rows": [
+          {
+            "bucket": 0,
+            "matches": 12,
+            "meanGap": 1.41667,
+            "target": {
+              "homeWin": 0.39746,
+              "draw": 0.270228,
+              "awayWin": 0.332312
+            },
+            "observed": {
+              "homeWin": 0.583333,
+              "draw": 0.166667,
+              "awayWin": 0.25
+            },
+            "intervals": {
+              "homeWin": [
+                0.319511,
+                0.80674
+              ],
+              "draw": [
+                0.0469651,
+                0.448031
+              ],
+              "awayWin": [
+                0.0889417,
+                0.532305
+              ]
+            },
+            "error": 0.371747
+          },
+          {
+            "bucket": 5,
+            "matches": 28,
+            "meanGap": 4.07143,
+            "target": {
+              "homeWin": 0.466564,
+              "draw": 0.252201,
+              "awayWin": 0.281235
+            },
+            "observed": {
+              "homeWin": 0.571429,
+              "draw": 0.285714,
+              "awayWin": 0.142857
+            },
+            "intervals": {
+              "homeWin": [
+                0.390708,
+                0.734915
+              ],
+              "draw": [
+                0.15254,
+                0.470593
+              ],
+              "awayWin": [
+                0.0569901,
+                0.314898
+              ]
+            },
+            "error": 0.276756
+          }
+        ],
+        "meanAbsoluteError": 0.108084
+      },
+      "candidate": {
+        "status": "measured",
+        "missing": 0,
+        "rows": [
+          {
+            "bucket": 0,
+            "matches": 12,
+            "meanGap": 1.41667,
+            "target": {
+              "homeWin": 0.39746,
+              "draw": 0.270228,
+              "awayWin": 0.332312
+            },
+            "observed": {
+              "homeWin": 0.25,
+              "draw": 0.5,
+              "awayWin": 0.25
+            },
+            "intervals": {
+              "homeWin": [
+                0.0889417,
+                0.532305
+              ],
+              "draw": [
+                0.253782,
+                0.746218
+              ],
+              "awayWin": [
+                0.0889417,
+                0.532305
+              ]
+            },
+            "error": 0.459544
+          },
+          {
+            "bucket": 5,
+            "matches": 28,
+            "meanGap": 4.07143,
+            "target": {
+              "homeWin": 0.466564,
+              "draw": 0.252201,
+              "awayWin": 0.281235
+            },
+            "observed": {
+              "homeWin": 0.464286,
+              "draw": 0.285714,
+              "awayWin": 0.25
+            },
+            "intervals": {
+              "homeWin": [
+                0.295316,
+                0.641873
+              ],
+              "draw": [
+                0.15254,
+                0.470593
+              ],
+              "awayWin": [
+                0.126765,
+                0.433557
+              ]
+            },
+            "error": 0.0670274
+          }
+        ],
+        "meanAbsoluteError": 0.0877619
+      }
+    },
     "invariants": {
       "reference": [
         {
@@ -7212,8 +7352,25 @@
             "p90": 11,
             "p99": 11
           },
-          "status": "constant",
-          "reason": "reference is constant: no relative margin"
+          "status": "different",
+          "difference": {
+            "estimate": -5,
+            "interval": [
+              -5,
+              -5
+            ],
+            "margin": 0.8,
+            "status": "different"
+          },
+          "cdf": {
+            "distance": 1,
+            "interval": [
+              0.531917,
+              1
+            ],
+            "margin": 0.08,
+            "status": "different"
+          }
         },
         {
           "id": "participation.minutes",
@@ -7353,10 +7510,10 @@
               0.0915815,
               2.72981
             ],
-            "requiredEvents": 473,
+            "requiredEvents": 534,
             "status": "underpowered"
           },
-          "reason": "2 events on a path, 473 needed"
+          "reason": "2 events on a path, 534 needed"
         },
         {
           "id": "incident.red",
@@ -7398,10 +7555,10 @@
               0.143391,
               2.51062
             ],
-            "requiredEvents": 473,
+            "requiredEvents": 534,
             "status": "underpowered"
           },
-          "reason": "3 events on a path, 473 needed"
+          "reason": "3 events on a path, 534 needed"
         },
         {
           "id": "incident.sub",
@@ -7432,8 +7589,25 @@
             "p90": 0,
             "p99": 0
           },
-          "status": "constant",
-          "reason": "reference is constant: no relative margin"
+          "status": "different",
+          "difference": {
+            "estimate": -5,
+            "interval": [
+              -5,
+              -5
+            ],
+            "margin": 0.25,
+            "status": "different"
+          },
+          "cdf": {
+            "distance": 1,
+            "interval": [
+              0.531917,
+              1
+            ],
+            "margin": 0.08,
+            "status": "different"
+          }
         },
         {
           "id": "incident.injury",
@@ -7475,10 +7649,10 @@
               0.401177,
               1.5536
             ],
-            "requiredEvents": 473,
+            "requiredEvents": 534,
             "status": "underpowered"
           },
-          "reason": "15 events on a path, 473 needed"
+          "reason": "15 events on a path, 534 needed"
         },
         {
           "id": "outcome.homeWin",
@@ -8510,8 +8684,8 @@
       "summary": {
         "metrics": {
           "insufficient": 17,
-          "different": 16,
-          "constant": 5,
+          "different": 18,
+          "constant": 3,
           "missing": 71,
           "not-applicable": 1,
           "underpowered": 3
@@ -8525,5 +8699,5 @@
     }
   },
   "candidateParity": null,
-  "elapsedMs": 45160
+  "elapsedMs": 11790
 }

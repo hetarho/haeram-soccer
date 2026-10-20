@@ -7,19 +7,25 @@ import {
   buildCoverageReport,
   buildEquivalenceReport,
   buildInvariantReport,
+  buildOutcomeTargetReport,
   buildPerformanceReport,
   buildTargetReport,
+  clusterSpread,
   compareDistributions,
   comparePerformance,
   compareRelationship,
   CORPUS_CONFIG,
   corpusFixtureIds,
   COUNTER_INDEXES,
+  equivalencePower,
   INCIDENT_KINDS,
   METRIC_BY_ID,
   METRIC_REGISTRY,
+  normalCdf,
   normalQuantile,
   observe,
+  outcomeTarget,
+  rareEventPower,
   requiredRareEvents,
   seedOverlap,
   validateCorpusConfig,
@@ -77,6 +83,8 @@ const obs = (values: number[]): Observations => ({
   zeros: values.filter((v) => v === 0).length,
 });
 const mean = { id: 'td.crosses', comparison: 'mean-cdf' as const, applies: true };
+/** Events a path needs for 80% power against [0.8, 1.2]; pinned because the corpus is frozen on it. */
+const REQUIRED_RARE_EVENTS = 534;
 
 describe('match parity registry', () => {
   it('covers every counter exactly once', () => {
@@ -194,8 +202,24 @@ describe('match parity registry', () => {
   });
 
   it('reports constant and underpowered variables', () => {
-    const constant = compareDistributions(mean, obs(Array(50).fill(90)), obs(Array(50).fill(90)));
+    const fill = (n: number, value: number) => obs(Array(n).fill(value));
+    const constant = compareDistributions(mean, fill(50, 90), fill(50, 90));
     expect(constant).toMatchObject({ status: 'constant', reason: 'both paths constant and equal' });
+    expect(compareDistributions(mean, fill(50, 0), fill(50, 0)).status).toBe('constant');
+    // A constant reference keeps MATCH-28's 5% margin: a candidate held elsewhere differs.
+    const none = compareDistributions(mean, fill(50, 5), fill(50, 0));
+    expect(none.status).toBe('different');
+    expect(none.difference!.margin).toBeCloseTo(0.25, 10);
+    // …and one that mostly matches it can be shown equivalent once the sample resolves it.
+    const mostly = obs(Array.from({ length: 20000 }, (_, i) => (i % 20 === 0 ? 4 : 5)));
+    expect(compareDistributions(mean, fill(20000, 5), mostly).status).toBe('equivalent');
+    // A reference constant at 0 leaves no margin: only a resolved difference is reported.
+    const near = obs([...Array(46).fill(0), 1, 1, -1, -1]);
+    expect(compareDistributions(mean, fill(50, 0), near)).toMatchObject({
+      status: 'constant',
+      reason: 'reference constant at 0: no margin',
+    });
+    expect(compareDistributions(mean, fill(50, 0), fill(50, 2)).status).toBe('different');
     expect(compareDistributions(mean, obs(spread(10, 5, 1)), obs(spread(10, 5, 1))).status).toBe(
       'underpowered',
     );
@@ -219,9 +243,62 @@ describe('match parity registry', () => {
     expect(compareRelationship(['team.shots', 'team.goals'], scoreless, scoreless).status).toBe(
       'unidentifiable',
     );
+    expect(normalQuantile(0.975)).toBeCloseTo(1.959964, 5);
+    expect(normalCdf(1.959964)).toBeCloseTo(0.975, 6);
+    // Equivalence power is two-sided: a 3-point outcome margin at p = 0.5 needs 5,838 matches a
+    // path for 80% (the one-sided formula's 4,361 reach about 60%).
+    const outcome = validationSize(0.5, 0.03);
+    expect(outcome).toMatchObject({ needed: 5838, size: 5838, sufficient: true });
+    expect(outcome.power).toBeGreaterThanOrEqual(0.8);
+    expect(equivalencePower(0.5 * Math.sqrt(2 / 5837), 0.03)).toBeLessThan(0.8);
+    expect(equivalencePower(0.5 * Math.sqrt(2 / 4361), 0.03)).toBeCloseTo(0.6, 1);
     expect(validationSize(5, 0.5)).toMatchObject({ size: 4000, sufficient: true });
     expect(validationSize(50, 0.5)).toMatchObject({ size: 100000, sufficient: false });
-    expect(normalQuantile(0.975)).toBeCloseTo(1.959964, 5);
+    expect(validationSize(50, 0.5).power).toBeLessThan(0.8);
+    // Rare events: the fewest per path whose interval fits [0.8, 1.2] with 80% probability.
+    const required = requiredRareEvents();
+    expect(required).toBe(REQUIRED_RARE_EVENTS);
+    expect(rareEventPower(required)).toBeGreaterThanOrEqual(0.8);
+    expect(rareEventPower(required - 1)).toBeLessThan(0.8);
+    expect(rareEventPower(473)).toBeLessThan(0.8);
+    // Pilot spread is per match: two sides of a match averaged before the spread is taken.
+    const paired = { ...obs([1, 3, 2, 4, 6, 8]), clusters: [0, 0, 1, 1, 2, 2] };
+    expect(clusterSpread(paired)).toBeCloseTo(Math.sqrt(7), 10);
+  });
+
+  it('measures rare events per match, not per player line', () => {
+    const rare = { id: 'pd.redCards', comparison: 'rate-ratio' as const, applies: true };
+    // 1,000 matches a path with 600 red cards: 16 player lines a match on one path, 11 on the other.
+    const lines = (perMatch: number) => {
+      const clusters = Array.from({ length: 1000 * perMatch }, (_, i) => Math.floor(i / perMatch));
+      const values = clusters.map((match, i) => (i % perMatch === 0 && match < 600 ? 1 : 0));
+      return { ...obs(values), clusters };
+    };
+    const result = compareDistributions(rare, lines(16), lines(11));
+    expect(result.rate!.ratio).toBeCloseTo(1, 10);
+    expect(result.status).toBe('equivalent');
+  });
+
+  it('records the outcome curve against the Elo target without passing it', () => {
+    const scored = (home: number, away: number, gap: number) =>
+      ({ ...sample(record({ score: { home, away } })), gap }) as MatchSample;
+    const samples = [
+      ...Array.from({ length: 6 }, () => scored(1, 0, 1)),
+      ...Array.from({ length: 3 }, () => scored(0, 0, 2)),
+      scored(0, 1, -1),
+      scored(2, 0, 21),
+    ];
+    const report = buildOutcomeTargetReport(samples);
+    expect(report.status).toBe('measured');
+    expect(report.rows.map((r) => [r.bucket, r.matches])).toEqual([
+      [0, 10],
+      [20, 1],
+    ]);
+    const even = report.rows[0]!;
+    expect(even.observed).toEqual({ homeWin: 0.6, draw: 0.3, awayWin: 0.1 });
+    expect(even.target).toEqual(outcomeTarget(1.1));
+    expect(report.meanAbsoluteError).toBeGreaterThan(0);
+    expect(buildOutcomeTargetReport([sample(record())]).status).toBe('missing');
   });
 
   it('separates computation from codec time', () => {

@@ -18,7 +18,13 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { arch, cpus, platform, totalmem } from 'node:os';
 import { dirname } from 'node:path';
-import type { Fixture, MatchPlayback, MatchRecord, World } from '../packages/contracts/src/types';
+import type {
+  Fixture,
+  Founding,
+  MatchPlayback,
+  MatchRecord,
+  World,
+} from '../packages/contracts/src/types';
 import * as engine from '../packages/engine/src/index';
 import {
   advanceRound,
@@ -42,6 +48,7 @@ import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { buildFrames } from '../packages/engine/src/grid/playback';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { decode, encode } from '../apps/web/src/adapters/persistence';
+import { SLOT } from '../apps/web/src/adapters/repository';
 import {
   buildParityReport,
   buildPerformanceReport,
@@ -348,12 +355,16 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
   const [, decodeMs] = await timedAsync(() => decode(raw));
   record('codec.encode', encodeMs);
   record('codec.decode', decodeMs);
+  // Conservative UTF-16 size of the active slot, as scripts/benchmark.ts counts it (→SAVE-4).
+  const checkpointBytes = 2 * (raw.length + SLOT[0]!.length);
   seasons.push({
     profile,
     seed,
     seasons: w.history.length,
     year: w.year,
     checkpointChars: raw.length,
+    checkpointBytes,
+    withinCheckpointLimit: checkpointBytes <= PERFORMANCE_CONFIG.storage.checkpointBytes,
   });
   sampleMemory();
 }
@@ -361,18 +372,17 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
 // ---- Pilot parity sample of the core condition --------------------------------------------------------
 const params = core.params as {
   worldSeeds: string[];
+  world: Omit<Founding, 'seed'>;
   countries: string[];
   maxRatingGap: number;
-  year: number;
+  pairing: string;
+  tactics: string;
+  fixture: { year: number; round: number; kind: Fixture['kind'] };
 };
+if (params.pairing !== 'world-country-roster' || params.tactics !== 'club')
+  throw new Error(`the runner builds only world-country-roster pairs playing their clubs' tactics`);
 const pairs = params.worldSeeds.flatMap((seed) => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Parity Pilot',
-    color: '#2a5d8f',
-    seed,
-    level: 'normal',
-  });
+  const w = createWorld({ ...params.world, seed });
   return params.countries.flatMap((country) => {
     const clubs = w.clubs
       .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)
@@ -392,15 +402,15 @@ for (let i = 0; i < settings.pilot; i++) {
   const { w, home, away } = pairs[i % pairs.length]!;
   const f: Fixture = {
     ...w.fixtures[0]!,
+    ...params.fixture,
     id: corpusFixtureId('calibration', core.id, i),
-    year: params.year,
-    round: 1,
-    kind: 'league',
     home: home.id,
     away: away.id,
   };
   const grid: GridResult = playGrid(buildGridSetup(w, f, { observe: false, recordPlayers: true }));
-  const base = { incidentsTracked: true, condition: core.id };
+  // Match strength of two clubs nobody owns: XI ratings and home ground (their manager terms cancel).
+  const gap = rating(w, home, f) + 3 - rating(w, away, f);
+  const base = { incidentsTracked: true, condition: core.id, gap };
   reference.push({ ...base, record: grid.record, diagnostics: grid.diagnostics });
   legacy.push({ ...base, record: simulateMatch(w, f, false, true).record });
   if (candidateFn) candidate.push({ ...base, record: candidateFn(w, f).record });

@@ -465,6 +465,9 @@ export function outcomeTarget(gap: number) {
     }
   return { homeWin: e - draw / 2, draw, awayWin: 1 - e - draw / 2 };
 }
+/** scripts/calibrate.ts's bucket of a home-minus-away gap: 5-point steps, ends clamped. */
+export const gapBucket = (gap: number) =>
+  Math.max(GAP_BUCKETS[0]!, Math.min(GAP_BUCKETS.at(-1)!, Math.round(gap / 5) * 5)) + 0;
 
 /** One match as a report reads it. */
 export interface MatchSample {
@@ -475,6 +478,8 @@ export interface MatchSample {
   incidentsTracked: boolean;
   /** A CORPUS_CONFIG condition id. */
   condition: string;
+  /** Home-minus-away match strength before form (MATCH-2), for the outcome curve. */
+  gap?: number;
 }
 /** Season-level values keyed by `season`-family metric id. */
 export type SeasonSample = Readonly<Record<string, number>>;
@@ -805,9 +810,22 @@ export const CORPUS_CONFIG = {
   conditions: [
     condition('core', 'equal-top-tier', 'equal top-tier sides, modern era (MATCH-23)', {
       worldSeeds: ['grid-bands-1', 'grid-bands-2', 'grid-bands-3', 'grid-bands-4'],
+      /** Founding input of each world besides its seed. */
+      world: { country: 'ENG', name: 'Parity Pilot', color: '#2a5d8f', level: 'normal' },
       countries: ['ENG', 'ESP', 'GER', 'ITA'],
       maxRatingGap: 2,
-      year: 2024,
+      /**
+       * Pairs in world, country, then roster order (i < j) of the top-tier clubs nobody owns whose
+       * ratings differ by at most maxRatingGap; fixture i plays pair i mod pairs, the first at home.
+       */
+      pairing: 'world-country-roster',
+      /**
+       * Each club plays its own tactic, the only assignment both existing paths support (the
+       * summary path takes no override). scripts/grid-bands.ts rotates all four tactics by override
+       * instead, so its band readings are not this condition's.
+       */
+      tactics: 'club',
+      fixture: { year: 2024, round: 1, kind: 'league' },
     }),
     ...GAP_BUCKETS.map((gap) =>
       condition('gap', String(gap), `home-minus-away gap ${gap} (home/away by sign)`, {
@@ -943,29 +961,75 @@ export function normalQuantile(p: number): number {
     (((((b[0]! * r + b[1]!) * r + b[2]!) * r + b[3]!) * r + b[4]!) * r + 1)
   );
 }
+/** Standard normal CDF (Abramowitz–Stegun 7.1.26 erf, absolute error below 1.5e-7). */
+export function normalCdf(x: number): number {
+  const t = 1 / (1 + (0.3275911 * Math.abs(x)) / Math.SQRT2);
+  const tail =
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+    t *
+    Math.exp(-(x * x) / 2);
+  return x >= 0 ? 1 - tail / 2 : tail / 2;
+}
 const zInterval = () => normalQuantile(1 - (1 - PARITY_CONFIG.confidence) / 2);
-const zPower = () => normalQuantile(PARITY_CONFIG.power);
+/**
+ * At a true difference of 0 the interval must clear both margin edges, so the power term is the
+ * two-sided quantile at (1 + power) / 2, not the one-sided superiority quantile.
+ */
+const zPower = () => normalQuantile((1 + PARITY_CONFIG.power) / 2);
 
 /**
- * The predeclared validation size for a pilot's standard deviation and margin: enough per side for
- * the interval to fit the margin at the configured power, clamped to CORPUS_CONFIG. `sufficient`
- * is false when even the maximum falls short; such a condition stays insufficient.
+ * Probability that the interval of a difference with standard error `se` fits the margin
+ * [−below, above] when the paths agree exactly.
+ */
+export function equivalencePower(se: number, below: number, above = below) {
+  const z = zInterval();
+  return Math.max(0, normalCdf(above / se - z) + normalCdf(below / se - z) - 1);
+}
+
+/**
+ * Spread of a metric's per-match means (a match's values are averaged first, so several values a
+ * match carry their design effect): the standard deviation `validationSize` reads from a pilot.
+ */
+export function clusterSpread(o: Observations) {
+  return clusterSe(o) * Math.sqrt(clusterCount(o));
+}
+
+/**
+ * The predeclared validation size in matches per path for a pilot's `clusterSpread` and the
+ * metric's margin: the fewest matches for which the interval fits the margin with probability
+ * PARITY_CONFIG.power when the paths agree, clamped to CORPUS_CONFIG. `power` is what the clamped
+ * size achieves; `sufficient` is false when even the maximum falls short, and such a condition
+ * stays insufficient.
  */
 export function validationSize(pilotSd: number, margin: number) {
   const { minimum, maximum } = CORPUS_CONFIG.validation;
   const needed =
     margin > 0 ? Math.ceil(2 * (((zInterval() + zPower()) * pilotSd) / margin) ** 2) : Infinity;
+  const size = Math.min(maximum, Math.max(minimum, needed));
   return {
     needed,
-    size: Math.min(maximum, Math.max(minimum, needed)),
+    size,
     sufficient: needed <= maximum,
+    power: margin > 0 ? equivalencePower(pilotSd * Math.sqrt(2 / size), margin) : 0,
   };
 }
-/** Events each side needs before a rare-event rate ratio can resolve MATCH-28's relative margin. */
+/**
+ * Probability that a rare-event rate ratio's interval fits [1 − m, 1 + m] (on the log scale, so
+ * the two edges differ) when both paths record `events` events at the same rate.
+ */
+export function rareEventPower(events: number) {
+  const m = PARITY_CONFIG.rareRelativeMargin;
+  return equivalencePower(Math.sqrt(2 / events), -Math.log(1 - m), Math.log(1 + m));
+}
+let rareEvents: number | undefined;
+/** The fewest events each path needs for the rare-event comparison to reach PARITY_CONFIG.power. */
 export function requiredRareEvents() {
-  return Math.ceil(
-    2 * ((zInterval() + zPower()) / Math.log(1 + PARITY_CONFIG.rareRelativeMargin)) ** 2,
-  );
+  if (rareEvents === undefined) {
+    let events = 1;
+    while (rareEventPower(events) < PARITY_CONFIG.power) events++;
+    rareEvents = events;
+  }
+  return rareEvents;
 }
 
 export type PerformanceCategory =
@@ -1018,7 +1082,10 @@ export const PERFORMANCE_CONFIG = {
     importFileBytes: 8 * 1024 * 1024,
     decompressedBytes: 32 * 1024 * 1024,
   },
-  /** ARCH-28's budgets as scripts/first-play.mjs enforces them. */
+  /**
+   * ARCH-28's budgets as scripts/first-play.mjs enforces them on a served production build;
+   * declared here for T286's gate, not checked by the match-model runner, which builds nothing.
+   */
   browser: { entryGzipBytes: 250 * 1024, initializationMs: 5000, inputP95Ms: 100, minimumFps: 30 },
 } as const;
 export type PerformanceComponent = keyof typeof PERFORMANCE_CONFIG.components;
@@ -1328,7 +1395,8 @@ export function compareDistributions(
       return { ...base, status: 'constant', reason: 'no events on either path' };
     if (events[0] === 0 || events[1] === 0)
       return { ...base, status: 'underpowered', reason: 'one path has no events' };
-    const ratio = events[1] / candidate.values.length / (events[0] / reference.values.length);
+    // Events per match: player lines a match differ between paths that substitute differently.
+    const ratio = events[1] / clusterCount(candidate) / (events[0] / clusterCount(reference));
     const half = zInterval() * Math.sqrt(1 / events[0] + 1 / events[1]);
     const interval: [number, number] = [ratio * Math.exp(-half), ratio * Math.exp(half)];
     const m = PARITY_CONFIG.rareRelativeMargin;
@@ -1350,15 +1418,13 @@ export function compareDistributions(
       status: 'underpowered',
       reason: `fewer than ${PARITY_CONFIG.minimumSamples} matches on a path`,
     };
-  if (base.reference.sd === 0)
-    return {
-      ...base,
-      status: 'constant',
-      reason:
-        base.candidate.sd === 0 && base.candidate.mean === base.reference.mean
-          ? 'both paths constant and equal'
-          : 'reference is constant: no relative margin',
-    };
+  // Both paths held at one value is reported as such, never counted as evidence of equivalence.
+  if (
+    base.reference.sd === 0 &&
+    base.candidate.sd === 0 &&
+    base.candidate.mean === base.reference.mean
+  )
+    return { ...base, status: 'constant', reason: 'both paths constant and equal' };
   if (d.comparison === 'proportion') {
     const p = [base.reference.mean, base.candidate.mean];
     const [lr, ur] = wilson(p[0]!, reference.values.length);
@@ -1386,15 +1452,21 @@ export function compareDistributions(
     Math.min(1, distance + width),
   ];
   const cdfStatus = verdict(cdfInterval, 0, PARITY_CONFIG.cdfMargin);
-  const status: ComparisonStatus =
+  const resolved: ComparisonStatus =
     meanStatus === 'different' || cdfStatus === 'different'
       ? 'different'
       : meanStatus === 'equivalent' && cdfStatus === 'equivalent'
         ? 'equivalent'
         : 'insufficient';
+  // A reference constant at 0 leaves a margin of 0 (5% of nothing, 0.1 of no spread): only a
+  // difference can be resolved. A reference constant elsewhere keeps its 5% margin, so a candidate
+  // held at another value or outside that margin is different.
+  const noMargin = margin === 0 && resolved !== 'different';
+  const status: ComparisonStatus = noMargin ? 'constant' : resolved;
   return {
     ...base,
     status,
+    ...(noMargin && { reason: 'reference constant at 0: no margin' }),
     difference: {
       estimate,
       interval: [estimate - half, estimate + half],
@@ -1557,6 +1629,66 @@ export function buildTargetReport(samples: readonly MatchSample[]): TargetResult
           : 'unresolved';
     return { ...base, status, value, interval, error, missing };
   });
+}
+
+type Outcomes = { homeWin: number; draw: number; awayWin: number };
+export interface OutcomeCurveRow {
+  bucket: number;
+  matches: number;
+  meanGap: number;
+  target: Outcomes;
+  /** 90-minute result shares and their Wilson intervals. */
+  observed: Outcomes;
+  intervals: Record<keyof Outcomes, [number, number]>;
+  /** |observed − target| summed over the three shares. */
+  error: number;
+}
+/**
+ * MATCH-2's outcome curve: 90-minute results per gap bucket against OUTCOME_TARGET, and the mean
+ * absolute W/D/L error over the buckets inside OUTCOME_TARGET.gaps as scripts/calibrate.ts prints
+ * it. MATCH-2 asks each calibration to record that error and sets no tolerance, so the report
+ * measures and never passes; any sample without a gap makes it missing.
+ */
+export function buildOutcomeTargetReport(samples: readonly MatchSample[]) {
+  const buckets = new Map<number, MatchSample[]>();
+  const missing = samples.filter((s) => s.gap === undefined).length;
+  for (const s of samples) {
+    if (s.gap === undefined) continue;
+    const bucket = gapBucket(s.gap);
+    if (!buckets.has(bucket)) buckets.set(bucket, []);
+    buckets.get(bucket)!.push(s);
+  }
+  const keys = ['homeWin', 'draw', 'awayWin'] as const;
+  const rows = [...buckets]
+    .sort(([a], [b]) => a - b)
+    .map(([bucket, list]): OutcomeCurveRow => {
+      const n = list.length;
+      const shares = keys.map((key) => list.filter((s) => outcomeReading(s, key) === 1).length / n);
+      const meanGap = sum(list.map((s) => s.gap!)) / n;
+      const target = outcomeTarget(meanGap);
+      const [homeWin, draw, awayWin] = shares as [number, number, number];
+      return {
+        bucket,
+        matches: n,
+        meanGap,
+        target,
+        observed: { homeWin, draw, awayWin },
+        intervals: {
+          homeWin: wilson(homeWin, n),
+          draw: wilson(draw, n),
+          awayWin: wilson(awayWin, n),
+        },
+        error: sum(keys.map((key, i) => Math.abs(shares[i]! - target[key]))),
+      };
+    });
+  const [low, high] = OUTCOME_TARGET.gaps;
+  const scored = rows.filter((r) => r.bucket >= low && r.bucket <= high);
+  return {
+    status: missing || !rows.length ? ('missing' as const) : ('measured' as const),
+    missing,
+    rows,
+    meanAbsoluteError: scored.length ? sum(scored.map((r) => r.error)) / (3 * scored.length) : null,
+  };
 }
 
 /** An exact record invariant: no statistical tolerance (→MATCH-27). */
@@ -1967,6 +2099,10 @@ export function buildParityReport(input: {
     targets: {
       reference: buildTargetReport(input.reference.samples),
       candidate: buildTargetReport(input.candidate.samples),
+    },
+    outcomeCurve: {
+      reference: buildOutcomeTargetReport(input.reference.samples),
+      candidate: buildOutcomeTargetReport(input.candidate.samples),
     },
     invariants: {
       reference: buildInvariantReport(input.reference.samples),
