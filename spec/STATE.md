@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T12:23Z | - |
 
 ## inbox
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
@@ -201,11 +200,13 @@
 | identity | 2 | 18 | 3 | 15 | 0 | 0 | 0 | 2026-10-20T14:16:02.189Z | [history](work/identity.json) |
 
 ## next
+- identity group (p7x5 stopped 2026-10-20T15:43Z): sync the open identity tasks' bases to WEB r94 SAVE r50 ARCH r16 MATCH r14 in the planning space, resume both attempts, rerun `work run --work identity --provider claude --autopilot`; engine lane at T244 (task verify failed), editor lane approved awaiting integration; lane heads on wip/identity-engine, wip/identity-editor; red main CI first (WebKit owner-workflows, report 261020-p7x5)
 - implement-task T272; capture the post-T255 baseline before T273 changes football; existing identity task contracts remain unchanged
 - implement-task T273 after T255 and T272, then follow T274–T286 dependencies; exploration results must pass the final release gate
 - FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
 - 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
 - 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
 - 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
@@ -225,4 +226,3 @@
 - 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
 - 261020 T222 done: level knockout ties play extra time and a kick-by-kick shoot-out on both paths; cups and Europe pass each tie's rule, the coin flips are gone, Elo reads the 90-minute score.
 - 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
-- 261020 T229 done (k4p2): player sheet 징계 and season heat maps, appearances = own records with minutes (substitutes as 교체 n), new counters in advanced stats, ban and warning badges, 부상·정지 on the home tile, the league 징계 table; the worker sends per-player `tallies` because the UI world holds only the last 30 own matches.
