@@ -187,9 +187,11 @@
 
 ## next
 - inspect work board for remaining tasks
-- ideation match-continuity-and-performance 계속: fixed playback speed and continuous movement, coordinated player intentions, cheaper probabilistic other-club results; owner statistical scope pending
+- ideation match-continuity-and-performance 계속: owner selected complete probabilistic other-club records with measured target-based calibration; define statistical equivalence, coverage, error bands and speed budget alongside playback continuity and coordinated intentions
 
 ## log
+- 261020 ideation match-continuity-and-performance: owner selected complete probabilistic records equivalent to detailed play, starting from target football numbers and refining through measurement; MATCH-26 policy change, parity definition, tolerances and speed budget await SSOT planning.
+- 261020 ideation match-continuity-and-performance start: owner clarified full probabilistic records and iterative measured calibration.
 - 261020 ideation match-continuity-and-performance: mapped playback to completed T217/T225, agency to T206/T208 and the existing probabilistic path to T221/T224; continuity, coordinated intentions and cheaper aggregate results remain proposals; owner statistical scope pending.
 - 261020 ideation match-continuity-and-performance start
 - 261020 T235 T237 T239 integrated
@@ -208,5 +210,3 @@
 - 261020 fix tests calibration: the grid calibration samples take 70–80 s alone and passed 120 s in full loaded runs (three timeouts at load 20) → `SLOW` 120 → 360 s; no band changed.
 - 261020 fix engine counters: `TD/PD.cutBacks` count completed cut-backs only and a cross records its arrival cell (receiver or header taker; origin when it fails), so crosses into the box count as box entries (MATCH-13); golden regenerated (player detail rows only), glossary 컷백 text follows.
 - 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
-- 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
-- 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
