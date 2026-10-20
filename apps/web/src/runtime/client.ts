@@ -18,6 +18,8 @@ const CHECKPOINT_TIMEOUT_MS = 60000;
 const CODEC_TIMEOUT_MS = 600000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
+/** The writer's notice once an activated career's updated save data is committed (→WEB-66). */
+export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
 export interface ClientState {
   view?: View;
   busy: boolean;
@@ -292,7 +294,8 @@ export class GameClient {
             revision: this.state.view!.world.revision,
           };
           this.state.savedAt = Date.now();
-          notificationStore.add('기존 기록을 보존하고 새 게임 규칙으로 저장했습니다.');
+          // A catalog pin or missing club designs (→SAVE-21) are updated, never the gameplay rules.
+          notificationStore.add(SAVE_DATA_UPDATED);
           this.channel.postMessage({
             revision: this.state.savedRevision,
             generation: this.saves.generationInfo.parentGeneration,
@@ -300,7 +303,7 @@ export class GameClient {
         } catch (error) {
           this.state.saveFailed = true;
           throw new Error(
-            `현재 진행은 메모리에 있습니다. 규칙 업그레이드 저장 실패: ${String(error)} · 파일로 내보내세요.`,
+            `현재 진행은 메모리에 있습니다. 갱신한 저장 데이터를 저장하지 못했어요: ${String(error)} · 파일로 내보내세요.`,
           );
         }
       }

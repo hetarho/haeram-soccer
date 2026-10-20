@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r49 | Define the browser-demo rules for browser persistence and protocol.
+> r50 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -77,7 +77,14 @@
   - Identity edits never rewrite a recorded appearance, including the currently observed settled match.
   - Playback without historical identity information retains that absence and displays the unrecorded status; never backfill an invented historical kit from today's design.
 
+- SAVE-23 [o] The continuous-match and complete aggregate-result model (→MATCH-12/17/22/26/28) activates prospectively in supported rules-4.0.0 careers without resetting retained gameplay.
+  - persist a declared match-model revision and the first tracked boundary of newly available counters. New careers start with full coverage; supported older careers preserve settled scores, contributions, designs, money, dates, personnel and history, and use the new model only for future unsettled fixtures. No backfill or resimulation of settled matches is allowed.
+  - model activation is one validated writer upgrade through →SAVE-3/6/10. A queued or already revealed own-match playback completes under its settled model; activation waits for that safe boundary. Read-only views do not write or switch a career's persisted model.
+  - checkpoints carrying the new aggregates/model metadata declare a container version that an older reader must refuse instead of silently dropping fields. Preserve supported older container readers, future-version protection and failed-write/export recovery (→SAVE-5/11/13).
+  - activating the full model requires →MATCH-28 and →ARCH-31 evidence. New full-model checkpoints round-trip all aggregate values, tracking boundaries, saved appearances and settled facts within →SAVE-4/13; a failed gate cannot be replaced by clearing careers or raising the limits.
+
 ## chg
+- r50 261020 SAVE-23+ prospective versioned full-match-model activation for supported careers, exact aggregates and coverage, safe playback boundary and older-reader protection
 - r49 261019 SAVE-3✎ IndexedDB-unavailable commit without a previous copy→verified localStorage predecessor or refusal before overwrite, preserving disk data/exportable memory; SAVE-14✎ always saves without IndexedDB→SAVE-3 bounded fallback and failure protection
 - r48 261019 SAVE-3✎ two localStorage slots a/b→one active localStorage checkpoint plus the previous copy in IndexedDB (slots a/b only without IndexedDB); SAVE-4✎ checkpoint 1.5→3 MiB, import file 4→8 MiB, decompressed 16→32 MiB, total 3.5 MiB unchanged; SAVE-13✎ without raising budgets→budgets per SAVE-4; SAVE-14✎ two-slot wording→active plus previous copy
 - r47 261019 SAVE-21✎ open→preserve supported careers and add only missing shirts through validated writer activation; SAVE-22✎ open→retain actual playback appearance and disclose missing historical kits; gameplay boundary and storage limits unchanged

@@ -3,7 +3,9 @@ import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
-import { AUTOSAVE_MS, GameClient, type ClientState } from './client';
+import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
+import { identityOf } from '../../../../packages/engine/src/club-identity';
+import type { World } from '../../../../packages/contracts/src/types';
 import { Host } from './host';
 import { serve } from './codec';
 import type { CodecResult, Reply, Request } from './protocol';
@@ -539,6 +541,74 @@ async function legacyCheckpoint(withHistory = false) {
   return { legacy, raw };
 }
 
+/** A supported career saved before club identities: no designs and no recorded appearances. */
+function withoutIdentities(w: World) {
+  for (const club of w.clubs) delete club.identity;
+  for (const match of w.ownMatches) delete match.appearance;
+  return w;
+}
+/** That career committed as the game in play, generation 7. */
+async function identitylessCheckpoint() {
+  const legacy = withoutIdentities(simulatedWorld(founding, { rounds: 2 }));
+  const raw = await encode(legacy, 7, 6);
+  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem(
+    'haeram-soccor:manifest',
+    JSON.stringify({ slot: 0, worldId: legacy.id, generation: 7, parentGeneration: 6 }),
+  );
+  return { legacy, raw };
+}
+
+describe('supported-career identity adoption (→SAVE-21)', () => {
+  it('adoption commits through the existing save repository', async () => {
+    const { legacy, raw } = await identitylessCheckpoint();
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toBeUndefined();
+    expect(client.state.view!.world.clubs.every((club) => club.identity)).toBe(true);
+    expect(client.state.savedRevision).toBe(legacy.revision + 1);
+    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    expect(manifest).toMatchObject({ worldId: legacy.id, generation: 8, parentGeneration: 7 });
+    const saved = (
+      await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!)
+    ).world;
+    expect(saved.revision).toBe(legacy.revision + 1);
+    expect(saved.clubs.every((club) => club.identity)).toBe(true);
+    expect(saved.ownMatches.every((m) => !('appearance' in m))).toBe(true);
+    // The career as it was stays the previous copy until a newer save commits.
+    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
+    // Loading the adopted career again changes nothing and tells nothing more.
+    const committed = new Map(storage.data);
+    await client.reload();
+    expect(client.state.savedRevision).toBe(legacy.revision + 1);
+    expect(storage.data).toEqual(committed);
+  });
+
+  it('failure preserves old raw data and export access', async () => {
+    const { legacy, raw } = await identitylessCheckpoint();
+    const manifest = storage.getItem('haeram-soccor:manifest');
+    storage.fail = 'haeram-soccor:manifest';
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
+    expect(client.state.saveFailed).toBe(true);
+    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
+    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    expect(notifications()).toEqual([]);
+    // The adopted career stays in memory and exportable.
+    const exported = (await decode((await client.exportFile())!)).world;
+    expect(exported.id).toBe(legacy.id);
+    expect(exported.revision).toBe(legacy.revision + 1);
+    expect(exported.clubs.every((club) => club.identity)).toBe(true);
+    expect(canonical((await decode(storage.getItem('haeram-soccor:slot:a')!)).world)).toBe(
+      canonical(legacy),
+    );
+  });
+});
+
 describe('earlier-rules and future saves: compatibility recovery', () => {
   it('resets recognized earlier gameplay on writer activation (→SAVE-18)', async () => {
     await legacyCheckpoint();
@@ -724,6 +794,30 @@ describe('game slots', () => {
     expect(await slots.remove(1)).toBe(true);
     expect(ACTIVE_SAVE_KEYS.every((key) => storage.getItem(key) === null)).toBe(true);
     expect(slots.read()).toMatchObject({ active: null, slots: [null, null, null] });
+  });
+
+  it('slot import applies only to its intended world', async () => {
+    const client = await start();
+    const parked = new MemoryParked();
+    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const first = client.state.view!.world.id;
+    slots.sync(client.state.view!.world);
+    const firstRaw = await client.checkpoint();
+    const imported = withoutIdentities(
+      simulatedWorld({ ...founding, name: 'Archive Rovers', seed: 'identityless-import' }),
+    );
+    await slots.importInto(1, await encode(imported));
+    const w = client.state.view!.world;
+    expect(w.id).toBe(imported.id);
+    expect(w.revision).toBe(imported.revision + 1);
+    for (const club of w.clubs) expect(club.identity).toEqual(identityOf(imported, club.id));
+    const index = slots.read();
+    expect(index.slots.map((entry) => entry?.worldId)).toEqual([first, imported.id, undefined]);
+    // The parked game is byte for byte what it was; only the imported world was adopted.
+    expect(parked.data.get(index.slots[0]!.id)).toBe(firstRaw);
+    const saved = (await decode((await client.checkpoint())!)).world;
+    expect(saved.id).toBe(imported.id);
+    expect(saved.clubs.every((club) => club.identity)).toBe(true);
   });
 
   it('lists a save from before slots as slot 1 and refuses a slot whose copy is gone', async () => {

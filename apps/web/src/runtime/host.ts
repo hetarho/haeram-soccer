@@ -18,6 +18,7 @@ import {
   operatingCost,
   europeanCoefficient,
   clubNews,
+  installMissingIdentities,
   BANKRUPT_MESSAGE,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
@@ -33,6 +34,22 @@ import { requestSchema, type CodecJob, type Request, type Reply, type View } fro
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
 import { tallies } from '../ui/playerAnalysis';
+/**
+ * KIT-15: a copy of the validated candidate with only its missing club identities installed (each
+ * club's legacy crest and colour kept), or the candidate itself when none is missing. The revision
+ * moves once: not again when a rules or catalog upgrade has already moved it.
+ */
+function adoptIdentities(w: World, revised: boolean): World {
+  if (w.clubs.every((club) => club.identity)) return w;
+  const candidate = structuredClone(w);
+  if (!installMissingIdentities(candidate)) return w;
+  if (!revised) {
+    if (!Number.isSafeInteger(candidate.revision + 1))
+      throw new Error('저장 revision 범위를 초과했습니다.');
+    candidate.revision++;
+  }
+  return candidate;
+}
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
   ok: false,
@@ -270,9 +287,15 @@ export class Host {
         const result =
           this.inspected?.raw === r.body.raw ? this.inspected.result : await decode(r.body.raw);
         this.inspected = r.body.activate ? undefined : { raw: r.body.raw, result };
-        const activated = r.body.upgrade
+        const rules = r.body.upgrade
           ? upgradeWorldRules(result.world, CURRENT_CATALOG)
           : result.world;
+        // Only the writer's activation adopts missing identities (→SAVE-21); inspection and
+        // read-only tabs keep the career exactly as stored.
+        const activated =
+          r.body.activate && r.body.upgrade
+            ? adoptIdentities(rules, rules !== result.world)
+            : rules;
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = { id: activated.id, revision: activated.revision };
         else if (!r.body.activate) candidate = structuredClone(activated);

@@ -1,4 +1,5 @@
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
+import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
@@ -164,6 +165,8 @@ interface Packed {
   };
   /** Per season 0 (no archived heat) or players + 1, then rows `[playerRef, 40 cells]`. */
   seasonHeat?: { counts: string; rows: BitColumns };
+  /** Own records' appearance snapshots, absent when no record has one (identityPacking.ts). */
+  appearances?: PackedAppearances;
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -402,6 +405,7 @@ export function pack(w: World): Packed {
       heatRows.push(id(player), ...h.heat[player]);
     }
   }
+  const appearances = packAppearances(w.ownMatches);
   const careers =
     w.people === undefined
       ? undefined
@@ -506,6 +510,7 @@ export function pack(w: World): Packed {
           },
         }
       : {}),
+    ...(appearances ? { appearances } : {}),
     ...(compactEvents
       ? {
           eventStats: integers(eventRows.flat(), 6),
@@ -876,6 +881,8 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   detailFlags?.done();
   teamDetails?.done();
   playerDetails?.done();
+  // Snapshots attach to the rebuilt rows, whose home/away IDs they must name.
+  readAppearances(p.appearances, matches);
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
       throw new Error('정산 이벤트 압축 데이터 손상');
