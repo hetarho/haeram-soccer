@@ -6,9 +6,11 @@ import {
   clubOf,
   createWorld,
   lineupSummary,
+  nextOwnFixture,
   startingSquad,
   tacticLabel,
 } from '../../packages/engine/src/index';
+import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { expectViewFits, settle } from './layout';
 
 async function savedRaw(page: Page) {
@@ -181,6 +183,11 @@ for (const viewport of [
     await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('다음 경기 관전');
     const settled = await savedRaw(page);
     expect((await decode(settled)).world.ownMatches[0]).toEqual(reference.ownMatches[0]);
+    // Preparation was skipped: the record wears the automatic selection, captured at settlement.
+    const founded = createWorld(founding);
+    expect(reference.ownMatches[0].appearance).toEqual(
+      appearanceForFixture(founded, nextOwnFixture(founded)!),
+    );
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeVisible();
@@ -262,6 +269,13 @@ for (const viewport of [
     await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
     await expect(preparation).toBeVisible();
+    // The settled match on screen offers no shirt choice; only the next fixture does (→WEB-88).
+    const upcoming = nextOwnFixture(reference)!;
+    expect(upcoming.id).not.toBe(first.record.id);
+    await expect(preparation.getByTestId('fixture-kit')).toHaveAttribute(
+      'data-fixture-id',
+      upcoming.id,
+    );
     await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
     await expect(preparation).toHaveCount(0);
     await expect(prepare).toBeFocused();
