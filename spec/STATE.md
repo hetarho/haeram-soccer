@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:50Z | T229 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T07:12Z | - |
 | - |
 | z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T06:43Z | T221 |
 
@@ -117,9 +117,9 @@
 - 261020 decided T223: take the post-match material off the serial grid chain? → k4p2 runs T223 (dep T222 → T218) and then T227 while z5k8 runs T219–T222 (alt: keep T223 after T222) — extra-time matches use the same material encoding over a longer span, which T222 extends; agreed split: engine.ts gets only a collection hook, season.ts only closeSeason, and whoever rebases later regenerates the golden fixture and reruns the contract tests
 - 261020 decided T225 WEB-50: the player inspector's bench — options in the one combobox, or text under it? → the combobox keeps the players on the pitch and the bench (with 교체·부상·퇴장 reasons) is listed beneath it (alt: bench as extra options, which breaks styled-select, native-touch, season-flow and intervention journeys that count 22 options and read `1:4` values) — same information, no unrelated journey rewritten
 - 261020 decided T226 ARCH-28: the glossary text sat in the entry and its 14 new entries would have crossed 256,000 B → the entries load with the glossary sheet (`glossaryEntries.ts`, `GlossarySheet.tsx`, `Term.tsx`), and T225 loads the pitch theatre lazily from LiveSeason; entry 255,868 → 243,550 gzip bytes (alt: raise the budget | drop glossary entries)
-- 261020 suggest T222 MATCH-24: T225 found incidents a minute off their frames (a red card recorded at 73′ appears in the 74′ frame) and an incident at 90+3′ in a match whose last frame is 90+2′ → align incident minutes with `buildFrames` labels; the theatre places an unmatched incident in its period's last or its minute's first frame meanwhile
 - 261020 decided T228: z5k8 hands T228 to k4p2 (z5k8 runs T220 next) → k4p2 builds it beside T227 on T219's discipline API (`isUnavailable`, `isBanned`, fixture-aware `ownStarters`/`lineupPreset`/`startingSquad`) — T228's touches share no file with T227 or T220
 - 261020 decided T227 ARCH-28: the material screens grew the entry by 1,269 gzip bytes (243,907 → 245,176) because the lazy chunk's import of `material.ts` makes Rolldown split it into a shared chunk the entry's engine chunk loads (season.ts calls `reduceSeasonMaterial` since T223) → accept it, 10,824 B stay free (alt: a manual chunk rule in vite.config.ts | move the season reduction out of material.ts) — the task's 'must not grow' guards the budget, and both alternatives touch shared build or engine files under the grid chain
+- 261020 decided T229 HIST-13: the UI world holds only the last 30 own matches, so counting appearances there undercounts seasons and careers → the worker computes per-player appearances, substitute appearances, cards and this season's heat (`tallies` in the view data, protocol 1 unchanged; touches outside the task: runtime/protocol.ts, runtime/host.ts) (alt: send every own record to the UI, which grows each update with the career)
 
 ## ideation
 | id | st |
@@ -159,7 +159,6 @@
 |---|---|---|---|---|
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
-| T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | doing |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
@@ -194,6 +193,8 @@
 - implement-task T221, then T222; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T229 done (k4p2): player sheet 징계 and season heat maps, appearances = own records with minutes (substitutes as 교체 n), new counters in advanced stats, ban and warning badges, 부상·정지 on the home tile, the league 징계 table; the worker sends per-player `tallies` because the UI world holds only the last 30 own matches.
+- 261020 fix engine incidents: cards stamped mid-play read a minute before their frame and whistle dissent fell past the last added minute → `stampAt(period, t, added)` in playback.ts (per-period offsets, extra-time ready) stamps incidents and frame labels alike, cards re-stamped at the play's end (MATCH-24); golden unchanged by it.
 - 261020 fix e2e match-core: the full match loop takes 25–28 s alone at 390x844 (30 s limit) and timed out in two full runs → `test.slow()` like the other whole-journey specs.
 - 261020 T220 done: own matches settle substitutes' adaptation and fatigue by minutes, match injuries reach own players (CLUB-23 bands) and other clubs' `out` list, farewells count matches actually played.
 - 261020 fix tests calibration: the grid calibration samples take 70–80 s alone and passed 120 s in full loaded runs (three timeouts at load 20) → `SLOW` 120 → 360 s; no band changed.
