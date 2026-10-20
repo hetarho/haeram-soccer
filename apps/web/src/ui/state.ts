@@ -51,6 +51,8 @@ export const BUSINESS_TABS = [
   ['build', '시설'],
   ['finance', '재정'],
   ['sponsor', '후원'],
+  // The authoritative club-design editor (→WEB-71/86).
+  ['identity', '구단 디자인'],
 ] as const;
 export type BusinessView = (typeof BUSINESS_TABS)[number][0];
 /** Views from before 방향 open the tab that now holds their content. */

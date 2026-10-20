@@ -72,6 +72,18 @@ function expectCompleteFoundingFits(
   }
 }
 
+/** Picks the club colour in the real design editor: its representative main colour (→KIT-4). */
+async function chooseClubColour(page: Page, colour: string) {
+  await page
+    .getByTestId('club-founding')
+    .getByRole('button', { name: '구단 디자인 꾸미기', exact: true })
+    .click();
+  const editor = page.getByRole('dialog', { name: '구단 디자인' });
+  await editor.getByLabel('대표 주색 색 코드', { exact: true }).fill(colour);
+  await editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
+  await expect(editor).toHaveCount(0);
+}
+
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   const menu = page.getByRole('dialog', { name: '전체 메뉴' });
@@ -136,7 +148,7 @@ for (const viewport of [
     await founding.getByRole('button', { name: '어려움' }).click();
     await founding.getByText('고급 설정', { exact: true }).click();
     await founding.getByLabel('세계 생성 시드').fill(input.seed);
-    await founding.getByLabel('클럽 색상').fill(input.color);
+    await chooseClubColour(page, input.color);
     await create.click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -149,6 +161,7 @@ for (const viewport of [
     expect(club.country).toBe(input.country);
     expect(club.name).toBe(input.name);
     expect(club.color).toBe(input.color);
+    expect(club.identity?.colours[0]).toBe(input.color);
     expect(actual.seed).toBe(input.seed);
     expect(actual.level).toBe(input.level);
     expect(actual.cash).toBe(reference.cash);

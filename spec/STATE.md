@@ -165,8 +165,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T250 | Found a club with exactly the previewed identity and shirts | KIT WEB SAVE ARCH | T244 T249 | todo |
-| T251 | Edit club design through a game-scoped draft and one explicit apply | KIT WEB SAVE ARCH | T240 T250 | todo |
 | T252 | Select a warned fixture-specific shirt without changing saved designs | KIT WEB SAVE ARCH | T241 T249 | todo |
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 T251 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
@@ -192,12 +190,13 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 33 | 13 | 20 | 0 | 2 | 2 | 2026-10-20T20:56:00.364Z | [history](work/identity.json) |
+| identity | 2 | 33 | 15 | 18 | 0 | 0 | 2 | 2026-10-20T20:56:52.138Z | [history](work/identity.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261020 T250 T251 integrated
 - 261020 T272 integrated
 - 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
 - 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
@@ -217,4 +216,3 @@
 - 261021 create-task WEB r98 → T290; T290 start at 4af396f, compact NEXT MATCH and event/menu watch routing.
 - 261021 update-ssot WEB r98 start: compact preparation-only NEXT MATCH, preserve event watching and move the general watch/return/season action to the HUD menu.
 - 261021 T289 done: manual mode hides background settings only; observation/delegation remain editable, WEB r97; 6 tests/typecheck/lint/format/build pass, browser specs updated for batch.
-- 261021 create-task WEB r97 → T289; T289 start at 4af396f, manual background-only visibility correction.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T20:56:00.364Z",
-  "sourceCommit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
+  "snapshotAt": "2026-10-20T20:56:52.138Z",
+  "sourceCommit": "7621a7cc4390948438ba7305a86ab63d6f376ec8",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
+      "commit": "7621a7cc4390948438ba7305a86ab63d6f376ec8",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T19:07:53.306Z"
+      "at": "2026-10-20T20:56:02.981Z"
     },
     "lastRun": {
       "id": "9e548699-9671-4ca3-bd44-6a54ce30900a",
@@ -57,34 +57,14 @@
   },
   "summary": {
     "total": 33,
-    "completed": 13,
-    "remaining": 20,
+    "completed": 15,
+    "remaining": 18,
     "running": 0,
-    "review": 2,
+    "review": 0,
     "blocked": 2,
     "unassigned": 16
   },
   "tasks": [
-    {
-      "id": "T250",
-      "title": "Found a club with exactly the previewed identity and shirts",
-      "dep": [
-        "T244",
-        "T249"
-      ],
-      "lane": "identity-founding",
-      "status": "approved"
-    },
-    {
-      "id": "T251",
-      "title": "Edit club design through a game-scoped draft and one explicit apply",
-      "dep": [
-        "T240",
-        "T250"
-      ],
-      "lane": "identity-founding",
-      "status": "approved"
-    },
     {
       "id": "T252",
       "title": "Select a warned fixture-specific shirt without changing saved designs",
@@ -959,7 +939,7 @@
       "contributors": [
         "405f9654-6a48-463c-9566-f2169a73318e/worker-1"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-20T16:53:19.991Z",
       "startCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
@@ -10128,6 +10108,39 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 740,
+      "at": "2026-10-20T20:56:02.993Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "7621a7cc4390948438ba7305a86ab63d6f376ec8",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T20:56:02.981Z"
+        }
+      }
+    },
+    {
+      "sequence": 741,
+      "at": "2026-10-20T20:56:50.630Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

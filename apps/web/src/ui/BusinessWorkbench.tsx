@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import type {
   Command,
   SponsorContract,
@@ -25,8 +25,14 @@ import { DecisionOwner } from './DecisionOwner';
 import { Money } from './Money';
 import s from './BusinessWorkbench.module.css';
 
-/** The operations page's money views: the ledger and fixed costs, or one kind of deal. */
-export type WorkbenchPart = 'finance' | 'build' | 'sponsor' | 'marketing';
+/**
+ * The operations page's views: the ledger and fixed costs, one kind of deal, or the club's design.
+ */
+export type WorkbenchPart = 'finance' | 'build' | 'sponsor' | 'marketing' | 'identity';
+/** The design editor loads when 구단 디자인 first opens, outside the other pages (→ARCH-28). */
+const ClubDesignView = lazy(() =>
+  import('./ClubDesignView').then((module) => ({ default: module.ClubDesignView })),
+);
 const bonusRule: Record<SponsorBonus, string> = {
   none: '없음',
   promotion: '승격·우승',
@@ -119,6 +125,34 @@ export function BusinessWorkbench({
   state: ClientState;
   client: GameClient;
   part: WorkbenchPart;
+  legacy?: ReactNode;
+}) {
+  // 구단 디자인 is the authoritative design editor (→WEB-39/71/86), not a money view.
+  if (part === 'identity')
+    return (
+      <Suspense
+        fallback={
+          <p className={s.note} role="status">
+            구단 디자인을 여는 중…
+          </p>
+        }
+      >
+        {/* One view per game: a pending apply or its message never carries over (→WEB-74). */}
+        <ClubDesignView key={state.view!.world.id} state={state} client={client} />
+      </Suspense>
+    );
+  return <MoneyWorkbench state={state} client={client} part={part} legacy={legacy} />;
+}
+
+function MoneyWorkbench({
+  state,
+  client,
+  part,
+  legacy,
+}: {
+  state: ClientState;
+  client: GameClient;
+  part: Exclude<WorkbenchPart, 'identity'>;
   legacy?: ReactNode;
 }) {
   const w = state.view!.world,

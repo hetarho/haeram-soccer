@@ -382,6 +382,8 @@ const selectContentWorld = worldSelector([
   'year',
   'round',
   'playerClub',
+  // Each club's applied identity rides on its club, so an applied design reaches every crest at
+  // once (→WEB-49).
   'clubs',
   'tables',
   'fixtures',
@@ -1207,7 +1209,10 @@ export function App() {
                 />
               </Suspense>
             ) : !w || replacing ? (
+              // One founding session per slot: another slot never inherits its design draft
+              // (→WEB-86).
               <ConnectedFounding
+                key={foundingSlot()}
                 client={client}
                 replace={replacing}
                 slot={foundingSlot()}
