@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T234 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T246 |
 | - |
 
 ## inbox
@@ -157,11 +157,8 @@
 | T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T218 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
-| T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T218 | doing |
-| T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T234 | todo |
-| T236 | Extract the existing crest generator without changing its output | KIT ARCH | T234 | todo |
+| T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
 | T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
-| T238 | Define one normalized geometry for shirt patterns and trim | KIT WEB ARCH | T234 | todo |
 | T239 | Select readable saved shirts and automatic goalkeeper colours | KIT ARCH | T238 T237 | todo |
 | T240 | Apply own-club identity edits atomically through the existing worker command | KIT SAVE ARCH | T237 T235 | todo |
 | T241 | Persist a kit role for exactly the validated next own fixture | KIT WEB SAVE | T240 T239 | todo |
@@ -192,6 +189,7 @@
 - implement-task T231 (T232's manual benchmark run closes T271); then T224 (own-league engine), then T219
 
 ## log
+- 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
 - 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
