@@ -206,6 +206,7 @@ interface KitPitchPreviewProps {
 - Full final validation runs `pnpm run verify`, the unchanged complete baseline/active-management century benchmarks including active round 23, and `pnpm run benchmark:browser`. Record final-source build/fingerprint, actual codec sizes, round-trip equality and the existing p95/entry/FPS budgets. No shortened career, raised budget, history pruning or renderer-only success substitutes for this gate.
 - The final pushed source also passes the existing CI checks, browser shards and benchmark job; retain their run IDs/results. Planning-time document checks do not count as implementation or release evidence.
 - Persist technical changes to these interfaces here as well as in their code and task contract; future workers must not have to rediscover a public schema from an archived task.
+- T255's cosmetic workload is `tests/fixtures/identity-workload.ts` (`identityWorkload()`: `edit(w, n)` sends one real `club-identity` command at each active-management season start, `chooseKit(w)` one real `match-kit` command for the next own fixture, plus appearance and pending-choice assertions); it is a benchmark source-fingerprint input. `pnpm run benchmark` writes `docs/benchmarks/club-identity-final.json` (storage report and `identityWorkload` evidence) only when storage passes, and `pnpm run benchmark:browser` refuses to run unless that file carries the same source fingerprint, then adds its browser measurements, `observedKits` and `patternRendering`.
 
 ## 9. Task map and hand-off
 
