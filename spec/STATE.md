@@ -118,7 +118,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 13 | 12 | ARCH-30✎ | 2 |
+| ARCH | 14 | 12 | ARCH-30✎ ARCH-23✎ | 2 |
 | WEB | 93 | 93 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
@@ -190,6 +190,7 @@
 - implement-task T231 (its green CI benchmark closes T271); then T219
 
 ## log
+- 261020 update ARCH r14 (owner): ARCH-23✎ the 100-season and first-play benchmarks (about 90 min a push since T218) leave the push CI for a manually dispatched `benchmark.yml`; verify.yml and benchmark.yml changed with the revision. T231/T233/T255 name the CI benchmark job as evidence → that is now a manual dispatch or a local `pnpm run benchmark`.
 - 261020 create-task T271 decision: T231 moves ahead of T219 (dep T218) with the benchmark's active-copy-only total; T232 dep T230.
 - 261020 T271 blocked: fixed the pinned brotli encoder that cut the century checkpoint after its first meta-block (checksum mismatch), split feature-replay per career and gave the two Node-heavy journeys `test.slow()`; the benchmark now fails the 1.5 MiB checkpoint budget at 2,378,780 B (parked: T231/T232).
 - 261020 fix e2e live-state: wait for the run to leave 8월 1일 instead of the transient 8월 3일, which a late x2 step skips by carrying its owed days (red since 5659b91, Firefox then Chromium). The 57d81a3 benchmark miss is runner speed, not a lane: same engine and century save, EPYC 7763 ran the storage benchmark 1.6× slower than the 9V45 that passed b477308 (century load 3.4 s there, 5 s limit).

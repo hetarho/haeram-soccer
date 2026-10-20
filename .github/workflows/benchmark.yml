@@ -1,0 +1,42 @@
+name: Benchmark
+# The 100-season storage benchmark and the first-play browser benchmark take over an hour, so they
+# run only when a storage or release gate needs their evidence: Actions → Benchmark → Run workflow.
+on:
+  workflow_dispatch:
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run build
+      - run: pnpm run benchmark
+      - name: Verify browser performance against the production build
+        run: |
+          mkdir -p .tmp
+          PORT=4180 pnpm run preview > .tmp/benchmark-preview.log 2>&1 &
+          benchmark_preview_pid=$!
+          trap 'kill "$benchmark_preview_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:4180/ > /dev/null; then
+              break
+            fi
+            sleep 0.25
+          done
+          BENCHMARK_ORIGIN=http://127.0.0.1:4180 pnpm run benchmark:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-verification
+          include-hidden-files: true
+          path: |
+            apps/web/dist
+            docs/benchmarks/T010-storage.json
+            docs/benchmarks/T010-first-play.json
+            .tmp/benchmark-preview.log
