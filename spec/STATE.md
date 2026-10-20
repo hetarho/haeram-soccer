@@ -19,6 +19,7 @@
 | z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T04:56Z | - |
 
 ## inbox
+- 261020 decided MATCH-26: grid-only counters for own-league players on the probabilistic path → leave them absent (alt: estimate by position at real rates, which shows invented figures as measured and needs per-position tables) — T224 kept the own league on that path; the owner's own players always play the grid
 - 261020 decided T224 MATCH-22 SAVE-5: `'summary'` left own-league fixtures without player lines and `validateWorld` refused every world on the scorer-table check → `summaryMatch` names the starters' lines now from the shooter and creator its chance model already picks, no new random draws (alt: T221's separate scorer stream, which needs T219–T220 first and leaves saves broken until then | keep `'grid'` against MATCH-22 at 8.4× the season budget) — saves had to stay loadable, and reusing the model's own picks leaves every score unchanged
 - 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
 - 261020 decided T231 SAVE-4: the 32 MiB inflate limit failed inside the pinned brotli decoder, whose patch capped output at 16 MiB → raise the patch's cap to 32 MiB (alt: keep brotli payloads at 16 MiB while gzip allows 32) — SAVE-4 sets one decompressed limit; T218's century already inflates to 16.1 MB
@@ -131,7 +132,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 12 | 12 | - | 1 |
+| MATCH | 13 | 13 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -193,9 +194,11 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- update-ssot MATCH (MATCH-26: grid-only counters for own-league players on the probabilistic path), then implement-task T219; T232's manual benchmark run closes T271
+- implement-task T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 create-task MATCH-26: no task — T224's summary lines already record only minutes, shots, shots on target, goals, assists and saves, and nothing estimates grid-only counters.
+- 261020 update-ssot MATCH r13: MATCH-26✎ grid-only counters stay absent on the probabilistic path.
 - 261020 fix save entry: T231's larger SaveRepository put the entry at 256,348 of ARCH-28's 256,000 gzip bytes (main 255,661) → the commit path moved to `checkpointWriter.ts`, which the client injects as a lazy import (a dynamic import inside repository.ts split rolldown's preload helper into its own 749 B entry chunk); entry 255,963 B, 37 B headroom.
 - 261020 T224 done: own league on the probabilistic path (grid 42.7 s a season = 8.4× rules 3.0.0's 5.1 s; summary 8.4 s), whose own-league fixtures now carry the starters' lines from the chance model's shooter/creator so the scorer table stays exact; MATCH-26 open.
 - 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
