@@ -1,8 +1,10 @@
-import { finishSeason, advanceOneRound } from './season-progression';
+import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
+import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
+import { continueSlot, seedSlot } from './slots';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -329,13 +331,24 @@ test('keeps the home briefing informational alongside the public clock and links
 test('chooses a cup once and keeps its archived season through competition and club-record visits', async ({
   page,
 }) => {
-  await found(page);
-  for (const year of [1951, 1952]) {
-    await finishSeason(page);
-    await expect(page.getByTestId('calendar')).toContainText(
-      `${year}/${String(year + 1).slice(-2)} · 라운드 0`,
-    );
-  }
+  // The journey reads two archived seasons. Simulating them here instead of through some two
+  // hundred next-event clicks keeps it off WebKit's stalled web process on CI, which a journey
+  // that long met in every attempt.
+  test.slow();
+  const w = createWorld({
+    country: 'ENG',
+    name: 'Haeram Athletic',
+    color: '#bf7956',
+    seed: 'owner-workflow-regression',
+    level: 'easy',
+  });
+  simulateSeason(w);
+  simulateSeason(w);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seedSlot(page, w);
+  await page.goto('/');
+  await continueSlot(page);
+  await expect(page.getByTestId('calendar')).toContainText('1952/53 · 라운드 0');
   await page.keyboard.press('Escape');
   await nav(page).getByRole('button', { name: '컵 대회', exact: true }).click();
   const competition = page.getByRole('tablist', { name: '컵 대회', exact: true });

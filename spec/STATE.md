@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
@@ -206,6 +207,7 @@
 - FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
 - 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
 - 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
 - 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
