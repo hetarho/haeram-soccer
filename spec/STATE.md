@@ -198,6 +198,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
 - 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
 - 261021 update-ssot MATCH start (T272 decision request)
 - 261021 r3m9 T250–T255, T275, T283, T286 bases to WEB@99 after the owner's 73b0e42 (contents unchanged; their WEB-50 cites the match view, not the moved watch entry).
@@ -217,4 +218,3 @@
 - 261021 create-task WEB r97 → T289; T289 start at 4af396f, manual background-only visibility correction.
 - 261021 update-ssot WEB r97 start: owner clarified manual mode should hide only background settings; restore observation and delegation controls.
 - 261021 T288 done: manual draft hides observation/delegation/background controls, keeps mode picker, validation and pending-work disclosure; WEB r96, 6 tests/typecheck/lint/format/build pass; browser specs updated for batch, business rules unchanged.
-- 261021 create-task WEB r96 → T288; T288 start at 4af396f, standalone manual-settings presentation follow-up.
