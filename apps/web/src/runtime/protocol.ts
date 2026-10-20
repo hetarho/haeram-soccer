@@ -208,7 +208,7 @@ export const requestSchema = z.object({
       metadataOnly: z.boolean().optional(),
       activate: z.boolean().optional(),
       upgrade: z.boolean().optional(),
-      raw: z.string().max(4 * 1024 * 1024),
+      raw: z.string().max(8 * 1024 * 1024),
     }),
     z.object({
       type: z.literal('found'),

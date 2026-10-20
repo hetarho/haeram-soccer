@@ -174,7 +174,7 @@ describe('recoverable persistence', () => {
       '체크섬',
     );
     await expect(decode(JSON.stringify({ ...e, schema: 2 }))).rejects.toThrow('버전');
-    await expect(decode('x'.repeat(4 * 1024 * 1024 + 1))).rejects.toThrow('너무');
+    await expect(decode('x'.repeat(8 * 1024 * 1024 + 1))).rejects.toThrow('너무');
   });
   it('commits manifest last and retains previous world on quota failure', async () => {
     const port = new Memory();

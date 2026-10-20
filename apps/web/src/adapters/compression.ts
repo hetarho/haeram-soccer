@@ -2,7 +2,7 @@ import { denseBytes, denseText } from './dense';
 import { bmpBytes, bmpText } from './bmp127';
 import { unbase64 } from './packing';
 import type { SaveCodec } from './repository';
-const LIMIT = 16 * 1024 * 1024;
+const LIMIT = 32 * 1024 * 1024;
 async function gzip(bytes: Uint8Array, compress: boolean) {
   const stream = new Blob([new Uint8Array(bytes).buffer])
     .stream()

@@ -1120,8 +1120,8 @@ export function App() {
   };
   const importFile = async (file?: File) => {
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      setLocalError('파일 크기는 4 MiB 이하이어야 합니다.');
+    if (file.size > 8 * 1024 * 1024) {
+      setLocalError('파일 크기는 8 MiB 이하이어야 합니다.');
       return;
     }
     setLocalError('');

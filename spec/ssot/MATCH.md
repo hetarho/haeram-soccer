@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r12 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
+> r13 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
 
 ## decisions
 - MATCH-1 [o] A match is played touch by touch: two halves of 45 minutes plus added time, each action taking its own few seconds of match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -174,7 +174,7 @@
   | ball in play (a match) | 54–58 min |
 - MATCH-24 [o] The live event line narrates notable actions with their cell and tags in Korean football media's terms (하프스페이스, 라인 사이, 뒷공간, 아크 정면, 컷백, 니어/파 포스트, 레스트 디펜스, 세컨드 볼, 수적 우위, 라인 브레이킹, 역습, 게겐프레싱 and the like), derived from recorded events only; it never changes outcomes and uses no invented zone names.
 - MATCH-25 [o] After an own match its post-match material is shown and kept as →MATCH-5 allows: a shot map (place, xG, outcome, header or foot), heat maps for each player and side, a pass network (average positions and passes between pairs) and a tactical report — where attacks came from by lane and band, entries, where the ball was won and lost, set pieces and decisive duels. ← it gives the owner grounds for manager and signing decisions
-- MATCH-26 [?] Players on the probabilistic path have no grid-only counters (box entries, xT added, line-breaking passes and the like): leave them absent, or estimate them by position at real rates — settled once the grid engine's cost is measured (→MATCH-22).
+- MATCH-26 [o] Players on the probabilistic path (→MATCH-22) carry only the counters that path produces: minutes, shots, shots on target, goals, assists and keeper saves; grid-only counters (box entries, xT added, line-breaking passes and the like) stay absent, never estimated. ← an estimate by position would present invented figures as measured; the own club's players always play the grid
 
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
@@ -183,6 +183,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r13 261020 MATCH-26✎ open: absent or estimated by position→absent, the path records minutes, shots, goals, assists and saves only
 - r12 261019 MATCH-18✎ offside beyond the second-last defender in the opponent's half→receiving teammate beyond both the ball and the second-last opponent when the pass is played; restart unchanged
 - r11 261019 constraints✎ a running career keeps the rules it plays→the grid engine starts new careers, earlier careers follow →SAVE-19
 - r10 261019 MATCH-1✎ one possession chain a minute→touch-by-touch halves plus added time, sides change only on events; MATCH-2✎ measured duel/summary error→both paths hold the target; MATCH-3✎ +fouls, cards, corners, offsides, minutes, substitutions, injuries; MATCH-5✎ +current-season post-match material, season heat maps; MATCH-6✎ extra-time/penalty outcome→extra time 2×15 and a kick-by-kick shootout; MATCH-8✎ profile tradeoffs→tactic behaviour, four presets only; MATCH-9✎ shared profile→the engine's attributes and behaviour; MATCH-11✎ zone pools, team pass/chance rates, tactic line and transition factors→per-action duels; MATCH-12✎ a minute's last duels with invented restarts→the engine's positions every touch, automatic pacing; MATCH-13✎ big chance band→0.30 xG or more, box band→penalty box, +8 spatial counters, season/career totals; MATCH-14+ 40-cell grid; MATCH-15+ tags; MATCH-16+ decision tables; MATCH-17+ off-ball movement; MATCH-18+ fouls, set pieces, offside; MATCH-19+ cards and suspensions; MATCH-20+ substitutions by era; MATCH-21+ in-match injuries; MATCH-22+ engine paths, 125% season budget; MATCH-23+ real-football bands; MATCH-24+ spatial commentary; MATCH-25+ post-match material; MATCH-26+ open: grid-only counters off the grid

@@ -12,7 +12,8 @@ export function transferredScorerWorld() {
     country: 'ENG',
     name: 'Synthetic Transfer Scorer',
     color: '#224433',
-    seed: 'transferred-scorer',
+    // A seed where the summary-path own league (T224) still leaves him a top-ten scorer.
+    seed: 'transferred-scorer-c',
     level: 'easy',
   });
   w.cash = '999999999999';

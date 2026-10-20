@@ -1,5 +1,6 @@
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
+import { IndexedDbPreviousStore } from '../adapters/previousStore';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
   envelopeEngine,
@@ -96,11 +97,17 @@ export class GameClient {
     }
   };
   constructor(private notify: (state: ClientState) => void) {
-    this.saves = new SaveRepository(localStorage, async (raw) => {
-      const reply = await this.rpc({ type: 'inspect', raw, metadataOnly: true });
-      if (!reply.worldMetadata || !reply.envelope) throw new Error('저장 검증 응답 누락');
-      return { world: reply.worldMetadata, envelope: reply.envelope };
-    });
+    this.saves = new SaveRepository(
+      localStorage,
+      async (raw) => {
+        const reply = await this.rpc({ type: 'inspect', raw, metadataOnly: true });
+        if (!reply.worldMetadata || !reply.envelope) throw new Error('저장 검증 응답 누락');
+        return { world: reply.worldMetadata, envelope: reply.envelope };
+      },
+      // The writer loads with the first save, keeping it out of the entry (→ARCH-28).
+      async (...args) => (await import('../adapters/checkpointWriter')).writeCheckpoint(...args),
+      IndexedDbPreviousStore.available() ? new IndexedDbPreviousStore() : undefined,
+    );
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
       const pending = this.waiters.get(r.requestId);
@@ -674,6 +681,7 @@ export class GameClient {
       this.autosaveTimer = undefined;
       await this.whenSaved();
       for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
+      await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;
       this.state.playback = undefined;

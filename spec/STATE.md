@@ -14,10 +14,15 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T225 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T05:25Z | T223 |
 | - |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T04:56Z | - |
 
 ## inbox
+- 261020 decided MATCH-26: grid-only counters for own-league players on the probabilistic path → leave them absent (alt: estimate by position at real rates, which shows invented figures as measured and needs per-position tables) — T224 kept the own league on that path; the owner's own players always play the grid
+- 261020 decided T224 MATCH-22 SAVE-5: `'summary'` left own-league fixtures without player lines and `validateWorld` refused every world on the scorer-table check → `summaryMatch` names the starters' lines now from the shooter and creator its chance model already picks, no new random draws (alt: T221's separate scorer stream, which needs T219–T220 first and leaves saves broken until then | keep `'grid'` against MATCH-22 at 8.4× the season budget) — saves had to stay loadable, and reusing the model's own picks leaves every score unchanged
+- 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
+- 261020 decided T231 SAVE-4: the 32 MiB inflate limit failed inside the pinned brotli decoder, whose patch capped output at 16 MiB → raise the patch's cap to 32 MiB (alt: keep brotli payloads at 16 MiB while gzip allows 32) — SAVE-4 sets one decompressed limit; T218's century already inflates to 16.1 MB
 - 261019 decided review/outside-t216-t255-261019: which findings of the side review to adopt while T216–T255 run → adopt the P1 and P2 findings whose fix stays outside every T216–T255 touch and the grid, contracts, adapters and runtime modules and changes no SSOT rule, contract, save format or migration: F1–F5 and F7–F14; F6 and every P3 stay [?] (alt: P1 only, leaving the duplicated rules to drift during the rebuild | P3 dead-code and formatting cleanups too, which adds visible text changes and no protection) — the P2s are drift risks the rebuild will lean on, and each fix is file-disjoint from the open tasks
 - 261019 parked review/outside-t216-t255-261019: F6 — the ECON-33 runway check exists six times with two formulas (floored per-round cost × runway in signings, contracts and staff; cash × SEASON_ROUNDS / annual in recruitment and investment); unifying moves outcomes at the limit, so the owner picks the intended arithmetic (update-ssot ECON-33) before a task
 - 261019 suggest T258: after main's settings-sheet fix the entry measures 254,413 of ARCH-28's 256,000 B gzip (1,587 B headroom at b4c85ee); run T258 before T225–T255 add entry UI, or the CI benchmark turns red again
@@ -104,8 +109,10 @@
 - 261020 suggest T225 ARCH-28: entry JS/CSS measures about 255,661 of 256,000 gzip bytes on 35492d5 (refactor-261019 lanes + T216–T218 + T271) → make the grid playback path lazy before T225 adds match-theatre UI, or the CI benchmark's entry check turns red
 - 261020 decided T271 SAVE-4 ARCH-14: the benchmark job red on the 1.5 MiB checkpoint limit (century 2,378,780 B since T218) → move T231 ahead of T219 (dep T218, T219 now dep T231) and give it the benchmark's active-copy-only total; T232 measures on rules 4.0.0 after T230 (alt: T231 and T232 both first, which measures before T219–T229 add discipline, post-match material and heat maps | keep the order and a red benchmark for twelve tasks) — owner: reorder only when it costs little; T231 shares no file with T219–T229 and only `persistence.ts`/`client.ts` with T230, and SAVE-4's 3 MiB does not depend on rules 4.0.0
 - 261020 decided T224 MATCH-22: the grid's own-league cost (a season 1.8 → 10 s since T218) slows every season, the unit suite and CI → move T224 (measure, then MATCH-22's 125% rule sets `OWN_LEAGUE_ENGINE`) to right after T231 (dep T231; T219 now dep T224, T225 dep T223) and have it update the tests and golden facts if it picks `'summary'` (alt: set `'summary'` now without measuring | keep T224 after T223 and the slow runs until then) — owner chose the measured route; the own club's matches stay on the grid either way, and T221 already gives the probabilistic path cards, injuries and named lines
-
 - 261020 decided T234 T236 T238 T246: owner asked for parallel work beside the grid chain until 17:00 → re-point T234 to T218 and run T234 → T236/T238 → T246 in worktree k4p2 (replaces this morning's keep-the-T233-gate answer; alt: keep the gate and idle) — their touches (packages/contracts identity leaf + types/schema, engine identity-legacy/kit-patterns, web crests/kitPainting) share no file with T219–T224; T235 and later stay behind T233 because they need the codec, storage and grid renderer
+- 261020 decided T225 T226: what can run beside the grid chain once the identity track reaches its T233 gate? → move T225 to dep T218 and run T225 then T226 in worktree k4p2 (alt: idle after T246 | the entry-bundle refactor of engine leaves, which edits match.ts/world.ts under T219–T224) — both read only T218's contracts (`MatchFrame.period/label/pace/onPitch`, `MatchEvent.text`, incidents, `lineCounts`, the TD counters) and touch only apps/web/src/ui and their e2e specs; T227 keeps T226 → T223 since it needs material.ts
+- 261020 decided T223: take the post-match material off the serial grid chain? → k4p2 runs T223 (dep T222 → T218) and then T227 while z5k8 runs T219–T222 (alt: keep T223 after T222) — extra-time matches use the same material encoding over a longer span, which T222 extends; agreed split: engine.ts gets only a collection hook, season.ts only closeSeason, and whoever rebases later regenerates the golden fixture and reruns the contract tests
+
 ## ideation
 | id | st |
 |---|---|
@@ -125,7 +132,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 12 | 12 | - | 1 |
+| MATCH | 13 | 13 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -146,15 +153,13 @@
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
-| T223 | Post-match material and season heat maps | MATCH HIST | T222 | todo |
-| T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T231 | todo |
-| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T223 | todo |
+| T223 | Post-match material and season heat maps | MATCH HIST | T218 | doing |
+| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T218 | doing |
 | T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
 | T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
-| T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T218 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
@@ -185,11 +190,16 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T231 (T232's manual benchmark run closes T271); then T224 (own-league engine), then T219
+- implement-task T219; T232's manual benchmark run closes T271
 
 ## log
 - 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
 - 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
+- 261020 create-task MATCH-26: no task — T224's summary lines already record only minutes, shots, shots on target, goals, assists and saves, and nothing estimates grid-only counters.
+- 261020 update-ssot MATCH r13: MATCH-26✎ grid-only counters stay absent on the probabilistic path.
+- 261020 fix save entry: T231's larger SaveRepository put the entry at 256,348 of ARCH-28's 256,000 gzip bytes (main 255,661) → the commit path moved to `checkpointWriter.ts`, which the client injects as a lazy import (a dynamic import inside repository.ts split rolldown's preload helper into its own 749 B entry chunk); entry 255,963 B, 37 B headroom.
+- 261020 T224 done: own league on the probabilistic path (grid 42.7 s a season = 8.4× rules 3.0.0's 5.1 s; summary 8.4 s), whose own-league fixtures now carry the starters' lines from the chance model's shooter/creator so the scorer table stays exact; MATCH-26 open.
+- 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
 - 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
