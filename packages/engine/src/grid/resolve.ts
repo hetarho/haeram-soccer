@@ -29,11 +29,12 @@ import type { Decision } from './decide';
 type Kind = NonNullable<Decision['kind']>;
 type Ref = [0 | 1, number];
 
+/** `aerial`: an aerial duel decided this outcome, won by that side (post-match material, T223). */
 export type Outcome =
-  | { kind: 'complete'; to: [number, number]; receiver: number }
+  | { kind: 'complete'; to: [number, number]; receiver: number; aerial?: 0 | 1 }
   | { kind: 'intercepted'; by: number; at: [number, number] }
   | { kind: 'tackled'; by: number }
-  | { kind: 'loose'; at: [number, number]; winner: Ref }
+  | { kind: 'loose'; at: [number, number]; winner: Ref; aerial?: 0 | 1 }
   | { kind: 'out'; at: [number, number]; lastTouch: 0 | 1; over: 'touch' | 'byline' }
   /** `on` is the fouled player when he is not the one on the ball (a 50/50). */
   | { kind: 'foul'; by: number; at: [number, number]; on?: Ref }
@@ -47,6 +48,7 @@ export type Outcome =
       then?: 'corner' | 'loose' | 'hold' | 'goalKick';
       by?: number;
       header?: boolean;
+      aerial?: 0 | 1;
     };
 export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
@@ -506,16 +508,23 @@ export function resolveCross(
     );
     if (duel.kind === 'loose' && duel.winner[0] === foe) {
       const at = toEngine(side, [88.5, attackFrame(side, attacker.pos)[1]]);
-      return { kind: 'loose', at, winner: duel.winner };
+      return { kind: 'loose', at, winner: duel.winner, aerial: foe };
     }
   }
+  const aerial = defender ? { aerial: side } : {};
   if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))
-    return { kind: 'complete', to: [attacker.pos[0], attacker.pos[1]], receiver: attacker.idx };
+    return {
+      kind: 'complete',
+      to: [attacker.pos[0], attacker.pos[1]],
+      receiver: attacker.idx,
+      ...aerial,
+    };
   // A header won against a marker is a header under pressure.
   const pressure = { pressure: defender ? SHOT_CONFIG.headerPressure : 0 };
   return {
     ...resolveShot(s, side, attacker.idx, pressure, ctx, r, { header: true }),
     header: true,
+    ...aerial,
   };
 }
 

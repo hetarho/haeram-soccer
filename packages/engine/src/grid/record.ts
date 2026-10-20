@@ -1,12 +1,14 @@
 /** The only place a grid match is counted: team and player metrics, goals, xG and possession (→MATCH-11, MATCH-13). */
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/src/detail';
-import type { Incident, MatchRecord } from '../../../contracts/src/types';
+import type { Incident, MatchMaterial, MatchRecord } from '../../../contracts/src/types';
+import { MATERIAL_LAYOUT, REPORT_SLOTS, SHOT_OUTCOMES } from '../material';
 import { zeroMetrics } from '../primitives';
 import { CELL_BASELINES } from './baselines';
-import { BAND_EDGES, bandOf, cellOf, inBox, type Point } from './pitch';
+import { attackFrame, BAND_EDGES, bandOf, cellOf, inBox, laneOf, PITCH, type Point } from './pitch';
 import type { RestartKind } from './restarts';
 import type { GridSetup } from './setup';
 import type { GridState } from './state';
+import type { Tags } from './tags';
 
 /** Indexes of the per-player and team metric lines. */
 export const M = {
@@ -57,6 +59,178 @@ export interface GridDiagnostics {
   possessions: { side: 0 | 1; passes: number; shot: boolean }[];
 }
 
+/** The schema's caps on a match's material rows: shots and network pairs. */
+const MAX_SHOTS = 80;
+const MAX_PAIRS = 300;
+const C = MATERIAL_LAYOUT.cells;
+const RS = MATERIAL_LAYOUT.report;
+
+/**
+ * Post-match material of an own match (design §9.4, →MATCH-25), counted into typed arrays sized at
+ * kick-off so a touch allocates nothing. Players are roster indexes until `finish` maps them to lines.
+ */
+export class MaterialTally {
+  private readonly size: number;
+  /** Own players' touches per cell, roster index × 40. */
+  private readonly heat: Uint16Array;
+  private readonly totals = [new Uint16Array(C), new Uint16Array(C)] as const;
+  /** Own players' summed touch positions (x, y) and touch counts. */
+  private readonly sum: Float64Array;
+  private readonly touches: Uint16Array;
+  /** Own completed passes, passer roster index × receiver roster index. */
+  private readonly pairs: Uint16Array;
+  private readonly report = new Uint32Array(2 * RS);
+  /** Per shot: side, roster index, x10, y10, xG100, outcome, header. */
+  private readonly shots: number[] = [];
+  private possession: 0 | 1 | undefined;
+  private counter = false;
+
+  constructor(
+    private readonly own: 0 | 1,
+    roster: number,
+  ) {
+    this.size = roster;
+    this.heat = new Uint16Array(roster * C);
+    this.sum = new Float64Array(roster * 2);
+    this.touches = new Uint16Array(roster);
+    this.pairs = new Uint16Array(roster * roster);
+  }
+
+  private bump(side: 0 | 1, slot: number, n = 1) {
+    this.report[side * RS + slot]! += n;
+  }
+
+  /** A touch at `p` in the player's attack frame. */
+  private touchAt(side: 0 | 1, idx: number, p: Point) {
+    const cell = cellOf(p);
+    this.totals[side][cell]!++;
+    if (side !== this.own) return;
+    this.heat[idx * C + cell]!++;
+    this.sum[idx * 2]! += p[0];
+    this.sum[idx * 2 + 1]! += p[1];
+    this.touches[idx]!++;
+  }
+
+  /**
+   * An action start by `(side, idx)` at `at` (engine frame). `phase` is the carrier's tag in open play,
+   * absent for a restart; a restart or a change of side starts a possession.
+   */
+  touch(side: 0 | 1, idx: number, at: Point, phase?: Tags['phase']): void {
+    this.touchAt(side, idx, attackFrame(side, at));
+    if (phase !== undefined && side === this.possession) return;
+    this.possession = side;
+    this.counter = phase === 'counter';
+    if (this.counter) this.bump(side, REPORT_SLOTS.counterAttacks);
+  }
+
+  /** A completed pass from `passer` received by `receiver` at `at` (engine frame). */
+  received(side: 0 | 1, passer: number, receiver: number, at: Point): void {
+    this.touchAt(side, receiver, attackFrame(side, at));
+    if (side === this.own) this.pairs[passer * this.size + receiver]!++;
+  }
+
+  /** A shot: `d` holds its point (attack frame), xG, header and set-piece flag. */
+  shot(
+    side: 0 | 1,
+    idx: number,
+    result: (typeof SHOT_OUTCOMES)[number],
+    d: { x: number; y: number; xg: number; header: boolean; setPiece: boolean },
+  ): void {
+    // A header is the header taker's touch; any other shot follows a touch already counted.
+    if (d.header) this.touchAt(side, idx, [d.x, d.y]);
+    if (d.setPiece) {
+      this.bump(side, REPORT_SLOTS.setPieceShots);
+      if (result === 'goal') this.bump(side, REPORT_SLOTS.setPieceGoals);
+    }
+    if (this.counter && this.possession === side) this.bump(side, REPORT_SLOTS.counterShots);
+    if (this.shots.length >= MAX_SHOTS * MATERIAL_LAYOUT.shot) return;
+    this.shots.push(
+      side,
+      idx,
+      Math.round(Math.min(PITCH.length, Math.max(0, d.x)) * 10),
+      Math.round(Math.min(PITCH.width, Math.max(0, d.y)) * 10),
+      Math.round(d.xg * 100),
+      SHOT_OUTCOMES.indexOf(result),
+      d.header ? 1 : 0,
+    );
+  }
+
+  /** An aerial duel won by `winner`. */
+  aerial(winner: 0 | 1): void {
+    this.bump(winner, REPORT_SLOTS.aerialsWon);
+    this.bump(0, REPORT_SLOTS.aerials);
+    this.bump(1, REPORT_SLOTS.aerials);
+  }
+
+  /** The ball won by `side` at `at` (its attack frame), lost by the other at the same point. */
+  regain(side: 0 | 1, at: Point): void {
+    const third = (x: number) => (x < PRESS_FROM ? 0 : x < FINAL_THIRD ? 1 : 2);
+    this.bump(side, REPORT_SLOTS.regains + third(at[0]));
+    this.bump((1 - side) as 0 | 1, REPORT_SLOTS.losses + third(PITCH.length - at[0]));
+    if (at[0] >= FINAL_THIRD) this.bump(side, REPORT_SLOTS.highRegains);
+  }
+
+  /** A completed pass or carry from `from` to `to` (attack frame): final-third and box entries by lane. */
+  entry(side: 0 | 1, from: Point, to: Point): void {
+    if (from[0] < FINAL_THIRD && to[0] >= FINAL_THIRD)
+      this.bump(side, REPORT_SLOTS.finalThirdEntries + laneOf(to[1]));
+    if (inBox(to) && !inBox(from)) this.bump(side, REPORT_SLOTS.boxEntries + laneOf(to[1]));
+  }
+
+  pass(side: 0 | 1, kind: string): void {
+    if (kind === 'cross') this.bump(side, REPORT_SLOTS.crosses);
+    else if (kind === 'cutBack') this.bump(side, REPORT_SLOTS.cutBacks);
+    else if (kind === 'through') this.bump(side, REPORT_SLOTS.throughBalls);
+  }
+
+  takeOn(side: 0 | 1): void {
+    this.bump(side, REPORT_SLOTS.takeOns);
+  }
+
+  /** A take-on won: the dribbler's success and a tackle lost by the other side. */
+  dribble(side: 0 | 1): void {
+    this.bump(side, REPORT_SLOTS.takeOnsWon);
+    this.bump((1 - side) as 0 | 1, REPORT_SLOTS.tackles);
+  }
+
+  tackle(side: 0 | 1): void {
+    this.bump(side, REPORT_SLOTS.tacklesWon);
+    this.bump(side, REPORT_SLOTS.tackles);
+  }
+
+  /** The rows, with roster indexes mapped to each side's lines (`played`, in record order). */
+  finish(played: number[][]): MatchMaterial {
+    const lineOf = played.map((idxs) => {
+      const map = new Map<number, number>();
+      idxs.forEach((idx, line) => map.set(idx, line));
+      return map;
+    });
+    const shots = this.shots.slice();
+    for (let i = 0; i < shots.length; i += MATERIAL_LAYOUT.shot)
+      shots[i + 1] = lineOf[shots[i]!]!.get(shots[i + 1]!) ?? 0;
+    const own = played[this.own]!;
+    const heat: number[] = [];
+    const network: number[] = [];
+    for (const idx of own) {
+      for (let c = 0; c < C; c++) heat.push(this.heat[idx * C + c]!);
+      const n = this.touches[idx]!;
+      network.push(
+        n ? Math.round((this.sum[idx * 2]! / n) * 10) : 0,
+        n ? Math.round((this.sum[idx * 2 + 1]! / n) * 10) : 0,
+        n,
+      );
+    }
+    heat.push(...this.totals[this.own], ...this.totals[1 - this.own]!);
+    let kept = 0;
+    for (let a = 0; a < own.length; a++)
+      for (let b = 0; b < own.length; b++) {
+        const n = this.pairs[own[a]! * this.size + own[b]!]!;
+        if (n >= 2 && kept++ < MAX_PAIRS) network.push(a, b, n);
+      }
+    return { shots, heat, network, report: Array.from(this.report) };
+  }
+}
+
 export class Tally {
   private readonly lines: [number[][], number[][]];
   private readonly xg: [number, number] = [0, 0];
@@ -64,6 +238,8 @@ export class Tally {
   /** Team (TD) and player (PD) advanced counters (→MATCH-13). */
   private readonly td: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
   private readonly pd: [number[][], number[][]];
+  /** Post-match material, counted for every match with an own side (design §9.4). */
+  readonly material?: MaterialTally;
   readonly highlights: MatchRecord['highlights'] = [];
   readonly incidents: Incident[] = [];
   readonly diagnostics: GridDiagnostics = {
@@ -90,6 +266,8 @@ export class Tally {
       setup.rosters[0].map(() => emptyPlayerDetail()),
       setup.rosters[1].map(() => emptyPlayerDetail()),
     ];
+    if (setup.own !== undefined && setup.recordPlayers)
+      this.material = new MaterialTally(setup.own, setup.rosters[setup.own].length);
   }
 
   /** Bumps a team counter and, when the player has the same counter, his. */
@@ -120,6 +298,7 @@ export class Tally {
     },
   ): void {
     this.pass(side, idx, e.ok);
+    this.material?.pass(side, e.kind);
     const [dx, dy] = [e.to[0] - e.from[0], e.to[1] - e.from[1]];
     const direction = e.kind === 'cross' || dx > Math.abs(dy) ? 0 : -dx > Math.abs(dy) ? 2 : 1;
     this.diagnostics.directions[side][direction]!++;
@@ -147,6 +326,7 @@ export class Tally {
 
   /** What a completed pass or carry gains: box and front-of-box entries and expected threat. */
   private movement(side: 0 | 1, idx: number, from: Point, to: Point): void {
+    this.material?.entry(side, from, to);
     if (inBox(to) && !inBox(from)) this.count(side, idx, TD.boxEntries, PD.boxEntries);
     if (bandOf(to[0]) === 5 && bandOf(from[0]) < 5)
       this.count(side, idx, TD.frontOfBoxEntries, PD.frontOfBoxEntries);
@@ -166,11 +346,13 @@ export class Tally {
   /** A take-on attempt, won or not (the won ones also count as dribbles). */
   takeOnAttempt(side: 0 | 1, idx: number): void {
     this.count(side, idx, TD.takeOns, PD.takeOns);
+    this.material?.takeOn(side);
   }
 
   /** The ball won by `(side, idx)` at `at` (his attack frame): a high turnover from x ≥ 70. */
   regain(side: 0 | 1, idx: number, at: Point): void {
     if (at[0] >= FINAL_THIRD) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
+    this.material?.regain(side, at);
   }
 
   /**
@@ -251,6 +433,7 @@ export class Tally {
   /** A tackle or interception at `at` (the winner's attack frame); from x ≥ 35 it is a press action (PPDA). */
   tackle(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.tackles);
+    this.material?.tackle(side);
     if (at && at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
   }
 
@@ -261,6 +444,7 @@ export class Tally {
 
   dribble(side: 0 | 1, idx: number): void {
     this.add(side, idx, M.dribbles);
+    this.material?.dribble(side);
   }
 
   save(side: 0 | 1, idx: number): void {
@@ -310,7 +494,7 @@ export class Tally {
     state: GridState,
   ): Pick<
     MatchRecord,
-    'metrics' | 'players' | 'highlights' | 'xg' | 'detail' | 'lineCounts' | 'incidents'
+    'metrics' | 'players' | 'highlights' | 'xg' | 'detail' | 'lineCounts' | 'incidents' | 'material'
   > {
     const { setup } = this;
     const sides = [0, 1] as const;
@@ -357,6 +541,7 @@ export class Tally {
       xg: [Math.round(this.xg[0] * 100) / 100, Math.round(this.xg[1] * 100) / 100],
       detail: this.td,
       ...(setup.recordPlayers ? { lineCounts } : {}),
+      ...(this.material ? { material: this.material.finish(played) } : {}),
     };
   }
 }

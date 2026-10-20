@@ -25,6 +25,7 @@ import { evolveClubs } from './dynamics';
 import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
 import { gate, settleLeagueMerit, settleRound } from './settlement';
 import { assessOperatingExpenses } from './finance';
+import { reduceSeasonMaterial } from './material';
 import { delegatedBusiness, sponsorReminder, yearlySponsor } from './ops-commercial';
 import { yearlyStaff } from './ops-staff';
 import type {
@@ -671,6 +672,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     runs: cupRuns(w),
     ...seasonRecords(w, order, oldTier, oldGroup),
   });
+  // The season's own match material becomes one heat map per own player (→MATCH-5).
+  reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   const startersBeforeDepartures = [...ownStarters(w)];
   retireAtClose(w);

@@ -139,6 +139,7 @@ export function playGrid(setup: GridSetup): GridResult {
       goal: o.result === 'goal',
       line: lineOf(slotOf(s, gp).position),
     });
+    tally.material?.shot(side, shooter, o.result, tally.diagnostics.shots.at(-1)!);
     const passer =
       lastPasser &&
       lastPasser[0] === side &&
@@ -249,9 +250,11 @@ export function playGrid(setup: GridSetup): GridResult {
   /** Applies any outcome of the player `(side, idx)` on the ball. */
   function apply(side: 0 | 1, idx: number, o: Outcome) {
     const foe = other(side);
+    if ('aerial' in o && o.aerial !== undefined) tally.material?.aerial(o.aerial);
     switch (o.kind) {
       case 'complete':
         if (o.receiver !== idx) {
+          tally.material?.received(side, idx, o.receiver, o.to);
           lastPasser = [side, idx];
           const from = s.players[side][idx]!.pos;
           const dx = (o.to[0] - from[0]) * (side === 0 ? 1 : -1);
@@ -448,6 +451,7 @@ export function playGrid(setup: GridSetup): GridResult {
             : undefined;
         const res = playRestart(s, rs, r, ctx);
         actor = [rs.side, res.taker];
+        tally.material?.touch(rs.side, res.taker, rs.spot);
         const kind = res.kind === 'penalty' ? 'shot' : res.kind;
         if (res.kind === 'cross') {
           const spot = attackFrame(rs.side, rs.spot);
@@ -489,6 +493,7 @@ export function playGrid(setup: GridSetup): GridResult {
         justBeat = undefined;
         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const tags = computeTags(s, owner[0], owner[1]);
+        tally.material?.touch(owner[0], owner[1], from, tags.phase);
         let d: Decision;
         if (holdBias) {
           holdBias = false;
