@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useMemo, useState, type ReactNode } from 'react';
 import {
   CREST_EMBLEMS,
   CREST_PALETTE,
@@ -16,15 +16,19 @@ import {
 } from '../../../../packages/contracts/src/identity';
 import { CrestMark } from './ClubCrest';
 import { colourInput, reduceIdentityDraft, type IdentityDraftAction } from './clubIdentityDraft';
+import {
+  editorPreviewAppearance,
+  KIT_ROLE_LABELS,
+  PREVIEW_OPPONENTS,
+  type PreviewOpponent,
+} from './identityPreview';
 import { SHIRT_PATTERN_LABELS } from './kitPainting';
+import { KitPitchPreview } from './KitPitchPreview';
 import { KitSwatch } from './KitSwatch';
+import { Select } from './Select';
 import s from './ClubIdentityEditor.module.css';
 
-export const KIT_ROLE_LABELS: Readonly<Record<KitRole, string>> = {
-  home: '홈',
-  away: '원정',
-  third: '서드',
-};
+export { KIT_ROLE_LABELS };
 export const CREST_SHAPE_LABELS: Readonly<Record<CrestShape, string>> = {
   shield: '방패',
   round: '원형',
@@ -195,7 +199,8 @@ function Choice({
  * KIT-2–5/9/10/14, WEB-86: the one club-design editor for founding and career, as a controlled
  * component (docs/CLUB-IDENTITY-CONTRACT.md §7). Every change goes through `reduceIdentityDraft`
  * and comes back as a new complete identity through `onChange`; the caller owns the entry copy,
- * apply/cancel, persistence and their errors. The selected shirt and an open composer are local.
+ * apply/cancel, persistence and their errors. The selected shirt, an open composer and the pitch
+ * preview's example opponent are local.
  */
 export function ClubIdentityEditor({
   value,
@@ -210,6 +215,12 @@ export function ClubIdentityEditor({
   const id = useId();
   const { colours, crest, kits } = value;
   const [role, setRole] = useState<KitRole>('home');
+  // WEB-87: the pitch preview wears the shirt being edited against an example opponent.
+  const [opponent, setOpponent] = useState<PreviewOpponent>('light');
+  const preview = useMemo(
+    () => editorPreviewAppearance(value, role, opponent),
+    [value, role, opponent],
+  );
   // A composition that is no ready-made crest opens the composer that made it.
   const [composing, setComposing] = useState(
     () => !CREST_PRESETS.some((preset) => sameParts(preset, crest)),
@@ -557,6 +568,28 @@ export function ClubIdentityEditor({
             대표색을 {roleName}에만 넣어요. 무늬와 다른 유니폼은 그대로예요.
           </p>
         </fieldset>
+      </fieldset>
+
+      <fieldset className={s.section}>
+        <legend>경기장 미리보기</legend>
+        <p className={s.note}>
+          고른 {roleName}을 실제 경기 크기로 잔디 위에 보여 줘요. 상대는 예시일 뿐이고 경기나 일정은
+          만들지 않아요.
+        </p>
+        <div className={s.actions}>
+          <Select
+            value={opponent}
+            onValueChange={(next) => setOpponent(next as PreviewOpponent)}
+            aria-label="미리보기 상대 예시"
+          >
+            {(Object.keys(PREVIEW_OPPONENTS) as PreviewOpponent[]).map((key) => (
+              <option key={key} value={key}>
+                {PREVIEW_OPPONENTS[key].label}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <KitPitchPreview appearance={preview.appearance} labels={preview.labels} />
       </fieldset>
     </div>
   );
