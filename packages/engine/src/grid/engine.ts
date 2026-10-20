@@ -26,7 +26,7 @@ import {
   RESTART_CONFIG,
   type Restart,
 } from './restarts';
-import { Tally, type GridDiagnostics } from './record';
+import { crossArrival, Tally, type GridDiagnostics } from './record';
 import type { GridSetup } from './setup';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
@@ -362,7 +362,7 @@ export function playGrid(setup: GridSetup): GridResult {
         const from = attackFrame(side, s.players[side][idx]!.pos);
         const o = resolveCross(s, side, idx, tags, ctx, r);
         const ok = o.kind === 'shot' || o.kind === 'complete';
-        tally.passEvent(side, idx, { from, to: from, ok, kind: 'cross' });
+        tally.passEvent(side, idx, { from, to: crossArrival(s, side, o, from), ok, kind: 'cross' });
         if (o.kind === 'shot') lastPasser = [side, idx];
         apply(side, idx, o);
         return { key: 'cross', outcome: o };
@@ -457,7 +457,7 @@ export function playGrid(setup: GridSetup): GridResult {
           const spot = attackFrame(rs.side, rs.spot);
           tally.passEvent(rs.side, res.taker, {
             from: spot,
-            to: spot,
+            to: crossArrival(s, rs.side, res.outcome, spot),
             ok: res.outcome.kind === 'shot' || res.outcome.kind === 'complete',
             kind: 'cross',
           });

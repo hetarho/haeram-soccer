@@ -4,7 +4,7 @@ import { createWorld } from '../index';
 import { playGrid } from './engine';
 import { CELL_BASELINES } from './baselines';
 import { cellOf, type Point } from './pitch';
-import { M, Tally } from './record';
+import { crossArrival, M, Tally } from './record';
 import { buildGridSetup } from './setup';
 import { createState } from './state';
 import { gridKit } from './testkit';
@@ -66,6 +66,23 @@ describe('grid advanced counters', () => {
     expect(pd[7]![PD.boxEntries]).toBe(1);
     expect(pd[8]![PD.boxEntries]).toBe(1);
     expect(td[TD.progressiveCarries]).toBe(1);
+  });
+
+  it('counts completed cut-backs only, and a completed cross by where it arrived', () => {
+    const t = fresh();
+    t.passEvent(0, 7, { from: [100, 20], to: [96, 34], ok: false, kind: 'cutBack' });
+    t.passEvent(0, 7, { from: [100, 20], to: [96, 34], ok: true, kind: 'cutBack' });
+    const s = createState(recorded);
+    s.players[0][9]!.pos = [95, 30];
+    const from: Point = [85, 3];
+    const header = { kind: 'shot', shooter: 9, result: 'miss', xg: 0.1, recordedXg: 0.1 } as const;
+    const to = crossArrival(s, 0, header, from);
+    expect(to).toEqual([95, 30]);
+    expect(crossArrival(s, 0, { kind: 'held', by: 0 }, from)).toBe(from);
+    t.passEvent(0, 4, { from, to, ok: true, kind: 'cross' });
+    const { td, pd } = detail(t);
+    expect([td[TD.cutBacks], pd[7]![PD.cutBacks]]).toEqual([1, 1]);
+    expect([td[TD.boxEntries], pd[4]![PD.boxEntries]]).toEqual([1, 1]);
   });
 
   it('counts a line-breaking pass', () => {

@@ -6,9 +6,19 @@ import { zeroMetrics } from '../primitives';
 import { CELL_BASELINES } from './baselines';
 import { attackFrame, BAND_EDGES, bandOf, cellOf, inBox, laneOf, PITCH, type Point } from './pitch';
 import type { RestartKind } from './restarts';
+import type { Outcome } from './resolve';
 import type { GridSetup } from './setup';
 import type { GridState } from './state';
 import type { Tags } from './tags';
+
+/**
+ * Where a cross arrived, in the crosser's attack frame: the teammate who controlled or headed it when it reached
+ * one, otherwise its origin `from` (MATCH-13 box entries).
+ */
+export function crossArrival(s: GridState, side: 0 | 1, o: Outcome, from: Point): Point {
+  const to = o.kind === 'complete' ? o.receiver : o.kind === 'shot' ? o.shooter : undefined;
+  return to === undefined ? from : attackFrame(side, s.players[side][to]!.pos);
+}
 
 /** Indexes of the per-player and team metric lines. */
 export const M = {
@@ -177,9 +187,10 @@ export class MaterialTally {
     if (inBox(to) && !inBox(from)) this.bump(side, REPORT_SLOTS.boxEntries + laneOf(to[1]));
   }
 
-  pass(side: 0 | 1, kind: string): void {
+  /** Crosses and through balls count attempts; cut-backs count completions (MATCH-13). */
+  pass(side: 0 | 1, kind: string, ok = true): void {
     if (kind === 'cross') this.bump(side, REPORT_SLOTS.crosses);
-    else if (kind === 'cutBack') this.bump(side, REPORT_SLOTS.cutBacks);
+    else if (kind === 'cutBack' && ok) this.bump(side, REPORT_SLOTS.cutBacks);
     else if (kind === 'through') this.bump(side, REPORT_SLOTS.throughBalls);
   }
 
@@ -298,7 +309,7 @@ export class Tally {
     },
   ): void {
     this.pass(side, idx, e.ok);
-    this.material?.pass(side, e.kind);
+    this.material?.pass(side, e.kind, e.ok);
     const [dx, dy] = [e.to[0] - e.from[0], e.to[1] - e.from[1]];
     const direction = e.kind === 'cross' || dx > Math.abs(dy) ? 0 : -dx > Math.abs(dy) ? 2 : 1;
     this.diagnostics.directions[side][direction]!++;
@@ -313,7 +324,7 @@ export class Tally {
       this.count(side, idx, TD.crosses, PD.crosses);
       if (e.ok) this.count(side, idx, TD.crossesCompleted, PD.crossesCompleted);
     }
-    if (e.kind === 'cutBack') this.count(side, idx, TD.cutBacks, PD.cutBacks);
+    if (e.kind === 'cutBack' && e.ok) this.count(side, idx, TD.cutBacks, PD.cutBacks);
     if (e.kind === 'through') {
       this.count(side, idx, TD.throughBalls, PD.throughBalls);
       if (e.ok) this.count(side, idx, TD.throughBallsCompleted, PD.throughBallsCompleted);
