@@ -195,6 +195,7 @@
 - implement-task T221, then T222; T232's manual benchmark run closes T271
 
 ## log
+- 261020 fix e2e match-core: the full match loop takes 25–28 s alone at 390x844 (30 s limit) and timed out in two full runs → `test.slow()` like the other whole-journey specs.
 - 261020 T220 done: own matches settle substitutes' adaptation and fatigue by minutes, match injuries reach own players (CLUB-23 bands) and other clubs' `out` list, farewells count matches actually played.
 - 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
 - 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.

@@ -88,6 +88,8 @@ for (const viewport of [
   test(`keeps the full match loop in ${viewport.width}x${viewport.height} and preserves actual seeded facts`, async ({
     page,
   }) => {
+    // A whole match watched, replayed and settled: 25–28 s alone since the theatre grew (T225).
+    test.slow();
     const founding = {
       country: 'ENG' as const,
       name: 'Haeram Athletic',
