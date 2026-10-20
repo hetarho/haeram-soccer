@@ -3,11 +3,10 @@ import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-
 export const CHECKPOINT_LIMIT = 3 * 1024 * 1024;
 export const TOTAL_LIMIT = 3.5 * 1024 * 1024;
-const MANIFEST = 'haeram-soccor:manifest';
-const SLOT = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b'];
+export const MANIFEST = 'haeram-soccor:manifest';
+export const SLOT = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b'];
 function checkpointGeneration(raw: string | null) {
   try {
     const value = JSON.parse(raw || 'null')?.generation;
@@ -47,17 +46,12 @@ export interface PreviousStore {
   write(raw: string): Promise<void>;
   clear(): Promise<void>;
 }
-/** A commit that would leave no verified previous copy beside the committed one (→SAVE-3). */
-export class PreviousUnavailableError extends Error {
-  readonly code = 'previous-unavailable';
-  constructor() {
-    super('이 브라우저에서는 이전 저장본을 함께 둘 공간이 없어 저장하지 않았어요');
-  }
-}
 /** Checkpoint sources: the two localStorage slots, then the previous store. */
-const PREVIOUS = 2;
-type Source = 0 | 1 | typeof PREVIOUS;
-interface Lineage {
+export const PREVIOUS = 2;
+export type Source = 0 | 1 | typeof PREVIOUS;
+/** Writes a validated candidate (checkpointWriter.ts), injected so browsers load it lazily. */
+export type CheckpointWrite = typeof import('./checkpointWriter').writeCheckpoint;
+export interface Lineage {
   worldId: string;
   generation: number;
   parentGeneration: number;
@@ -78,6 +72,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
   constructor(
     private storage: StoragePort,
     private inspect: SaveInspector<W>,
+    private write: CheckpointWrite,
     private previous?: PreviousStore,
   ) {}
   get generationInfo() {
@@ -214,56 +209,22 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     const envelope = options.envelope ?? (await this.inspect(raw)).envelope;
     if (envelope.generation <= this.generation)
       throw new Error('더 새로운 저장이 이미 있어 오래된 체크포인트를 쓰지 않았습니다.');
-    if (2 * (raw.length + SLOT[0].length) > CHECKPOINT_LIMIT)
-      throw new Error('저장 용량 한도에 도달했습니다. 현재 진행을 파일로 내보내세요.');
     const lineage: Lineage = {
       worldId: envelope.worldId,
       generation: envelope.generation,
       parentGeneration: envelope.parentGeneration,
     };
-    if (this.previous) await this.commitWithPrevious(this.previous, raw, lineage);
-    else this.commitTwoSlots(raw, lineage);
+    const source = await this.write(
+      this.storage,
+      this.previous,
+      this.source,
+      this.committedRaw(),
+      raw,
+      lineage,
+    );
+    this.adopt(source, raw);
     this.generation = envelope.generation;
     this.incompatible = undefined;
     this.protectedRaw = undefined;
-  }
-  /** Namespaced localStorage use (→SAVE-4); the previous store is not part of it. */
-  private budget(...values: string[]) {
-    return 2 * (values.join('').length + SLOT.join('').length + MANIFEST.length);
-  }
-  private writeVerified(key: string, value: string, failure: string) {
-    this.storage.setItem(key, value);
-    if (this.storage.getItem(key) !== value) throw new Error(failure);
-  }
-  private async commitWithPrevious(previous: PreviousStore, raw: string, lineage: Lineage) {
-    const committed = this.committedRaw();
-    const manifest = JSON.stringify({ slot: 0, ...lineage });
-    const second = this.storage.getItem(SLOT[1]);
-    // A committed slot:b of the two-slot layout stays until the manifest has moved to slot:a.
-    if (this.budget(raw, this.source === 1 ? second || '' : '', manifest) > TOTAL_LIMIT)
-      throw new Error('브라우저 저장 예산을 초과했습니다.');
-    if (committed !== null && this.source !== PREVIOUS) await previous.write(committed);
-    // An older slot:b is superseded by the verified previous copy.
-    if (second !== null && this.source !== 1) this.storage.removeItem(SLOT[1]);
-    this.writeVerified(SLOT[0], raw, '저장 읽기 검증에 실패했습니다.');
-    this.writeVerified(MANIFEST, manifest, '매니페스트 읽기 검증 실패');
-    if (second !== null && this.source === 1) this.storage.removeItem(SLOT[1]);
-    // A first checkpoint has no predecessor; a copy left by another career must not recover into it.
-    if (committed === null) await previous.clear().catch(() => {});
-    this.adopt(0, raw);
-  }
-  private commitTwoSlots(raw: string, lineage: Lineage) {
-    const committed = this.committedRaw();
-    const next = this.source === 0 ? 1 : 0;
-    const manifest = JSON.stringify({ slot: next, ...lineage });
-    const other = this.storage.getItem(SLOT[1 - next]) || '';
-    if (this.budget(raw, other, manifest) > TOTAL_LIMIT) {
-      // Overwriting would leave the committed checkpoint without a verified previous copy.
-      if (committed !== null) throw new PreviousUnavailableError();
-      throw new Error('브라우저 저장 예산을 초과했습니다.');
-    }
-    this.writeVerified(SLOT[next], raw, '저장 읽기 검증에 실패했습니다.');
-    this.writeVerified(MANIFEST, manifest, '매니페스트 읽기 검증 실패');
-    this.adopt(next, raw);
   }
 }

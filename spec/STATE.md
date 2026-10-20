@@ -196,6 +196,7 @@
 - update-ssot MATCH (MATCH-26: grid-only counters for own-league players on the probabilistic path), then implement-task T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 fix save entry: T231's larger SaveRepository put the entry at 256,348 of ARCH-28's 256,000 gzip bytes (main 255,661) → the commit path moved to `checkpointWriter.ts`, which the client injects as a lazy import (a dynamic import inside repository.ts split rolldown's preload helper into its own 749 B entry chunk); entry 255,963 B, 37 B headroom.
 - 261020 T224 done: own league on the probabilistic path (grid 42.7 s a season = 8.4× rules 3.0.0's 5.1 s; summary 8.4 s), whose own-league fixtures now carry the starters' lines from the chance model's shooter/creator so the scorer table stays exact; MATCH-26 open.
 - 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.

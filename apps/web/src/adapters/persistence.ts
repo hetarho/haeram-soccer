@@ -6,6 +6,7 @@ import {
 } from '../../../../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
 import { pack, unpack } from './packing';
+import { writeCheckpoint } from './checkpointWriter';
 import { encodePayload, decodePayload } from './compression';
 import {
   LEGACY_ENGINE_VERSIONS,
@@ -150,7 +151,7 @@ export async function checkpoint(w: World, generation = 1, parentGeneration = 0)
 /** Public codec API retained; browser clients inject their worker into lean SaveRepository. */
 export class Saves extends SaveRepository {
   constructor(storage: StoragePort, inspect: SaveInspector = decode, previous?: PreviousStore) {
-    super(storage, inspect, previous);
+    super(storage, inspect, writeCheckpoint, previous);
   }
   async save(w: World) {
     const info = this.generationInfo;

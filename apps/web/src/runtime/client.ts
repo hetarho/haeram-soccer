@@ -104,6 +104,8 @@ export class GameClient {
         if (!reply.worldMetadata || !reply.envelope) throw new Error('저장 검증 응답 누락');
         return { world: reply.worldMetadata, envelope: reply.envelope };
       },
+      // The writer loads with the first save, keeping it out of the entry (→ARCH-28).
+      async (...args) => (await import('../adapters/checkpointWriter')).writeCheckpoint(...args),
       IndexedDbPreviousStore.available() ? new IndexedDbPreviousStore() : undefined,
     );
     this.worker.onmessage = (event: MessageEvent<Reply>) => {

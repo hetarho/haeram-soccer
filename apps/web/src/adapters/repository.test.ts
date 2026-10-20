@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { PreviousUnavailableError, writeCheckpoint } from './checkpointWriter';
 import {
   CHECKPOINT_LIMIT,
-  PreviousUnavailableError,
   SaveRepository,
   type Envelope,
   type PreviousStore,
@@ -69,7 +69,7 @@ function setup(withPrevious = true) {
   const log: Log = [];
   const storage = new Memory(log),
     previous = withPrevious ? new MemoryPrevious(log) : undefined;
-  const open = () => new SaveRepository(storage, inspect, previous);
+  const open = () => new SaveRepository(storage, inspect, writeCheckpoint, previous);
   return { log, storage, previous, open };
 }
 /** The payload size whose checkpoint takes about `bytes` of conservative UTF-16. */
@@ -171,7 +171,7 @@ describe('save repository', () => {
   });
   it('migrates a two-slot layout', async () => {
     const { storage, previous, open } = setup();
-    const legacy = new SaveRepository(storage, inspect);
+    const legacy = new SaveRepository(storage, inspect, writeCheckpoint);
     await legacy.commit(checkpoint(1));
     await legacy.commit(checkpoint(2));
     expect(storage.getItem(B)).toBe(checkpoint(2));
