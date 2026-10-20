@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r93 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r94 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -99,7 +99,7 @@
 - WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
 
 - WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming); preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
-- WEB-32 [o] Match presentation defaults to 1x with approximately 4 real seconds per simulated minute on average, quicker through own-half build-up and slower near the box, at chances and at set pieces (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the pace changes presentation only and never changes settled outcomes or the game calendar.
+- WEB-32 [o] Match presentation defaults to 1x with exactly 4 real seconds per 60 match seconds of running playback, uniformly in and out of play (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole timeline, including added time and extra time. No situation-based acceleration or slowdown is applied. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar.
   - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
 
@@ -398,6 +398,10 @@
   - A selected design is not silently repainted into another palette. If the forthcoming fixture changes before commit, refresh its context rather than applying the old choice to a different match.
   - A historical or already settled match offers no kit-changing action. Skipping preparation keeps automatic selection and the existing watch/play-through paths.
 
+- WEB-89 [o] Existing league, player-comparison and scouting statistics display the complete settled records available under →MATCH-26/27 and →HIST-17, using the same metric definitions and denominators for own and other clubs.
+  - probability-generated game facts are not shown as missing or estimates solely because of their engine path. Missing historical periods remain unavailable; partial tracking names its starting point and sample size, never a fabricated full season or zero.
+  - retain existing navigation and load detail on request; no engine-selection control or new world-simulation settings are introduced.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -405,6 +409,7 @@
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## chg
+- r94 261020 WEB-32✎ approximately 4 s per minute with automatic pacing→constant 4 s per 60 match seconds at selected speed; WEB-89+ complete own/other-club numerical comparisons with tracking coverage
 - r93 261019 WEB-18/50✎ match clock and pitch playback buttons→speed-only live observation; WEB-32✎ live manual pause→speed resumes detailed seek and visibility resumes playback, archived controls kept; WEB-81✎ preview replacement→stable pending preview with current-condition confirmation
 - r92 261019 WEB-47✎ unconditional whole-pitch PPDA beside advanced PPDA→MATCH-13 for advanced samples, marked whole-pitch approximation only without those counters
 - r91 261019 WEB-2✎ single colour→club identity/three shirts; WEB-15✎ advanced colour field→visible design entry/editor; WEB-39/71✎ four operations tabs→+authoritative club-design tab; WEB-49✎ derived two-colour crests/single-colour kits→KIT-owned crests/patterned shirts; WEB-50✎ solid player colours→selected shirt patterns; WEB-86/87/88+ shared editor, pitch preview and pre-match kit choice

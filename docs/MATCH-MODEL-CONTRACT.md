@@ -1,0 +1,63 @@
+# Continuous match and aggregate-result contract
+
+This is an implementation specification for the follow-up tasks beginning at T272. It does not describe completed functionality. Gameplay policy belongs to MATCH r14, WEB r94, HIST r16, SAVE r50 and ARCH r16.
+
+## Ownership and sequencing
+
+- Existing task files and their accepted interfaces remain unchanged. Shared implementation begins after T255, the identity feature's final gate. T272 may build measurement tooling independently; capture its actual pre-change baseline on the source after T255 and before new football changes.
+- The work is standalone planning, with no assignments added to an active work-group lane. Every new task uses `lane:-`; exploration and its dependent tasks stay in the main session.
+- T273 owns shared DTOs, compatibility metadata and validators; T279 owns the aggregate kernel and input adapter; T282 owns the exact compact representation. Consumers use those contracts rather than parallel private variants.
+- The full-model production activation remains disabled until the combined release gate. Tests and measurement commands may request the candidate model explicitly. This is an internal release switch, not a player control or a runtime speed-dependent fallback.
+
+## Candidate model and safe activation
+
+- Define one `MATCH_MODEL_REVISION` in `packages/contracts/src/match-model.ts`, initially `continuous-aggregate-1`.
+- `World.matchModel` is optional for supported older worlds. When present it contains the recognized revision, activation game date/revision and first tracked boundary for the new counters. Missing metadata means the pre-feature model; unknown future revisions are typed compatibility failures.
+- A full-model `MatchRecord` carries its model revision and supplies the existing metrics, xG, TD, PD, participation/lineCounts, incidents, added-time and applicable knockout fields. Older records retain their actual optional-field presence. `FullMatchRecord` refines the existing DTO; it does not globally require new fields on historical records.
+- Add candidate-only adapters to detailed and aggregate processing while the release switch is off. A supported writer activates once at a safe boundary; no unsettled revealed playback is replaced, no settled fixture is replayed and no monetary or personnel fact is changed by the metadata upgrade.
+- Keep gameplay rules 4.0.0 compatibility. T273 defines `FULL_MODEL_CHECKPOINT_SCHEMA` as the next container after the identity feature's container; T282 implements its codec. Select that container only for candidate-model metadata/aggregates after the codec is available; ordinary unactivated worlds keep the existing writer format. Retain older readers and refuse future containers. Never classify a supported 4.0.0 save as resettable legacy data.
+- Activation uses the existing worker writer/commit protocol. Read-only and failed-write paths preserve source data and exportable memory. The final gate enables the release switch only after all required evidence passes.
+
+## One match-time coordinate
+
+- Engine coordinates remain metres on the existing pitch. Every recorded knot has an absolute elapsed match time, with a period identifier. All movement bounds and action durations are expressed against match seconds.
+- Preserve `MatchMotionSample.elapsedSeconds`. Extend frames with an explicit start time and a parallel time array for ball-track points; lengths, monotonicity and period membership are validated. Keep legacy frame decoding when explicit times are absent. Old `pace` values remain readable but candidate frames set a neutral pace and the new clock ignores situation weights.
+- Evaluate player and ball paths by their timestamps, not an assumed equal sample interval. Include semantic knots at a kick, arrival, reception, tackle, restart placement and change of intention. Crossing a minute does not reset a trajectory. Never interpolate across a declared period/seek boundary.
+- T274 defines shared `GRID_MOVEMENT_CONFIG` and `GRID_BALL_CONFIG` once. Start the ball model with pass/turnover speed 20 m per match second, restart 18, shot 30 and maximum 40; these are implementation defaults to measure, not a claim of researched football constants. Player top speed reuses the existing pace/fatigue calculation; initial acceleration is 4 m/s², braking 6 m/s² and maximum turn 180 degrees per match second. T278 may tune the shared configuration against the unchanged targets.
+- Schedule the action long enough for its physical route. Preparatory dead time contains player relocation and ball retrieval; the kick follows actual arrival. Do not move a taker, marker, receiver or set-piece participant directly to an unrelated location or shorten a flight to meet a preselected deadline.
+- T275 maps elapsed match time with `WATCH_MINUTE_MS` and selected speed, preserves the current position when speed changes, and supports old saved replays. Presentation never advances or reruns the engine.
+
+## Intentions and team reactions
+
+- Add transient `GridPlayer.intention`: kind, target, optional teammate/opponent reference, start time, expiry and cancellation/priority reason. It is match-local, not a new player attribute or a career DTO. Existing run state becomes a compatible view of that intention rather than an independent competing planner.
+- T276 owns the common intention lifecycle and priority order: unavailable/exit, restart assignment, immediate defensive danger, committed receiving/carrying action, then tactical support/run/mark/cover/recovery. A reasoned event can interrupt an intention; an ordinary update preserves it while feasible.
+- T277 owns side-level assignment of pressing, covering and support jobs using a shared snapshot, then individual role/trait choices. Stable roster IDs break ties. No processing-order advantage or repeated per-render random decisions is allowed.
+- The carrier consumes current teammate intentions in `decide.ts`. Record the active target, state and relevant partner in observation traces so the renderer and inspector show the same choice the engine uses. Existing four tactics, substitutions and manager authority remain intact.
+
+## Full aggregate facts
+
+- T279 defines `AggregateInput` and `AggregateTeamFacts` in `packages/engine/src/aggregate/types.ts`, plus `buildAggregateInput` in `aggregate/input.ts`. Consume the existing prepared strength, lineups, tactic effects and effective skills; do not create a second strength formula. Adapt the existing prepared match at dispatch rather than generating another world or another roster.
+- `generateTeamFacts(input, streams, participation)` creates coupled team facts: possession/time allocation, passing flows between coarse cells, attempts/completions, chances/shots with place and quality, set pieces, turnovers and advanced counters. It never steps all players through space or loops through every match minute.
+- Generate a compact internal ledger sufficient to derive the required numeric definitions. It may group actions and use coarse-cell flows; it is not an NPC frame trace and is discarded after complete result construction and ordinary settlement. xG, xA, xT, entries and pass classifications come from that shared ledger, not unrelated independent totals.
+- T280 defines `planParticipation` and `attributePlayerFacts`, then `simulateAggregate`. Plan legal era-dependent starters, substitutions, dismissals and injuries before final team production; pass their on-pitch intervals/strength effects to the kernel. Allocate only to eligible participants, by role and effective attributes, preserving exact team/player sums under the defined metrics.
+- Use separately named seeded streams for the candidate model, fixture and decision family. An observer, stat query, command count or unordered map iteration cannot change a draw. Reusing earlier named world streams must not perturb unrelated recruitment or finances.
+- For extra time, extend the aggregate period facts and participation intervals under the existing tie rule. Use the existing taker/keeper shootout rules, not a winner coin flip. Regulation and shootout scores remain distinct.
+- `validateFullMatchRecord` is shared by detailed and aggregate adapters. It checks all field widths/presence, contributions, classifications, time legality and derived totals. Violations fail before settlement; clamping unrelated outputs until they fit is not an acceptable replacement for coherent generation.
+
+## Current-season aggregates and retention
+
+- T273 defines `NpcSeasonStats` for one season: a tracking boundary, competition/club totals and compact participant identity plus per-club contributions. Preserve departed contributors until that season closes. Use stable IDs; do not clone full generated `Player` objects into the persistent ledger.
+- T281 owns one settlement reducer used by league, cup, playoff and European paths. It updates full current-season aggregates, existing scorers/availability/Elo and existing retained-person facts exactly once, keyed by the fixture. A settled or duplicate command is a no-op for accumulation.
+- T282 owns packing for the new DTO and model/coverage metadata. Width/presence tables are versioned and bounded; sparse columns and shared identity/competition indexes restore the exact canonical DTO. Missing, zero and untracked are distinct. Wrong dimensions, references or future metadata fail before activation.
+- Own matches and material retain their current history lifetimes and frozen kit appearances. NPC full match records are transient; after settlement the new ledger retains current-season aggregates, while existing older NPC archive/person scope remains unchanged. Do not retain all NPC maps or match traces to achieve numerical parity.
+- T283 extends existing projections/comparison views. It does not add a world-simulation settings screen. Fully tracked generated counters use the ordinary metric labels; earlier missing periods expose their tracking boundary and sample size.
+
+## Measurement registry and release evidence
+
+- T272 creates `scripts/lib/match-parity.ts` with the complete metric registry, units, invariant definitions, condition matrix, independently named training/validation seeds and all test budgets. Existing `Metrics`, TD and PD indexes remain authoritative; a new index without a registry entry fails coverage validation.
+- `PARITY_CONFIG` defines the numeric comparison settings once from MATCH-28. Treat a metric as rare by explicit registry classification; use an equivalence interval that fits its declared margin. Constant-reference variables and unidentifiable correlations are reported explicitly, not divided by zero or silently passed. Round counters in their canonical units before reconciliation.
+- `CORPUS_CONFIG` initially uses 600 calibration fixtures per core condition; calibration/pilot variance determines a predeclared validation size, initially at least 4,000 and at most 100,000 fixtures per condition. Rare-event conditions begin with 10,000. Freeze candidate parameters and the validation sample before evaluating it; further evaluations use fresh held-out seeds under a declared uncertainty procedure. These settings are not proof of sufficient power; an unresolved interval remains insufficient. Cover all strength-gap buckets already used by `calibrate.ts`, every tactic pairing, tier bands and era/knockout rules without claiming an unmeasured Cartesian product passed.
+- The report distinguishes absolute intended target bands, detailed-versus-aggregate equivalence, exact consistency and runtime/capacity results. Detailed-engine defects are named and fixed against intended targets; the aggregate model does not learn their error as a target.
+- T278 calibrates the changed detailed engine. T284 calibrates aggregate equivalence with held-out seeds and checks season distributions. T285 profiles and optimizes cost without weakening the registry or football rules. Each is a timeboxed exploration whose completion records residual failures; only T286 can declare the full model ready.
+- `PERFORMANCE_CONFIG` consumes ARCH-31's paired relative budgets and existing browser/storage limits. Record fingerprints, seeds, toolchain, machine, repetitions, timing components and actual check outcomes. Large measurement runs are CLI artifacts; unit tests use small independent fixtures.
+- T286 runs final combined parity and the unchanged local century/browser benchmarks, uses the batch/CI evidence required by ARCH-30 and verifies prospective activation and rollback refusal. An unmet accuracy or capacity gate leaves activation disabled and produces a concrete follow-up; no passing result is invented from a timebox exit.

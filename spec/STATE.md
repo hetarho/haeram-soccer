@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T12:23Z | - |
+| r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
@@ -134,22 +134,23 @@
 | expert-proposal-review | converted@261016 |
 | match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | converted@261019 |
+| match-continuity-and-performance | converted@261021 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 15 | 15 | - | 2 |
-| WEB | 93 | 93 | - | 0 |
+| ARCH | 16 | 16 | - | 2 |
+| WEB | 94 | 94 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 13 | 13 | - | 0 |
+| MATCH | 14 | 14 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 15 | 15 | - | 0 |
-| SAVE | 49 | 49 | - | 0 |
+| HIST | 16 | 16 | - | 0 |
+| SAVE | 50 | 50 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## review
@@ -175,6 +176,21 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
+| T272 | Define complete match metrics and reproducible measurement tooling | MATCH ARCH | - | todo |
+| T273 | Define candidate match contracts and supported-career compatibility | MATCH HIST SAVE ARCH | T255 T272 | todo |
+| T274 | Make candidate actions and restart preparation physically continuous | MATCH ARCH | T273 | todo |
+| T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
+| T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
+| T277 | Connect player intentions through support, pressing and covering reactions | MATCH PLAYER STAFF ARCH | T276 | todo |
+| T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
+| T279 | Generate coupled complete team facts without spatial or minute simulation | MATCH PLAYER STAFF ARCH | T273 | todo |
+| T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
+| T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
+| T282 | Preserve full aggregates and model coverage in bounded checkpoints | MATCH HIST SAVE KIT ARCH | T273 | todo |
+| T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
+| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
+| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -185,9 +201,24 @@
 | identity | 2 | 18 | 3 | 15 | 0 | 4 | 5 | 2026-10-20T16:03:21.631Z | [history](work/identity.json) |
 
 ## next
-- inspect work board for remaining tasks
+- identity group (p7x5 stopped 2026-10-20T15:43Z): sync the open identity tasks' bases to WEB r94 SAVE r50 ARCH r16 MATCH r14 in the planning space, resume both attempts, rerun `work run --work identity --provider claude --autopilot`; engine lane at T244 (task verify failed), editor lane approved awaiting integration; lane heads on wip/identity-engine, wip/identity-editor; red main CI first (WebKit owner-workflows, report 261020-p7x5)
+- implement-task T272; capture the post-T255 baseline before T273 changes football; existing identity task contracts remain unchanged
+- implement-task T273 after T255 and T272, then follow T274–T286 dependencies; exploration results must pass the final release gate
+- FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
+- 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
+- 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
+- 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
+- 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
+- 261020 create-task MATCH WEB HIST SAVE ARCH start: allocate T272 onward in main; keep all existing task files immutable and serialize shared implementation after T255.
+- 261020 update-ssot MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16: constant playback, coordinated intentions, full aggregate statistics, measured parity/speed and prospective supported-career activation; existing tasks unchanged.
+- 261020 update-ssot MATCH WEB HIST SAVE ARCH start: preserve existing task contracts and add follow-up work for continuous playback, coordinated intentions and complete calibrated probabilistic records.
+- 261020 ideation match-continuity-and-performance: owner selected complete probabilistic records equivalent to detailed play, starting from target football numbers and refining through measurement; MATCH-26 policy change, parity definition, tolerances and speed budget await SSOT planning.
+- 261020 ideation match-continuity-and-performance start: owner clarified full probabilistic records and iterative measured calibration.
+- 261020 ideation match-continuity-and-performance: mapped playback to completed T217/T225, agency to T206/T208 and the existing probabilistic path to T221/T224; continuity, coordinated intentions and cheaper aggregate results remain proposals; owner statistical scope pending.
+- 261020 ideation match-continuity-and-performance start
 - 261020 T235 T237 T239 integrated
 - 261020 T233 done: grid rebuild documents brought to the settled code (playback rewrite, engine design values, calibration, README), golden unchanged; batch at bba7485 (unit 1,271, contract 37, Chromium 186) and CI 39419491861 pass.
 - 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
@@ -197,14 +228,3 @@
 - 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
 - 261020 T222 done: level knockout ties play extra time and a kick-by-kick shoot-out on both paths; cups and Europe pass each tie's rule, the coin flips are gone, Elo reads the 90-minute score.
 - 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
-- 261020 T229 done (k4p2): player sheet 징계 and season heat maps, appearances = own records with minutes (substitutes as 교체 n), new counters in advanced stats, ban and warning badges, 부상·정지 on the home tile, the league 징계 table; the worker sends per-player `tallies` because the UI world holds only the last 30 own matches.
-- 261020 fix engine incidents: cards stamped mid-play read a minute before their frame and whistle dissent fell past the last added minute → `stampAt(period, t, added)` in playback.ts (per-period offsets, extra-time ready) stamps incidents and frame labels alike, cards re-stamped at the play's end (MATCH-24); golden unchanged by it.
-- 261020 fix e2e match-core: the full match loop takes 25–28 s alone at 390x844 (30 s limit) and timed out in two full runs → `test.slow()` like the other whole-journey specs.
-- 261020 T220 done: own matches settle substitutes' adaptation and fatigue by minutes, match injuries reach own players (CLUB-23 bands) and other clubs' `out` list, farewells count matches actually played.
-- 261020 fix tests calibration: the grid calibration samples take 70–80 s alone and passed 120 s in full loaded runs (three timeouts at load 20) → `SLOW` 120 → 360 s; no band changed.
-- 261020 fix engine counters: `TD/PD.cutBacks` count completed cut-backs only and a cross records its arrival cell (receiver or header taker; origin when it fails), so crosses into the box count as box entries (MATCH-13); golden regenerated (player detail rows only), glossary 컷백 text follows.
-- 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
-- 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
-- 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
-- 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
-- 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.

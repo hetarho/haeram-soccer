@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r15 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r16 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -197,6 +197,13 @@
   - a work group maps task → `--task-verify`, batch → `--verify`, and omits `--group-verify`: CI is the group gate.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
+- ARCH-31 [o] The continuous-match and full probabilistic-result release has paired accuracy, throughput and capacity gates (→MATCH-28 and →SAVE-23).
+  - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
+  - fixtures without the own club target at most 50% of the baseline summary path's median processing time with full numerical records enabled. Complete-season engine time targets at most 80% of the baseline for both existing century workload profiles; do not skip clubs, competitions, calendar effects, player records or business actions to meet it.
+  - compare paired runs with the same world scenarios; absolute historical measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
+  - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending does not make the model pass its release gate.
+  - the final combined movement, intention and aggregate model must pass together. Reusing a reference measured before a relevant football change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
+
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
@@ -215,6 +222,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r16 261020 ARCH-31+ paired complete-model accuracy and performance gates, NPC fixture time ≤50% and season engine time ≤80% of same-machine pre-change baseline, unchanged browser/storage budgets
 - r15 261020 ARCH-21✎ setup simulation in unit tests→shared simulated test worlds (`tests/fixtures/worlds.ts`), simulate only the verified step; ARCH-23✎ unit tests leave the checks job for three parallel shards with a cached world store
 - r14 261020 ARCH-23✎ storage and first-play benchmarks on every push→only on demand in a manually dispatched workflow; a storage or release gate task runs `pnpm run benchmark` locally or has the owner dispatch it
 - r13 261020 ARCH-30✎ task tier: covering Chromium specs for UI/journey/storage/worker changes→no browser specs, `pnpm run build` only; browser specs only in the batch run right before a push to main, which confirms acceptance items naming e2e specs (task: `- [v]` + specs in `- limits:`); `pnpm run verify` in a storage/release gate task→never in a task
