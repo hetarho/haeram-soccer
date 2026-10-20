@@ -220,6 +220,43 @@
   font-size: 22px;
   font-variant-numeric: tabular-nums;
 }
+/* The manager's matchday squad around the XI: read-only facts under the formation. */
+.matchday {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface-2);
+}
+.matchday h4 {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+.matchday dl {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0;
+}
+.matchday dl > div {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: var(--display);
+}
+.matchday dt {
+  color: var(--text-muted);
+}
+.matchday dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.matchday ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 .slots {
   margin-top: 10px;
   border: 1px solid var(--line);

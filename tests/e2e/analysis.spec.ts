@@ -384,11 +384,24 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await sheet.getByText('전술 실험실 · 네 가지 비교', { exact: true }).click();
   const lab = sheet.getByRole('region', { name: '전술 실험실', exact: true });
   await expect(lab.getByRole('article')).toHaveCount(4);
-  await expect(lab).toContainText('0.0 pp');
+  await expect(lab).toContainText('적용 대비 0.0 pp');
+  // Each tactic draws its own formation with the previewed lineup in it (→WEB-21).
+  await expect(lab.getByRole('group', { name: /배치$/ })).toHaveCount(4);
+  await expect(lab.getByRole('group', { name: /4-2-3-1 배치$/ })).toBeVisible();
   const press = lab.getByRole('button', { name: /압박 실험 미리보기$/ });
   await press.click();
   await expect(press).toHaveAttribute('aria-pressed', 'true');
   expect((await press.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // Under the formation: the era's rule, the manager's substitutes, takers and who is out.
+  await sheet.getByRole('tab', { name: '선발 선택', exact: true }).click();
+  const squad = sheet.getByRole('region', { name: '감독이 정한 경기 명단', exact: true });
+  await expect(squad).toContainText('교체 없음 (1965년 이전)');
+  await expect(squad.getByRole('definition').first()).toHaveText('없음');
+  for (const taker of ['페널티킥', '직접 프리킥', '코너킥'])
+    await expect(squad.getByRole('term').filter({ hasText: taker })).toBeVisible();
+  await expect(squad.getByRole('definition').nth(1)).not.toHaveText('—');
+  await expect(squad.getByRole('definition').last()).toHaveText('없음');
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toHaveText(appliedText);
   await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');

@@ -25,20 +25,23 @@ export const POSITION_SPOT: Record<Position, readonly [number, number]> = {
 
 /**
  * A formation drawn on a vertical pitch (→CLUB-10, STAFF-22): each of its 11 slots where its
- * position stands, holding what `slot` renders for it.
+ * position stands, holding what `slot` renders for it. `compact` draws a shorter pitch for a card,
+ * such as one of the tactic laboratory's four (→WEB-21).
  */
 export function FormationPitch({
   tactic,
   label,
   slot,
+  compact,
 }: {
   tactic: Tactic;
   label: string;
   slot: (index: number) => ReactNode;
+  compact?: boolean;
 }) {
   const spots = MATCH_MOTION_CONFIG.formations[tactic];
   return (
-    <div className={s.pitch} role="group" aria-label={label}>
+    <div className={compact ? `${s.pitch} ${s.compact}` : s.pitch} role="group" aria-label={label}>
       <span className={s.half} aria-hidden="true" />
       <span className={s.box} aria-hidden="true" />
       {FORMATIONS[tactic].slots.map((place, index) => {

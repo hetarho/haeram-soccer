@@ -36,6 +36,30 @@
   justify-items: center;
   text-align: center;
 }
+/* A card's pitch: shorter, its slots a name tag each. */
+.compact {
+  aspect-ratio: 3 / 3.6;
+  max-height: 320px;
+  margin: 10px 0;
+}
+.compact .slot {
+  width: 23%;
+}
+.name {
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 2px 3px;
+  border-radius: 2px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--display);
+}
 .mini {
   max-width: 150px;
   max-height: 210px;

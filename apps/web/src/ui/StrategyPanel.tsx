@@ -1,11 +1,13 @@
 import { Select } from './Select';
 import { FacilityArt } from './FacilityArt';
 import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
-import type { Player, Tactic, World } from '../../../../packages/contracts/src/types';
+import type { Ban, Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import {
   activePlayers,
   clubOf,
   formationOf,
+  injuryDaysLeft,
+  isInjured,
   ownMultiplier,
   quote,
   slotOvr,
@@ -19,6 +21,13 @@ import {
   tacticalProfile,
 } from '../../../../packages/engine/src/strategy';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { isUnavailable } from '../../../../packages/engine/src/discipline';
+import {
+  benchFor,
+  eraRules,
+  takersFor,
+  type EraRules,
+} from '../../../../packages/engine/src/grid/setup';
 import { tacticRequestOutlook } from '../../../../packages/engine/src/ops-staff';
 import { FORMATIONS, lineOf, ROLE_LABEL } from '../../../../packages/engine/src/player';
 import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
@@ -57,6 +66,102 @@ const styles: Record<Tactic, { advantage: string; tradeoff: string }> = {
     tradeoff: '피로 비용이 커요. 지친 선수단은 압박 효과가 떨어져요.',
   },
 };
+/** The era's substitute rule in one line (→MATCH-20). */
+function eraRuleLine(era: EraRules) {
+  if (!era.named) return '교체 없음 (1965년 이전)';
+  if (era.injuryOnly) return `부상 교체 ${era.maxSubs}명`;
+  return `교체 명단 ${era.named}명 · 최대 ${era.maxSubs}명 교체${era.windows ? ` (${era.windows}회)` : ''}`;
+}
+/** Where a ban counts: the league, a named domestic cup, every domestic competition or Europe. */
+function banScope(w: World, scope: Ban['scope']) {
+  if (scope === 'league') return '리그';
+  if (scope === 'domestic') return '국내 대회';
+  if (scope === 'europe') return '유럽 대회';
+  return (
+    w.cups?.find((cup) => cup.fixtures.some((f) => `cup:${f.groupKey}` === scope))?.name ||
+    '컵 대회'
+  );
+}
+
+/**
+ * What the manager names around the XI for the next fixture, read-only (→CLUB-6, MATCH-20): the
+ * substitutes, the set-piece takers as the match picks them, and who is out and why.
+ */
+function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
+  const next = nextOwnFixture(w);
+  const era = eraRules(w.year);
+  const bench = next
+    ? benchFor(w, clubOf(w), xi, era, (p) => isUnavailable(w, p, w.playerClub, next))
+    : benchFor(w, clubOf(w), xi, era);
+  const takers = xi.length ? takersFor(xi) : undefined;
+  const bans = w.discipline?.bans ?? [];
+  const out = activePlayers(w).flatMap((player) => {
+    const own = bans.filter((ban) => ban.player === player.id);
+    const unavailable = next
+      ? isUnavailable(w, player, w.playerClub, next)
+      : isInjured(w, player) || own.length > 0;
+    if (!unavailable) return [];
+    const days = injuryDaysLeft(w, player);
+    return [
+      {
+        player,
+        reasons: [
+          ...(days > 0 ? [`부상 ${days}일`] : []),
+          ...own.map((ban) => `출장 정지 ${ban.matches}경기 (${banScope(w, ban.scope)})`),
+        ],
+      },
+    ];
+  });
+  return (
+    <section className={s.matchday} aria-label="감독이 정한 경기 명단">
+      <h4>감독이 정한 경기 명단</h4>
+      <p className={s.hint}>{eraRuleLine(era)}</p>
+      <dl>
+        <div>
+          <dt>교체 명단</dt>
+          <dd>
+            {bench.length
+              ? bench.map((player) => `${player.name} (${player.position})`).join(' · ')
+              : '없음'}
+          </dd>
+        </div>
+        {(
+          [
+            ['penalty', '페널티킥'],
+            ['directFreeKick', '직접 프리킥'],
+            ['corner', '코너킥'],
+          ] as const
+        ).map(([key, label]) => (
+          <div key={key}>
+            <dt>{label}</dt>
+            <dd>{takers ? xi[takers[key]]!.name : '—'}</dd>
+          </div>
+        ))}
+        <div>
+          <dt>출전 불가</dt>
+          <dd>
+            {out.length ? (
+              <ul>
+                {out.map(({ player, reasons }) => (
+                  <li key={player.id}>
+                    {player.name} · {player.position} · {reasons.join(' · ')}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              '없음'
+            )}
+          </dd>
+        </div>
+      </dl>
+      <p className={s.hint}>
+        교체 명단과 키커는 감독이 선발에 맞춰 정해요. 부상이나 징계로 빠진 선수는 명단에 오르지
+        않아요.
+      </p>
+    </section>
+  );
+}
+
 function Preview({
   players,
   baseline,
@@ -132,7 +237,11 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
       if (!opening.current) return;
       const current = gameStore.getSnapshot().view?.world;
       if (current) {
-        setDraft(startingSquad(current, clubOf(current)).map((player) => player.id));
+        setDraft(
+          startingSquad(current, clubOf(current), nextOwnFixture(current)).map(
+            (player) => player.id,
+          ),
+        );
         setTactic(current.tactic);
       }
       setPreparing(false);
@@ -141,7 +250,9 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
   useEffect(() => {
     openPreparation();
   }, [openPreparation]);
-  const baseline = startingSquad(w, clubOf(w));
+  const next = nextOwnFixture(w);
+  // The XI the manager fields for the next fixture: nobody injured or banned for it (→CLUB-6).
+  const baseline = startingSquad(w, clubOf(w), next);
   const players = activePlayers(w);
   const byId = new Map(players.map((player) => [player.id, player]));
   const selected = draft.flatMap((id) => (byId.get(id) ? [byId.get(id)!] : []));
@@ -149,7 +260,6 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
   const valid =
     draft.length === 11 && new Set(draft).size === 11 && draft.every((id) => byId.has(id));
   const slots = formationOf(w.tactic);
-  const next = nextOwnFixture(w);
   const opponentId = next && (next.home === w.playerClub ? next.away : next.home);
   const opponent = w.clubs.find((club) => club.id === opponentId);
   const opponentTactic = opponent ? npcTactic(opponent) : undefined;
@@ -175,8 +285,9 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
     const reply = await client.command({ type: 'lineup', ids }, { background: true });
     if (reply?.ok && reply.view) {
       if (ids === null) setPreset('current');
+      const world = reply.view.world;
       setDraft(
-        startingSquad(reply.view.world, clubOf(reply.view.world)).map((player) => player.id),
+        startingSquad(world, clubOf(world), nextOwnFixture(world)).map((player) => player.id),
       );
       setMessage(
         ids
@@ -346,6 +457,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                 결과에 영향을 줍니다.
               </p>
               <TacticalLab
+                w={w}
                 players={valid ? selected : baseline}
                 applied={w.tactic}
                 selected={tactic}
@@ -420,7 +532,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   disabled={blocked}
                   aria-pressed={preset === 'strongest'}
                   onClick={() => {
-                    setDraft(lineupPreset(w, 'strongest'));
+                    setDraft(lineupPreset(w, 'strongest', next));
                     setPreset('strongest');
                   }}
                 >
@@ -430,7 +542,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   disabled={blocked}
                   aria-pressed={preset === 'rest'}
                   onClick={() => {
-                    setDraft(lineupPreset(w, 'rest'));
+                    setDraft(lineupPreset(w, 'rest', next));
                     setPreset('rest');
                   }}
                 >
@@ -468,6 +580,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   );
                 }}
               />
+              <MatchdaySquad w={w} xi={valid ? selected : baseline} />
               {replaced > 0 && (
                 <p className={s.hint}>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</p>
               )}
