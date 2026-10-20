@@ -649,6 +649,16 @@ describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () =>
     expect(canonical(restored.ownMatches.map((m) => m.appearance))).toBe(recorded);
   });
 
+  it('reads a career saved before identities without installing any: only activation adopts', async () => {
+    const legacy = observed(1);
+    for (const club of legacy.clubs) delete club.identity;
+    for (const match of legacy.ownMatches) delete match.appearance;
+    const loaded = (await decode(await encode(legacy))).world;
+    expect(canonical(loaded)).toBe(canonical(legacy));
+    expect(loaded.clubs.some((club) => club.identity)).toBe(false);
+    expect(loaded.ownMatches.some((match) => 'appearance' in match)).toBe(false);
+  });
+
   it('rejects a damaged appearance stream and reports a newer one as incompatible', async () => {
     const w = identityCareer();
     const swapped = pack(w);

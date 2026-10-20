@@ -17,13 +17,17 @@ import {
   advanceRound,
   createIdentityDraft,
   createWorld,
+  identityOf,
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
+import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
+import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
+import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
@@ -389,6 +393,107 @@ describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
     expect(canonical(w)).toBe(before);
     expect(w.kitChoice).toEqual({ fixtureId: next.id, role: 'away' });
     expect(w.receiptIds.filter((id) => id === 'stale' || id === 'later')).toEqual([]);
+  });
+});
+
+/** A supported career saved before club identities: no designs, no recorded appearances. */
+function withoutIdentities(w: World) {
+  for (const club of w.clubs) delete club.identity;
+  for (const match of w.ownMatches) delete match.appearance;
+  return w;
+}
+const activate = (id: string, raw: string, upgrade = true) =>
+  req(id, -1, { type: 'inspect', raw, activate: true, upgrade });
+
+describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
+  it('inspect/read-only activation does not install identities or increment revision', async () => {
+    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    const raw = await encode(legacy);
+    const h = new Host();
+    const inspected = await h.handle(req('inspect', -1, { type: 'inspect', raw }));
+    expect(inspected.ok, inspected.error).toBe(true);
+    expect(inspected.upgraded).toBeUndefined();
+    expect(canonical(inspected.candidate)).toBe(canonical(legacy));
+    const metadata = await h.handle(req('meta', -1, { type: 'inspect', raw, metadataOnly: true }));
+    expect(metadata.worldMetadata).toEqual({ id: legacy.id, revision: legacy.revision });
+    expect(
+      (await h.handle(req('upgrade-only', -1, { type: 'inspect', raw, upgrade: true }))).ok,
+    ).toBe(false);
+    const readonly = await h.handle(activate('readonly', raw, false));
+    expect(readonly.ok, readonly.error).toBe(true);
+    expect(readonly.upgraded).toBeUndefined();
+    expect(readonly.raw).toBeUndefined();
+    expect(canonical(h.world)).toBe(canonical(legacy));
+    expect(h.world!.clubs.some((club) => club.identity)).toBe(false);
+  });
+
+  it('writer adoption preserves exact legacy crests and sporting facts', async () => {
+    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    expect(legacy.ownMatches.length).toBeGreaterThan(0);
+    const crests = legacyCrestMap({ ...legacy, clubs: legacy.clubs.slice() });
+    const h = new Host();
+    const reply = await h.handle(activate('adopt', await encode(legacy)));
+    expect(reply.ok, reply.error).toBe(true);
+    expect(reply.upgraded).toBe(true);
+    const w = h.world!;
+    expect(w.revision).toBe(legacy.revision + 1);
+    for (const club of w.clubs) {
+      expect(club.identity!.crest).toEqual(crests.get(club.id));
+      expect(club.identity).toEqual(identityOf(legacy, club.id));
+      expect(club.identity!.colours[0]).toBe(club.color);
+    }
+    // Nothing else moves: colours, sporting facts and the absence of every historical kit stay.
+    expect(w.ownMatches.every((m) => !('appearance' in m))).toBe(true);
+    expect(
+      canonical({
+        ...w,
+        revision: legacy.revision,
+        clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
+      }),
+    ).toBe(canonical(legacy));
+    // The validated candidate the client commits is the adopted world.
+    expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(w));
+    const again = new Host();
+    const repeat = await again.handle(activate('again', reply.raw!));
+    expect(repeat.ok, repeat.error).toBe(true);
+    expect(repeat.upgraded).toBeUndefined();
+    expect(repeat.raw).toBeUndefined();
+    expect(canonical(again.world)).toBe(canonical(w));
+  });
+
+  it('moves the revision once whatever upgrades together, and never past a safe integer', async () => {
+    const pinned = withoutIdentities(simulatedWorld(input));
+    pinned.revision = 9;
+    pinned.catalog = '2026-demo-2';
+    pinned.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-2'];
+    const h = new Host();
+    const both = await h.handle(activate('both', await encode(pinned)));
+    expect(both.ok, both.error).toBe(true);
+    expect(both.upgraded).toBe(true);
+    expect(h.world!.revision).toBe(10);
+    expect(h.world!.catalog).toBe(CATALOG_VERSION);
+    expect(h.world!.clubs.every((club) => club.identity)).toBe(true);
+    const top = withoutIdentities(simulatedWorld(input));
+    top.revision = Number.MAX_SAFE_INTEGER;
+    const full = new Host();
+    const refused = await full.handle(activate('top', await encode(top)));
+    expect(refused.ok).toBe(false);
+    expect(refused.error).toContain('revision');
+    expect(full.world).toBeUndefined();
+  });
+
+  it('leaves earlier gameplay and future designs to their compatibility rules', async () => {
+    const earlier = withoutIdentities(simulatedWorld(input));
+    earlier.engine = '3.0.0';
+    const future = simulatedWorld(input);
+    future.clubs[0].identity = { ...future.clubs[0].identity!, version: 2 as 1 };
+    for (const world of [earlier, future]) {
+      const h = new Host();
+      const reply = await h.handle(activate('incompatible', await encode(world)));
+      expect(reply.ok).toBe(false);
+      expect(reply.errorCode).toBe('save-compatibility');
+      expect(h.world).toBeUndefined();
+    }
   });
 });
 
