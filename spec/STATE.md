@@ -134,6 +134,7 @@
 | expert-proposal-review | converted@261016 |
 | match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | converted@261019 |
+| match-continuity-and-performance | open@261020 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -186,8 +187,11 @@
 
 ## next
 - inspect work board for remaining tasks
+- ideation match-continuity-and-performance 계속: fixed playback speed and continuous movement, coordinated player intentions, cheaper probabilistic other-club results; owner statistical scope pending
 
 ## log
+- 261020 ideation match-continuity-and-performance: mapped playback to completed T217/T225, agency to T206/T208 and the existing probabilistic path to T221/T224; continuity, coordinated intentions and cheaper aggregate results remain proposals; owner statistical scope pending.
+- 261020 ideation match-continuity-and-performance start
 - 261020 T235 T237 T239 integrated
 - 261020 T233 done: grid rebuild documents brought to the settled code (playback rewrite, engine design values, calibration, README), golden unchanged; batch at bba7485 (unit 1,271, contract 37, Chromium 186) and CI 39419491861 pass.
 - 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
@@ -206,5 +210,3 @@
 - 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
 - 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
 - 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
-- 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
-- 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.

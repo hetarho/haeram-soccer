@@ -1,0 +1,41 @@
+# IDEATION match-continuity-and-performance
+> st:open@261020 | Make match playback continuous, make players' intentions readable and keep the rest of the world fast.
+
+## vision
+The owner reports slow passages while the ball is out of play followed by sudden ball and player movement, players who seem to move separately rather than act as footballers, and slower progression after the engine rebuild. Watching the own club should feel continuous and purposeful; other fixtures should preserve credible results and records without the cost of full spatial simulation.
+
+## explored
+- [o] Investigate the three reported problems against remaining tasks and the current implementation before proposing additional work.
+- [o] The remaining task scope does not directly fix these problems: at the inspection of `5411896`, the open work is the club identity and kit feature. T253 changes recorded appearance in the theatre; T255 measures release budgets, including pitch FPS, but neither specifies continuity, player agency or a cheaper result generator.
+- [o] Playback already has relevant completed work: T217 builds the ball/player tracks and T225 applies automatic pacing. `MATCH-12` and `WEB-32` deliberately slow chances and set pieces; `presentationClock.ts` spends `4000 ms × frame.pace / selected speed` on a match minute. This does not promise a constant tempo at 1x.
+- [?] Keep the owner's selected playback speed throughout the match, including stoppages. This reopens the earlier `match-engine-rebuild` rejection of one tempo; the owner's new reason is the slow-wait/fast-action experience. The meaning of 1x remains to be chosen: today's average four real seconds per match minute, or literal real time.
+- [o] Code inspection identifies continuity risks rather than a reproduced screen defect: `grid/playback.ts` compresses flights to fit the next recorded action, walks restart takers to their spots in at most 0.9 motion seconds and samples player positions eight times per match minute (the ball eighty times). `grid/restarts.ts` places the taker directly at the restart spot, and `grid/shape.ts` places set-piece participants directly. Playback interpolates recorded positions, so fixed pacing alone does not establish physically continuous movement or fix every fast transition.
+- [?] Assess continuity through the sequence ball out → retrieval/placement → players reposition → kick → receiver, including minute and period boundaries. Select a speed rule together with a rule for traversing these movements; final displayed coordinates alone are insufficient.
+- [o] Individual behaviour already has a foundation: T206 implements shape, pressing, marking and runs; T208 chooses the carrier's actions from position, role, traits, situation and decision quality. `grid/shape.ts` also retains an active run until its expiry. This is not a blank-slate request for player autonomy.
+- [?] Strengthen intentions and teammate coordination beyond the existing targets and retained runs. Candidate visible examples: a player shows to receive while another opens a passing lane; a winger holds the ball for an overlap; one defender presses while another covers; a player abandons a run when its pass is no longer possible. The owner has not selected these examples or a new simulation model.
+- [?] Individuality should show in choices and reactions under a shared tactical purpose. Merely adding separate random movement would not address the reported lack of connected football.
+- [o] The own/other-club split is already active: T224 set `OWN_LEAGUE_ENGINE = 'summary'`; `simulateMatch` always uses the grid for an own-club fixture and the summary path for every other fixture under the production default. Observation changes only whether frames are built. T221 adds probabilistic discipline and injuries; T224 keeps the own league's basic named player lines.
+- [o] The existing summary is lighter than spatial simulation but still runs `playMinute` 90 times per match (120 in extra time), drawing possession, pass counts, chances and shot outcomes. It already returns the common `MatchPlayback`/`MatchRecord` shape, with empty frames and player lines only where players are recorded.
+- [?] Replace the minute loop for other-club fixtures with a cheaper aggregate result generator while preserving the agreed outcome and record distributions. This is a new extension to completed work, not an unfinished switch to the summary path; no sampler or implementation strategy is selected here.
+- [?] Interpret comparable numbers as comparable distributions conditional on strength, tactic, home advantage and other agreed factors, not the same score in every fixture or exact equality to the grid's result for each seed. Scores, scorers, assists, player/team totals, suspensions and injuries must remain mutually consistent. Saved inputs must reproduce the same result independently of viewing.
+- [o] Statistical parity is currently bounded: `MATCH-26` keeps other-club players' grid-only counters absent and forbids estimates. Offering the same detailed fields would therefore reopen this policy; the existing common result type does not mean every metric is produced by both paths. An optional owner question asks whether basic records are sufficient or labelled estimates of detailed statistics are wanted.
+- [o] Existing evidence is historical, not a new benchmark: T224 measured 42.67 s/season with the own league on the grid versus 8.43 s on summary and 5.11 s for rules 3.0.0 on one Xeon machine (`docs/CALIBRATION.md`). T232 later recorded about 8.5 s/season in STATE. A fresh profile is needed before attributing today's remaining delay to other-club matches or promising a speedup. Existing grid tactic-balance gaps in the calibration document also prevent claiming exact statistical parity today.
+- [?] Suggested sequence for the owner's consideration: playback continuity and predictable speed → profile progression and assess a cheaper other-club generator → stronger individual intentions and coordinated reactions. The third item may add own-match computation, so its cost belongs in that evaluation.
+
+## shape
+- flow: compare the request with existing tasks and engine behaviour → identify gaps → owner chooses the scope → update the affected SSOTs → create implementation tasks.
+- v1 candidates: predictable selected speed with continuous restart/action transitions; intentions and coordinated reactions that make existing roles and traits visible; cheaper non-own results with agreed statistical parity. Existing sports rules, save compatibility and calibration need an explicit assessment before implementation.
+- v1 boundary is open: no new engine architecture, detailed-stat estimation policy or change to the meaning of 1x has been adopted.
+
+## domains
+- MATCH: revisit MATCH-12 timing and continuity; assess MATCH-16/17 intentions and coordination; extend MATCH-22's existing split and revisit MATCH-26 only if detailed estimates are wanted; preserve MATCH-2/7 calibration and determinism.
+- WEB: revisit WEB-32 selected playback speed, its real-time mapping and readable movement.
+- PLAYER/STAFF: individual tendencies and coordinated behaviour within existing roles and tactics, only where current rules are insufficient.
+- ARCH: profile progression and establish an agreed processing budget before any performance claim.
+
+## open
+- Which reported discontinuities reproduce on the current build, and which come from pacing, compressed actions, sparse player sampling or repositioning? Screen-level reproduction has not been performed in this ideation session.
+- Should fixed 1x preserve today's average four seconds per match minute or mean one real second per match second? Fixed tempo also changes how long ordinary build-up and stoppages feel.
+- Which coordinated behaviours best convey the desired individual agency, and how much extra own-match processing is acceptable?
+- Are basic other-club records sufficient, or should currently absent detailed counters become explicitly labelled estimates? The optional owner question is pending; no policy change is implied by recording the idea.
+- Which outcome/record distributions and tolerances must an aggregate generator preserve, and what season-time target would make the change worthwhile?
