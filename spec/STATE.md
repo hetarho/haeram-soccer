@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:25Z | T228 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:50Z | T229 |
 | - |
 | z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T05:55Z | T220 |
 
@@ -160,8 +160,7 @@
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
-| T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | doing |
-| T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
+| T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | doing |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
@@ -196,6 +195,7 @@
 - implement-task T220, then T221, T222 (k4p2 runs T223 → T227 beside them); T232's manual benchmark run closes T271
 
 ## log
+- 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
 - 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
 - 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
 - 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
