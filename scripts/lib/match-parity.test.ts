@@ -1,0 +1,357 @@
+import { describe, expect, it } from 'vitest';
+import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
+import type { MatchRecord } from '../../packages/contracts/src/types';
+import { M } from '../../packages/engine/src/grid/record';
+import { zeroMetrics } from '../../packages/engine/src/primitives';
+import {
+  buildCoverageReport,
+  buildEquivalenceReport,
+  buildInvariantReport,
+  buildPerformanceReport,
+  buildTargetReport,
+  compareDistributions,
+  comparePerformance,
+  compareRelationship,
+  CORPUS_CONFIG,
+  corpusFixtureIds,
+  COUNTER_INDEXES,
+  INCIDENT_KINDS,
+  METRIC_BY_ID,
+  METRIC_REGISTRY,
+  normalQuantile,
+  observe,
+  requiredRareEvents,
+  seedOverlap,
+  validateCorpusConfig,
+  validateRegistry,
+  validationSize,
+  type MatchSample,
+  type Observations,
+  type PerformanceComponent,
+  type Provenance,
+} from './match-parity';
+
+// Synthetic records and observations only (→ARCH-21): no engine run, no claim about real matches.
+function team(goals = 0, shots = 12) {
+  const m = zeroMetrics();
+  m[M.goals] = goals;
+  m[M.passes] = 400;
+  m[M.completed] = 320;
+  m[M.shots] = shots;
+  m[M.onTarget] = Math.max(goals, 4);
+  m[M.minutes] = 90;
+  m[M.possession] = 45;
+  return m;
+}
+function record(overrides: Partial<MatchRecord> = {}): MatchRecord {
+  return {
+    id: 'synthetic:1',
+    year: 2024,
+    round: 1,
+    kind: 'league',
+    home: 'SYN:H',
+    away: 'SYN:A',
+    country: 'ENG',
+    groupKey: 'ENG:0:0',
+    score: { home: 0, away: 0 },
+    metrics: [team(), team()],
+    players: [],
+    highlights: [],
+    tactics: ['balanced', 'balanced'],
+    ...overrides,
+  };
+}
+const sample = (r: MatchRecord, incidentsTracked = true): MatchSample => ({
+  record: r,
+  incidentsTracked,
+  condition: 'core:equal-top-tier',
+});
+/** Values at evenly spaced normal quantiles: a deterministic sample with this mean and spread. */
+const spread = (n: number, mean: number, sd: number) =>
+  Array.from({ length: n }, (_, i) => mean + sd * normalQuantile((i + 0.5) / n));
+const obs = (values: number[]): Observations => ({
+  values,
+  clusters: values.map((_, i) => i),
+  missing: 0,
+  undefinedRatios: 0,
+  zeros: values.filter((v) => v === 0).length,
+});
+const mean = { id: 'td.crosses', comparison: 'mean-cdf' as const, applies: true };
+
+describe('match parity registry', () => {
+  it('covers every counter exactly once', () => {
+    expect(validateRegistry()).toEqual([]);
+    for (const [family, indexes] of Object.entries(COUNTER_INDEXES)) {
+      const covered = METRIC_REGISTRY.filter((d) => d.family === family).map((d) => d.index);
+      expect(covered.sort((a, b) => a! - b!)).toEqual(Object.values(indexes).sort((a, b) => a - b));
+    }
+    expect(
+      METRIC_REGISTRY.filter((d) => d.family === 'incident')
+        .map((d) => d.key)
+        .sort(),
+    ).toEqual([...INCIDENT_KINDS].sort());
+    // A counter appended to the contracts without an entry fails coverage.
+    const grown = { ...COUNTER_INDEXES, 'team-detail': { ...TD, newCounter: 31 } };
+    expect(validateRegistry(METRIC_REGISTRY, grown)).toContain(
+      'team-detail index 31 (newCounter) has no registry entry',
+    );
+    const copy = { ...METRIC_BY_ID.get('td.keyPasses')!, id: 'td.keyPassesAgain' };
+    expect(validateRegistry([...METRIC_REGISTRY, copy])).toContain(
+      'team-detail index 0 is covered by td.keyPasses and td.keyPassesAgain',
+    );
+    const unknown = { ...METRIC_BY_ID.get('ratio.ppda')!, id: 'ratio.other' };
+    unknown.ratio = { ...unknown.ratio!, numerator: 'td.nothing' };
+    expect(validateRegistry([...METRIC_REGISTRY, unknown])).toContain(
+      'ratio.other refers to unknown td.nothing',
+    );
+  });
+
+  it('rejects missing metrics instead of zero filling', () => {
+    // A legacy-summary-like record: no advanced counters, xG, player lines or added time.
+    const bare = sample(record());
+    // A detailed record whose advanced counters really are zero.
+    const zero = sample(record({ detail: [emptyTeamDetail(), emptyTeamDetail()], xg: [0, 0] }));
+    const keyPasses = METRIC_BY_ID.get('td.keyPasses')!;
+    expect(observe([bare], keyPasses)).toMatchObject({ values: [], missing: 1, zeros: 0 });
+    expect(observe([zero], keyPasses)).toMatchObject({ values: [0, 0], missing: 0, zeros: 2 });
+    const coverage = buildCoverageReport([bare, zero]);
+    expect(coverage.rows.find((r) => r.id === 'td.keyPasses')).toMatchObject({
+      present: 1,
+      missing: 1,
+      zeros: 2,
+    });
+    expect(coverage.missing).toEqual(expect.arrayContaining(['td.keyPasses', 'pd.xg', 'team.xg']));
+    expect(coverage.notApplicable).toEqual(['player.possession']);
+    // No crosses attempted: the completion share is undefined, not 0%.
+    expect(observe([zero], METRIC_BY_ID.get('ratio.crossCompletion')!)).toMatchObject({
+      values: [],
+      undefinedRatios: 2,
+      missing: 0,
+    });
+    // Untracked incidents are missing; tracked with none recorded are real zeros.
+    const red = METRIC_BY_ID.get('incident.red')!;
+    expect(observe([sample(record(), false)], red).missing).toBe(1);
+    expect(observe([bare], red)).toMatchObject({ missing: 0, zeros: 2 });
+
+    const report = buildEquivalenceReport({
+      reference: Array.from({ length: 40 }, () => zero),
+      candidate: Array.from({ length: 40 }, () => bare),
+    });
+    expect(report.metrics.find((m) => m.id === 'td.keyPasses')!.status).toBe('missing');
+    expect(report.metrics.find((m) => m.id === 'season.championPpg')!.status).toBe('missing');
+    expect(report.passed).toBe(false);
+    const targets = buildTargetReport([bare]);
+    expect(targets.find((t) => t.id === 'crosses')!.status).toBe('missing');
+    expect(targets.find((t) => t.id === 'passForward')!.status).toBe('missing');
+  });
+
+  it('keeps training and validation seeds disjoint', () => {
+    expect(validateCorpusConfig(CORPUS_CONFIG)).toEqual([]);
+    const ids = (partition: 'calibration' | 'validation', round = 0) =>
+      CORPUS_CONFIG.conditions.flatMap((c) => corpusFixtureIds(partition, c.id, 50, round));
+    const calibration = ids('calibration'),
+      validation = ids('validation'),
+      heldOut = ids('validation', 1);
+    expect(new Set(calibration).size).toBe(calibration.length);
+    for (const world of CORPUS_CONFIG.conditions[0]!.params.worldSeeds as string[]) {
+      expect(seedOverlap(calibration, validation, world)).toEqual({ ids: [], streams: 0 });
+      expect(seedOverlap(validation, heldOut, world)).toEqual({ ids: [], streams: 0 });
+    }
+    expect(corpusFixtureIds('validation', 'gap:10', 3)).toEqual(
+      corpusFixtureIds('validation', 'gap:10', 3),
+    );
+    expect(seedOverlap(calibration, calibration.slice(0, 2)).ids).toHaveLength(2);
+    const shared = { calibration: { prefix: 'parity' }, validation: { prefix: 'parity' } };
+    expect(validateCorpusConfig({ ...CORPUS_CONFIG, partitions: shared })).toContain(
+      'calibration and validation partitions must have distinct prefixes',
+    );
+  });
+
+  it('does not call overlap a proof of equivalence', () => {
+    // The interval includes zero but reaches past the margin: not evidence of equivalence.
+    const wide = compareDistributions(mean, obs(spread(40, 10, 5)), obs(spread(40, 10.2, 5)));
+    expect(wide.difference!.interval[0]).toBeLessThan(0);
+    expect(wide.difference!.interval[1]).toBeGreaterThan(wide.difference!.margin);
+    expect(wide.status).toBe('insufficient');
+    const close = compareDistributions(
+      mean,
+      obs(spread(20000, 10, 5)),
+      obs(spread(20000, 10.05, 5)),
+    );
+    expect(close.status).toBe('equivalent');
+    const far = compareDistributions(mean, obs(spread(20000, 10, 5)), obs(spread(20000, 13, 5)));
+    expect(far.status).toBe('different');
+    // Outcome rates: a 1-point difference on 100 matches each is far from resolved.
+    const rate = (n: number, p: number) =>
+      obs(Array.from({ length: n }, (_, i) => (i < n * p ? 1 : 0)));
+    const outcome = { id: 'outcome.homeWin', comparison: 'proportion' as const, applies: true };
+    const proportions = compareDistributions(outcome, rate(100, 0.45), rate(100, 0.46));
+    expect(proportions.difference!.interval[0]).toBeLessThan(0);
+    expect(proportions.status).toBe('insufficient');
+    expect(compareDistributions(outcome, rate(40000, 0.45), rate(40000, 0.455)).status).toBe(
+      'equivalent',
+    );
+  });
+
+  it('reports constant and underpowered variables', () => {
+    const constant = compareDistributions(mean, obs(Array(50).fill(90)), obs(Array(50).fill(90)));
+    expect(constant).toMatchObject({ status: 'constant', reason: 'both paths constant and equal' });
+    expect(compareDistributions(mean, obs(spread(10, 5, 1)), obs(spread(10, 5, 1))).status).toBe(
+      'underpowered',
+    );
+    const rare = { id: 'incident.red', comparison: 'rate-ratio' as const, applies: true };
+    const events = (n: number, k: number) =>
+      obs(Array.from({ length: n }, (_, i) => (i < k ? 1 : 0)));
+    const few = compareDistributions(rare, events(1000, 20), events(1000, 22));
+    expect(few.status).toBe('underpowered');
+    expect(few.rate!.requiredEvents).toBe(requiredRareEvents());
+    expect(compareDistributions(rare, events(1000, 0), events(1000, 3)).status).toBe(
+      'underpowered',
+    );
+    expect(compareDistributions(rare, events(1000, 0), events(1000, 0)).status).toBe('constant');
+    expect(compareDistributions(rare, events(10000, 600), events(10000, 610)).status).toBe(
+      'equivalent',
+    );
+    // Goals never vary on either path: the shots–goals correlation cannot be identified.
+    const scoreless = Array.from({ length: 40 }, (_, i) =>
+      sample(record({ metrics: [team(0, 5 + (i % 9)), team(0, 6 + (i % 7))] })),
+    );
+    expect(compareRelationship(['team.shots', 'team.goals'], scoreless, scoreless).status).toBe(
+      'unidentifiable',
+    );
+    expect(validationSize(5, 0.5)).toMatchObject({ size: 4000, sufficient: true });
+    expect(validationSize(50, 0.5)).toMatchObject({ size: 100000, sufficient: false });
+    expect(normalQuantile(0.975)).toBeCloseTo(1.959964, 5);
+  });
+
+  it('separates computation from codec time', () => {
+    const timing = (id: PerformanceComponent, samplesMs: number[]) => ({
+      id,
+      samplesMs,
+      warmup: 1,
+      repetitions: 1,
+    });
+    const baseline = buildPerformanceReport({
+      provisional: true,
+      components: [
+        timing('fixture.summary', [2, 2, 2]),
+        timing('season.baseline', [8000, 8100]),
+        timing('season.active-management', [8200]),
+        timing('codec.encode', [900]),
+        timing('codec.decode', [400]),
+      ],
+    });
+    expect(baseline.categories.codec.totalMs).toBe(1300);
+    expect(baseline.categories.computation.totalMs).toBe(6);
+    expect(baseline.categories.season.totalMs).toBe(24300);
+    // A slower codec does not count against the engine budgets.
+    const candidate = buildPerformanceReport({
+      provisional: false,
+      components: [
+        timing('fixture.candidate', [0.9, 1, 1.1]),
+        timing('season.baseline', [6000]),
+        timing('season.active-management', [6400]),
+        timing('codec.encode', [5000]),
+      ],
+    });
+    const provenance: Provenance = {
+      date: '2026-10-21T00:00:00.000Z',
+      source: {
+        gitHead: 'synthetic',
+        gitDirty: false,
+        fingerprint: { algorithm: 'sha256', sha256: '0'.repeat(64), files: 1, scope: ['packages'] },
+      },
+      toolchain: { node: 'v24.12.0' },
+      machine: { platform: 'test', arch: 'x', cpu: 'synthetic', logicalCpus: 1, memoryBytes: 1 },
+      seeds: { profiles: ['release-century-baseline'] },
+      conditions: [],
+      partitions: {},
+    };
+    const paired = comparePerformance(
+      { provenance, report: baseline },
+      { provenance, report: candidate },
+    );
+    expect(paired.paired).toBe(true);
+    expect(paired.gates.map((g) => [g.id, g.status])).toEqual([
+      ['npc-fixture', 'pass'],
+      ['season.baseline', 'pass'],
+      ['season.active-management', 'pass'],
+    ]);
+    // A provisional baseline is never release evidence.
+    expect(paired.releaseEvidence).toBe(false);
+    const elsewhere = comparePerformance(
+      { provenance, report: baseline },
+      {
+        provenance: { ...provenance, machine: { ...provenance.machine, cpu: 'another' } },
+        report: candidate,
+      },
+    );
+    expect(elsewhere).toMatchObject({ paired: false, reasons: ['machine differs'] });
+    expect(elsewhere.gates.every((g) => g.status === 'unpaired')).toBe(true);
+    expect(() =>
+      buildPerformanceReport({
+        provisional: true,
+        components: [timing('codec.encode', [1]), timing('codec.encode', [2])],
+      }),
+    ).toThrow(/twice/);
+    expect(() =>
+      buildPerformanceReport({
+        provisional: true,
+        components: [timing('fixture.grid+codec' as PerformanceComponent, [1])],
+      }),
+    ).toThrow(/unknown/);
+  });
+
+  it('fails exact invariants without tolerance', () => {
+    const line = (id: string, goals: number, xg: number) => {
+      const metrics = zeroMetrics();
+      metrics[M.goals] = goals;
+      metrics[M.shots] = goals + 1;
+      metrics[M.onTarget] = goals;
+      metrics[M.passes] = 200;
+      metrics[M.completed] = 160;
+      metrics[M.minutes] = 90;
+      const detail = emptyPlayerDetail();
+      detail[PD.xg] = xg;
+      return { id, metrics, detail };
+    };
+    const lined = (xg: number, goals = 1) => {
+      const home = team(1, 3);
+      home[M.passes] = 400;
+      home[M.completed] = 320;
+      home[M.onTarget] = 1;
+      const away = team(0, 1);
+      away[M.passes] = 200;
+      away[M.completed] = 160;
+      away[M.onTarget] = 0;
+      return record({
+        score: { home: goals, away: 0 },
+        metrics: [home, away],
+        xg: [0.35, 0.1],
+        detail: [emptyTeamDetail(), emptyTeamDetail()],
+        players: [line('SYN:H:1', 1, xg), line('SYN:H:2', 0, 0), line('SYN:A:1', 0, 10)],
+        lineCounts: [2, 1],
+      });
+    };
+    const status = (r: MatchRecord, id: string) => {
+      const row = buildInvariantReport([sample(r)]).find((x) => x.id === id)!;
+      return row.failed ? 'fail' : row.unsupported ? 'unsupported' : 'pass';
+    };
+    // Player lines make up the team rows: one home goal, and 0.35 xG within per-shot rounding.
+    const fixed = lined(34);
+    fixed.players[0]!.metrics[M.shots] = 3;
+    fixed.players[1]!.metrics[M.shots] = 0;
+    fixed.players[2]!.metrics[M.shots] = 1;
+    expect(status(fixed, 'reconcile')).toBe('pass');
+    expect(status(fixed, 'score-goals')).toBe('pass');
+    const drifted = structuredClone(fixed);
+    drifted.players[0]!.detail![PD.xg] = 30;
+    expect(status(drifted, 'reconcile')).toBe('fail');
+    expect(status(lined(34, 2), 'score-goals')).toBe('fail');
+    const inverted = structuredClone(fixed);
+    inverted.metrics[0]![M.completed] = 401;
+    expect(status(inverted, 'attempts')).toBe('fail');
+    expect(status(record(), 'detail-attempts')).toBe('unsupported');
+    expect(status(record(), 'reconcile')).toBe('unsupported');
+  });
+});
