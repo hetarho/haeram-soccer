@@ -192,7 +192,7 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 33 | 12 | 21 | 0 | 1 | 0 | 2026-10-20T16:40:28.961Z | [history](work/identity.json) |
+| identity | 2 | 33 | 12 | 21 | 0 | 0 | 5 | 2026-10-20T17:33:51.108Z | [history](work/identity.json) |
 
 ## next
 - inspect work board for remaining tasks
