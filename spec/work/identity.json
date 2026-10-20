@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T15:42:20.640Z",
-  "sourceCommit": "863ac24dfdbe88fd7d5e9f3fb4b8dd300e074c02",
+  "snapshotAt": "2026-10-20T16:03:21.631Z",
+  "sourceCommit": "9460f28e890585e4c05f79e876d079991ae824c2",
   "group": {
     "id": "identity",
     "branch": "work/identity",
