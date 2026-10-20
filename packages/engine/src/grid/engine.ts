@@ -1,5 +1,5 @@
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
-import type { MatchRecord } from '../../../contracts/src/types';
+import type { MatchRecord, Score } from '../../../contracts/src/types';
 import { choosePass, decide, DECISION_CONFIG, type Decision } from './decide';
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
@@ -27,7 +27,8 @@ import {
   type Restart,
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
-import type { GridSetup } from './setup';
+import { isLevel, type GridSetup } from './setup';
+import { playShootout } from './shootout';
 import { moveAll, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
 import { createState, kickOff, other, slotOf, type GridState } from './state';
@@ -72,7 +73,8 @@ export interface GridResult {
 
 type Ref = [0 | 1, number];
 type ActionKey = keyof typeof ACTION_SECONDS;
-const PERIOD_SECONDS = 45 * 60;
+/** Each period's length in seconds: two halves of 45 minutes, extra time 2 × 15. */
+const PERIOD_SECONDS = [45 * 60, 45 * 60, 15 * 60, 15 * 60] as const;
 const CENTRE_SPOT: [number, number] = [PITCH.length / 2, PITCH.width / 2];
 
 export function playGrid(setup: GridSetup): GridResult {
@@ -82,7 +84,7 @@ export function playGrid(setup: GridSetup): GridResult {
   const tally = new Tally(setup);
   const tracer = new Tracer(setup.observe, () => tally.running());
   const added: number[] = [];
-  const credits = [0, 0];
+  const credits = [0, 0, 0, 0];
   let pending: Restart | undefined;
   let lastPasser: Ref | undefined;
   let justBeat: Ref | undefined;
@@ -93,7 +95,7 @@ export function playGrid(setup: GridSetup): GridResult {
   let setPieceAt: number | undefined;
   let penalty = false;
 
-  const minute = () => Math.min(45, Math.floor(s.t / 60) + 1) + (s.period === 2 ? 45 : 0);
+  const minute = () => stampAt(s.period, s.t, 0).minute;
   /** The match minute of an incident: the label of the playback frame that shows it (→MATCH-24). */
   const stamp = () => stampAt(s.period, s.t, added[s.period - 1]);
 
@@ -224,7 +226,7 @@ export function playGrid(setup: GridSetup): GridResult {
 
   /** Both managers' changes at a dead ball or at half-time (design §8.1). */
   function stoppage(rs: Restart) {
-    const half = s.period === 2 && s.t === 0;
+    const half = s.period > 1 && s.t === 0;
     for (const side of [0, 1] as const) {
       const plan = planChanges(s, side, r);
       applyChanges(s, side, plan);
@@ -420,10 +422,13 @@ export function playGrid(setup: GridSetup): GridResult {
     return { key: 'carry', outcome: o };
   }
 
-  for (const period of [1, 2] as const) {
+  // A knockout tie still level after 90 minutes plays extra time (→MATCH-6, design §8.4).
+  const periods: (1 | 2 | 3 | 4)[] = [1, 2];
+  let regulation: Score | undefined;
+  for (const period of periods) {
     s.period = period;
     s.t = 0;
-    const start: 0 | 1 = period === 1 ? 0 : 1;
+    const start: 0 | 1 = period % 2 === 1 ? 0 : 1;
     pending = { kind: 'kickoff', side: start, spot: CENTRE_SPOT, dead: 0 };
     for (let guard = 0; guard < 20000; guard++) {
       const held = tally.incidents.length;
@@ -536,7 +541,7 @@ export function playGrid(setup: GridSetup): GridResult {
       // Cards of a play take the minute it ends, as their trace entries follow it; subs keep the stoppage.
       for (const i of tally.incidents.slice(held))
         if (i.kind !== 'sub') Object.assign(i, stampAt(period, s.t, extra));
-      if (s.t >= PERIOD_SECONDS + extra * 60) {
+      if (s.t >= PERIOD_SECONDS[period - 1]! + extra * 60) {
         added.push(extra);
         // Dissent is drawn once per side at the end of each period.
         for (const side of [0, 1] as const) {
@@ -548,13 +553,33 @@ export function playGrid(setup: GridSetup): GridResult {
         break;
       }
     }
+    if (period === 2 && setup.decide && isLevel(setup.decide, tally.goals(0), tally.goals(1))) {
+      regulation = { home: tally.goals(0), away: tally.goals(1) };
+      periods.push(3, 4);
+    }
+  }
+  const shootout =
+    regulation && isLevel(setup.decide!, tally.goals(0), tally.goals(1))
+      ? playShootout(s, r).score
+      : undefined;
+  const finished = tally.finish(s);
+  if (shootout) {
+    const side = shootout.home > shootout.away ? 0 : 1;
+    finished.highlights.push({
+      minute: 120,
+      side,
+      player: '승부차기',
+      action: `승부차기 ${side === 0 ? '홈' : '원정'} 승리`,
+    });
   }
   const record: MatchRecord = {
     ...setup.f,
     score: { home: tally.goals(0), away: tally.goals(1) },
-    ...tally.finish(s),
+    ...finished,
     tactics: setup.tactics,
     added,
+    ...(regulation && { regulation }),
+    ...(shootout && { shootout }),
   };
   return {
     record,

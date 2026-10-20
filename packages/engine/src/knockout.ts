@@ -9,6 +9,7 @@ import type {
 } from '../../contracts/src/types';
 import { compareIds, random } from './primitives';
 import { simulateMatch } from './match';
+import type { DecideRule } from './grid/setup';
 import { recordMatch } from './season';
 import { fixtureDay } from './calendar';
 
@@ -120,14 +121,48 @@ export function legsOf(
     .sort((a, b) => a.round - b.round);
 }
 
-/** Plays one fixture through the shared match engine; the own club's playback is reported. */
-export function playFixture(w: World, f: Fixture, settlement?: Settlement, observe = true) {
+/**
+ * Plays one fixture through the shared match engine; the own club's playback is reported. A tie's
+ * deciding match takes `decide` and may go to extra time and a shoot-out (→MATCH-6).
+ */
+export function playFixture(
+  w: World,
+  f: Fixture,
+  settlement?: Settlement,
+  observe = true,
+  decide?: DecideRule,
+) {
   if (f.score) return undefined;
   const own = f.home === w.playerClub || f.away === w.playerClub;
-  const p = simulateMatch(w, f, observe && !!settlement && own, own);
+  const p = simulateMatch(w, f, observe && !!settlement && own, own, decide);
   f.score = p.record.score;
+  if (p.record.shootout) f.shootout = p.record.shootout;
   recordMatch(w, p);
   return p;
+}
+
+/**
+ * The deciding rule of a knockout fixture among `fixtures`: a single match or a second leg, with
+ * the first leg's score turned to this fixture's sides; a first leg decides nothing.
+ */
+export function tieRule(
+  f: Fixture,
+  fixtures: readonly Fixture[],
+  awayGoals: boolean,
+): DecideRule | undefined {
+  if (f.id.endsWith(':2')) {
+    const leg = fixtures.find((x) => x.id === f.id.slice(0, -2));
+    if (!leg?.score) return { awayGoals: false };
+    const hosted = leg.home === f.home;
+    return {
+      first: {
+        home: hosted ? leg.score.home : leg.score.away,
+        away: hosted ? leg.score.away : leg.score.home,
+      },
+      awayGoals,
+    };
+  }
+  return fixtures.some((x) => x.id === `${f.id}:2`) ? undefined : { awayGoals: false };
 }
 
 /**
@@ -154,18 +189,12 @@ export function decideTie(w: World, tie: KnockoutTie, legs: Fixture[], awayGoals
     tie.winner = homeAway > awayAway ? tie.home : tie.away;
     tie.decided = 'away';
   } else {
+    // Still level after extra time: the deciding match's shoot-out (→MATCH-6).
     const last = legs.at(-1)!;
-    tie.winner = random(`${w.seed}:penalty:${last.id}`)() < 0.5 ? last.home : last.away;
+    const kicks = last.shootout;
+    if (!kicks) throw new Error('승부차기 기록 없이 동률인 대진이 있습니다.');
+    tie.winner = kicks.home > kicks.away ? last.home : last.away;
     tie.decided = 'pens';
-    // The stored own match keeps the shoot-out that settled it.
-    const record = w.ownMatches.find((m) => m.id === last.id);
-    if (record && !record.highlights.some((h) => h.player === '승부차기'))
-      record.highlights.push({
-        minute: 120,
-        side: tie.winner === last.home ? 0 : 1,
-        player: '승부차기',
-        action: `승부차기 ${tie.winner === last.home ? '홈' : '원정'} 승리`,
-      });
   }
   return true;
 }

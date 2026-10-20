@@ -5,6 +5,7 @@ import type {
   MatchPlayback,
   MatchRecord,
   Player,
+  Score,
   Tactic,
   World,
 } from '../../contracts/src/types';
@@ -28,7 +29,7 @@ import { buildEffects } from './build';
 import { injuryChance } from './careers';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
-import { buildGridSetup, type DecideRule } from './grid/setup';
+import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
 export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile } from './grid/playback';
 export const METRICS = [
   '득점',
@@ -511,7 +512,7 @@ export function simulateMatch(
       squads: setup.rosters,
     };
   }
-  return summaryMatch(prepareMatch(w, f), keepPlayers);
+  return summaryMatch(prepareMatch(w, f), keepPlayers, decide);
 }
 
 /**
@@ -704,6 +705,23 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
   };
 }
 
+/** A kick in a shoot-out off the grid goes in this often (→MATCH-6). */
+export const SUMMARY_KICK = 0.76;
+/** Five kicks each, the home side first, ending once one side cannot be caught, then sudden death. */
+function summaryShootout(r: () => number): Score {
+  const scored = [0, 0];
+  for (let k = 0; k < 5; k++)
+    for (const side of [0, 1]) {
+      if (r() < SUMMARY_KICK) scored[side]!++;
+      const left = [5 - k - 1, side === 0 ? 5 - k : 5 - k - 1];
+      if (scored[0]! + left[0]! < scored[1]! || scored[1]! + left[1]! < scored[0]!)
+        return { home: scored[0]!, away: scored[1]! };
+    }
+  while (scored[0] === scored[1])
+    for (const side of [0, 1]) if (r() < SUMMARY_KICK) scored[side]!++;
+  return { home: scored[0]!, away: scored[1]! };
+}
+
 /**
  * Cards per team on the probabilistic path: the grid engine's measured rates (T215, docs/CALIBRATION.md:
  * 3.93 yellows and 0.14 reds a match), so a fixture nobody watches books players as often.
@@ -787,7 +805,7 @@ function summaryIncidents({ w, f, squads, tactics }: MatchSetup): Incident[] {
  * model without the touches, on the same strength curve. With `keepPlayers` (the own league) the
  * starters get lines of 90 minutes with the shots, goals and assists the model already chose.
  */
-function summaryMatch(setup: MatchSetup, keepPlayers = false) {
+function summaryMatch(setup: MatchSetup, keepPlayers = false, decide?: DecideRule) {
   const { f, r, squads, strength, tactics, profiles, possessionChance } = setup;
   const { skill, shapeChance, chooseReceiver } = matchSkills(setup);
   const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
@@ -795,7 +813,8 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
   const lines = starters.map((squad) => squad.map(() => zeroMetrics()));
   const line = (side: Side, slot: number) => lines[side][Math.min(slot, lines[side].length - 1)]!;
   const highlights: MatchRecord['highlights'] = [];
-  for (let minute = 1; minute <= 90; minute++) {
+  // One minute of the chance model; extra time plays more of the same minutes (→MATCH-6).
+  const playMinute = (minute: number) => {
     const side: Side = r() < possessionAt(possessionChance, metrics) ? 0 : 1;
     const other: Side = side === 0 ? 1 : 0;
     const passCount = integer(r, 5, 12);
@@ -815,7 +834,7 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
         metrics[other][6]++;
         metrics[other][7]++;
       }
-      continue;
+      return;
     }
     // The final ball comes from whoever carries it into the final third, the playmakers most
     // often; the chance model decides the rest (a cross, a run, the shooter).
@@ -825,11 +844,11 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
       solo = made.creator === undefined;
     if (made.swept) {
       metrics[other][7]++;
-      continue;
+      return;
     }
     if (r() >= keyChance(made.margin)) {
       metrics[other][solo ? 6 : 7]++;
-      continue;
+      return;
     }
     const { xg } = chanceQuality(r(), made.margin, false, made.shape);
     const shooting = made.shooting;
@@ -837,13 +856,13 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
     const shot = r();
     metrics[side][4]++;
     line(side, shooter)[4]++;
-    if (shot >= targetChance(goal, shooting)) continue;
+    if (shot >= targetChance(goal, shooting)) return;
     metrics[side][5]++;
     line(side, shooter)[5]++;
     if (shot >= goal) {
       metrics[other][9]++;
       line(other, 0)[9]++;
-      continue;
+      return;
     }
     metrics[side][0]++;
     line(side, shooter)[0]++;
@@ -857,10 +876,28 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
       player: squads[side][Math.min(shooter, squads[side].length - 1)].name,
       action: '골',
     });
+  };
+  for (let minute = 1; minute <= 90; minute++) playMinute(minute);
+  let end = 90;
+  let regulation: Score | undefined, shootout: Score | undefined;
+  if (decide && isLevel(decide, metrics[0][0]!, metrics[1][0]!)) {
+    regulation = { home: metrics[0][0]!, away: metrics[1][0]! };
+    for (end = 91; end <= 120; end++) playMinute(end);
+    end = 120;
+    if (isLevel(decide, metrics[0][0]!, metrics[1][0]!)) {
+      shootout = summaryShootout(random(`${setup.w.seed}:shootout:${f.id}`));
+      const side = shootout.home > shootout.away ? 0 : 1;
+      highlights.push({
+        minute: 120,
+        side,
+        player: '승부차기',
+        action: `승부차기 ${side === 0 ? '홈' : '원정'} 승리`,
+      });
+    }
   }
-  metrics[0][10] = 90;
-  metrics[1][10] = 90;
-  for (const side of lines) for (const row of side) row[10] = 90;
+  metrics[0][10] = end;
+  metrics[1][10] = end;
+  for (const side of lines) for (const row of side) row[10] = end;
   const record: MatchRecord = {
     ...f,
     score: { home: metrics[0][0], away: metrics[1][0] },
@@ -873,6 +910,8 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
     highlights,
     tactics,
     incidents: summaryIncidents(setup),
+    ...(regulation && { regulation }),
+    ...(shootout && { shootout }),
     ...(keepPlayers && {
       lineCounts: [starters[0].length, starters[1].length] as [number, number],
     }),

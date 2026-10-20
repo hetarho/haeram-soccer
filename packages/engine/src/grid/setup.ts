@@ -137,6 +137,16 @@ export interface DecideRule {
   first?: Score;
   awayGoals: boolean;
 }
+/**
+ * Whether a knockout tie is still level after this fixture's goals: on aggregate with the first
+ * leg (oriented to this fixture) and, under the away-goals rule, on away goals (design §8.4).
+ */
+export function isLevel(decide: DecideRule, home: number, away: number) {
+  const first = decide.first ?? { home: 0, away: 0 };
+  if (first.home + home !== first.away + away) return false;
+  // This fixture's home side scored its away goals in the first leg.
+  return !decide.awayGoals || !decide.first || first.home === away;
+}
 
 export interface GridSetup {
   w: World;

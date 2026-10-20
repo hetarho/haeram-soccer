@@ -277,7 +277,8 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   // Earlier bans serve this fixture before its own cards make new ones (→MATCH-19).
   serveBans(w, m);
   applyDiscipline(w, m);
-  settleElo(w, m);
+  // Elo reads the 90-minute result; extra time and a shoot-out decide the tie only.
+  settleElo(w, { ...m, score: m.regulation ?? m.score });
   if (league) {
     settleTable(w.tables[m.home], m.score.home, m.score.away);
     settleTable(w.tables[m.away], m.score.away, m.score.home);
@@ -360,27 +361,20 @@ function injuriesFromMatch(w: World, m: MatchRecord) {
 }
 export function resolveTie(w: World, f: Fixture) {
   const existing = w.ownMatches.find((m) => m.id === f.id);
-  if (existing) {
-    if (existing.score.home !== existing.score.away)
-      return existing.score.home > existing.score.away ? f.home : f.away;
-    return random(`${w.seed}:penalty:${f.id}`)() < 0.5 ? f.home : f.away;
-  }
+  if (existing) return winnerOf(f, existing);
   const own = f.home === w.playerClub || f.away === w.playerClub;
-  const p = simulateMatch(w, f, false, own);
-  if (p.record.score.home === p.record.score.away) {
-    const r = random(`${w.seed}:penalty:${f.id}`);
-    const winner = r() < 0.5 ? f.home : f.away;
-    p.record.highlights.push({
-      minute: 120,
-      side: winner === f.home ? 0 : 1,
-      player: '승부차기',
-      action: `승부차기 ${winner === f.home ? '홈' : '원정'} 승리`,
-    });
-    recordMatch(w, p);
-    return winner;
-  }
+  // A single match that must produce a winner: extra time, then a shoot-out (→MATCH-6).
+  const p = simulateMatch(w, f, false, own, { awayGoals: false });
   recordMatch(w, p);
-  return p.record.score.home > p.record.score.away ? f.home : f.away;
+  return winnerOf(f, p.record);
+}
+/** The winner of a one-match tie by its score, then its shoot-out. */
+function winnerOf(f: Fixture, m: Pick<MatchRecord, 'score' | 'shootout'>) {
+  const [home, away] =
+    m.score.home !== m.score.away || !m.shootout
+      ? [m.score.home, m.score.away]
+      : [m.shootout.home, m.shootout.away];
+  return home > away ? f.home : f.away;
 }
 function tournament(w: World, clubs: Club[], key: string) {
   let list = [...clubs].sort((a, b) => compareIds(a.id, b.id));

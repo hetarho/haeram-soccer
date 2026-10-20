@@ -102,8 +102,8 @@ const isTired = (s: GridState, gp: GridPlayer) =>
 const lineAt = (s: GridState, side: 0 | 1, slot: number) =>
   lineOf(FORMATIONS[s.setup.tactics[side]].slots[slot]!.position);
 
-/** Whether this stoppage is half-time: period 2 has not started. */
-const halfTime = (s: GridState) => s.period === 2 && s.t === 0;
+/** Whether this stoppage is an interval: half-time, or before or within extra time. */
+const halfTime = (s: GridState) => s.period > 1 && s.t === 0;
 
 /**
  * The substitutions a side makes at this stoppage, in the order of design §8.1: injured players

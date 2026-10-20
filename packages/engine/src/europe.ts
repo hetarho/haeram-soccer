@@ -20,6 +20,7 @@ import {
   splitByes,
   survivors,
   tieFixtures,
+  tieRule,
   type Settlement,
 } from './knockout';
 /**
@@ -339,7 +340,9 @@ export function phaseGroups(t: EuropeTournament, marker: 'phase' | 'second' = 'p
   return [...groups.values()];
 }
 function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement, observe = true) {
-  const p = playFixture(w, f, settlement, observe);
+  // A knockout tie's deciding match goes to extra time; away goals count before 2021 (→MATCH-6).
+  const rule = isKnockout(f.id) ? tieRule(f, t.fixtures, w.year < 2021) : undefined;
+  const p = playFixture(w, f, settlement, observe, rule);
   if (!p || !f.score) return;
   if (!isKnockout(f.id))
     for (const [id, gf, ga] of [

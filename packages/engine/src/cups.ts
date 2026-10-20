@@ -18,6 +18,7 @@ import {
   splitByes,
   survivors,
   tieFixtures,
+  tieRule,
   type Settlement,
 } from './knockout';
 
@@ -151,7 +152,7 @@ export function advanceCups(w: World, settlement?: Settlement, day?: number, obs
       let played = false;
       for (const f of cup.fixtures)
         if (isDue(w, f, day)) {
-          const p = playFixture(w, f, settlement, observe);
+          const p = playFixture(w, f, settlement, observe, tieRule(f, cup.fixtures, false));
           if (p && (f.home === w.playerClub || f.away === w.playerClub)) settlement?.(w, p);
           played = true;
         }
@@ -165,7 +166,8 @@ export function finishCups(w: World) {
   if (!w.cups) prepareCups(w);
   for (const cup of w.cups!)
     for (let guard = 0; guard < 16 && !cup.winner; guard++) {
-      for (const f of cup.fixtures) if (!f.score) playFixture(w, f);
+      for (const f of cup.fixtures)
+        if (!f.score) playFixture(w, f, undefined, true, tieRule(f, cup.fixtures, false));
       progress(w, cup);
     }
 }
