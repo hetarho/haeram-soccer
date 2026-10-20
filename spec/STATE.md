@@ -18,6 +18,7 @@
 | r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
+- 261021 decided T253 T251: T253's observation spec recolours a paused match through T251's 구단 디자인 tab, which only the identity-founding lane adds → identity-founding integrates first and identity-match-kit re-merges it and confirms the case in the batch Chromium run; T251 joins T253's deps, contents unchanged (alt: hold the lane on a new dep without re-merging | move the case to T254 and drop that clause from T253 acceptance)
 - 261021 decided MATCH-28 T272: how the equivalence gate treats metrics both paths hold constant and metrics a condition's rules make impossible (strict, so no league condition could pass even grid against grid) → equal constants are equivalent by their zero difference and stay listed as constant; MATCH-6/MATCH-20-impossible metrics are not applicable for that condition, listed and outside its verdict; applicability only from rules, never from measured absence (alt: keep the strict gate and judge release from the constant list | equal constants only, without per-condition applicability)
 - 261021 decided T250 T251 T252 T253 T254 T255 T275 T283 T286: the owner's settings and home commits raised WEB r95–r99 under the open identity and follow-up tasks → bases to WEB@99 with contents unchanged; WEB-74 now discards only central-settings drafts on dismissal and keeps other policy drafts, which T251's retained club-design draft already follows, and WEB-10/11/18/50/51/52/79 move settings, the next-match row and the watch entry, not kits or crests (alt: re-plan T251 and T253 against the new home layout, which changes none of their acceptance)
 - 261021 decided T240 T241 T242 T243 T244 T245 T247 T248 T249 T250 T251 T252 T253 T254 T255: the owner's planning commits raised WEB r94 SAVE r50 ARCH r16 under the open identity tasks → bases bumped with contents unchanged; ARCH-31, SAVE-23, WEB-32 and WEB-89 govern the full match model, match pacing and numerical comparisons, not identity (alt: re-plan the identity tasks against the full-model rules, which T273 and later already own after T255)
@@ -167,7 +168,7 @@
 | T250 | Found a club with exactly the previewed identity and shirts | KIT WEB SAVE ARCH | T244 T249 | todo |
 | T251 | Edit club design through a game-scoped draft and one explicit apply | KIT WEB SAVE ARCH | T240 T250 | todo |
 | T252 | Select a warned fixture-specific shirt without changing saved designs | KIT WEB SAVE ARCH | T241 T249 | todo |
-| T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
+| T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 T251 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
 | T272 | Define complete match metrics and reproducible measurement tooling | MATCH ARCH | - | todo |
@@ -198,6 +199,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
 - 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
 - 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
 - 261021 update-ssot MATCH start (T272 decision request)
@@ -217,4 +219,3 @@
 - 261021 T289 done: manual mode hides background settings only; observation/delegation remain editable, WEB r97; 6 tests/typecheck/lint/format/build pass, browser specs updated for batch.
 - 261021 create-task WEB r97 → T289; T289 start at 4af396f, manual background-only visibility correction.
 - 261021 update-ssot WEB r97 start: owner clarified manual mode should hide only background settings; restore observation and delegation controls.
-- 261021 T288 done: manual draft hides observation/delegation/background controls, keeps mode picker, validation and pending-work disclosure; WEB r96, 6 tests/typecheck/lint/format/build pass; browser specs updated for batch, business rules unchanged.
