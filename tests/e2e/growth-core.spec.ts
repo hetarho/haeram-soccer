@@ -1,6 +1,18 @@
 import { watchNext } from './watch';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { expectHomeBounds, viewGeometry } from './layout';
+
+async function expectTouchSize(target: Locator) {
+  // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
+  // becomes 43.999984px. The native DOM rectangle preserves its actual CSS pixel dimensions.
+  const size = await target.evaluate((element) => {
+    const { width, height } = element.getBoundingClientRect();
+    return { width, height };
+  });
+  const label = await target.innerText();
+  expect(size.width, label).toBeGreaterThanOrEqual(44);
+  expect(size.height, label).toBeGreaterThanOrEqual(44);
+}
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -26,8 +38,7 @@ for (const viewport of [
       await target.scrollIntoViewIfNeeded();
       const bounds = await target.boundingBox();
       expect(bounds, await target.innerText()).not.toBeNull();
-      expect(bounds!.width).toBeGreaterThanOrEqual(44);
-      expect(bounds!.height).toBeGreaterThanOrEqual(44);
+      await expectTouchSize(target);
       expect(bounds!.x).toBeGreaterThanOrEqual(0);
       expect(bounds!.y).toBeGreaterThanOrEqual(0);
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width);
@@ -39,8 +50,7 @@ for (const viewport of [
     for (const target of await menu.getByRole('button').all()) {
       const bounds = await target.boundingBox();
       expect(bounds).not.toBeNull();
-      expect(bounds!.width).toBeGreaterThanOrEqual(44);
-      expect(bounds!.height).toBeGreaterThanOrEqual(44);
+      await expectTouchSize(target);
       expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
     }
     await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');

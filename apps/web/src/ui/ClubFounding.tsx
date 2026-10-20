@@ -1,11 +1,22 @@
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/preset-data';
+import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
 import { Select } from './Select';
-import { useState, type FormEvent } from 'react';
+import { lazy, Suspense, useState, type FormEvent } from 'react';
 import type { CountryCode, DifficultyLevel } from '../../../../packages/contracts/src/types';
+import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import type { ClientState, GameClient } from '../runtime/client';
+import { CrestMark } from './ClubCrest';
+import { Dialog } from './Dialog';
 import s from './ClubFounding.module.css';
+
+/** The editor and its pitch preview load only when 꾸미기 opens them (WEB-86/87). */
+const ClubIdentityEditor = lazy(() =>
+  import('./ClubIdentityEditor').then((module) => ({ default: module.ClubIdentityEditor })),
+);
+/** The representative main colour a new club's design starts from. */
+const FIRST_COLOUR = '#bf7956';
 
 export function ClubFounding({
   client,
@@ -27,10 +38,17 @@ export function ClubFounding({
   const [code, setCode] = useState<CountryCode>('ENG'),
     [name, setName] = useState('Haeram Athletic'),
     [level, setLevel] = useState<DifficultyLevel>('easy'),
-    [color, setColor] = useState('#bf7956'),
     [seed, setSeed] = useState(() => crypto.randomUUID().slice(0, 18)),
     // 기본 방향 shows selected; a preset founds the club with its whole direction (→WEB-15).
-    [preset, setPreset] = useState('default');
+    [preset, setPreset] = useState('default'),
+    // KIT-14: the club design is drafted once per founding session. Later seed or country changes
+    // never reroll it; it lives until this session (this slot's founding) is left.
+    [design, setDesign] = useState(() =>
+      createIdentityDraft({ country: code, seed, color: FIRST_COLOUR }),
+    ),
+    // The editor's working copy while 꾸미기 is open. The session design stays its entry: 사용
+    // takes the copy, 취소 or closing the editor drops it (WEB-86).
+    [editing, setEditing] = useState<ClubIdentity | null>(null);
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!name.trim()) return;
@@ -40,9 +58,12 @@ export function ClubFounding({
           country: code,
           name: name.trim(),
           level,
-          color,
+          // The club's colour is the design's representative main colour (→KIT-4).
+          color: design.colours[0],
           seed,
           ...(preset !== 'default' ? { preset } : {}),
+          // Exactly the previewed design; the worker draws no other colour or crest (→KIT-14).
+          identity: design,
         },
         replace,
       )
@@ -153,14 +174,6 @@ export function ClubFounding({
           <summary>고급 설정</summary>
           <div>
             <label>
-              클럽 색상
-              <input
-                type="color"
-                value={color}
-                onChange={(event) => setColor(event.target.value)}
-              />
-            </label>
-            <label>
               세계 생성 시드
               <input
                 maxLength={80}
@@ -169,7 +182,10 @@ export function ClubFounding({
                 autoComplete="off"
               />
             </label>
-            <p>같은 시드는 같은 세계를 만들어요. 난이도는 첫 자금과 창단 선수단만 바꿉니다.</p>
+            <p>
+              같은 시드는 같은 세계를 만들어요. 시드를 바꿔도 고른 구단 디자인은 그대로예요.
+              난이도는 첫 자금과 창단 선수단만 바꿉니다.
+            </p>
           </div>
         </details>
         <div className={s.origin}>
@@ -178,14 +194,60 @@ export function ClubFounding({
           </span>
           <small>계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요.</small>
         </div>
-        <button
-          className={s.play}
-          type="submit"
-          disabled={state.busy || state.readonly || (!replace && !!state.error) || !name.trim()}
-        >
-          {state.busy ? '클럽을 준비하는 중…' : '클럽 창단 →'}
-        </button>
+        {/* The current crest and its 꾸미기 entry share the create row, so the basic screen still
+            fits (→WEB-15). */}
+        <div className={s.launch}>
+          <button
+            type="button"
+            className={s.design}
+            aria-label="구단 디자인 꾸미기"
+            onClick={() => setEditing(design)}
+          >
+            <CrestMark crest={design.crest} size={30} />
+            <span>꾸미기</span>
+          </button>
+          <button
+            className={s.play}
+            type="submit"
+            disabled={state.busy || state.readonly || (!replace && !!state.error) || !name.trim()}
+          >
+            {state.busy ? '클럽을 준비하는 중…' : '클럽 창단 →'}
+          </button>
+        </div>
       </form>
+      {editing && (
+        <Dialog
+          label="구단 디자인"
+          wide
+          onClose={() => setEditing(null)}
+          actions={
+            <div className={s.designActions}>
+              <button type="button" onClick={() => setEditing(null)}>
+                취소
+              </button>
+              <button
+                type="button"
+                className={s.use}
+                disabled={state.readonly}
+                onClick={() => {
+                  setDesign(editing);
+                  setEditing(null);
+                }}
+              >
+                이 디자인 사용
+              </button>
+            </div>
+          }
+        >
+          <p className={s.designNote}>
+            이 디자인 사용을 누르면 창단할 때 그대로 써요. 취소하거나 창을 닫으면 꾸미기를 열기 전
+            디자인으로 돌아가요.
+          </p>
+          <Suspense fallback={<p role="status">디자인 도구를 불러오는 중…</p>}>
+            <ClubIdentityEditor value={editing} onChange={setEditing} readonly={state.readonly} />
+          </Suspense>
+        </Dialog>
+      )}
     </section>
   );
 }

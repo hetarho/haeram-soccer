@@ -100,7 +100,16 @@ for (const viewport of [
       seed: `match-core-${viewport.width}`,
       level: 'easy' as const,
     };
-    const reference = createWorld(founding);
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.getByText('고급 설정', { exact: true }).click();
+    await page.getByLabel('세계 생성 시드').fill(founding.seed);
+    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    // Founding sends the design draft made when the screen opened (→KIT-14), so the reference is
+    // founded with the identity the browser confirmed; the match facts use no identity draws.
+    const identity = clubOf((await decode(await savedRaw(page))).world).identity;
+    const reference = createWorld({ ...founding, identity });
     reference.settings!.responsibilities.sales = 'delegated';
     reference.settings!.responsibilities.recruitment = 'delegated';
     const first = advanceToNextMatch(reference)!;
@@ -110,12 +119,6 @@ for (const viewport of [
         incidents.filter((i) => i.side === side && (i.kind === 'red' || i.kind === 'secondYellow'))
           .length,
     );
-    await page.setViewportSize(viewport);
-    await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(founding.seed);
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
     await configureResponsibilities(page, {
       responsibilities: { sales: 'delegated', recruitment: 'delegated' },
     });
