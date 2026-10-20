@@ -27,13 +27,13 @@
     }
   ],
   "provenance": {
-    "date": "2026-10-20T18:21:31.255Z",
+    "date": "2026-10-20T18:48:58.929Z",
     "source": {
-      "gitHead": "86e0359fc1f6cd66a2760017a3b3418683ef32d0",
+      "gitHead": "f20a1369b42f48f6dab55af8959da1f3aa771de0",
       "gitDirty": true,
       "fingerprint": {
         "algorithm": "sha256",
-        "sha256": "f5c09e3c0cdc337d10dbdf961297855ce16381ca0d5a82885ab0679cb06431ea",
+        "sha256": "4104df9984724101f272b102652dd3364635c750df2093011ba4a39cb5605820",
         "files": 340,
         "scope": [
           "packages",
@@ -247,12 +247,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.0143855,
-        "meanMs": 0.0144567,
-        "p90Ms": 0.0163545,
-        "minMs": 0.01275,
-        "maxMs": 0.017354,
-        "totalMs": 0.17348
+        "medianMs": 0.0138958,
+        "meanMs": 0.0149636,
+        "p90Ms": 0.0187085,
+        "minMs": 0.0130005,
+        "maxMs": 0.020458,
+        "totalMs": 0.179563
       },
       {
         "id": "preparation.grid",
@@ -260,12 +260,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.502802,
-        "meanMs": 0.506306,
-        "p90Ms": 0.559584,
-        "minMs": 0.471604,
-        "maxMs": 0.561188,
-        "totalMs": 6.07567
+        "medianMs": 0.528052,
+        "meanMs": 0.537675,
+        "p90Ms": 0.559666,
+        "minMs": 0.510813,
+        "maxMs": 0.616771,
+        "totalMs": 6.4521
       },
       {
         "id": "fixture.summary",
@@ -273,12 +273,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.200375,
-        "meanMs": 0.208085,
-        "p90Ms": 0.282625,
-        "minMs": 0.146979,
-        "maxMs": 0.305875,
-        "totalMs": 2.49702
+        "medianMs": 0.19174,
+        "meanMs": 0.20946,
+        "p90Ms": 0.259604,
+        "minMs": 0.152604,
+        "maxMs": 0.372375,
+        "totalMs": 2.51352
       },
       {
         "id": "fixture.summary-lines",
@@ -286,12 +286,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.148938,
-        "meanMs": 0.15187,
-        "p90Ms": 0.168626,
-        "minMs": 0.127271,
-        "maxMs": 0.176604,
-        "totalMs": 1.82244
+        "medianMs": 0.134802,
+        "meanMs": 0.157681,
+        "p90Ms": 0.170979,
+        "minMs": 0.1075,
+        "maxMs": 0.37725,
+        "totalMs": 1.89217
       },
       {
         "id": "fixture.grid",
@@ -299,12 +299,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 36.4975,
-        "meanMs": 37.2196,
-        "p90Ms": 40.4057,
-        "minMs": 32.8092,
-        "maxMs": 49.5025,
-        "totalMs": 446.635
+        "medianMs": 36.0305,
+        "meanMs": 37.0849,
+        "p90Ms": 39.2916,
+        "minMs": 33.2077,
+        "maxMs": 48.3998,
+        "totalMs": 445.019
       },
       {
         "id": "observation.grid",
@@ -312,12 +312,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 63.7035,
-        "meanMs": 64.908,
-        "p90Ms": 69.0881,
-        "minMs": 59.6495,
-        "maxMs": 77.7834,
-        "totalMs": 778.896
+        "medianMs": 63.8886,
+        "meanMs": 64.4627,
+        "p90Ms": 67.3772,
+        "minMs": 57.0282,
+        "maxMs": 79.4908,
+        "totalMs": 773.552
       },
       {
         "id": "observation.frames",
@@ -325,12 +325,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 14.4937,
-        "meanMs": 15.5995,
-        "p90Ms": 21.1145,
-        "minMs": 12.934,
-        "maxMs": 22.6734,
-        "totalMs": 187.194
+        "medianMs": 14.7215,
+        "meanMs": 15.3214,
+        "p90Ms": 18.0873,
+        "minMs": 12.2245,
+        "maxMs": 21.8379,
+        "totalMs": 183.857
       },
       {
         "id": "settlement.npc",
@@ -338,12 +338,12 @@
         "samples": 24,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.021021,
-        "meanMs": 0.0869774,
-        "p90Ms": 0.062417,
-        "minMs": 0.003,
-        "maxMs": 1.52063,
-        "totalMs": 2.08746
+        "medianMs": 0.0223545,
+        "meanMs": 0.0844949,
+        "p90Ms": 0.066667,
+        "minMs": 0.003167,
+        "maxMs": 1.44583,
+        "totalMs": 2.02788
       },
       {
         "id": "settlement.own",
@@ -351,12 +351,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 1.2291,
-        "meanMs": 1.69987,
-        "p90Ms": 3.95946,
-        "minMs": 0.940416,
-        "maxMs": 4.48367,
-        "totalMs": 20.3985
+        "medianMs": 1.30325,
+        "meanMs": 1.73291,
+        "p90Ms": 3.98383,
+        "minMs": 0.944541,
+        "maxMs": 4.38467,
+        "totalMs": 20.795
       },
       {
         "id": "season.baseline",
@@ -364,12 +364,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3139.32,
-        "meanMs": 3139.32,
-        "p90Ms": 3139.32,
-        "minMs": 3139.32,
-        "maxMs": 3139.32,
-        "totalMs": 3139.32
+        "medianMs": 3097.51,
+        "meanMs": 3097.51,
+        "p90Ms": 3097.51,
+        "minMs": 3097.51,
+        "maxMs": 3097.51,
+        "totalMs": 3097.51
       },
       {
         "id": "codec.encode",
@@ -377,12 +377,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 72.4237,
-        "meanMs": 72.4237,
-        "p90Ms": 81.6114,
-        "minMs": 63.236,
-        "maxMs": 81.6114,
-        "totalMs": 144.847
+        "medianMs": 73.8888,
+        "meanMs": 73.8888,
+        "p90Ms": 83.5672,
+        "minMs": 64.2104,
+        "maxMs": 83.5672,
+        "totalMs": 147.778
       },
       {
         "id": "codec.decode",
@@ -390,12 +390,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 96.5161,
-        "meanMs": 96.5161,
-        "p90Ms": 105.127,
-        "minMs": 87.905,
-        "maxMs": 105.127,
-        "totalMs": 193.032
+        "medianMs": 95.4845,
+        "meanMs": 95.4845,
+        "p90Ms": 102.581,
+        "minMs": 88.3882,
+        "maxMs": 102.581,
+        "totalMs": 190.969
       },
       {
         "id": "season.active-management",
@@ -403,12 +403,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3169.76,
-        "meanMs": 3169.76,
-        "p90Ms": 3169.76,
-        "minMs": 3169.76,
-        "maxMs": 3169.76,
-        "totalMs": 3169.76
+        "medianMs": 3184.68,
+        "meanMs": 3184.68,
+        "p90Ms": 3184.68,
+        "minMs": 3184.68,
+        "maxMs": 3184.68,
+        "totalMs": 3184.68
       }
     ],
     "categories": {
@@ -417,7 +417,7 @@
           "preparation.summary",
           "preparation.grid"
         ],
-        "totalMs": 6.24915
+        "totalMs": 6.63167
       },
       "computation": {
         "components": [
@@ -425,41 +425,41 @@
           "fixture.summary-lines",
           "fixture.grid"
         ],
-        "totalMs": 450.954
+        "totalMs": 449.424
       },
       "observation": {
         "components": [
           "observation.grid",
           "observation.frames"
         ],
-        "totalMs": 966.09
+        "totalMs": 957.41
       },
       "settlement": {
         "components": [
           "settlement.npc",
           "settlement.own"
         ],
-        "totalMs": 22.4859
+        "totalMs": 22.8228
       },
       "season": {
         "components": [
           "season.baseline",
           "season.active-management"
         ],
-        "totalMs": 6309.09
+        "totalMs": 6282.19
       },
       "codec": {
         "components": [
           "codec.encode",
           "codec.decode"
         ],
-        "totalMs": 337.88
+        "totalMs": 338.747
       }
     }
   },
   "memory": {
-    "peakHeapBytes": 203700720,
-    "peakRssBytes": 416874496
+    "peakHeapBytes": 193220816,
+    "peakRssBytes": 405438464
   },
   "seasons": [
     {
@@ -489,13 +489,13 @@
       "performance": 1
     },
     "provenance": {
-      "date": "2026-10-20T18:21:31.255Z",
+      "date": "2026-10-20T18:48:58.929Z",
       "source": {
-        "gitHead": "86e0359fc1f6cd66a2760017a3b3418683ef32d0",
+        "gitHead": "f20a1369b42f48f6dab55af8959da1f3aa771de0",
         "gitDirty": true,
         "fingerprint": {
           "algorithm": "sha256",
-          "sha256": "f5c09e3c0cdc337d10dbdf961297855ce16381ca0d5a82885ab0679cb06431ea",
+          "sha256": "4104df9984724101f272b102652dd3364635c750df2093011ba4a39cb5605820",
           "files": 340,
           "scope": [
             "packages",
@@ -7529,10 +7529,10 @@
               0.0915815,
               2.72981
             ],
-            "requiredEvents": 534,
+            "requiredEvents": 536,
             "status": "underpowered"
           },
-          "reason": "2 events on a path, 534 needed"
+          "reason": "2 events on a path, 536 expected at the planned size"
         },
         {
           "id": "incident.red",
@@ -7574,10 +7574,10 @@
               0.143391,
               2.51062
             ],
-            "requiredEvents": 534,
+            "requiredEvents": 536,
             "status": "underpowered"
           },
-          "reason": "3 events on a path, 534 needed"
+          "reason": "3 events on a path, 536 expected at the planned size"
         },
         {
           "id": "incident.sub",
@@ -7668,10 +7668,10 @@
               0.401177,
               1.5536
             ],
-            "requiredEvents": 534,
+            "requiredEvents": 536,
             "status": "underpowered"
           },
-          "reason": "15 events on a path, 534 needed"
+          "reason": "15 events on a path, 536 expected at the planned size"
         },
         {
           "id": "outcome.homeWin",
@@ -9087,34 +9087,34 @@
       },
       {
         "id": "td.redCards",
-        "matches": 2374
+        "matches": 2383
       },
       {
         "id": "td.penalties",
-        "matches": 2670
+        "matches": 2680
       },
       {
         "id": "td.penaltiesScored",
-        "matches": 3560
+        "matches": 3574
       },
       {
         "id": "pd.redCards",
-        "matches": 2374
+        "matches": 2383
       },
       {
         "id": "incident.secondYellow",
-        "matches": 5340
+        "matches": 5360
       },
       {
         "id": "incident.red",
-        "matches": 4272
+        "matches": 4288
       },
       {
         "id": "incident.injury",
-        "matches": 1125
+        "matches": 1129
       }
     ]
   },
   "candidateParity": null,
-  "elapsedMs": 11403
+  "elapsedMs": 11392
 }

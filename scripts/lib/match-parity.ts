@@ -15,7 +15,7 @@ import {
   type GridDiagnostics,
   type ShotDiagnostic,
 } from '../../packages/engine/src/grid/record';
-import { eraRules } from '../../packages/engine/src/grid/setup';
+import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/grid/setup';
 import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
@@ -787,6 +787,8 @@ const TIER_BANDS: readonly (readonly [string, number, number])[] = [
 const ERA_YEARS = [1950, 1965, 1967, 1970, 1987, 1995, 1996, 2008, 2022, 2024];
 /** The core condition's fixture; every family but era and knockout varies one factor around it. */
 const CORE_FIXTURE = { year: 2024, round: 1, kind: 'league' } as const;
+/** A tie's fixture: a cup match, since a league fixture never has to produce a winner. */
+const TIE_FIXTURE = { ...CORE_FIXTURE, kind: 'cup' } as const;
 
 /**
  * Metrics a condition's own rules make impossible (→MATCH-28): extra time and shoot-outs outside a
@@ -883,12 +885,15 @@ export const CORPUS_CONFIG = {
     ),
     condition('knockout', 'single-match', 'one match that needs a winner', {
       decide: { awayGoals: false },
+      fixture: TIE_FIXTURE,
     }),
     condition('knockout', 'second-leg', 'second leg level on aggregate', {
       decide: { first: { home: 1, away: 1 }, awayGoals: false },
+      fixture: TIE_FIXTURE,
     }),
     condition('knockout', 'second-leg-away-goals', 'second leg under the away-goals rule', {
       decide: { first: { home: 1, away: 1 }, awayGoals: true },
+      fixture: TIE_FIXTURE,
     }),
     condition('rare', 'discipline', 'red cards and second yellows', {}, true),
     condition('rare', 'penalties', 'penalties awarded and scored', {}, true),
@@ -897,7 +902,7 @@ export const CORPUS_CONFIG = {
       'rare',
       'extra-time',
       'extra time and shoot-outs',
-      { decide: { awayGoals: false } },
+      { decide: { awayGoals: false }, fixture: TIE_FIXTURE },
       true,
     ),
     condition('season', 'league-20', '20-club double round robins', { clubs: 20 }),
@@ -1057,19 +1062,57 @@ export function validationSize(pilotSd: number, margin: number) {
   };
 }
 /**
- * Probability that a rare-event rate ratio's interval fits [1 − m, 1 + m] (on the log scale, so
- * the two edges differ) when both paths record `events` events at the same rate.
+ * The rare-event verdict: the rate ratio (candidate over reference, per match), its Poisson log
+ * interval and where that interval lies against [1 − m, 1 + m]. compareDistributions and
+ * rareComparisonPower both use it, so the sizes predict the verdict actually given.
  */
-export function rareEventPower(events: number) {
+function rateVerdict(events: readonly [number, number], matches: readonly [number, number]) {
+  const ratio = events[1] / matches[1] / (events[0] / matches[0]);
+  const half = zInterval() * Math.sqrt(1 / events[0] + 1 / events[1]);
+  const interval: [number, number] = [ratio * Math.exp(-half), ratio * Math.exp(half)];
   const m = PARITY_CONFIG.rareRelativeMargin;
-  return equivalencePower(Math.sqrt(2 / events), -Math.log(1 - m), Math.log(1 + m));
+  return { ratio, interval, status: verdict(interval, 1 - m, 1 + m) };
+}
+/**
+ * Probability that the rare-event comparison says `equivalent` when both paths play the same
+ * number of matches at the same rate and expect `expected` events each. The counts are Poisson,
+ * and the verdict is compareDistributions' own; counts of zero, which carry no rate, are left out.
+ */
+export function rareComparisonPower(expected: number) {
+  const reach = 8 * Math.sqrt(expected);
+  const low = Math.max(1, Math.floor(expected - reach)),
+    high = Math.ceil(expected + reach);
+  let logFactorial = 0;
+  for (let k = 2; k < low; k++) logFactorial += Math.log(k);
+  const mass: number[] = [];
+  for (let k = low; k <= high; k++) {
+    logFactorial += Math.log(k);
+    mass.push(Math.exp(k * Math.log(expected) - expected - logFactorial));
+  }
+  let power = 0;
+  for (let a = low; a <= high; a++)
+    for (let b = low; b <= high; b++)
+      if (rateVerdict([a, b], [1, 1]).status === 'equivalent')
+        power += mass[a - low]! * mass[b - low]!;
+  return power;
 }
 let rareEvents: number | undefined;
-/** The fewest events each path needs for the rare-event comparison to reach PARITY_CONFIG.power. */
+/**
+ * The fewest events each path must expect for the rare-event comparison to say `equivalent` with
+ * probability PARITY_CONFIG.power when the paths agree, Poisson variation in the counts included.
+ */
 export function requiredRareEvents() {
   if (rareEvents === undefined) {
+    const m = PARITY_CONFIG.rareRelativeMargin;
+    // Start from the fixed-count normal approximation, then settle on the exact Poisson power.
     let events = 1;
-    while (rareEventPower(events) < PARITY_CONFIG.power) events++;
+    while (
+      equivalencePower(Math.sqrt(2 / events), -Math.log(1 - m), Math.log(1 + m)) <
+      PARITY_CONFIG.power
+    )
+      events++;
+    while (rareComparisonPower(events) < PARITY_CONFIG.power) events++;
+    while (events > 1 && rareComparisonPower(events - 1) >= PARITY_CONFIG.power) events--;
     rareEvents = events;
   }
   return rareEvents;
@@ -1111,11 +1154,13 @@ export function pilotNeeds(samples: readonly MatchSample[], condition: ParityCon
 }
 /**
  * One condition's predeclared validation size in matches a path: the largest need among every
- * metric it judges, so none is left underpowered by design. A mean or proportion needs its
- * `validationSize`; a rare metric needs requiredRareEvents() over its events per match. Sizes are
- * clamped to CORPUS_CONFIG. A pilot constant needs no sample, because the equal-constant rule
- * judges it. A rare metric without pilot events has no statable need and is listed `unsized`.
- * `sufficient` is false when any need exceeds the maximum, and the condition stays insufficient.
+ * metric it judges, so each metric alone reaches PARITY_CONFIG.power at the pilot's spread or rate
+ * when the paths agree. A mean or proportion needs its `validationSize`. A rare metric needs
+ * requiredRareEvents() expected events, which is requiredRareEvents() over its events per match.
+ * Sizes are clamped to CORPUS_CONFIG. A pilot constant needs no sample, because the equal-constant
+ * rule judges it. A rare metric without pilot events has no statable need and is listed
+ * `unsized`. `sufficient` is false when any need exceeds the maximum, and the condition stays
+ * insufficient.
  */
 export function conditionValidationSize(needs: PilotNeeds) {
   const all = [
@@ -1530,19 +1575,23 @@ export function compareDistributions(
         : { ...base, status: 'equivalent', constant: true, reason: 'no events on either path' };
     if (events[0] === 0 || events[1] === 0)
       return { ...base, status: 'underpowered', reason: 'one path has no events' };
-    // Events per match: player lines a match differ between paths that substitute differently.
-    const ratio = events[1] / clusterCount(candidate) / (events[0] / clusterCount(reference));
-    const half = zInterval() * Math.sqrt(1 / events[0] + 1 / events[1]);
-    const interval: [number, number] = [ratio * Math.exp(-half), ratio * Math.exp(half)];
-    const m = PARITY_CONFIG.rareRelativeMargin;
-    const resolved = verdict(interval, 1 - m, 1 + m);
-    const short = resolved !== 'different' && Math.min(...events) < required;
+    // Rates per match: player lines a match differ between paths that substitute differently.
+    // The interval decides; requiredRareEvents() sizes the sample and only names the shortfall
+    // of an interval that has not resolved.
+    const {
+      ratio,
+      interval,
+      status: resolved,
+    } = rateVerdict(events, [clusterCount(reference), clusterCount(candidate)]);
+    const short = resolved === 'insufficient' && Math.min(...events) < required;
     const status: ComparisonStatus = short ? 'underpowered' : resolved;
     return {
       ...base,
       status,
       rate: { events, ratio, interval, requiredEvents: required, status },
-      ...(short && { reason: `${Math.min(...events)} events on a path, ${required} needed` }),
+      ...(short && {
+        reason: `${Math.min(...events)} events on a path, ${required} expected at the planned size`,
+      }),
     };
   }
   const nRef = clusterCount(reference),
@@ -2112,15 +2161,32 @@ export const INVARIANTS: readonly Invariant[] = [
     check: (s) => {
       const r = s.record,
         out: string[] = [];
+      const condition = conditionOf(s.condition);
       // A league fixture never has to produce a winner (→MATCH-6).
       if ((r.kind === 'league' || r.kind === 'lower') && (r.regulation || r.shootout))
         out.push(`extra time or a shoot-out in a ${r.kind} fixture (MATCH-6)`);
-      // What the sample's condition rules out must not be recorded at all.
-      const condition = CORPUS_CONFIG.conditions.find((c) => c.id === s.condition);
-      for (const [id, rule] of Object.entries(condition?.notApplicable ?? {}))
-        if (recordedMatches(observe([s], METRIC_BY_ID.get(id)!)))
-          out.push(`${id} recorded under ${s.condition}: ${rule}`);
-      return out;
+      // A tie that must produce a winner plays extra time exactly when it is level after 90
+      // minutes, and a shoot-out exactly when it is still level after extra time (→MATCH-6).
+      const decide = condition.params.decide as DecideRule | undefined;
+      if (decide) {
+        const ninety = r.regulation ?? r.score;
+        const level = isLevel(decide, ninety.home, ninety.away);
+        if (level && !r.regulation) out.push('a tie level after 90 minutes played no extra time');
+        if (!level && r.regulation) out.push('extra time after a decided 90 minutes');
+        if (r.regulation) {
+          const stillLevel = isLevel(decide, r.score.home, r.score.away);
+          if (stillLevel && !r.shootout) out.push('a tie level after extra time had no shoot-out');
+          if (!stillLevel && r.shootout) out.push('a shoot-out after extra time decided the tie');
+        }
+      }
+      // What the condition rules out must not be recorded at all; unreadable is not a pass.
+      let unread = false;
+      for (const [id, rule] of Object.entries(condition.notApplicable)) {
+        const o = observe([s], METRIC_BY_ID.get(id)!);
+        if (o.missing) unread = true;
+        else if (recordedMatches(o)) out.push(`${id} recorded under ${s.condition}: ${rule}`);
+      }
+      return out.length || !unread ? out : 'unsupported';
     },
   },
 ];

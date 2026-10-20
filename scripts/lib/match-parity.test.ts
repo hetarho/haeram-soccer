@@ -29,7 +29,7 @@ import {
   observe,
   outcomeTarget,
   pilotNeeds,
-  rareEventPower,
+  rareComparisonPower,
   requiredRareEvents,
   ruleExclusions,
   seedOverlap,
@@ -88,8 +88,11 @@ const obs = (values: number[]): Observations => ({
   zeros: values.filter((v) => v === 0).length,
 });
 const mean = { id: 'td.crosses', comparison: 'mean-cdf' as const, applies: true };
-/** Events a path needs for 80% power against [0.8, 1.2]; pinned because the corpus is frozen on it. */
-const REQUIRED_RARE_EVENTS = 534;
+/**
+ * Events a path must expect for 80% power against [0.8, 1.2], Poisson counts included; pinned
+ * because the corpus is frozen on it.
+ */
+const REQUIRED_RARE_EVENTS = 536;
 
 describe('match parity registry', () => {
   it('covers every counter exactly once', () => {
@@ -264,6 +267,10 @@ describe('match parity registry', () => {
     expect(compareDistributions(rare, events(10000, 600), events(10000, 610)).status).toBe(
       'equivalent',
     );
+    // The interval decides: fewer events than planned still pass once the interval fits.
+    expect(compareDistributions(rare, events(10000, 500), events(10000, 500)).status).toBe(
+      'equivalent',
+    );
     // Goals never vary on either path: the shots–goals correlation cannot be identified.
     const scoreless = Array.from({ length: 40 }, (_, i) =>
       sample(record({ metrics: [team(0, 5 + (i % 9)), team(0, 6 + (i % 7))] })),
@@ -283,12 +290,13 @@ describe('match parity registry', () => {
     expect(validationSize(5, 0.5)).toMatchObject({ size: 4000, sufficient: true });
     expect(validationSize(50, 0.5)).toMatchObject({ size: 100000, sufficient: false });
     expect(validationSize(50, 0.5).power).toBeLessThan(0.8);
-    // Rare events: the fewest per path whose interval fits [0.8, 1.2] with 80% probability.
+    // Rare events: the fewest expected per path for which the comparison itself says equivalent
+    // with 80% probability over Poisson counts.
     const required = requiredRareEvents();
     expect(required).toBe(REQUIRED_RARE_EVENTS);
-    expect(rareEventPower(required)).toBeGreaterThanOrEqual(0.8);
-    expect(rareEventPower(required - 1)).toBeLessThan(0.8);
-    expect(rareEventPower(473)).toBeLessThan(0.8);
+    expect(rareComparisonPower(required)).toBeGreaterThanOrEqual(0.8);
+    expect(rareComparisonPower(required - 1)).toBeLessThan(0.8);
+    expect(rareComparisonPower(473)).toBeLessThan(0.8);
     // Pilot spread is per match: two sides of a match averaged before the spread is taken.
     const paired = { ...obs([1, 3, 2, 4, 6, 8]), clusters: [0, 0, 1, 1, 2, 2] };
     expect(clusterSpread(paired)).toBeCloseTo(Math.sqrt(7), 10);
@@ -397,10 +405,59 @@ describe('match parity registry', () => {
     expect(buildInvariantReport(league).find((x) => x.id === 'condition-rules')!.failed).toBe(0);
   });
 
+  it('holds a tie to extra time and a shoot-out exactly when level', () => {
+    const tie = (
+      score: { home: number; away: number },
+      regulation?: { home: number; away: number },
+      shootout?: { home: number; away: number },
+    ): MatchSample => {
+      const r = record({
+        kind: 'cup',
+        score,
+        metrics: [team(score.home), team(score.away)],
+        ...(regulation && { regulation }),
+        ...(shootout && { shootout }),
+      });
+      if (regulation) for (const side of r.metrics) side[M.minutes] = 120;
+      return { ...sample(r), condition: 'knockout:single-match' };
+    };
+    const failures = (s: MatchSample) =>
+      buildInvariantReport([s])
+        .filter((x) => x.failed)
+        .flatMap((x) => x.examples[0]!.failures);
+    expect(failures(tie({ home: 1, away: 1 }))).toEqual([
+      'a tie level after 90 minutes played no extra time',
+    ]);
+    expect(failures(tie({ home: 3, away: 1 }, { home: 2, away: 1 }))).toEqual([
+      'extra time after a decided 90 minutes',
+    ]);
+    expect(failures(tie({ home: 2, away: 1 }, { home: 1, away: 1 }, { home: 4, away: 3 }))).toEqual(
+      ['a shoot-out after extra time decided the tie'],
+    );
+    expect(failures(tie({ home: 1, away: 1 }, { home: 1, away: 1 }))).toEqual([
+      'a tie level after extra time had no shoot-out',
+    ]);
+    // Ties that follow MATCH-6 pass.
+    for (const valid of [
+      tie({ home: 2, away: 1 }),
+      tie({ home: 2, away: 1 }, { home: 1, away: 1 }),
+      tie({ home: 1, away: 1 }, { home: 1, away: 1 }, { home: 4, away: 3 }),
+    ])
+      expect(failures(valid)).toEqual([]);
+    // A rule it cannot read is unsupported, never a pass; an unknown condition is refused.
+    const untracked = { ...sample(record(), false), condition: 'era:1950' };
+    expect(buildInvariantReport([untracked]).find((x) => x.id === 'condition-rules')).toMatchObject(
+      { passed: 0, failed: 0, unsupported: 1 },
+    );
+    expect(() => buildInvariantReport([{ ...sample(record()), condition: 'nowhere' }])).toThrow(
+      /unknown parity condition nowhere/,
+    );
+  });
+
   it('sizes a condition to cover every metric it judges', () => {
     expect(calibrationSize(conditionOf('core:equal-top-tier'))).toBe(600);
     expect(calibrationSize(conditionOf('rare:discipline'))).toBe(10000);
-    // Rare metrics need requiredRareEvents() over their rate: at 0.05 a match, 10,680 matches.
+    // Rare metrics need requiredRareEvents() over their rate: at 0.05 a match, 10,720 matches.
     const size = conditionValidationSize({
       means: [
         { id: 'outcome.homeWin', spread: 0.5, margin: 0.03 },
@@ -417,6 +474,8 @@ describe('match parity registry', () => {
       limiting: 'incident.red',
       unsized: ['outcome.shootout'],
     });
+    // At the returned size the limiting rare comparison itself passes with the declared power.
+    expect(rareComparisonPower(size.size * 0.05)).toBeGreaterThanOrEqual(0.8);
     expect(size.needs.find((n) => n.id === 'outcome.homeWin')!.matches).toBe(5838);
     expect(size.needs.find((n) => n.id === 'team.minutes')!.matches).toBe(0);
     const rarer = conditionValidationSize({
