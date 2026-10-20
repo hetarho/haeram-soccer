@@ -15,6 +15,7 @@ import {
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { ALL_DELEGATED } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { watchNext } from './watch';
 
 /**
  * KIT-6/7/8, WEB-88, SAVE-20: our shirt for the named next fixture, chosen in preparation. Careers
@@ -82,7 +83,7 @@ async function closePreparation(page: Page, dialog: Locator, decided: boolean) {
   await expect(outcome).toHaveCount(0);
 }
 async function watchToResult(page: Page) {
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await expect(page.getByTestId('match-theatre')).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByTestId('match-result-summary')).toBeVisible();
