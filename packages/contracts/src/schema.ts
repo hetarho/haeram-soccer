@@ -4,6 +4,12 @@ import type { SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 import { BUILD_OPTIONS, STRATEGY_NAME_LIMIT } from './build';
 import { ATTRIBUTES, PLAY_TRAITS, POSITIONS } from './player';
+import {
+  assertIdentityFormatVersions,
+  clubIdentitySchema,
+  fixtureKitChoiceSchema,
+  matchAppearanceSchema,
+} from './identitySchema';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -74,6 +80,7 @@ const club = z.object({
   elo: z.number().finite().min(0).max(4000).optional(),
   project: z.number().finite().min(0).max(60).optional(),
   cohesion: z.number().finite().min(0.3).max(1).optional(),
+  identity: clubIdentitySchema.optional(),
 });
 /** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut. */
 const clauses = z.strictObject({
@@ -328,6 +335,7 @@ const match = fixture
         report: materialRow(60),
       })
       .optional(),
+    appearance: matchAppearanceSchema.optional(),
   })
   .refine((m) => !m.lineCounts || m.lineCounts[0] + m.lineCounts[1] === m.players.length);
 const event = z.object({
@@ -963,6 +971,7 @@ const worldSchema: z.ZodType<World> = z.object({
   requested: tactic.optional(),
   fixtures: z.array(fixture).max(20000),
   tables: z.record(id, table),
+  kitChoice: fixtureKitChoiceSchema.optional(),
   ownMatches: z.array(match).max(100000),
   history: z.array(archive).max(2200),
   events: z.array(event).max(100000),
@@ -1147,6 +1156,7 @@ function scorerClubsValid<C extends string | number>(
 }
 
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
+  assertIdentityFormatVersions(input);
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
   for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {
@@ -1425,6 +1435,28 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
+  for (const m of w.ownMatches)
+    if (
+      m.appearance &&
+      (m.appearance.sides[0].club !== m.home || m.appearance.sides[1].club !== m.away)
+    )
+      throw new Error('경기 복장 기록 참조 손상');
+  // KIT-7: a kit choice names a known unplayed own fixture of this season, not necessarily the earliest.
+  if (w.kitChoice) {
+    const fixtureId = w.kitChoice.fixtureId;
+    const known = [
+      ...w.fixtures,
+      ...w.europe.flatMap((t) => t.fixtures),
+      ...(w.cups || []).flatMap((cup) => cup.fixtures),
+    ].some(
+      (f) =>
+        f.id === fixtureId &&
+        !f.score &&
+        f.year === w.year &&
+        (f.home === w.playerClub || f.away === w.playerClub),
+    );
+    if (!known) throw new Error('경기 복장 선택 참조 손상');
+  }
   const owner = w.clubs.find((c) => c.id === w.playerClub)!;
   if (w.scorerSeason) {
     const season = w.scorerSeason;

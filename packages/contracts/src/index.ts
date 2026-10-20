@@ -21,6 +21,8 @@ export { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
 export * from './build';
 export * from './detail';
 export * from './schema';
+export * from './identity';
+export * from './identitySchema';
 
 export * from './hall-of-fame';
 export * from './versions';

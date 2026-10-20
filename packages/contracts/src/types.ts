@@ -1,4 +1,5 @@
 import type { ClubBuild } from './build';
+import type { ClubIdentity, FixtureKitChoice, MatchAppearance } from './identity';
 import type {
   Attributes,
   Line,
@@ -338,6 +339,8 @@ export interface Club {
   cohesion?: number;
   /** Level a rare project (new owner, golden generation) adds, fading each summer (→LEAGUE-10). */
   project?: number;
+  /** Crest, representative colours and saved shirts (→KIT-1); absent in older saves. */
+  identity?: ClubIdentity;
 }
 export interface Player {
   id: string;
@@ -632,6 +635,8 @@ export interface MatchRecord extends Fixture {
   shootout?: Score;
   /** Own current-season matches only (→MATCH-25). */
   material?: MatchMaterial;
+  /** What both sides actually wore, frozen at settlement (→KIT-12); absent before identities. */
+  appearance?: MatchAppearance;
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
@@ -1084,6 +1089,8 @@ export interface World {
   requested?: Tactic;
   fixtures: Fixture[];
   tables: Record<string, TableRow>;
+  /** The owner's shirt for one named unplayed own fixture (→KIT-7); absent is automatic. */
+  kitChoice?: FixtureKitChoice;
   ownMatches: MatchRecord[];
   history: SeasonArchive[];
   events: Event[];
@@ -1167,6 +1174,8 @@ export interface Founding {
   level: DifficultyLevel;
   /** The direction preset chosen at founding (→WEB-15); absent is 기본 방향. */
   preset?: string;
+  /** The previewed founding identity (→KIT-14); its first colour equals `color`. */
+  identity?: ClubIdentity;
 }
 export type Command =
   | { type: 'settings'; settings: GameSettings }
