@@ -312,7 +312,8 @@ test('a pre-identity career keeps its crests and facts, gains only shirts on wri
   await expect(replay.getByRole('img', { name: /엠블럼 미기록$/ })).toHaveCount(2);
   // A later load finds nothing missing and commits nothing more.
   await page.reload();
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+  // A reload restores the view it left, so the loaded game shows as the season HUD, not home.
+  await expect(page.getByRole('region', { name: /^시즌 진행/ })).toBeVisible({ timeout: 30000 });
   expect(JSON.parse((await committedRaw(page))!).generation).toBe(2);
 });
 
@@ -416,7 +417,8 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(retried);
   await page.reload();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // A reload restores the view it left, so the loaded game shows as the season HUD, not home.
+  await expect(page.getByRole('region', { name: /^시즌 진행/ })).toBeVisible();
   expect(ownClub(await savedWorld(page)).identity).toEqual(retried);
 });
 
