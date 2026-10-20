@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import type { MatchPlayback } from '../../contracts/src/types';
+import { nextOwnFixture } from './calendar';
 import { eloOf, ownLeagueClubs } from './index';
+import { appearanceForFixture } from './match-appearance';
+import { advanceRound } from './season';
 import { archiveLastRound, closedSeason } from './season.testkit';
 
 describe('closed season archive', () => {
@@ -94,5 +99,30 @@ describe('closed season archive', () => {
     spread.history[0].eloRange = [leagueLow + 1, high, leagueLow, leagueHigh];
     expect(() => validateWorld(spread)).toThrow();
     expect(low).toBeLessThanOrEqual(leagueLow);
+  });
+});
+
+describe('league settlement appearance (→KIT-12)', () => {
+  it('captures the own league result, observed or not, and nothing for other matches', () => {
+    const base = simulatedWorld({
+      country: 'ENG',
+      name: 'Design Town',
+      color: '#223344',
+      seed: 'identity-command',
+      level: 'normal',
+    });
+    const next = nextOwnFixture(base)!;
+    const expected = appearanceForFixture(base, next);
+    for (const observe of [true, false]) {
+      const w = structuredClone(base);
+      let live: MatchPlayback | undefined;
+      advanceRound(w, (_, p) => (live = p), observe);
+      expect(live!.record.id).toBe(next.id);
+      expect(live!.frames.length > 0).toBe(observe);
+      expect(live!.record.appearance).toEqual(expected);
+      expect(w.ownMatches.find((m) => m.id === next.id)!.appearance).toEqual(expected);
+      // The round's other matches leave no appearance anywhere in the world.
+      expect(canonical(w).split('"appearance":').length - 1).toBe(w.ownMatches.length);
+    }
   });
 });
