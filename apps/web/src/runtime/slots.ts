@@ -26,7 +26,10 @@ const browserStorage = {
   removeItem: (key: string) => localStorage.removeItem(key),
 };
 
-/** What a slot card shows without loading its game. */
+/**
+ * What a slot card shows without loading its game; the crest is a copy of the one applied now
+ * (→WEB-49), its optional colours kept.
+ */
 export function summarize(w: World): SlotSummary {
   const club = clubOf(w);
   return {
@@ -35,7 +38,7 @@ export function summarize(w: World): SlotSummary {
     division: divisionName(club.country, club.tier, club.group),
     date: seasonDate(w),
     seasons: w.history.length + 1,
-    crest: crestOf(w, w.playerClub),
+    crest: { ...crestOf(w, w.playerClub) },
   };
 }
 

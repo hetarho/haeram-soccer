@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T16:16:28.735Z",
-  "sourceCommit": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
+  "snapshotAt": "2026-10-20T16:40:28.961Z",
+  "sourceCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,11 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "dd93769f9b97477a0a4c77ac012a284374cb3a4b",
+      "commit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T16:03:23.331Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        dd93769f9b97477a0a4c77ac012a284374cb3a4b -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-20T16:28:42.344Z"
     },
     "runner": {
       "id": "405f9654-6a48-463c-9566-f2169a73318e",
@@ -87,55 +86,14 @@
   },
   "summary": {
     "total": 33,
-    "completed": 8,
-    "remaining": 25,
-    "running": 5,
-    "review": 0,
+    "completed": 12,
+    "remaining": 21,
+    "running": 0,
+    "review": 1,
     "blocked": 0,
     "unassigned": 20
   },
   "tasks": [
-    {
-      "id": "T245",
-      "title": "Render one-to-three-colour crests consistently in club and slot views",
-      "dep": [
-        "T237",
-        "T236"
-      ],
-      "lane": "identity-editor",
-      "status": "doing"
-    },
-    {
-      "id": "T247",
-      "title": "Make identity editing a pure isolated draft reducer",
-      "dep": [
-        "T237"
-      ],
-      "lane": "identity-editor",
-      "status": "doing"
-    },
-    {
-      "id": "T248",
-      "title": "Build accessible controlled crest and shirt editing panels",
-      "dep": [
-        "T245",
-        "T246",
-        "T247"
-      ],
-      "lane": "identity-editor",
-      "status": "doing"
-    },
-    {
-      "id": "T249",
-      "title": "Preview the actual selected shirt pairing on grass without simulating a match",
-      "dep": [
-        "T239",
-        "T246",
-        "T248"
-      ],
-      "lane": "identity-editor",
-      "status": "doing"
-    },
     {
       "id": "T250",
       "title": "Found a club with exactly the previewed identity and shirts",
@@ -201,7 +159,7 @@
       "id": "T272",
       "title": "Define complete match metrics and reproducible measurement tooling",
       "dep": [],
-      "status": "doing"
+      "status": "ready"
     },
     {
       "id": "T273",
@@ -486,6 +444,8 @@
       "submittedBase": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
       "submissionId": "df2d43f1-ade6-4f46-a1e8-43a871a73ad1",
       "submittedAt": "2026-10-20T16:08:30.872Z",
+      "integratedCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+      "integratedAt": "2026-10-20T16:28:40.438Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -602,6 +562,13 @@
           "startedAt": "2026-10-20T16:07:45.272Z",
           "finishedAt": "2026-10-20T16:08:30.098Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-20T16:16:29.063Z",
+          "finishedAt": "2026-10-20T16:28:40.203Z"
+        }
       ]
     },
     {
@@ -615,18 +582,20 @@
         "T249"
       ],
       "lane": "identity-editor",
-      "owner": "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716/worker-2",
+      "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-1",
       "contributors": [
         "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2",
-        "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716/worker-2"
+        "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716/worker-2",
+        "405f9654-6a48-463c-9566-f2169a73318e/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-20T14:27:49.859Z",
       "startCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
-      "submittedBase": "863ac24dfdbe88fd7d5e9f3fb4b8dd300e074c02",
-      "submissionId": "a183b08d-d82b-4b1e-8224-d5bef4884b87",
-      "submittedAt": "2026-10-20T15:25:10.821Z",
+      "verifiedCommit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+      "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+      "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
+      "submittedAt": "2026-10-20T16:36:48.367Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -638,17 +607,36 @@
         "files": 17
       },
       "dispatch": {
-        "id": "762e5589-9311-4183-8825-cbe51295ba69",
-        "runner": "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716",
+        "id": "8b1dd561-dbb7-421b-9841-59d56dc6d248",
+        "runner": "405f9654-6a48-463c-9566-f2169a73318e",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-20T15:25:13.247Z",
-        "finishedAt": "2026-10-20T15:30:12.516Z",
+        "startedAt": "2026-10-20T16:36:51.556Z",
+        "finishedAt": "2026-10-20T16:40:25.963Z",
         "error": null,
-        "summary": "I re-reviewed the identity-editor lane (T245, T247, T248, T249) at 2301e82 against base 863ac24. I checked it against the four task contracts, KIT r2, WEB r93 (WEB-49/86/87), SAVE-20, ARCH-7 and docs/CLUB-IDENTITY-CONTRACT.md §§2–4 and 7. I did not run the tests. The review checkout has no node_modules, and installing them would change a read-only workspace. This is a static review, alongside the workers' recorded targeted runs: typecheck, lint, format and build passed, and the correction run passed 53 tests in 6 files.\n\nThe three risk flags were checked first:\n- **Size (2,685 lines).** Most of it is new tests and new components. Every changed file is inside its task's touches.\n- **Merge commit f670a18.** It brings in only base's spec/STATE.md and spec/work/identity.json. `git diff 863ac24 2301e82` has no change to either, and the code does not interact with them.\n- **Autopilot decision.** The only one pending is the STATE inbox lane split, and its dependencies are done at base.\n\n**Rework (correction 2301e82):**\n- **Fixed — last review's P2.** The 무늬색 hint is now built from what CrestMark actually paints with the secondary. It names the pattern only when the field is patterned, always names the ring, and names the emblem only while there is no accent. The one-colour notice uses the same rule.\n- **Button label.** The accent button now reads 엠블럼색 따로 정하기 when the secondary already colours the emblem.\n- **New test.** A markup case covers the striped, plain, accented and plain+accented hints plus the one-colour plain notice.\n- **P3 hand-off.** The Pitch hand-off is recorded in `drawGround`'s doc comment and in T249's limits.\n\n**Whole lane:**\n- **T245:** Crests come from each club's applied identity before the legacy cache, and opponents keep theirs. The two-colour SVG is unchanged. One-colour crests leave their missing regions as negative space through a uniquely named mask, and the accent reaches the emblem. Slot summaries accept one, two or three colours and skip only a malformed entry. Every earlier writer wrote club colours as `#RRGGBB`, so tightening that check affects no existing save. The chart line falls back to the away secondary, then the accent, then fixed warm and ivory lines. Per-render lookup cost is no worse, because the legacy cache was already keyed on the clubs array.\n- **T247:** The reducer is pure, matches §7 exactly, copies only the branch it changes, and refuses invalid input by returning the same value. Reset returns a deep clone.\n- **T248:** The editor is controlled and every change goes through the reducer. Each colour control's hint now names exactly the region it paints, and read-only mode disables every change control.\n- **T249:** The pairing comes from the shared `selectMatchKits` with the own role forced. Away and third play as the real away side. Drawing uses the shared painter at the live marker scale, and the resize observer is disconnected on unmount. There is no clock, world, command or save.\n\nNo P1 or P2 issues remain."
+        "summary": "I'm approving this re-review of the identity-editor lane (T245, T247, T248, T249) at commit e271734 against base 2309deb. I checked it against the four task contracts, KIT r2, WEB r94 (WEB-49/86/87), SAVE-20, ARCH-7 and docs/CLUB-IDENTITY-CONTRACT.md §§2–4 and §7. I did not run any tests myself: the review checkout has no node_modules, and installing them would change a read-only workspace. The verdict rests on a static review plus the workers' recorded targeted runs.\n\n**Risk reasons, checked first:**\n- **2,685 changed lines:** most of them are new tests and new components. Every changed file is inside its lane's touches. The two merges (f670a18, 33fd2e9) touch none of this lane's files except a 2-line `outcome.ts` title addition, which doesn't interact with them.\n- **Rework:** the earlier P2 is fixed in 2301e82. The 무늬색 hint is now built from what CrestMark actually paints with the secondary: `바탕 무늬(<pattern>)` only on a patterned field, always `원 테두리`, and `엠블럼(<emblem>)` while there is no accent. The one-colour note lists the same empty regions. The button reads `엠블럼색 따로 정하기` when the secondary already paints the emblem. I compared this with `ClubCrest.tsx` (both the two-colour path and the mask path) and it matches. A new markup case covers striped, plain, accented and one-colour plain crests.\n- **The latest commit (e271734):** it only rewrites the task-result text. Headers and acceptance text are unchanged; the checkboxes went from [ ] to [v].\n- **Autopilot decisions awaiting the owner:** the lane split (261020) and the base bump to WEB r94/SAVE r50/ARCH r16 with contents unchanged (261021). Neither affects this lane's behaviour.\n\n**Per task:**\n- **T245:** `crestOf`/`crestMap` read `club.identity` before the cached legacy lookup, so a replaced crest is never hidden and opponents keep theirs. Two-colour SVG output is unchanged. A one-colour crest masks the pattern, the ring and (with no accent) the emblem as negative space, using unique IDs. Slot summaries check `#RRGGBB` and accept optional secondary/accent. `summarize()` copies the crest. `seriesColours` ends on fixed lines, and tests cover it.\n- **T247:** the reducer is pure and copies only the branch it changes. Reuse follows §7 exactly, plain shirts drop the secondary and a pattern supplies one explicitly. Reset returns a deep clone, and the `never` switch rejects unknown actions at compile time. Refused actions return `value` itself, and the tests use deep-frozen fixtures plus the strict schema.\n- **T248:** the editor is controlled and every change goes through the reducer. It has six presets, the 6/10/20 composer, three role shirts, eight patterns, labelled colour fields with visible hex text and local input errors, keyed per-role fields and 44px targets. Read-only disables every change control but leaves viewing controls usable, and there are no forbidden controls.\n- **T249:** the pairing comes from `selectMatchKits` with the own role forced. When the own club wears away or third it really becomes side 1. Drawing goes through `createKitPainter`. The ground, marker radius, outline and font match `Pitch.tsx` value for value. A resize observer is disconnected on unmount, and there is no requestAnimationFrame loop, world, simulation, command or save. The caption covers both sides, the keepers and every warning."
+      },
+      "review": {
+        "id": "35e8dcc9-f913-4b2e-8bbc-4f1a0bf27173",
+        "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I'm approving this re-review of the identity-editor lane (T245, T247, T248, T249) at commit e271734 against base 2309deb. I checked it against the four task contracts, KIT r2, WEB r94 (WEB-49/86/87), SAVE-20, ARCH-7 and docs/CLUB-IDENTITY-CONTRACT.md §§2–4 and §7. I did not run any tests myself: the review checkout has no node_modules, and installing them would change a read-only workspace. The verdict rests on a static review plus the workers' recorded targeted runs.\n\n**Risk reasons, checked first:**\n- **2,685 changed lines:** most of them are new tests and new components. Every changed file is inside its lane's touches. The two merges (f670a18, 33fd2e9) touch none of this lane's files except a 2-line `outcome.ts` title addition, which doesn't interact with them.\n- **Rework:** the earlier P2 is fixed in 2301e82. The 무늬색 hint is now built from what CrestMark actually paints with the secondary: `바탕 무늬(<pattern>)` only on a patterned field, always `원 테두리`, and `엠블럼(<emblem>)` while there is no accent. The one-colour note lists the same empty regions. The button reads `엠블럼색 따로 정하기` when the secondary already paints the emblem. I compared this with `ClubCrest.tsx` (both the two-colour path and the mask path) and it matches. A new markup case covers striped, plain, accented and one-colour plain crests.\n- **The latest commit (e271734):** it only rewrites the task-result text. Headers and acceptance text are unchanged; the checkboxes went from [ ] to [v].\n- **Autopilot decisions awaiting the owner:** the lane split (261020) and the base bump to WEB r94/SAVE r50/ARCH r16 with contents unchanged (261021). Neither affects this lane's behaviour.\n\n**Per task:**\n- **T245:** `crestOf`/`crestMap` read `club.identity` before the cached legacy lookup, so a replaced crest is never hidden and opponents keep theirs. Two-colour SVG output is unchanged. A one-colour crest masks the pattern, the ring and (with no accent) the emblem as negative space, using unique IDs. Slot summaries check `#RRGGBB` and accept optional secondary/accent. `summarize()` copies the crest. `seriesColours` ends on fixed lines, and tests cover it.\n- **T247:** the reducer is pure and copies only the branch it changes. Reuse follows §7 exactly, plain shirts drop the secondary and a pattern supplies one explicitly. Reset returns a deep clone, and the `never` switch rejects unknown actions at compile time. Refused actions return `value` itself, and the tests use deep-frozen fixtures plus the strict schema.\n- **T248:** the editor is controlled and every change goes through the reducer. It has six presets, the 6/10/20 composer, three role shirts, eight patterns, labelled colour fields with visible hex text and local input errors, keyed per-role fields and 44px targets. Read-only disables every change control but leaves viewing controls usable, and there are no forbidden controls.\n- **T249:** the pairing comes from `selectMatchKits` with the own role forced. When the own club wears away or third it really becomes side 1. Drawing goes through `createKitPainter`. The ground, marker radius, outline and font match `Pitch.tsx` value for value. A resize observer is disconnected on unmount, and there is no requestAnimationFrame loop, world, simulation, command or save. The caption covers both sides, the keepers and every warning.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/KitPitchPreview.tsx:29 (T249) → spec/tasks/T253.recorded-kits-in-match-observation.md",
+            "message": "The earlier P3's hand-off is recorded only as a code comment. `drawGround` and `markerRadius` still duplicate the live `Pitch.tsx` values (ground colours, mown stripes, markings, the 6.5% border, the radius `max(6, w×0.011)` and the number font), and T253's impl notes don't mention it. Planner hand-off, not a change for this lane: add a T253 impl note saying that when Pitch moves onto the shared painter it should import `markerRadius`/the ground from KitPitchPreview, or both should share one helper. That way the preview and live observation can't drift apart (WEB-87: placement and colours agree between sample, preview and match observation)."
+          }
+        ],
+        "commit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+        "baseCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+        "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
+        "createdAt": "2026-10-20T16:36:49.482Z",
+        "finishedAt": "2026-10-20T16:40:25.928Z"
       },
       "reviewHistory": [
         {
@@ -749,13 +737,13 @@
         },
         {
           "taskId": "T249",
-          "commit": "2301e827ff6a200e97080d71f237420137192839",
-          "at": "2026-10-20T15:25:10.754Z",
+          "commit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+          "at": "2026-10-20T16:36:48.262Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
-              "startedAt": "2026-10-20T15:24:39.886Z",
-              "finishedAt": "2026-10-20T15:25:09.642Z"
+              "startedAt": "2026-10-20T16:31:18.393Z",
+              "finishedAt": "2026-10-20T16:36:46.624Z"
             }
           ]
         }
@@ -763,8 +751,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
-          "startedAt": "2026-10-20T15:24:39.886Z",
-          "finishedAt": "2026-10-20T15:25:09.642Z"
+          "startedAt": "2026-10-20T16:31:18.393Z",
+          "finishedAt": "2026-10-20T16:36:46.624Z"
         }
       ]
     },
@@ -780,9 +768,23 @@
       "contributors": [
         "405f9654-6a48-463c-9566-f2169a73318e/worker-2"
       ],
-      "status": "doing",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-20T16:05:49.828Z",
       "startCommit": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
+      "verifiedCommit": "87c089d479ffc36c7ac8cce141740932637be110",
+      "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+      "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+      "submittedAt": "2026-10-20T16:37:43.185Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "11557 changed lines (limit 300)",
+          "outside touches: vitest.config.ts"
+        ],
+        "lines": 11557,
+        "files": 6
+      },
       "dispatch": {
         "id": "edea97b0-fce8-4c4b-9932-aa8bb95be094",
         "runner": "405f9654-6a48-463c-9566-f2169a73318e",
@@ -790,9 +792,33 @@
         "slot": 2,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-20T16:05:50.307Z"
-      }
+        "status": "finished",
+        "startedAt": "2026-10-20T16:05:50.307Z",
+        "finishedAt": "2026-10-20T16:37:43.211Z",
+        "error": null,
+        "summary": "T272 구현을 마쳤습니다. 측정 레지스트리, 베이스라인 실행기, 단위 테스트 7개, 문서를 추가했고 스모크 측정 결과를 남겼습니다. 커밋은 하지 않았습니다.\n\n- **레지스트리** (`scripts/lib/match-parity.ts`)\n  - `METRIC_REGISTRY`는 contracts의 M/TD/PD 인덱스에서 생성합니다. 팀 xG, 출전, 사건 종류마다 항목 하나, 결과, 분모가 기록된 비율 13개, 시즌·커리어 지표를 더했습니다. `validateRegistry`는 빠지거나 겹치는 인덱스를 거부하고, 사건 종류가 새로 생기면 타입 검사에서 실패합니다.\n  - `TARGET_BANDS`(MATCH-23의 37행과 MATCH-1 추가시간), `OUTCOME_TARGET`, 정확한 불변식 10개(`INVARIANTS`)를 정의했습니다.\n  - `PARITY_CONFIG`, `CORPUS_CONFIG`, `PERFORMANCE_CONFIG`를 한 곳에 정의했습니다. 보정과 검증 시드는 파티션을 fixture id에 넣어 분리하고, 분석적 결정론 구간을 씁니다. 통과는 `equivalent`/`inside`뿐입니다. 누락·분모 없음·표본 부족·상수 변수는 따로 보고하며, 코덱 시간은 엔진 시간과 분리합니다.\n- **실행기** (`scripts/match-model-baseline.ts`)\n  - `--out`/`--fixtures`/`--seasons`/`--pilot`/`--smoke`를 지원합니다.\n  - 준비, summary/grid 경기, 관찰, 정산, 세기 프로필 두 개의 시즌, 코덱을 따로 잽니다.\n  - `OWN_LEAGUE_ENGINE`과 릴리스 스위치는 바꾸지 않고, 나중에 `simulateAggregate`가 생기면 감지만 합니다.\n  - 출처 fingerprint, 툴체인, 기계, 시드, 조건, 파티션을 기록합니다.\n- **문서**: `docs/MATCH-MODEL-CONTRACT.md`에 사용법과 격리 베이스라인 체크아웃 절차를 추가했습니다.\n- **스모크 결과** (`docs/benchmarks/match-model-baseline.json`, sha256 5ec5bf6c…, provisional, releaseEvidence false)\n  - grid는 불변식 10개를 모두 통과했습니다. 목표 띠 38개 중 16개가 안, 22개는 표본이 작아 미결입니다.\n  - 기존 summary 경로는 40경기 모두 `reconcile`에서 실패합니다. 선수 줄의 패스·태클 등이 0으로 남아 있습니다(MATCH-26 위반). 레지스트리 지표 71개도 없습니다.\n  - 반복 실행과 관찰 실행은 같은 기록을 냈습니다.\n  - 공유 기계, Node 26.8.1에서 잰 값이라 grid 중앙값이 세 번 실행에 39 → 68 → 153 ms로 흔들렸습니다. 베이스라인이 아닙니다.\n- **실행한 검사**: typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(7개 통과), 스모크 실행. 모두 통과했습니다.\n- **범위 밖 변경**: `vitest.config.ts`의 include에 `scripts/**/*.test.ts`를 추가했습니다. 없으면 이 테스트가 어디서도 실행되지 않습니다. 대신 config 변경 때문에 이번 diff의 `vitest run --changed`는 단위 스위트 전체를 돕니다. 전체 스위트는 배치 관문 몫이라 여기서는 돌리지 않았습니다.\n- **기타 한계**: 상세는 task result limits에 적었습니다. 엔진은 사건이 없으면 `incidents` 필드를 생략하므로 T273 DTO에서 존재 여부를 명시해야 합니다. benchmark/calibrate/grid-bands/first-play의 일부 정의는 복사본으로 남았습니다."
+      },
+      "steps": [
+        {
+          "taskId": "T272",
+          "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+          "at": "2026-10-20T16:37:43.103Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T16:36:54.706Z",
+              "finishedAt": "2026-10-20T16:37:41.875Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-20T16:36:54.706Z",
+          "finishedAt": "2026-10-20T16:37:41.875Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -5619,6 +5645,602 @@
         "T242",
         "T243",
         "T244"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 597,
+      "at": "2026-10-20T16:28:40.371Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T244",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-20T16:16:29.063Z",
+            "finishedAt": "2026-10-20T16:28:40.203Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 598,
+      "at": "2026-10-20T16:28:40.438Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T244",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+        "integratedAt": "2026-10-20T16:28:40.438Z"
+      }
+    },
+    {
+      "sequence": 599,
+      "at": "2026-10-20T16:28:42.351Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T16:28:42.344Z"
+        }
+      }
+    },
+    {
+      "sequence": 600,
+      "at": "2026-10-20T16:28:42.366Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-1",
+        "contributors": [
+          "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2",
+          "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716/worker-2",
+          "405f9654-6a48-463c-9566-f2169a73318e/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 601,
+      "at": "2026-10-20T16:28:42.524Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2bdfa6ea-396a-49cf-b3c0-540cb985ad05",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T16:28:42.524Z"
+        }
+      }
+    },
+    {
+      "sequence": 602,
+      "at": "2026-10-20T16:28:42.731Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2bdfa6ea-396a-49cf-b3c0-540cb985ad05",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T16:28:42.524Z"
+        }
+      }
+    },
+    {
+      "sequence": 603,
+      "at": "2026-10-20T16:31:16.640Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 604,
+      "at": "2026-10-20T16:31:17.751Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 605,
+      "at": "2026-10-20T16:31:17.792Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 606,
+      "at": "2026-10-20T16:36:48.367Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+        "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
+        "submittedAt": "2026-10-20T16:36:48.367Z",
+        "steps": [
+          {
+            "taskId": "T245",
+            "commit": "d0275d209123345b856585bcfa7674cf05f0c687",
+            "at": "2026-10-20T14:41:57.433Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:41:17.600Z",
+                "finishedAt": "2026-10-20T14:41:56.950Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T247",
+            "commit": "2464e6bce5f7fc35006416a949a0f819c9632625",
+            "at": "2026-10-20T14:48:34.239Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:47:49.428Z",
+                "finishedAt": "2026-10-20T14:48:32.952Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T248",
+            "commit": "d65e886c3edf877b38a9e867c38dcb0b2e796ad2",
+            "at": "2026-10-20T14:56:30.735Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:56:05.331Z",
+                "finishedAt": "2026-10-20T14:56:30.225Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T249",
+            "commit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+            "at": "2026-10-20T16:36:48.262Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T16:31:18.393Z",
+                "finishedAt": "2026-10-20T16:36:46.624Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-20T16:31:18.393Z",
+            "finishedAt": "2026-10-20T16:36:46.624Z"
+          }
+        ],
+        "verifiedCommit": "e271734e2aee3af451a5b2a94fc8df344eade30e"
+      }
+    },
+    {
+      "sequence": 607,
+      "at": "2026-10-20T16:36:48.442Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "2bdfa6ea-396a-49cf-b3c0-540cb985ad05",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:28:42.524Z",
+          "finishedAt": "2026-10-20T16:36:48.442Z",
+          "error": null,
+          "summary": "T249 (identity-editor lane), WEB r94 / SAVE r50 / ARCH r16 sync: no code change was needed. The planning branch only raised the task bases, and the lane already has it through merge 33fd2e9. The previous review's P2 finding (the 무늬색 hint must name only the regions it actually paints) was already fixed in 2301e82. The P3 hand-off to T253 is in T249's limits and in the drawGround comment.\n\nThe only edits are to the result sections in spec/tasks. The directive asks for each result line on one line, so I flattened the outcome sub-lists in T249, T248 and T247 into single lines with the same text; T245 was already one line. In T249 I also updated `at:` and added the sync re-run to `verified:`. No other result section changed, and the code and acceptance items are untouched.\n\nAll checks below ran on the merged tree and passed:\n- The lane's 9 targeted test files, 75 tests: identityPreview, kitPainting, kit-selection, identityEditorMarkup, clubIdentityDraft, identityCrest, crests, games, matchCharts.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` (no errors or warnings).\n- `pnpm run build`. The entry bundle is 119.35 kB gzip, up from 119.26 kB because of the merged identity-engine lane.\n- `pnpm exec vitest run --changed 33fd2e9 --passWithNoTests` selected no test files, because only spec files changed.\n\nLeft to the batch gate, not run here: `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs`, and the Chromium playwright run. I did not commit or submit; the host runner does that."
+        }
+      }
+    },
+    {
+      "sequence": 608,
+      "at": "2026-10-20T16:36:49.482Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "35e8dcc9-f913-4b2e-8bbc-4f1a0bf27173",
+          "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+          "status": "reviewing",
+          "commit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+          "baseCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+          "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
+          "createdAt": "2026-10-20T16:36:49.482Z"
+        }
+      }
+    },
+    {
+      "sequence": 609,
+      "at": "2026-10-20T16:36:51.556Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8b1dd561-dbb7-421b-9841-59d56dc6d248",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T16:36:51.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 610,
+      "at": "2026-10-20T16:36:51.580Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8b1dd561-dbb7-421b-9841-59d56dc6d248",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T16:36:51.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 611,
+      "at": "2026-10-20T16:36:51.752Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 612,
+      "at": "2026-10-20T16:36:53.633Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 613,
+      "at": "2026-10-20T16:36:53.725Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 614,
+      "at": "2026-10-20T16:37:43.185Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "87c089d479ffc36c7ac8cce141740932637be110",
+        "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+        "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+        "submittedAt": "2026-10-20T16:37:43.185Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "11557 changed lines (limit 300)",
+            "outside touches: vitest.config.ts"
+          ],
+          "lines": 11557,
+          "files": 6
+        },
+        "steps": [
+          {
+            "taskId": "T272",
+            "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+            "at": "2026-10-20T16:37:43.103Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T16:36:54.706Z",
+                "finishedAt": "2026-10-20T16:37:41.875Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-20T16:36:54.706Z",
+            "finishedAt": "2026-10-20T16:37:41.875Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 615,
+      "at": "2026-10-20T16:37:43.211Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "edea97b0-fce8-4c4b-9932-aa8bb95be094",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:05:50.307Z",
+          "finishedAt": "2026-10-20T16:37:43.211Z",
+          "error": null,
+          "summary": "T272 구현을 마쳤습니다. 측정 레지스트리, 베이스라인 실행기, 단위 테스트 7개, 문서를 추가했고 스모크 측정 결과를 남겼습니다. 커밋은 하지 않았습니다.\n\n- **레지스트리** (`scripts/lib/match-parity.ts`)\n  - `METRIC_REGISTRY`는 contracts의 M/TD/PD 인덱스에서 생성합니다. 팀 xG, 출전, 사건 종류마다 항목 하나, 결과, 분모가 기록된 비율 13개, 시즌·커리어 지표를 더했습니다. `validateRegistry`는 빠지거나 겹치는 인덱스를 거부하고, 사건 종류가 새로 생기면 타입 검사에서 실패합니다.\n  - `TARGET_BANDS`(MATCH-23의 37행과 MATCH-1 추가시간), `OUTCOME_TARGET`, 정확한 불변식 10개(`INVARIANTS`)를 정의했습니다.\n  - `PARITY_CONFIG`, `CORPUS_CONFIG`, `PERFORMANCE_CONFIG`를 한 곳에 정의했습니다. 보정과 검증 시드는 파티션을 fixture id에 넣어 분리하고, 분석적 결정론 구간을 씁니다. 통과는 `equivalent`/`inside`뿐입니다. 누락·분모 없음·표본 부족·상수 변수는 따로 보고하며, 코덱 시간은 엔진 시간과 분리합니다.\n- **실행기** (`scripts/match-model-baseline.ts`)\n  - `--out`/`--fixtures`/`--seasons`/`--pilot`/`--smoke`를 지원합니다.\n  - 준비, summary/grid 경기, 관찰, 정산, 세기 프로필 두 개의 시즌, 코덱을 따로 잽니다.\n  - `OWN_LEAGUE_ENGINE`과 릴리스 스위치는 바꾸지 않고, 나중에 `simulateAggregate`가 생기면 감지만 합니다.\n  - 출처 fingerprint, 툴체인, 기계, 시드, 조건, 파티션을 기록합니다.\n- **문서**: `docs/MATCH-MODEL-CONTRACT.md`에 사용법과 격리 베이스라인 체크아웃 절차를 추가했습니다.\n- **스모크 결과** (`docs/benchmarks/match-model-baseline.json`, sha256 5ec5bf6c…, provisional, releaseEvidence false)\n  - grid는 불변식 10개를 모두 통과했습니다. 목표 띠 38개 중 16개가 안, 22개는 표본이 작아 미결입니다.\n  - 기존 summary 경로는 40경기 모두 `reconcile`에서 실패합니다. 선수 줄의 패스·태클 등이 0으로 남아 있습니다(MATCH-26 위반). 레지스트리 지표 71개도 없습니다.\n  - 반복 실행과 관찰 실행은 같은 기록을 냈습니다.\n  - 공유 기계, Node 26.8.1에서 잰 값이라 grid 중앙값이 세 번 실행에 39 → 68 → 153 ms로 흔들렸습니다. 베이스라인이 아닙니다.\n- **실행한 검사**: typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(7개 통과), 스모크 실행. 모두 통과했습니다.\n- **범위 밖 변경**: `vitest.config.ts`의 include에 `scripts/**/*.test.ts`를 추가했습니다. 없으면 이 테스트가 어디서도 실행되지 않습니다. 대신 config 변경 때문에 이번 diff의 `vitest run --changed`는 단위 스위트 전체를 돕니다. 전체 스위트는 배치 관문 몫이라 여기서는 돌리지 않았습니다.\n- **기타 한계**: 상세는 task result limits에 적었습니다. 엔진은 사건이 없으면 `incidents` 필드를 생략하므로 T273 DTO에서 존재 여부를 명시해야 합니다. benchmark/calibrate/grid-bands/first-play의 일부 정의는 복사본으로 남았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 616,
+      "at": "2026-10-20T16:40:25.928Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "35e8dcc9-f913-4b2e-8bbc-4f1a0bf27173",
+          "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I'm approving this re-review of the identity-editor lane (T245, T247, T248, T249) at commit e271734 against base 2309deb. I checked it against the four task contracts, KIT r2, WEB r94 (WEB-49/86/87), SAVE-20, ARCH-7 and docs/CLUB-IDENTITY-CONTRACT.md §§2–4 and §7. I did not run any tests myself: the review checkout has no node_modules, and installing them would change a read-only workspace. The verdict rests on a static review plus the workers' recorded targeted runs.\n\n**Risk reasons, checked first:**\n- **2,685 changed lines:** most of them are new tests and new components. Every changed file is inside its lane's touches. The two merges (f670a18, 33fd2e9) touch none of this lane's files except a 2-line `outcome.ts` title addition, which doesn't interact with them.\n- **Rework:** the earlier P2 is fixed in 2301e82. The 무늬색 hint is now built from what CrestMark actually paints with the secondary: `바탕 무늬(<pattern>)` only on a patterned field, always `원 테두리`, and `엠블럼(<emblem>)` while there is no accent. The one-colour note lists the same empty regions. The button reads `엠블럼색 따로 정하기` when the secondary already paints the emblem. I compared this with `ClubCrest.tsx` (both the two-colour path and the mask path) and it matches. A new markup case covers striped, plain, accented and one-colour plain crests.\n- **The latest commit (e271734):** it only rewrites the task-result text. Headers and acceptance text are unchanged; the checkboxes went from [ ] to [v].\n- **Autopilot decisions awaiting the owner:** the lane split (261020) and the base bump to WEB r94/SAVE r50/ARCH r16 with contents unchanged (261021). Neither affects this lane's behaviour.\n\n**Per task:**\n- **T245:** `crestOf`/`crestMap` read `club.identity` before the cached legacy lookup, so a replaced crest is never hidden and opponents keep theirs. Two-colour SVG output is unchanged. A one-colour crest masks the pattern, the ring and (with no accent) the emblem as negative space, using unique IDs. Slot summaries check `#RRGGBB` and accept optional secondary/accent. `summarize()` copies the crest. `seriesColours` ends on fixed lines, and tests cover it.\n- **T247:** the reducer is pure and copies only the branch it changes. Reuse follows §7 exactly, plain shirts drop the secondary and a pattern supplies one explicitly. Reset returns a deep clone, and the `never` switch rejects unknown actions at compile time. Refused actions return `value` itself, and the tests use deep-frozen fixtures plus the strict schema.\n- **T248:** the editor is controlled and every change goes through the reducer. It has six presets, the 6/10/20 composer, three role shirts, eight patterns, labelled colour fields with visible hex text and local input errors, keyed per-role fields and 44px targets. Read-only disables every change control but leaves viewing controls usable, and there are no forbidden controls.\n- **T249:** the pairing comes from `selectMatchKits` with the own role forced. When the own club wears away or third it really becomes side 1. Drawing goes through `createKitPainter`. The ground, marker radius, outline and font match `Pitch.tsx` value for value. A resize observer is disconnected on unmount, and there is no requestAnimationFrame loop, world, simulation, command or save. The caption covers both sides, the keepers and every warning.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/KitPitchPreview.tsx:29 (T249) → spec/tasks/T253.recorded-kits-in-match-observation.md",
+              "message": "The earlier P3's hand-off is recorded only as a code comment. `drawGround` and `markerRadius` still duplicate the live `Pitch.tsx` values (ground colours, mown stripes, markings, the 6.5% border, the radius `max(6, w×0.011)` and the number font), and T253's impl notes don't mention it. Planner hand-off, not a change for this lane: add a T253 impl note saying that when Pitch moves onto the shared painter it should import `markerRadius`/the ground from KitPitchPreview, or both should share one helper. That way the preview and live observation can't drift apart (WEB-87: placement and colours agree between sample, preview and match observation)."
+            }
+          ],
+          "commit": "e271734e2aee3af451a5b2a94fc8df344eade30e",
+          "baseCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+          "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
+          "createdAt": "2026-10-20T16:36:49.482Z",
+          "finishedAt": "2026-10-20T16:40:25.928Z"
+        }
+      }
+    },
+    {
+      "sequence": 617,
+      "at": "2026-10-20T16:40:25.963Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "8b1dd561-dbb7-421b-9841-59d56dc6d248",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:36:51.556Z",
+          "finishedAt": "2026-10-20T16:40:25.963Z",
+          "error": null,
+          "summary": "I'm approving this re-review of the identity-editor lane (T245, T247, T248, T249) at commit e271734 against base 2309deb. I checked it against the four task contracts, KIT r2, WEB r94 (WEB-49/86/87), SAVE-20, ARCH-7 and docs/CLUB-IDENTITY-CONTRACT.md §§2–4 and §7. I did not run any tests myself: the review checkout has no node_modules, and installing them would change a read-only workspace. The verdict rests on a static review plus the workers' recorded targeted runs.\n\n**Risk reasons, checked first:**\n- **2,685 changed lines:** most of them are new tests and new components. Every changed file is inside its lane's touches. The two merges (f670a18, 33fd2e9) touch none of this lane's files except a 2-line `outcome.ts` title addition, which doesn't interact with them.\n- **Rework:** the earlier P2 is fixed in 2301e82. The 무늬색 hint is now built from what CrestMark actually paints with the secondary: `바탕 무늬(<pattern>)` only on a patterned field, always `원 테두리`, and `엠블럼(<emblem>)` while there is no accent. The one-colour note lists the same empty regions. The button reads `엠블럼색 따로 정하기` when the secondary already paints the emblem. I compared this with `ClubCrest.tsx` (both the two-colour path and the mask path) and it matches. A new markup case covers striped, plain, accented and one-colour plain crests.\n- **The latest commit (e271734):** it only rewrites the task-result text. Headers and acceptance text are unchanged; the checkboxes went from [ ] to [v].\n- **Autopilot decisions awaiting the owner:** the lane split (261020) and the base bump to WEB r94/SAVE r50/ARCH r16 with contents unchanged (261021). Neither affects this lane's behaviour.\n\n**Per task:**\n- **T245:** `crestOf`/`crestMap` read `club.identity` before the cached legacy lookup, so a replaced crest is never hidden and opponents keep theirs. Two-colour SVG output is unchanged. A one-colour crest masks the pattern, the ring and (with no accent) the emblem as negative space, using unique IDs. Slot summaries check `#RRGGBB` and accept optional secondary/accent. `summarize()` copies the crest. `seriesColours` ends on fixed lines, and tests cover it.\n- **T247:** the reducer is pure and copies only the branch it changes. Reuse follows §7 exactly, plain shirts drop the secondary and a pattern supplies one explicitly. Reset returns a deep clone, and the `never` switch rejects unknown actions at compile time. Refused actions return `value` itself, and the tests use deep-frozen fixtures plus the strict schema.\n- **T248:** the editor is controlled and every change goes through the reducer. It has six presets, the 6/10/20 composer, three role shirts, eight patterns, labelled colour fields with visible hex text and local input errors, keyed per-role fields and 44px targets. Read-only disables every change control but leaves viewing controls usable, and there are no forbidden controls.\n- **T249:** the pairing comes from `selectMatchKits` with the own role forced. When the own club wears away or third it really becomes side 1. Drawing goes through `createKitPainter`. The ground, marker radius, outline and font match `Pitch.tsx` value for value. A resize observer is disconnected on unmount, and there is no requestAnimationFrame loop, world, simulation, command or save. The caption covers both sides, the keepers and every warning."
+        }
+      }
+    },
+    {
+      "sequence": 618,
+      "at": "2026-10-20T16:40:26.076Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
       ],
       "previousStatus": "approved",
       "status": "integrating",

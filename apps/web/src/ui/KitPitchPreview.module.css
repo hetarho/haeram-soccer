@@ -1,0 +1,29 @@
+.preview {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+}
+/* The live pitch's 1.9:1 shape (WEB-50), as wide as its holder. */
+.canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.9;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: #253b31;
+}
+.caption {
+  display: grid;
+  gap: 2px;
+}
+.caption p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.caption .warning {
+  color: var(--warm);
+}
