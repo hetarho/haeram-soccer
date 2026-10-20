@@ -18,6 +18,7 @@
 | r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
+- 261021 decided T240 T241 T242 T243 T244 T245 T247 T248 T249 T250 T251 T252 T253 T254 T255: the owner's planning commits raised WEB r94 SAVE r50 ARCH r16 under the open identity tasks → bases bumped with contents unchanged; ARCH-31, SAVE-23, WEB-32 and WEB-89 govern the full match model, match pacing and numerical comparisons, not identity (alt: re-plan the identity tasks against the full-model rules, which T273 and later already own after T255)
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
 - 261020 decided ARCH-30 ARCH-23 ARCH-21: ARCH r13–r15 were already carried out by the owner's fix commits (benchmark.yml, three unit shards, `tests/fixtures/worlds.ts`) → no new task; the todo tasks follow them in place: T250–T254 drop playwright from their task checks and leave their specs to the batch Chromium run, T254 leaves Firefox/WebKit to CI, T255 no longer runs `pnpm run verify`, T232/T233/T255 take the storage benchmark from a local `pnpm run benchmark` instead of a CI benchmark job, T240/T242/T254 take simulated worlds from `tests/fixtures/worlds.ts` (alt: one task that re-checks every ARCH-30 rule in the repo, which has nothing left to change)
 - 261020 decided T221 MATCH-19: a Poisson yellow draw that hit an already booked player made about 0.13 extra sendings-off a team (target 0.07 with second yellows in it) → cautions go to unbooked players and second yellows come only as 30% of the red draw (alt: keep natural second yellows and lower the red mean, which still overshoots) — the grid's measured red rate already includes second yellows
@@ -207,6 +208,7 @@
 - FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
 - 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
 - 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
 - 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
@@ -226,5 +228,3 @@
 - 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
 - 261020 create-task ARCH start
 - 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
-- 261020 T222 done: level knockout ties play extra time and a kick-by-kick shoot-out on both paths; cups and Europe pass each tie's rule, the coin flips are gone, Elo reads the 90-minute score.
-- 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
