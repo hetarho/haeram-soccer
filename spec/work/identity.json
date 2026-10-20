@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T18:56:00.025Z",
-  "sourceCommit": "cceca30b9d63c8a5198e8291aca2f30792c846a2",
+  "snapshotAt": "2026-10-20T20:56:00.364Z",
+  "sourceCommit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,12 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "d7d27a66a0065c1ead03b4440f07911cb53e43ca",
+      "commit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T17:33:53.242Z"
+      "at": "2026-10-20T19:07:53.306Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "9e548699-9671-4ca3-bd44-6a54ce30900a",
       "adapter": "builtin",
       "providers": {
@@ -42,35 +42,17 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-20T17:42:13.293Z"
-    },
-    "lastRun": {
-      "id": "8230bb41-8caf-430b-96f5-aa055872111a",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
+      "startedAt": "2026-10-20T17:42:13.293Z",
+      "stoppedAt": "2026-10-20T20:55:59.781Z",
+      "dispatched": 10,
+      "outcome": "decision-wait",
+      "failures": [
         {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
+          "attempt": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         }
-      ],
-      "startedAt": "2026-10-20T17:35:58.720Z",
-      "stoppedAt": "2026-10-20T17:36:02.206Z",
-      "dispatched": 0,
-      "outcome": "needs-attention",
-      "failures": []
+      ]
     }
   },
   "summary": {
@@ -770,6 +752,8 @@
       "submittedBase": "cceca30b9d63c8a5198e8291aca2f30792c846a2",
       "submissionId": "f1f2adfb-f69d-4edb-81c3-c5ad7f40c471",
       "submittedAt": "2026-10-20T18:50:31.134Z",
+      "integratedCommit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
+      "integratedAt": "2026-10-20T19:07:51.076Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -952,6 +936,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-20T18:50:05.652Z",
           "finishedAt": "2026-10-20T18:50:30.685Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-20T18:56:00.216Z",
+          "finishedAt": "2026-10-20T19:07:50.843Z"
         }
       ]
     },
@@ -10042,6 +10033,101 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 736,
+      "at": "2026-10-20T19:07:51.013Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-20T18:56:00.216Z",
+            "finishedAt": "2026-10-20T19:07:50.843Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 737,
+      "at": "2026-10-20T19:07:51.076Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
+        "integratedAt": "2026-10-20T19:07:51.076Z"
+      }
+    },
+    {
+      "sequence": 738,
+      "at": "2026-10-20T19:07:53.320Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "44592aab9ada5035d9d429da71e51a1e8a388aa4",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T19:07:53.306Z"
+        }
+      }
+    },
+    {
+      "sequence": 739,
+      "at": "2026-10-20T20:55:59.781Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "9e548699-9671-4ca3-bd44-6a54ce30900a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-20T17:42:13.293Z",
+          "stoppedAt": "2026-10-20T20:55:59.781Z",
+          "dispatched": 10,
+          "outcome": "decision-wait",
+          "failures": [
+            {
+              "attempt": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ]
+        }
       }
     }
   ]
