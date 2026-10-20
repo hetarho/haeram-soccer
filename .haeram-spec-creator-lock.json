@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
   "packageName": "haeram-spec-creator",
-  "packageVersion": "0.7.1",
-  "installedAt": "2026-10-19T11:08:14.895Z",
+  "packageVersion": "0.7.2",
+  "installedAt": "2026-10-20T01:26:59.486Z",
   "agents": [
     "claude",
     "codex"
   ],
   "files": {
     ".claude/skills/create-architecture/assets/FORMAT.md": {
-      "sha256": "8a54c5432664e3a24900c7c6d165278cbfcf44d88674adfbf01b5c853ddc7fb3"
+      "sha256": "a1c123f58b1b2a64a5eafa96471255fa92870d0b8c200577d150c54b3fa51601"
     },
     ".claude/skills/create-architecture/assets/STATE.md": {
       "sha256": "74968e5bb4f130c103c907ce2d95b73daaa99cd0f206b0e46ea896fcf3722117"
     },
     ".claude/skills/create-architecture/SKILL.md": {
-      "sha256": "f5e664833072c9b8c72bed7e9488013b9eac7293fac11701ef6516c8760d2302"
+      "sha256": "300e243c9d607a600f0f0bd87e009888c425113ab6236ae539f12bad761e623c"
     },
     ".claude/skills/create-narrative/references/korean-style.md": {
       "sha256": "4769f33b8bf82058947d029e38f6226bcc1fb614460611bc18eb975cf6dafbca"
@@ -33,7 +33,7 @@
       "sha256": "3a4bca2cb2023db00e2e49413a30d0b86dfc856a6df6e127badbb1292f7e31cc"
     },
     ".claude/skills/create-task/SKILL.md": {
-      "sha256": "d8424e1ac36a6d72d95415f6eef4dcf37bbab94bd226fbd629e5fa72400b2080"
+      "sha256": "b029edfb02526ef80d45886204f553d1158c39f871590a409f359fea8d422655"
     },
     ".claude/skills/doc-review/SKILL.md": {
       "sha256": "8aadde938ad479a7cbb8c019a62958a0ad43c5f64df68f473333a0ecfb993930"
@@ -45,10 +45,10 @@
       "sha256": "3f4e788d0cdd8fd8098cec32f9aa1aadf4619f63199ab36f56574aba0246fc30"
     },
     ".claude/skills/implement-task/references/work-group.md": {
-      "sha256": "edc56eab0bf14af4bf364d57d8db263cb5bb39fbd1d76bbe11ccd109837f6178"
+      "sha256": "89e751aab050660496871825743583ab08551dee7048f113f3316c535e165352"
     },
     ".claude/skills/implement-task/SKILL.md": {
-      "sha256": "8780e1354351867f8cb196b985aa5c8106e91583537a5025354a9b73b71d9ced"
+      "sha256": "46f7c523368ef1e92968565ff5d239386064f0db2649a491cb9f049ea9cca947"
     },
     ".claude/skills/manage-work/references/runner.md": {
       "sha256": "06f4da607dda7eb95efafed58b883354c68123480e6b6aac9274f9c4ecd9b79e"
@@ -72,28 +72,28 @@
       "sha256": "f1f933dc44cfc7a9e4b225412a9e201637b29a4b9a812fdbaa06d72d0389097a"
     },
     ".claude/skills/start-vibe/references/coordinator.md": {
-      "sha256": "ed82d533bb9ee9dc2895c1ac333f5dc36fb808fa71204ccb69511dc589409c70"
+      "sha256": "be40c7a62faf34cd8e98e2231dcc12a4fd659d909903cd8bb6840a4e141d22e7"
     },
     ".claude/skills/start-vibe/references/session.md": {
       "sha256": "00abf4956d194ebd4a3c756ffadc522ddf83e3ffbf16c61134ad2198ffe4fbdf"
     },
     ".claude/skills/start-vibe/SKILL.md": {
-      "sha256": "a82f04d0aa9ed2c56df7bf567c07c10304f30b93da519ef7a112f26dffad2f88"
+      "sha256": "813503f46c7a6a6dc83a969c37ee5718338424ae0575f41f89b108eb6d114fc8"
     },
     ".claude/skills/update-ssot/SKILL.md": {
-      "sha256": "4a5f70499a3fb41e9dce6faa6978dabd493ab58f6517c416e7013c64a2fe4c32"
+      "sha256": "bc088740d2458951f5a6657786ea7b5ea799bd7a9f4ecf45abf808b118e882fc"
     },
     ".codex/skills/create-architecture/agents/openai.yaml": {
       "sha256": "e54fb97860eb279322fab4733af4eef5da1119e0f4a86f57bd1449dbbc19a3d3"
     },
     ".codex/skills/create-architecture/assets/FORMAT.md": {
-      "sha256": "8a54c5432664e3a24900c7c6d165278cbfcf44d88674adfbf01b5c853ddc7fb3"
+      "sha256": "a1c123f58b1b2a64a5eafa96471255fa92870d0b8c200577d150c54b3fa51601"
     },
     ".codex/skills/create-architecture/assets/STATE.md": {
       "sha256": "74968e5bb4f130c103c907ce2d95b73daaa99cd0f206b0e46ea896fcf3722117"
     },
     ".codex/skills/create-architecture/SKILL.md": {
-      "sha256": "f5e664833072c9b8c72bed7e9488013b9eac7293fac11701ef6516c8760d2302"
+      "sha256": "300e243c9d607a600f0f0bd87e009888c425113ab6236ae539f12bad761e623c"
     },
     ".codex/skills/create-narrative/agents/openai.yaml": {
       "sha256": "c11d27ac8a7b045cf12719d9d82fcb0e0c1fd3e3ca1c397de4d14a390b69762a"
@@ -120,7 +120,7 @@
       "sha256": "3a4bca2cb2023db00e2e49413a30d0b86dfc856a6df6e127badbb1292f7e31cc"
     },
     ".codex/skills/create-task/SKILL.md": {
-      "sha256": "d8424e1ac36a6d72d95415f6eef4dcf37bbab94bd226fbd629e5fa72400b2080"
+      "sha256": "b029edfb02526ef80d45886204f553d1158c39f871590a409f359fea8d422655"
     },
     ".codex/skills/doc-review/agents/openai.yaml": {
       "sha256": "bda2a8c4695ad756c2173153dbef7d176787ab0eee5968cc4ce495d56a677afb"
@@ -141,10 +141,10 @@
       "sha256": "20ccb4149f9ce9bc5ac8a96910b0adba73476cfac2ee4a7cfa2dbc2b66aacce3"
     },
     ".codex/skills/implement-task/references/work-group.md": {
-      "sha256": "edc56eab0bf14af4bf364d57d8db263cb5bb39fbd1d76bbe11ccd109837f6178"
+      "sha256": "89e751aab050660496871825743583ab08551dee7048f113f3316c535e165352"
     },
     ".codex/skills/implement-task/SKILL.md": {
-      "sha256": "8780e1354351867f8cb196b985aa5c8106e91583537a5025354a9b73b71d9ced"
+      "sha256": "46f7c523368ef1e92968565ff5d239386064f0db2649a491cb9f049ea9cca947"
     },
     ".codex/skills/manage-work/agents/openai.yaml": {
       "sha256": "931a5f88d53978761b087dce965ada8acde1c3042fa5e46bdc925244dc046890"
@@ -180,19 +180,19 @@
       "sha256": "f1f933dc44cfc7a9e4b225412a9e201637b29a4b9a812fdbaa06d72d0389097a"
     },
     ".codex/skills/start-vibe/references/coordinator.md": {
-      "sha256": "ed82d533bb9ee9dc2895c1ac333f5dc36fb808fa71204ccb69511dc589409c70"
+      "sha256": "be40c7a62faf34cd8e98e2231dcc12a4fd659d909903cd8bb6840a4e141d22e7"
     },
     ".codex/skills/start-vibe/references/session.md": {
       "sha256": "00abf4956d194ebd4a3c756ffadc522ddf83e3ffbf16c61134ad2198ffe4fbdf"
     },
     ".codex/skills/start-vibe/SKILL.md": {
-      "sha256": "a82f04d0aa9ed2c56df7bf567c07c10304f30b93da519ef7a112f26dffad2f88"
+      "sha256": "813503f46c7a6a6dc83a969c37ee5718338424ae0575f41f89b108eb6d114fc8"
     },
     ".codex/skills/update-ssot/agents/openai.yaml": {
       "sha256": "704e25b36beb15c806ac20cfaefadc946e9591024723fbdd06034e39d1d17fb4"
     },
     ".codex/skills/update-ssot/SKILL.md": {
-      "sha256": "4a5f70499a3fb41e9dce6faa6978dabd493ab58f6517c416e7013c64a2fe4c32"
+      "sha256": "bc088740d2458951f5a6657786ea7b5ea799bd7a9f4ecf45abf808b118e882fc"
     }
   }
 }
