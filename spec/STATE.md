@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:05Z | T227 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:25Z | T228 |
 | - |
 | z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T04:56Z | - |
 
@@ -117,6 +117,7 @@
 - 261020 suggest T221 MATCH-13 MATCH-18: T226 found the grid counts cut-back attempts as `TD.cutBacks` (MATCH-13 says completed) and records a cross's end cell as its origin, so crosses into the box never count as box entries → fix the counters with the grid chain (engine files under T219–T223), then the report's 컷백 row reads completions
 - 261020 suggest T222 MATCH-24: T225 found incidents a minute off their frames (a red card recorded at 73′ appears in the 74′ frame) and an incident at 90+3′ in a match whose last frame is 90+2′ → align incident minutes with `buildFrames` labels; the theatre places an unmatched incident in its period's last or its minute's first frame meanwhile
 - 261020 decided T228: z5k8 hands T228 to k4p2 (z5k8 runs T220 next) → k4p2 builds it beside T227 on T219's discipline API (`isUnavailable`, `isBanned`, fixture-aware `ownStarters`/`lineupPreset`/`startingSquad`) — T228's touches share no file with T227 or T220
+- 261020 decided T227 ARCH-28: the material screens grew the entry by 1,269 gzip bytes (243,907 → 245,176) because the lazy chunk's import of `material.ts` makes Rolldown split it into a shared chunk the entry's engine chunk loads (season.ts calls `reduceSeasonMaterial` since T223) → accept it, 10,824 B stay free (alt: a manual chunk rule in vite.config.ts | move the season reduction out of material.ts) — the task's 'must not grow' guards the budget, and both alternatives touch shared build or engine files under the grid chain
 
 ## ideation
 | id | st |
@@ -158,7 +159,6 @@
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
-| T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T223 | doing |
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | doing |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
@@ -195,6 +195,7 @@
 - implement-task T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
 - 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
 - 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
 - 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
