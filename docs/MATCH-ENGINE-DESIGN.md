@@ -1,8 +1,8 @@
 # Grid match engine — implementation design (rules 4.0.0)
 
-Implementation contract for tasks T200–T233. Policy lives in the SSOTs (MATCH r11, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r90, HIST r14, SAVE r48, ARCH r11). This document fixes how the code is built.
+Implementation contract for tasks T200–T233. Policy lives in the SSOTs (MATCH r13, PLAYER r9, STAFF r34, CLUB r42, LEAGUE r10, WEB r93, HIST r15, SAVE r49, ARCH r15 at T233). This document fixes how the code is built.
 
-- Every number here is an **initial value**. The explore tasks T215, T216 and T224 tune them, and every tunable constant lives in one exported `*_CONFIG` object.
+- The numbers here are the values the explore tasks T215, T216 and T224 settled (T233 checked them against the code). Every tunable constant lives in one exported `*_CONFIG` object; where this document and that object differ, the code is the record and this document is corrected.
 - If this document and an SSOT disagree, the SSOT wins and the task stops for update-ssot.
 
 Reference data:
@@ -249,10 +249,17 @@ export const SHAPE_CONFIG = {
     counter:    { advance: 2, defend: -10, line: [18, 38], press: 8,  counterPress: 0,  compact: 0.30 },
     balanced:   { advance: 4, defend: -4, line: [24, 45], press: 10, counterPress: 8,  compact: 0.33 },
   },
-  lateral: 0.25, keeperPull: 0.08, keeperMax: { sweeperKeeper: 22, other: 14 },
+  lateral: 0.25,
+  deepLine: { behindBall: 4, min: 6 },                 // T215
+  keeperPull: 0.08, keeperMax: { sweeperKeeper: 22, other: 14 }, sweeperStep: 0.3,
   markBlend: 0.4, markRadius: 10, counterPressSeconds: 5,
+  transitionSeconds: 4, recoverySpeed: 1.15,
   speed: { base: 5.2, pace: 2.8, tired: 0.25 },        // m/s = base + pace·pace/99, × (1 − tired·fatigueShare)
   run: { chance: 0.04, seconds: [4, 6], behindDepth: 6, overlapAhead: 10, boxX: 95 },
+  setPiece: {                                          // T215, attack-frame metres of the attacking side
+    box: [[98.5, 30.5], [98.5, 37.5], [95, 34], [93, 27], [93, 41]], edge: [86.5, 34],
+    mark: 0.8, zonal: [[101.5, 31], [101.5, 37], [100.5, 34]], stayUp: 1, stay: 8,
+  },
 } as const;
 ```
 
@@ -261,7 +268,7 @@ export const SHAPE_CONFIG = {
 `targetOf(state, side, idx): Point` in the side's attack frame. `b` is the ball in that frame.
 
 - **Goalkeeper:**
-  - `x = clamp(4 + (b.x − 52.5) × keeperPull, 2, keeperMax)`, where `keeperMax` is 22 for a sweeper keeper while the own line is at or above 40, else 14.
+  - `x = clamp(4 + (b.x − 52.5) × keeperPull, 2, keeperMax)`, where `keeperMax` is 22 for a sweeper keeper while the own line is at or above 40, else 14; at that line a sweeper keeper also steps up `sweeperStep` (0.3) m per metre the line stands above 20 m.
   - `y = 34 + (b.y − 34) × 0.15`.
 - **In possession:**
   - `spot + [advance, 0] + roleShift`.
@@ -269,7 +276,8 @@ export const SHAPE_CONFIG = {
   - Then `x ≤ offsideLine − 0.5` for players not on a run, where `offsideLine` is the opponent's second-last player.
 - **Out of possession:**
   - `spot + [defend, 0]`, then `x += (b.x − 52.5) × compact` and `y += (b.y − 34) × lateral`.
-  - DF-line players are clamped to `line[0] ≤ x ≤ line[1]`.
+  - DF-line players are clamped to `line[0] ≤ x ≤ line[1]`. With the ball played behind that line, the line drops to `deepLine.behindBall` (4) m goal-side of the ball, never deeper than `deepLine.min` (6) m (T215: back lines used to stay above their 18–30 m floor and left box shots unmarked).
+  - For `transitionSeconds` (4) after losing the ball, the side's players move at `recoverySpeed` (1.15) times their speed (§4.4).
   - Pressers:
     - The nearest opponent to the ball within `press` m runs at the ball, 1.2 m goal-side.
     - Under press, a second player within `0.6 × press` also presses.
@@ -282,10 +290,14 @@ export const SHAPE_CONFIG = {
     - `overlap`: overlapping full-back, attacking wing-back. Target `[b.x + overlapAhead, wide-lane centre on his side]`.
     - `box`: box-to-box, mezzala, shadow striker, only while b is in band ≥ 5. Target `[boxX, 30 + 8·u]`.
   - Run draws come from the match stream and happen in roster order.
+- **Set pieces** (a corner, or a free kick crossed into the box; MATCH-18, T215):
+  - The attacking side's five best headers (0.6 공중볼 + 0.4 몸싸움) take the `setPiece.box` spots and the sixth waits at `edge`; the rest hold where they stand.
+  - The defending side's most advanced `stayUp` (1) outfielder stays upfield. The others, best headers first, stand `mark` (0.8) m goal-side of each man in the box, then on the three six-yard `zonal` spots, then goal-side of the man at the edge.
+  - The players who went up hold their spots for `stay` (8) s after the delivery for the second ball.
 
 ### 4.4 Movement
 
-`moveAll(state, dt)`: every player on the pitch moves toward his target by `min(distance, speed × dt)`, with `speed` from `SHAPE_CONFIG.speed`. `fatigueShare = minutesOnPitch / 90`, capped at 1.
+`moveAll(state, dt)`: every player on the pitch moves toward his target by `min(distance, speed × dt)`, with `speed` from `SHAPE_CONFIG.speed`. `fatigueShare = minutesOnPitch / 90`, capped at 1. The side that lost the ball within `transitionSeconds` moves at `speed × recoverySpeed`.
 
 The carrier moves only through his own action (§6.1). Positions are clamped to the pitch.
 
@@ -346,11 +358,11 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
    - `pass × (1 − crossOfPasses)`, `cross = pass × crossOfPasses`
    - `carry`, `takeOn`, `shot`, `clearance`
    - `holdUp = 0.03`, or 0.15 for FW/AM in central lanes when `backToGoal`
-   - In the cut-back cells (`goalArea` band × half-space lanes): `cutBack = 0.35 × cross`, `cross = 0.65 × cross`
-2. **Position profile** (`POSITION_PROFILES[profileKey(position)]` against `OVERALL`):
-   - `takeOn × (takeOnPerPass / 0.045)`
-   - `cross × (crossShare / 0.025)`, clamped to 0.2–3
-3. **Line factor on `shot`:** GK 0, DF 0.6, MF 1, FW 1.25.
+   - In the cut-back cells (`goalArea` band × half-space lanes): `cutBack = cutBackShare × cross`, `cross = (1 − cutBackShare) × cross`, `cutBackShare` 0.1
+2. **Position profile** (`POSITION_PROFILES[profileKey(position)]` against the league's overall, `factorRange` 0.2–3):
+   - `takeOn × clamp(profile.takeOnPerPass / 0.075)`
+   - `cross` and `cutBack × clamp(profile.crossShare / 0.025) × crossScale`, `crossScale` 7.2 (the cells' own cross shares gave under one cross a side, T215)
+3. **Shot volume:** `shot × shotLine[line] × shotScale × (band 6 ? shotBox : 1) × exp(−max(0, goalDistance − 28)/6)` with `shotLine` GK 0, DF 1, MF 3.8, FW 0.9, `shotScale` 0.19 (the first engine made about 25 shots a side), `shotBox` 0.42 (shoot in the box band rather than carry into the goal area) and `longShot` 28 m / 6 m (a cell's shots come from its near end), all T215.
 4. **Role and traits:** multiply by `actionWeight(role, traits, x)` for:
    - `shot ← 'shot'`
    - `takeOn ← 'dribble'`
@@ -364,9 +376,10 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 6. **Tags:**
    - `pressure ≥ 1`: `carry ×0.6`, `takeOn ×1.3` for a player with 드리블 ≥ 65, `clearance ×2` in bands 0–2
    - `backToGoal`: `takeOn ×0.5`, `shot ×0.3`
-   - `inBehind` in bands ≥ 5, central or half-space lanes: `shot ×1.6`, `carry ×1.3`
-   - `pocket`: `takeOn ×1.2`, shot from band 5 `×1.2`
+   - `inBehind` in bands ≥ 5, central or half-space lanes: `shot ×0.8`, `carry ×1.3`
+   - `pocket`: `takeOn ×1.2`, shot from band 5 `×1.6`
 7. **Score and time:**
+   - all match long, `shot × 0.6^lead` for a side ahead and `shot × 1.4^deficit` for a side behind, by at most 3 goals (`leading.shot`, `trailing.push`, `maxLead`; T216)
    - leading and `minute ≥ 75`: `takeOn ×0.8`, `clearance ×1.3` in bands 0–2
    - trailing and `minute ≥ 70`: `shot ×1.2`, `cross ×1.2`
 8. **Decisions on shots:**
@@ -393,7 +406,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 prior_j = CELL_BASELINES[cell][dir] × sqrt(profile[dir] / OVERALL[dir]) / n_dir
 ```
 
-`n_dir` is the number of candidates in that direction. When scores are flat, the choice reproduces the cell's real direction mix.
+`n_dir` is the number of candidates in that direction. When scores are flat, the choice reproduces the cell's real direction mix. Backward options take `backPrior` (2.2) on top, since the threat gain alone kept back passes near 9% (T215); after a hold-up they take `backBias` (3) more and at a kick-off `RESTART_CONFIG.kickoffBackBias` (10).
 
 **Temperature:**
 
@@ -412,9 +425,9 @@ prior_j = CELL_BASELINES[cell][dir] × sqrt(profile[dir] / OVERALL[dir]) / n_dir
 ### 6.4 Carry and take-on
 
 - **Carry.** Pick among 5 headings (0°, ±30°, ±90° from goal-ward) by `exp((xT gain − 0.5·pressure_at_point)/τ)`.
-  - Length 6–12 m (`6 + 6·r()`), clamped inside the pitch.
+  - Length 6–12 m (`6 + 6·r()`), or 3–6 m (`boxLength`) for a carry that starts in the box (T215), kept `margin` (0.5 m) inside the pitch.
   - A carry ending past the box line in bands 5–7 is allowed.
-- **Take-on.** Against the nearest opponent in front within 4.6 m. On success the carrier ends 5–8 m past him toward goal.
+- **Take-on.** Against the nearest opponent in front within 4.6 m. On success the carrier ends 6.5 m past him toward goal (the middle of `takeOn.past` 5–8 m, no draw). With nobody in front it is a carry, and only a take-on against a defender counts as one (MATCH-13, T215).
 
 ### 6.5 Goalkeeper distribution
 
@@ -451,41 +464,45 @@ Synergy `pass`, `possession`, `defense` and `lineHigh` add the same way.
 
 ```ts
 export const DUEL_CONFIG = {
-  pass: { passer: 1/250, marker: 1/300, risk: 0.08, distance: 1/200, pressure: 0.03, min: 0.25, max: 0.97,
-          lost: { intercepted: 0.55, loose: 0.30, out: 0.15 } },
-  cross: { base: 0.24, skill: 1/150, crowd: 0.03, min: 0.08, max: 0.6, claim: 0.12 },
+  pass: { base: 0.07, passer: 1/250, marker: 1/300, risk: 0.03, distance: 1/400, pressure: 0.015, min: 0.25, max: 0.97,
+          lost: { intercepted: 0.07, loose: 0.81, out: 0.12 }, receiverLoose: 0.35 },
+  cross: { base: 0.55, skill: 1/150, crowd: 0.015, min: 0.08, max: 0.6, claim: 0.1, failOut: 0.15, intercept: 0.4,
+           targetSpread: 8, control: { open: 0.8, setPiece: 0.05 } },
   cutBack: { base: 0.43, skill: 1/200, min: 0.2, max: 0.7 },
-  takeOn: { skill: 1/140, min: 0.2, max: 0.85, fail: { tackle: 0.70, foul: 0.22, loose: 0.08 } },
-  carry: { lostScale: 3, skill: 1/120, min: 0.01, max: 0.35, foul: 0.15 },
+  takeOn: { skill: 1/285, min: 0.2, max: 0.62, fail: { tackle: 0.35, foul: 0.55, loose: 0.1 }, past: [5, 8] },
+  boxFoul: 0.035, thirdFoul: 0.3, looseFoul: 0.08,
+  carry: { lostScale: 2, skill: 1/120, min: 0.01, max: 0.35, foul: 0.8 },
   holdUp: { base: 0.6, skill: 1/150, min: 0.3, max: 0.85 },
-  aerial: { skill: 1/150, base: 0.5 },
-  clearance: { out: 0.30 },
+  aerial: { skill: 1/150, base: 0.5, min: 0.15, max: 0.85 },
+  clearance: { out: 0.35, reach: [25, 45] },
 } as const;
 ```
 
-- **Pass.** `p = clamp(cell.passCompletion + (passer − 60)·passer − (marker − 60)·marker − risk·risk − max(0, dist − 20)·distance − pressure·pressure + bends, min, max)`.
+- **Pass.** `p = clamp(cell.passCompletion + base + (passer − 60)·passer − (marker − 60)·marker − risk·laneRisk − max(0, dist − 20)·distance − pressure·tags.pressure + bend.pass/100, min, max)`; `base` is T215's offset on every cell's real completion rate.
   - `passer` is 패스, or (패스 + 시야)/2 for long, through, switch or line-breaking passes, or 발밑 for a goalkeeper.
   - `marker` is 위치선정 of the opponent nearest the segment.
   - On failure, split by `lost`:
-    - `intercepted`: the marker wins it at his projection point.
-    - `loose`: the nearest player to the landing point wins it, by 1/distance weights.
-    - `out`: the ball goes out past the target's side (§7.2).
+    - `intercepted` (only when there is a marker): the marker wins it at his projection point.
+    - `loose`: a 50/50 at the target among the two nearest players of each side by `1/(distance + 1)`, where the receiver the pass missed weighs `receiverLoose` (T215: he won most of them back and possessions reached 83 a team).
+    - `out`: the ball leaves the pitch along the pass line (§7.2).
   - Before resolving, check offside (§7.3).
+- **Loose balls.** Outside the boxes a 50/50 ends in a foul on its winner by the nearest opponent `looseFoul` of the time (T215).
 - **Cross.**
-  - Delivery: `p = clamp(base + (크로스 − 60)·skill − (defenders − attackers in box)·crowd, min, max)`. The keeper claims a delivered cross first with `claim + (공중볼 처리 − 60)/400`.
-  - Then an aerial duel between the target (the attacker with the highest `0.6 공중볼 + 0.4 몸싸움` in the box, the cross weight from `chooseHeader` logic) and the best defender: `p = clamp(0.5 + (att − def)·aerial.skill, 0.15, 0.85)`.
-  - Attacker wins: a header shot (§7.4). Defender wins: a loose ball at the box edge.
-  - A failed delivery goes to the defender (or out: 30% → corner).
-- **Cut-back.** `p = clamp(base + (크로스 − 60)·skill, min, max)` to a teammate in the box. The next action is forced to `shot` with `cutBack: true`.
+  - The target is drawn first among the attackers in the box, weighted `e^((rating − best)/targetSpread)` with `rating = (0.6 공중볼 + 0.4 몸싸움) × aerial habit`.
+  - Delivery: `p = clamp(base + (크로스 − 60)·skill − max(0, defenders − attackers in box)·crowd, min, max)`.
+  - A failed delivery (or no target) goes out over the byline `failOut` of the time (a goal kick); otherwise the nearest defender to the target intercepts it `intercept` of the time and heads it clear as a loose ball the rest.
+  - A delivered cross: the keeper claims it with `claim + (공중볼 처리 − 60)/400`, else the target duels his nearest marker in the air, `p = clamp(0.5 + (att − def)·aerial.skill, 0.15, 0.85)` on 0.6 공중볼 + 0.4 몸싸움. A marker who wins it heads it to a loose ball at the box edge (x = 88.5 m).
+  - The attacker who wins it brings it down (`control.open` 0.8 in open play, `control.setPiece` 0.05 at a set piece) or heads at goal, under `SHOT_CONFIG.headerPressure` when a marker contested it (§7.4).
+- **Cut-back.** `p = clamp(base + (크로스 − 60)·skill, min, max)` to a teammate in the box, else the nearest defender intercepts. The next action is forced to `shot` with `cutBack: true`.
 - **Take-on.**
-  - `p = clamp(cell.takeOnSuccess ?? 0.5 + (0.7 드리블 + 0.3 속도 − 0.7 태클 − 0.3 속도)·skill, min, max)`.
-  - On failure, split by `fail`. `tackle` counts a tackle for the defender. `foul` goes to §7.5.
-- **Carry under pressure** (pressure ≥ 1).
+  - `p = clamp((cell.takeOnSuccess ?? 0.5) + (0.7 드리블 + 0.3 속도 − 0.7 태클 − 0.3 속도)·skill, min, max)`.
+  - On failure, split by `fail`. `tackle` counts a tackle for the defender, `loose` is a 50/50 where he stands. Of the `foul` share the defender keeps `× 0.6` when booked and `× boxFoul` in his own box or `× thirdFoul` in his own third; the rest become clean tackles (T215: 80% of fouls came in the fouled side's attacking 40 m).
+- **Carry under pressure** (pressure ≥ 1, against the opponent nearest the carry's line).
   - Dispossession `p = clamp(cell.lostPer100/100 × lostScale × (1 + (태클 − 드리블)·skill), min, max)`.
-  - On dispossession, a foul happens with `carry.foul`, otherwise the defender wins it.
-- **Hold-up.** `p = clamp(base + (몸싸움 − 몸싸움_def)·skill, min, max)`. On success the next action is a pass with the back-direction prior × 3. On failure the defender wins it.
-- **Clearance.** Lands 25–45 m up-field.
-  - `out` → throw-in. Otherwise an aerial or loose-ball contest decides the second ball (nearest 2 of each side, `0.5 공중볼 + 0.5 몸싸움`).
+  - On dispossession, a foul with `carry.foul` × the same booked and box/third factors; the challenges held back that way leave the carrier on the ball, the rest are tackles.
+- **Hold-up.** `p = clamp(base + (몸싸움 − 몸싸움_def)·skill, min, max)`. On success the next action is a pass with the back-direction prior × `backBias` (§6.3). On failure the defender wins it.
+- **Clearance.** Lands `reach` 25–45 m up-field.
+  - `out` → throw-in. Otherwise a 50/50 at the landing point decides the second ball (nearest 2 of each side, as for loose balls).
 
 ### 7.2 Out of play (`restarts.ts`)
 
@@ -499,10 +516,10 @@ Dead time (seconds, counted on the clock, not as ball in play):
 
 | restart | dead time |
 |---|---|
-| throw-in | 18 |
-| goal kick | 30 |
-| corner | 37 |
-| free kick | 32 |
+| throw-in | 16 |
+| goal kick | 24 |
+| corner | 32 |
+| free kick | 28 |
 | penalty | 70 |
 | goal (to kick-off) | 55 |
 | substitution | 30 |
@@ -512,47 +529,49 @@ Dead time (seconds, counted on the clock, not as ball in play):
 
 ### 7.3 Offside (MATCH-18)
 
-When a pass is played in the opponent half to a target that stands beyond the second-last opponent and beyond the ball:
+When a pass (not a throw-in, goal kick or corner) is played to a target in the opponent half who stands beyond the second-last opponent and beyond the ball:
 
-- Offside with `p = clamp(0.45 − (판단력 − 60)/200 − (linebreaker ? 0.1 : 0) + (opponent line ≥ 40 m ? 0.05 : 0), 0.1, 0.7)`.
+- Offside with `p = clamp(0.03 − (판단력 − 60)/360 − (linebreaker ? 0.1 : 0) + (opponent DF line ≥ 40 m ? 0.05 : 0), 0.012, 0.7)` (`RESTART_CONFIG.offside`; 360 is the raw scale's 200 times the grid's skill scale, T216).
 - Offside gives an indirect free kick to the defenders at the target spot, and counts `offsides` for the target.
 
 ### 7.4 Shots and xG
 
 ```ts
-export const SHOT_CONFIG = { a: -1.0, b: -0.11, c: 1.6, header: 0.55, cutBack: 1.25, pressure: 0.12,
-  onTargetSkill: 1/250, block: { base: 0.25, perDefender: 0.06, skill: 1/300, min: 0.05, max: 0.5 },
-  save: { hold: 0.55, corner: 0.25, loose: 0.20 } } as const;
+export const SHOT_CONFIG = { a: -1.0, b: -0.11, c: 1.6, header: 0.47, cutBack: 1.25, pressure: 0.25, pressureFloor: 0.2,
+  freeKickWall: 0.6, headerPressure: 1, onTargetSkill: 1/250, saveShare: 0.5,
+  block: { base: 0.4, perDefender: 0.06, skill: 1/300, min: 0.05, max: 0.6, lane: 2 },
+  save: { hold: 0.3, corner: 0.5, loose: 0.2 }, blockThen: { corner: 0.65 },
+  penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 }, maxXg: 0.8 } as const;
 ```
 
 - **Chance xG:**
 
   ```
-  xg = sigmoid(a + b·dist + c·angle) × (header ? 0.55 : 1) × (cutBack ? 1.25 : 1) × (1 − 0.12·pressure)
+  xg = sigmoid(a + b·dist + c·angle) × (header ? 0.47 : 1) × (cutBack ? 1.25 : 1) × (freeKick ? 0.6 : 1)
+       × max(0.2, 1 − 0.25·pressure)
   ```
 
-  `dist` is to the goal centre (105, 34); `angle` is the angle the posts subtend. This gives about 0.23 at the penalty spot, 0.068 at 20 m central and 0.52 at 6 m.
+  `dist` is to the goal centre (105, 34); `angle` is the angle the posts subtend. Unpressured, this gives about 0.23 at the penalty spot, 0.068 at 20 m central and 0.52 at 6 m. The pressure floor keeps two or more close markers from making xG negative (T215); a header won against a marker is taken under pressure 1 (`headerPressure`, T215/T216).
 - **Shooting skill:** `shooting = 0.8 슈팅 + 0.2 침착성`, or `0.65/0.35` when `pressure ≥ 1` or `xg ≥ 0.3`. Use 공중볼 in place of 슈팅 for headers.
-- **Outcome:** `goal = goalChance(xg, shooting, keeper 선방)`, with the existing `finishing`/`goalChance`/`targetChance` functions. Then:
-  - block chance `clamp(base + perDefender · defendersInShotLane + (위치선정 − 55)·skill, min, max)` on misses; real blocks are 24–29% of shots
-  - a save is split by `save`
+- **Outcome:** `goal = goalChance(xg, shooting, keeper 선방)` and `onTarget = targetChance(goal, shooting)`, the shared functions. Then:
+  - a save with `(onTarget − goal) × saveShare`: the grid keeps half the shared model's saves and the rest go wide (T215), split by `save`
+  - otherwise a miss, unless a defender stands within `block.lane` (2) m of the line to the goal centre: block chance `clamp(base + perDefender · defendersInLane + (위치선정 − 55)·skill, min, max)` for the nearest of them; real blocks are 24–29% of shots
   - a miss → goal kick
-  - a block → corner 35%, loose 65%
-- **Recorded xG** (`xg` in the record and `PD.xg`) = chance xG × `levelFactor`, as today.
+  - a block → corner `blockThen.corner` (65%), loose 35%
+- **Recorded xG** (`xg` in the record and `PD.xg`) = chance xG × `levelFactor`, capped at `maxXg` (0.8).
 - **Penalty:** `p = clamp(0.78 + ((0.6 슈팅 + 0.4 침착성) − 선방)/300, 0.6, 0.92)`, recorded with xG 0.76.
 - **Direct free kick:** `xg = sigmoid(a + b·dist + c·angle) × 0.6` (the wall).
 
 ### 7.5 Fouls (T210) and cards (T213)
 
-- A foul comes from a take-on failure or a carry dispossession (§7.1), with ×1.2 under press.
-- A **tactical foul** is a foul in `phase = counter` by a player goal-side of the ball. Its probability from a failed defensive action in a counter is +0.15 on top.
+- A foul comes from a failed take-on or a carry dispossession, each with the booked and box/third care factors of §7.1, or from a 50/50 outside the boxes (`looseFoul`).
+- A **tactical foul** is one within `counterSeconds` (8) of the fouled side's regain by a player goal-side of the ball. It changes only the card chance.
 - **Free kick:** at the spot. Inside the box → penalty.
-- **Card per foul** (`discipline.ts`, `CARD_CONFIG`):
-  - yellow: 0.14 base; tactical 0.6; the booked player's fouls 0.10 (he is more careful: his foul chance ×0.6)
-  - DOGSO (inBehind or central band ≥ 6 with no defender goal-side): red 0.8, or 0.3 inside the box
-  - serious foul play: red 0.006 per foul
-  - dissent: yellow 0.06 per side per half, red 0.002 per side per match
-  - second yellow → red (`secondYellow`)
+- **Card per foul** (`discipline.ts`, `CARD_CONFIG`), drawn in this order:
+  - serious foul play: red 0.002
+  - DOGSO (the fouled player beyond the fouler side's offside line, or central in band ≥ 6 with no other outfield defender goal-side): red 0.05, or 0.015 inside the box, where the penalty already restores the chance
+  - caution: yellow 0.12, tactical 0.6; a booked player's foul 0.02 and then a second yellow (`secondYellow`), sent off
+  - dissent, at each period's end: per side one player, yellow 0.06, red 0.001
 - **After a red card:** the player leaves; that side plays one fewer. The empty slot stays empty and §8.1 rebalances.
 
 ---
@@ -779,9 +798,10 @@ The UI spends `4000 ms × pace / speed` on a minute.
 
 `summaryMatch` keeps its calibrated team-level minutes. It adds:
 
-- **Cards.** Per side, yellows ~ `Poisson(1.9)` and reds ~ `Poisson(0.06)`, drawn from `random(`${seed}:discipline:${f.id}`)`, assigned to starters by line weight: GK 0.2, DF 1.3, MF 1.2, FW 0.8. The draws stop at 2 yellows → red for one player.
+- **Cards** (every fixture). Per side, yellows ~ `Poisson(1.97)` and reds ~ `Poisson(0.07)` (`SUMMARY_DISCIPLINE`, the grid's measured 3.93 yellows and 0.14 reds a match, T215), drawn from `random(`${seed}:discipline:${f.id}`)`, assigned to starters by line weight: GK 0.2, DF 1.3, MF 1.2, FW 0.8.
+  - Cautions go only to players not yet booked. Of the reds, 30% are a second yellow (a caution first if he had none), 50% DOGSO and 20% serious foul play (T221: drawing yellows onto booked players sent off about 0.13 a team against the 0.07 target).
 - **Injuries.** Each starter is injured with →CLUB-23's `injuryChance` from `random(`${seed}:injury:${f.id}`)` at minute `1 + floor(90·u)`.
-- **Named lines when `keepPlayers`.** 22 lines (no substitutions), each with minutes 90. Goals and assists are assigned with the duel chain's line weights (shooters FW 3, MF 1.1, DF 0.2 by 슈팅; assisters by key-pass weight). `lineCounts = [11, 11]`, and `incidents` hold cards and injuries.
+- **Named lines when `keepPlayers`** (the own league, T224). One line per starter (no substitutions) with the match's minutes; the shots, shots on target, goals, assists and saves are those of the shooter and creator the chance model already picks, so no new draws are made and every score is unchanged. Grid-only counters stay absent (MATCH-26). `lineCounts` holds the two starter counts.
 - **Extra time and shoot-out** (§8.4): 30 more team-level minutes, then kicks with p = 0.76 each.
 
 ---
@@ -789,12 +809,14 @@ The UI spends `4000 ms × pace / speed` on a minute.
 ## 12. Dispatch (T218, T224)
 
 ```ts
-export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'grid';   // T224 sets it from the measured 125% budget
+export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'summary';   // T224 measured it against MATCH-22's 125% budget
 simulateMatch(w, f, observe = false, keepPlayers = false, decide?: DecideRule): MatchPlayback
   own club in the fixture            → playGrid
   keepPlayers (own-league scoring)   → OWN_LEAGUE_ENGINE === 'grid' ? playGrid : summaryMatch(named)
   otherwise                          → summaryMatch
 ```
+
+T224 measured a season at 42.7 s with the own league on the grid against rules 3.0.0's 5.1 s (8.4×, past the 125% budget) and 8.4 s on the summary path, so the own league plays `summaryMatch(named)` (docs/CALIBRATION.md); T232's century benchmark measured 8.2–8.5 s of engine time a season on the same path. `setOwnLeagueEngine` switches the path for measurement scripts only (`scripts/season-throughput.ts`).
 
 ---
 
@@ -872,7 +894,7 @@ export interface Unavailable { player: string; club: string; until: { year: numb
   - `material`: per-match flag plus bit columns per array.
   - Widened TD/PD use the existing `matchDetail` stream with the new sizes.
 - **World fields** (`discipline`, `SeasonArchive.heat`, `Fixture.shootout`): `world` is inline JSON, except `history` heat, which gets a bit-column stream `seasonHeat` (width 40) with per-season player counts.
-- **Benchmark** (T232): `docs/benchmarks/T232-rules4-storage.json`, plus the existing `T010-storage.json` for `first-play.mjs`.
+- **Benchmark** (T232): `docs/benchmarks/T232-rules4-storage.json`, plus the existing `T010-storage.json` for `first-play.mjs`. Every checkpoint fits: the worst, the baseline century, is 2,382,876 of 3,145,728 B, its largest streams `matchDetail.players`, `statBits.data`, `careers.jobs` and `matchIncidents.rows` (docs/VERIFICATION.md).
 
 ---
 
@@ -882,4 +904,4 @@ export interface Unavailable { player: string; club: string; until: { year: numb
 - Determinism: the same setup gives an identical record; `observe` true and false give identical records.
 - Schema: every produced record passes `validateWorld` in `world.test.ts` after a season.
 - Golden: after a task changes engine output, run `pnpm exec tsx scripts/update-golden.ts --write`, then `pnpm run test:contract`.
-- Task-level run: the task's own test files plus `pnpm run typecheck` and `pnpm run lint`. Full `pnpm run verify` runs at T233.
+- Verification tiers follow ARCH-30: a task runs typecheck, lint, format and its changed unit tests (plus `pnpm run build` for UI, storage or worker changes) and never a browser spec; unit, contract, catalog, build and every Chromium journey run once before a push to main; CI runs every browser after it. T233 ran that batch on the final rebuild source.

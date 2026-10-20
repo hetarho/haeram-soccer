@@ -38,6 +38,7 @@ Rules `4.0.0` adds own-match facts and season heat maps. Each has an optional st
 - `seasonHeat`: `counts` (width 1, one value per archived season: 0 = no `heat`, otherwise players + 1) and `rows`, a width-41 `planes` bit-column stream `[player ref, 40 cell counts]`, players in object order within a season. The packed world's seasons carry no `heat`.
 - Widened team and player advanced counters (31 and 24 columns, `TEAM_DETAIL_SIZE`, `PLAYER_DETAIL_SIZE`) need no new stream: they flow through `matchDetail`, whose bit columns take their widths from those constants. Matches with substitutes (more than 11 own lines) use the existing `statWidth` 12 / `playerWidth` 1 path.
 - `discipline` and `Fixture.shootout` of cup and European fixtures live in the inline world JSON. Streams that disagree with the match or season count, with their flags or with their dictionary, or that leave data unread, fail decoding.
+- Measured size (T232, rules 4.0.0): the largest 100-season checkpoint is 2,382,876 of the 3,145,728 conservative UTF-16 bytes, with `matchDetail.players`, `statBits`, the career `jobs` and `matchIncidents.rows` its largest streams; no codec change was needed (docs/VERIFICATION.md).
 
 Archived movement frames are not save facts. Historical goal playback uses preserved goal minutes; only the final recorded counters are displayed in that summary playback.
 

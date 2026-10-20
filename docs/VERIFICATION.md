@@ -1,5 +1,24 @@
 # Local web verification
 
+## Grid engine rebuild, final verification (T233) — 2026-10-20
+
+The rebuild's final source is `bba748577743a488f149d220ce0934b100f896b4` (rules 4.0.0); T233 changes only documentation after it. `pnpm exec tsx scripts/update-golden.ts --write` on that source rewrites the seven portable scenarios to the committed `tests/fixtures/portable-v1.json` unchanged.
+
+The ARCH-30 batch ran once on that commit in a clean detached worktree (Node 26.8.1, macOS arm64, Apple M1 Max, 695,793 ms):
+
+| command | result |
+|---|---|
+| `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check` | pass |
+| `pnpm run test:unit` | 203 files, 1,271 passed, 4 skipped (192.9 s) |
+| `pnpm run test:contract` | 3 files, 37 passed |
+| `pnpm run validate:catalogs` | pass |
+| `pnpm run build` | pass |
+| `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium` | 186 passed (8.1 min) |
+
+The four skipped unit cases are the rebuild's tactic-balance skips: the grid path's equal-side draw share (`calibration.grid-favourite.test.ts`, T216; the summary path runs it in `calibration.test.ts`) and the three non-press preferences of `build.tradeoffs.test.ts` (T218), both waiting on the grid tactic-balance follow-up in STATE next (press beats every other grid tactic, docs/CALIBRATION.md). The other skips in the repository are the browser and preview gates of `contract-talks`, `preview` and `large-codec` journeys, which predate the rebuild.
+
+[CI 39419491861](https://github.com/hetarho/haeram-soccer/actions/runs/39419491861) passed every job on that commit (pinned Node 24.12.0): checks (type/lint/format, contract tests, catalogs, production build), unit tests in three shards, and the built-preview journeys on Chromium, Firefox and WebKit (two shards). The storage evidence is T232's local `pnpm run benchmark` below; `benchmark.yml` was not dispatched.
+
 ## Rules 4.0.0 century storage (T232) — 2026-10-20
 
 `pnpm run benchmark` passed locally at committed `fbd018c8b6848a3cec43db70723d113b45259def` (clean tree), source SHA-256 `f3c510eea708a128ba0d4a12f6305f5908c5c5334857534e5e4862efab9c6a41`, engine rules 4.0.0, on Node 26.8.1, macOS arm64, Apple M1 Max, in 3,071,890 ms. Both century careers, the settled active round 23, every lossless round trip, both resumed-season replays, the retained workload and the 1950–2025 era probe pass under SAVE-4 (3,145,728 B a checkpoint, 3,670,016 B total; only the active copy counts toward the total since T231).

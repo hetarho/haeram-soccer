@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T12:03Z | T233 |
+| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T12:23Z | - |
 
 ## inbox
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
@@ -160,7 +160,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | doing@261020.p7x5 |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
 | T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
 | T239 | Select readable saved shirts and automatic goalkeeper colours | KIT ARCH | T238 T237 | todo |
@@ -188,9 +187,11 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T233 (docs, golden, batch run and CI on the final rebuild source); then work group identity (lanes in T235–T253), T255 last
+- work group identity: lanes identity-base (T235 T237 T239) → identity-engine (T240–T244) beside identity-editor (T245 T247–T249) → identity-founding (T250 T251) beside identity-match-kit (T252 T253) → T254; T255 last in the main session
+- grid tactic balance (inbox 261019 suggest T216 MATCH-8, owner to confirm the MATCH-8 bands): press beats every other grid tactic; re-enables the skipped grid equal-side draw case (`calibration.grid-favourite.test.ts`) and the three non-press `build.tradeoffs.test.ts` cases
 
 ## log
+- 261020 T233 done: grid rebuild documents brought to the settled code (playback rewrite, engine design values, calibration, README), golden unchanged; batch at bba7485 (unit 1,271, contract 37, Chromium 186) and CI 39419491861 pass.
 - 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
 - 261020 create-task T235 T240 T245 T250 T252 lanes: identity-base, identity-engine, identity-editor, identity-founding, identity-match-kit (T254 T255 lane-less); deps unchanged.
 - 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
@@ -210,4 +211,3 @@
 - 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
 - 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
 - 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
-- 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
