@@ -52,8 +52,11 @@ import { SLOT } from '../apps/web/src/adapters/repository';
 import {
   buildParityReport,
   buildPerformanceReport,
+  calibrationSize,
+  conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureId,
+  pilotNeeds,
   MATCH_PARITY_VERSION,
   median,
   METRIC_REGISTRY,
@@ -95,7 +98,7 @@ const settings = {
   ),
   pilot: count(
     'pilot',
-    smoke ? CORPUS_CONFIG.smokePerCondition : CORPUS_CONFIG.calibrationPerCondition,
+    smoke ? CORPUS_CONFIG.smokePerCondition : calibrationSize(CORPUS_CONFIG.conditions[0]!),
   ),
 };
 
@@ -433,6 +436,8 @@ const candidateParity = candidateFn
       candidate: { path: 'simulateAggregate', samples: candidate },
     })
   : null;
+// The validation size the reference pilot implies for every metric this condition judges.
+const pilotSizing = conditionValidationSize(pilotNeeds(reference, core));
 
 // ---- Report -----------------------------------------------------------------------------------------
 if (sourceFingerprint().sha256 !== source.sha256)
@@ -495,6 +500,7 @@ const report = {
   memory,
   seasons,
   parity,
+  pilotSizing,
   candidateParity,
   elapsedMs: Math.round(performance.now() - started),
 };

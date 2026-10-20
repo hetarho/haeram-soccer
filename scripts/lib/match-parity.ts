@@ -1075,6 +1075,72 @@ export function requiredRareEvents() {
   return rareEvents;
 }
 
+/** The calibration sample a condition starts with: a rare-event condition begins larger. */
+export function calibrationSize(condition: Pick<ParityCondition, 'rare'>) {
+  return condition.rare ? CORPUS_CONFIG.rarePerCondition : CORPUS_CONFIG.calibrationPerCondition;
+}
+
+export interface PilotNeeds {
+  /** Judged means and proportions: per-match spread and margin, in canonical units. */
+  means: { id: string; spread: number; margin: number }[];
+  /** Judged rare metrics: events per match. */
+  rates: { id: string; perMatch: number }[];
+}
+/**
+ * What a match condition's metrics need, read from its reference pilot: the spread and margin of
+ * every judged mean or proportion and the events per match of every judged rare metric. Metrics
+ * the condition rules out, and metrics the pilot lacks, are left out.
+ */
+export function pilotNeeds(samples: readonly MatchSample[], condition: ParityCondition) {
+  const needs: PilotNeeds = { means: [], rates: [] };
+  for (const d of METRIC_REGISTRY) {
+    if (!d.applies || d.family === 'season' || d.id in condition.notApplicable) continue;
+    const o = observe(samples, d);
+    if (o.missing || !o.values.length) continue;
+    if (d.comparison === 'rate-ratio')
+      needs.rates.push({ id: d.id, perMatch: sum(o.values) / clusterCount(o) });
+    else
+      needs.means.push({
+        id: d.id,
+        spread: clusterSpread(o),
+        margin:
+          d.comparison === 'proportion' ? PARITY_CONFIG.outcomeRateMargin : meanMargin(describe(o)),
+      });
+  }
+  return needs;
+}
+/**
+ * One condition's predeclared validation size in matches a path: the largest need among every
+ * metric it judges, so none is left underpowered by design. A mean or proportion needs its
+ * `validationSize`; a rare metric needs requiredRareEvents() over its events per match. Sizes are
+ * clamped to CORPUS_CONFIG. A pilot constant needs no sample, because the equal-constant rule
+ * judges it. A rare metric without pilot events has no statable need and is listed `unsized`.
+ * `sufficient` is false when any need exceeds the maximum, and the condition stays insufficient.
+ */
+export function conditionValidationSize(needs: PilotNeeds) {
+  const all = [
+    ...needs.means.map((m) => ({
+      id: m.id,
+      matches: m.spread === 0 ? 0 : validationSize(m.spread, m.margin).needed,
+    })),
+    ...needs.rates
+      .filter((r) => r.perMatch > 0)
+      .map((r) => ({ id: r.id, matches: Math.ceil(requiredRareEvents() / r.perMatch) })),
+  ];
+  const limiting = all.reduce<(typeof all)[number] | undefined>(
+    (a, b) => (!a || b.matches > a.matches ? b : a),
+    undefined,
+  );
+  const { minimum, maximum } = CORPUS_CONFIG.validation;
+  return {
+    size: Math.min(maximum, Math.max(minimum, limiting?.matches ?? 0)),
+    sufficient: all.every((n) => n.matches <= maximum),
+    limiting: limiting?.id ?? null,
+    unsized: needs.rates.filter((r) => !(r.perMatch > 0)).map((r) => r.id),
+    needs: all,
+  };
+}
+
 export type PerformanceCategory =
   'preparation' | 'computation' | 'observation' | 'settlement' | 'season' | 'codec';
 /**
@@ -1288,6 +1354,15 @@ function quantile(sorted: readonly number[], q: number) {
   return sorted[Math.min(sorted.length - 1, Math.max(0, Math.floor(q * sorted.length)))]!;
 }
 const clusterCount = (o: Observations) => new Set(o.clusters).size;
+/** MATCH-28's mean margin: the larger of 5% of the reference mean or 0.1 reference sd. */
+const meanMargin = (reference: { mean: number; sd: number }) =>
+  Math.max(
+    PARITY_CONFIG.meanRelativeMargin * Math.abs(reference.mean),
+    PARITY_CONFIG.meanSdMargin * reference.sd,
+  );
+/** Matches with a non-zero value: how often a path recorded the metric at all. */
+const recordedMatches = (o: Observations) =>
+  new Set(o.clusters.filter((_, i) => o.values[i] !== 0)).size;
 /** Standard error of a mean with values grouped by match (cluster-robust). */
 function clusterSe(o: Observations) {
   const n = o.values.length,
@@ -1381,11 +1456,13 @@ function describe(o: Observations): Distribution {
 
 /**
  * Only `equivalent` passes and `not-applicable` stays outside a verdict; every other status is
- * reported as what it is.
+ * reported as what it is. `violated` is a metric the condition's rules rule out that a path
+ * recorded anyway.
  */
 export type ComparisonStatus =
   | 'equivalent'
   | 'different'
+  | 'violated'
   | 'insufficient'
   | 'underpowered'
   | 'unidentifiable'
@@ -1435,16 +1512,22 @@ export function compareDistributions(
       status: 'missing',
       reason: `missing in ${reference.missing} reference and ${candidate.missing} candidate samples`,
     };
+  const tooFew =
+    clusterCount(reference) < PARITY_CONFIG.minimumSamples ||
+    clusterCount(candidate) < PARITY_CONFIG.minimumSamples;
   if (d.comparison === 'rate-ratio') {
     const events: [number, number] = [sum(reference.values), sum(candidate.values)];
     const required = requiredRareEvents();
-    // No events is a measured absence, not a rule: the rate stays unresolved (→MATCH-28).
+    // Both paths at 0 is an equal constant like any other (→MATCH-28): equivalent by the zero
+    // difference once each path has its minimum sample. Applicability never follows from it.
     if (events[0] === 0 && events[1] === 0)
-      return {
-        ...base,
-        status: 'underpowered',
-        reason: `no events on either path, ${required} needed`,
-      };
+      return tooFew
+        ? {
+            ...base,
+            status: 'underpowered',
+            reason: `fewer than ${PARITY_CONFIG.minimumSamples} matches on a path`,
+          }
+        : { ...base, status: 'equivalent', constant: true, reason: 'no events on either path' };
     if (events[0] === 0 || events[1] === 0)
       return { ...base, status: 'underpowered', reason: 'one path has no events' };
     // Events per match: player lines a match differ between paths that substitute differently.
@@ -1464,7 +1547,7 @@ export function compareDistributions(
   }
   const nRef = clusterCount(reference),
     nCand = clusterCount(candidate);
-  if (nRef < PARITY_CONFIG.minimumSamples || nCand < PARITY_CONFIG.minimumSamples)
+  if (tooFew)
     return {
       ...base,
       status: 'underpowered',
@@ -1497,10 +1580,7 @@ export function compareDistributions(
   }
   const estimate = base.candidate.mean - base.reference.mean;
   const half = zInterval() * Math.hypot(clusterSe(reference), clusterSe(candidate));
-  const margin = Math.max(
-    PARITY_CONFIG.meanRelativeMargin * Math.abs(base.reference.mean),
-    PARITY_CONFIG.meanSdMargin * base.reference.sd,
-  );
+  const margin = meanMargin(base.reference);
   const meanStatus = verdict([estimate - half, estimate + half], -margin, margin);
   const distance = cdfDistance(reference.values, candidate.values);
   const width = dkw(nRef) + dkw(nCand);
@@ -2026,6 +2106,23 @@ export const INVARIANTS: readonly Invariant[] = [
       return out;
     },
   },
+  {
+    id: 'condition-rules',
+    source: 'MATCH-6/20/27',
+    check: (s) => {
+      const r = s.record,
+        out: string[] = [];
+      // A league fixture never has to produce a winner (→MATCH-6).
+      if ((r.kind === 'league' || r.kind === 'lower') && (r.regulation || r.shootout))
+        out.push(`extra time or a shoot-out in a ${r.kind} fixture (MATCH-6)`);
+      // What the sample's condition rules out must not be recorded at all.
+      const condition = CORPUS_CONFIG.conditions.find((c) => c.id === s.condition);
+      for (const [id, rule] of Object.entries(condition?.notApplicable ?? {}))
+        if (recordedMatches(observe([s], METRIC_BY_ID.get(id)!)))
+          out.push(`${id} recorded under ${s.condition}: ${rule}`);
+      return out;
+    },
+  },
 ];
 
 export interface InvariantResult {
@@ -2069,8 +2166,9 @@ const tally = <T extends { status: string }>(rows: readonly T[]) =>
 /**
  * Path equivalence of one condition's metrics and relationships (→MATCH-28): a fixture condition
  * compares the match metrics, a season condition the season measures. Metrics the condition's
- * rules make impossible are not applicable: listed with their rule and left out of the verdict.
- * Equal constants pass by their zero difference and are listed; every other status blocks.
+ * rules make impossible are not applicable: listed with their rule and left out of the verdict,
+ * unless a path records them, which is `violated` and blocks. Equal constants pass by their zero
+ * difference and are listed; every other status blocks.
  */
 export function buildEquivalenceReport(input: {
   condition: string;
@@ -2094,11 +2192,18 @@ export function buildEquivalenceReport(input: {
             ]
           : [observe(input.reference, d), observe(input.candidate, d)];
       const rule = condition.notApplicable[d.id];
-      if (rule)
-        return {
-          ...compareDistributions({ ...d, applies: false }, reference, candidate),
-          reason: rule,
-        };
+      if (rule) {
+        const c = compareDistributions({ ...d, applies: false }, reference, candidate);
+        // Ruled out, yet recorded: an exact violation of the rule, never a quiet exclusion.
+        const seen = [recordedMatches(reference), recordedMatches(candidate)];
+        return seen[0] || seen[1]
+          ? {
+              ...c,
+              status: 'violated',
+              reason: `${rule}, yet recorded in ${seen[0]} reference and ${seen[1]} candidate matches`,
+            }
+          : { ...c, reason: rule };
+      }
       const c = compareDistributions(d, reference, candidate);
       // A season measure without season samples is unmeasured.
       return d.family === 'season' && !c.reference.n && !c.candidate.n
@@ -2128,7 +2233,7 @@ export function buildEquivalenceReport(input: {
     summary: { metrics: tally(metrics), relationships: tally(relationships) },
     constants: metrics.filter((m) => m.constant).map((m) => m.id),
     notApplicable: metrics
-      .filter((m) => m.status === 'not-applicable')
+      .filter((m) => m.status === 'not-applicable' || m.status === 'violated')
       .map((m) => ({ id: m.id, reason: m.reason ?? 'not measured at this level' })),
     blocking,
     passed: blocking.length === 0,

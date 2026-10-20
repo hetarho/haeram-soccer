@@ -27,13 +27,13 @@
     }
   ],
   "provenance": {
-    "date": "2026-10-20T17:31:53.648Z",
+    "date": "2026-10-20T18:21:31.255Z",
     "source": {
-      "gitHead": "86f72f81fe7e55a2ca65b503eab36eb2cba5ca87",
+      "gitHead": "86e0359fc1f6cd66a2760017a3b3418683ef32d0",
       "gitDirty": true,
       "fingerprint": {
         "algorithm": "sha256",
-        "sha256": "5922e9645698ff5fbf9505707251c061b51318bfd915bfaaf76c885811861161",
+        "sha256": "f5c09e3c0cdc337d10dbdf961297855ce16381ca0d5a82885ab0679cb06431ea",
         "files": 340,
         "scope": [
           "packages",
@@ -247,12 +247,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.0187193,
-        "meanMs": 0.0188212,
-        "p90Ms": 0.0218125,
-        "minMs": 0.0154585,
-        "maxMs": 0.0243125,
-        "totalMs": 0.225854
+        "medianMs": 0.0143855,
+        "meanMs": 0.0144567,
+        "p90Ms": 0.0163545,
+        "minMs": 0.01275,
+        "maxMs": 0.017354,
+        "totalMs": 0.17348
       },
       {
         "id": "preparation.grid",
@@ -260,12 +260,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.598541,
-        "meanMs": 0.595479,
-        "p90Ms": 0.664021,
-        "minMs": 0.495146,
-        "maxMs": 0.804021,
-        "totalMs": 7.14575
+        "medianMs": 0.502802,
+        "meanMs": 0.506306,
+        "p90Ms": 0.559584,
+        "minMs": 0.471604,
+        "maxMs": 0.561188,
+        "totalMs": 6.07567
       },
       {
         "id": "fixture.summary",
@@ -273,12 +273,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.161323,
-        "meanMs": 0.168356,
-        "p90Ms": 0.225167,
-        "minMs": 0.130271,
-        "maxMs": 0.235105,
-        "totalMs": 2.02027
+        "medianMs": 0.200375,
+        "meanMs": 0.208085,
+        "p90Ms": 0.282625,
+        "minMs": 0.146979,
+        "maxMs": 0.305875,
+        "totalMs": 2.49702
       },
       {
         "id": "fixture.summary-lines",
@@ -286,12 +286,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.146084,
-        "meanMs": 0.150533,
-        "p90Ms": 0.172562,
-        "minMs": 0.129667,
-        "maxMs": 0.203626,
-        "totalMs": 1.8064
+        "medianMs": 0.148938,
+        "meanMs": 0.15187,
+        "p90Ms": 0.168626,
+        "minMs": 0.127271,
+        "maxMs": 0.176604,
+        "totalMs": 1.82244
       },
       {
         "id": "fixture.grid",
@@ -299,12 +299,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 37.008,
-        "meanMs": 37.7324,
-        "p90Ms": 41.7757,
-        "minMs": 33.8589,
-        "maxMs": 49.4704,
-        "totalMs": 452.788
+        "medianMs": 36.4975,
+        "meanMs": 37.2196,
+        "p90Ms": 40.4057,
+        "minMs": 32.8092,
+        "maxMs": 49.5025,
+        "totalMs": 446.635
       },
       {
         "id": "observation.grid",
@@ -312,12 +312,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 63.4371,
-        "meanMs": 65.1632,
-        "p90Ms": 71.9075,
-        "minMs": 58.6226,
-        "maxMs": 81.0253,
-        "totalMs": 781.959
+        "medianMs": 63.7035,
+        "meanMs": 64.908,
+        "p90Ms": 69.0881,
+        "minMs": 59.6495,
+        "maxMs": 77.7834,
+        "totalMs": 778.896
       },
       {
         "id": "observation.frames",
@@ -325,12 +325,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 14.7007,
-        "meanMs": 15.7947,
-        "p90Ms": 21.5183,
-        "minMs": 13.0897,
-        "maxMs": 23.411,
-        "totalMs": 189.537
+        "medianMs": 14.4937,
+        "meanMs": 15.5995,
+        "p90Ms": 21.1145,
+        "minMs": 12.934,
+        "maxMs": 22.6734,
+        "totalMs": 187.194
       },
       {
         "id": "settlement.npc",
@@ -338,12 +338,12 @@
         "samples": 24,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.0233545,
-        "meanMs": 0.114198,
-        "p90Ms": 0.062334,
-        "minMs": 0.003583,
-        "maxMs": 2.12875,
-        "totalMs": 2.74075
+        "medianMs": 0.021021,
+        "meanMs": 0.0869774,
+        "p90Ms": 0.062417,
+        "minMs": 0.003,
+        "maxMs": 1.52063,
+        "totalMs": 2.08746
       },
       {
         "id": "settlement.own",
@@ -351,12 +351,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 1.33302,
-        "meanMs": 1.69668,
-        "p90Ms": 2.92817,
-        "minMs": 0.924708,
-        "maxMs": 3.97204,
-        "totalMs": 20.3601
+        "medianMs": 1.2291,
+        "meanMs": 1.69987,
+        "p90Ms": 3.95946,
+        "minMs": 0.940416,
+        "maxMs": 4.48367,
+        "totalMs": 20.3985
       },
       {
         "id": "season.baseline",
@@ -364,12 +364,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3191.36,
-        "meanMs": 3191.36,
-        "p90Ms": 3191.36,
-        "minMs": 3191.36,
-        "maxMs": 3191.36,
-        "totalMs": 3191.36
+        "medianMs": 3139.32,
+        "meanMs": 3139.32,
+        "p90Ms": 3139.32,
+        "minMs": 3139.32,
+        "maxMs": 3139.32,
+        "totalMs": 3139.32
       },
       {
         "id": "codec.encode",
@@ -377,12 +377,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 75.5142,
-        "meanMs": 75.5142,
-        "p90Ms": 89.5852,
-        "minMs": 61.4432,
-        "maxMs": 89.5852,
-        "totalMs": 151.028
+        "medianMs": 72.4237,
+        "meanMs": 72.4237,
+        "p90Ms": 81.6114,
+        "minMs": 63.236,
+        "maxMs": 81.6114,
+        "totalMs": 144.847
       },
       {
         "id": "codec.decode",
@@ -390,12 +390,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 98.1285,
-        "meanMs": 98.1285,
-        "p90Ms": 106.81,
-        "minMs": 89.4465,
-        "maxMs": 106.81,
-        "totalMs": 196.257
+        "medianMs": 96.5161,
+        "meanMs": 96.5161,
+        "p90Ms": 105.127,
+        "minMs": 87.905,
+        "maxMs": 105.127,
+        "totalMs": 193.032
       },
       {
         "id": "season.active-management",
@@ -403,12 +403,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3336.99,
-        "meanMs": 3336.99,
-        "p90Ms": 3336.99,
-        "minMs": 3336.99,
-        "maxMs": 3336.99,
-        "totalMs": 3336.99
+        "medianMs": 3169.76,
+        "meanMs": 3169.76,
+        "p90Ms": 3169.76,
+        "minMs": 3169.76,
+        "maxMs": 3169.76,
+        "totalMs": 3169.76
       }
     ],
     "categories": {
@@ -417,7 +417,7 @@
           "preparation.summary",
           "preparation.grid"
         ],
-        "totalMs": 7.3716
+        "totalMs": 6.24915
       },
       "computation": {
         "components": [
@@ -425,41 +425,41 @@
           "fixture.summary-lines",
           "fixture.grid"
         ],
-        "totalMs": 456.615
+        "totalMs": 450.954
       },
       "observation": {
         "components": [
           "observation.grid",
           "observation.frames"
         ],
-        "totalMs": 971.495
+        "totalMs": 966.09
       },
       "settlement": {
         "components": [
           "settlement.npc",
           "settlement.own"
         ],
-        "totalMs": 23.1009
+        "totalMs": 22.4859
       },
       "season": {
         "components": [
           "season.baseline",
           "season.active-management"
         ],
-        "totalMs": 6528.35
+        "totalMs": 6309.09
       },
       "codec": {
         "components": [
           "codec.encode",
           "codec.decode"
         ],
-        "totalMs": 347.285
+        "totalMs": 337.88
       }
     }
   },
   "memory": {
-    "peakHeapBytes": 196191784,
-    "peakRssBytes": 406175744
+    "peakHeapBytes": 203700720,
+    "peakRssBytes": 416874496
   },
   "seasons": [
     {
@@ -489,13 +489,13 @@
       "performance": 1
     },
     "provenance": {
-      "date": "2026-10-20T17:31:53.648Z",
+      "date": "2026-10-20T18:21:31.255Z",
       "source": {
-        "gitHead": "86f72f81fe7e55a2ca65b503eab36eb2cba5ca87",
+        "gitHead": "86e0359fc1f6cd66a2760017a3b3418683ef32d0",
         "gitDirty": true,
         "fingerprint": {
           "algorithm": "sha256",
-          "sha256": "5922e9645698ff5fbf9505707251c061b51318bfd915bfaaf76c885811861161",
+          "sha256": "f5c09e3c0cdc337d10dbdf961297855ce16381ca0d5a82885ab0679cb06431ea",
           "files": 340,
           "scope": [
             "packages",
@@ -4252,6 +4252,14 @@
           "failed": 0,
           "unsupported": 0,
           "examples": []
+        },
+        {
+          "id": "condition-rules",
+          "source": "MATCH-6/20/27",
+          "passed": 40,
+          "failed": 0,
+          "unsupported": 0,
+          "examples": []
         }
       ],
       "candidate": [
@@ -4381,6 +4389,14 @@
         {
           "id": "periods",
           "source": "MATCH-1/6",
+          "passed": 40,
+          "failed": 0,
+          "unsupported": 0,
+          "examples": []
+        },
+        {
+          "id": "condition-rules",
+          "source": "MATCH-6/20/27",
           "passed": 40,
           "failed": 0,
           "unsupported": 0,
@@ -8671,6 +8687,434 @@
       "passed": false
     }
   },
+  "pilotSizing": {
+    "size": 5853,
+    "sufficient": true,
+    "limiting": "outcome.homeWin",
+    "unsized": [],
+    "needs": [
+      {
+        "id": "team.goals",
+        "matches": 713
+      },
+      {
+        "id": "team.assists",
+        "matches": 801
+      },
+      {
+        "id": "team.passes",
+        "matches": 30
+      },
+      {
+        "id": "team.completed",
+        "matches": 54
+      },
+      {
+        "id": "team.shots",
+        "matches": 452
+      },
+      {
+        "id": "team.onTarget",
+        "matches": 681
+      },
+      {
+        "id": "team.tackles",
+        "matches": 182
+      },
+      {
+        "id": "team.interceptions",
+        "matches": 468
+      },
+      {
+        "id": "team.dribbles",
+        "matches": 557
+      },
+      {
+        "id": "team.saves",
+        "matches": 739
+      },
+      {
+        "id": "team.minutes",
+        "matches": 0
+      },
+      {
+        "id": "team.possession",
+        "matches": 0
+      },
+      {
+        "id": "team.xg",
+        "matches": 638
+      },
+      {
+        "id": "td.keyPasses",
+        "matches": 499
+      },
+      {
+        "id": "td.bigChances",
+        "matches": 796
+      },
+      {
+        "id": "td.bigChancesScored",
+        "matches": 887
+      },
+      {
+        "id": "td.boxShots",
+        "matches": 434
+      },
+      {
+        "id": "td.finalThirdPasses",
+        "matches": 151
+      },
+      {
+        "id": "td.finalThirdCompleted",
+        "matches": 288
+      },
+      {
+        "id": "td.progressivePasses",
+        "matches": 89
+      },
+      {
+        "id": "td.takeOns",
+        "matches": 479
+      },
+      {
+        "id": "td.highTurnovers",
+        "matches": 391
+      },
+      {
+        "id": "td.buildUpPasses",
+        "matches": 98
+      },
+      {
+        "id": "td.pressActions",
+        "matches": 394
+      },
+      {
+        "id": "td.boxEntries",
+        "matches": 232
+      },
+      {
+        "id": "td.frontOfBoxEntries",
+        "matches": 153
+      },
+      {
+        "id": "td.lineBreakingPasses",
+        "matches": 104
+      },
+      {
+        "id": "td.xtAdded",
+        "matches": 219
+      },
+      {
+        "id": "td.crosses",
+        "matches": 392
+      },
+      {
+        "id": "td.crossesCompleted",
+        "matches": 606
+      },
+      {
+        "id": "td.cutBacks",
+        "matches": 1037
+      },
+      {
+        "id": "td.throughBalls",
+        "matches": 1108
+      },
+      {
+        "id": "td.throughBallsCompleted",
+        "matches": 960
+      },
+      {
+        "id": "td.progressiveCarries",
+        "matches": 223
+      },
+      {
+        "id": "td.fouls",
+        "matches": 295
+      },
+      {
+        "id": "td.yellowCards",
+        "matches": 1096
+      },
+      {
+        "id": "td.corners",
+        "matches": 481
+      },
+      {
+        "id": "td.offsides",
+        "matches": 1264
+      },
+      {
+        "id": "td.throwIns",
+        "matches": 275
+      },
+      {
+        "id": "td.goalKicks",
+        "matches": 528
+      },
+      {
+        "id": "td.freeKicks",
+        "matches": 289
+      },
+      {
+        "id": "player.goals",
+        "matches": 41
+      },
+      {
+        "id": "player.assists",
+        "matches": 45
+      },
+      {
+        "id": "player.passes",
+        "matches": 13
+      },
+      {
+        "id": "player.completed",
+        "matches": 21
+      },
+      {
+        "id": "player.shots",
+        "matches": 27
+      },
+      {
+        "id": "player.onTarget",
+        "matches": 47
+      },
+      {
+        "id": "player.tackles",
+        "matches": 15
+      },
+      {
+        "id": "player.interceptions",
+        "matches": 39
+      },
+      {
+        "id": "player.dribbles",
+        "matches": 30
+      },
+      {
+        "id": "player.saves",
+        "matches": 21
+      },
+      {
+        "id": "player.minutes",
+        "matches": 2
+      },
+      {
+        "id": "pd.xg",
+        "matches": 53
+      },
+      {
+        "id": "pd.xa",
+        "matches": 69
+      },
+      {
+        "id": "pd.keyPasses",
+        "matches": 42
+      },
+      {
+        "id": "pd.bigChancesCreated",
+        "matches": 66
+      },
+      {
+        "id": "pd.finalThirdPasses",
+        "matches": 12
+      },
+      {
+        "id": "pd.finalThirdCompleted",
+        "matches": 19
+      },
+      {
+        "id": "pd.progressivePasses",
+        "matches": 27
+      },
+      {
+        "id": "pd.takeOns",
+        "matches": 25
+      },
+      {
+        "id": "pd.highTurnovers",
+        "matches": 27
+      },
+      {
+        "id": "pd.boxEntries",
+        "matches": 25
+      },
+      {
+        "id": "pd.frontOfBoxEntries",
+        "matches": 18
+      },
+      {
+        "id": "pd.lineBreakingPasses",
+        "matches": 15
+      },
+      {
+        "id": "pd.xtAdded",
+        "matches": 28
+      },
+      {
+        "id": "pd.crosses",
+        "matches": 34
+      },
+      {
+        "id": "pd.crossesCompleted",
+        "matches": 65
+      },
+      {
+        "id": "pd.cutBacks",
+        "matches": 65
+      },
+      {
+        "id": "pd.throughBalls",
+        "matches": 158
+      },
+      {
+        "id": "pd.throughBallsCompleted",
+        "matches": 152
+      },
+      {
+        "id": "pd.progressiveCarries",
+        "matches": 32
+      },
+      {
+        "id": "pd.fouls",
+        "matches": 33
+      },
+      {
+        "id": "pd.foulsWon",
+        "matches": 38
+      },
+      {
+        "id": "pd.yellowCards",
+        "matches": 48
+      },
+      {
+        "id": "pd.offsides",
+        "matches": 81
+      },
+      {
+        "id": "participation.lines",
+        "matches": 0
+      },
+      {
+        "id": "participation.minutes",
+        "matches": 2
+      },
+      {
+        "id": "incident.yellow",
+        "matches": 1023
+      },
+      {
+        "id": "incident.sub",
+        "matches": 0
+      },
+      {
+        "id": "outcome.homeWin",
+        "matches": 5853
+      },
+      {
+        "id": "outcome.draw",
+        "matches": 4491
+      },
+      {
+        "id": "outcome.awayWin",
+        "matches": 3458
+      },
+      {
+        "id": "outcome.goals",
+        "matches": 2102
+      },
+      {
+        "id": "outcome.goalDifference",
+        "matches": 2102
+      },
+      {
+        "id": "outcome.addedMinutes",
+        "matches": 170
+      },
+      {
+        "id": "ratio.passCompletion",
+        "matches": 8
+      },
+      {
+        "id": "ratio.shotAccuracy",
+        "matches": 788
+      },
+      {
+        "id": "ratio.conversion",
+        "matches": 745
+      },
+      {
+        "id": "ratio.xgPerShot",
+        "matches": 736
+      },
+      {
+        "id": "ratio.finalThirdAccuracy",
+        "matches": 32
+      },
+      {
+        "id": "ratio.crossCompletion",
+        "matches": 726
+      },
+      {
+        "id": "ratio.throughBallCompletion",
+        "matches": 32
+      },
+      {
+        "id": "ratio.takeOnSuccess",
+        "matches": 215
+      },
+      {
+        "id": "ratio.bigChanceConversion",
+        "matches": 2198
+      },
+      {
+        "id": "ratio.penaltyConversion",
+        "matches": 2102
+      },
+      {
+        "id": "ratio.ppda",
+        "matches": 745
+      },
+      {
+        "id": "ratio.fieldTilt",
+        "matches": 1
+      },
+      {
+        "id": "ratio.possessionShare",
+        "matches": 1
+      },
+      {
+        "id": "td.redCards",
+        "matches": 2374
+      },
+      {
+        "id": "td.penalties",
+        "matches": 2670
+      },
+      {
+        "id": "td.penaltiesScored",
+        "matches": 3560
+      },
+      {
+        "id": "pd.redCards",
+        "matches": 2374
+      },
+      {
+        "id": "incident.secondYellow",
+        "matches": 5340
+      },
+      {
+        "id": "incident.red",
+        "matches": 4272
+      },
+      {
+        "id": "incident.injury",
+        "matches": 1125
+      }
+    ]
+  },
   "candidateParity": null,
-  "elapsedMs": 11708
+  "elapsedMs": 11403
 }

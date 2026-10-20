@@ -10,11 +10,13 @@ import {
   buildOutcomeTargetReport,
   buildPerformanceReport,
   buildTargetReport,
+  calibrationSize,
   clusterSpread,
   compareDistributions,
   comparePerformance,
   compareRelationship,
   conditionOf,
+  conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureIds,
   COUNTER_INDEXES,
@@ -26,6 +28,7 @@ import {
   normalQuantile,
   observe,
   outcomeTarget,
+  pilotNeeds,
   rareEventPower,
   requiredRareEvents,
   ruleExclusions,
@@ -251,11 +254,13 @@ describe('match parity registry', () => {
     expect(compareDistributions(rare, events(1000, 0), events(1000, 3)).status).toBe(
       'underpowered',
     );
-    // No events on either path is a measured absence, not a rule: still unresolved.
+    // No events on either path is an equal constant once both paths have their minimum sample.
     expect(compareDistributions(rare, events(1000, 0), events(1000, 0))).toMatchObject({
-      status: 'underpowered',
-      reason: `no events on either path, ${REQUIRED_RARE_EVENTS} needed`,
+      status: 'equivalent',
+      constant: true,
+      reason: 'no events on either path',
     });
+    expect(compareDistributions(rare, events(10, 0), events(10, 0)).status).toBe('underpowered');
     expect(compareDistributions(rare, events(10000, 600), events(10000, 610)).status).toBe(
       'equivalent',
     );
@@ -325,15 +330,19 @@ describe('match parity registry', () => {
     for (const id of ['outcome.extraTime', 'outcome.shootout', 'team.minutes'])
       expect(report.blocking).not.toContain(id);
     expect(report.metrics.some((m) => METRIC_BY_ID.get(m.id)!.family === 'season')).toBe(false);
-    // The same absence under a knockout tie is measured, not ruled out: it stays unresolved.
+    // The same absence under a knockout tie is measured, not ruled out: it is judged, here as an
+    // equal constant at 0.
     const tie = under('knockout:single-match');
     const knockout = buildEquivalenceReport({
       condition: 'knockout:single-match',
       reference: tie,
       candidate: tie,
     });
-    expect(knockout.metrics.find((m) => m.id === 'outcome.extraTime')!.status).toBe('underpowered');
-    expect(knockout.blocking).toContain('outcome.extraTime');
+    expect(knockout.metrics.find((m) => m.id === 'outcome.extraTime')).toMatchObject({
+      status: 'equivalent',
+      constant: true,
+    });
+    expect(knockout.notApplicable.map((n) => n.id)).not.toContain('outcome.extraTime');
     // An era without substitutions rules them out.
     const early = under('era:1950');
     expect(
@@ -346,6 +355,87 @@ describe('match parity registry', () => {
     expect(() =>
       buildEquivalenceReport({ condition: 'era:1950', reference: league, candidate: early }),
     ).toThrow(/drawn under core:equal-top-tier/);
+  });
+
+  it('fails a league record that played extra time', () => {
+    const extraTime = record({
+      score: { home: 2, away: 1 },
+      regulation: { home: 1, away: 1 },
+      metrics: [team(2), team(1)],
+      added: [2, 4, 1, 2],
+    });
+    extraTime.metrics[0]![M.minutes] = 120;
+    extraTime.metrics[1]![M.minutes] = 120;
+    const rules = buildInvariantReport([sample(extraTime)]).find(
+      (x) => x.id === 'condition-rules',
+    )!;
+    expect(rules.failed).toBe(1);
+    expect(rules.examples[0]!.failures).toEqual([
+      'extra time or a shoot-out in a league fixture (MATCH-6)',
+      'outcome.extraTime recorded under core:equal-top-tier: no tie that must produce a winner (MATCH-6)',
+    ]);
+    // The rest of the record is consistent, so only the condition rule catches it.
+    expect(
+      buildInvariantReport([sample(extraTime)])
+        .filter((x) => x.failed)
+        .map((x) => x.id),
+    ).toEqual(['condition-rules']);
+    // A rule-excluded metric that a path records blocks the verdict instead of leaving it.
+    const league = Array.from({ length: 40 }, () => sample(record()));
+    const report = buildEquivalenceReport({
+      condition: 'core:equal-top-tier',
+      reference: league,
+      candidate: [...league.slice(1), sample(extraTime)],
+    });
+    expect(report.metrics.find((m) => m.id === 'outcome.extraTime')).toMatchObject({
+      status: 'violated',
+      reason:
+        'no tie that must produce a winner (MATCH-6), yet recorded in 0 reference and 1 candidate matches',
+    });
+    expect(report.blocking).toContain('outcome.extraTime');
+    expect(report.passed).toBe(false);
+    expect(buildInvariantReport(league).find((x) => x.id === 'condition-rules')!.failed).toBe(0);
+  });
+
+  it('sizes a condition to cover every metric it judges', () => {
+    expect(calibrationSize(conditionOf('core:equal-top-tier'))).toBe(600);
+    expect(calibrationSize(conditionOf('rare:discipline'))).toBe(10000);
+    // Rare metrics need requiredRareEvents() over their rate: at 0.05 a match, 10,680 matches.
+    const size = conditionValidationSize({
+      means: [
+        { id: 'outcome.homeWin', spread: 0.5, margin: 0.03 },
+        { id: 'team.minutes', spread: 0, margin: 4.5 },
+      ],
+      rates: [
+        { id: 'incident.red', perMatch: 0.05 },
+        { id: 'outcome.shootout', perMatch: 0 },
+      ],
+    });
+    expect(size).toMatchObject({
+      size: Math.ceil(REQUIRED_RARE_EVENTS / 0.05),
+      sufficient: true,
+      limiting: 'incident.red',
+      unsized: ['outcome.shootout'],
+    });
+    expect(size.needs.find((n) => n.id === 'outcome.homeWin')!.matches).toBe(5838);
+    expect(size.needs.find((n) => n.id === 'team.minutes')!.matches).toBe(0);
+    const rarer = conditionValidationSize({
+      means: [],
+      rates: [{ id: 'incident.red', perMatch: 0.004 }],
+    });
+    expect(rarer).toMatchObject({ size: 100000, sufficient: false });
+    // Needs come from the reference pilot and skip what the condition rules out.
+    const core = conditionOf('core:equal-top-tier');
+    const needs = pilotNeeds(
+      Array.from({ length: 40 }, () => sample(record())),
+      core,
+    );
+    expect(needs.rates.map((r) => r.id)).not.toContain('outcome.extraTime');
+    expect(needs.rates.map((r) => r.id)).toContain('incident.red');
+    expect(needs.means.find((m) => m.id === 'team.passes')).toMatchObject({
+      spread: 0,
+      margin: 20,
+    });
   });
 
   it('measures rare events per match, not per player line', () => {
