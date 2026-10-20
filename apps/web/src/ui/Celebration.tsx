@@ -82,8 +82,7 @@ function Celebrating() {
 
 /**
  * Achievements the club earned while playing get a short celebration that never blocks play
- * (→WEB-52): a tap dismisses it, it stays clear of the HUD and clock (one line beside the news
- * button on phones), and files itself into the news button.
+ * (→WEB-52): a tap dismisses it, it stays clear of the HUD and clock (one line above phone navigation), and keeps its headline in notifications/news.
  */
 export function CelebrationHost() {
   const id = useGameState((state) => state.view?.world.id);

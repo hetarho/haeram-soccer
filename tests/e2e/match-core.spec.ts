@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -125,7 +126,7 @@ for (const viewport of [
     await page.goto('/matches');
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page).toHaveURL(/\/journal$/);
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
     expect(

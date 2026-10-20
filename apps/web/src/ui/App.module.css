@@ -2340,18 +2340,9 @@
     display: none;
   }
 }
-/* Ordinary pages can scroll their last card clear of the floating news button. */
-.newsLayout .scroller {
-  padding-bottom: 92px;
-}
-/* Home uses the full content viewport; the launcher overlays it without reserving a row. */
+/* Home uses the full content viewport; clock actions reserve no content space. */
 .newsLayout.coreLayout .scroller {
   padding-bottom: 0;
-}
-@media (max-width: 760px) {
-  .newsLayout .scroller {
-    padding-bottom: 76px;
-  }
 }
 /* Phones: tight gaps leave the club name room for up to two lines beside the cash. */
 @media (max-width: 760px) {
@@ -3374,10 +3365,7 @@
   line-height: 1.7;
 }
 
-/* The mounted policy draft owns the bottom edge; retained drafts on other pages do not. */
-.layout:has([data-testid='strategy-draft']) [data-testid='communications-button'] {
-  display: none;
-}
+/* The mounted policy draft owns the bottom edge. */
 .newsLayout:has([data-testid='strategy-draft']) .scroller {
   padding-bottom: 0;
 }

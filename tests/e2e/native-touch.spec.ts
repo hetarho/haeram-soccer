@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
@@ -150,7 +151,7 @@ for (const viewport of [
     await preparation.getByText('선수별 교체', { exact: true }).click();
     await expect(keeper).toHaveAttribute('data-value', replacement!);
     await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expectCompactDocument(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();

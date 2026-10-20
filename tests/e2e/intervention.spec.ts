@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { chooseLevel, delegateSales } from './events';
 import { test, expect } from '@playwright/test';
@@ -49,7 +50,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await dialog.getByText('선수별 교체', { exact: true }).click();
   await expect(keeper).toHaveAttribute('data-value', other!);
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
@@ -158,7 +159,7 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const contextUrl = page.url();
   const score = await page.getByTestId('match-score').locator('strong').innerText();

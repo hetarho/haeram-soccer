@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
@@ -31,7 +32,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByRole('button', { name: '다음 경기 관전' }).click();
+  await watchNext(page);
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();

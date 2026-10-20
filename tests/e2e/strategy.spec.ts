@@ -231,7 +231,7 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ]) {
-  test(`keeps draft review compact and reclaims launcher space at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps draft review compact with notifications beside settings at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -253,7 +253,7 @@ for (const viewport of [
     const body = draft.locator('#strategy-draft-body');
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
     await expect(body).toBeHidden();
-    await expect(launcher).toBeHidden();
+    await expect(launcher).toBeVisible();
     await expect(draft.getByRole('button', { name: '적용', exact: true })).toBeInViewport();
     await settle(page);
     const bounds = (await draft.boundingBox())!;
@@ -267,12 +267,8 @@ for (const viewport of [
       path: test.info().outputPath(`draft-collapsed-${viewport.width}.png`),
     });
 
-    // Hiding the launcher leaves the menu's notification/news entry available.
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    await page
-      .getByRole('dialog', { name: '전체 메뉴' })
-      .getByRole('button', { name: '알림·뉴스', exact: true })
-      .click();
+    // The clock's notification entry stays reachable while a policy draft is open.
+    await launcher.click();
     await page
       .getByRole('dialog', { name: '알림·뉴스', exact: true })
       .getByRole('button', { name: '닫기', exact: true })
@@ -296,7 +292,7 @@ for (const viewport of [
     await expect(launcher).toBeVisible();
     await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
-    await expect(launcher).toBeHidden();
+    await expect(launcher).toBeVisible();
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
     await expect(launcher).toBeVisible();
     await nav.getByRole('button', { name: '구단 운영', exact: true }).click();

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T16:40:28.961Z",
-  "sourceCommit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+  "snapshotAt": "2026-10-20T17:33:51.108Z",
+  "sourceCommit": "f116a0929e8c84ebbd167074070f7a6fad087ea2",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,12 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
+      "commit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T16:28:42.344Z"
+      "at": "2026-10-20T16:53:19.448Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "405f9654-6a48-463c-9566-f2169a73318e",
       "adapter": "builtin",
       "providers": {
@@ -42,44 +42,34 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-20T16:05:48.301Z"
-    },
-    "lastRun": {
-      "id": "69b0d9dd-7520-4be3-97b9-6a5f4d7d0716",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-20T15:15:30.772Z",
-      "stoppedAt": "2026-10-20T15:42:20.172Z",
-      "dispatched": 5,
-      "outcome": "interrupted",
+      "startedAt": "2026-10-20T16:05:48.301Z",
+      "stoppedAt": "2026-10-20T17:33:50.545Z",
+      "dispatched": 11,
+      "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+          "role": "reviewer",
+          "error": "T245: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
         },
         {
-          "attempt": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+          "attempt": "40186811-c39d-409f-93db-3e643dc7c41a",
           "role": "worker",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+          "error": "T252: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        },
+        {
+          "attempt": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+          "role": "worker",
+          "error": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        },
+        {
+          "attempt": "40186811-c39d-409f-93db-3e643dc7c41a",
+          "role": "worker",
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+        },
+        {
+          "attempt": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+          "role": "worker",
+          "error": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
         }
       ]
     }
@@ -89,9 +79,9 @@
     "completed": 12,
     "remaining": 21,
     "running": 0,
-    "review": 1,
-    "blocked": 0,
-    "unassigned": 20
+    "review": 0,
+    "blocked": 5,
+    "unassigned": 16
   },
   "tasks": [
     {
@@ -102,7 +92,7 @@
         "T249"
       ],
       "lane": "identity-founding",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T251",
@@ -112,7 +102,7 @@
         "T250"
       ],
       "lane": "identity-founding",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T252",
@@ -122,7 +112,7 @@
         "T249"
       ],
       "lane": "identity-match-kit",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T253",
@@ -134,7 +124,7 @@
         "T252"
       ],
       "lane": "identity-match-kit",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T254",
@@ -159,7 +149,7 @@
       "id": "T272",
       "title": "Define complete match metrics and reproducible measurement tooling",
       "dep": [],
-      "status": "ready"
+      "status": "blocked"
     },
     {
       "id": "T273",
@@ -596,6 +586,8 @@
       "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
       "submissionId": "ddd69add-723f-42f4-8bd3-977a72f8de04",
       "submittedAt": "2026-10-20T16:36:48.367Z",
+      "integratedCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+      "integratedAt": "2026-10-20T16:53:15.898Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -754,6 +746,13 @@
           "startedAt": "2026-10-20T16:31:18.393Z",
           "finishedAt": "2026-10-20T16:36:46.624Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-20T16:41:23.349Z",
+          "finishedAt": "2026-10-20T16:53:15.676Z"
+        }
       ]
     },
     {
@@ -768,11 +767,10 @@
       "contributors": [
         "405f9654-6a48-463c-9566-f2169a73318e/worker-2"
       ],
-      "status": "ready",
-      "reason": null,
+      "status": "blocked",
+      "reason": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
       "createdAt": "2026-10-20T16:05:49.828Z",
       "startCommit": "450db0c7aa2b217c99fe4188767a8b098ff48feb",
-      "verifiedCommit": "87c089d479ffc36c7ac8cce141740932637be110",
       "submittedBase": "2309debc99ce1b75521e57bf7e7cfe40325efd70",
       "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
       "submittedAt": "2026-10-20T16:37:43.185Z",
@@ -786,18 +784,71 @@
         "files": 6
       },
       "dispatch": {
-        "id": "edea97b0-fce8-4c4b-9932-aa8bb95be094",
+        "id": "7025b410-eaf9-46d0-8a0a-48d5cf670e90",
         "runner": "405f9654-6a48-463c-9566-f2169a73318e",
         "role": "worker",
         "slot": 2,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-20T16:05:50.307Z",
-        "finishedAt": "2026-10-20T16:37:43.211Z",
-        "error": null,
-        "summary": "T272 구현을 마쳤습니다. 측정 레지스트리, 베이스라인 실행기, 단위 테스트 7개, 문서를 추가했고 스모크 측정 결과를 남겼습니다. 커밋은 하지 않았습니다.\n\n- **레지스트리** (`scripts/lib/match-parity.ts`)\n  - `METRIC_REGISTRY`는 contracts의 M/TD/PD 인덱스에서 생성합니다. 팀 xG, 출전, 사건 종류마다 항목 하나, 결과, 분모가 기록된 비율 13개, 시즌·커리어 지표를 더했습니다. `validateRegistry`는 빠지거나 겹치는 인덱스를 거부하고, 사건 종류가 새로 생기면 타입 검사에서 실패합니다.\n  - `TARGET_BANDS`(MATCH-23의 37행과 MATCH-1 추가시간), `OUTCOME_TARGET`, 정확한 불변식 10개(`INVARIANTS`)를 정의했습니다.\n  - `PARITY_CONFIG`, `CORPUS_CONFIG`, `PERFORMANCE_CONFIG`를 한 곳에 정의했습니다. 보정과 검증 시드는 파티션을 fixture id에 넣어 분리하고, 분석적 결정론 구간을 씁니다. 통과는 `equivalent`/`inside`뿐입니다. 누락·분모 없음·표본 부족·상수 변수는 따로 보고하며, 코덱 시간은 엔진 시간과 분리합니다.\n- **실행기** (`scripts/match-model-baseline.ts`)\n  - `--out`/`--fixtures`/`--seasons`/`--pilot`/`--smoke`를 지원합니다.\n  - 준비, summary/grid 경기, 관찰, 정산, 세기 프로필 두 개의 시즌, 코덱을 따로 잽니다.\n  - `OWN_LEAGUE_ENGINE`과 릴리스 스위치는 바꾸지 않고, 나중에 `simulateAggregate`가 생기면 감지만 합니다.\n  - 출처 fingerprint, 툴체인, 기계, 시드, 조건, 파티션을 기록합니다.\n- **문서**: `docs/MATCH-MODEL-CONTRACT.md`에 사용법과 격리 베이스라인 체크아웃 절차를 추가했습니다.\n- **스모크 결과** (`docs/benchmarks/match-model-baseline.json`, sha256 5ec5bf6c…, provisional, releaseEvidence false)\n  - grid는 불변식 10개를 모두 통과했습니다. 목표 띠 38개 중 16개가 안, 22개는 표본이 작아 미결입니다.\n  - 기존 summary 경로는 40경기 모두 `reconcile`에서 실패합니다. 선수 줄의 패스·태클 등이 0으로 남아 있습니다(MATCH-26 위반). 레지스트리 지표 71개도 없습니다.\n  - 반복 실행과 관찰 실행은 같은 기록을 냈습니다.\n  - 공유 기계, Node 26.8.1에서 잰 값이라 grid 중앙값이 세 번 실행에 39 → 68 → 153 ms로 흔들렸습니다. 베이스라인이 아닙니다.\n- **실행한 검사**: typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(7개 통과), 스모크 실행. 모두 통과했습니다.\n- **범위 밖 변경**: `vitest.config.ts`의 include에 `scripts/**/*.test.ts`를 추가했습니다. 없으면 이 테스트가 어디서도 실행되지 않습니다. 대신 config 변경 때문에 이번 diff의 `vitest run --changed`는 단위 스위트 전체를 돕니다. 전체 스위트는 배치 관문 몫이라 여기서는 돌리지 않았습니다.\n- **기타 한계**: 상세는 task result limits에 적었습니다. 엔진은 사건이 없으면 `incidents` 필드를 생략하므로 T273 DTO에서 존재 여부를 명시해야 합니다. benchmark/calibrate/grid-bands/first-play의 일부 정의는 복사본으로 남았습니다."
+        "startedAt": "2026-10-20T17:27:18.638Z",
+        "finishedAt": "2026-10-20T17:33:49.614Z",
+        "error": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "결정된 MATCH-28 r15(옵션 1)를 반영했고 검사는 모두 통과했습니다. 지시 메모에는 '커밋 후 제출'이 있었지만 호스트 규칙에 따라 커밋과 제출은 하지 않고 수정분을 워크스페이스에 남겼습니다.\n\n**바뀐 판정 규칙** (`scripts/lib/match-parity.ts`)\n- 두 경로가 같은 값으로 고정된 지표는 차이 0으로 `equivalent`가 되고, `constant: true`로 목록에 남습니다. 그래서 `constant` 상태 자체는 없앴습니다.\n- 기준값이 상수인데 후보가 다른 값에 고정됐거나 5% 마진을 벗어나면 `different`입니다.\n- 기준이 0에 고정된 경우는 마진이 0이라 차이가 판정될 때만 `different`이고, 아니면 `insufficient`입니다.\n- 희귀 사건이 두 경로 모두 0건이면 측정된 부재일 뿐이라 `underpowered`로 남깁니다. 이 부분은 규칙 문구에서 제가 해석한 것으로, 0건을 '같은 값으로 고정'으로 보지 않았습니다.\n\n**조건별 적용 제외**\n- 각 조건은 `level`과 `notApplicable`을 가집니다. `notApplicable`은 규칙에서만 나옵니다.\n  - 승자를 가려야 하는 경기가 아니면 연장·승부차기(MATCH-6)를 제외합니다.\n  - 교체가 없는 시대(1965년 이전)는 교체(MATCH-20)를 제외합니다.\n- 경기 조건은 경기 지표만, 시즌 조건은 시즌 지표만 비교합니다. 그래서 core 보고서의 missing이 71에서 66으로 줄었습니다. 이 경기/시즌 분리는 결정 메모에 없던 것으로, 제가 추가했습니다.\n- `buildEquivalenceReport`와 `buildParityReport`는 이제 `condition`을 필수로 받고, 다른 조건의 샘플이 섞이면 거부합니다.\n- 제외된 지표는 규칙 사유와 함께 `notApplicable`로 표시하고 판정에서 뺍니다. 보고서는 `constants`, `notApplicable`, `blocking`을 나열하고, `passed`는 막는 항목이 하나도 없을 때만 참입니다.\n\n**테스트·문서·스모크**\n- 상수 기대값을 새 규칙에 맞게 고쳤습니다. 규칙상 불가능한 지표가 판정에서 빠지는지, 같은 부재가 녹아웃 조건에서는 계속 막는지, 1950년 시대의 교체 제외를 새 테스트로 확인합니다. 테스트는 모두 10개입니다.\n- `docs/MATCH-MODEL-CONTRACT.md`를 r15 규칙에 맞게 고쳤고 \"기획 대기\" 문단은 지웠습니다.\n- 스모크를 다시 생성했습니다(sha256 `5922e964…`, provisional).\n  - grid는 불변식 10개를 모두 통과했습니다.\n  - 상수로 남은 지표는 `team.minutes`, 적용 제외는 연장·승부차기입니다.\n  - summary 경로는 40경기 모두 `reconcile`에서 실패하고, 18개 지표가 `different`입니다.\n- task result는 지시대로 네 줄로 바꿨고, limits는 'a; b; c' 형식입니다.\n\n**검사 결과**: typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(10개)를 실행해 모두 통과했습니다.\n\n**남은 것**: acceptance 6은 체크하지 않은 채 두었습니다. `vitest.config.ts`가 바뀌어 `--changed` 실행이 단위 스위트 전체가 되므로, 그 증거는 호스트 taskVerify와 배치 게이트 몫입니다."
       },
+      "reviewHistory": [
+        {
+          "id": "fa11e14d-c9ff-46cd-8294-39025e4ad98d",
+          "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T272 at 87c089d, reviewed against base 19907a6 (merge-base 450db0c; the base's identity changes touch none of the engine, grid, contract-detail or codec files the tooling imports). I checked both risk reasons first. The 11,557 lines are mostly the 8,529-line smoke JSON. The vitest.config.ts change outside touches is needed, because otherwise the acceptance-named test never runs. Things that check out: the registry is generated from M/TD/PD and type-checks that every incident kind is covered. The bands match MATCH-23 and grid-bands.ts, and the outcome curve matches calibrate.ts. The MATCH-28 margins are copied correctly, and the Newcombe, Zou, delta-ratio and DKW intervals are correct. The reconcile rules agree with how the grid Tally counts (cards, xT, fouls won). The century workloads mirror benchmark.ts, the runner never sets the dispatch, the report is marked provisional and unpaired, and the smoke JSON backs up the claims about invariants and missing fields. Two statistical defects in the shared settings that later tasks must import unchanged block approval. First, a constant reference is labelled 'constant' even when the candidate differs, which hides that the legacy path never substitutes. Second, the predeclared validation and rare-event sizes do not reach the power they claim.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/lib/match-parity.ts:1353 (T272 compareDistributions)",
+              "message": "When the reference sd is 0, the function returns 'constant' with the reason 'reference is constant: no relative margin', whatever the candidate does. MATCH-28's margin is the larger of 5% of the reference mean magnitude or 0.1 sd, so it is defined whenever the reference mean is not 0 (0.25 for a mean of 5). Reproduce with the committed smoke report: incident.sub is grid mean 5 vs legacy 0 and participation.lines is 16 vs 11. Both are reported as 'constant' instead of 'different'. So the summary's 'different: 16' and the result's '16 metrics already differ' both miss that the summary path makes no substitutions at all. Fix: when the reference sd is 0 and its mean is not 0, judge against the 5% margin. A candidate held constant at another value, or whose interval leaves the margin, is 'different'. Keep 'constant' only for equal constants or a margin of 0. Add a test (constant 5 vs constant 0 → different), then regenerate the smoke report and the result counts."
+            },
+            {
+              "priority": "P2",
+              "where": "scripts/lib/match-parity.ts:954-969 (T272 validationSize, requiredRareEvents)",
+              "message": "Both sizes use z_power (0.84 for power 0.8), which is the one-sided superiority formula. An equivalence interval at a true difference of 0 has to fit on both sides, so the code needs z at (1+power)/2 (1.28). As written, validationSize gives about 60% power, not the documented PARITY_CONFIG.power of 0.8. Example: a 3-point outcome margin gives 4,361 per side instead of about 5,837. requiredRareEvents = 473 gives about 73% against the asymmetric [0.8, 1.2] bounds; about 632 is needed. These sizes have to be predeclared and frozen before T284 tunes anything, and changing them later would mean a version bump and a new sample. Fix the formulas, or say clearly which power they actually achieve. Document whether pilotSd is per match or per value (the design effect). Add tests that pin the corrected values."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:1909-1911 (T272 buildEquivalenceReport.passed)",
+              "message": "`passed` can never be true for any league condition, even when the grid is compared with itself. team.minutes is always 90, and outcome.extraTime and outcome.shootout have no events, so all three are 'constant'. In the modern era incident.sub is constant at 5 as well. The registry has no per-condition applicability. docs/MATCH-MODEL-CONTRACT.md says constant-reference variables are not silently passed, so how the T284/T286 gate should treat equal constants and metrics that cannot apply to a condition is a planning decision. Hand it to planning before T284 relies on this gate."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:1331 (T272 rate-ratio)",
+              "message": "The rate-ratio exposure is values.length. For the player-level rare counter pd.redCards that is the number of player lines, which differs between paths with different substitution counts (grid 16 lines a side, legacy 11). Equal red cards per match then read as a different per-line rate. Use the match (cluster) count as the exposure for rare comparisons."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:806-811, scripts/match-model-baseline.ts:391-406 (T272 core condition)",
+              "message": "The core condition does not say how tactics are assigned. The existing harness, scripts/grid-bands.ts, rotates all four tactics across equal pairs, while the pilot uses each club's default tactic. So the pilot's band readings cannot be compared with grid-bands, and later tasks cannot rebuild the core corpus from CORPUS_CONFIG alone. Declare the tactic assignment in the core params."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:438-467, 1014-1022 (T272)",
+              "message": "Some exports are never read. OUTCOME_TARGET/outcomeTarget (MATCH-2's curve) have no report builder, and nothing evaluates the gap family against them. PERFORMANCE_CONFIG.storage and .browser are not checked: the runner records checkpointChars but never compares them with checkpointBytes. Either add the checks or note them as declared-only for T278/T284/T286."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T272.match-model-measurement-registry.md (T272 acceptance 6, verified)",
+              "message": "Acceptance item 6 ('Task verification follows ARCH-30') is checked, but the worker never ran `pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\"`. Because vitest.config.ts changed, that check reruns the whole unit suite. The host taskVerify has to supply this evidence. The worker's own record lists only the single test file."
+            }
+          ],
+          "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+          "baseCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+          "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+          "createdAt": "2026-10-20T16:53:23.055Z",
+          "finishedAt": "2026-10-20T17:01:58.592Z",
+          "invalidatedAt": "2026-10-20T17:16:33.918Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T272",
@@ -819,6 +870,82 @@
           "finishedAt": "2026-10-20T16:37:41.875Z"
         }
       ]
+    },
+    {
+      "id": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "group": "identity",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "lane": "identity-founding",
+      "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-1",
+      "contributors": [
+        "405f9654-6a48-463c-9566-f2169a73318e/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "createdAt": "2026-10-20T16:53:19.991Z",
+      "startCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+      "dispatch": {
+        "id": "b4e395df-f726-4d4f-ad53-aeb4b6ac17c8",
+        "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-20T17:09:27.606Z",
+        "finishedAt": "2026-10-20T17:24:24.893Z",
+        "error": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T251 is in place: 구단 운영 now has a 구단 디자인 tab where the club design is edited as a draft and changed only by an explicit 적용. Typecheck, lint, format:check, the navigation unit tests (8 passed), the changed-file unit tests (2 files, 15 passed) and the build pass. The new browser spec was written but not run; it is left to the batch Chromium run.\n\n**What changed**\n- **New tab:** 구단 디자인 is the last tab under 구단 운영, at `/direction?view=identity` (an older `/business?view=identity` lands there too). Existing tabs and older addresses work as before, and coming back to 구단 운영 reopens the tab you left.\n- **Loading:** the editor loads only when the tab first opens, in its own small chunk (3.71 kB) that reuses the founding editor.\n- **Draft:** the draft is kept per game in task memory. It survives other tabs, other pages and passing days. It clears only on 되돌리기, a successful 적용, or when another game comes into play.\n- **Stale check:** a draft is stale when the applied design no longer matches the one it started from. The check compares designs, never the world revision, so days advancing don't invalidate it. A stale draft can't be applied; the screen offers 지금 적용된 디자인 불러오기 instead.\n- **Apply:** 적용 sends exactly one club-identity command through the existing `GameClient.command` and waits for it. If it fails, the draft and the applied design both stay, with 다시 적용 and reload options. If another game came into play meanwhile, the answer changes nothing in the new game.\n- **Read-only:** a read-only tab can look at the design but can't edit or apply it, and says why.\n- **Clock:** the editor never starts or stops the clock.\n- **Crests:** the applied design lives inside the club data that the HUD, standings, team sheet and slot card already read, so App needed only a comment, no new field.\n\n**Tests**\n- **Unit (`navigation.test.ts`):** 5 new cases for the new route and the draft rules.\n- **Browser (`tests/e2e/club-identity-management.spec.ts`):** counts the commands actually sent to the engine worker and checks the exported save. Cases:\n  - palette edits keep every shirt; 대표색 적용 changes only the selected shirt;\n  - one command per apply, and the new crest shows in the HUD, standings, team sheet and slot card, also after a reload;\n  - 되돌리기, and a failed apply followed by retry;\n  - the draft survives tab and page detours and a running clock, next to an unapplied 운영 방침 draft;\n  - another game never gets the draft;\n  - a read-only tab can look but not apply;\n  - a stale draft can't overwrite a newer design.\n\n**Limits**\n- The new spec's selectors were taken from the component code and haven't been run in a browser. They are confirmed only once the batch Chromium run executes `tests/e2e/club-identity-management.spec.ts` and `tests/e2e/owner-workflows.spec.ts`; Firefox and WebKit are left to CI.\n- `owner-workflows.spec.ts` is named in the acceptance but is outside this task's files, so I didn't edit it. The check that a policy-board draft stays put is in the new spec instead.\n- The 구단 운영 header text in `Rich.tsx` and the comment in `Operations.tsx` still list only the four earlier tabs. Both files are outside this task's files.\n- The editor's selected shirt, composer and preview opponent reset after leaving the tab; the draft itself does not.\n- Switching to another game and back loses the first game's draft."
+      },
+      "steps": [
+        {
+          "taskId": "T250",
+          "commit": "3bdddda19f0c1a4aececaf39512d1b7567d87ac7",
+          "at": "2026-10-20T17:09:27.513Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T17:09:02.375Z",
+              "finishedAt": "2026-10-20T17:09:26.995Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "group": "identity",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "lane": "identity-match-kit",
+      "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-2",
+      "contributors": [
+        "405f9654-6a48-463c-9566-f2169a73318e/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "createdAt": "2026-10-20T16:53:21.816Z",
+      "startCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+      "dispatch": {
+        "id": "f6e7366f-1dc6-4ff4-86b2-539d18f01efd",
+        "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-20T16:53:22.718Z",
+        "finishedAt": "2026-10-20T17:16:33.877Z",
+        "error": "T252: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T252 is implemented: match preparation now lets the owner choose our home/away/third shirt for the named next fixture. Type, lint, format, unit tests and the build pass. The two browser specs are written but not run here; ARCH-30 leaves them to the batch Chromium run.\n\nWhat the owner sees:\n- A folded \"다음 경기 유니폼\" section in the preparation sheet, placed under the opponent dossier so the tactic and lineup tabs stay where they were.\n- When opened, it names the fixture (date, competition, both clubs, our venue) and shows both sides' shirts with the automatic goalkeeper colours. It also shows the automatic recommendation and three radios for our home/away/third shirts, above the existing pitch preview.\n- Picking a radio only changes the preview. \"이 유니폼으로 정하기\" sends one `match-kit` command for the fixture shown. \"자동 선택으로 되돌리기\" sends `role: null` when a choice is stored.\n- A clashing choice gets a warning and a recommendation for a clearer shirt, but can still be confirmed.\n- If the next fixture changes while the sheet is open (for example the running clock plays the match), the preview restarts for the new fixture and says the drafted shirt was not applied. Before sending, it also re-checks that the fixture is still next and sends nothing if not.\n- With no next fixture it shows only a note with no buttons. A read-only tab shows everything with all controls disabled.\n- It does not touch the tactic or lineup drafts, adds no event or acknowledgement, and never edits saved designs. The preview uses the same function as match settlement, so it matches what gets recorded.\n\nChecks run: `pnpm install --frozen-lockfile --prefer-offline`, `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --changed 19907a6… --passWithNoTests` (1 file, 8 tests), the neighbouring identity UI tests (3 files, 26 tests) and `pnpm run build`, all passing. The preparation chunk is 11.92 kB gzipped.\n\nLimits, also recorded in the task result:\n- **Browser specs not run:** `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium tests/e2e/club-identity-preparation.spec.ts tests/e2e/match-core.spec.ts` is left for the batch run, along with `pnpm run test:unit`, `pnpm run test:contract` and `pnpm run validate:catalogs`.\n  - The new spec covers a home league match (including reload and the choice being used up by that match), an away league match kept separate from a lineup save, and an away cup tie with a confirmed clash, a read-only second tab and a return to automatic. It also covers the fixture changing while the clock runs.\n  - The match-core addition checks that skipping preparation records the automatic shirts, and that preparation opened from the match screen offers only the next fixture.\n- **One file outside touches:** `apps/web/src/ui/FixtureKitSelector.test.ts`, a small new unit test, because no unit test covered the selector.\n- **No Europe case in the browser spec:** reaching a continental tie needs a career that has qualified in 1955 or later. The selector works the same for every competition, and the earlier engine tests (T241/T242) cover continental ties.\n- **Rare stale refusal:** if the engine still refuses a choice as stale (a clock tick slipping in just before the command), the existing error band appears and preparation stays disabled until the next successful command or a reload. Every refused command already behaves this way, and the client code is outside this task.\n- **Single stored choice:** only one choice can be stored, so choosing for an earlier, newly drawn tie replaces a later fixture's choice. The selector tells the owner before they confirm."
+      }
     }
   ],
   "history": [
@@ -6246,6 +6373,1093 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 619,
+      "at": "2026-10-20T16:53:15.843Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-20T16:41:23.349Z",
+            "finishedAt": "2026-10-20T16:53:15.676Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 620,
+      "at": "2026-10-20T16:53:15.898Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+        "integratedAt": "2026-10-20T16:53:15.898Z"
+      }
+    },
+    {
+      "sequence": 621,
+      "at": "2026-10-20T16:53:19.454Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T16:53:19.448Z"
+        }
+      }
+    },
+    {
+      "sequence": 622,
+      "at": "2026-10-20T16:53:19.991Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+        "group": "identity",
+        "taskId": "T250",
+        "tasks": [
+          "T250",
+          "T251"
+        ],
+        "lane": "identity-founding",
+        "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-1",
+        "contributors": [
+          "405f9654-6a48-463c-9566-f2169a73318e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-20T16:53:19.991Z",
+        "startCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693"
+      }
+    },
+    {
+      "sequence": 623,
+      "at": "2026-10-20T16:53:20.869Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 624,
+      "at": "2026-10-20T16:53:21.138Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a0d220c2-f8c5-41d3-a62e-789a2b858a57",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T16:53:21.138Z"
+        }
+      }
+    },
+    {
+      "sequence": 625,
+      "at": "2026-10-20T16:53:21.357Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a0d220c2-f8c5-41d3-a62e-789a2b858a57",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T16:53:21.138Z"
+        }
+      }
+    },
+    {
+      "sequence": 626,
+      "at": "2026-10-20T16:53:21.817Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "40186811-c39d-409f-93db-3e643dc7c41a",
+        "group": "identity",
+        "taskId": "T252",
+        "tasks": [
+          "T252",
+          "T253"
+        ],
+        "lane": "identity-match-kit",
+        "owner": "405f9654-6a48-463c-9566-f2169a73318e/worker-2",
+        "contributors": [
+          "405f9654-6a48-463c-9566-f2169a73318e/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-20T16:53:21.816Z",
+        "startCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693"
+      }
+    },
+    {
+      "sequence": 627,
+      "at": "2026-10-20T16:53:22.529Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 628,
+      "at": "2026-10-20T16:53:22.718Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f6e7366f-1dc6-4ff4-86b2-539d18f01efd",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T16:53:22.718Z"
+        }
+      }
+    },
+    {
+      "sequence": 629,
+      "at": "2026-10-20T16:53:22.943Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f6e7366f-1dc6-4ff4-86b2-539d18f01efd",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T16:53:22.718Z"
+        }
+      }
+    },
+    {
+      "sequence": 630,
+      "at": "2026-10-20T16:53:23.055Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "fa11e14d-c9ff-46cd-8294-39025e4ad98d",
+          "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+          "status": "reviewing",
+          "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+          "baseCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+          "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+          "createdAt": "2026-10-20T16:53:23.055Z"
+        }
+      }
+    },
+    {
+      "sequence": 631,
+      "at": "2026-10-20T16:53:24.311Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c12c99eb-408f-4c28-b016-4680a4cbf855",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T16:53:24.311Z"
+        }
+      }
+    },
+    {
+      "sequence": 632,
+      "at": "2026-10-20T16:53:24.325Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c12c99eb-408f-4c28-b016-4680a4cbf855",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T16:53:24.311Z"
+        }
+      }
+    },
+    {
+      "sequence": 633,
+      "at": "2026-10-20T17:01:58.592Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T272 at 87c089d, reviewed against base 19907a6 (merge-base 450db0c; the base's identity changes touch none of the engine, grid, contract-detail or codec files the tooling imports). I checked both risk reasons first. The 11,557 lines are mostly the 8,529-line smoke JSON. The vitest.config.ts change outside touches is needed, because otherwise the acceptance-named test never runs. Things that check out: the registry is generated from M/TD/PD and type-checks that every incident kind is covered. The bands match MATCH-23 and grid-bands.ts, and the outcome curve matches calibrate.ts. The MATCH-28 margins are copied correctly, and the Newcombe, Zou, delta-ratio and DKW intervals are correct. The reconcile rules agree with how the grid Tally counts (cards, xT, fouls won). The century workloads mirror benchmark.ts, the runner never sets the dispatch, the report is marked provisional and unpaired, and the smoke JSON backs up the claims about invariants and missing fields. Two statistical defects in the shared settings that later tasks must import unchanged block approval. First, a constant reference is labelled 'constant' even when the candidate differs, which hides that the legacy path never substitutes. Second, the predeclared validation and rare-event sizes do not reach the power they claim.",
+        "review": {
+          "id": "fa11e14d-c9ff-46cd-8294-39025e4ad98d",
+          "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T272 at 87c089d, reviewed against base 19907a6 (merge-base 450db0c; the base's identity changes touch none of the engine, grid, contract-detail or codec files the tooling imports). I checked both risk reasons first. The 11,557 lines are mostly the 8,529-line smoke JSON. The vitest.config.ts change outside touches is needed, because otherwise the acceptance-named test never runs. Things that check out: the registry is generated from M/TD/PD and type-checks that every incident kind is covered. The bands match MATCH-23 and grid-bands.ts, and the outcome curve matches calibrate.ts. The MATCH-28 margins are copied correctly, and the Newcombe, Zou, delta-ratio and DKW intervals are correct. The reconcile rules agree with how the grid Tally counts (cards, xT, fouls won). The century workloads mirror benchmark.ts, the runner never sets the dispatch, the report is marked provisional and unpaired, and the smoke JSON backs up the claims about invariants and missing fields. Two statistical defects in the shared settings that later tasks must import unchanged block approval. First, a constant reference is labelled 'constant' even when the candidate differs, which hides that the legacy path never substitutes. Second, the predeclared validation and rare-event sizes do not reach the power they claim.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/lib/match-parity.ts:1353 (T272 compareDistributions)",
+              "message": "When the reference sd is 0, the function returns 'constant' with the reason 'reference is constant: no relative margin', whatever the candidate does. MATCH-28's margin is the larger of 5% of the reference mean magnitude or 0.1 sd, so it is defined whenever the reference mean is not 0 (0.25 for a mean of 5). Reproduce with the committed smoke report: incident.sub is grid mean 5 vs legacy 0 and participation.lines is 16 vs 11. Both are reported as 'constant' instead of 'different'. So the summary's 'different: 16' and the result's '16 metrics already differ' both miss that the summary path makes no substitutions at all. Fix: when the reference sd is 0 and its mean is not 0, judge against the 5% margin. A candidate held constant at another value, or whose interval leaves the margin, is 'different'. Keep 'constant' only for equal constants or a margin of 0. Add a test (constant 5 vs constant 0 → different), then regenerate the smoke report and the result counts."
+            },
+            {
+              "priority": "P2",
+              "where": "scripts/lib/match-parity.ts:954-969 (T272 validationSize, requiredRareEvents)",
+              "message": "Both sizes use z_power (0.84 for power 0.8), which is the one-sided superiority formula. An equivalence interval at a true difference of 0 has to fit on both sides, so the code needs z at (1+power)/2 (1.28). As written, validationSize gives about 60% power, not the documented PARITY_CONFIG.power of 0.8. Example: a 3-point outcome margin gives 4,361 per side instead of about 5,837. requiredRareEvents = 473 gives about 73% against the asymmetric [0.8, 1.2] bounds; about 632 is needed. These sizes have to be predeclared and frozen before T284 tunes anything, and changing them later would mean a version bump and a new sample. Fix the formulas, or say clearly which power they actually achieve. Document whether pilotSd is per match or per value (the design effect). Add tests that pin the corrected values."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:1909-1911 (T272 buildEquivalenceReport.passed)",
+              "message": "`passed` can never be true for any league condition, even when the grid is compared with itself. team.minutes is always 90, and outcome.extraTime and outcome.shootout have no events, so all three are 'constant'. In the modern era incident.sub is constant at 5 as well. The registry has no per-condition applicability. docs/MATCH-MODEL-CONTRACT.md says constant-reference variables are not silently passed, so how the T284/T286 gate should treat equal constants and metrics that cannot apply to a condition is a planning decision. Hand it to planning before T284 relies on this gate."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:1331 (T272 rate-ratio)",
+              "message": "The rate-ratio exposure is values.length. For the player-level rare counter pd.redCards that is the number of player lines, which differs between paths with different substitution counts (grid 16 lines a side, legacy 11). Equal red cards per match then read as a different per-line rate. Use the match (cluster) count as the exposure for rare comparisons."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:806-811, scripts/match-model-baseline.ts:391-406 (T272 core condition)",
+              "message": "The core condition does not say how tactics are assigned. The existing harness, scripts/grid-bands.ts, rotates all four tactics across equal pairs, while the pilot uses each club's default tactic. So the pilot's band readings cannot be compared with grid-bands, and later tasks cannot rebuild the core corpus from CORPUS_CONFIG alone. Declare the tactic assignment in the core params."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/lib/match-parity.ts:438-467, 1014-1022 (T272)",
+              "message": "Some exports are never read. OUTCOME_TARGET/outcomeTarget (MATCH-2's curve) have no report builder, and nothing evaluates the gap family against them. PERFORMANCE_CONFIG.storage and .browser are not checked: the runner records checkpointChars but never compares them with checkpointBytes. Either add the checks or note them as declared-only for T278/T284/T286."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T272.match-model-measurement-registry.md (T272 acceptance 6, verified)",
+              "message": "Acceptance item 6 ('Task verification follows ARCH-30') is checked, but the worker never ran `pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\"`. Because vitest.config.ts changed, that check reruns the whole unit suite. The host taskVerify has to supply this evidence. The worker's own record lists only the single test file."
+            }
+          ],
+          "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+          "baseCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+          "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+          "createdAt": "2026-10-20T16:53:23.055Z",
+          "finishedAt": "2026-10-20T17:01:58.592Z"
+        }
+      }
+    },
+    {
+      "sequence": 634,
+      "at": "2026-10-20T17:01:58.608Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "c12c99eb-408f-4c28-b016-4680a4cbf855",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:53:24.311Z",
+          "finishedAt": "2026-10-20T17:01:58.608Z",
+          "error": null,
+          "summary": "T272 at 87c089d, reviewed against base 19907a6 (merge-base 450db0c; the base's identity changes touch none of the engine, grid, contract-detail or codec files the tooling imports). I checked both risk reasons first. The 11,557 lines are mostly the 8,529-line smoke JSON. The vitest.config.ts change outside touches is needed, because otherwise the acceptance-named test never runs. Things that check out: the registry is generated from M/TD/PD and type-checks that every incident kind is covered. The bands match MATCH-23 and grid-bands.ts, and the outcome curve matches calibrate.ts. The MATCH-28 margins are copied correctly, and the Newcombe, Zou, delta-ratio and DKW intervals are correct. The reconcile rules agree with how the grid Tally counts (cards, xT, fouls won). The century workloads mirror benchmark.ts, the runner never sets the dispatch, the report is marked provisional and unpaired, and the smoke JSON backs up the claims about invariants and missing fields. Two statistical defects in the shared settings that later tasks must import unchanged block approval. First, a constant reference is labelled 'constant' even when the candidate differs, which hides that the legacy path never substitutes. Second, the predeclared validation and rare-event sizes do not reach the power they claim."
+        }
+      }
+    },
+    {
+      "sequence": 635,
+      "at": "2026-10-20T17:09:00.958Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 636,
+      "at": "2026-10-20T17:09:01.876Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 637,
+      "at": "2026-10-20T17:09:01.914Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T250",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 638,
+      "at": "2026-10-20T17:09:27.519Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T251",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T250",
+            "commit": "3bdddda19f0c1a4aececaf39512d1b7567d87ac7",
+            "at": "2026-10-20T17:09:27.513Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T17:09:02.375Z",
+                "finishedAt": "2026-10-20T17:09:26.995Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 639,
+      "at": "2026-10-20T17:09:27.531Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a0d220c2-f8c5-41d3-a62e-789a2b858a57",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:53:21.138Z",
+          "finishedAt": "2026-10-20T17:09:27.531Z",
+          "error": null,
+          "summary": "T250 is implemented. Typecheck, lint, format:check, changed-file vitest and build all pass; the two founding browser specs are written but not run here and are left to the batch Chromium run.\n\nWhat the founding screen now does:\n- **One design per founding session.** `ClubFounding` creates the design once, when the form opens, with `createIdentityDraft` and the first country (ENG) and seed. Changing the seed or country afterwards does not reset it. `App` keys the founding form by slot, so another slot starts from a fresh design.\n- **Old colour field removed.** The 클럽 색상 input under 고급 설정 is gone. Founding sends `identity: design` and `color: design.colours[0]`; no other colour or crest is drawn for the club.\n- **Crest summary and 꾸미기 entry.** A 꾸미기 button showing the current crest sits beside 클럽 창단 in the create row, so the basic screen gets no taller.\n- **Editor dialog.** The editor and pitch preview load lazily (`ClubIdentityEditor` is its own 19.95 kB chunk) inside the shared Dialog. 이 디자인 사용 keeps the changes. 취소, Escape, ✕ or the backdrop throw them away and keep the design from before opening. Focus returns to 꾸미기.\n\nTests:\n- **New `tests/e2e/club-identity-founding.spec.ts`.** Each case decodes the exported save and compares the club's design field by field with the expected design, computed by applying the same editor actions in Node. Cases:\n  - a customised design survives founding, a reload (checked so the founding form never flashes) and continuing the slot; this case also checks the preview canvas pixels;\n  - founding without opening the editor gives three complete shirts;\n  - changing seed or country keeps a customised design, and cancel restores the earlier design;\n  - every editor control can be reached at 360x740 and focus returns to 꾸미기;\n  - another slot's founding starts with a clean design.\n- **`founding.spec.ts`** now picks the club colour through the real editor instead of the old colour field. Its geometry, country, difficulty, preset and seed checks are kept.\n\nLimits:\n- **Fit not measured.** The 360x740 / 390x844 fit is reasoned from the layout, not measured; only those specs can prove it.\n- **No unit test.** None was added, because the allowed files include no new unit test file.\n- **Failed founding.** If founding fails while the first world is loading, the form starts a new session and loses the design, as it already does for name and seed.\n\nAll of this is recorded in the T250 result."
+        }
+      }
+    },
+    {
+      "sequence": 640,
+      "at": "2026-10-20T17:09:27.606Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4e395df-f726-4d4f-ad53-aeb4b6ac17c8",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T17:09:27.606Z"
+        }
+      }
+    },
+    {
+      "sequence": 641,
+      "at": "2026-10-20T17:09:27.775Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4e395df-f726-4d4f-ad53-aeb4b6ac17c8",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T17:09:27.606Z"
+        }
+      }
+    },
+    {
+      "sequence": 642,
+      "at": "2026-10-20T17:12:35.730Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 643,
+      "at": "2026-10-20T17:16:33.500Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 644,
+      "at": "2026-10-20T17:16:33.854Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T252: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 645,
+      "at": "2026-10-20T17:16:33.877Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "f6e7366f-1dc6-4ff4-86b2-539d18f01efd",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T16:53:22.718Z",
+          "finishedAt": "2026-10-20T17:16:33.877Z",
+          "error": "T252: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T252 is implemented: match preparation now lets the owner choose our home/away/third shirt for the named next fixture. Type, lint, format, unit tests and the build pass. The two browser specs are written but not run here; ARCH-30 leaves them to the batch Chromium run.\n\nWhat the owner sees:\n- A folded \"다음 경기 유니폼\" section in the preparation sheet, placed under the opponent dossier so the tactic and lineup tabs stay where they were.\n- When opened, it names the fixture (date, competition, both clubs, our venue) and shows both sides' shirts with the automatic goalkeeper colours. It also shows the automatic recommendation and three radios for our home/away/third shirts, above the existing pitch preview.\n- Picking a radio only changes the preview. \"이 유니폼으로 정하기\" sends one `match-kit` command for the fixture shown. \"자동 선택으로 되돌리기\" sends `role: null` when a choice is stored.\n- A clashing choice gets a warning and a recommendation for a clearer shirt, but can still be confirmed.\n- If the next fixture changes while the sheet is open (for example the running clock plays the match), the preview restarts for the new fixture and says the drafted shirt was not applied. Before sending, it also re-checks that the fixture is still next and sends nothing if not.\n- With no next fixture it shows only a note with no buttons. A read-only tab shows everything with all controls disabled.\n- It does not touch the tactic or lineup drafts, adds no event or acknowledgement, and never edits saved designs. The preview uses the same function as match settlement, so it matches what gets recorded.\n\nChecks run: `pnpm install --frozen-lockfile --prefer-offline`, `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --changed 19907a6… --passWithNoTests` (1 file, 8 tests), the neighbouring identity UI tests (3 files, 26 tests) and `pnpm run build`, all passing. The preparation chunk is 11.92 kB gzipped.\n\nLimits, also recorded in the task result:\n- **Browser specs not run:** `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium tests/e2e/club-identity-preparation.spec.ts tests/e2e/match-core.spec.ts` is left for the batch run, along with `pnpm run test:unit`, `pnpm run test:contract` and `pnpm run validate:catalogs`.\n  - The new spec covers a home league match (including reload and the choice being used up by that match), an away league match kept separate from a lineup save, and an away cup tie with a confirmed clash, a read-only second tab and a return to automatic. It also covers the fixture changing while the clock runs.\n  - The match-core addition checks that skipping preparation records the automatic shirts, and that preparation opened from the match screen offers only the next fixture.\n- **One file outside touches:** `apps/web/src/ui/FixtureKitSelector.test.ts`, a small new unit test, because no unit test covered the selector.\n- **No Europe case in the browser spec:** reaching a continental tie needs a career that has qualified in 1955 or later. The selector works the same for every competition, and the earlier engine tests (T241/T242) cover continental ties.\n- **Rare stale refusal:** if the engine still refuses a choice as stale (a clock tick slipping in just before the command), the existing error band appears and preparation stays disabled until the next successful command or a reload. Every refused command already behaves this way, and the client code is outside this task.\n- **Single stored choice:** only one choice can be stored, so choosing for an earlier, newly drawn tie replaces a later fixture's choice. The selector tells the owner before they confirm."
+        }
+      }
+    },
+    {
+      "sequence": 646,
+      "at": "2026-10-20T17:16:33.918Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "fa11e14d-c9ff-46cd-8294-39025e4ad98d",
+            "owner": "405f9654-6a48-463c-9566-f2169a73318e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T272 at 87c089d, reviewed against base 19907a6 (merge-base 450db0c; the base's identity changes touch none of the engine, grid, contract-detail or codec files the tooling imports). I checked both risk reasons first. The 11,557 lines are mostly the 8,529-line smoke JSON. The vitest.config.ts change outside touches is needed, because otherwise the acceptance-named test never runs. Things that check out: the registry is generated from M/TD/PD and type-checks that every incident kind is covered. The bands match MATCH-23 and grid-bands.ts, and the outcome curve matches calibrate.ts. The MATCH-28 margins are copied correctly, and the Newcombe, Zou, delta-ratio and DKW intervals are correct. The reconcile rules agree with how the grid Tally counts (cards, xT, fouls won). The century workloads mirror benchmark.ts, the runner never sets the dispatch, the report is marked provisional and unpaired, and the smoke JSON backs up the claims about invariants and missing fields. Two statistical defects in the shared settings that later tasks must import unchanged block approval. First, a constant reference is labelled 'constant' even when the candidate differs, which hides that the legacy path never substitutes. Second, the predeclared validation and rare-event sizes do not reach the power they claim.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "scripts/lib/match-parity.ts:1353 (T272 compareDistributions)",
+                "message": "When the reference sd is 0, the function returns 'constant' with the reason 'reference is constant: no relative margin', whatever the candidate does. MATCH-28's margin is the larger of 5% of the reference mean magnitude or 0.1 sd, so it is defined whenever the reference mean is not 0 (0.25 for a mean of 5). Reproduce with the committed smoke report: incident.sub is grid mean 5 vs legacy 0 and participation.lines is 16 vs 11. Both are reported as 'constant' instead of 'different'. So the summary's 'different: 16' and the result's '16 metrics already differ' both miss that the summary path makes no substitutions at all. Fix: when the reference sd is 0 and its mean is not 0, judge against the 5% margin. A candidate held constant at another value, or whose interval leaves the margin, is 'different'. Keep 'constant' only for equal constants or a margin of 0. Add a test (constant 5 vs constant 0 → different), then regenerate the smoke report and the result counts."
+              },
+              {
+                "priority": "P2",
+                "where": "scripts/lib/match-parity.ts:954-969 (T272 validationSize, requiredRareEvents)",
+                "message": "Both sizes use z_power (0.84 for power 0.8), which is the one-sided superiority formula. An equivalence interval at a true difference of 0 has to fit on both sides, so the code needs z at (1+power)/2 (1.28). As written, validationSize gives about 60% power, not the documented PARITY_CONFIG.power of 0.8. Example: a 3-point outcome margin gives 4,361 per side instead of about 5,837. requiredRareEvents = 473 gives about 73% against the asymmetric [0.8, 1.2] bounds; about 632 is needed. These sizes have to be predeclared and frozen before T284 tunes anything, and changing them later would mean a version bump and a new sample. Fix the formulas, or say clearly which power they actually achieve. Document whether pilotSd is per match or per value (the design effect). Add tests that pin the corrected values."
+              },
+              {
+                "priority": "P3",
+                "where": "scripts/lib/match-parity.ts:1909-1911 (T272 buildEquivalenceReport.passed)",
+                "message": "`passed` can never be true for any league condition, even when the grid is compared with itself. team.minutes is always 90, and outcome.extraTime and outcome.shootout have no events, so all three are 'constant'. In the modern era incident.sub is constant at 5 as well. The registry has no per-condition applicability. docs/MATCH-MODEL-CONTRACT.md says constant-reference variables are not silently passed, so how the T284/T286 gate should treat equal constants and metrics that cannot apply to a condition is a planning decision. Hand it to planning before T284 relies on this gate."
+              },
+              {
+                "priority": "P3",
+                "where": "scripts/lib/match-parity.ts:1331 (T272 rate-ratio)",
+                "message": "The rate-ratio exposure is values.length. For the player-level rare counter pd.redCards that is the number of player lines, which differs between paths with different substitution counts (grid 16 lines a side, legacy 11). Equal red cards per match then read as a different per-line rate. Use the match (cluster) count as the exposure for rare comparisons."
+              },
+              {
+                "priority": "P3",
+                "where": "scripts/lib/match-parity.ts:806-811, scripts/match-model-baseline.ts:391-406 (T272 core condition)",
+                "message": "The core condition does not say how tactics are assigned. The existing harness, scripts/grid-bands.ts, rotates all four tactics across equal pairs, while the pilot uses each club's default tactic. So the pilot's band readings cannot be compared with grid-bands, and later tasks cannot rebuild the core corpus from CORPUS_CONFIG alone. Declare the tactic assignment in the core params."
+              },
+              {
+                "priority": "P3",
+                "where": "scripts/lib/match-parity.ts:438-467, 1014-1022 (T272)",
+                "message": "Some exports are never read. OUTCOME_TARGET/outcomeTarget (MATCH-2's curve) have no report builder, and nothing evaluates the gap family against them. PERFORMANCE_CONFIG.storage and .browser are not checked: the runner records checkpointChars but never compares them with checkpointBytes. Either add the checks or note them as declared-only for T278/T284/T286."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T272.match-model-measurement-registry.md (T272 acceptance 6, verified)",
+                "message": "Acceptance item 6 ('Task verification follows ARCH-30') is checked, but the worker never ran `pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\"`. Because vitest.config.ts changed, that check reruns the whole unit suite. The host taskVerify has to supply this evidence. The worker's own record lists only the single test file."
+              }
+            ],
+            "commit": "87c089d479ffc36c7ac8cce141740932637be110",
+            "baseCommit": "19907a64fb57b00c9337e84eac7c4ef01b104693",
+            "submissionId": "5e1b0b79-bc46-49f9-8f08-18d2d609f267",
+            "createdAt": "2026-10-20T16:53:23.055Z",
+            "finishedAt": "2026-10-20T17:01:58.592Z",
+            "invalidatedAt": "2026-10-20T17:16:33.918Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 647,
+      "at": "2026-10-20T17:16:33.999Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c2a03e2d-68f0-43a1-af57-77b794253a61",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T17:16:33.999Z"
+        }
+      }
+    },
+    {
+      "sequence": 648,
+      "at": "2026-10-20T17:16:34.164Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c2a03e2d-68f0-43a1-af57-77b794253a61",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T17:16:33.999Z"
+        }
+      }
+    },
+    {
+      "sequence": 649,
+      "at": "2026-10-20T17:24:24.464Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 650,
+      "at": "2026-10-20T17:24:24.871Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 651,
+      "at": "2026-10-20T17:24:24.893Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+      "taskId": "T251",
+      "tasks": [
+        "T250",
+        "T251"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "b4e395df-f726-4d4f-ad53-aeb4b6ac17c8",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T17:09:27.606Z",
+          "finishedAt": "2026-10-20T17:24:24.893Z",
+          "error": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T251 is in place: 구단 운영 now has a 구단 디자인 tab where the club design is edited as a draft and changed only by an explicit 적용. Typecheck, lint, format:check, the navigation unit tests (8 passed), the changed-file unit tests (2 files, 15 passed) and the build pass. The new browser spec was written but not run; it is left to the batch Chromium run.\n\n**What changed**\n- **New tab:** 구단 디자인 is the last tab under 구단 운영, at `/direction?view=identity` (an older `/business?view=identity` lands there too). Existing tabs and older addresses work as before, and coming back to 구단 운영 reopens the tab you left.\n- **Loading:** the editor loads only when the tab first opens, in its own small chunk (3.71 kB) that reuses the founding editor.\n- **Draft:** the draft is kept per game in task memory. It survives other tabs, other pages and passing days. It clears only on 되돌리기, a successful 적용, or when another game comes into play.\n- **Stale check:** a draft is stale when the applied design no longer matches the one it started from. The check compares designs, never the world revision, so days advancing don't invalidate it. A stale draft can't be applied; the screen offers 지금 적용된 디자인 불러오기 instead.\n- **Apply:** 적용 sends exactly one club-identity command through the existing `GameClient.command` and waits for it. If it fails, the draft and the applied design both stay, with 다시 적용 and reload options. If another game came into play meanwhile, the answer changes nothing in the new game.\n- **Read-only:** a read-only tab can look at the design but can't edit or apply it, and says why.\n- **Clock:** the editor never starts or stops the clock.\n- **Crests:** the applied design lives inside the club data that the HUD, standings, team sheet and slot card already read, so App needed only a comment, no new field.\n\n**Tests**\n- **Unit (`navigation.test.ts`):** 5 new cases for the new route and the draft rules.\n- **Browser (`tests/e2e/club-identity-management.spec.ts`):** counts the commands actually sent to the engine worker and checks the exported save. Cases:\n  - palette edits keep every shirt; 대표색 적용 changes only the selected shirt;\n  - one command per apply, and the new crest shows in the HUD, standings, team sheet and slot card, also after a reload;\n  - 되돌리기, and a failed apply followed by retry;\n  - the draft survives tab and page detours and a running clock, next to an unapplied 운영 방침 draft;\n  - another game never gets the draft;\n  - a read-only tab can look but not apply;\n  - a stale draft can't overwrite a newer design.\n\n**Limits**\n- The new spec's selectors were taken from the component code and haven't been run in a browser. They are confirmed only once the batch Chromium run executes `tests/e2e/club-identity-management.spec.ts` and `tests/e2e/owner-workflows.spec.ts`; Firefox and WebKit are left to CI.\n- `owner-workflows.spec.ts` is named in the acceptance but is outside this task's files, so I didn't edit it. The check that a policy-board draft stays put is in the new spec instead.\n- The 구단 운영 header text in `Rich.tsx` and the comment in `Operations.tsx` still list only the four earlier tabs. Both files are outside this task's files.\n- The editor's selected shirt, composer and preview opponent reset after leaving the tab; the draft itself does not.\n- Switching to another game and back loses the first game's draft."
+        }
+      }
+    },
+    {
+      "sequence": 652,
+      "at": "2026-10-20T17:24:25.818Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 653,
+      "at": "2026-10-20T17:26:10.057Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: How should the T284/T286 equivalence gate (`buildEquivalenceReport.passed` in scripts/lib/match-parity.ts) treat two kinds of metric? (a) Metrics held at the same value on both paths, such as team minutes 90, or five substitutions every modern match once the aggregate path substitutes. (b) Metrics a condition's own rules make impossible, such as extra time and shoot-outs in league fixtures, or substitutions before 1965. Today both stay 'constant', which is non-passing, so no league condition can pass even grid against grid. MATCH-28 and docs/MATCH-MODEL-CONTRACT.md only say constant references are reported explicitly and never silently passed."
+      }
+    },
+    {
+      "sequence": 654,
+      "at": "2026-10-20T17:26:10.067Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c2a03e2d-68f0-43a1-af57-77b794253a61",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T17:16:33.999Z",
+          "finishedAt": "2026-10-20T17:26:10.067Z",
+          "error": null,
+          "summary": "교정 지적 7건 가운데 6건은 고쳤고, 나머지 1건(동치 관문 판정 규칙)은 기획 결정이 필요해 blocked로 넘깁니다. 수정분은 커밋하지 않은 채 워크스페이스에 남겨 두었습니다.\n\n**고친 것**\n- **P2 상수 기준값:** 기준 경로에 분산이 없어도 MATCH-28의 5% 마진을 그대로 씁니다. 후보가 다른 값에 고정됐거나 마진을 벗어나면 `different`입니다. `constant`는 두 경로가 같은 값에 고정됐을 때와, 기준이 0이라 마진이 0인데 차이가 판정되지 않을 때만 남습니다. 스모크에서 교체 5 대 0, 출전 줄 16 대 11이 이제 `different`로 나옵니다.\n- **P2 표본 크기:** 등가 검정의 검정력 항을 (1+power)/2 분위수로 바로잡았습니다.\n  - 3%p 결과 마진이면 경로당 5,838경기가 필요합니다(기존 4,361경기는 검정력 약 60%).\n  - 희귀 사건은 비대칭 [0.8, 1.2] 경계로 정확히 풀어 경로당 534건입니다(기존 473건은 73%).\n  - `validationSize`가 실제 달성 검정력도 돌려주고, `clusterSpread`로 경기당 분산(design effect 포함)을 정의했습니다. 문서에도 적었습니다.\n- **P3 희귀 사건 비율:** 선수 줄 수가 아니라 경기 수 기준으로 비교합니다.\n- **P3 core 조건:** 월드, 창단 입력, 페어 순서, 경기 형식, 전술 배정(각 클럽의 기본 전술)을 모두 선언했고, 실행기는 이 선언만 읽습니다.\n- **P3 쓰이지 않던 export:** `buildOutcomeTargetReport`를 추가해 MATCH-2 Elo 곡선 대비 오차를 기록만 하고 통과 판정은 하지 않습니다. 실행기는 세기 프로필 체크포인트를 `storage.checkpointBytes`와 비교합니다. 브라우저 예산은 T286용 선언으로만 남겼습니다.\n- **P3 acceptance 6:** 체크를 해제했습니다. `vitest --changed`는 config 변경 때문에 단위 스위트 전체를 돌리므로, 그 증거는 호스트 taskVerify 몫으로 남겼습니다.\n\n**검사와 결과물**\n- typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(9개)를 실행해 모두 통과했습니다.\n- 스모크를 다시 돌려 결과 파일을 새로 만들었습니다(sha256 `2217f738…`, provisional).\n  - grid는 불변식 10개를 모두 통과합니다.\n  - summary 경로는 40경기 모두 `reconcile`에서 실패하고, 18개 지표가 `different`, 3개가 `constant`입니다.\n- task result와 `docs/MATCH-MODEL-CONTRACT.md`도 갱신했습니다.\n\n**남은 결정 (P3-1)**\n`buildEquivalenceReport.passed`는 지표 하나라도 `constant`이면 false입니다. 그래서 리그 조건에서는 grid끼리 비교해도 통과할 수 없습니다. 같은 값으로 고정된 지표와 조건상 일어날 수 없는 지표를 관문이 어떻게 다룰지는 기획 결정이라 코드로 정하지 않았습니다. 결정이 나면 T272 범위 안의 파일 수정, 테스트, 스모크 재생성으로 마무리할 수 있습니다."
+        }
+      }
+    },
+    {
+      "sequence": 655,
+      "at": "2026-10-20T17:26:10.405Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "40186811-c39d-409f-93db-3e643dc7c41a",
+      "taskId": "T252",
+      "tasks": [
+        "T252",
+        "T253"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 656,
+      "at": "2026-10-20T17:27:14.582Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 657,
+      "at": "2026-10-20T17:27:18.638Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7025b410-eaf9-46d0-8a0a-48d5cf670e90",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T17:27:18.638Z"
+        }
+      }
+    },
+    {
+      "sequence": 658,
+      "at": "2026-10-20T17:27:18.809Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7025b410-eaf9-46d0-8a0a-48d5cf670e90",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T17:27:18.638Z"
+        }
+      }
+    },
+    {
+      "sequence": 659,
+      "at": "2026-10-20T17:33:49.270Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 660,
+      "at": "2026-10-20T17:33:49.589Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 661,
+      "at": "2026-10-20T17:33:49.614Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+      "taskId": "T272",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "7025b410-eaf9-46d0-8a0a-48d5cf670e90",
+          "runner": "405f9654-6a48-463c-9566-f2169a73318e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T17:27:18.638Z",
+          "finishedAt": "2026-10-20T17:33:49.614Z",
+          "error": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "결정된 MATCH-28 r15(옵션 1)를 반영했고 검사는 모두 통과했습니다. 지시 메모에는 '커밋 후 제출'이 있었지만 호스트 규칙에 따라 커밋과 제출은 하지 않고 수정분을 워크스페이스에 남겼습니다.\n\n**바뀐 판정 규칙** (`scripts/lib/match-parity.ts`)\n- 두 경로가 같은 값으로 고정된 지표는 차이 0으로 `equivalent`가 되고, `constant: true`로 목록에 남습니다. 그래서 `constant` 상태 자체는 없앴습니다.\n- 기준값이 상수인데 후보가 다른 값에 고정됐거나 5% 마진을 벗어나면 `different`입니다.\n- 기준이 0에 고정된 경우는 마진이 0이라 차이가 판정될 때만 `different`이고, 아니면 `insufficient`입니다.\n- 희귀 사건이 두 경로 모두 0건이면 측정된 부재일 뿐이라 `underpowered`로 남깁니다. 이 부분은 규칙 문구에서 제가 해석한 것으로, 0건을 '같은 값으로 고정'으로 보지 않았습니다.\n\n**조건별 적용 제외**\n- 각 조건은 `level`과 `notApplicable`을 가집니다. `notApplicable`은 규칙에서만 나옵니다.\n  - 승자를 가려야 하는 경기가 아니면 연장·승부차기(MATCH-6)를 제외합니다.\n  - 교체가 없는 시대(1965년 이전)는 교체(MATCH-20)를 제외합니다.\n- 경기 조건은 경기 지표만, 시즌 조건은 시즌 지표만 비교합니다. 그래서 core 보고서의 missing이 71에서 66으로 줄었습니다. 이 경기/시즌 분리는 결정 메모에 없던 것으로, 제가 추가했습니다.\n- `buildEquivalenceReport`와 `buildParityReport`는 이제 `condition`을 필수로 받고, 다른 조건의 샘플이 섞이면 거부합니다.\n- 제외된 지표는 규칙 사유와 함께 `notApplicable`로 표시하고 판정에서 뺍니다. 보고서는 `constants`, `notApplicable`, `blocking`을 나열하고, `passed`는 막는 항목이 하나도 없을 때만 참입니다.\n\n**테스트·문서·스모크**\n- 상수 기대값을 새 규칙에 맞게 고쳤습니다. 규칙상 불가능한 지표가 판정에서 빠지는지, 같은 부재가 녹아웃 조건에서는 계속 막는지, 1950년 시대의 교체 제외를 새 테스트로 확인합니다. 테스트는 모두 10개입니다.\n- `docs/MATCH-MODEL-CONTRACT.md`를 r15 규칙에 맞게 고쳤고 \"기획 대기\" 문단은 지웠습니다.\n- 스모크를 다시 생성했습니다(sha256 `5922e964…`, provisional).\n  - grid는 불변식 10개를 모두 통과했습니다.\n  - 상수로 남은 지표는 `team.minutes`, 적용 제외는 연장·승부차기입니다.\n  - summary 경로는 40경기 모두 `reconcile`에서 실패하고, 18개 지표가 `different`입니다.\n- task result는 지시대로 네 줄로 바꿨고, limits는 'a; b; c' 형식입니다.\n\n**검사 결과**: typecheck, lint, format:check, build, `vitest run scripts/lib/match-parity.test.ts`(10개)를 실행해 모두 통과했습니다.\n\n**남은 것**: acceptance 6은 체크하지 않은 채 두었습니다. `vitest.config.ts`가 바뀌어 `--changed` 실행이 단위 스위트 전체가 되므로, 그 증거는 호스트 taskVerify와 배치 게이트 몫입니다."
+        }
+      }
+    },
+    {
+      "sequence": 662,
+      "at": "2026-10-20T17:33:50.545Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "405f9654-6a48-463c-9566-f2169a73318e",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-20T16:05:48.301Z",
+          "stoppedAt": "2026-10-20T17:33:50.545Z",
+          "dispatched": 11,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "reviewer",
+              "error": "T245: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "40186811-c39d-409f-93db-3e643dc7c41a",
+              "role": "worker",
+              "error": "T252: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "2c8af150-1934-4d07-a61b-118bb51db1b7",
+              "role": "worker",
+              "error": "T250: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "40186811-c39d-409f-93db-3e643dc7c41a",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            },
+            {
+              "attempt": "a74c2308-9171-47e6-bd2f-05c766ee4750",
+              "role": "worker",
+              "error": "T272: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ]
+        }
       }
     }
   ]

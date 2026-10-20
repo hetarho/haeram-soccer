@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { expect, test } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -20,7 +21,7 @@ for (const width of [360, 390]) {
     const mode = await page.getByRole('combobox', { name: '진행 모드', exact: true }).boundingBox();
     expect(date!.width).toBeGreaterThan(140);
     expect(mode!.y).toBeGreaterThanOrEqual(date!.y + date!.height);
-    await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
+    await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
     await expect(canvas).toBeVisible();
     for (const height of [844, 740, 920]) {

@@ -11,7 +11,6 @@ import {
   type BackgroundSettings,
   type ProgressionController,
 } from '../runtime/progression';
-import { useTaskState } from './taskMemory';
 import { Dialog } from './Dialog';
 import { Select } from './Select';
 import { applyResponsibilitySettings, RESPONSIBILITY_LABELS } from './intervention';
@@ -42,12 +41,7 @@ export function ResponsibilitySettings({
   const state = useGameState((state) => state),
     w = state.view!.world;
   const background = useProgression(controller, (state) => state.background);
-  const [stored, setStored] = useTaskState<Draft | undefined>(
-    w.id,
-    'responsibility-settings-draft',
-    undefined,
-  );
-  const draft = stored ?? { game: settingsOf(w), background };
+  const [draft, setDraft] = useState<Draft>(() => ({ game: settingsOf(w), background }));
   const [message, setMessage] = useState('');
   const statusId = useId();
   const acting = !!state.pendingActions || state.processing;
@@ -55,7 +49,7 @@ export function ResponsibilitySettings({
   const update = (change: (game: GameSettings) => void) => {
     const next = structuredClone(draft);
     change(next.game);
-    setStored(next);
+    setDraft(next);
     setMessage('');
   };
   const changeObservation = (key: 'matchEve' | 'windowOpen', value: boolean) => {
@@ -68,6 +62,7 @@ export function ResponsibilitySettings({
     });
   };
   const manualInvalid = draft.game.mode === 'manual' && !draft.game.observations.matchEve;
+  const automatic = draft.game.mode === 'automatic';
   const blocked = state.readonly
     ? '읽기 전용 상태에서는 설정을 적용할 수 없어요.'
     : state.error
@@ -95,7 +90,6 @@ export function ResponsibilitySettings({
     }
     if (gameStore.getSnapshot().view?.world.id !== w.id) return;
     controller.setBackground(draft.background);
-    setStored(undefined);
     onClose();
   };
   return (
@@ -103,16 +97,7 @@ export function ResponsibilitySettings({
       label="위임·진행 설정"
       onClose={onClose}
       actions={
-        <>
-          <button
-            disabled={acting || !stored}
-            onClick={() => {
-              setStored(undefined);
-              setMessage('');
-            }}
-          >
-            변경 버리기
-          </button>
+        <div className={s.actions}>
           <button onClick={onClose}>닫기</button>
           <button
             disabled={!changed || !!blocked}
@@ -121,58 +106,18 @@ export function ResponsibilitySettings({
           >
             적용
           </button>
-        </>
+        </div>
       }
     >
-      <p>
+      <p className={s.intro}>
         업무마다 직접 결정하거나 맡길 수 있어요. 변경은 적용을 눌러야 반영됩니다. 훈련은 코치가
-        맡아요.
+        맡아요. 닫으면 적용하지 않은 변경은 버려져요.
       </p>
       {guidance && !matchGuidance && (
         <p id={statusId} role="status" className={s.message}>
           {guidance}
         </p>
       )}
-      <div className={s.bulkActions} role="group" aria-label="전체 업무 위임 설정">
-        {(['delegated', 'direct'] as const).map((value) => (
-          <button
-            type="button"
-            key={value}
-            disabled={acting || state.readonly}
-            onClick={() =>
-              update((game) => {
-                for (const key of RESPONSIBILITY_KEYS) game.responsibilities[key] = value;
-              })
-            }
-          >
-            {value === 'delegated' ? '전체 위임' : '전체 수동'}
-          </button>
-        ))}
-      </div>
-      <div className={s.rows}>
-        {RESPONSIBILITY_KEYS.map((key) => (
-          <label className={s.row} key={key}>
-            <span>
-              <b>{RESPONSIBILITY_LABELS[key]}</b>
-              <small>{DETAILS[key]}</small>
-            </span>
-            <Select
-              className={s.select}
-              aria-label={RESPONSIBILITY_LABELS[key]}
-              disabled={acting || state.readonly}
-              value={draft.game.responsibilities[key]}
-              onValueChange={(value) =>
-                update((game) => {
-                  game.responsibilities[key] = value as 'direct' | 'delegated';
-                })
-              }
-            >
-              <option value="direct">직접 결정</option>
-              <option value="delegated">위임</option>
-            </Select>
-          </label>
-        ))}
-      </div>
       <section className={s.section} aria-label="시간 진행 방식">
         <label className={s.row}>
           <b>진행 모드</b>
@@ -192,33 +137,36 @@ export function ResponsibilitySettings({
           </Select>
         </label>
         <p>
-          자동은 재생·정지와 속도로, 수동은 다음 이벤트 버튼으로 진행해요. 직접 결정할 일이 있으면
-          두 모드 모두 멈춰요.
+          {automatic
+            ? '재생·정지와 속도로 진행해요. 직접 결정할 일이 있으면 멈춰요.'
+            : '다음 이벤트를 눌러 진행해요. 업무 위임과 중지 조건은 아래에서 바꿀 수 있어요.'}
         </p>
-        <label className={s.check}>
-          <input
-            type="checkbox"
-            aria-label="경기 전날 이벤트"
-            checked={draft.game.observations.matchEve}
-            disabled={acting || state.readonly}
-            onChange={(event) => changeObservation('matchEve', event.target.checked)}
-          />
-          경기 전날 멈추기
-        </label>
-        <label className={s.check}>
-          <input
-            type="checkbox"
-            aria-label="이적시장 개장 이벤트"
-            checked={draft.game.observations.windowOpen}
-            disabled={acting || state.readonly}
-            onChange={(event) => changeObservation('windowOpen', event.target.checked)}
-          />
-          이적시장 개장에 멈추기
-        </label>
-        <p>
-          수동 모드에는 경기 이벤트가 반드시 필요해요. 다른 일을 모두 맡겨도 다음 경기 전날에
-          도착합니다.
-        </p>
+        <div className={s.observations}>
+          <label className={s.check}>
+            <input
+              type="checkbox"
+              aria-label="경기 전날 이벤트"
+              checked={draft.game.observations.matchEve}
+              disabled={acting || state.readonly}
+              onChange={(event) => changeObservation('matchEve', event.target.checked)}
+            />
+            경기 전날 멈추기
+          </label>
+          <label className={s.check}>
+            <input
+              type="checkbox"
+              aria-label="이적시장 개장 이벤트"
+              checked={draft.game.observations.windowOpen}
+              disabled={acting || state.readonly}
+              onChange={(event) => changeObservation('windowOpen', event.target.checked)}
+            />
+            이적시장 개장에 멈추기
+          </label>
+          <p>
+            수동 모드에는 경기 이벤트가 반드시 필요해요. 다른 일을 모두 맡겨도 다음 경기 전날에
+            도착합니다.
+          </p>
+        </div>
         {matchGuidance && (
           <p id={statusId} role="status" className={s.message}>
             수동 모드에는 경기 이벤트가 필요해요
@@ -237,65 +185,110 @@ export function ResponsibilitySettings({
           </button>
         )}
       </section>
-      {pending.length > 0 && (
-        <section className={s.section} aria-label="대기 업무 이관 미리보기">
-          <h3>함께 넘길 대기 업무</h3>
-          <ul>
-            {pending.map((item) => (
-              <li key={item.key}>
-                {item.count > 0 && (
-                  <>
-                    대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
-                    {item.to === 'delegated' ? '위임됩니다' : '직접 결정으로 가져옵니다'}.
-                  </>
-                )}
-                {(item.held ?? 0) > 0 && (
-                  <> 공동 승인 {item.held}건은 다른 직접 결정이 남아 대기해요.</>
-                )}
-              </li>
-            ))}
-          </ul>
+      <section className={s.section} aria-label="업무 위임">
+        <h3>업무 위임</h3>
+        <div className={s.bulkActions} role="group" aria-label="전체 업무 위임 설정">
+          {(['delegated', 'direct'] as const).map((value) => (
+            <button
+              type="button"
+              key={value}
+              disabled={acting || state.readonly}
+              onClick={() =>
+                update((game) => {
+                  for (const key of RESPONSIBILITY_KEYS) game.responsibilities[key] = value;
+                })
+              }
+            >
+              {value === 'delegated' ? '전체 위임' : '전체 수동'}
+            </button>
+          ))}
+        </div>
+        <div className={s.rows}>
+          {RESPONSIBILITY_KEYS.map((key) => (
+            <label className={s.row} key={key}>
+              <span>
+                <b>{RESPONSIBILITY_LABELS[key]}</b>
+                <small>{DETAILS[key]}</small>
+              </span>
+              <Select
+                className={s.select}
+                aria-label={RESPONSIBILITY_LABELS[key]}
+                disabled={acting || state.readonly}
+                value={draft.game.responsibilities[key]}
+                onValueChange={(value) =>
+                  update((game) => {
+                    game.responsibilities[key] = value as 'direct' | 'delegated';
+                  })
+                }
+              >
+                <option value="direct">직접 결정</option>
+                <option value="delegated">위임</option>
+              </Select>
+            </label>
+          ))}
+        </div>
+        {pending.length > 0 && (
+          <section className={s.preview} aria-label="대기 업무 이관 미리보기">
+            <h3>함께 넘길 대기 업무</h3>
+            <ul>
+              {pending.map((item) => (
+                <li key={item.key}>
+                  {item.count > 0 && (
+                    <>
+                      대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
+                      {item.to === 'delegated' ? '위임됩니다' : '직접 결정으로 가져옵니다'}.
+                    </>
+                  )}
+                  {(item.held ?? 0) > 0 && (
+                    <> 공동 승인 {item.held}건은 다른 직접 결정이 남아 대기해요.</>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </section>
+      {automatic && (
+        <section className={s.section} aria-label="자동 모드의 백그라운드 진행">
+          <h3>자동 모드의 백그라운드 진행</h3>
+          <label className={s.check}>
+            <input
+              type="checkbox"
+              checked={draft.background.hidden}
+              disabled={acting || state.readonly}
+              onChange={(event) =>
+                setDraft({
+                  ...structuredClone(draft),
+                  background: { ...draft.background, hidden: event.target.checked },
+                })
+              }
+            />
+            다른 탭에서도 계속 진행
+          </label>
+          <label className={s.row}>
+            <span>다시 열었을 때 따라갈 시간</span>
+            <Select
+              className={s.select}
+              aria-label="자리 비운 동안 진행 한도"
+              disabled={acting || state.readonly}
+              value={draft.background.away}
+              onValueChange={(value) =>
+                setDraft({
+                  ...structuredClone(draft),
+                  background: { ...draft.background, away: value as AwayLimit },
+                })
+              }
+            >
+              {Object.entries(AWAY_LIMITS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          </label>
+          <p>수동 모드에서는 자리를 비워도 시간이 진행하지 않아요.</p>
         </section>
       )}
-      <section className={s.section} aria-label="자동 모드의 백그라운드 진행">
-        <h3>자동 모드의 백그라운드 진행</h3>
-        <label className={s.check}>
-          <input
-            type="checkbox"
-            checked={draft.background.hidden}
-            disabled={acting || state.readonly}
-            onChange={(event) =>
-              setStored({
-                ...structuredClone(draft),
-                background: { ...draft.background, hidden: event.target.checked },
-              })
-            }
-          />
-          다른 탭에서도 계속 진행
-        </label>
-        <label className={s.row}>
-          <span>다시 열었을 때 따라갈 시간</span>
-          <Select
-            className={s.select}
-            aria-label="자리 비운 동안 진행 한도"
-            disabled={acting || state.readonly}
-            value={draft.background.away}
-            onValueChange={(value) =>
-              setStored({
-                ...structuredClone(draft),
-                background: { ...draft.background, away: value as AwayLimit },
-              })
-            }
-          >
-            {Object.entries(AWAY_LIMITS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <p>수동 모드에서는 자리를 비워도 시간이 진행하지 않아요.</p>
-      </section>
     </Dialog>
   );
 }

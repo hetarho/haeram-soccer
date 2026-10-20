@@ -77,7 +77,7 @@ test('keeps the club name and compact cash readable in a 360 px HUD', async ({ p
   expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^운영 자금\s*£[\d,]+$/);
 });
 
-test('celebrates in one line beside the news button, which then holds the headline as NEW', async ({
+test('celebrates in one lower line, with headlines collected in the clock news button', async ({
   page,
 }) => {
   // A first round can queue several celebrations, each shown for a few seconds.
@@ -95,11 +95,13 @@ test('celebrates in one line beside the news button, which then holds the headli
   const card = (await status.boundingBox())!;
   const button = (await newsButton(page).boundingBox())!;
   expect(card.y).toBeGreaterThan(clock.y + clock.height);
-  // A phone keeps the view readable: one 44 px line left of the news button, beside it.
+  // A phone keeps the view readable: one 44 px line above navigation and below the clock button.
   expect(card.height).toBeLessThanOrEqual(44);
-  expect(card.x + card.width).toBeLessThanOrEqual(button.x);
-  expect(card.y).toBeLessThan(button.y + button.height);
-  expect(card.y + card.height).toBeGreaterThan(button.y);
+  expect(card.y).toBeGreaterThanOrEqual(button.y + button.height);
+  const navigation = (await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .boundingBox())!;
+  expect(card.y + card.height).toBeLessThanOrEqual(navigation.y);
   // Every queued celebration (a first win, a hat-trick…) clears on its own.
   await expect(banner).toHaveCount(0, { timeout: 25000 });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /새 소식 \d+개/);
@@ -144,6 +146,21 @@ for (const width of [390, 1280]) {
     await playRound(page);
     const trigger = newsButton(page);
     await expect(trigger).toHaveCount(1);
+    await expect(
+      page
+        .getByRole('group', { name: '설정과 알림', exact: true })
+        .getByTestId('communications-button'),
+    ).toBeVisible();
+    await settle(page);
+    const settingsBox = (await page.getByTestId('intervention-trigger').boundingBox())!;
+    const triggerBox = (await trigger.boundingBox())!;
+    expect(triggerBox.x).toBeGreaterThanOrEqual(settingsBox.x + settingsBox.width + 4);
+    expect(
+      Math.abs(triggerBox.y + triggerBox.height / 2 - settingsBox.y - settingsBox.height / 2),
+    ).toBeLessThanOrEqual(1);
+    expect(triggerBox.width).toBeGreaterThanOrEqual(44);
+    expect(triggerBox.height).toBeGreaterThanOrEqual(44);
+    await expect(trigger).toBeInViewport();
     await expect(page.getByRole('button', { name: /^알림·결정/ })).toHaveCount(0);
     const address = page.url();
     await trigger.click();

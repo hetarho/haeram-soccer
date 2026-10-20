@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
@@ -139,7 +140,7 @@ test('shows independent player decisions and post-match league context', async (
   // The first match's injury opens a director–manager mediation; the staff settle it here, so
   // the next watch is not held for an owner decision this journey is not about.
   await configureResponsibilities(page, { responsibilities: { recruitment: 'delegated' } });
-  await page.getByRole('button', { name: '다음 경기 관전' }).click();
+  await watchNext(page);
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
@@ -163,7 +164,7 @@ test('shows independent player decisions and post-match league context', async (
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   await page.getByTestId('match-next-action').click();
   const beforeNext = await page.getByTestId('game-date').innerText();
-  await page.getByRole('button', { name: '다음 경기 관전', exact: true }).click();
+  await watchNext(page);
   await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
   await expect(page.getByTestId('match-next-action')).toBeEnabled();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);

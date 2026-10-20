@@ -27,7 +27,7 @@ import { compactMoney, competitionLabel, money, number, percent, seasonName } fr
 import { Money } from './Money';
 import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
-import { ClubHub } from './ClubHub';
+import { ClubHub, MatchAction } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
@@ -499,7 +499,6 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
     <ClubHub
       w={state.view!.world}
       client={client}
-      controller={controller}
       journal={<ClubJournal client={client} state={state} controller={controller} />}
     />
   );
@@ -1289,14 +1288,26 @@ export function App() {
       </nav>
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
-      {client && playing && (
-        <CommunicationsCenter key={w.id} client={client} floating={page !== 'match'} />
-      )}
+      {client && playing && <CommunicationsCenter key={w.id} client={client} />}
       {client && controller && playing && !w.bankrupt && page !== 'match' && (
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
         <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
+          {client && controller && playing && (
+            <MatchAction
+              critical={!!w.critical}
+              next={!!nextOwnFixture(w)}
+              onWatch={() => {
+                setMoreOpen(false);
+                return watchNextMatch(client, controller, () => setPage('match'));
+              }}
+              onReturn={() => {
+                setMoreOpen(false);
+                setPage('match');
+              }}
+            />
+          )}
           <button
             className={s.guideOpen}
             onClick={() => {

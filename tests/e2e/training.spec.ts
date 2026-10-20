@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -196,7 +197,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
     // An offer that arrived while the clock ran waits on home as a card; answer it first.
     await acknowledgeEvents(page);
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
