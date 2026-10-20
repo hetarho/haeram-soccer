@@ -162,11 +162,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T240 | Apply own-club identity edits atomically through the existing worker command | KIT SAVE ARCH | T237 T235 | todo |
-| T241 | Persist a kit role for exactly the validated next own fixture | KIT WEB SAVE | T240 T239 | todo |
-| T242 | Freeze actual shirt and crest appearance at own-match settlement | KIT SAVE ARCH | T241 T239 | todo |
-| T243 | Preserve appearance snapshots in bounded compact checkpoint streams | SAVE KIT ARCH | T242 T235 | todo |
-| T244 | Install missing identities only through validated writer activation | KIT SAVE ARCH | T243 T237 T236 | todo |
 | T245 | Render one-to-three-colour crests consistently in club and slot views | KIT WEB SAVE | T237 T236 | todo |
 | T247 | Make identity editing a pure isolated draft reducer | KIT WEB | T237 | todo |
 | T248 | Build accessible controlled crest and shirt editing panels | KIT WEB | T245 T246 T247 | todo |
@@ -199,15 +194,13 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 18 | 3 | 15 | 0 | 4 | 5 | 2026-10-20T16:03:21.631Z | [history](work/identity.json) |
+| identity | 2 | 33 | 8 | 25 | 5 | 0 | 0 | 2026-10-20T16:16:28.735Z | [history](work/identity.json) |
 
 ## next
-- identity group (p7x5 stopped 2026-10-20T15:43Z): sync the open identity tasks' bases to WEB r94 SAVE r50 ARCH r16 MATCH r14 in the planning space, resume both attempts, rerun `work run --work identity --provider claude --autopilot`; engine lane at T244 (task verify failed), editor lane approved awaiting integration; lane heads on wip/identity-engine, wip/identity-editor; red main CI first (WebKit owner-workflows, report 261020-p7x5)
-- implement-task T272; capture the post-T255 baseline before T273 changes football; existing identity task contracts remain unchanged
-- implement-task T273 after T255 and T272, then follow T274–T286 dependencies; exploration results must pass the final release gate
-- FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
+- inspect work board for remaining tasks
 
 ## log
+- 261020 T240 T241 T242 T243 T244 integrated
 - 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
 - 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
 - 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
@@ -227,4 +220,3 @@
 - 261020 create-task T235 T240 T245 T250 T252 lanes: identity-base, identity-engine, identity-editor, identity-founding, identity-match-kit (T254 T255 lane-less); deps unchanged.
 - 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
 - 261020 create-task ARCH start
-- 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.

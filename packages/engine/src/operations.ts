@@ -8,6 +8,7 @@ import { squadCommand } from './ops-squad';
 import { staffCommand } from './ops-staff';
 import { advanceToNextEvent } from './next-event';
 import { applySettings } from './settings';
+import { applyClubIdentity, chooseMatchKit } from './identity-operations';
 
 // Read models and limits the app and other modules import from here.
 export { campaignOffers, sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
@@ -42,6 +43,12 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'read-inbox':
       readInbox(w, cmd.id);
+      break;
+    case 'club-identity':
+      applyClubIdentity(w, cmd.identity);
+      break;
+    case 'match-kit':
+      chooseMatchKit(w, cmd.fixtureId, cmd.role);
       break;
     // Day steps run in the host; as a command they change nothing.
     case 'advance-days':
