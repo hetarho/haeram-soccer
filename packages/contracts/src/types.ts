@@ -1246,4 +1246,6 @@ export type Command =
    * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
    * history (→WEB-61).
    */
-  | { type: 'build'; build: ClubBuild; name?: string };
+  | { type: 'build'; build: ClubBuild; name?: string }
+  /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
+  | { type: 'club-identity'; identity: ClubIdentity };

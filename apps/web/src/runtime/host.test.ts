@@ -15,9 +15,11 @@ import {
   addEvent,
   clubNews,
   advanceRound,
+  createIdentityDraft,
   createWorld,
 } from '../../../../packages/engine/src/index';
-import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
+import type { World } from '../../../../packages/contracts/src/types';
+import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { cachedWorld } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
@@ -285,6 +287,57 @@ describe('worker command protocol', () => {
     expect(h.world!.ownMatches.some((m) => m.year === FOUNDING_YEAR && m.players.length > 0)).toBe(
       true,
     );
+  });
+});
+
+describe('own-club design requests (→KIT-9, SAVE-6)', () => {
+  const design = (color: string) =>
+    createIdentityDraft({ country: input.country, seed: input.seed, color });
+  const apply = (id: string, revision: number, color: string) =>
+    req(id, revision, {
+      type: 'command',
+      command: { type: 'club-identity', identity: design(color) },
+    });
+  it('duplicate identity receipt has one effect', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const first = apply('design', 0, '#aa2233');
+    const [applied, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
+    expect(applied.ok, applied.error).toBe(true);
+    expect(duplicate).toBe(applied);
+    expect(h.world!.revision).toBe(1);
+    expect(h.world!.receiptIds.filter((id) => id === 'design')).toHaveLength(1);
+    const own = (w = h.world!) => w.clubs.find((club) => club.id === w.playerClub)!;
+    expect(own(applied.view!.world as World).identity).toEqual(design('#aa2233'));
+    // After newer work the same request returns its stored answer, never a second effect.
+    expect((await h.handle(apply('newer', 1, '#3355aa'))).ok).toBe(true);
+    expect(await h.handle(first)).toBe(applied);
+    expect(h.world!.revision).toBe(2);
+    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
+    expect(clubOf(h.world!).color).toBe('#3355aa');
+    // Reloaded without the answers in memory, the saved receipt still refuses a replay.
+    const restored = new Host();
+    await restored.handle(
+      req('restore', -1, { type: 'inspect', raw: await encode(h.world!), activate: true }),
+    );
+    const replay = await restored.handle(apply('newer', 2, '#3355aa'));
+    expect(replay.ok).toBe(false);
+    expect(replay.error).toContain('이미 처리된 요청');
+    expect(restored.world!.revision).toBe(2);
+    expect(canonical(restored.world)).toBe(canonical(h.world));
+  });
+  it('stale identity request does not overwrite newer work', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    expect((await h.handle(apply('newer', 0, '#3355aa'))).ok).toBe(true);
+    const before = canonical(h.world);
+    // Drafted against revision 0, it arrives after the newer design was applied.
+    const stale = await h.handle(apply('stale', 0, '#aa2233'));
+    expect(stale.ok).toBe(false);
+    expect(stale.error).toContain('오래된 요청');
+    expect(canonical(h.world)).toBe(before);
+    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
+    expect(h.world!.receiptIds).not.toContain('stale');
   });
 });
 

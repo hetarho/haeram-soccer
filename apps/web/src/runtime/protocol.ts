@@ -196,6 +196,8 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ticket'), price: z.number().min(0.01).max(0.5) }),
   z.object({ type: z.literal('support') }),
   z.object({ type: z.literal('accept-condition') }),
+  // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
+  z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
 ]);
 export const requestSchema = z.object({
   protocol: z.literal(1),
