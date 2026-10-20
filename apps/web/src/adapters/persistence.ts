@@ -4,11 +4,18 @@ import {
   LOAD_CATALOG,
   currency,
 } from '../../../../packages/catalogs/src/index';
-import { canonical, validateWorld, type World } from '../../../../packages/contracts/src/index';
+import {
+  assertIdentityFormatVersions,
+  canonical,
+  validateWorld,
+  type World,
+} from '../../../../packages/contracts/src/index';
 import { pack, unpack } from './packing';
 import { writeCheckpoint } from './checkpointWriter';
 import { encodePayload, decodePayload } from './compression';
 import {
+  CURRENT_CHECKPOINT_SCHEMA,
+  isCheckpointSchema,
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
   isEarlierEngine,
@@ -36,7 +43,7 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
   const bytes = new TextEncoder().encode(canonical(pack(w)));
   const payload = await encodePayload(bytes);
   const e: Envelope = {
-    schema: 1,
+    schema: CURRENT_CHECKPOINT_SCHEMA,
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -58,7 +65,7 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
     throw new Error('저장 헤더가 올바르지 않습니다.');
-  if (e.schema !== 1)
+  if (!isCheckpointSchema(e.schema))
     throw new SaveCompatibilityError(
       '지원하지 않는 저장 스키마 버전입니다. 원본 파일을 보관하세요.',
     );
@@ -111,6 +118,9 @@ async function readCheckpoint(
   validateExpandedWorld = false,
 ) {
   const { json, envelope } = await readEnvelope(raw, supported);
+  // A newer game's identity data is a compatibility failure before unpacking can call it corrupt.
+  const packed = json as { format?: unknown; world?: unknown } | null;
+  assertIdentityFormatVersions(packed?.format === 'compact1' ? packed.world : json);
   return { value: unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld), envelope };
 }
 /**

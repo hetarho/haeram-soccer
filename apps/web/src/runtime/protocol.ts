@@ -15,6 +15,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
 import { clubBuildSchema, gameSettingsSchema } from '../../../../packages/contracts/src/schema';
+import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
@@ -221,6 +222,8 @@ export const requestSchema = z.object({
         seed: z.string().max(80),
         level: z.enum(['easy', 'normal', 'hard', 'extreme']),
         preset: z.string().min(1).max(40).optional(),
+        // The previewed founding identity (→KIT-14); the engine checks it leads with `color`.
+        identity: clubIdentitySchema.optional(),
       }),
     }),
     z.object({ type: z.literal('command'), command }),

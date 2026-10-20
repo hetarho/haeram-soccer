@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
-import { encode, Saves } from './persistence';
+import { envelopeEngine } from '../../../../packages/contracts/src/versions';
+import { encode, recognizedLegacy, Saves } from './persistence';
 import { resetLegacy } from './legacyReset';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type GameEntry, type ParkedStore } from './games';
 class Memory {
@@ -199,6 +200,42 @@ it('does not create device metadata while preserving current, future or unclassi
     const before = new Map(storage.data);
     await resetLegacy(storage, undefined, () => true);
     expect(storage.data).toEqual(before);
+  }
+});
+
+it('unknown envelope never grants legacy reset permission', async () => {
+  const legacy = await saved('2.0.0');
+  for (const schema of [1, 2]) {
+    const raw = JSON.stringify({ ...JSON.parse(legacy), schema });
+    expect(envelopeEngine(raw)).toBe('2.0.0');
+    expect(await recognizedLegacy(raw)).toBe(true);
+  }
+  // An apparently older engine header over a genuine legacy payload, in a container this version
+  // cannot read.
+  for (const schema of [0, 3, 99]) {
+    const raw = JSON.stringify({ ...JSON.parse(legacy), schema });
+    expect(envelopeEngine(raw)).toBeUndefined();
+    expect(await recognizedLegacy(raw)).toBe(false);
+    const unindexed = new Memory();
+    unindexed.setItem(ACTIVE_SAVE_KEYS[1], raw);
+    unindexed.setItem(ACTIVE_SAVE_KEYS[0], JSON.stringify({ slot: 0 }));
+    const alone = new Map(unindexed.data);
+    expect(await resetLegacy(unindexed, undefined, () => true)).toBe(0);
+    expect(unindexed.data).toEqual(alone);
+    const storage = new Memory(),
+      parked = new Parked();
+    new GameIndexStore(storage).write({
+      owner: { kind: 'device', id: 'owner' },
+      active: 0,
+      slots: [entry('active', '2.0.0'), entry('parked', '2.0.0'), null],
+    });
+    storage.setItem(ACTIVE_SAVE_KEYS[1], raw);
+    storage.setItem(ACTIVE_SAVE_KEYS[0], JSON.stringify({ slot: 0 }));
+    await parked.put('parked', raw);
+    const before = new Map(storage.data);
+    expect(await resetLegacy(storage, parked, () => true)).toBe(0);
+    expect(storage.data).toEqual(before);
+    expect(await parked.get('parked')).toBe(raw);
   }
 });
 

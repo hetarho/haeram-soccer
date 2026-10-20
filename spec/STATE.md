@@ -160,9 +160,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
-| T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
-| T239 | Select readable saved shirts and automatic goalkeeper colours | KIT ARCH | T238 T237 | todo |
 | T240 | Apply own-club identity edits atomically through the existing worker command | KIT SAVE ARCH | T237 T235 | todo |
 | T241 | Persist a kit role for exactly the validated next own fixture | KIT WEB SAVE | T240 T239 | todo |
 | T242 | Freeze actual shirt and crest appearance at own-match settlement | KIT SAVE ARCH | T241 T239 | todo |
@@ -185,13 +182,13 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 18 | 0 | 18 | 0 | 0 | 3 | 2026-10-20T13:57:16.893Z | [history](work/identity.json) |
+| identity | 2 | 18 | 3 | 15 | 0 | 0 | 0 | 2026-10-20T14:16:02.189Z | [history](work/identity.json) |
 
 ## next
-- work group identity: lanes identity-base (T235 T237 T239) → identity-engine (T240–T244) beside identity-editor (T245 T247–T249) → identity-founding (T250 T251) beside identity-match-kit (T252 T253) → T254; T255 last in the main session
-- grid tactic balance (inbox 261019 suggest T216 MATCH-8, owner to confirm the MATCH-8 bands): press beats every other grid tactic; re-enables the skipped grid equal-side draw case (`calibration.grid-favourite.test.ts`) and the three non-press `build.tradeoffs.test.ts` cases
+- inspect work board for remaining tasks
 
 ## log
+- 261020 T235 T237 T239 integrated
 - 261020 T233 done: grid rebuild documents brought to the settled code (playback rewrite, engine design values, calibration, README), golden unchanged; batch at bba7485 (unit 1,271, contract 37, Chromium 186) and CI 39419491861 pass.
 - 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
 - 261020 create-task T235 T240 T245 T250 T252 lanes: identity-base, identity-engine, identity-editor, identity-founding, identity-match-kit (T254 T255 lane-less); deps unchanged.
@@ -211,4 +208,3 @@
 - 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
 - 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
 - 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
-- 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
