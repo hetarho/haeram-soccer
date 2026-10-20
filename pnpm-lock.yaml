@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   brotli@2.1.0:
-    hash: 1d3f05e5cc7f5fc05155db4a32c4d1f72258e6bb3e08d5b291663129c07a4e9e
+    hash: 563923945f4c166d8a41103c0406dc9a3e52f27c2fa3f9bc4b4c5b764ca35cf3
     path: patches/brotli@2.1.0.patch
 
 importers:
@@ -15,7 +15,7 @@ importers:
     dependencies:
       brotli:
         specifier: 2.1.0
-        version: 2.1.0(patch_hash=1d3f05e5cc7f5fc05155db4a32c4d1f72258e6bb3e08d5b291663129c07a4e9e)
+        version: 2.1.0(patch_hash=563923945f4c166d8a41103c0406dc9a3e52f27c2fa3f9bc4b4c5b764ca35cf3)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -1473,7 +1473,7 @@ snapshots:
     dependencies:
       balanced-match: 4.0.4
 
-  brotli@2.1.0(patch_hash=1d3f05e5cc7f5fc05155db4a32c4d1f72258e6bb3e08d5b291663129c07a4e9e):
+  brotli@2.1.0(patch_hash=563923945f4c166d8a41103c0406dc9a3e52f27c2fa3f9bc4b4c5b764ca35cf3):
     dependencies:
       base64-js: 1.5.1
 

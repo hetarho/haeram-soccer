@@ -52,8 +52,8 @@ index 6a5c11aa1f01261185d2c5f125cc2b643fce2eee..0db277cd77bc999e6abf4d23bf3d06ab
  }
  
 -export function decompress(buffer, output_size) {
-+export function decompress(buffer, output_size, max_output_size = 16 * 1024 * 1024) {
-+  if (!Number.isSafeInteger(max_output_size) || max_output_size < 0 || max_output_size > 16 * 1024 * 1024) throw new Error("Brotli output limit");
++export function decompress(buffer, output_size, max_output_size = 32 * 1024 * 1024) {
++  if (!Number.isSafeInteger(max_output_size) || max_output_size < 0 || max_output_size > 32 * 1024 * 1024) throw new Error("Brotli output limit");
    var input = new BrotliInput(buffer);
    
    if (output_size == null) {

@@ -17,7 +17,7 @@ describe('bounded adaptive checkpoint compression', () => {
     ).rejects.toThrow();
   });
   it('refuses oversized input and decoder allocation before growth', async () => {
-    const over = new Uint8Array(16 * 1024 * 1024 + 1);
+    const over = new Uint8Array(32 * 1024 * 1024 + 1);
     await expect(encodePayload(over)).rejects.toThrow('한도');
     const compressed = brotliCompressSync(over, {
       params: { [constants.BROTLI_PARAM_QUALITY]: 0 },

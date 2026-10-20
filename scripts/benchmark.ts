@@ -93,8 +93,9 @@ async function measure(w: World, label: string) {
     encodingMs = performance.now() - t,
     restored = (await decode(raw)).world;
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
+  // Only the active copy lives in localStorage; its previous copy is in IndexedDB (→SAVE-3).
   const checkpointBytes = 2 * (raw.length + 'haeram-soccor:slot:a'.length),
-    totalBytes = checkpointBytes * 2 + 512;
+    totalBytes = checkpointBytes + 512;
   const heapBytes = process.memoryUsage().heapUsed;
   peakObservedHeapBytes = Math.max(peakObservedHeapBytes, heapBytes);
   const result = {

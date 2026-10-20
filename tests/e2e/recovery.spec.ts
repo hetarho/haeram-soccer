@@ -61,11 +61,25 @@ test('recovers prior checkpoint after active corruption without clearing another
   await found(page);
   const first = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
-  const previousRaw = await page.evaluate(() => {
+  const previousRaw = await page.evaluate(async () => {
     localStorage.setItem('another-app:keep', 'present');
-    const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest')!);
-    const previous = localStorage.getItem(`haeram-soccor:slot:${m.slot ? 'a' : 'b'}`)!;
-    localStorage.setItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`, 'corrupt');
+    // The committed predecessor is kept in IndexedDB (→SAVE-3); the active copy is slot:a.
+    const previous = await new Promise<string>((resolve, reject) => {
+      const open = indexedDB.open('haeram-soccor');
+      open.onerror = () => reject(open.error);
+      open.onsuccess = () => {
+        const get = open.result
+          .transaction('checkpoints', 'readonly')
+          .objectStore('checkpoints')
+          .get('previous');
+        get.onsuccess = () => {
+          open.result.close();
+          resolve(get.result as string);
+        };
+        get.onerror = () => reject(get.error);
+      };
+    });
+    localStorage.setItem('haeram-soccor:slot:a', 'corrupt');
     return previous;
   });
   const previous = (await decode(previousRaw)).world;

@@ -3,7 +3,7 @@ import type { StoragePort } from './repository';
 
 /**
  * Game slots (→SAVE-14, →WEB-62). The index lists what each slot holds and which one is in play;
- * the game in play keeps the two-slot localStorage checkpoint and every other game waits in
+ * the game in play keeps its active checkpoint and previous copy (→SAVE-3) and every other game waits in
  * IndexedDB as the same checkpoint envelope an export file carries.
  */
 export const GAMES_KEY = 'haeram-soccor:games';
@@ -103,15 +103,26 @@ export interface ParkedStore {
 
 const DB = 'haeram-soccor',
   STORE = 'games';
-function request<T>(run: (store: IDBObjectStore) => IDBRequest<T>, mode: IDBTransactionMode) {
+/**
+ * One request on a store of the shared `haeram-soccor` database: version 2 adds the previous
+ * checkpoint store (→SAVE-3) beside parked games, leaving `games` as it was.
+ */
+export function idbRequest<T>(
+  name: 'games' | 'checkpoints',
+  run: (store: IDBObjectStore) => IDBRequest<T>,
+  mode: IDBTransactionMode,
+) {
   return new Promise<T>((resolve, reject) => {
-    const open = indexedDB.open(DB, 1);
-    open.onupgradeneeded = () => open.result.createObjectStore(STORE);
+    const open = indexedDB.open(DB, 2);
+    open.onupgradeneeded = () => {
+      for (const store of ['games', 'checkpoints'])
+        if (!open.result.objectStoreNames.contains(store)) open.result.createObjectStore(store);
+    };
     open.onerror = () => reject(open.error ?? new Error('게임 보관함을 열지 못했어요.'));
     open.onsuccess = () => {
       const db = open.result;
-      const tx = db.transaction(STORE, mode);
-      const result = run(tx.objectStore(STORE));
+      const tx = db.transaction(name, mode);
+      const result = run(tx.objectStore(name));
       tx.oncomplete = () => {
         db.close();
         resolve(result.result);
@@ -123,6 +134,8 @@ function request<T>(run: (store: IDBObjectStore) => IDBRequest<T>, mode: IDBTran
     };
   });
 }
+const request = <T>(run: (store: IDBObjectStore) => IDBRequest<T>, mode: IDBTransactionMode) =>
+  idbRequest(STORE, run, mode);
 export class IndexedDbParkedStore implements ParkedStore {
   static available() {
     return typeof indexedDB !== 'undefined';

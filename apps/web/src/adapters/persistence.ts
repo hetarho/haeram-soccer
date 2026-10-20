@@ -21,9 +21,10 @@ import {
   type Envelope,
   type StoragePort,
   type SaveInspector,
+  type PreviousStore,
 } from './repository';
 export { CHECKPOINT_LIMIT, TOTAL_LIMIT } from './repository';
-export type { Envelope, StoragePort, SaveInspector } from './repository';
+export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
   return Array.from(
     new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(bytes).buffer)),
@@ -52,7 +53,7 @@ async function readCheckpoint(
   supported: readonly string[],
   validateExpandedWorld = false,
 ) {
-  if (raw.length > 4 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
+  if (raw.length > 8 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
     throw new Error('저장 헤더가 올바르지 않습니다.');
@@ -148,8 +149,8 @@ export async function checkpoint(w: World, generation = 1, parentGeneration = 0)
 }
 /** Public codec API retained; browser clients inject their worker into lean SaveRepository. */
 export class Saves extends SaveRepository {
-  constructor(storage: StoragePort, inspect: SaveInspector = decode) {
-    super(storage, inspect);
+  constructor(storage: StoragePort, inspect: SaveInspector = decode, previous?: PreviousStore) {
+    super(storage, inspect, previous);
   }
   async save(w: World) {
     const info = this.generationInfo;

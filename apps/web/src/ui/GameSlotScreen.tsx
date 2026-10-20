@@ -92,8 +92,8 @@ export function GameSlotScreen({
     });
   const importInto = (slot: number, file?: File) => {
     if (!file) return;
-    if (file.size > 4 * 1024 * 1024) {
-      setError('파일 크기는 4 MiB 이하이어야 합니다.');
+    if (file.size > 8 * 1024 * 1024) {
+      setError('파일 크기는 8 MiB 이하이어야 합니다.');
       return;
     }
     void run('기록을 가져오는 중…', async () => {

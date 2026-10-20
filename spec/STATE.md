@@ -16,8 +16,11 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T234 |
 | - |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T03:01Z | T224 |
 
 ## inbox
+- 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
+- 261020 decided T231 SAVE-4: the 32 MiB inflate limit failed inside the pinned brotli decoder, whose patch capped output at 16 MiB → raise the patch's cap to 32 MiB (alt: keep brotli payloads at 16 MiB while gzip allows 32) — SAVE-4 sets one decompressed limit; T218's century already inflates to 16.1 MB
 - 261019 decided review/outside-t216-t255-261019: which findings of the side review to adopt while T216–T255 run → adopt the P1 and P2 findings whose fix stays outside every T216–T255 touch and the grid, contracts, adapters and runtime modules and changes no SSOT rule, contract, save format or migration: F1–F5 and F7–F14; F6 and every P3 stay [?] (alt: P1 only, leaving the duplicated rules to drift during the rebuild | P3 dead-code and formatting cleanups too, which adds visible text changes and no protection) — the P2s are drift risks the rebuild will lean on, and each fix is file-disjoint from the open tasks
 - 261019 parked review/outside-t216-t255-261019: F6 — the ECON-33 runway check exists six times with two formulas (floored per-round cost × runway in signings, contracts and staff; cash × SEASON_ROUNDS / annual in recruitment and investment); unifying moves outcomes at the limit, so the owner picks the intended arithmetic (update-ssot ECON-33) before a task
 - 261019 suggest T258: after main's settings-sheet fix the entry measures 254,413 of ARCH-28's 256,000 B gzip (1,587 B headroom at b4c85ee); run T258 before T225–T255 add entry UI, or the CI benchmark turns red again
@@ -156,7 +159,6 @@
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
-| T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T218 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 | T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T218 | doing |
@@ -191,9 +193,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T231 (T232's manual benchmark run closes T271); then T224 (own-league engine), then T219
+- implement-task T224 (own-league engine), then T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
 - 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
