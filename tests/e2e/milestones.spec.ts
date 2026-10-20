@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -40,22 +41,43 @@ for (const viewport of [
     await expect(hub).toBeVisible();
     await delegateSales(page);
     await expectCompactHome(page);
-    // The launcher overlays home without reserving a bottom row; the primary action stays usable.
-    const watch = hub.getByTestId('hub-play');
-    await watch.scrollIntoViewIfNeeded();
+    const nextCard = hub.getByRole('region', { name: '다음 경기', exact: true });
+    await expect(nextCard.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
     await settle(page);
-    await watch.click({ trial: true });
+    const cardBox = (await nextCard.boundingBox())!;
+    const hubBox = (await hub.boundingBox())!;
+    expect(Math.abs(cardBox.width - hubBox.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(cardBox.x - hubBox.x)).toBeLessThanOrEqual(1);
+    const titleBox = (await nextCard.locator('h3').boundingBox())!;
+    const prepareBox = (await nextCard
+      .getByRole('button', { name: '전술·선발 준비' })
+      .boundingBox())!;
+    expect(cardBox.height).toBeLessThanOrEqual(112);
+    const progressBox = (await hub
+      .getByRole('progressbar', { name: '시즌 진행률', exact: true })
+      .boundingBox())!;
+    expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(progressBox.y);
+    expect(
+      await nextCard.evaluate((element) => element === element.parentElement?.firstElementChild),
+    ).toBe(true);
+    expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width + 6);
+    expect(prepareBox.height).toBeGreaterThanOrEqual(44);
+    // Notifications sit in the clock; preparation stays usable across the full home content.
+    const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
+    await prepare.scrollIntoViewIfNeeded();
+    await settle(page);
+    await prepare.click({ trial: true });
     if (viewport.width < 760) {
       const contentBox = (await hub.locator('..').boundingBox())!;
       const viewBox = (await page.getByTestId('view-scroller').boundingBox())!;
       expect(
         Math.abs(viewBox.y + viewBox.height - contentBox.y - contentBox.height),
       ).toBeLessThanOrEqual(1);
-      const watchBox = (await watch.boundingBox())!;
+      const prepareBox = (await prepare.boundingBox())!;
       const navBox = (await page
         .getByRole('navigation', { name: '모바일 게임 메뉴' })
         .boundingBox())!;
-      expect(watchBox.y + watchBox.height).toBeLessThanOrEqual(navBox.y);
+      expect(prepareBox.y + prepareBox.height).toBeLessThanOrEqual(navBox.y);
     }
     await page
       .locator('[class*="coreContent"]')
@@ -91,7 +113,7 @@ for (const viewport of [
     expect(afterBrowsing.cash).toBe(before.cash);
     expect(afterBrowsing).toEqual(before);
 
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await page

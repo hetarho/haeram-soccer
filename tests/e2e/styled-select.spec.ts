@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseOption, optionList } from './select';
@@ -68,7 +69,7 @@ for (const viewport of [
     await chooseOption(tone, 'demand');
     await expect(sheet.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
     await sheet.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
     const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });

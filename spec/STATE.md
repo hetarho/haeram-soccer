@@ -141,7 +141,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 16 | 16 | - | 2 |
-| WEB | 94 | 94 | - | 0 |
+| WEB | 99 | 99 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -196,23 +196,23 @@
 - inspect work board for remaining tasks
 
 ## log
-- 261020 T245 T247 T248 T249 integrated
-- 261020 T240 T241 T242 T243 T244 integrated
+- 261021 T287–T291 push gate on 0084882, rebased onto 19907a6: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; typecheck, lint, format, catalog validation, build and spec lint pass. Browser checks confirm full-width compact NEXT MATCH above progress, inline notifications and discard-on-dismiss settings. Frozen install refreshed the stale local Brotli patch; source changes were unnecessary.
 - 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
 - 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
-- 261020 p7x5 stopped: identity-base integrated (5411896, CI 39439433028 red on WebKit owner-workflows only); identity-editor approved, integration refused by stale bases; identity-engine T240–T243 submitted, T244 verify failed (report 261020-p7x5).
 - 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
 - 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
 - 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
-- 261020 create-task MATCH WEB HIST SAVE ARCH start: allocate T272 onward in main; keep all existing task files immutable and serialize shared implementation after T255.
-- 261020 update-ssot MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16: constant playback, coordinated intentions, full aggregate statistics, measured parity/speed and prospective supported-career activation; existing tasks unchanged.
-- 261020 update-ssot MATCH WEB HIST SAVE ARCH start: preserve existing task contracts and add follow-up work for continuous playback, coordinated intentions and complete calibrated probabilistic records.
-- 261020 ideation match-continuity-and-performance: owner selected complete probabilistic records equivalent to detailed play, starting from target football numbers and refining through measurement; MATCH-26 policy change, parity definition, tolerances and speed budget await SSOT planning.
-- 261020 ideation match-continuity-and-performance start: owner clarified full probabilistic records and iterative measured calibration.
-- 261020 ideation match-continuity-and-performance: mapped playback to completed T217/T225, agency to T206/T208 and the existing probabilistic path to T221/T224; continuity, coordinated intentions and cheaper aggregate results remain proposals; owner statistical scope pending.
-- 261020 ideation match-continuity-and-performance start
-- 261020 T235 T237 T239 integrated
-- 261020 T233 done: grid rebuild documents brought to the settled code (playback rewrite, engine design values, calibration, README), golden unchanged; batch at bba7485 (unit 1,271, contract 37, Chromium 186) and CI 39419491861 pass.
-- 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
-- 261020 create-task T235 T240 T245 T250 T252 lanes: identity-base, identity-engine, identity-editor, identity-founding, identity-match-kit (T254 T255 lane-less); deps unchanged.
-- 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
+- 261021 T291 done: notifications beside settings without floating reserve, full-width NEXT MATCH above progress, WEB r99; 13 affected tests/typecheck/lint/format/build pass, browser layout checks updated for batch.
+- 261021 create-task WEB r99 → T291; T291 start at 4af396f, inline clock notifications and home order.
+- 261021 update-ssot WEB r99 start: notifications beside clock settings, NEXT MATCH above home progress; remove floating/draft-hiding launcher rules and retain compact lower achievement banners.
+- 261021 T290 done: compact horizontal preparation-only NEXT MATCH, watch/return/season action in HUD menu, event watching retained; WEB r98; 10 affected tests/typecheck/lint/format/build pass; browser journeys and benchmark entry updated for batch.
+- 261021 create-task WEB r98 → T290; T290 start at 4af396f, compact NEXT MATCH and event/menu watch routing.
+- 261021 update-ssot WEB r98 start: compact preparation-only NEXT MATCH, preserve event watching and move the general watch/return/season action to the HUD menu.
+- 261021 T289 done: manual mode hides background settings only; observation/delegation remain editable, WEB r97; 6 tests/typecheck/lint/format/build pass, browser specs updated for batch.
+- 261021 create-task WEB r97 → T289; T289 start at 4af396f, manual background-only visibility correction.
+- 261021 update-ssot WEB r97 start: owner clarified manual mode should hide only background settings; restore observation and delegation controls.
+- 261021 T288 done: manual draft hides observation/delegation/background controls, keeps mode picker, validation and pending-work disclosure; WEB r96, 6 tests/typecheck/lint/format/build pass; browser specs updated for batch, business rules unchanged.
+- 261021 create-task WEB r96 → T288; T288 start at 4af396f, standalone manual-settings presentation follow-up.
+- 261021 update-ssot WEB r96 start: simplify manual settings presentation; preserve independent business responsibilities pending any explicit policy change.
+- 261021 T287 done: central settings order/spacing and discard-on-close (WEB r95); 3 unit tests, typecheck, changed-file lint/format, build pass; browser specs updated for batch; full lint/format blocked by unrelated temporary scripts.
+- 261021 create-task WEB r95 → T287; T287 start at 345e6dd, standalone owner-requested central settings fix.
