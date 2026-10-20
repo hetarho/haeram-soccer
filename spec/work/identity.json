@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T14:16:02.189Z",
-  "sourceCommit": "f9d71e29bae6f8c7aeace9015f71670ea584955b",
+  "snapshotAt": "2026-10-20T15:08:50.985Z",
+  "sourceCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,12 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "f9d71e29bae6f8c7aeace9015f71670ea584955b",
+      "commit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T13:57:19.411Z"
+      "at": "2026-10-20T14:27:48.425Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "d4a40100-60fe-4904-baa6-fcb350da7f43",
       "adapter": "builtin",
       "providers": {
@@ -42,39 +42,20 @@
           "version": "2.1.296 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-20T14:01:53.450Z"
-    },
-    "lastRun": {
-      "id": "d5c80711-df21-40be-bc12-42d63fb1a99f",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.296 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-20T13:57:15.656Z",
-      "stoppedAt": "2026-10-20T13:57:16.300Z",
-      "dispatched": 0,
+      "startedAt": "2026-10-20T14:01:53.450Z",
+      "stoppedAt": "2026-10-20T15:08:50.523Z",
+      "dispatched": 9,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+          "attempt": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
           "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+        },
+        {
+          "attempt": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+          "role": "worker",
+          "error": "T249: 태스크 result에 limits 기록이 필요합니다."
         }
       ]
     }
@@ -85,8 +66,8 @@
     "remaining": 15,
     "running": 0,
     "review": 0,
-    "blocked": 0,
-    "unassigned": 15
+    "blocked": 9,
+    "unassigned": 6
   },
   "tasks": [
     {
@@ -97,7 +78,7 @@
         "T235"
       ],
       "lane": "identity-engine",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T241",
@@ -107,7 +88,7 @@
         "T239"
       ],
       "lane": "identity-engine",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T242",
@@ -117,7 +98,7 @@
         "T239"
       ],
       "lane": "identity-engine",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T243",
@@ -127,7 +108,7 @@
         "T235"
       ],
       "lane": "identity-engine",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T244",
@@ -138,7 +119,7 @@
         "T236"
       ],
       "lane": "identity-engine",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T245",
@@ -148,7 +129,7 @@
         "T236"
       ],
       "lane": "identity-editor",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T247",
@@ -157,7 +138,7 @@
         "T237"
       ],
       "lane": "identity-editor",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T248",
@@ -168,7 +149,7 @@
         "T247"
       ],
       "lane": "identity-editor",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T249",
@@ -179,7 +160,7 @@
         "T248"
       ],
       "lane": "identity-editor",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T250",
@@ -268,6 +249,8 @@
       "submittedBase": "f9d71e29bae6f8c7aeace9015f71670ea584955b",
       "submissionId": "701a32b1-28a5-487a-8b4a-878dd8dbc32e",
       "submittedAt": "2026-10-20T14:08:52.478Z",
+      "integratedCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
+      "integratedAt": "2026-10-20T14:27:43.909Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -364,6 +347,144 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-20T14:08:27.900Z",
           "finishedAt": "2026-10-20T14:08:51.987Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-20T14:16:02.330Z",
+          "finishedAt": "2026-10-20T14:27:43.620Z"
+        }
+      ]
+    },
+    {
+      "id": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "group": "identity",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "lane": "identity-engine",
+      "owner": "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-1",
+      "contributors": [
+        "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+      "createdAt": "2026-10-20T14:27:48.887Z",
+      "startCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
+      "dispatch": {
+        "id": "bdd3685c-edfc-4156-a452-9b16b0cec554",
+        "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-20T14:53:31.991Z",
+        "finishedAt": "2026-10-20T15:08:49.404Z",
+        "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+        "summary": "T242 is implemented and all 18 of its target tests pass. The broader `--changed` run fails 32 codec round-trip tests, a planned hand-off to T243 (details at the end).\n\n**How it works**\n- **`appearanceForFixture`:** the new `packages/engine/src/match-appearance.ts` exports `appearanceForFixture(w, fixture)` and `captureAppearance(w, record)`. `appearanceForFixture` looks up both clubs' current designs by the fixture's home and away IDs. It forces our shirt role only when the stored choice names this exact fixture; it never calls `nextOwnFixture`. The T239 selector picks the opponent's shirt and both keeper colours. The result is a deep-copied version-1 snapshot, home side first. It reads no score, xG, incidents or random draws.\n- **Choice consumption:** `captureAppearance` freezes the snapshot once. It deletes the stored kit choice only if that choice names this match.\n- **Hook point:** `recordMatch` in `season.ts` calls it for own matches right after the duplicate-match check, before any other settlement. The live playback and the saved record therefore share the same snapshot, and a repeated settlement returns before the capture. League rounds, cup ties and Europe ties all go through this one function. The match simulator and its timing are unchanged.\n\n**Tests run**\n- The four target test files: 18 tests passed.\n  - A recorded appearance stays unchanged after a design edit and after changing every club's current crest in place.\n  - A cup tie played before the chosen league match uses automatic selection and leaves the choice alone; the league match then wears the chosen role and the choice is removed.\n  - Replaying a settled match changes nothing.\n  - Old records without an appearance stay without one.\n  - Our cup tie gives identical results, counters, discipline and injury lists with or without a kit choice.\n  - Real league (watched and not watched), cup and Europe matches each come out with the appearance. Other clubs' matches add none.\n- `pnpm run typecheck`, `lint` and `format:check` passed.\n- `pnpm run build` passed. The lazy settlement chunk grew from 66.80 to 67.26 kB gzip because the kit selector is now part of it.\n\n**Expected failures, for T243**\n- `vitest run --changed 2eee9ff` failed 32 of 1,225 tests across 8 files: `packing.test.ts`, `persistence.test.ts`, `persistence.history.test.ts` and `persistence.long-career.test.ts` in `apps/web/src/adapters`, and `feature-replay.test.ts`, `feature-replay.retained.test.ts`, `goals.season.test.ts` and `training.test.ts` in `packages/engine/src`.\n- Each one checks that a world is identical after a save round trip (`encode`/`decode` or `pack`). `pack()` rebuilds own matches from columns and drops the new appearance field.\n- A scratch check confirms that is the only difference: after 5 rounds, 5 of 5 matches had an appearance before the round trip and 0 after, and the worlds are identical once appearances are stripped.\n- The contract says T242 must not invent a codec to avoid this; T243 adds the appearance stream, regenerates the golden fixture and runs the contract checks. Until it lands, reloading a save loses its match appearances.\n\nLeft for the batch gate, not run here: full `test:unit`, `test:contract`, `validate:catalogs` and the Chromium playwright run."
+      },
+      "steps": [
+        {
+          "taskId": "T240",
+          "commit": "52ba2e14618d18fbed3b39802e0c489df7b1aeb9",
+          "at": "2026-10-20T14:41:16.236Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T14:39:11.224Z",
+              "finishedAt": "2026-10-20T14:41:15.673Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T241",
+          "commit": "2eee9ff8005b9789e632bb32220d7761165ad0a3",
+          "at": "2026-10-20T14:53:31.909Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T14:51:26.855Z",
+              "finishedAt": "2026-10-20T14:53:31.353Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "group": "identity",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "lane": "identity-editor",
+      "owner": "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2",
+      "contributors": [
+        "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "T249: 태스크 result에 limits 기록이 필요합니다.",
+      "createdAt": "2026-10-20T14:27:49.859Z",
+      "startCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
+      "dispatch": {
+        "id": "a1ee7584-318e-40c8-b814-cb7ccf2e5577",
+        "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-20T14:56:30.817Z",
+        "finishedAt": "2026-10-20T15:08:49.785Z",
+        "error": "T249: 태스크 result에 limits 기록이 필요합니다.",
+        "summary": "T249 is implemented and its task-tier checks pass. Nothing is committed; the host runner commits. Base is d65e886 (T248).\n\n- **`identityPreview.ts` (new, pure):** two frozen example opponents, 밝은 상대 예시 and 어두운 상대 예시, each with three shirts of the same tone. `editorPreviewAppearance(own, role, opponent)` gets the shirt pair from the shared `selectMatchKits` with the own role forced. The home shirt plays at home; away and third play as the away side, with that side's ID, label, crest and keeper, not a swapped badge. `previewLines` builds the caption: what it is, each side's role and shirt, the automatic keeper colours, and every clash warning, or 경고 없음. It shows no score. `KIT_ROLE_LABELS` moved here, and the editor re-exports it.\n- **`KitPitchPreview.tsx` (new):** takes only `{ appearance, labels }`. It draws the live pitch's grass and markings, then a static 11-player shape per side, through the shared shirt painter. Markers use the live pitch's size, `#ffffffcc` outline and numbers, with keepers as plain shirts in their automatic colour. It draws once and redraws on resize; the `ResizeObserver` is disconnected on unmount and there is no animation loop. The canvas is 1.9:1, with the caption as its accessible description.\n- **Editor:** a new 경기장 미리보기 section. The preview wears the shirt chosen in the existing 홈/원정/서드 selector, and a `Select` switches the light/dark example. Both are local UI state only.\n- **Tests:** the new `identityPreview.test.ts` has 8 cases:\n  - the selected shirt and its custom colours are kept exactly;\n  - away and third play as side 1, with side IDs and labels swapped;\n  - shirts, keepers and warnings match the selector;\n  - the light and dark examples are independent and readable;\n  - a white own shirt against the light example really warns of a clash and is not repainted;\n  - the caption and its warnings;\n  - drawing scale and positions, and the shared sprite cache;\n  - neither preview module uses a world, match simulation, commands, storage or an animation loop.\n\n**Checks run:** the targeted tests plus T248's markup test (4 files, 34 passed) and `pnpm run typecheck` passed. `pnpm run lint` and `pnpm run format:check` are clean. The changed-files test run against d65e886 (14 passed) and `pnpm run build` both passed; the entry bundle is unchanged.\n\n**Limits:**\n- The preview has no own-role control of its own; it follows the editor's shirt selector. The opponent picker is a `Select` rather than segment buttons, because T248's markup test (outside this task's scope) rejects other enabled buttons in read-only mode.\n- `ClubIdentityEditor.module.css` is out of scope, so the preview row reuses its existing `actions` class.\n- The grass drawing and marker size are copied from `Pitch.tsx`, which is also out of scope; T253 could share them.\n- `Pitch` draws on `#253b31`, while the kit selector judges grass contrast against `#1c543e`. I left both as they are.\n- Canvas pixels, resize cleanup and phone layouts aren't tested without a DOM, and no browser spec was added.\n\n**Left for the batch gate (not run here):** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`."
+      },
+      "steps": [
+        {
+          "taskId": "T245",
+          "commit": "d0275d209123345b856585bcfa7674cf05f0c687",
+          "at": "2026-10-20T14:41:57.433Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T14:41:17.600Z",
+              "finishedAt": "2026-10-20T14:41:56.950Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T247",
+          "commit": "2464e6bce5f7fc35006416a949a0f819c9632625",
+          "at": "2026-10-20T14:48:34.239Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T14:47:49.428Z",
+              "finishedAt": "2026-10-20T14:48:32.952Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T248",
+          "commit": "d65e886c3edf877b38a9e867c38dcb0b2e796ad2",
+          "at": "2026-10-20T14:56:30.735Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T14:56:05.331Z",
+              "finishedAt": "2026-10-20T14:56:30.225Z"
+            }
+          ]
         }
       ]
     }
@@ -1506,6 +1627,1478 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 472,
+      "at": "2026-10-20T14:27:43.839Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T239",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-20T14:16:02.330Z",
+            "finishedAt": "2026-10-20T14:27:43.620Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 473,
+      "at": "2026-10-20T14:27:43.909Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T239",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
+        "integratedAt": "2026-10-20T14:27:43.909Z"
+      }
+    },
+    {
+      "sequence": 474,
+      "at": "2026-10-20T14:27:48.436Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "541189611c2389343810fa0eedb8d168d1a4c0b8",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T14:27:48.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 475,
+      "at": "2026-10-20T14:27:48.887Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+        "group": "identity",
+        "taskId": "T240",
+        "tasks": [
+          "T240",
+          "T241",
+          "T242",
+          "T243",
+          "T244"
+        ],
+        "lane": "identity-engine",
+        "owner": "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-1",
+        "contributors": [
+          "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-20T14:27:48.887Z",
+        "startCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8"
+      }
+    },
+    {
+      "sequence": 476,
+      "at": "2026-10-20T14:27:49.183Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 477,
+      "at": "2026-10-20T14:27:49.319Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0ad09d8b-3d97-4852-adf9-f49bebea2d55",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:27:49.319Z"
+        }
+      }
+    },
+    {
+      "sequence": 478,
+      "at": "2026-10-20T14:27:49.497Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0ad09d8b-3d97-4852-adf9-f49bebea2d55",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:27:49.319Z"
+        }
+      }
+    },
+    {
+      "sequence": 479,
+      "at": "2026-10-20T14:27:49.859Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+        "group": "identity",
+        "taskId": "T245",
+        "tasks": [
+          "T245",
+          "T247",
+          "T248",
+          "T249"
+        ],
+        "lane": "identity-editor",
+        "owner": "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2",
+        "contributors": [
+          "d4a40100-60fe-4904-baa6-fcb350da7f43/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-20T14:27:49.859Z",
+        "startCommit": "541189611c2389343810fa0eedb8d168d1a4c0b8"
+      }
+    },
+    {
+      "sequence": 480,
+      "at": "2026-10-20T14:27:50.147Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 481,
+      "at": "2026-10-20T14:27:50.270Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce6a52cc-2d12-46e3-8385-f79bebede423",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:27:50.270Z"
+        }
+      }
+    },
+    {
+      "sequence": 482,
+      "at": "2026-10-20T14:27:50.464Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce6a52cc-2d12-46e3-8385-f79bebede423",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:27:50.270Z"
+        }
+      }
+    },
+    {
+      "sequence": 483,
+      "at": "2026-10-20T14:39:09.694Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 484,
+      "at": "2026-10-20T14:39:10.700Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 485,
+      "at": "2026-10-20T14:39:10.737Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T240",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 486,
+      "at": "2026-10-20T14:41:16.240Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T241",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T240",
+            "commit": "52ba2e14618d18fbed3b39802e0c489df7b1aeb9",
+            "at": "2026-10-20T14:41:16.236Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:39:11.224Z",
+                "finishedAt": "2026-10-20T14:41:15.673Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 487,
+      "at": "2026-10-20T14:41:16.249Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0ad09d8b-3d97-4852-adf9-f49bebea2d55",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:27:49.319Z",
+          "finishedAt": "2026-10-20T14:41:16.249Z",
+          "error": null,
+          "summary": "T240 is implemented and its targeted checks pass. The owner can now apply a full club design to their own club with the new `{type:'club-identity', identity}` command. The command has no club field, and the bridge uses a strict schema, so a request naming another club (`club`, `clubId` or `target`) is rejected.\n\n- **Engine:** the new handler in `packages/engine/src/identity-operations.ts` checks the whole design first, then stores a copy as the own club's identity and sets the club colour to the design's first colour. It replaces the old identity object rather than changing it, so anything still holding the old one (for example a recorded match appearance) is untouched. It adds no events, news, cash, date change or random draws. `operate` has an explicit case for it and still counts the revision once and refuses a bankrupt club.\n- **Host and saving:** no changes were needed. The host's existing duplicate and stale-request protection and `GameClient.command`'s immediate owner-decision save already cover the command.\n\n**Checks run:**\n- The three target test files: 28 tests passed. The cosmetic-only case edits one copy of a `simulatedWorld`, advances both copies 7 days through the first match, and gets identical results once design fields, receipts and revision are left out.\n- `pnpm run typecheck`, `lint` and `format:check` passed.\n- `vitest run --changed 541189611c23`: 181 files, 1,200 passed, 4 skipped.\n- `pnpm run build` passed. Bundle sizes barely moved: settlement chunk unchanged at 66.80 kB gzip, index from 119.26 to 119.28 kB gzip.\n\n**Things to know:**\n1. I added one guard the contract doesn't mention: the command is refused, with nothing written, if any club still has no stored identity. Changing the own colour would otherwise reshuffle those clubs' old-style crests (KIT-11), and SAVE-21 keeps installing missing identities in writer activation (T244). New worlds and careers activated under T244 always have every identity, so this only affects worlds saved before T237. §5 of `docs/CLUB-IDENTITY-CONTRACT.md` should mention it; I left the doc alone because it is outside this task's files.\n2. I edited one file outside the task's file list: `apps/web/src/ui/outcome.ts` needed the title `구단 디자인을 적용했어요`, because typecheck requires every command type to have one.\n3. No UI sends the command yet; that comes in T251.\n4. Left for the batch gate, not run here: full `test:unit`, `test:contract`, `validate:catalogs` and the Chromium playwright run."
+        }
+      }
+    },
+    {
+      "sequence": 488,
+      "at": "2026-10-20T14:41:16.292Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 489,
+      "at": "2026-10-20T14:41:17.131Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 490,
+      "at": "2026-10-20T14:41:17.164Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T245",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 491,
+      "at": "2026-10-20T14:41:57.438Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T247",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T245",
+            "commit": "d0275d209123345b856585bcfa7674cf05f0c687",
+            "at": "2026-10-20T14:41:57.433Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:41:17.600Z",
+                "finishedAt": "2026-10-20T14:41:56.950Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 492,
+      "at": "2026-10-20T14:41:57.447Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce6a52cc-2d12-46e3-8385-f79bebede423",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:27:50.270Z",
+          "finishedAt": "2026-10-20T14:41:57.447Z",
+          "error": null,
+          "summary": "T245 is implemented and the task-tier checks pass. Nothing is committed; the host runner commits.\n\n- **Crest lookup:** `crestOf` and `crestMap` in `apps/web/src/ui/crests.ts` now use each club's applied identity first. The exact legacy lookup is used only for clubs that have no identity. `crestMap` is rebuilt on every call, so the legacy cache (keyed on seed and the own colour) can never hide a replaced crest. `Crest` is now the contract `CrestDesign` type, so secondary and accent are optional. The temporary `kits()` helper reuses the primary when there is no secondary and never generates a colour.\n- **Crest drawing:** `CrestMark` draws two-colour crests exactly as before. This is checked against markup recorded from the old renderer. The emblem now uses the accent if there is one, else the secondary. A crest with no secondary uses an SVG mask, with its own unique ID, to cut the pattern, the ring around the emblem and an emblem without an accent out of the primary. The fixed neutral outline, labels and decorative semantics are unchanged.\n- **Match charts:** the away line now tries the crest's secondary, then its accent, then the existing warm `#ff9257`, then neutral ivory `#f6f1e1`. It no longer assumes a secondary exists.\n- **Slot summaries:** `SlotSummary.crest` now has optional secondary and accent. Colours must be `#RRGGBB`. An invalid entry is skipped on its own and the other slots still load. `summarize()` copies the current applied crest.\n- **Tests:** new `identityCrest.test.ts` (7 cases) and `games.test.ts` (9 cases). `crests.test.ts` now runs its legacy assertions on a world with identities removed, and has new explicit-identity cases.\n\n**Checks run:** the targeted vitest command (4 files, 29 tests) passed, and so did `pnpm run typecheck`. The identity-legacy and club-identity engine tests (25) still pass. `pnpm run lint` and `pnpm run format:check` are clean, the changed-files vitest run against 5411896 (7 files, 74 tests) passed, and `pnpm run build` passed. One combined shell command (`build` plus `head`/`echo`) was denied by the permission policy; I re-ran `pnpm run build` on its own and it passed.\n\n**Limits:**\n- An opponent with no identity still follows the legacy lookup, which reads the own `Club.color`. This only happens in an older world before T244 installs identities when the game loads, before any owner edit.\n- `Pitch.tsx` is outside this task's scope and still draws current crests until T253.\n- The App.tsx HUD itself is not rendered in a test; it uses `ClubCrest`, which is.\n- The mask is checked on server markup only, not in a browser.\n\n**Left for the batch gate (not run here):** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`."
+        }
+      }
+    },
+    {
+      "sequence": 493,
+      "at": "2026-10-20T14:41:57.515Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "94df290e-5078-4e74-ad00-140c745b48fe",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:41:57.515Z"
+        }
+      }
+    },
+    {
+      "sequence": 494,
+      "at": "2026-10-20T14:41:57.703Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "94df290e-5078-4e74-ad00-140c745b48fe",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:41:57.515Z"
+        }
+      }
+    },
+    {
+      "sequence": 495,
+      "at": "2026-10-20T14:41:57.768Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e954640c-5c4b-4e93-a71a-87048aa8c601",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:41:57.768Z"
+        }
+      }
+    },
+    {
+      "sequence": 496,
+      "at": "2026-10-20T14:41:57.957Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e954640c-5c4b-4e93-a71a-87048aa8c601",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:41:57.768Z"
+        }
+      }
+    },
+    {
+      "sequence": 497,
+      "at": "2026-10-20T14:47:45.944Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 498,
+      "at": "2026-10-20T14:47:48.259Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 499,
+      "at": "2026-10-20T14:47:48.353Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T247",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 500,
+      "at": "2026-10-20T14:48:34.250Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T248",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T245",
+            "commit": "d0275d209123345b856585bcfa7674cf05f0c687",
+            "at": "2026-10-20T14:41:57.433Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:41:17.600Z",
+                "finishedAt": "2026-10-20T14:41:56.950Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T247",
+            "commit": "2464e6bce5f7fc35006416a949a0f819c9632625",
+            "at": "2026-10-20T14:48:34.239Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:47:49.428Z",
+                "finishedAt": "2026-10-20T14:48:32.952Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 501,
+      "at": "2026-10-20T14:48:34.269Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e954640c-5c4b-4e93-a71a-87048aa8c601",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:41:57.768Z",
+          "finishedAt": "2026-10-20T14:48:34.269Z",
+          "error": null,
+          "summary": "T247 is implemented and its task-tier checks pass. Nothing is committed; the host runner commits. Base is d0275d2 (T245).\n\nThe new `apps/web/src/ui/clubIdentityDraft.ts` imports only the contract identity file: no zod, engine, storage, GameClient, world revision, navigation or random draws. It exports the typed action union `IdentityDraftAction`, `reduceIdentityDraft(value, action)`, `cloneIdentity` and `colourInput`.\n\n- **Representative colours:** set, add (up to three) and remove (second or third). Only `colours` changes; the crest and all three shirts keep their exact objects.\n- **Crest:** pick one of the six ready-made crests, which copies its parts in the crest's current colours. Change shape, pattern or emblem. Set colour regions, where removing secondary or accent leaves negative space.\n- **Shirts:** change pattern. Switching to plain drops the secondary; switching to a patterned design keeps the shirt's own secondary, else uses representative colour 2, else colour 1. Set colours: primary, secondary only on patterned shirts, and trim, which can be removed.\n- **대표색 적용:** follows the contract mapping exactly and changes only the selected shirt, keeping its pattern.\n- **Reset/cancel:** returns an independent deep copy of the entry identity.\n\nEvery action rebuilds only the part it changes and never writes to its input. An action that can't apply returns the input unchanged, so every output passes the strict identity schema. That covers a bad colour, removing a required colour, a fourth or missing colour, an unknown preset, and a part or pattern outside the catalogue. An unknown action type is a compile error, and an error at runtime. `colourInput` turns typed text into a valid colour or null, so bad text stays an error in the editor and never reaches a save.\n\nThe new `clubIdentityDraft.test.ts` has 11 cases. The entry fixture is frozen, and the other shirts are checked both as the same objects and against a snapshot. Every accepted output is parsed with `clubIdentitySchema`. Four `@ts-expect-error` lines confirm that invalid actions don't compile.\n\n**Checks run:** the reducer test (11 passed) and `pnpm run typecheck` passed. `pnpm run lint` and `pnpm run format:check` are clean. The changed-files test run against d0275d2 (11 passed) and `pnpm run build` both passed.\n\n**Limits:** the schema check runs only in the tests, because the reducer validates by hand to keep zod out of the founding entry bundle. Keeping colour 1 equal to the founding colour is left to the founding task (T250). Selected role, open composer and input errors belong to the editor component (T248). No browser spec was added.\n\n**Left for the batch gate (not run here):** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`."
+        }
+      }
+    },
+    {
+      "sequence": 502,
+      "at": "2026-10-20T14:48:34.384Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6d12d75-8e42-4901-aa12-38ebf1a9a299",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:48:34.384Z"
+        }
+      }
+    },
+    {
+      "sequence": 503,
+      "at": "2026-10-20T14:48:34.786Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6d12d75-8e42-4901-aa12-38ebf1a9a299",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:48:34.384Z"
+        }
+      }
+    },
+    {
+      "sequence": 504,
+      "at": "2026-10-20T14:51:25.368Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 505,
+      "at": "2026-10-20T14:51:26.333Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 506,
+      "at": "2026-10-20T14:51:26.366Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T241",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 507,
+      "at": "2026-10-20T14:53:31.913Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T242",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T240",
+            "commit": "52ba2e14618d18fbed3b39802e0c489df7b1aeb9",
+            "at": "2026-10-20T14:41:16.236Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:39:11.224Z",
+                "finishedAt": "2026-10-20T14:41:15.673Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T241",
+            "commit": "2eee9ff8005b9789e632bb32220d7761165ad0a3",
+            "at": "2026-10-20T14:53:31.909Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:51:26.855Z",
+                "finishedAt": "2026-10-20T14:53:31.353Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 508,
+      "at": "2026-10-20T14:53:31.924Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "94df290e-5078-4e74-ad00-140c745b48fe",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:41:57.515Z",
+          "finishedAt": "2026-10-20T14:53:31.924Z",
+          "error": null,
+          "summary": "T241 is implemented and its targeted checks pass. The new `{type:'match-kit', fixtureId, role}` command stores the owner's shirt choice (home/away/third) for the next own fixture, and `role: null` returns that fixture to automatic selection. The bridge and the engine handler both take their role list from `KIT_ROLES`.\n\n**How it works**\n- **Calendar check:** before writing anything, `chooseMatchKit` in `packages/engine/src/identity-operations.ts` checks that `nextOwnFixture(w)` exists right now and has exactly the requested ID. That helper covers league, cup and continental fixtures, and the caller's cached list is never used.\n- **Stale requests:** any other ID throws `KIT_FIXTURE_CHANGED` (`다음 경기가 변경됐어요. 유니폼을 다시 골라 주세요.`). The role is never moved to a different match.\n- **Clearing:** `null` clears the stored choice only if it names that fixture. A choice for a later league match therefore survives a cup tie drawn before it. Because the world holds a single choice, choosing a role for that new cup tie replaces the league match's choice.\n- **No side effects:** the command adds no event, inbox item, design change, cash or game-day change. A role that clashes with the opponent is stored like any other, and the clash stays a warning from the kit selector. `operate` still counts the revision once and still refuses a bankrupt club.\n\n**Checks run**\n- The three target test files: 37 tests passed. They cover every role for an amateur-league, professional-league, cup and continental next fixture, and `null`. They also cover refusals that leave the world unchanged (stale, later, settled, other-club, missing and empty fixture IDs, bad roles, bankruptcy, no fixture left). Further cases: designs untouched, a clashing role with no new stop or decision, and identical match results with and without a choice. On the host side: a duplicate request has one effect, a stale revision or wrong fixture is refused, and a saved checkpoint keeps the choice.\n- `pnpm run typecheck`, `lint` and `format:check` passed.\n- `vitest run --changed 52ba2e1`: 181 files, 1,209 passed, 4 skipped.\n- `pnpm run build` passed. The settlement chunk is unchanged; index went from 119.28 to 119.31 kB gzip.\n\n**Things to know**\n1. Nothing removes the choice once its match is played; that is T242's job. Until T242 lands, a choice whose match is then played would make the next save fail validation (`경기 복장 선택 참조 손상`). No UI sends this command before T252, and T242 is the next task in this lane.\n2. I edited one file outside the task's list again: `apps/web/src/ui/outcome.ts` gained the title `다음 경기 유니폼을 정했어요`, which typecheck requires.\n3. The cup and continental test cases add a synthetic tie to the founding world rather than simulating seasons to reach a real draw.\n4. Left for the batch gate, not run here: full `test:unit`, `test:contract`, `validate:catalogs` and the Chromium playwright run."
+        }
+      }
+    },
+    {
+      "sequence": 509,
+      "at": "2026-10-20T14:53:31.991Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "bdd3685c-edfc-4156-a452-9b16b0cec554",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:53:31.991Z"
+        }
+      }
+    },
+    {
+      "sequence": 510,
+      "at": "2026-10-20T14:53:32.183Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "bdd3685c-edfc-4156-a452-9b16b0cec554",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:53:31.991Z"
+        }
+      }
+    },
+    {
+      "sequence": 511,
+      "at": "2026-10-20T14:56:03.974Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 512,
+      "at": "2026-10-20T14:56:04.860Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 513,
+      "at": "2026-10-20T14:56:04.897Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T248",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 514,
+      "at": "2026-10-20T14:56:30.740Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T249",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T245",
+            "commit": "d0275d209123345b856585bcfa7674cf05f0c687",
+            "at": "2026-10-20T14:41:57.433Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:41:17.600Z",
+                "finishedAt": "2026-10-20T14:41:56.950Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T247",
+            "commit": "2464e6bce5f7fc35006416a949a0f819c9632625",
+            "at": "2026-10-20T14:48:34.239Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:47:49.428Z",
+                "finishedAt": "2026-10-20T14:48:32.952Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T248",
+            "commit": "d65e886c3edf877b38a9e867c38dcb0b2e796ad2",
+            "at": "2026-10-20T14:56:30.735Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T14:56:05.331Z",
+                "finishedAt": "2026-10-20T14:56:30.225Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 515,
+      "at": "2026-10-20T14:56:30.751Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6d12d75-8e42-4901-aa12-38ebf1a9a299",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:48:34.384Z",
+          "finishedAt": "2026-10-20T14:56:30.751Z",
+          "error": null,
+          "summary": "T248 is implemented and its task-tier checks pass. Nothing is committed; the host runner commits. Base is 2464e6b (T247).\n\nThe new `ClubIdentityEditor.tsx` is a controlled component: `{ value, onChange, readonly }` as the contract §7 defines. Every change goes through `reduceIdentityDraft`, and `onChange` only ever receives a new complete identity. It never talks to the worker, storage, a dialog or the simulation. Apply, cancel and saving are left to the later founding and career wrappers.\n\n- **대표색:** one to three labelled colour fields, with explicit 추가/빼기, and a note that changing them leaves the crest and shirts alone.\n- **엠블럼:** a large crest preview, the six ready-made crests as pressed buttons, and colour fields only for regions that exist (바탕색; 무늬색 and 엠블럼색 with explicit add/remove). A note always states the fixed neutral outline; for a one-colour crest it also says the empty regions show the background. 직접 꾸미기 opens shape (6), field pattern (10) and emblem (20) choices, and opens by itself when the crest matches no preset.\n- **유니폼:** 홈/원정/서드 selection as local state, each with its own swatch, and a large swatch of the selected shirt. Eight pattern choices, each previewing the shirt it would make. 주색, 보조색 only on patterned shirts, removable 테두리, and an explicit 대표색 적용.\n\nEach colour field has a picker plus its visible `#RRGGBB` text. Invalid text stays a local error and is never sent to the draft. A newly added colour starts from a visible representative or palette colour; nothing is hidden or random. Read-only disables every change control but keeps the design visible, with shirt selection and the composer still usable. There are no shorts, socks, goalkeeper, upload or sponsor controls. The CSS keeps 44px targets and sets no fixed heights, so the parent dialog or tab does the scrolling.\n\nThe new `identityEditorMarkup.test.ts` has 6 server-render cases: labels and pressed states, the composer's choices, one-colour disclosure with no hidden editable colour, read-only disabling, selected-shirt labels matching the actual value, and one to three representative colours.\n\n**Checks run:** the targeted test command (3 files, 24 passed) and `pnpm run typecheck` passed. `pnpm run lint` and `pnpm run format:check` are clean. The changed-files test run against 2464e6b (6 passed) and `pnpm run build` both passed; the entry bundle is unchanged because nothing imports the editor yet.\n\n**Limits:**\n- Clicking, typing, keyboard focus, canvas pixels and phone-size scrolling aren't tested here, since there's no DOM test setup. That browser evidence belongs to T250/T251 and the batch e2e run; no browser spec was added.\n- The server-render test only sees the default 홈 shirt. Isolation when switching shirts rests on the reducer tests and per-shirt field keys.\n- The pitch preview is left to T249.\n- The Korean names for crest shapes, patterns and emblems are new wording defined in this component.\n\n**Left for the batch gate (not run here):** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`."
+        }
+      }
+    },
+    {
+      "sequence": 516,
+      "at": "2026-10-20T14:56:30.817Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a1ee7584-318e-40c8-b814-cb7ccf2e5577",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T14:56:30.817Z"
+        }
+      }
+    },
+    {
+      "sequence": 517,
+      "at": "2026-10-20T14:56:30.998Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a1ee7584-318e-40c8-b814-cb7ccf2e5577",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T14:56:30.817Z"
+        }
+      }
+    },
+    {
+      "sequence": 518,
+      "at": "2026-10-20T15:06:56.746Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 519,
+      "at": "2026-10-20T15:06:57.663Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 520,
+      "at": "2026-10-20T15:06:57.696Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 521,
+      "at": "2026-10-20T15:08:49.385Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+      }
+    },
+    {
+      "sequence": 522,
+      "at": "2026-10-20T15:08:49.404Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+      "taskId": "T242",
+      "tasks": [
+        "T240",
+        "T241",
+        "T242",
+        "T243",
+        "T244"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "bdd3685c-edfc-4156-a452-9b16b0cec554",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:53:31.991Z",
+          "finishedAt": "2026-10-20T15:08:49.404Z",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "summary": "T242 is implemented and all 18 of its target tests pass. The broader `--changed` run fails 32 codec round-trip tests, a planned hand-off to T243 (details at the end).\n\n**How it works**\n- **`appearanceForFixture`:** the new `packages/engine/src/match-appearance.ts` exports `appearanceForFixture(w, fixture)` and `captureAppearance(w, record)`. `appearanceForFixture` looks up both clubs' current designs by the fixture's home and away IDs. It forces our shirt role only when the stored choice names this exact fixture; it never calls `nextOwnFixture`. The T239 selector picks the opponent's shirt and both keeper colours. The result is a deep-copied version-1 snapshot, home side first. It reads no score, xG, incidents or random draws.\n- **Choice consumption:** `captureAppearance` freezes the snapshot once. It deletes the stored kit choice only if that choice names this match.\n- **Hook point:** `recordMatch` in `season.ts` calls it for own matches right after the duplicate-match check, before any other settlement. The live playback and the saved record therefore share the same snapshot, and a repeated settlement returns before the capture. League rounds, cup ties and Europe ties all go through this one function. The match simulator and its timing are unchanged.\n\n**Tests run**\n- The four target test files: 18 tests passed.\n  - A recorded appearance stays unchanged after a design edit and after changing every club's current crest in place.\n  - A cup tie played before the chosen league match uses automatic selection and leaves the choice alone; the league match then wears the chosen role and the choice is removed.\n  - Replaying a settled match changes nothing.\n  - Old records without an appearance stay without one.\n  - Our cup tie gives identical results, counters, discipline and injury lists with or without a kit choice.\n  - Real league (watched and not watched), cup and Europe matches each come out with the appearance. Other clubs' matches add none.\n- `pnpm run typecheck`, `lint` and `format:check` passed.\n- `pnpm run build` passed. The lazy settlement chunk grew from 66.80 to 67.26 kB gzip because the kit selector is now part of it.\n\n**Expected failures, for T243**\n- `vitest run --changed 2eee9ff` failed 32 of 1,225 tests across 8 files: `packing.test.ts`, `persistence.test.ts`, `persistence.history.test.ts` and `persistence.long-career.test.ts` in `apps/web/src/adapters`, and `feature-replay.test.ts`, `feature-replay.retained.test.ts`, `goals.season.test.ts` and `training.test.ts` in `packages/engine/src`.\n- Each one checks that a world is identical after a save round trip (`encode`/`decode` or `pack`). `pack()` rebuilds own matches from columns and drops the new appearance field.\n- A scratch check confirms that is the only difference: after 5 rounds, 5 of 5 matches had an appearance before the round trip and 0 after, and the worlds are identical once appearances are stripped.\n- The contract says T242 must not invent a codec to avoid this; T243 adds the appearance stream, regenerates the golden fixture and runs the contract checks. Until it lands, reloading a save loses its match appearances.\n\nLeft for the batch gate, not run here: full `test:unit`, `test:contract`, `validate:catalogs` and the Chromium playwright run."
+        }
+      }
+    },
+    {
+      "sequence": 523,
+      "at": "2026-10-20T15:08:49.449Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 524,
+      "at": "2026-10-20T15:08:49.766Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T249: 태스크 result에 limits 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 525,
+      "at": "2026-10-20T15:08:49.785Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+      "taskId": "T249",
+      "tasks": [
+        "T245",
+        "T247",
+        "T248",
+        "T249"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a1ee7584-318e-40c8-b814-cb7ccf2e5577",
+          "runner": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T14:56:30.817Z",
+          "finishedAt": "2026-10-20T15:08:49.785Z",
+          "error": "T249: 태스크 result에 limits 기록이 필요합니다.",
+          "summary": "T249 is implemented and its task-tier checks pass. Nothing is committed; the host runner commits. Base is d65e886 (T248).\n\n- **`identityPreview.ts` (new, pure):** two frozen example opponents, 밝은 상대 예시 and 어두운 상대 예시, each with three shirts of the same tone. `editorPreviewAppearance(own, role, opponent)` gets the shirt pair from the shared `selectMatchKits` with the own role forced. The home shirt plays at home; away and third play as the away side, with that side's ID, label, crest and keeper, not a swapped badge. `previewLines` builds the caption: what it is, each side's role and shirt, the automatic keeper colours, and every clash warning, or 경고 없음. It shows no score. `KIT_ROLE_LABELS` moved here, and the editor re-exports it.\n- **`KitPitchPreview.tsx` (new):** takes only `{ appearance, labels }`. It draws the live pitch's grass and markings, then a static 11-player shape per side, through the shared shirt painter. Markers use the live pitch's size, `#ffffffcc` outline and numbers, with keepers as plain shirts in their automatic colour. It draws once and redraws on resize; the `ResizeObserver` is disconnected on unmount and there is no animation loop. The canvas is 1.9:1, with the caption as its accessible description.\n- **Editor:** a new 경기장 미리보기 section. The preview wears the shirt chosen in the existing 홈/원정/서드 selector, and a `Select` switches the light/dark example. Both are local UI state only.\n- **Tests:** the new `identityPreview.test.ts` has 8 cases:\n  - the selected shirt and its custom colours are kept exactly;\n  - away and third play as side 1, with side IDs and labels swapped;\n  - shirts, keepers and warnings match the selector;\n  - the light and dark examples are independent and readable;\n  - a white own shirt against the light example really warns of a clash and is not repainted;\n  - the caption and its warnings;\n  - drawing scale and positions, and the shared sprite cache;\n  - neither preview module uses a world, match simulation, commands, storage or an animation loop.\n\n**Checks run:** the targeted tests plus T248's markup test (4 files, 34 passed) and `pnpm run typecheck` passed. `pnpm run lint` and `pnpm run format:check` are clean. The changed-files test run against d65e886 (14 passed) and `pnpm run build` both passed; the entry bundle is unchanged.\n\n**Limits:**\n- The preview has no own-role control of its own; it follows the editor's shirt selector. The opponent picker is a `Select` rather than segment buttons, because T248's markup test (outside this task's scope) rejects other enabled buttons in read-only mode.\n- `ClubIdentityEditor.module.css` is out of scope, so the preview row reuses its existing `actions` class.\n- The grass drawing and marker size are copied from `Pitch.tsx`, which is also out of scope; T253 could share them.\n- `Pitch` draws on `#253b31`, while the kit selector judges grass contrast against `#1c543e`. I left both as they are.\n- Canvas pixels, resize cleanup and phone layouts aren't tested without a DOM, and no browser spec was added.\n\n**Left for the batch gate (not run here):** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`."
+        }
+      }
+    },
+    {
+      "sequence": 526,
+      "at": "2026-10-20T15:08:50.524Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "d4a40100-60fe-4904-baa6-fcb350da7f43",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-20T14:01:53.450Z",
+          "stoppedAt": "2026-10-20T15:08:50.523Z",
+          "dispatched": 9,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "882bf52d-2519-4e8c-b6e3-c4c9322b58fd",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+            },
+            {
+              "attempt": "10683d2a-c2bf-454f-9964-a30e4fc458a3",
+              "role": "worker",
+              "error": "T249: 태스크 result에 limits 기록이 필요합니다."
+            }
+          ]
+        }
       }
     }
   ]
