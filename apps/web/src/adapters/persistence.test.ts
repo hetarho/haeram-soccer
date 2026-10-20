@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { advanceDays, advanceRound, simulateSeason } from '../../../../packages/engine/src/index';
+import {
+  advanceDays,
+  advanceRound,
+  operate,
+  simulateSeason,
+} from '../../../../packages/engine/src/index';
+import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
@@ -602,6 +608,63 @@ describe('checkpoint container schema 2', () => {
       await expect(new Saves(port).load()).rejects.toBeInstanceOf(SaveCompatibilityError);
     },
   );
+});
+
+/**
+ * A career whose own records wear every shirt role: a custom one-colour crest, home, away and
+ * third chosen for three matches with a design edit after the first, then a choice left pending.
+ */
+const identityCareer = () =>
+  cachedWorld('identity-career', () => {
+    const w = world();
+    const design = (primary: string): ClubIdentity => {
+      const own = w.clubs.find((club) => club.id === w.playerClub)!.identity!;
+      const { pattern, emblem } = own.crest;
+      return { ...own, colours: [primary], crest: { shape: 'diamond', pattern, emblem, primary } };
+    };
+    operate(w, { type: 'club-identity', identity: design('#AbCdEf') });
+    (['home', 'away', 'third'] as const).forEach((role, i) => {
+      if (i === 1) operate(w, { type: 'club-identity', identity: design('#5A3E8c') });
+      const next = nextOwnFixture(w)!;
+      operate(w, { type: 'match-kit', fixtureId: next.id, role });
+      advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);
+    });
+    operate(w, { type: 'match-kit', fixtureId: nextOwnFixture(w)!.id, role: 'away' });
+    return w;
+  });
+
+describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () => {
+  it('survive a real codec round trip as separate copies', async () => {
+    const w = identityCareer();
+    expect(w.ownMatches.every((m) => m.appearance)).toBe(true);
+    expect(w.kitChoice).toBeDefined();
+    const restored = (await decode(await encode(w))).world;
+    expect(canonical(restored)).toBe(canonical(w));
+    // Each restored record owns its snapshot; editing the design afterwards reaches none of them.
+    const [first, second] = restored.ownMatches;
+    expect(first.appearance).not.toBe(second.appearance);
+    const recorded = canonical(restored.ownMatches.map((m) => m.appearance));
+    restored.clubs.find((club) => club.id === restored.playerClub)!.identity!.crest.primary =
+      '#000000';
+    expect(canonical(restored.ownMatches.map((m) => m.appearance))).toBe(recorded);
+  });
+
+  it('rejects a damaged appearance stream and reports a newer one as incompatible', async () => {
+    const w = identityCareer();
+    const swapped = pack(w);
+    swapped.appearances!.values[0].sides.reverse();
+    const damaged = await decode(await seal(w, swapped, 2)).catch((error: unknown) => error);
+    expect(damaged).toBeInstanceOf(Error);
+    expect(isSaveCompatibilityError(damaged)).toBe(false);
+    for (const newer of [
+      (p: ReturnType<typeof pack>) => (p.appearances!.version = 2 as 1),
+      (p: ReturnType<typeof pack>) => (p.appearances!.values[1].version = 2 as 1),
+    ]) {
+      const packed = pack(w);
+      newer(packed);
+      await expect(decode(await seal(w, packed, 2))).rejects.toBeInstanceOf(SaveCompatibilityError);
+    }
+  });
 });
 
 it('feature-state-lossless-roundtrip and continued-career-parity preserve roles, money, draws and promise judgements', async () => {
