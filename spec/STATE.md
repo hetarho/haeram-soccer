@@ -154,9 +154,7 @@
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T223 | Post-match material and season heat maps | MATCH HIST | T218 | doing |
-| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T218 | doing |
-| T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
-| T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
+| T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T223 | todo |
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
@@ -193,6 +191,7 @@
 - implement-task T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
 - 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
 - 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
 - 261020 create-task MATCH-26: no task — T224's summary lines already record only minutes, shots, shots on target, goals, assists and saves, and nothing estimates grid-only counters.
