@@ -5,6 +5,7 @@ import { random, integer, compareIds } from './primitives';
 import { addEvent, broadcastQuote, clubOf, findClub, initialElo } from './world';
 import { emptyTable } from './season';
 import { credit } from './transactions';
+import { installMissingIdentities } from './club-identity';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import {
   decideTie,
@@ -89,6 +90,7 @@ export function europeanEras(year: number): Era[] {
 }
 export function ensureRepresentatives(w: World) {
   if (w.clubs.some((c) => c.id === 'euro:0')) return;
+  const first = w.clubs.length;
   const places = [
     'AUT',
     'SCO',
@@ -127,6 +129,8 @@ export function ensureRepresentatives(w: World) {
     });
     w.tables[`euro:${i}`] = emptyTable();
   }
+  // The entrants get their own designs; no earlier club's identity moves (→KIT-11).
+  installMissingIdentities(w, w.clubs.slice(first));
 }
 function order(w: World, code: string) {
   const last = w.history.at(-1);

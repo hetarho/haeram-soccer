@@ -1,5 +1,6 @@
 import type { Founding, World } from '../../contracts/src/types';
-import { createBase } from './world';
+import { clubIdentitySchema } from '../../contracts/src/identitySchema';
+import { clubOf, createBase } from './world';
 import { prepareSeason, advanceRound, closeSeason } from './season';
 import { basicStaff } from './staff';
 import { MORALE_START } from './morale';
@@ -7,7 +8,9 @@ import { NEW_CLUB_INTERVENTION } from './intervention';
 import { foundWithPreset } from './presets';
 import { openShortlistWindow } from './signings';
 import { defaultSettings } from './responsibilities';
+import { installMissingIdentities } from './club-identity';
 export * from './responsibilities';
+export * from './club-identity';
 export * from './settings';
 export * from './world';
 export * from './season';
@@ -52,8 +55,20 @@ export * from './intervention';
 export * from './orders';
 export * from './coach-training';
 export function createWorld(input: Founding) {
+  // The previewed founding identity is used as it is, so it must be complete and lead with the
+  // founding colour (→KIT-14); nothing is built from an invalid one.
+  if (
+    input.identity !== undefined &&
+    (!clubIdentitySchema.safeParse(input.identity).success ||
+      input.identity.colours[0] !== input.color)
+  )
+    throw new Error('구단 디자인을 확인해 주세요.');
   const w = createBase(input);
   prepareSeason(w);
+  // Every club starts with a complete identity; the previewed founding draft is the own club's
+  // exactly as confirmed (→KIT-11, KIT-14).
+  installMissingIdentities(w);
+  if (input.identity) clubOf(w).identity = structuredClone(input.identity);
   // New clubs start with unpaid basic coaches at the "important decisions" intervention level:
   // the staff run training, the academy and contract talks, the owner the rest (→STAFF-13).
   w.staff = basicStaff(w);

@@ -23,6 +23,12 @@ const founding = {
   level: 'easy' as const,
 };
 const world = () => createWorld(founding);
+/** A world saved before club identities: new worlds now install them all (→KIT-11). */
+const compatible = () => {
+  const w = world();
+  for (const club of w.clubs) delete club.identity;
+  return w;
+};
 const identity = (): ClubIdentity => ({
   version: 1,
   colours: ['#224466', '#FFFFFF'],
@@ -130,7 +136,7 @@ describe('club identity vocabulary (→KIT-1, KIT-2, KIT-3)', () => {
 
 describe('optional identity fields on a compatible world (→SAVE-20, SAVE-21)', () => {
   it('preserves the absence of identity, kit choice and appearance', () => {
-    const w = world();
+    const w = compatible();
     const parsed = validateWorld(structuredClone(w));
     expect(parsed.clubs.some((c) => 'identity' in c)).toBe(false);
     expect('kitChoice' in parsed).toBe(false);
@@ -138,7 +144,7 @@ describe('optional identity fields on a compatible world (→SAVE-20, SAVE-21)',
   });
 
   it('keeps an explicit identity exactly', () => {
-    const w = world();
+    const w = compatible();
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     own.identity = identity();
     const parsed = validateWorld(structuredClone(w));
