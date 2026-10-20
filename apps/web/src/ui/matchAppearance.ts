@@ -106,9 +106,11 @@ type Roster = readonly Pick<Player, 'id' | 'position'>[];
 /**
  * Who stands in goal in each sample, by player ID per side: the player the engine moves as the
  * keeper; while he has the ball (`carry`), whoever it moved as keeper elsewhere in that minute;
- * else the player on the pitch whom the whole matchday roster (starters and bench) lists as a
- * goalkeeper. Slots and squad order play no part, so a substitute keeper or an outfield player in
- * goal after a red card is found as he stands. A sample without players has no keeper.
+ * else the previous sample's keeper while he is still on the pitch, so a minute in which the
+ * engine never shows its keeper keeps his colour steady; else the player on the pitch whom the
+ * whole matchday roster (starters and bench) lists as a goalkeeper. Slots and squad order play no
+ * part, so a substitute keeper or an outfield player in goal after a red card is found as he
+ * stands. A sample without players has no keeper and carries none on.
  */
 export function keepersBySample(
   samples: readonly PresentedSample[],
@@ -126,17 +128,21 @@ export function keepersBySample(
     known[1] ??= inGoal(sample.players?.[1]);
     byMinute.set(sample.frame, known);
   }
-  return samples.map(
-    (sample) =>
-      ([0, 1] as const).map((side) => {
-        const players = sample.players?.[side];
-        if (!players) return undefined;
-        const minute = byMinute.get(sample.frame)?.[side];
-        return (
-          inGoal(players) ??
-          (minute && players.some((motion) => motion.id === minute) ? minute : undefined) ??
-          players.find((motion) => goalkeepers[side]!.has(motion.id))?.id
-        );
-      }) as [string | undefined, string | undefined],
-  );
+  let previous: [string | undefined, string | undefined] = [undefined, undefined];
+  return samples.map((sample) => {
+    const keepers = ([0, 1] as const).map((side) => {
+      const players = sample.players?.[side];
+      if (!players) return undefined;
+      const onPitch = (id: string | undefined) =>
+        id && players.some((motion) => motion.id === id) ? id : undefined;
+      return (
+        inGoal(players) ??
+        onPitch(byMinute.get(sample.frame)?.[side]) ??
+        onPitch(previous[side]) ??
+        players.find((motion) => goalkeepers[side]!.has(motion.id))?.id
+      );
+    }) as [string | undefined, string | undefined];
+    previous = keepers;
+    return keepers;
+  });
 }

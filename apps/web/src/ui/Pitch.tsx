@@ -30,6 +30,7 @@ import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
 import { createKitPainter } from './kitPainting';
+import { markerRadius } from './KitPitchPreview';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
 import { paceStarts, presentationAt, presentationTime, WATCH_SPEEDS } from './presentationClock';
@@ -286,6 +287,29 @@ export function Pitch({
   }, [summary]);
 
   useEffect(() => {
+    // Build the four shirt sprites (both outfield shirts, both keepers) for the size the pitch is
+    // drawn at before the frame loop needs them, and again when that size changes, so the loop
+    // below only blits cached sprites (ARCH-7).
+    const element = canvas.current;
+    const scratch = element && look ? document.createElement('canvas').getContext('2d') : null;
+    if (!element || !look || !scratch) return;
+    const warm = () => {
+      const width = element.clientWidth;
+      if (!width) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const radius = markerRadius(width);
+      for (const side of look.sides)
+        for (const shirt of [side.shirt, side.keeper])
+          painter.draw(scratch, shirt, radius, radius, radius, { dpr });
+    };
+    warm();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(warm);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [look, painter]);
+
+  useEffect(() => {
     let raf = 0;
     last.current = 0;
     const pitchFont = canvas.current
@@ -359,7 +383,7 @@ export function Pitch({
           ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
         }
         if (p && current && look) {
-          const radius = Math.max(6, width * 0.011);
+          const radius = markerRadius(width);
           const marker = {
             dpr,
             outline: MARKER_OUTLINE,

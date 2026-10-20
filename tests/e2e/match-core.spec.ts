@@ -185,7 +185,8 @@ for (const viewport of [
     const settled = await savedRaw(page);
     expect((await decode(settled)).world.ownMatches[0]).toEqual(reference.ownMatches[0]);
     // Preparation was skipped: the record wears the automatic selection, captured at settlement.
-    const founded = createWorld(founding);
+    // The pre-match world is founded with the reference's own design, however that was founded.
+    const founded = createWorld({ ...founding, identity: clubOf(reference).identity });
     expect(reference.ownMatches[0].appearance).toEqual(
       appearanceForFixture(founded, nextOwnFixture(founded)!),
     );

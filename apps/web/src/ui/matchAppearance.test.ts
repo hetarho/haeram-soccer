@@ -134,7 +134,8 @@ describe('the actual keeper in each sample (→KIT-8)', () => {
           [motion('a-st'), motion('a-cm', 'keeper')],
         ],
       },
-      // No keeper state this minute: the roster's goalkeeper on the pitch, or nobody.
+      // No keeper state this minute: the last keeper while still on the pitch, so the outfield
+      // player in goal keeps the keeper colour.
       {
         frame: 2,
         players: [
@@ -142,22 +143,27 @@ describe('the actual keeper in each sample (→KIT-8)', () => {
           [motion('a-st'), motion('a-cm')],
         ],
       },
-      // The minute's earlier keeper has gone off: he is not drawn as keeper.
+      // Both have left the pitch and no goalkeeper is on: nobody is drawn as keeper.
+      { frame: 2, players: [[motion('h-cb')], [motion('a-st')]] },
+      // The minute's earlier keeper has gone off: the roster's goalkeeper on the pitch is.
       { frame: 3, players: [[motion('h-gk', 'keeper')], [motion('a-gk', 'keeper')]] },
       {
         frame: 3,
         players: [[motion('h-cb', 'carry'), motion('h-gk2')], [motion('a-gk', 'keeper')]],
       },
-      // An archived minute without players.
+      // An archived minute without players carries no keeper on.
       { frame: 4 },
+      { frame: 5, players: [[motion('h-cb')], [motion('a-st'), motion('a-cm')]] },
     ];
     expect(keepersBySample(samples, SQUADS)).toEqual([
       ['h-gk', 'a-gk'],
       ['h-gk', 'a-gk'],
       ['h-gk2', 'a-cm'],
-      ['h-gk2', undefined],
+      ['h-gk2', 'a-cm'],
+      [undefined, undefined],
       ['h-gk', 'a-gk'],
       ['h-gk2', 'a-gk'],
+      [undefined, undefined],
       [undefined, undefined],
     ]);
   });

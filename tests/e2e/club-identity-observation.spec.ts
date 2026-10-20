@@ -16,7 +16,7 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { ALL_DELEGATED } from './events';
 import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { watchNext } from './watch';
+import { openWatchMenu, watchNext } from './watch';
 
 /**
  * KIT-8/12, WEB-49/50, SAVE-22: the live pitch Canvas draws the shirts and keeper colours the match
@@ -255,7 +255,8 @@ test('the live Canvas wears the recorded stripes, checks and keeper colours at p
   ).toHaveCount(1);
 });
 
-test('a design applied while the match is paused leaves its recorded shirts on the pitch', async ({
+// Needs T251's 구단 운영 › 구단 디자인 tab (identity-founding lane) in the tree under test.
+test('a design applied while the match is paused mid-match leaves its recorded shirts on the pitch', async ({
   page,
 }) => {
   test.slow();
@@ -264,6 +265,12 @@ test('a design applied while the match is paused leaves its recorded shirts on t
   await importResponsibilityCareer(page, w);
   await watchToWhistle(page);
   await expect.poll(() => recorded(page, next.id)).toEqual(expected);
+  // Seek back to half-time: seeking pauses (→WEB-23), and the playback is unfinished again.
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  await page.getByText('주요 장면 탐색', { exact: true }).click();
+  await page.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+  expect(await markers(page, STRIPES)).toBeGreaterThanOrEqual(3);
   // The owner recolours the home shirt in 구단 운영 › 구단 디자인 and applies it (→KIT-9).
   const edited = '#ff6d00';
   await page
@@ -280,12 +287,11 @@ test('a design applied while the match is paused leaves its recorded shirts on t
   await expect
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);
-  // Back in the theatre the paused match still wears what it recorded.
-  const theatre = page.getByTestId('match-theatre');
-  for (let i = 0; i < 3 && !(await theatre.isVisible()); i++) await page.goBack();
-  await expect(theatre).toBeVisible();
-  const reveal = page.getByRole('button', { name: '결과 보기', exact: true });
-  if (await reveal.isVisible()) await reveal.click();
+  // The menu leads back to the unfinished match (→WEB-50); it still wears what it recorded.
+  const back = await openWatchMenu(page);
+  await expect(back).toHaveAccessibleName('경기로 돌아가기');
+  await back.click();
+  await expect(page.getByTestId('match-theatre')).toBeVisible();
   expect(await markers(page, STRIPES)).toBeGreaterThanOrEqual(3);
   expect(await markers(page, { ...STRIPES, primary: edited })).toBe(0);
   expect(await recorded(page, next.id)).toEqual(expected);
