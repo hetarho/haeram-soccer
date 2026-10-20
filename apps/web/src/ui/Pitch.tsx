@@ -29,7 +29,9 @@ const MatchReport = lazy(() =>
 import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
-import { crestOf, inkOn, kits } from './crests';
+import { createKitPainter } from './kitPainting';
+import { markerRadius } from './KitPitchPreview';
+import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
 import { paceStarts, presentationAt, presentationTime, WATCH_SPEEDS } from './presentationClock';
 import s from './App.module.css';
@@ -45,19 +47,25 @@ const stateLabels: Record<PlayerMotionState, string> = {
   carry: '볼 운반',
   keeper: '골문 보호',
 };
-const initialShape: [number, number][] = [
-  [5, 50],
-  [22, 15],
-  [20, 38],
-  [20, 62],
-  [22, 85],
-  [46, 25],
-  [43, 50],
-  [46, 75],
-  [72, 20],
-  [76, 50],
-  [72, 80],
+/**
+ * An archived match without motion stands each side in this fixed shape: an illustration of its
+ * shirts, not of any recorded player, with the keeper on his line.
+ */
+const initialShape: { at: [number, number]; keeper?: true }[] = [
+  { at: [5, 50], keeper: true },
+  { at: [22, 15] },
+  { at: [20, 38] },
+  { at: [20, 62] },
+  { at: [22, 85] },
+  { at: [46, 25] },
+  { at: [43, 50] },
+  { at: [46, 75] },
+  { at: [72, 20] },
+  { at: [76, 50] },
+  { at: [72, 80] },
 ];
+/** The side outline every marker wears, as in the design preview (WEB-87). */
+const MARKER_OUTLINE = '#ffffffcc';
 /** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
 const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
 interface Sample {
@@ -113,13 +121,6 @@ function fromSample(firsts: number[], samples: Sample[], index: number) {
   const frame = samples[Math.floor(index)]?.frame ?? 0;
   const count = (firsts[frame + 1] ?? 0) - (firsts[frame] ?? 0);
   return count > 0 ? frame + (index - firsts[frame]!) / count : 0;
-}
-
-/** The side's keeper: the slot-0 starter while he is on the pitch, else whoever stands in slot 0. */
-export function keeperOf(playback: MatchPlayback, frame: MatchFrame | undefined, side: 0 | 1) {
-  const onPitch = frame?.onPitch?.[side] ?? [];
-  const starter = playback.squads[side]?.[0]?.id;
-  return starter && (!onPitch.length || onPitch.includes(starter)) ? starter : onPitch[0];
 }
 
 export interface PitchControls {
@@ -205,6 +206,13 @@ export function Pitch({
     () => new Map(p?.squads.flatMap((squad) => squad.map((player) => [player.id, player.name]))),
     [p],
   );
+  // What both sides wore, from the record's own snapshot only (KIT-12): resolved once per record,
+  // so editing a club's design while watching never repaints this match.
+  const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p]);
+  // Who is in goal in each sample, found by player over the whole matchday roster.
+  const keepers = useMemo(() => keepersBySample(samples, p?.squads ?? [[], []]), [samples, p]);
+  // One painter, and so one sprite cache, per mounted pitch: rAF only blits cached shirts.
+  const [painter] = useState(() => createKitPainter());
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
   const visibleIndex = sampleMatchId === p?.record.id ? sampleIndex : 0;
   const sample = samples[Math.min(visibleIndex, samples.length - 1)];
@@ -212,18 +220,15 @@ export function Pitch({
   const finished = !!p && sampleMatchId === p.record.id && sampleIndex >= samples.length - 1;
   const home = world.clubs.find((c) => c.id === p?.record.home);
   const away = world.clubs.find((c) => c.id === p?.record.away);
-  const homeCrest = crestOf(world, home?.id),
-    awayCrest = crestOf(world, away?.id);
-  const [homeKit, awayKit] = kits(homeCrest, awayCrest);
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedId = selectedPlayer?.id;
   const selectedMotion = sample?.players?.[selectedSide]?.find((m) => m.id === selectedId);
-  // The inspector lists the players on the pitch now by ID (the starters before any are recorded),
-  // then each side's bench: everyone else of the matchday squad.
+  // The inspector lists the players on the pitch now by ID (the presented sample's players before a
+  // minute records them), then each side's bench: everyone else of the matchday squad.
   const onPitch = ([0, 1] as const).map((side) => {
     const ids = frame?.onPitch[side].length
       ? frame.onPitch[side]
-      : (p?.squads[side].slice(0, 11).map((player) => player.id) ?? []);
+      : (sample?.players?.[side].map((motion) => motion.id) ?? []);
     return new Set(ids);
   });
   const reds = p ? sentOff(p.record, p.frames, sample?.frame ?? 0) : [0, 0];
@@ -280,6 +285,29 @@ export function Pitch({
     document.addEventListener('visibilitychange', hide);
     return () => document.removeEventListener('visibilitychange', hide);
   }, [summary]);
+
+  useEffect(() => {
+    // Build the four shirt sprites (both outfield shirts, both keepers) for the size the pitch is
+    // drawn at before the frame loop needs them, and again when that size changes, so the loop
+    // below only blits cached sprites (ARCH-7).
+    const element = canvas.current;
+    const scratch = element && look ? document.createElement('canvas').getContext('2d') : null;
+    if (!element || !look || !scratch) return;
+    const warm = () => {
+      const width = element.clientWidth;
+      if (!width) return;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const radius = markerRadius(width);
+      for (const side of look.sides)
+        for (const shirt of [side.shirt, side.keeper])
+          painter.draw(scratch, shirt, radius, radius, radius, { dpr });
+    };
+    warm();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(warm);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [look, painter]);
 
   useEffect(() => {
     let raf = 0;
@@ -354,11 +382,16 @@ export function Pitch({
           ctx.fillStyle = '#e8efe6aa';
           ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
         }
-        if (p && current) {
-          const radius = Math.max(6, width * 0.011);
+        if (p && current && look) {
+          const radius = markerRadius(width);
+          const marker = {
+            dpr,
+            outline: MARKER_OUTLINE,
+            font: `${Math.max(8, width * 0.012)}px ${pitchFont}`,
+          };
           for (const side of [0, 1] as const) {
-            const kit = side === 0 ? homeKit : awayKit;
-            const keeper = keeperOf(p, p.frames[current.frame], side);
+            const { shirt, keeper: keeperShirt } = look.sides[side];
+            const keeper = keepers[index]?.[side];
             // The players on the pitch in this sample; an archived match without motion stands
             // its sides in a fixed shape.
             const dots =
@@ -371,10 +404,13 @@ export function Pitch({
               })) ??
               initialShape.map((base, i) => ({
                 motion: undefined,
-                position: [side === 0 ? base[0] : 100 - base[0], base[1]] as [number, number],
+                position: [side === 0 ? base.at[0] : 100 - base.at[0], base.at[1]] as [
+                  number,
+                  number,
+                ],
                 target: undefined,
                 number: i + 1,
-                keeper: i === 0,
+                keeper: !!base.keeper,
               }));
             for (const { motion, position, target, number, keeper: isKeeper } of dots) {
               const px = position[0] * (1 - mix) + (target?.[0] ?? position[0]) * mix;
@@ -400,20 +436,12 @@ export function Pitch({
                 ctx.lineWidth = 2;
                 ctx.stroke();
               }
-              ctx.beginPath();
-              ctx.arc(x(px), y(py), radius, 0, Math.PI * 2);
-              // Goalkeepers wear a contrasting shirt.
-              const shirt = isKeeper ? (side === 0 ? '#f2c94c' : '#56ccf2') : kit;
-              ctx.fillStyle = shirt;
-              ctx.fill();
-              ctx.strokeStyle = '#ffffffcc';
-              ctx.lineWidth = 1.2;
-              ctx.stroke();
-              ctx.fillStyle = inkOn(shirt);
-              ctx.font = `${Math.max(8, width * 0.012)}px ${pitchFont}`;
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(String(number), x(px), y(py));
+              // The side's recorded shirt with its pattern and trim (or the unrecorded stand-in),
+              // or its keeper's colour.
+              painter.draw(ctx, isKeeper ? keeperShirt : shirt, x(px), y(py), radius, {
+                ...marker,
+                number,
+              });
             }
           }
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
@@ -464,8 +492,9 @@ export function Pitch({
     numbers,
     paused,
     speed,
-    homeKit,
-    awayKit,
+    look,
+    keepers,
+    painter,
     inspect,
     selectedId,
   ]);
@@ -505,7 +534,13 @@ export function Pitch({
       <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
         {lead}
         <span className={t.team}>
-          {home && <CrestMark crest={homeCrest} size={24} />}
+          {home && look && (
+            <CrestMark
+              crest={look.sides[0].crest}
+              size={24}
+              label={look.recorded ? undefined : `${home.name} 엠블럼 미기록`}
+            />
+          )}
           <b className={t.fullName}>{home?.name || 'HOME'}</b>
           <b className={t.shortName} aria-hidden="true">
             {home?.short || 'HOME'}
@@ -519,7 +554,13 @@ export function Pitch({
           <b className={t.shortName} aria-hidden="true">
             {away?.short || 'AWAY'}
           </b>
-          {away && <CrestMark crest={awayCrest} size={24} />}
+          {away && look && (
+            <CrestMark
+              crest={look.sides[1].crest}
+              size={24}
+              label={look.recorded ? undefined : `${away.name} 엠블럼 미기록`}
+            />
+          )}
         </span>
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
@@ -570,6 +611,12 @@ export function Pitch({
           className={`${s.canvas} ${t.canvas} ${summary ? t.replayCanvas : ''}`}
           onClick={summary ? toggle : undefined}
         />
+        {look && !look.recorded && (
+          // Older playback: neutral markers, never today's designs presented as this match's.
+          <span className={t.unrecorded} data-testid="match-kit-unrecorded">
+            {UNRECORDED_KIT}
+          </span>
+        )}
         {summary && (
           <button
             className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
@@ -601,12 +648,11 @@ export function Pitch({
                 : '다음 경기를 시작하고 우리 선발의 활약을 지켜보세요.'}
         </p>
       </div>
-      {p && !summary && frame?.xg && (
+      {p && look && !summary && frame?.xg && (
         <MatchCharts
           playback={p}
           shown={(sample?.frame ?? 0) + 1}
-          kits={[homeKit, awayKit]}
-          crests={[homeCrest, awayCrest]}
+          look={look}
           names={[home?.short || 'HOME', away?.short || 'AWAY']}
           details={details}
           detailsId={detailsId}

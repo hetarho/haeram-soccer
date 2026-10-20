@@ -1,7 +1,9 @@
 import { useMemo, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
-import { CrestMark } from './ClubCrest';
 import { colourDistance, contrast, type Crest } from './crests';
+import { KIT_ROLE_LABELS } from './identityPreview';
+import { KitSwatch } from './KitSwatch';
+import { UNRECORDED_KIT, type MatchLook, type SideLook } from './matchAppearance';
 import { goalFrame, recordedGoals } from './moments';
 import t from './Pitch.module.css';
 
@@ -29,7 +31,10 @@ function mix(hex: string, amount: number) {
     .map((value) => channel(value).toString(16).padStart(2, '0'))
     .join('')}`;
 }
-/** A kit colour lifted until it reads as a line on the dark chart surface. */
+/**
+ * A kit colour lifted until it reads as a line on the dark chart surface. Only the chart line
+ * changes: the lifted colour is a new value, never written back to a shirt or a snapshot.
+ */
 export function seriesColour(kit: string) {
   let colour = kit;
   for (let step = 1; step <= 10 && contrast(colour, SURFACE) < 3; step++)
@@ -39,10 +44,14 @@ export function seriesColour(kit: string) {
 /** Fixed lines for an away side whose colours all look like home's: warm, else neutral ivory. */
 const FALLBACK_SERIES = ['#ff9257', '#f6f1e1'] as const;
 /**
- * Both sides' line colours. Two lines must never look alike: the away line falls back to its
- * crest's secondary, then its accent, when it has them, then to the fixed lines.
+ * Both sides' line colours. Two lines must never look alike: the away line falls back to the
+ * away side's other colours (its shirt's secondary, then its trim) when it has them, then to the
+ * fixed lines.
  */
-export function seriesColours(kits: [string, string], away: Crest): [string, string] {
+export function seriesColours(
+  kits: [string, string],
+  away: Pick<Crest, 'secondary' | 'accent'>,
+): [string, string] {
   const home = seriesColour(kits[0]);
   let line = seriesColour(kits[1]);
   for (const candidate of [away.secondary, away.accent, ...FALLBACK_SERIES]) {
@@ -50,6 +59,28 @@ export function seriesColours(kits: [string, string], away: Crest): [string, str
     if (candidate !== undefined) line = seriesColour(candidate);
   }
   return [home, line];
+}
+
+/**
+ * The series' lines follow each side's worn shirt (lifted for contrast) and differ in dash as well,
+ * so colour is never the only link from a line to its team (WEB-49): home solid, away dashed.
+ */
+export function chartLines(look: MatchLook) {
+  const [home, away] = look.sides;
+  const colours = seriesColours([home.shirt.primary, away.shirt.primary], {
+    secondary: away.shirt.secondary,
+    accent: away.shirt.trim,
+  });
+  return colours.map((colour, side) => ({ colour, dash: side ? '5 3' : undefined })) as [
+    { colour: string; dash: string | undefined },
+    { colour: string; dash: string | undefined },
+  ];
+}
+/** The legend's name for a side's swatch: the worn role, or that the shirt was not recorded. */
+export function swatchLabel(look: MatchLook, side: SideLook, name: string) {
+  return look.recorded && side.role
+    ? `${name} ${KIT_ROLE_LABELS[side.role]} 유니폼`
+    : `${name} 기본 표시 (${UNRECORDED_KIT})`;
 }
 
 /** Per-minute series for both sides, over the first `shown` frames (the presented ones) only. */
@@ -69,8 +100,7 @@ export function chartSeries(playback: MatchPlayback, shown: number, chart: Chart
 export function MatchCharts({
   playback,
   shown: presented,
-  kits,
-  crests,
+  look,
   names,
   details,
   detailsId,
@@ -79,8 +109,8 @@ export function MatchCharts({
   playback: MatchPlayback;
   /** Frames presented so far, added minutes included. */
   shown: number;
-  kits: [string, string];
-  crests: [Crest, Crest];
+  /** What both sides wore, from the record (KIT-12). */
+  look: MatchLook;
   names: [string, string];
   details: boolean;
   detailsId: string;
@@ -92,7 +122,8 @@ export function MatchCharts({
     () => chartSeries(playback, presented, chart),
     [playback, presented, chart],
   );
-  const colours = useMemo(() => seriesColours(kits, crests[1]), [kits, crests]);
+  const lines = useMemo(() => chartLines(look), [look]);
+  const colours = lines.map((line) => line.colour);
   const max =
     chart === 'possession'
       ? 100
@@ -165,10 +196,24 @@ export function MatchCharts({
         </button>
       </header>
       <ul className={t.legend}>
-        {[0, 1].map((side) => (
+        {([0, 1] as const).map((side) => (
           <li key={side}>
-            <i style={{ background: colours[side] }} aria-hidden="true" />
-            <CrestMark crest={crests[side]} size={14} />
+            <svg className={t.legendLine} width="14" height="6" aria-hidden="true">
+              <line
+                x1="1"
+                x2="13"
+                y1="3"
+                y2="3"
+                stroke={colours[side]}
+                strokeWidth="2"
+                strokeDasharray={lines[side].dash}
+              />
+            </svg>
+            <KitSwatch
+              shirt={look.sides[side].shirt}
+              label={swatchLabel(look, look.sides[side], names[side])}
+              size={16}
+            />
             <span>{names[side]}</span>
             <b>{label(active !== undefined ? series[side][active - 1] : latest[side])}</b>
           </li>
@@ -186,7 +231,7 @@ export function MatchCharts({
           viewBox={`0 0 ${W} ${H}`}
           role="img"
           tabIndex={0}
-          aria-label={`${title}: ${names[0]} ${label(latest[0])}, ${names[1]} ${label(latest[1])} · ${labelAt(shown)}분까지`}
+          aria-label={`${title}: ${names[0]} ${label(latest[0])} (실선), ${names[1]} ${label(latest[1])} (점선) · ${labelAt(shown)}분까지`}
           onPointerMove={(event: PointerEvent<SVGSVGElement>) =>
             pick(event.clientX, event.currentTarget.getBoundingClientRect())
           }
@@ -242,6 +287,7 @@ export function MatchCharts({
                   points={series[side].map((v, i) => `${x(i + 1)},${y(v)}`).join(' ')}
                   fill="none"
                   stroke={colours[side]}
+                  strokeDasharray={lines[side].dash}
                   strokeWidth="2"
                   strokeLinejoin="round"
                   strokeLinecap="round"

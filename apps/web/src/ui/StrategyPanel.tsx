@@ -34,6 +34,7 @@ import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
+import { FixtureKitSelector } from './FixtureKitSelector';
 import { Money } from './Money';
 import { OpponentDossier } from './OpponentDossier';
 import { TacticalLab } from './TacticalLab';
@@ -378,6 +379,8 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
             </figcaption>
           </figure>
           <OpponentDossier w={w} />
+          {/* Its own draft and command, apart from the tactic and lineup below (→WEB-88). */}
+          {!preparing && <FixtureKitSelector client={client} blocked={blocked} />}
           {playerId && (
             <p className={s.message}>
               {w.players.find((person) => person.id === playerId)?.name}의 다음 경기 준비를

@@ -1,0 +1,120 @@
+/* Folded like the opponent dossier, so preparation stays compact until the owner opens it. */
+.disclosure {
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
+  min-width: 0;
+}
+.disclosure summary {
+  padding: 13px 14px;
+  min-height: 48px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.disclosure summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.content {
+  display: grid;
+  gap: 10px;
+  padding: 4px 14px 14px;
+  min-width: 0;
+}
+.content p,
+.empty {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: var(--display);
+  overflow-wrap: anywhere;
+}
+.empty {
+  margin: 12px 0;
+  color: var(--text-muted);
+}
+.context {
+  color: var(--text);
+}
+.note {
+  color: var(--text-muted);
+}
+.notice {
+  padding: 8px 10px;
+  border-radius: 2px;
+  background: var(--warm-soft);
+  color: var(--text);
+}
+.warning {
+  color: var(--warm);
+}
+.content .message:empty {
+  display: none;
+}
+.pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+.side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.side span {
+  display: grid;
+  min-width: 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.side small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--display);
+}
+.roles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.roles button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 6px 4px;
+  font-size: 13px;
+}
+.roles button[aria-checked='true'] {
+  border: 2px solid var(--accent);
+  background: var(--surface-2);
+  color: var(--accent-text);
+}
+.roles small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--display);
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.actions button {
+  min-height: 48px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-family: var(--display);
+}
+.confirm {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}

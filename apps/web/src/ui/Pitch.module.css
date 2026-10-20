@@ -163,6 +163,19 @@
   pointer-events: none;
   font-family: var(--display);
 }
+/* An older record without its appearance: the neutral markers say so (KIT-12). */
+.stage .unrecorded {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(16, 19, 20, 0.78);
+  pointer-events: none;
+  font-family: var(--display);
+}
 .latestEvent {
   display: flex;
   align-items: center;
@@ -248,10 +261,9 @@
   align-items: center;
   gap: 5px;
 }
-.legend i {
-  width: 14px;
-  height: 2px;
-  border-radius: 2px;
+/* The series' own line, solid for home and dashed for away, beside the side's worn shirt. */
+.legendLine {
+  flex-shrink: 0;
 }
 .legend b {
   color: var(--text);
