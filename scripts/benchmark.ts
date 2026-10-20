@@ -26,6 +26,13 @@ import {
   TOTAL_LIMIT,
 } from '../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../tests/fixtures/retained-workload';
+import {
+  appearanceSummary,
+  assertConsumedChoice,
+  assertPendingChoice,
+  identityWorkload,
+  type IdentityWorkloadEvidence,
+} from '../tests/fixtures/identity-workload';
 import { payloadBytes } from '../apps/web/src/adapters/compression';
 import { pack } from '../apps/web/src/adapters/packing';
 const measurements: Record<string, unknown>[] = [];
@@ -71,6 +78,7 @@ function sourceFingerprint() {
       'scripts',
       'patches',
       'tests/fixtures/retained-workload.ts',
+      'tests/fixtures/identity-workload.ts',
       'package.json',
       'pnpm-lock.yaml',
       'pnpm-workspace.yaml',
@@ -119,7 +127,8 @@ async function measure(w: World, label: string) {
   const t = performance.now(),
     raw = await encode(w, 2, 1),
     encodingMs = performance.now() - t,
-    restored = (await decode(raw)).world;
+    restored = (await decode(raw)).world,
+    decodingMs = performance.now() - t - encodingMs;
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
   // Only the active copy lives in localStorage; its previous copy is in IndexedDB (→SAVE-3).
   const checkpointBytes = 2 * (raw.length + 'haeram-soccor:slot:a'.length),
@@ -157,6 +166,7 @@ async function measure(w: World, label: string) {
     totalBytes,
     heapBytes,
     encodingMs: Math.round(encodingMs),
+    decodingMs: Math.round(decodingMs),
     passed: checkpointBytes <= CHECKPOINT_LIMIT && totalBytes <= TOTAL_LIMIT,
   };
   measurements.push(result);
@@ -218,9 +228,24 @@ const crossed = await measure(focused, 'retained workload after actual season cl
 if (!crossed.restored.promises?.some((p) => p.status === 'pending'))
   throw Error('Cross-season promise was lost');
 
+/** What the active-management career's identity workload did and what its final checkpoint kept. */
+let identityEvidence:
+  | (IdentityWorkloadEvidence & {
+      profile: string;
+      seed: string;
+      checkpointLabel: string;
+      checkpointAppearances: ReturnType<typeof appearanceSummary>;
+      pendingChoiceDecoded: boolean;
+      resumedSettlementConsumed: { uninterrupted: boolean; restored: boolean };
+    })
+  | undefined;
 for (const variant of ['baseline', 'active-management']) {
   const workloadStart = performance.now();
   let trainingSelections = 0;
+  // T255: the owner's own design at each active-management season's start and a shirt for the
+  // fixture after the century checkpoint, through the real club-identity and match-kit commands.
+  // Cosmetic only (KIT-13); it adds to the business and training actions, never replaces them.
+  const identity = variant === 'active-management' ? identityWorkload() : undefined;
   // Engine time of the career's seasons alone: no checkpoint codec, replay check or mid-career branch.
   let simulationMs = 0;
   const w = createWorld({
@@ -233,6 +258,9 @@ for (const variant of ['baseline', 'active-management']) {
   await measure(w, variant + ' founding');
   for (let n = 0; n < 100; n++) {
     const before = retainedFacts(w);
+    // Before the season's business and training; its recorded-appearance checks stay out of the
+    // engine time below.
+    identity?.edit(w, n);
     const seasonStart = performance.now();
     if (variant === 'active-management') {
       const code = clubOf(w).country;
@@ -306,6 +334,8 @@ for (const variant of ['baseline', 'active-management']) {
     throw new Error('Century own-club/global archival coverage failed');
   if (variant === 'active-management') {
     const before = retainedFacts(w);
+    // The 101st season starts like the others: the season's design first.
+    identity!.edit(w, 100);
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     for (let round = 0; round < 12; round++) advanceRound(w, undefined, false);
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
@@ -313,12 +343,29 @@ for (const variant of ['baseline', 'active-management']) {
     assertRetained(w, before);
     if (w.history.length !== 100 || w.round !== 23 || w.trainingAt !== `${w.year}:23`)
       throw new Error('Century active checkpoint was not settled at round 23');
-    const { restored } = await measure(w, variant + ' century active round 23');
+    // The checkpoint carries a pending own-shirt choice for the real next own fixture (SAVE-20).
+    const choice = identity!.chooseKit(w);
+    const checkpointLabel = variant + ' century active round 23';
+    const checkpointAppearances = appearanceSummary(w);
+    const { restored } = await measure(w, checkpointLabel);
+    assertPendingChoice(restored, choice);
     const continued = structuredClone(w);
     simulateSeason(continued);
     simulateSeason(restored);
     if (loadedCanonical(continued) !== loadedCanonical(restored))
       throw new Error('Resumed century active checkpoint differs from uninterrupted engine');
+    // Both resumed careers wear the chosen shirt in that fixture and use the choice up there.
+    assertConsumedChoice(continued, choice);
+    assertConsumedChoice(restored, choice);
+    identityEvidence = {
+      profile: variant,
+      seed: w.seed,
+      ...identity!.evidence(),
+      checkpointLabel,
+      checkpointAppearances,
+      pendingChoiceDecoded: true,
+      resumedSettlementConsumed: { uninterrupted: true, restored: true },
+    };
   }
   const elapsedMs = performance.now() - workloadStart;
   workloads.push({
@@ -327,6 +374,7 @@ for (const variant of ['baseline', 'active-management']) {
     completedSeasons: 100,
     careerDomesticRoundSettlements: variant === 'active-management' ? 4623 : 4600,
     completeSeasonTrainingSelections: trainingSelections,
+    identityEdits: identity?.evidence().edits ?? 0,
     centuryActiveCheckpointTrainingSelections: variant === 'active-management' ? 2 : 0,
     trainingCycle:
       variant === 'active-management'
@@ -355,11 +403,12 @@ if (
   !era.history.find((h) => h.year === 2024)?.europe.some((e) => e.kind === 'uecl' && e.field === 36)
 )
   throw new Error('2024 era archival gate failed');
+if (!identityEvidence) throw new Error('Active-management identity workload did not run');
 if (sourceFingerprint().sha256 !== source.sha256)
   throw new Error('Source changed during storage verification; rerun after edits settle');
 const report = {
   phase:
-    'T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries',
+    'T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile',
   synthetic: true,
   date: new Date().toISOString(),
   node: process.version,
@@ -390,16 +439,35 @@ const report = {
     .update(readFileSync('.tmp/release-century.haeram-save.json'))
     .digest('hex'),
   eraProbe: { seasons: 2025 - FOUNDING_YEAR, year: era.year, passed: true },
+  identityWorkload: identityEvidence,
   elapsedMs: Math.round(performance.now() - start),
   heapBytes: process.memoryUsage().heapUsed,
   peakObservedHeapBytes,
   losslessRoundtrip: true,
   resumedSeasonReplay: true,
   passed: true,
-  scope:
-    'Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after 100 seasons, eight-country archive/capacity checks and a separate 1950–2025 era probe. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.',
+  scope: `Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after 100 seasons, an own design applied through the club-identity command at each active season start (${identityEvidence.edits} edits) and a pending match-kit choice in the round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate 1950–2025 era probe. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
 };
 mkdirSync('docs/benchmarks', { recursive: true });
 writeFileSync('docs/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');
 writeFileSync('docs/benchmarks/T232-rules4-storage.json', JSON.stringify(report, null, 2) + '\n');
+// T255 feature evidence: this run's storage facts and identity workload on the same source
+// fingerprint. `storagePassed` covers this script only; `pnpm run benchmark:browser` fills
+// `browser` from its own measurements, and `null` there means it has not run on this source.
+const { passed: storagePassed, ...storage } = report;
+writeFileSync(
+  'docs/benchmarks/club-identity-final.json',
+  JSON.stringify(
+    {
+      task: 'T255',
+      feature: 'Club identity and kits (KIT r2, SAVE-20–22) on the final combined source',
+      ...storage,
+      storagePassed,
+      storageReport: 'docs/benchmarks/T010-storage.json',
+      browser: null,
+    },
+    null,
+    2,
+  ) + '\n',
+);
 console.log(JSON.stringify(report, null, 2));

@@ -26,6 +26,7 @@ function sourceFingerprint() {
         'scripts',
         'patches',
         'tests/fixtures/retained-workload.ts',
+        'tests/fixtures/identity-workload.ts',
         'package.json',
         'pnpm-lock.yaml',
         'pnpm-workspace.yaml',
@@ -107,6 +108,12 @@ if (!storageReport.passed || storageReport.sourceFingerprint?.sha256 !== source.
   throw new Error(
     'Run the storage benchmark against this working tree before browser verification',
   );
+// The identity feature evidence the storage benchmark wrote for this same source (T255).
+const identityReport = JSON.parse(readFileSync('docs/benchmarks/club-identity-final.json', 'utf8'));
+if (!identityReport.storagePassed || identityReport.sourceFingerprint?.sha256 !== source.sha256)
+  throw new Error(
+    'Run the storage benchmark against this working tree before browser verification',
+  );
 const browser = await chromium.launch();
 try {
   const errors = [];
@@ -181,6 +188,48 @@ try {
       foundingCommandMs: Math.round(performance.now() - command),
     };
   }
+  /**
+   * The founded club's next fixture in its home shirt, whose founding draft is striped (KIT-14):
+   * chosen through preparation's real match-kit selector, so the observed pitch paints a recorded
+   * patterned shirt rather than the plain pair automatic selection gives the reference fixture.
+   */
+  async function wearHomeShirt(page) {
+    await page
+      .getByTestId('club-hub')
+      .getByRole('button', { name: '전술·선발 준비', exact: true })
+      .click();
+    const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    const kit = dialog.getByTestId('fixture-kit');
+    await kit.getByTestId('fixture-kit-summary').click();
+    await kit.getByRole('radio', { name: '우리 홈 유니폼', exact: true }).click();
+    await kit.getByRole('button', { name: '이 유니폼으로 정하기', exact: true }).click();
+    // The command waits for queued work; give the throttled page more than the default 5 s.
+    await expect(kit.getByTestId('fixture-kit-message')).toContainText('홈 유니폼으로 정했어요.', {
+      timeout: 15000,
+    });
+    await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    const outcome = page.getByTestId('action-outcome');
+    await outcome.getByRole('button', { name: '확인', exact: true }).click();
+    await expect(outcome).toHaveCount(0);
+  }
+  /** The two shirts the match legend names for the observed playback, from its recorded look. */
+  async function observedKits(page) {
+    const swatches = page.getByTestId('match-theatre').getByRole('img', { name: /유니폼/ });
+    await expect(swatches).toHaveCount(2);
+    const labels = await swatches.evaluateAll((elements) =>
+      elements.map((element) => element.getAttribute('aria-label') ?? ''),
+    );
+    return labels.map((label) => ({
+      label,
+      pattern: label.slice(label.lastIndexOf(': ') + 2).split(', ')[0],
+      recorded: !label.includes('유니폼 미기록'),
+    }));
+  }
+  const patterned = (kits) =>
+    kits.length === 2 &&
+    kits.every((kit) => kit.recorded) &&
+    kits.some((kit) => kit.pattern !== '단색');
   async function fps(page) {
     return await page.evaluate(
       () =>
@@ -197,10 +246,12 @@ try {
   }
   const desktop = await referencePage({ width: 1440, height: 1000 });
   const desktopInit = await create(desktop.page);
+  await wearHomeShirt(desktop.page);
   await desktop.page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await desktop.page.getByRole('dialog', { name: '전체 메뉴' }).getByTestId('menu-watch').click();
   await expect(desktop.page.getByRole('button', { name: '결과 보기' })).toBeEnabled();
   const desktopFps = await fps(desktop.page);
+  const desktopKits = await observedKits(desktop.page);
   const firstPlayResources = Array.from(desktop.resources.values());
   await desktop.page.evaluate(() => {
     window.inputSamples = [];
@@ -230,10 +281,12 @@ try {
   await desktop.context.close();
   const mobile = await referencePage({ width: 390, height: 844 }, 2);
   const mobileInit = await create(mobile.page);
+  await wearHomeShirt(mobile.page);
   await mobile.page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await mobile.page.getByRole('dialog', { name: '전체 메뉴' }).getByTestId('menu-watch').click();
   await expect(mobile.page.getByRole('button', { name: '결과 보기' })).toBeEnabled();
   const mobileFps = await fps(mobile.page);
+  const mobileKits = await observedKits(mobile.page);
   const mobileFirstPlayResources = Array.from(mobile.resources.values());
   await mobile.page.evaluate(() => {
     window.inputSamples = [];
@@ -316,6 +369,7 @@ try {
     throw new Error(
       'Source or build changed during browser verification; rerun after edits settle',
     );
+  const patternRendering = patterned(desktopKits) && patterned(mobileKits);
   const report = {
     date: new Date().toISOString(),
     browser: await browser.version(),
@@ -337,12 +391,18 @@ try {
     },
     synthetic: true,
     reference,
-    desktop: { viewport: [1440, 1000], ...desktopInit, animationFps: Math.round(desktopFps) },
+    desktop: {
+      viewport: [1440, 1000],
+      ...desktopInit,
+      animationFps: Math.round(desktopFps),
+      observedKits: desktopKits,
+    },
     mobile: {
       viewport: [390, 844],
       deviceScaleFactor: 2,
       ...mobileInit,
       animationFps: Math.round(mobileFps),
+      observedKits: mobileKits,
       inputSamples: mobileSamples.length,
       pointerToSecondFrameP95Ms: Math.round(mobilePointerP95Ms),
     },
@@ -374,6 +434,7 @@ try {
     inputLimitMs: 100,
     minimumFps: 30,
     mobileHorizontalOverflow: overflow,
+    patternRendering,
     pageErrors: errors,
     passed:
       entryGzipBytes <= 250 * 1024 &&
@@ -385,12 +446,53 @@ try {
       desktopFps >= 30 &&
       mobileFps >= 30 &&
       !overflow &&
+      patternRendering &&
       !errors.length,
     scope:
-      'Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback. Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS is budgeted; the conservative all-asset compressed inventory, including the lazy engine worker, is reported separately; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim.',
+      'Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback, after the founded club chose its striped home shirt for that fixture in preparation, so both pitches paint a recorded patterned shirt (observedKits names the worn shirts from the match legend). Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS is budgeted; the conservative all-asset compressed inventory, including the lazy engine worker, is reported separately; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim.',
   };
   mkdirSync('docs/benchmarks', { recursive: true });
   writeFileSync('docs/benchmarks/T010-first-play.json', JSON.stringify(report, null, 2) + '\n');
+  // T255: the browser half of the identity feature evidence, beside the storage run's facts.
+  writeFileSync(
+    'docs/benchmarks/club-identity-final.json',
+    JSON.stringify(
+      {
+        ...identityReport,
+        browser: {
+          report: 'docs/benchmarks/T010-first-play.json',
+          date: report.date,
+          browser: report.browser,
+          playwright: report.playwright,
+          gitHead,
+          gitDirty,
+          sourceFingerprint: source,
+          buildFingerprint: build,
+          entryGzipBytes,
+          entryGzipLimit: report.entryGzipLimit,
+          buildGzipBytes,
+          firstPlayPageTargetTransferBytes: report.firstPlayPageTargetTransferBytes,
+          mobileFirstPlayPageTargetTransferBytes: report.mobileFirstPlayPageTargetTransferBytes,
+          foundingCommandMs: [desktopInit.foundingCommandMs, mobileInit.foundingCommandMs],
+          centuryLoadMs: report.centuryLoadMs,
+          initializationLimitMs: report.initializationLimitMs,
+          pointerToSecondFrameP95Ms: [
+            report.pointerToSecondFrameP95Ms,
+            report.mobile.pointerToSecondFrameP95Ms,
+          ],
+          inputLimitMs: report.inputLimitMs,
+          animationFps: [report.desktop.animationFps, report.mobile.animationFps],
+          minimumFps: report.minimumFps,
+          observedKits: { desktop: desktopKits, mobile: mobileKits },
+          patternRendering,
+          pageErrors: errors,
+          passed: report.passed,
+        },
+      },
+      null,
+      2,
+    ) + '\n',
+  );
   console.log(report);
   if (!report.passed) process.exitCode = 1;
 } finally {
