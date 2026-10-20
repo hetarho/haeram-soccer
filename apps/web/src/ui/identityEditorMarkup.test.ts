@@ -174,6 +174,32 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
     ]);
   });
 
+  it('names every region the crest’s secondary paints, and only those', () => {
+    const hint = (crest: CrestDesign) =>
+      /<b>무늬색<\/b><small id="[^"]*">([^<]*)<\/small>/.exec(
+        group(render(withCrest(crest)), '엠블럼 색'),
+      )?.[1];
+    const actions = (crest: CrestDesign) =>
+      buttons(group(render(withCrest(crest)), '엠블럼 색')).map((b) => b.label);
+    // Without an accent the secondary also paints the emblem (CrestMark: accent ?? secondary).
+    expect(hint(IDENTITY.crest)).toBe('바탕 무늬(세로 줄무늬) · 원 테두리 · 엠블럼(별)');
+    expect(actions(IDENTITY.crest)).toEqual(['무늬색 빼기', '엠블럼색 따로 정하기']);
+    // A plain field has no pattern for it to paint.
+    const plain: CrestDesign = { ...IDENTITY.crest, pattern: 'plain', emblem: 'ball' };
+    expect(hint(plain)).toBe('원 테두리 · 엠블럼(공)');
+    // With an accent the emblem has its own field, and the secondary keeps the pattern and ring.
+    const accented: CrestDesign = { ...IDENTITY.crest, accent: '#fcbf49' };
+    expect(hint(accented)).toBe('바탕 무늬(세로 줄무늬) · 원 테두리');
+    expect(group(render(withCrest(accented)), '엠블럼 색')).toContain('<b>엠블럼색</b><small id');
+    expect(hint({ ...plain, accent: '#fcbf49' })).toBe('원 테두리');
+    // A one-colour plain field leaves only the ring and emblem empty.
+    expect(
+      render(withCrest({ shape: 'round', pattern: 'plain', emblem: 'ball', primary: '#6A0DAD' })),
+    ).toContain(
+      '한 가지 색 엠블럼이에요. 원 테두리·엠블럼 자리는 비워 두어 뒤 배경이 비쳐 보여요.',
+    );
+  });
+
   it('disables every change control when read-only and keeps the design visible', () => {
     const html = render(IDENTITY, true);
     expect(html).toContain('읽기 전용 탭이에요.');

@@ -234,6 +234,21 @@ export function ClubIdentityEditor({
   const roleName = `${KIT_ROLE_LABELS[role]} 유니폼`;
   const partLabel = (parts: Pick<CrestDesign, 'shape' | 'emblem'>) =>
     `${CREST_SHAPE_LABELS[parts.shape]} · ${CREST_EMBLEM_LABELS[parts.emblem]}`;
+  // What the crest's secondary paints, as CrestMark draws it: the field pattern when there is one,
+  // the ring round the disc and, without an accent, the emblem. A one-colour crest leaves exactly
+  // these regions empty.
+  const patterned = crest.pattern !== 'plain';
+  const emblemFollows = crest.accent === undefined;
+  const secondaryRegions = [
+    patterned && `바탕 무늬(${CREST_PATTERN_LABELS[crest.pattern]})`,
+    '원 테두리',
+    emblemFollows && `엠블럼(${CREST_EMBLEM_LABELS[crest.emblem]})`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const holes = [patterned && '무늬', '원 테두리', emblemFollows && '엠블럼']
+    .filter(Boolean)
+    .join('·');
   /** What the crest looks like after an action, for the choice that would take it. */
   const crestAfter = (action: IdentityDraftAction) => reduceIdentityDraft(value, action).crest;
 
@@ -291,11 +306,7 @@ export function ClubIdentityEditor({
           <CrestMark crest={crest} size={88} label={`엠블럼 미리보기: ${partLabel(crest)}`} />
           <div className={s.disclosure}>
             {crest.secondary === undefined && (
-              <p>
-                한 가지 색 엠블럼이에요. 무늬·원 테두리
-                {crest.accent === undefined ? '·엠블럼' : ''} 자리는 비워 두어 뒤 배경이 비쳐
-                보여요.
-              </p>
+              <p>한 가지 색 엠블럼이에요. {holes} 자리는 비워 두어 뒤 배경이 비쳐 보여요.</p>
             )}
             <p>바깥 테두리선은 모든 엠블럼에 같은 밝은 중립색으로 고정돼요.</p>
           </div>
@@ -329,7 +340,7 @@ export function ClubIdentityEditor({
             {crest.secondary !== undefined && (
               <ColourField
                 label="무늬색"
-                hint={`${CREST_PATTERN_LABELS[crest.pattern]} 무늬와 원 테두리`}
+                hint={secondaryRegions}
                 colour={crest.secondary}
                 disabled={readonly}
                 onColour={(next) =>
@@ -341,7 +352,7 @@ export function ClubIdentityEditor({
             {crest.accent !== undefined && (
               <ColourField
                 label="엠블럼색"
-                hint={`${CREST_EMBLEM_LABELS[crest.emblem]} 엠블럼`}
+                hint={`엠블럼(${CREST_EMBLEM_LABELS[crest.emblem]})`}
                 colour={crest.accent}
                 disabled={readonly}
                 onColour={(next) => act({ type: 'crest-colour', region: 'accent', colour: next })}
@@ -379,7 +390,7 @@ export function ClubIdentityEditor({
                   })
                 }
               >
-                엠블럼색 추가
+                {crest.secondary === undefined ? '엠블럼색 추가' : '엠블럼색 따로 정하기'}
               </button>
             )}
           </div>

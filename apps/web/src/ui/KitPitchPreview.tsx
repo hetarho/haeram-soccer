@@ -26,7 +26,11 @@ export const markerRadius = (width: number) => Math.max(6, width * 0.011);
 /** The live pitch's side outline. */
 const OUTLINE = '#ffffffcc';
 
-/** The grass, mown stripes and markings of the live pitch, with its 6.5% border. */
+/**
+ * The grass, mown stripes and markings of the live pitch, with its 6.5% border. `Pitch.tsx` still
+ * draws its own copy of these values and of `markerRadius`; when it moves onto the shared painter
+ * it should use these, so the preview and match observation cannot drift apart (WEB-87).
+ */
 function drawGround(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const pad = width * 0.065;
   const fw = width - pad * 2;
