@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-20T22:25:44.411Z",
-  "sourceCommit": "c8c190a40c3371bee0ba023a6acd330036477b63",
+  "snapshotAt": "2026-10-20T22:28:57.114Z",
+  "sourceCommit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
   "group": {
     "id": "identity",
     "branch": "work/identity",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "c8c190a40c3371bee0ba023a6acd330036477b63",
+      "commit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-20T21:30:27.738Z"
+      "at": "2026-10-20T22:25:46.877Z"
     },
     "lastRun": {
       "id": "91e58e0c-aff3-4ba3-b0f8-b73f983ea8a0",
@@ -57,25 +57,14 @@
   },
   "summary": {
     "total": 33,
-    "completed": 17,
-    "remaining": 16,
+    "completed": 18,
+    "remaining": 15,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 15
   },
   "tasks": [
-    {
-      "id": "T254",
-      "title": "Verify identity continuity across save, slots, readonly and failed writes",
-      "dep": [
-        "T251",
-        "T253",
-        "T243",
-        "T244"
-      ],
-      "status": "approved"
-    },
     {
       "id": "T255",
       "title": "Validate the complete identity feature against release and century budgets",
@@ -1246,21 +1235,21 @@
       "contributors": [
         "91e58e0c-aff3-4ba3-b0f8-b73f983ea8a0/worker-1"
       ],
-      "status": "approved",
-      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-20T21:30:28.082Z",
       "startCommit": "c8c190a40c3371bee0ba023a6acd330036477b63",
-      "verifiedCommit": "b2f46dee692f299bae9ea9cb1df81bb114256988",
-      "submittedBase": "c8c190a40c3371bee0ba023a6acd330036477b63",
-      "submissionId": "cc4afb6e-e3df-41a5-9cd4-8ba59e73ccdc",
-      "submittedAt": "2026-10-20T21:57:25.796Z",
+      "verifiedCommit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+      "submittedBase": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+      "submissionId": "f1e9898a-175b-441f-9651-778242d9acdc",
+      "submittedAt": "2026-10-20T22:28:36.185Z",
       "risk": {
         "risky": true,
         "reasons": [
-          "1207 changed lines (limit 300)",
+          "1209 changed lines (limit 300)",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 1207,
+        "lines": 1209,
         "files": 4
       },
       "dispatch": {
@@ -1277,49 +1266,66 @@
         "summary": "T254 changes only tests: three new test files and the extended persistence.test.ts, plus the task's result section. No product source changed. Both risk reasons check out. The 1,207 lines are all test code. The autopilot decisions only moved the task's base revisions to WEB@99, SAVE@50 and ARCH@16, and moved Playwright and Firefox/WebKit out of the task checks per ARCH-30; the task follows both.\n\nI checked each journey against the app code, not against the worker's report:\n- **Selectors and flows:** the founding and career editor labels, the pitch canvas, the HUD crest and read-only badge, the fixture kit selector, the replay scoreboard, the alerts and the save tools all match the markup.\n- **Save behaviour:** export returns the saved raw when revisions match, the writer lock hands over to a waiting tab, adoption runs only on writer activation with one revision bump, the commit order leaves `previous` equal to the old committed checkpoint, compatibility errors keep their code from the worker, and slot switches reset the design draft.\n\nAll seven acceptance items are covered:\n- **Continuity journey:** found with a one-colour crest and patterned shirts, settle a match, edit to a three-colour crest, then export and import into a new browser context. It decodes the files exactly and runs at 360x740 and 390x844 with screenshots kept.\n- **Slots:** a kit choice survives reload and slot parking; the other game gets neither the choice nor the draft.\n- **Old saves:** a container-1 career keeps its exact legacy crests and facts, and its replay says 유니폼 미기록.\n- **Read-only, then writer:** the read-only tab writes nothing; once it takes ownership it adopts the save once.\n- **Failures:** a refused apply, a failed checkpoint and a failed adoption each keep slot:a, the manifest and the IndexedDB `previous` copy, plus the draft and the export.\n- **Newer data:** a future envelope schema and a future identity format both stay protected over a valid older copy.\n\nNone of the browser journeys has run yet. ARCH-30 leaves them to the batch Chromium run, and the worker named them in `- limits:`. The unit side is credible: persistence.test.ts passed 54/54, and typecheck, lint, format, the changed-file vitest run and the build were recorded as passing. I re-ran none of these, because the review checkout has no node_modules and installing them would change it. The four findings are all optional cleanups."
       },
       "review": {
-        "id": "e9b52f23-7653-4d82-a8aa-b2a6b1c8b4fb",
-        "owner": "91e58e0c-aff3-4ba3-b0f8-b73f983ea8a0/reviewer-1",
+        "id": "b61586e3-e9d9-4028-b2d6-de54e825a926",
+        "owner": "r3m9",
         "status": "approved",
         "verdict": "approved",
-        "summary": "T254 changes only tests: three new test files and the extended persistence.test.ts, plus the task's result section. No product source changed. Both risk reasons check out. The 1,207 lines are all test code. The autopilot decisions only moved the task's base revisions to WEB@99, SAVE@50 and ARCH@16, and moved Playwright and Firefox/WebKit out of the task checks per ARCH-30; the task follows both.\n\nI checked each journey against the app code, not against the worker's report:\n- **Selectors and flows:** the founding and career editor labels, the pitch canvas, the HUD crest and read-only badge, the fixture kit selector, the replay scoreboard, the alerts and the save tools all match the markup.\n- **Save behaviour:** export returns the saved raw when revisions match, the writer lock hands over to a waiting tab, adoption runs only on writer activation with one revision bump, the commit order leaves `previous` equal to the old committed checkpoint, compatibility errors keep their code from the worker, and slot switches reset the design draft.\n\nAll seven acceptance items are covered:\n- **Continuity journey:** found with a one-colour crest and patterned shirts, settle a match, edit to a three-colour crest, then export and import into a new browser context. It decodes the files exactly and runs at 360x740 and 390x844 with screenshots kept.\n- **Slots:** a kit choice survives reload and slot parking; the other game gets neither the choice nor the draft.\n- **Old saves:** a container-1 career keeps its exact legacy crests and facts, and its replay says 유니폼 미기록.\n- **Read-only, then writer:** the read-only tab writes nothing; once it takes ownership it adopts the save once.\n- **Failures:** a refused apply, a failed checkpoint and a failed adoption each keep slot:a, the manifest and the IndexedDB `previous` copy, plus the draft and the export.\n- **Newer data:** a future envelope schema and a future identity format both stay protected over a valid older copy.\n\nNone of the browser journeys has run yet. ARCH-30 leaves them to the batch Chromium run, and the worker named them in `- limits:`. The unit side is credible: persistence.test.ts passed 54/54, and typecheck, lint, format, the changed-file vitest run and the build were recorded as passing. I re-ran none of these, because the review checkout has no node_modules and installing them would change it. The four findings are all optional cleanups.",
-        "findings": [
-          {
-            "priority": "P3",
-            "where": "tests/fixtures/club-identity.ts:141",
-            "message": "T254: The 'envelope schema 3' fixture hardcodes `schema: 3`. The expectations also hardcode today's container number: `[2, 2, 1]` in club-identity-continuity.spec.ts:278 and `schema: 2` in persistence.test.ts. `CURRENT_CHECKPOINT_SCHEMA` and `SUPPORTED_CHECKPOINT_SCHEMAS` already exist in packages/contracts/src/versions.ts. SAVE-23 plans a new container version for model metadata; once it lands, schema 3 stops being 'future' and these fixtures break. Derive the future schema as `Math.max(...SUPPORTED_CHECKPOINT_SCHEMAS) + 1`, and use `CURRENT_CHECKPOINT_SCHEMA` in the expectations."
-          },
-          {
-            "priority": "P3",
-            "where": "tests/e2e/club-identity-helpers.ts:21",
-            "message": "T254: The impl notes ask to reuse existing helpers, but the new shared helpers redefine several of them:\n- `KIT_LABEL` copies `KIT_ROLE_LABELS` (apps/web/src/ui/identityPreview.ts), while the same file already imports `SHIRT_PATTERN_LABELS` from product code.\n- `ACTIVE`/`MANIFEST` copy `SLOT`/`MANIFEST` from apps/web/src/adapters/repository.ts.\n- `exportWorld` copies `exportedCareer` in tests/e2e/career-fixtures.ts.\n- `openRecordedMatch` repeats `openCurrentClubSeason` from tests/e2e/record-navigation.ts.\n- club-identity-continuity.spec.ts:241 hardcodes 'haeram-soccor:games' instead of using `GAMES_KEY` (adapters/games.ts).\nImport the existing ones so the journeys cannot drift from the product's keys and labels."
-          },
-          {
-            "priority": "P3",
-            "where": "tests/e2e/club-identity-continuity.spec.ts:313",
-            "message": "T254: The 'a later load commits nothing more' check reads `committedRaw` right after club-hub appears. The hub appears when the inspect reply publishes the view, which is before `GameClient.load` commits any upgrade. A regression that adopted again on reload could commit after this read, and the check would still pass. Wait for the saved state first (`savedWorld(page)` or save-status 저장 완료), then assert generation 2 and that `SAVE_DATA_UPDATED` still appears only once."
-          },
-          {
-            "priority": "P3",
-            "where": "tests/fixtures/club-identity.ts:33",
-            "message": "T254: The doc comment calls `FOUNDING_ACTIONS` 'the editor steps the journey takes', but the browser journey never uses it. `designInEditor` drives the controls on its own and also removes 엠블럼색 when present, which `FOUNDING_ACTIONS` does not. The founding draft is also created once per session from a random seed before the test fills the seed field (ClubFounding.tsx:41-47). The unit test reduces from drafts for three fixed seeds, so it never sees the journey's real starting draft. Either describe `FOUNDING_ACTIONS` as an equivalent at the reducer level, or add the accent removal so both paths take the same steps."
-          }
-        ],
-        "commit": "b2f46dee692f299bae9ea9cb1df81bb114256988",
-        "baseCommit": "c8c190a40c3371bee0ba023a6acd330036477b63",
-        "submissionId": "cc4afb6e-e3df-41a5-9cd4-8ba59e73ccdc",
-        "createdAt": "2026-10-20T21:57:26.397Z",
-        "finishedAt": "2026-10-20T22:12:49.251Z"
+        "summary": "Re-review after the integration's Chromium run failed two continuity journeys. The only change since the reviewer-approved b2f46de is dcb0744: after page.reload() in the pre-identity and refused-apply journeys the spec waits for the season HUD region instead of the home hub, because a reload restores the view it left (records replay, club design tab). Assertions after the reload are unchanged. The full club-identity-continuity.spec.ts passes 9/9 in local Chromium; the base moved only by a planning save (aed6dd7, spec/work only).",
+        "findings": [],
+        "commit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+        "baseCommit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+        "submissionId": "f1e9898a-175b-441f-9651-778242d9acdc",
+        "createdAt": "2026-10-20T22:28:40.251Z",
+        "finishedAt": "2026-10-20T22:28:49.113Z"
       },
+      "reviewHistory": [
+        {
+          "id": "e9b52f23-7653-4d82-a8aa-b2a6b1c8b4fb",
+          "owner": "91e58e0c-aff3-4ba3-b0f8-b73f983ea8a0/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T254 changes only tests: three new test files and the extended persistence.test.ts, plus the task's result section. No product source changed. Both risk reasons check out. The 1,207 lines are all test code. The autopilot decisions only moved the task's base revisions to WEB@99, SAVE@50 and ARCH@16, and moved Playwright and Firefox/WebKit out of the task checks per ARCH-30; the task follows both.\n\nI checked each journey against the app code, not against the worker's report:\n- **Selectors and flows:** the founding and career editor labels, the pitch canvas, the HUD crest and read-only badge, the fixture kit selector, the replay scoreboard, the alerts and the save tools all match the markup.\n- **Save behaviour:** export returns the saved raw when revisions match, the writer lock hands over to a waiting tab, adoption runs only on writer activation with one revision bump, the commit order leaves `previous` equal to the old committed checkpoint, compatibility errors keep their code from the worker, and slot switches reset the design draft.\n\nAll seven acceptance items are covered:\n- **Continuity journey:** found with a one-colour crest and patterned shirts, settle a match, edit to a three-colour crest, then export and import into a new browser context. It decodes the files exactly and runs at 360x740 and 390x844 with screenshots kept.\n- **Slots:** a kit choice survives reload and slot parking; the other game gets neither the choice nor the draft.\n- **Old saves:** a container-1 career keeps its exact legacy crests and facts, and its replay says 유니폼 미기록.\n- **Read-only, then writer:** the read-only tab writes nothing; once it takes ownership it adopts the save once.\n- **Failures:** a refused apply, a failed checkpoint and a failed adoption each keep slot:a, the manifest and the IndexedDB `previous` copy, plus the draft and the export.\n- **Newer data:** a future envelope schema and a future identity format both stay protected over a valid older copy.\n\nNone of the browser journeys has run yet. ARCH-30 leaves them to the batch Chromium run, and the worker named them in `- limits:`. The unit side is credible: persistence.test.ts passed 54/54, and typecheck, lint, format, the changed-file vitest run and the build were recorded as passing. I re-ran none of these, because the review checkout has no node_modules and installing them would change it. The four findings are all optional cleanups.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/club-identity.ts:141",
+              "message": "T254: The 'envelope schema 3' fixture hardcodes `schema: 3`. The expectations also hardcode today's container number: `[2, 2, 1]` in club-identity-continuity.spec.ts:278 and `schema: 2` in persistence.test.ts. `CURRENT_CHECKPOINT_SCHEMA` and `SUPPORTED_CHECKPOINT_SCHEMAS` already exist in packages/contracts/src/versions.ts. SAVE-23 plans a new container version for model metadata; once it lands, schema 3 stops being 'future' and these fixtures break. Derive the future schema as `Math.max(...SUPPORTED_CHECKPOINT_SCHEMAS) + 1`, and use `CURRENT_CHECKPOINT_SCHEMA` in the expectations."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/club-identity-helpers.ts:21",
+              "message": "T254: The impl notes ask to reuse existing helpers, but the new shared helpers redefine several of them:\n- `KIT_LABEL` copies `KIT_ROLE_LABELS` (apps/web/src/ui/identityPreview.ts), while the same file already imports `SHIRT_PATTERN_LABELS` from product code.\n- `ACTIVE`/`MANIFEST` copy `SLOT`/`MANIFEST` from apps/web/src/adapters/repository.ts.\n- `exportWorld` copies `exportedCareer` in tests/e2e/career-fixtures.ts.\n- `openRecordedMatch` repeats `openCurrentClubSeason` from tests/e2e/record-navigation.ts.\n- club-identity-continuity.spec.ts:241 hardcodes 'haeram-soccor:games' instead of using `GAMES_KEY` (adapters/games.ts).\nImport the existing ones so the journeys cannot drift from the product's keys and labels."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/club-identity-continuity.spec.ts:313",
+              "message": "T254: The 'a later load commits nothing more' check reads `committedRaw` right after club-hub appears. The hub appears when the inspect reply publishes the view, which is before `GameClient.load` commits any upgrade. A regression that adopted again on reload could commit after this read, and the check would still pass. Wait for the saved state first (`savedWorld(page)` or save-status 저장 완료), then assert generation 2 and that `SAVE_DATA_UPDATED` still appears only once."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/club-identity.ts:33",
+              "message": "T254: The doc comment calls `FOUNDING_ACTIONS` 'the editor steps the journey takes', but the browser journey never uses it. `designInEditor` drives the controls on its own and also removes 엠블럼색 when present, which `FOUNDING_ACTIONS` does not. The founding draft is also created once per session from a random seed before the test fills the seed field (ClubFounding.tsx:41-47). The unit test reduces from drafts for three fixed seeds, so it never sees the journey's real starting draft. Either describe `FOUNDING_ACTIONS` as an equivalent at the reducer level, or add the accent removal so both paths take the same steps."
+            }
+          ],
+          "commit": "b2f46dee692f299bae9ea9cb1df81bb114256988",
+          "baseCommit": "c8c190a40c3371bee0ba023a6acd330036477b63",
+          "submissionId": "cc4afb6e-e3df-41a5-9cd4-8ba59e73ccdc",
+          "createdAt": "2026-10-20T21:57:26.397Z",
+          "finishedAt": "2026-10-20T22:12:49.251Z",
+          "invalidatedAt": "2026-10-20T22:28:09.264Z",
+          "invalidationReason": "new submission"
+        }
+      ],
       "steps": [
         {
           "taskId": "T254",
-          "commit": "b2f46dee692f299bae9ea9cb1df81bb114256988",
-          "at": "2026-10-20T21:57:25.757Z",
+          "commit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+          "at": "2026-10-20T22:28:36.144Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
-              "startedAt": "2026-10-20T21:56:40.903Z",
-              "finishedAt": "2026-10-20T21:57:25.331Z"
+              "startedAt": "2026-10-20T22:28:09.660Z",
+              "finishedAt": "2026-10-20T22:28:35.706Z"
             }
           ]
         }
@@ -1327,8 +1333,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
-          "startedAt": "2026-10-20T21:56:40.903Z",
-          "finishedAt": "2026-10-20T21:57:25.331Z"
+          "startedAt": "2026-10-20T22:28:09.660Z",
+          "finishedAt": "2026-10-20T22:28:35.706Z"
         }
       ]
     }
@@ -11230,6 +11236,184 @@
             }
           ]
         }
+      }
+    },
+    {
+      "sequence": 782,
+      "at": "2026-10-20T22:25:46.885Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-20T22:25:46.877Z"
+        }
+      }
+    },
+    {
+      "sequence": 783,
+      "at": "2026-10-20T22:28:09.264Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "02671034-2b73-4c5f-a82a-8c7b4d4cac25",
+      "taskId": "T254",
+      "previousStatus": "approved",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e9b52f23-7653-4d82-a8aa-b2a6b1c8b4fb",
+            "owner": "91e58e0c-aff3-4ba3-b0f8-b73f983ea8a0/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T254 changes only tests: three new test files and the extended persistence.test.ts, plus the task's result section. No product source changed. Both risk reasons check out. The 1,207 lines are all test code. The autopilot decisions only moved the task's base revisions to WEB@99, SAVE@50 and ARCH@16, and moved Playwright and Firefox/WebKit out of the task checks per ARCH-30; the task follows both.\n\nI checked each journey against the app code, not against the worker's report:\n- **Selectors and flows:** the founding and career editor labels, the pitch canvas, the HUD crest and read-only badge, the fixture kit selector, the replay scoreboard, the alerts and the save tools all match the markup.\n- **Save behaviour:** export returns the saved raw when revisions match, the writer lock hands over to a waiting tab, adoption runs only on writer activation with one revision bump, the commit order leaves `previous` equal to the old committed checkpoint, compatibility errors keep their code from the worker, and slot switches reset the design draft.\n\nAll seven acceptance items are covered:\n- **Continuity journey:** found with a one-colour crest and patterned shirts, settle a match, edit to a three-colour crest, then export and import into a new browser context. It decodes the files exactly and runs at 360x740 and 390x844 with screenshots kept.\n- **Slots:** a kit choice survives reload and slot parking; the other game gets neither the choice nor the draft.\n- **Old saves:** a container-1 career keeps its exact legacy crests and facts, and its replay says 유니폼 미기록.\n- **Read-only, then writer:** the read-only tab writes nothing; once it takes ownership it adopts the save once.\n- **Failures:** a refused apply, a failed checkpoint and a failed adoption each keep slot:a, the manifest and the IndexedDB `previous` copy, plus the draft and the export.\n- **Newer data:** a future envelope schema and a future identity format both stay protected over a valid older copy.\n\nNone of the browser journeys has run yet. ARCH-30 leaves them to the batch Chromium run, and the worker named them in `- limits:`. The unit side is credible: persistence.test.ts passed 54/54, and typecheck, lint, format, the changed-file vitest run and the build were recorded as passing. I re-ran none of these, because the review checkout has no node_modules and installing them would change it. The four findings are all optional cleanups.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "tests/fixtures/club-identity.ts:141",
+                "message": "T254: The 'envelope schema 3' fixture hardcodes `schema: 3`. The expectations also hardcode today's container number: `[2, 2, 1]` in club-identity-continuity.spec.ts:278 and `schema: 2` in persistence.test.ts. `CURRENT_CHECKPOINT_SCHEMA` and `SUPPORTED_CHECKPOINT_SCHEMAS` already exist in packages/contracts/src/versions.ts. SAVE-23 plans a new container version for model metadata; once it lands, schema 3 stops being 'future' and these fixtures break. Derive the future schema as `Math.max(...SUPPORTED_CHECKPOINT_SCHEMAS) + 1`, and use `CURRENT_CHECKPOINT_SCHEMA` in the expectations."
+              },
+              {
+                "priority": "P3",
+                "where": "tests/e2e/club-identity-helpers.ts:21",
+                "message": "T254: The impl notes ask to reuse existing helpers, but the new shared helpers redefine several of them:\n- `KIT_LABEL` copies `KIT_ROLE_LABELS` (apps/web/src/ui/identityPreview.ts), while the same file already imports `SHIRT_PATTERN_LABELS` from product code.\n- `ACTIVE`/`MANIFEST` copy `SLOT`/`MANIFEST` from apps/web/src/adapters/repository.ts.\n- `exportWorld` copies `exportedCareer` in tests/e2e/career-fixtures.ts.\n- `openRecordedMatch` repeats `openCurrentClubSeason` from tests/e2e/record-navigation.ts.\n- club-identity-continuity.spec.ts:241 hardcodes 'haeram-soccor:games' instead of using `GAMES_KEY` (adapters/games.ts).\nImport the existing ones so the journeys cannot drift from the product's keys and labels."
+              },
+              {
+                "priority": "P3",
+                "where": "tests/e2e/club-identity-continuity.spec.ts:313",
+                "message": "T254: The 'a later load commits nothing more' check reads `committedRaw` right after club-hub appears. The hub appears when the inspect reply publishes the view, which is before `GameClient.load` commits any upgrade. A regression that adopted again on reload could commit after this read, and the check would still pass. Wait for the saved state first (`savedWorld(page)` or save-status 저장 완료), then assert generation 2 and that `SAVE_DATA_UPDATED` still appears only once."
+              },
+              {
+                "priority": "P3",
+                "where": "tests/fixtures/club-identity.ts:33",
+                "message": "T254: The doc comment calls `FOUNDING_ACTIONS` 'the editor steps the journey takes', but the browser journey never uses it. `designInEditor` drives the controls on its own and also removes 엠블럼색 when present, which `FOUNDING_ACTIONS` does not. The founding draft is also created once per session from a random seed before the test fills the seed field (ClubFounding.tsx:41-47). The unit test reduces from drafts for three fixed seeds, so it never sees the journey's real starting draft. Either describe `FOUNDING_ACTIONS` as an equivalent at the reducer level, or add the accent removal so both paths take the same steps."
+              }
+            ],
+            "commit": "b2f46dee692f299bae9ea9cb1df81bb114256988",
+            "baseCommit": "c8c190a40c3371bee0ba023a6acd330036477b63",
+            "submissionId": "cc4afb6e-e3df-41a5-9cd4-8ba59e73ccdc",
+            "createdAt": "2026-10-20T21:57:26.397Z",
+            "finishedAt": "2026-10-20T22:12:49.251Z",
+            "invalidatedAt": "2026-10-20T22:28:09.264Z",
+            "invalidationReason": "new submission"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 784,
+      "at": "2026-10-20T22:28:36.185Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "02671034-2b73-4c5f-a82a-8c7b4d4cac25",
+      "taskId": "T254",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+        "submissionId": "f1e9898a-175b-441f-9651-778242d9acdc",
+        "submittedAt": "2026-10-20T22:28:36.185Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1209 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1209,
+          "files": 4
+        },
+        "steps": [
+          {
+            "taskId": "T254",
+            "commit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+            "at": "2026-10-20T22:28:36.144Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T22:28:09.660Z",
+                "finishedAt": "2026-10-20T22:28:35.706Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-20T22:28:09.660Z",
+            "finishedAt": "2026-10-20T22:28:35.706Z"
+          }
+        ],
+        "verifiedCommit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2"
+      }
+    },
+    {
+      "sequence": 785,
+      "at": "2026-10-20T22:28:40.251Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "02671034-2b73-4c5f-a82a-8c7b4d4cac25",
+      "taskId": "T254",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b61586e3-e9d9-4028-b2d6-de54e825a926",
+          "owner": "r3m9",
+          "status": "reviewing",
+          "commit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+          "baseCommit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+          "submissionId": "f1e9898a-175b-441f-9651-778242d9acdc",
+          "createdAt": "2026-10-20T22:28:40.251Z"
+        }
+      }
+    },
+    {
+      "sequence": 786,
+      "at": "2026-10-20T22:28:49.113Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "02671034-2b73-4c5f-a82a-8c7b4d4cac25",
+      "taskId": "T254",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b61586e3-e9d9-4028-b2d6-de54e825a926",
+          "owner": "r3m9",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Re-review after the integration's Chromium run failed two continuity journeys. The only change since the reviewer-approved b2f46de is dcb0744: after page.reload() in the pre-identity and refused-apply journeys the spec waits for the season HUD region instead of the home hub, because a reload restores the view it left (records replay, club design tab). Assertions after the reload are unchanged. The full club-identity-continuity.spec.ts passes 9/9 in local Chromium; the base moved only by a planning save (aed6dd7, spec/work only).",
+          "findings": [],
+          "commit": "dcb0744f88afb88d7f52381d80192bf5ea4fd5d2",
+          "baseCommit": "aed6dd78b42b374546e8291661578faeee2dbd5b",
+          "submissionId": "f1e9898a-175b-441f-9651-778242d9acdc",
+          "createdAt": "2026-10-20T22:28:40.251Z",
+          "finishedAt": "2026-10-20T22:28:49.113Z"
+        }
+      }
+    },
+    {
+      "sequence": 787,
+      "at": "2026-10-20T22:28:55.507Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "02671034-2b73-4c5f-a82a-8c7b4d4cac25",
+      "taskId": "T254",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

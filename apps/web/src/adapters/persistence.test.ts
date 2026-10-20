@@ -3,13 +3,39 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import {
   advanceDays,
   advanceRound,
+  createIdentityDraft,
+  createWorld,
+  identityOf,
+  installMissingIdentities,
   operate,
   simulateSeason,
 } from '../../../../packages/engine/src/index';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
+import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
+import {
+  adoptedCareer,
+  containerOneCheckpoint,
+  editActions,
+  editedDesign,
+  FIRST_COLOUR,
+  FOUNDED_DESIGN,
+  FOUNDING_ACTIONS,
+  FUTURE_CHECKPOINTS,
+  preIdentityCareer,
+} from '../../../../tests/fixtures/club-identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
-import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
+import { reduceIdentityDraft } from '../ui/clubIdentityDraft';
+import {
+  checkpoint,
+  encode,
+  decode,
+  Saves,
+  type PreviousStore,
+  type StoragePort,
+} from './persistence';
+import { MANIFEST, SLOT } from './repository';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import { bmpText } from './bmp127';
@@ -33,7 +59,8 @@ import {
   CURRENT_CATALOG,
 } from '../../../../packages/catalogs/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
-import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
+import { KIT_ROLES, type ClubIdentity } from '../../../../packages/contracts/src/identity';
+import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
 import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
 class Memory implements StoragePort {
   data = new Map<string, string>();
@@ -674,6 +701,160 @@ describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () =>
       newer(packed);
       await expect(decode(await seal(w, packed, 2))).rejects.toBeInstanceOf(SaveCompatibilityError);
     }
+  });
+});
+
+/** The game in play's previous copy (→SAVE-3), kept in memory. */
+class MemoryPrevious implements PreviousStore {
+  value: string | null = null;
+  async read() {
+    return this.value;
+  }
+  async write(raw: string) {
+    this.value = raw;
+  }
+  async clear() {
+    this.value = null;
+  }
+}
+/** The continuity journey's career: founded in FOUNDED_DESIGN, its first own match settled. */
+const continuityCareer = () =>
+  cachedWorld('continuity-career', () => {
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Continuity Kit FC',
+      color: FOUNDED_DESIGN.colours[0],
+      seed: 'identity-continuity',
+      level: 'easy',
+      identity: FOUNDED_DESIGN,
+    });
+    const next = nextOwnFixture(w)!;
+    advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);
+    return w;
+  });
+
+describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', () => {
+  it('the journey steps give its literal designs from any founding draft', () => {
+    for (const seed of ['identity-continuity-360', 'identity-continuity-390', 'save-test']) {
+      const draft = createIdentityDraft({ country: 'ENG', seed, color: FIRST_COLOUR });
+      expect(FOUNDING_ACTIONS.reduce(reduceIdentityDraft, draft)).toEqual(FOUNDED_DESIGN);
+    }
+    expect(clubIdentitySchema.parse(FOUNDED_DESIGN)).toEqual(FOUNDED_DESIGN);
+    expect(FOUNDED_DESIGN.crest).not.toHaveProperty('secondary');
+    for (const role of KIT_ROLES) {
+      const edited = editActions(role).reduce(reduceIdentityDraft, FOUNDED_DESIGN);
+      expect(edited).toEqual(editedDesign(role));
+      expect(clubIdentitySchema.parse(edited)).toEqual(edited);
+    }
+  });
+
+  it('a founded design, its settled match and a later edit round-trip with the earlier appearance frozen', async () => {
+    const w = continuityCareer();
+    expect(w.ownMatches.length).toBeGreaterThan(0);
+    const record = w.ownMatches.at(-1)!;
+    const side = record.home === w.playerClub ? 0 : 1;
+    const frozen = structuredClone(record.appearance!);
+    const worn = frozen.sides[side];
+    expect(worn.crest).toEqual(FOUNDED_DESIGN.crest);
+    expect(worn.shirt).toEqual(FOUNDED_DESIGN.kits[worn.role]);
+    operate(w, { type: 'club-identity', identity: editedDesign(worn.role) });
+    const restored = (await decode(await encode(w))).world;
+    expect(canonical(restored)).toBe(canonical(w));
+    const own = restored.clubs.find((club) => club.id === restored.playerClub)!;
+    expect(own.identity).toEqual(editedDesign(worn.role));
+    expect(own.color).toBe(FOUNDED_DESIGN.colours[0]);
+    const kept = restored.ownMatches.find((match) => match.id === record.id)!;
+    expect(kept.appearance).toEqual(frozen);
+    expect(appearanceForFixture(restored, kept).sides[side]).not.toEqual(worn);
+  });
+
+  it('a pre-identity career in container 1 reads unchanged; adoption adds only designs, with the exact legacy crests', async () => {
+    const legacy = preIdentityCareer();
+    const read = await decode(await containerOneCheckpoint(legacy));
+    expect(read.envelope.schema).toBe(1);
+    expect(canonical(read.world)).toBe(canonical(legacy));
+    expect(read.world.clubs.some((club) => club.identity)).toBe(false);
+    expect(read.world.ownMatches.length).toBeGreaterThan(0);
+    expect(read.world.ownMatches.some((match) => 'appearance' in match)).toBe(false);
+    const adopted = adoptedCareer(read.world);
+    const crests = legacyCrestMap(legacy);
+    for (const club of adopted.clubs) {
+      const before = legacy.clubs.find((c) => c.id === club.id)!;
+      expect(club.color).toBe(before.color);
+      expect(club.identity).toEqual(identityOf(legacy, club.id));
+      expect(club.identity!.crest).toEqual(crests.get(club.id));
+      expect(club.identity!.colours).toEqual([before.color, crests.get(club.id)!.secondary]);
+    }
+    const designless = (w: World) => ({
+      ...w,
+      revision: 0,
+      clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
+    });
+    expect(canonical(designless(adopted))).toBe(canonical(designless(legacy)));
+    expect(adopted.revision).toBe(legacy.revision + 1);
+    expect(canonical((await decode(await encode(adopted, 2, 1))).world)).toBe(canonical(adopted));
+    // Only what is missing: an identity already there stays, and a second pass changes nothing.
+    const partial = structuredClone(legacy);
+    const rival = partial.clubs.find((club) => club.id !== partial.playerClub)!;
+    rival.identity = { ...identityOf(legacy, rival.id), kits: { ...FOUNDED_DESIGN.kits } };
+    const designed = structuredClone(rival.identity);
+    expect(installMissingIdentities(partial)).toBe(true);
+    expect(partial.clubs.find((club) => club.id === rival.id)!.identity).toEqual(designed);
+    const once = canonical(partial);
+    expect(installMissingIdentities(partial)).toBe(false);
+    expect(canonical(partial)).toBe(once);
+  });
+
+  it.each(Object.keys(FUTURE_CHECKPOINTS))(
+    'newer data (%s) over a valid previous copy blocks fallback and writes',
+    async (name) => {
+      const port = new Memory();
+      const previous = new MemoryPrevious();
+      const saves = new Saves(port, decode, previous);
+      await saves.save(world());
+      await saves.save(observed(1));
+      const older = previous.value;
+      expect(older).not.toBeNull();
+      const newer = await FUTURE_CHECKPOINTS[name](observed(1), 2, 1);
+      port.data.set(SLOT[0], newer);
+      const before = new Map(port.data);
+      for (const manifest of [true, false]) {
+        if (!manifest) {
+          port.removeItem(MANIFEST);
+          before.delete(MANIFEST);
+        }
+        const recovery = new Saves(port, decode, previous);
+        await expect(recovery.load()).rejects.toBeInstanceOf(SaveCompatibilityError);
+        expect(recovery.incompatibleBackup).toBe(newer);
+        await expect(recovery.save(observed(1))).rejects.toBeInstanceOf(SaveCompatibilityError);
+        expect(port.data).toEqual(before);
+        expect(previous.value).toBe(older);
+      }
+    },
+  );
+
+  it('a failed write of the adopted career keeps the original checkpoint loadable as its verified previous copy', async () => {
+    const legacy = preIdentityCareer();
+    const raw = await containerOneCheckpoint(legacy);
+    const port = new Memory();
+    const previous = new MemoryPrevious();
+    const saves = new Saves(port, decode, previous);
+    await saves.commit(raw);
+    const manifest = port.getItem(MANIFEST);
+    port.fail = SLOT[0];
+    await expect(saves.save(adoptedCareer(legacy))).rejects.toThrow('Quota');
+    expect(port.getItem(SLOT[0])).toBe(raw);
+    expect(port.getItem(MANIFEST)).toBe(manifest);
+    expect(previous.value).toBe(raw);
+    expect(canonical((await new Saves(port, decode, previous).load())!.world)).toBe(
+      canonical(legacy),
+    );
+    port.fail = '';
+    await saves.save(adoptedCareer(legacy));
+    const reloaded = (await new Saves(port, decode, previous).load())!;
+    expect(reloaded.envelope).toMatchObject({ schema: 2, generation: 2, parentGeneration: 1 });
+    expect(canonical(reloaded.world)).toBe(canonical(adoptedCareer(legacy)));
+    expect(previous.value).toBe(raw);
   });
 });
 
