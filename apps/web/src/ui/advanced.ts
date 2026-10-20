@@ -145,7 +145,51 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
     ),
     row('saves', '선방', metric(9), (side) => String(record.metrics[side][9])),
   );
+  if (detail && record.lineCounts) rows.push(...spatialRows(detail));
   return rows;
+}
+
+/**
+ * The grid engine's counters (rules 4.0.0, →MATCH-13): only its records carry `lineCounts`, so
+ * older matches show none of these rows instead of zeros.
+ */
+function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
+  const pair = (index: number): [number, number] => [detail[0][index], detail[1][index]];
+  const count = (term: string, label: string, index: number, lowerIsBetter = false) =>
+    row(term, label, pair(index), (side) => String(detail[side][index]), lowerIsBetter);
+  const completed = (term: string, label: string, attempts: number, done: number) =>
+    row(term, label, pair(attempts), (side) => `${detail[side][attempts]} (${detail[side][done]})`);
+  const cards = (side: 0 | 1) => detail[side][TD.yellowCards] + 2 * detail[side][TD.redCards];
+  return [
+    count('box-entry', '박스 진입', TD.boxEntries),
+    count('front-of-box-entry', '박스 앞 진입', TD.frontOfBoxEntries),
+    count('line-breaking', '라인 브레이킹 패스', TD.lineBreakingPasses),
+    row('xt', '위협도 기여(xT)', pair(TD.xtAdded), (side) =>
+      fixed(detail[side][TD.xtAdded] / 1000),
+    ),
+    completed('cross', '크로스 (성공)', TD.crosses, TD.crossesCompleted),
+    count('cut-back', '컷백', TD.cutBacks),
+    completed('through-ball', '침투 패스 (성공)', TD.throughBalls, TD.throughBallsCompleted),
+    count('progressive-carry', '전진 운반', TD.progressiveCarries),
+    count('fouls', '파울', TD.fouls, true),
+    row(
+      'cards',
+      '경고·퇴장',
+      [cards(0), cards(1)],
+      (side) => `${detail[side][TD.yellowCards]}·${detail[side][TD.redCards]}`,
+      true,
+    ),
+    count('set-piece', '코너킥', TD.corners),
+    count('offside', '오프사이드', TD.offsides, true),
+  ];
+}
+
+/** Player lines of one side: `lineCounts` splits them; records without it hold eleven per side. */
+export function sideLines(record: MatchRecord, side: 0 | 1): MatchRecord['players'] {
+  const split = record.lineCounts?.[0] ?? 11;
+  const lines = side === 0 ? record.players.slice(0, split) : record.players.slice(split);
+  // A record saved with the own eleven only (before `lineCounts`) keeps them whatever the side.
+  return lines.length || record.lineCounts ? lines : record.players;
 }
 
 export interface PlayerAdvanced {

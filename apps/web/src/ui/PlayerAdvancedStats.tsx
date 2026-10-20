@@ -1,6 +1,6 @@
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { PD, per90, playerAdvanced, share } from './advanced';
-import { Term } from './Glossary';
+import { Term } from './Term';
 import s from './Analysis.module.css';
 
 /** A player's advanced production over the chosen scope, with totals and per-90 rates. */

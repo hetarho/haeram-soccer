@@ -8,7 +8,7 @@ import { divisionName } from './league';
 import type { SeasonFiles } from './seasonArchive';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
 import s from './SeasonReview.module.css';
-import { Term } from './Glossary';
+import { Term } from './Term';
 import { PlayerLink } from './PlayerSheet';
 
 const one = (value: number) => value.toFixed(1);
@@ -364,7 +364,7 @@ export function SeasonReview({
                 <div>
                   <dt>
                     <Term id="ppda">PPDA</Term>
-                    {stats.pressPpda === undefined ? '*' : ''}
+                    {stats.ppda === undefined ? '' : '*'}
                   </dt>
                   <dd>{two(stats.pressPpda ?? stats.ppda)}</dd>
                 </div>
@@ -489,9 +489,12 @@ export function SeasonReview({
             리그 {stats.played}경기 기준.{' '}
             {stats.xgMatches < stats.played &&
               `xG·기대 승점은 기록이 있는 ${stats.xgMatches}경기만 셉니다. `}
-            {stats.pressPpda === undefined
-              ? '* PPDA는 전 구역 기준 근사치(상대 패스 ÷ 우리 태클·인터셉트)예요. '
-              : 'PPDA는 상대가 자기 진영 2/3에서 한 패스 ÷ 그 구역에서의 우리 태클·인터셉트예요. '}
+            {stats.detailMatches > 0 &&
+              stats.detailMatches < stats.played &&
+              `고급 지표(PPDA·빅찬스·키패스·파이널 서드·필드 틸트·하이 턴오버)는 기록이 있는 ${stats.detailMatches}경기만 셉니다. `}
+            {stats.detailMatches
+              ? 'PPDA는 상대가 자기 진영 2/3에서 한 패스 ÷ 그 구역에서의 우리 태클·인터셉트예요. '
+              : '* PPDA는 전 구역 기준 근사치(상대 패스 ÷ 우리 태클·인터셉트)예요. '}
             낮을수록 강하게 압박했다는 뜻이에요. 기대 승점은 경기마다 양 팀 xG를 포아송 분포로
             계산했어요. 지표 이름을 누르면 정의를 볼 수 있어요.
           </p>

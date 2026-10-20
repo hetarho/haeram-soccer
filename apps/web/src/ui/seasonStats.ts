@@ -1,5 +1,6 @@
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../packages/contracts/src/detail';
+import { sideLines } from './advanced';
 
 /** League fixtures decide the table, so the review measures the season on them. */
 const LEAGUE = new Set(['league', 'lower']);
@@ -62,11 +63,14 @@ export interface SeasonStats {
   passesPerGame: number;
   /** Tackles and interceptions per match. */
   defensiveActions: number;
-  /** Opponent passes per own tackle or interception, over the whole pitch. */
+  /**
+   * The marked approximation: opponent passes per own tackle or interception over the whole pitch,
+   * only for a season with no match carrying advanced counters (→WEB-47).
+   */
   ppda?: number;
   /** Matches that recorded advanced counters (rules 1.6.0); the figures below cover them only. */
   detailMatches: number;
-  /** Opponent build-up passes per own press action (MATCH-13), when every match has detail. */
+  /** MATCH-13 PPDA over the matches with advanced counters: opponent build-up passes per own press action. */
   pressPpda?: number;
   bigChances: number;
   bigChancesScored: number;
@@ -233,8 +237,7 @@ export function seasonStats(
       points: stats.points,
       xpts: stats.xgMatches === stats.progression.length + 1 ? xpts : undefined,
     });
-    const squad = side === 0 ? m.players.slice(0, 11) : m.players.slice(11);
-    for (const player of squad.length ? squad : m.players) {
+    for (const player of sideLines(m, side)) {
       if (!w.players.some((p) => p.id === player.id)) continue;
       const row = totals.get(player.id) || Array<number>(12).fill(0);
       player.metrics.forEach((value, index) => (row[index] += value));
@@ -247,12 +250,12 @@ export function seasonStats(
   stats.passAccuracy = ratio(completed, passes);
   stats.passesPerGame = played ? passes / played : 0;
   stats.defensiveActions = played ? defending / played : 0;
-  stats.ppda = defending ? opponentPasses / defending : undefined;
+  // One PPDA definition per season: MATCH-13's over the matches that carry it, otherwise the
+  // marked whole-pitch approximation (→WEB-47).
   if (stats.detailMatches) {
     stats.fieldTilt = ratio(stats.finalThirdPasses, stats.finalThirdPasses + opponentFinalThird);
-    if (stats.detailMatches === played && pressActions)
-      stats.pressPpda = opponentBuildUp / pressActions;
-  }
+    stats.pressPpda = ratio(opponentBuildUp, pressActions);
+  } else stats.ppda = ratio(opponentPasses, defending);
   if (stats.xgMatches) {
     stats.xg = xg;
     stats.xga = xga;

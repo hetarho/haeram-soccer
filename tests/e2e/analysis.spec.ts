@@ -359,7 +359,13 @@ test('reveals the recorded match report only after choosing the final result', a
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(report).toBeVisible();
   await expect(report).toContainText('정규 90분 최종 집계');
-  await expect(report.getByRole('article')).toHaveCount(11);
+  // Every own line that played gets a card: the starters and any substitutes, marked as such.
+  const heading = report.getByRole('heading', { name: /^우리 선수 기여 · \d+명$/ });
+  const lines = Number((await heading.innerText()).match(/(\d+)명/)![1]);
+  expect(lines).toBeGreaterThanOrEqual(11);
+  await expect(report.getByRole('article')).toHaveCount(lines);
+  if (lines > 11) await expect(report).toContainText('교체 투입');
+  await expect(report).toContainText('박스 진입');
   await expect(report).toContainText('패스 성공률');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
