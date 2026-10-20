@@ -103,6 +103,7 @@
 - 261020 decided T234: start the identity track (T234–T255) early while the grid chain runs? → keep the T233 gate (alt: re-point T234 to T218 and run T234 → T236/T238 → T246 in a worktree) — docs/CLUB-IDENTITY-CONTRACT.md §9 says to read T233's result first with no parallel lanes; only four small tasks could move, at the cost of conflicts on contracts types/schema with T218 and on the golden fixture
 - 261020 suggest T225 ARCH-28: entry JS/CSS measures about 255,661 of 256,000 gzip bytes on 35492d5 (refactor-261019 lanes + T216–T218 + T271) → make the grid playback path lazy before T225 adds match-theatre UI, or the CI benchmark's entry check turns red
 - 261020 decided T271 SAVE-4 ARCH-14: the benchmark job red on the 1.5 MiB checkpoint limit (century 2,378,780 B since T218) → move T231 ahead of T219 (dep T218, T219 now dep T231) and give it the benchmark's active-copy-only total; T232 measures on rules 4.0.0 after T230 (alt: T231 and T232 both first, which measures before T219–T229 add discipline, post-match material and heat maps | keep the order and a red benchmark for twelve tasks) — owner: reorder only when it costs little; T231 shares no file with T219–T229 and only `persistence.ts`/`client.ts` with T230, and SAVE-4's 3 MiB does not depend on rules 4.0.0
+- 261020 decided T224 MATCH-22: the grid's own-league cost (a season 1.8 → 10 s since T218) slows every season, the unit suite and CI → move T224 (measure, then MATCH-22's 125% rule sets `OWN_LEAGUE_ENGINE`) to right after T231 (dep T231; T219 now dep T224, T225 dep T223) and have it update the tests and golden facts if it picks `'summary'` (alt: set `'summary'` now without measuring | keep T224 after T223 and the slow runs until then) — owner chose the measured route; the own club's matches stay on the grid either way, and T221 already gives the probabilistic path cards, injuries and named lines
 
 ## ideation
 | id | st |
@@ -140,13 +141,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T231 | todo |
+| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T224 | todo |
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T223 | Post-match material and season heat maps | MATCH HIST | T222 | todo |
-| T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T223 | todo |
-| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T224 | todo |
+| T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T231 | todo |
+| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T223 | todo |
 | T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
 | T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
@@ -187,9 +188,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T231 (T232's manual benchmark run closes T271); then T219
+- implement-task T231 (T232's manual benchmark run closes T271); then T224 (own-league engine), then T219
 
 ## log
+- 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
 - 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
 - 261020 update ARCH r14 (owner): ARCH-23✎ the 100-season and first-play benchmarks (about 90 min a push since T218) leave the push CI for a manually dispatched `benchmark.yml`; verify.yml and benchmark.yml changed with the revision. T231/T233/T255 name the CI benchmark job as evidence → that is now a manual dispatch or a local `pnpm run benchmark`.
@@ -209,4 +211,3 @@
 - 261019 fix web: drop the duplicate lazy settings wrapper that 049879b added in ProgressControls beside 83ffc27's; the entry overage began at da97fe0, hidden by the T256 script break.
 - 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
-- 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
