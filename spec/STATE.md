@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T11:04Z | T232 |
+| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T12:03Z | T233 |
 
 ## inbox
+- 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
 - 261020 decided ARCH-30 ARCH-23 ARCH-21: ARCH r13–r15 were already carried out by the owner's fix commits (benchmark.yml, three unit shards, `tests/fixtures/worlds.ts`) → no new task; the todo tasks follow them in place: T250–T254 drop playwright from their task checks and leave their specs to the batch Chromium run, T254 leaves Firefox/WebKit to CI, T255 no longer runs `pnpm run verify`, T232/T233/T255 take the storage benchmark from a local `pnpm run benchmark` instead of a CI benchmark job, T240/T242/T254 take simulated worlds from `tests/fixtures/worlds.ts` (alt: one task that re-checks every ARCH-30 rule in the repo, which has nothing left to change)
 - 261020 decided T221 MATCH-19: a Poisson yellow draw that hit an already booked player made about 0.13 extra sendings-off a team (target 0.07 with second yellows in it) → cautions go to unbooked players and second yellows come only as 30% of the red draw (alt: keep natural second yellows and lower the red mean, which still overshoots) — the grid's measured red rate already includes second yellows
 - 261020 suggest T232 ARCH-28 MATCH-22: a season measures 11.2 s on the summary path after T219–T223 (T224: 8.4 s; rules 3.0.0: 5.1 s) on a machine shared with another session's e2e → T232's century run should record the season time and whether MATCH-22's own-league choice still holds
@@ -159,8 +160,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | doing@261020.p7x5 |
-| T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
+| T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | doing@261020.p7x5 |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
 | T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
 | T239 | Select readable saved shirts and automatic goalkeeper colours | KIT ARCH | T238 T237 | todo |
@@ -179,7 +179,6 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
-| T271 | Fix CI failure | ARCH | - | blocked@261020 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -189,9 +188,11 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T232 (century benchmark, closes T271), then T233; T232's manual benchmark run closes T271
+- implement-task T233 (docs, golden, batch run and CI on the final rebuild source); then work group identity (lanes in T235–T253), T255 last
 
 ## log
+- 261020 T232 done: rules 4.0.0 century checkpoints fit SAVE-4 without codec changes (worst baseline century 2,382,876 of 3,145,728 B); season engine 8.5 s; T271 closed with it.
+- 261020 create-task T235 T240 T245 T250 T252 lanes: identity-base, identity-engine, identity-editor, identity-founding, identity-match-kit (T254 T255 lane-less); deps unchanged.
 - 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
 - 261020 create-task ARCH start
 - 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
@@ -210,5 +211,3 @@
 - 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
 - 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
 - 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
-- 261020 create-task MATCH-26: no task — T224's summary lines already record only minutes, shots, shots on target, goals, assists and saves, and nothing estimates grid-only counters.
-- 261020 update-ssot MATCH r13: MATCH-26✎ grid-only counters stay absent on the probabilistic path.

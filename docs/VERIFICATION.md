@@ -1,5 +1,41 @@
 # Local web verification
 
+## Rules 4.0.0 century storage (T232) — 2026-10-20
+
+`pnpm run benchmark` passed locally at committed `fbd018c8b6848a3cec43db70723d113b45259def` (clean tree), source SHA-256 `f3c510eea708a128ba0d4a12f6305f5908c5c5334857534e5e4862efab9c6a41`, engine rules 4.0.0, on Node 26.8.1, macOS arm64, Apple M1 Max, in 3,071,890 ms. Both century careers, the settled active round 23, every lossless round trip, both resumed-season replays, the retained workload and the 1950–2025 era probe pass under SAVE-4 (3,145,728 B a checkpoint, 3,670,016 B total; only the active copy counts toward the total since T231).
+
+| checkpoint | checkpoint B | compressed payload B | canonical world B | encode ms | own matches |
+|---|---|---|---|---|---|
+| retained career and cross-season promise | 284,910 | 248,715 | 4,165,674 | 135 | 152 |
+| retained workload after season close | 203,126 | 177,154 | 3,684,895 | 99 | 177 |
+| baseline founding | 65,258 | 56,521 | 2,237,465 | 36 | 0 |
+| baseline mid-career active round | 1,215,516 | 1,205,324 | 35,466,371 | 96,931 | 2,248 |
+| **baseline century (worst)** | **2,382,876** | 2,363,512 | 88,795,795 | 194,627 | 4,481 |
+| active-management founding | 65,154 | 56,428 | 2,237,957 | 38 | 0 |
+| active-management mid-career active round | 1,082,526 | 1,073,349 | 34,351,710 | 92,293 | 1,885 |
+| active-management century | 1,964,446 | 1,948,308 | 84,845,581 | 183,486 | 3,426 |
+| active-management century active round 23 | 2,052,254 | 2,035,431 | 86,320,752 | 183,987 | 3,442 |
+
+The worst checkpoint uses 75.7% of the checkpoint limit (762,852 B headroom); its total is 2,383,388 B. T271 measured 2,378,780 B for T218's century, a different career (4,704 own matches, own league on the grid, no discipline, material or heat), so the two do not compare like for like. The largest packed streams of that checkpoint, each compressed alone with the checkpoint's brotli settings (they compress jointly in the payload, so these rank them and do not sum to it):
+
+| stream | canonical B | brotli alone B |
+|---|---|---|
+| `matchDetail.players` | 1,328,584 | 490,257 |
+| `statBits.data` | 872,554 | 298,037 |
+| `careers.jobs` | 4,509,526 | 200,923 |
+| `matchIncidents.rows` | 352,115 | 176,885 |
+| `standings` | 444,718 | 171,861 |
+| `matchDetail.teams` | 282,553 | 170,734 |
+| `careers.people` | 2,777,332 | 157,019 |
+| `world.players` | 872,509 | 93,651 |
+| `dict` | 474,188 | 69,048 |
+| `careers.mentors` | 1,308,393 | 64,016 |
+| `seasonHeat.rows` | 137,633 | 55,073 |
+
+Season engine time without codec or replay checks: baseline 8.46 s and active management 8.24 s a season on this host (T224 measured 8.4 s on the summary path and 42.7 s with the own league on the grid, rules 3.0.0 5.1 s), so MATCH-22's own league stays on the probabilistic path. The baseline career retains 20,606 people, the active one 20,422; peak checkpoint-sampled heap 2,038,461,672 B.
+
+Raw [rules-4 storage report](benchmarks/T232-rules4-storage.json), identical to [T010-storage.json](benchmarks/T010-storage.json), which `first-play.mjs` reads. The run used the local Node 26.8.1, not the pinned 24.12.0; the manually dispatched `benchmark.yml` runs the same benchmark on the pinned toolchain when the owner starts it. No codec, retention or limit changed. These representative seeds do not guarantee every career fits.
+
 ## Rules 3.0.0 integration — 2026-10-17
 
 [CI 38970812465](https://github.com/hetarho/haeram-soccer/actions/runs/38970812465) passed at application commit `6df81fa31e88c981b74212ab0ee9ad44c2789bdd`, source SHA-256 `63ef01ba2666d94841b8683b890987bf44d2f929f2bfe70b4ee412e10348c1b0` (535 files). The closing documentation commits preserve that exact source.
