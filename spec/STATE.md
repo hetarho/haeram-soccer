@@ -171,7 +171,6 @@
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 T251 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
-| T272 | Define complete match metrics and reproducible measurement tooling | MATCH ARCH | - | todo |
 | T273 | Define candidate match contracts and supported-career compatibility | MATCH HIST SAVE ARCH | T255 T272 | todo |
 | T274 | Make candidate actions and restart preparation physically continuous | MATCH ARCH | T273 | todo |
 | T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
@@ -193,12 +192,13 @@
 | one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 33 | 12 | 21 | 0 | 0 | 5 | 2026-10-20T17:33:51.108Z | [history](work/identity.json) |
+| identity | 2 | 33 | 13 | 20 | 0 | 2 | 2 | 2026-10-20T18:56:00.025Z | [history](work/identity.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261020 T272 integrated
 - 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
 - 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
 - 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
@@ -218,4 +218,3 @@
 - 261021 update-ssot WEB r98 start: compact preparation-only NEXT MATCH, preserve event watching and move the general watch/return/season action to the HUD menu.
 - 261021 T289 done: manual mode hides background settings only; observation/delegation remain editable, WEB r97; 6 tests/typecheck/lint/format/build pass, browser specs updated for batch.
 - 261021 create-task WEB r97 → T289; T289 start at 4af396f, manual background-only visibility correction.
-- 261021 update-ssot WEB r97 start: owner clarified manual mode should hide only background settings; restore observation and delegation controls.
