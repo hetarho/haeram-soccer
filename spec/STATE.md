@@ -116,6 +116,7 @@
 - 261020 decided T226 ARCH-28: the glossary text sat in the entry and its 14 new entries would have crossed 256,000 B → the entries load with the glossary sheet (`glossaryEntries.ts`, `GlossarySheet.tsx`, `Term.tsx`), and T225 loads the pitch theatre lazily from LiveSeason; entry 255,868 → 243,550 gzip bytes (alt: raise the budget | drop glossary entries)
 - 261020 suggest T221 MATCH-13 MATCH-18: T226 found the grid counts cut-back attempts as `TD.cutBacks` (MATCH-13 says completed) and records a cross's end cell as its origin, so crosses into the box never count as box entries → fix the counters with the grid chain (engine files under T219–T223), then the report's 컷백 row reads completions
 - 261020 suggest T222 MATCH-24: T225 found incidents a minute off their frames (a red card recorded at 73′ appears in the 74′ frame) and an incident at 90+3′ in a match whose last frame is 90+2′ → align incident minutes with `buildFrames` labels; the theatre places an unmatched incident in its period's last or its minute's first frame meanwhile
+- 261020 decided T228: z5k8 hands T228 to k4p2 (z5k8 runs T220 next) → k4p2 builds it beside T227 on T219's discipline API (`isUnavailable`, `isBanned`, fixture-aware `ownStarters`/`lineupPreset`/`startingSquad`) — T228's touches share no file with T227 or T220
 
 ## ideation
 | id | st |
@@ -158,7 +159,7 @@
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T223 | doing |
-| T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
+| T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | doing |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
