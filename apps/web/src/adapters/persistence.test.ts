@@ -7,13 +7,18 @@ import { checkpoint, encode, decode, Saves, type StoragePort } from './persisten
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import { bmpText } from './bmp127';
+import { encodePayload } from './compression';
 import { brotliCompressSync } from 'node:zlib';
 import {
+  CURRENT_CHECKPOINT_SCHEMA,
   CURRENT_ENGINE_VERSION,
   envelopeEngine,
   isEarlierEngine,
+  isSaveCompatibilityError,
   PRIOR_CATALOG_HASHES,
   SaveCompatibilityError,
+  SUPPORTED_CHECKPOINT_SCHEMAS,
+  SUPPORTED_ENGINE_VERSIONS,
   upgradeWorldRules,
 } from '../../../../packages/contracts/src/versions';
 import {
@@ -22,6 +27,7 @@ import {
   CURRENT_CATALOG,
 } from '../../../../packages/catalogs/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
+import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
 class Memory implements StoragePort {
   data = new Map<string, string>();
@@ -45,6 +51,52 @@ const observed = (rounds: number): World =>
     return w;
   });
 const features = () => cachedWorld('feature-state', () => featureState());
+const sha256 = async (bytes: Uint8Array<ArrayBuffer>) =>
+  Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
+/**
+ * An envelope over `packed` as a writer of container `schema` made it: canonical compact bytes,
+ * their real SHA-256 and the codec the writer picks, independently of today's `encode`.
+ */
+async function seal(w: World, packed = pack(w), schema = 1, generation = 1, parentGeneration = 0) {
+  const bytes = new TextEncoder().encode(canonical(packed));
+  const { codec, payload } = await encodePayload(bytes);
+  return JSON.stringify({
+    schema,
+    engine: w.engine,
+    catalog: w.catalog,
+    catalogHash: w.catalogHash,
+    worldId: w.id,
+    generation,
+    parentGeneration,
+    codec,
+    checksum: await sha256(bytes),
+    payload,
+  });
+}
+const IDENTITY: ClubIdentity = {
+  version: 1,
+  colours: ['#126044', '#FFFFFF'],
+  crest: {
+    shape: 'shield',
+    pattern: 'stripes',
+    emblem: 'star',
+    primary: '#126044',
+    secondary: '#FFFFFF',
+  },
+  kits: {
+    home: { pattern: 'stripes', primary: '#126044', secondary: '#FFFFFF' },
+    away: { pattern: 'plain', primary: '#ffffff', trim: '#126044' },
+    third: { pattern: 'plain', primary: '#0b1f44', trim: '#FFFFFF' },
+  },
+};
+/** A world whose own club carries `identity`, the cached world left untouched. */
+function withIdentity(w: World, identity: unknown) {
+  const copy = structuredClone(w);
+  copy.clubs.find((club) => club.id === copy.playerClub)!.identity = identity as ClubIdentity;
+  return copy;
+}
 describe('recoverable persistence', () => {
   it('roundtrips active schedule, exact money and all match/player facts losslessly', async () => {
     const w = observed(2);
@@ -173,7 +225,7 @@ describe('recoverable persistence', () => {
     await expect(decode(JSON.stringify({ ...e, checksum: '0'.repeat(64) }))).rejects.toThrow(
       '체크섬',
     );
-    await expect(decode(JSON.stringify({ ...e, schema: 2 }))).rejects.toThrow('버전');
+    await expect(decode(JSON.stringify({ ...e, schema: 3 }))).rejects.toThrow('버전');
     await expect(decode('x'.repeat(8 * 1024 * 1024 + 1))).rejects.toThrow('너무');
   });
   it('commits manifest last and retains previous world on quota failure', async () => {
@@ -353,7 +405,7 @@ describe('compatible rule upgrades', () => {
 
 describe('incompatible checkpoint protection', () => {
   it.each([
-    ['schema', 2],
+    ['schema', 3],
     ['engine', '9.0.0'],
     ['catalog', 'future-catalog'],
     ['catalogHash', 'f'.repeat(64)],
@@ -449,6 +501,109 @@ describe('incompatible checkpoint protection', () => {
   });
 });
 
+describe('checkpoint container schema 2', () => {
+  it('writes container 2 with unchanged world schema, codec, checksum, catalog pin and rules', async () => {
+    expect(CURRENT_CHECKPOINT_SCHEMA).toBe(2);
+    expect(SUPPORTED_CHECKPOINT_SCHEMAS).toEqual([1, 2]);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
+    const w = withIdentity(observed(1), IDENTITY);
+    const two = JSON.parse(await encode(w, 3, 2)),
+      one = JSON.parse(await seal(w, pack(w), 1, 3, 2));
+    expect(two.schema).toBe(2);
+    expect({ ...two, schema: 1, payload: '' }).toEqual({ ...one, payload: '' });
+    const loaded = await decode(JSON.stringify(two));
+    expect(loaded.envelope.schema).toBe(2);
+    expect(loaded.world.schema).toBe(1);
+    // Container 2 keeps the identity a container-1 reader would have had to drop.
+    expect(canonical(loaded.world)).toBe(canonical(w));
+    expect(canonical((await decode(JSON.stringify(one))).world)).toBe(canonical(w));
+    // Neither container is permission to read earlier gameplay rules.
+    const legacy = { ...world(), engine: '3.0.0' };
+    for (const raw of [await encode(legacy), await seal(legacy)])
+      await expect(decode(raw)).rejects.toMatchObject({
+        code: 'save-compatibility',
+        engine: '3.0.0',
+      });
+  });
+
+  it('reads a genuine current-rule schema-1 envelope without rewriting it, then writes and reloads schema 2', async () => {
+    const port = new Memory();
+    const w = observed(1);
+    const raw = await seal(w);
+    expect(JSON.parse(raw).schema).toBe(1);
+    port.data.set('haeram-soccor:slot:a', raw);
+    port.data.set(
+      'haeram-soccor:manifest',
+      JSON.stringify({ slot: 0, worldId: w.id, generation: 1, parentGeneration: 0 }),
+    );
+    const before = new Map(port.data);
+    const saves = new Saves(port);
+    const loaded = await saves.load();
+    expect(loaded?.envelope.schema).toBe(1);
+    expect(loaded?.raw).toBe(raw);
+    expect(loaded?.recovered).toBe(false);
+    expect(canonical(loaded!.world)).toBe(canonical(w));
+    expect(port.data).toEqual(before);
+    await saves.save(observed(2));
+    const reloaded = await new Saves(port).load();
+    expect(reloaded?.envelope.schema).toBe(2);
+    expect(reloaded?.envelope.parentGeneration).toBe(1);
+    expect(canonical(reloaded!.world)).toBe(canonical(observed(2)));
+    // The schema-1 predecessor stays exactly as it was written.
+    expect(port.getItem('haeram-soccor:slot:a')).toBe(raw);
+  });
+
+  it('future envelope or nested identity version remains a compatibility error', async () => {
+    const w = world();
+    const current = JSON.parse(await encode(w));
+    for (const schema of [0, 3, 99])
+      await expect(decode(JSON.stringify({ ...current, schema }))).rejects.toBeInstanceOf(
+        SaveCompatibilityError,
+      );
+    await expect(decode(JSON.stringify({ ...current, schema: '2' }))).rejects.toThrow('헤더');
+    const future = withIdentity(w, { ...IDENTITY, version: 2 });
+    for (const raw of [await encode(future), await seal(future)])
+      await expect(decode(raw)).rejects.toBeInstanceOf(SaveCompatibilityError);
+    // The preflight runs before unpacking: damage elsewhere is not reported for a newer game.
+    const damaged = structuredClone(pack(future));
+    damaged.dict = 'damaged' as unknown as string[];
+    await expect(decode(await seal(future, damaged, 2))).rejects.toBeInstanceOf(
+      SaveCompatibilityError,
+    );
+    const plain = structuredClone(pack(w));
+    plain.dict = 'damaged' as unknown as string[];
+    const corrupt = await decode(await seal(w, plain, 2)).catch((error: unknown) => error);
+    expect(corrupt).toBeInstanceOf(Error);
+    expect(isSaveCompatibilityError(corrupt)).toBe(false);
+    // A malformed current-version identity is ordinary invalid data.
+    const malformed = withIdentity(w, { ...IDENTITY, colours: ['red'] });
+    const invalid = await decode(await encode(malformed)).catch((error: unknown) => error);
+    expect(invalid).toBeInstanceOf(Error);
+    expect(isSaveCompatibilityError(invalid)).toBe(false);
+  });
+
+  it.each([true, false])(
+    'a valid older predecessor never replaces a newer identity save (manifest kept: %s)',
+    async (manifest) => {
+      const port = new Memory();
+      const saves = new Saves(port);
+      await saves.save(world());
+      await saves.save(observed(1));
+      const newer = await encode(withIdentity(observed(1), { ...IDENTITY, version: 2 }), 2, 1);
+      port.data.set('haeram-soccor:slot:b', newer);
+      if (!manifest) port.removeItem('haeram-soccor:manifest');
+      const before = new Map(port.data);
+      const recovery = new Saves(port);
+      await expect(recovery.load()).rejects.toBeInstanceOf(SaveCompatibilityError);
+      expect(recovery.incompatibleBackup).toBe(newer);
+      expect(recovery.incompatibleCheckpoint).toBe(true);
+      await expect(recovery.save(observed(1))).rejects.toBeInstanceOf(SaveCompatibilityError);
+      expect(port.data).toEqual(before);
+      await expect(new Saves(port).load()).rejects.toBeInstanceOf(SaveCompatibilityError);
+    },
+  );
+});
+
 it('feature-state-lossless-roundtrip and continued-career-parity preserve roles, money, draws and promise judgements', async () => {
   const { operate } = await import('../../../../packages/engine/src/index');
   const { judgePromises } = await import('../../../../packages/engine/src/promises');
@@ -519,13 +674,10 @@ it('rejects malformed compact optional shapes and expanded person facts on the f
     const packed = pack(w);
     corrupt(packed);
     const bytes = new TextEncoder().encode(canonical(packed));
-    const checksum = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
-      b.toString(16).padStart(2, '0'),
-    ).join('');
     const raw = JSON.stringify({
       ...envelope,
       codec: 'brotli-bmp127',
-      checksum,
+      checksum: await sha256(bytes),
       payload: bmpText(brotliCompressSync(bytes)),
     });
     await expect(decode(raw)).rejects.toThrow();

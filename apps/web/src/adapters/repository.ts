@@ -2,6 +2,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
+  type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
 export const CHECKPOINT_LIMIT = 3 * 1024 * 1024;
 export const TOTAL_LIMIT = 3.5 * 1024 * 1024;
@@ -24,7 +25,8 @@ export interface StoragePort {
   removeItem(key: string): void;
 }
 export interface Envelope {
-  schema: 1;
+  /** Container 1 or 2 (identity-bearing); `World.schema` stays 1 either way. */
+  schema: CheckpointSchema;
   engine: string;
   catalog: string;
   catalogHash: string;

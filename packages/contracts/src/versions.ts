@@ -88,6 +88,17 @@ export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   '2.0.0',
   '3.0.0',
 ];
+/**
+ * The checkpoint container (envelope) schema, separate from `World.schema` and the bridge protocol,
+ * which stay 1. Container 2 carries club identities (→SAVE-20), so a reader that knows only 1
+ * refuses such a save instead of silently dropping the designs.
+ */
+export const CURRENT_CHECKPOINT_SCHEMA = 2;
+/** Containers this version reads; any other is a compatibility failure, never corruption. */
+export const SUPPORTED_CHECKPOINT_SCHEMAS = [1, CURRENT_CHECKPOINT_SCHEMA] as const;
+export type CheckpointSchema = (typeof SUPPORTED_CHECKPOINT_SCHEMAS)[number];
+export const isCheckpointSchema = (value: unknown): value is CheckpointSchema =>
+  (SUPPORTED_CHECKPOINT_SCHEMAS as readonly unknown[]).includes(value);
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 
 export class SaveCompatibilityError extends Error {
@@ -116,9 +127,15 @@ export function isEarlierEngine(engine: string) {
 /** What an earlier-rules save says when it is asked to open (→SAVE-16). */
 export const earlierRulesMessage = (engine: string) =>
   `이 저장은 규칙 ${engine} 커리어입니다 — 규칙 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`;
-/** The rules version an envelope names in its header, read without decoding its payload. */
+/**
+ * The rules version an envelope names in its header, read without decoding its payload; none for a
+ * container this version cannot read, whose header is not evidence of earlier rules.
+ */
 export function envelopeEngine(raw: string) {
-  return /"engine"\s*:\s*"([^"]{1,20})"/.exec(raw.slice(0, 400))?.[1];
+  const header = raw.slice(0, 400);
+  const schema = /"schema"\s*:\s*(\d{1,9})\b/.exec(header)?.[1];
+  if (!isCheckpointSchema(Number(schema))) return undefined;
+  return /"engine"\s*:\s*"([^"]{1,20})"/.exec(header)?.[1];
 }
 
 export function isSaveCompatibilityError(error: unknown): error is SaveCompatibilityError {
