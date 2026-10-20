@@ -1,8 +1,8 @@
 # MATCH Observable match simulation
-> r13 | Define the implemented browser-demo behavior for observable match simulation: a grid engine where every touch is a player's role-, place- and situation-based decision.
+> r14 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
-- MATCH-1 [o] A match is played touch by touch: two halves of 45 minutes plus added time, each action taking its own few seconds of match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
+- MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
   - added time is the time each half lost to goals, substitutions, injuries, cards and set-piece delays, announced as the half ends; the modern era plays about 6–12 minutes a match in all (EPL 2023-24 11:39, the five seasons before about 7:20).
   - at half-time the sides change ends and the manager may substitute (→MATCH-20).
 - MATCH-2 [o] Outcome factors include the players' attributes at their slots, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
@@ -51,13 +51,13 @@
   - the last completed pass before the shot is the key pass and earns the assist, unless the shooter beat his marker alone (then the shot is unassisted).
   - player contributions record the actual passer, receiver, marker, shooter, keeper, fouler, carded player and substitute.
 - MATCH-12 [o] Observed playback draws the engine's own positions for every touch: the ball flies along the recorded actions and players stand where the engine puts them. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
-  - pacing is automatic: quick through build-up in the own half, slower near the box, at chances and at set pieces; pause and the speed choices keep, and a match lasts about 720 motion seconds (8 a match minute on average).
-  - speed: passes about 48, turnovers 44, restarts 60, shots 84 pitch units per motion second (cap 100) against a 5.8 player maximum; a kick starts fast and slows a little.
+  - the selected speed applies uniformly in and out of play, through build-up, chances and restarts; 1x maps every 60 match seconds to 4 real seconds (→WEB-32). Added time and extra time use the same mapping. Seeking and the interval between periods are explicit transitions, not running play.
+  - action durations and restart preparation allow the ball and players to traverse their recorded routes. Player speed, acceleration and turning are bounded by movement rules using pace and fatigue; kicks have bounded travel speed and a visible departure and arrival. No path is compressed to catch a later action or replaced by an instantaneous position assignment.
   - flight: a quadratic curve from launch to landing whose sideways bend grows with distance; passes of 18+ units rise with distance (up to 9, about 30% of long balls driven low), shots stay low; bend and height come from the motion stream only.
-  - every flight ends where the engine recorded it: at the receiver, the interceptor, the tackler, out of play or in the net; restarts rest on their real spot and the taker walks to it for at most 0.9 s.
-  - the track records ground position and height every 0.1 motion seconds and the renderer draws the ball above its shadow, up to 35% larger when high.
+  - every flight ends where the engine recorded it: at the receiver, the interceptor, the tackler, out of play or in the net. After the ball leaves play it returns to the real restart spot through a recorded retrieval/placement interval; the taker and set-piece participants travel there before the kick. Substitutions and the change of ends have explicit entry/exit or period transitions.
+  - ball and player paths preserve continuity at actions, restarts and minute boundaries. Sampling must resolve departures, arrivals and changes of intent; interpolation does not invent a football event. The renderer draws the ball above its shadow, up to 35% larger when high.
 
-- MATCH-13 [o] Every own-club match records advanced counters for both sides and every own player; they add up to season and career totals for own players (→HIST). ← xG, xA, key passes and where the ball goes are what football fans compare
+- MATCH-13 [o] Every newly settled match produces advanced counters for both sides and every participating named player, with identical definitions on both paths (→MATCH-26/27); retained season and career scope is →HIST-3/16/17. ← xG, xA, key passes and where the ball goes are what football fans compare
   | counter | definition in this engine |
   |---|---|
   | key pass | last completed pass before a shot (assists included) |
@@ -110,8 +110,13 @@
   - the base probabilities are real football's for the cell and the player's position (→docs/MATCH-BASELINES.md); his role's spatial habit (→PLAYER-5), his play traits (→PLAYER-9), the tactic's behaviour (→MATCH-8) and the tags bend them.
   - pressure shortens the options, back to goal favours hold-up and lay-offs, in behind favours a shot or a through ball; a side ahead sits deeper and risks less, more so late, a side behind pushes up and risks more.
   - the target is weighed among teammates by the threat value of their cell, how free they are and the distance; 판단력 sharpens the choice toward the best option and 침착성 keeps that sharpness and the execution under pressure (→PLAYER-2).
+  - current intent and a teammate's committed supporting run affect the choice: the carrier may wait for an overlap, combine with a player showing for the ball or release a runner. A lost opportunity, turnover or danger can cancel the plan; options do not reroll without a football reason at every update (→MATCH-17).
   - shots follow real per-cell rates: almost none outside the attacking quarter, rising to most touches in the central cells near goal.
-- MATCH-17 [o] Off the ball every player moves toward a target position: his slot's place in the formation's shape for the phase (in possession, out of possession, transition), moved by his role's habit (e.g. the inverted full-back into midfield, the false nine into the pocket) and the tactic's block and line height, and shifted toward the ball. Runs in behind, overlaps and late runs into the box follow role, traits and tags; markers track their men; the side in possession keeps players behind the ball as its tactic's rest defence.
+- MATCH-17 [o] Every player has an individual football intention within his side's tactic and phase. ← coordinated choices make roles and personalities readable in play
+  - his formation, role, traits, attributes, pressure and fatigue shape his choice to support, receive, run, press, mark, cover, recover or carry. The target starts from his slot's phase shape, role habit, block height and ball-side shift; the side in possession preserves its rest defence.
+  - an intention retains its target and relevant teammate/opponent until achieved, no longer feasible or displaced by a higher-priority event. A turnover, pass, opponent movement, injury, dismissal or restart can trigger a reaction; changing circumstances may end a run before its original target.
+  - teammates coordinate: a receiver shows while another opens a lane, a wide player combines with an overlap, one defender presses while another covers, and markers react to the runner they track. Multiple players do not independently claim the same support, pressing or covering job without accounting for one another.
+  - role and trait differences remain observable across comparable situations. Movement follows continuous, speed-bounded paths (→MATCH-12); the four existing tactics and manager authority remain →MATCH-8/20.
 - MATCH-18 [o] Fouls, set pieces, restarts and offside are real scenes at their real spot. ← set pieces and penalties score about a quarter to a third of real goals
   - a challenge may be a foul, more often for a reckless 태클, under the press tactic and when stopping a counter, less often by a booked player; a foul gives a free kick at its spot, inside the box a penalty.
   - ball out of play: a throw-in at its touchline spot, a goal kick, or a corner when the defending side touched it last over its byline.
@@ -149,10 +154,10 @@
 - MATCH-21 [o] Injuries happen during the match: the per-match probability of →CLUB-23 strikes at a moment of play, more likely late and under press, and replaces the separate draw after the match; the injured player leaves the pitch (→MATCH-20) and the severity bands of →CLUB-23 apply. Players of clubs nobody owns are injured by the same rule. ← the →CLUB-23 frequency holds, now visible when it happens
 - MATCH-22 [o] Which engine plays a fixture:
   - the own club's matches always play the grid engine.
-  - fixtures between other clubs in a league whose players are recorded (the own league) play the grid engine while a season's processing stays within 125% of the rules 3.0.0 baseline on the century benchmark (→ARCH-28; about 10 s a season on CI); beyond that they take the probabilistic path.
-  - every other fixture takes the probabilistic path: team-level and fast, on the same scoring curve (goals per match within 20% of the grid engine at every tier, the same MATCH-2 calibration), naming scorers and assisters where players are recorded and drawing cards, suspensions and injuries for named players at the grid engine's rates. ← a world season simulates about 10,000 fixtures
-  - a fixture always takes the same path whether observed or not.
-- MATCH-23 [o] The grid engine holds real football's distributions for equal top-tier sides, measured over own matches (sources and per-cell tables →docs/MATCH-BASELINES.md). ← the decision tables are anchored to real data, so their output must read like it
+  - every fixture without the own club, including fixtures in its league, takes a fast aggregate probabilistic path producing complete results (→MATCH-26/27). It does not run the detailed 22-player spatial simulation or replay a per-minute chance loop. ← a world season settles about 10,000 fixtures
+  - the paths use the same strength factors and intended football targets (→MATCH-2/23/28), including named contributors, discipline, injuries, substitutions, extra time and shootouts. Generated incidents affect availability and subsequent fixtures through the ordinary world rules.
+  - a fixture always takes the same path whether observed or not. Performance and release evidence follow →ARCH-31; timing measurements never choose a fixture's path at runtime.
+- MATCH-23 [o] Both engines hold the intended football distributions below for equal top-tier sides (sources and per-cell tables →docs/MATCH-BASELINES.md); comparisons across other conditions follow →MATCH-28. ← the decision tables and aggregate outcomes must describe the same football
   | measure (a team a match unless noted) | band |
   |---|---|
   | passes attempted / completed | 430–520 / 76–84% |
@@ -174,15 +179,30 @@
   | ball in play (a match) | 54–58 min |
 - MATCH-24 [o] The live event line narrates notable actions with their cell and tags in Korean football media's terms (하프스페이스, 라인 사이, 뒷공간, 아크 정면, 컷백, 니어/파 포스트, 레스트 디펜스, 세컨드 볼, 수적 우위, 라인 브레이킹, 역습, 게겐프레싱 and the like), derived from recorded events only; it never changes outcomes and uses no invented zone names.
 - MATCH-25 [o] After an own match its post-match material is shown and kept as →MATCH-5 allows: a shot map (place, xG, outcome, header or foot), heat maps for each player and side, a pass network (average positions and passes between pairs) and a tactical report — where attacks came from by lane and band, entries, where the ball was won and lost, set pieces and decisive duels. ← it gives the owner grounds for manager and signing decisions
-- MATCH-26 [o] Players on the probabilistic path (→MATCH-22) carry only the counters that path produces: minutes, shots, shots on target, goals, assists and keeper saves; grid-only counters (box entries, xT added, line-breaking passes and the like) stay absent, never estimated. ← an estimate by position would present invented figures as measured; the own club's players always play the grid
+- MATCH-26 [o] The aggregate path produces the same complete numerical result contract as detailed play, with the same meanings and units (→MATCH-3/4/13/27).
+  - every new result supplies scores, basic team/player metrics, team xG, all advanced team/player counters, actual participation minutes, incidents and period/knockout outcomes. A supported counter cannot be omitted, filled with a placeholder zero or labelled unavailable solely because the match used probability.
+  - values are generated together as one simulated match, conditioned on the clubs, starting players, roles, tactics, strength, home advantage, fatigue and era. The numbers are settled game facts used by records and later progression; they are not independent decorative draws.
+  - numerical parity does not require ball/player frame traces or retaining an NPC per-action archive. Map and archive lifetimes remain →MATCH-5/25 and →HIST-2/16/17; named participants follow →WORLD-6/11.
+- MATCH-27 [o] A settled result is internally consistent on either path.
+  - score, goals and assists identify actual participating players; team/player totals reconcile under each metric's definition. Successful actions do not exceed attempts, shot classifications agree with shots and xG, and derived ratios use recorded denominators.
+  - cards, injuries, substitutions and dismissals share the match timeline and roster. Players cannot contribute outside their on-pitch intervals; era limits, man-short time, extra time, shootouts and unavailability follow →MATCH-6/19/20/21 and →LEAGUE-15.
+  - match facts feed exactly one settlement into standings, scorer tables, player/team totals, discipline and retained history. Save/reload, repeated commands and a change of view cannot add, redraw or reattribute the same match (→MATCH-7).
+- MATCH-28 [o] Statistical equivalence is measured against the intended football targets and detailed-play reference distributions; it is not a promise that two different algorithms reproduce every value of the same individual fixture.
+  - compare all produced scalar metrics, participation and incidents, their spread and tails, and their important relationships. Include strength gaps, all tactic pairings, home/away, tiers, fatigue, era rules and knockout formats; season tables, scoring leaders and career accumulation are also measured.
+  - version the metric inventory, condition sets, units, seed partitions, sample sizes, tolerances and 95% uncertainty intervals before tuning. Use separate calibration and validation samples. Missing coverage or insufficient evidence is reported as such, never a pass.
+  - outcome-rate differences allow at most 3 percentage points; mean differences allow the larger of 5% of the reference mean magnitude or 0.1 reference standard deviations; distribution CDF differences allow 8 percentage points; supported pairwise correlation differences allow 0.1. Rare events require a dedicated comparison with a 20% relative rate margin and enough samples to resolve it. Equivalence requires its uncertainty interval to fit the margin, not merely overlap zero.
+  - MATCH-2/23's intended targets remain authoritative where detailed play currently misses them. Fix and remeasure the reference rather than reproducing a known defect in the aggregate model. Recalibrate after movement, intentions, tactics or result-model changes; do not loosen targets to claim success.
+  - exact record invariants (→MATCH-27) have no statistical tolerance. Full-model activation requires the measured accuracy, compatibility, storage and speed gates together (→SAVE-23 and →ARCH-31).
 
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
+- Other-club fixture: prepared squads and fixture conditions → aggregate joint match facts → complete common result → invariant validation → ordinary world settlement and bounded aggregates.
 
 ## constraints
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r14 261020 MATCH-1✎ all→own detailed; MATCH-12✎ auto pace/compressed flights→uniform speed/continuous routes; MATCH-13✎ own→all records; MATCH-16/17✎ targets→coordinated intentions; MATCH-22✎ optional grid/minute summary→non-own aggregate; MATCH-23✎ grid→both bands; MATCH-26✎ absent→full counters; MATCH-27+ consistency; MATCH-28+ equivalence
 - r13 261020 MATCH-26✎ open: absent or estimated by position→absent, the path records minutes, shots, goals, assists and saves only
 - r12 261019 MATCH-18✎ offside beyond the second-last defender in the opponent's half→receiving teammate beyond both the ball and the second-last opponent when the pass is played; restart unchanged
 - r11 261019 constraints✎ a running career keeps the rules it plays→the grid engine starts new careers, earlier careers follow →SAVE-19
