@@ -15,9 +15,11 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T06:43Z | T221 |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T07:27Z | T222 |
 
 ## inbox
+- 261020 decided T221 MATCH-19: a Poisson yellow draw that hit an already booked player made about 0.13 extra sendings-off a team (target 0.07 with second yellows in it) → cautions go to unbooked players and second yellows come only as 30% of the red draw (alt: keep natural second yellows and lower the red mean, which still overshoots) — the grid's measured red rate already includes second yellows
+- 261020 suggest T232 ARCH-28 MATCH-22: a season measures 11.2 s on the summary path after T219–T223 (T224: 8.4 s; rules 3.0.0: 5.1 s) on a machine shared with another session's e2e → T232's century run should record the season time and whether MATCH-22's own-league choice still holds
 - 261020 suggest ARCH-30: `calibration.grid-equal` and `calibration.grid-giant` take about 78 s alone and passed vitest's 120 s limit under a full local run (also seen by k4p2 at load 20) → per-case limits or smaller samples before CI shards hit it
 - 261020 decided T219 MATCH-19: which competition a league-yellow ban covers → the league only (scope `league`), cup and European accumulation their own competition, red cards every domestic competition (alt: league yellows ban domestically like a red) — MATCH-19 counts yellows per competition and names only the red ban as covering every domestic competition
 - 261020 decided T219: `closeSeason` played the lower-promotion playoff after `retireAtClose`, so a club could field nobody → `promote` runs before `retireAtClose` (alt: let a club short of eleven forfeit | change only the test world) — the playoff belongs to the season just played, as `promote`'s own comment says
@@ -156,7 +158,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
@@ -189,9 +190,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T221, then T222; T232's manual benchmark run closes T271
+- implement-task T222; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
 - 261020 T229 done (k4p2): player sheet 징계 and season heat maps, appearances = own records with minutes (substitutes as 교체 n), new counters in advanced stats, ban and warning badges, 부상·정지 on the home tile, the league 징계 table; the worker sends per-player `tallies` because the UI world holds only the last 30 own matches.
 - 261020 fix engine incidents: cards stamped mid-play read a minute before their frame and whistle dissent fell past the last added minute → `stampAt(period, t, added)` in playback.ts (per-period offsets, extra-time ready) stamps incidents and frame labels alike, cards re-stamped at the play's end (MATCH-24); golden unchanged by it.
 - 261020 fix e2e match-core: the full match loop takes 25–28 s alone at 390x844 (30 s limit) and timed out in two full runs → `test.slow()` like the other whole-journey specs.

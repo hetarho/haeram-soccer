@@ -1,6 +1,7 @@
 import type {
   Club,
   Fixture,
+  Incident,
   MatchPlayback,
   MatchRecord,
   Player,
@@ -24,6 +25,7 @@ import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } 
 import { managerStyleEffects, type StyleEffects } from './styles';
 import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
+import { injuryChance } from './careers';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, type DecideRule } from './grid/setup';
@@ -703,6 +705,84 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
 }
 
 /**
+ * Cards per team on the probabilistic path: the grid engine's measured rates (T215, docs/CALIBRATION.md:
+ * 3.93 yellows and 0.14 reds a match), so a fixture nobody watches books players as often.
+ */
+export const SUMMARY_DISCIPLINE = { yellows: 1.97, reds: 0.07 };
+/** How often each line is booked, relative to the others. */
+const CARD_LINE_WEIGHT: Record<string, number> = { GK: 0.2, DF: 1.3, MF: 1.2, FW: 0.8 };
+/** Knuth's Poisson draw. */
+function poisson(r: () => number, mean: number) {
+  const limit = Math.exp(-mean);
+  let k = 0,
+    p = r();
+  while (p > limit) {
+    k++;
+    p *= r();
+  }
+  return k;
+}
+/**
+ * Cards and injuries of a fixture on the probabilistic path (→MATCH-22, →LEAGUE-15), each from a
+ * stream of its own so the score stream is untouched: named starters are booked by line, sent off
+ * for a second yellow, a lost goal-scoring chance or serious foul play, and hurt at CLUB-23's
+ * per-match rate.
+ */
+function summaryIncidents({ w, f, squads, tactics }: MatchSetup): Incident[] {
+  const cards = random(`${w.seed}:discipline:${f.id}`),
+    hurts = random(`${w.seed}:injury:${f.id}`);
+  const incidents: Incident[] = [];
+  const minute = (r: () => number, from = 1) => from + Math.floor((91 - from) * r());
+  for (const side of [0, 1] as const) {
+    const xi = [...new Set(squads[side].slice(0, 11))];
+    const booked = new Map<string, number>(),
+      sent = new Set<string>();
+    const pick = (unbooked = false) => {
+      const pool = xi.filter((p) => !sent.has(p.id) && !(unbooked && booked.has(p.id)));
+      const total = pool.reduce((sum, p) => sum + CARD_LINE_WEIGHT[lineOf(p.position)]!, 0);
+      let u = cards() * total;
+      for (const p of pool) if ((u -= CARD_LINE_WEIGHT[lineOf(p.position)]!) < 0) return p;
+      return pool.at(-1);
+    };
+    const book = (p: Player, reason: Incident['reason']) => {
+      const first = booked.get(p.id);
+      const at = minute(cards, first ?? 1);
+      if (first === undefined) {
+        booked.set(p.id, at);
+        incidents.push({ minute: at, side, kind: 'yellow', player: p.id, reason });
+      } else {
+        sent.add(p.id);
+        incidents.push({ minute: at, side, kind: 'secondYellow', player: p.id, reason });
+      }
+    };
+    // Cautions go to players not yet booked; second yellows come with the red cards below.
+    for (let n = poisson(cards, SUMMARY_DISCIPLINE.yellows); n > 0; n--) {
+      const p = pick(true);
+      if (p) book(p, 'reckless');
+    }
+    for (let n = poisson(cards, SUMMARY_DISCIPLINE.reds); n > 0; n--) {
+      const p = pick();
+      if (!p) break;
+      const u = cards();
+      // About 30% of reds are second yellows, the rest a lost chance or serious foul play.
+      if (u < 0.3) {
+        if (!booked.has(p.id)) book(p, 'reckless');
+        book(p, 'reckless');
+      } else {
+        sent.add(p.id);
+        const reason = u < 0.8 ? 'dogso' : 'serious';
+        incidents.push({ minute: minute(cards), side, kind: 'red', player: p.id, reason });
+      }
+    }
+    const pressing = tactics[side] === 'press';
+    for (const p of xi)
+      if (hurts() < injuryChance(p, pressing))
+        incidents.push({ minute: minute(hurts), side, kind: 'injury', player: p.id });
+  }
+  return incidents.sort((a, b) => a.minute - b.minute);
+}
+
+/**
  * Team-level minutes for fixtures the grid engine does not play (→MATCH-22): a calibrated chance
  * model without the touches, on the same strength curve. With `keepPlayers` (the own league) the
  * starters get lines of 90 minutes with the shots, goals and assists the model already chose.
@@ -792,6 +872,7 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false) {
       : [],
     highlights,
     tactics,
+    incidents: summaryIncidents(setup),
     ...(keepPlayers && {
       lineCounts: [starters[0].length, starters[1].length] as [number, number],
     }),

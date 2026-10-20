@@ -1,5 +1,6 @@
 import type {
   Ban,
+  Unavailable,
   CompetitionKey,
   DisciplineState,
   Fixture,
@@ -37,20 +38,24 @@ const CUP_YELLOWS = 3;
 function state(w: World): DisciplineState {
   return (w.discipline ??= { year: w.year, yellows: {}, bans: [], out: [] });
 }
+/** Each club's league rounds of the season, gathered once per fixture list. */
+const clubRounds = new WeakMap<Fixture[], Map<string, number[]>>();
 /** A club's league fixtures this season, and how many of them come up to `round`. */
 function leagueRounds(w: World, club: string, round: number) {
-  let rounds = 0,
-    reached = 0;
-  for (const f of w.fixtures)
-    if (
-      f.year === w.year &&
-      (f.kind === 'league' || f.kind === 'lower') &&
-      (f.home === club || f.away === club)
-    ) {
-      rounds++;
-      if (f.round <= round) reached++;
-    }
-  return { rounds, reached };
+  let map = clubRounds.get(w.fixtures);
+  if (!map) {
+    map = new Map();
+    for (const f of w.fixtures)
+      if (f.year === w.year && (f.kind === 'league' || f.kind === 'lower'))
+        for (const id of [f.home, f.away]) {
+          const rounds = map.get(id);
+          if (rounds) rounds.push(f.round);
+          else map.set(id, [f.round]);
+        }
+    clubRounds.set(w.fixtures, map);
+  }
+  const rounds = map.get(club) ?? [];
+  return { rounds: rounds.length, reached: rounds.filter((r) => r <= round).length };
 }
 /** Matches banned when a player's league yellows reach `count` at the club's `reached`th match. */
 function leagueYellowBan(count: number, reached: number, rounds: number) {
@@ -77,8 +82,49 @@ const REASON_LABEL: Record<Ban['reason'], string> = {
   tactical: '퇴장',
 };
 
+/**
+ * Bans by player and by club, and injury entries by player, kept in step with the state's lists;
+ * rebuilt whenever a list was replaced from outside (a load, a season close).
+ */
+interface Index {
+  bans: Ban[];
+  out: Unavailable[];
+  byPlayer: Map<string, Ban[]>;
+  byClub: Map<string, Ban[]>;
+  outBy: Map<string, Unavailable[]>;
+}
+const indexes = new WeakMap<DisciplineState, Index>();
+function add<T>(map: Map<string, T[]>, key: string, entry: T) {
+  const rows = map.get(key);
+  if (rows) rows.push(entry);
+  else map.set(key, [entry]);
+}
+function drop<T>(map: Map<string, T[]>, key: string, entry: T) {
+  const rows = map.get(key);
+  if (!rows) return;
+  rows.splice(rows.indexOf(entry), 1);
+  if (!rows.length) map.delete(key);
+}
+function index(d: DisciplineState): Index {
+  let ix = indexes.get(d);
+  if (!ix || ix.bans !== d.bans || ix.out !== d.out) {
+    ix = { bans: d.bans, out: d.out, byPlayer: new Map(), byClub: new Map(), outBy: new Map() };
+    for (const b of d.bans) {
+      add(ix.byPlayer, b.player, b);
+      add(ix.byClub, b.club, b);
+    }
+    for (const o of d.out) add(ix.outBy, o.player, o);
+    indexes.set(d, ix);
+  }
+  return ix;
+}
+
 function ban(w: World, next: Ban) {
-  state(w).bans.push(next);
+  const d = state(w);
+  const ix = index(d);
+  d.bans.push(next);
+  add(ix.byPlayer, next.player, next);
+  add(ix.byClub, next.club, next);
   if (next.club !== w.playerClub) return;
   const p = w.players.find((player) => player.id === next.player);
   if (!p) return;
@@ -110,8 +156,11 @@ export function applyDiscipline(w: World, record: MatchRecord) {
       const count = (counts[competition] = (counts[competition] ?? 0) + 1);
       let matches = 0;
       if (competition === 'league') {
-        const { rounds, reached } = leagueRounds(w, club, record.round);
-        matches = leagueYellowBan(count, reached, rounds);
+        // Only a count at a threshold needs the club's rounds.
+        if (count === 5 || count === 10 || count === 15) {
+          const { rounds, reached } = leagueRounds(w, club, record.round);
+          matches = leagueYellowBan(count, reached, rounds);
+        }
       } else if (count % CUP_YELLOWS === 0) matches = 1;
       if (matches)
         ban(w, { player: card.player, club, matches, scope: competition, reason: 'yellows' });
@@ -135,22 +184,26 @@ export function applyDiscipline(w: World, record: MatchRecord) {
 export function serveBans(w: World, f: Fixture) {
   const d = w.discipline;
   if (!d?.bans.length) return;
+  const ix = index(d);
   const competition = competitionOf(f);
-  d.bans = d.bans.flatMap((b) =>
-    (b.club === f.home || b.club === f.away) && covers(b.scope, competition)
-      ? b.matches > 1
-        ? [{ ...b, matches: b.matches - 1 }]
-        : []
-      : [b],
-  );
+  for (const club of [f.home, f.away])
+    for (const b of [...(ix.byClub.get(club) ?? [])]) {
+      if (!covers(b.scope, competition)) continue;
+      if (--b.matches > 0) continue;
+      d.bans.splice(d.bans.indexOf(b), 1);
+      drop(ix.byPlayer, b.player, b);
+      drop(ix.byClub, b.club, b);
+    }
 }
 
 /** Whether a player is banned for the fixture's competition. */
 export function isBanned(w: World, id: string, f: Pick<Fixture, 'kind' | 'groupKey'>) {
   const bans = w.discipline?.bans;
   if (!bans?.length) return false;
+  const mine = index(w.discipline!).byPlayer.get(id);
+  if (!mine) return false;
   const competition = competitionOf(f);
-  return bans.some((b) => b.player === id && covers(b.scope, competition));
+  return mine.some((b) => covers(b.scope, competition));
 }
 /**
  * Injured (an own player's injury, another club's `out` entry) or banned for the fixture's
@@ -168,18 +221,18 @@ export function isUnavailable(
     const p = typeof player === 'string' ? w.players.find((x) => x.id === id) : player;
     return !!p && isInjured(w, p);
   }
-  return !!w.discipline?.out.some(
-    (o) => o.player === id && o.until.day - dayCountedFrom(w, o.until.year) > 0,
-  );
+  const d = w.discipline;
+  const mine = d?.out.length ? index(d).outBy.get(id) : undefined;
+  return !!mine?.some((o) => o.until.day - dayCountedFrom(w, o.until.year) > 0);
 }
 
 /** Another club's player out injured for `days` from today (→LEAGUE-15). */
 export function recordNpcInjury(w: World, player: string, club: string, days: number) {
-  state(w).out.push({
-    player,
-    club,
-    until: { year: w.year, day: dayCountedFrom(w, w.year) + days },
-  });
+  const d = state(w);
+  const ix = index(d);
+  const entry = { player, club, until: { year: w.year, day: dayCountedFrom(w, w.year) + days } };
+  d.out.push(entry);
+  add(ix.outBy, player, entry);
 }
 
 /** One league yellow short of a ban that still applies at the club's next league match. */
