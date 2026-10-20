@@ -11,13 +11,19 @@ import {
   type LeaderBoard,
 } from './careerRecords';
 import { number, seasonName } from './format';
-import { appearances, per90, playerStatus } from './playerAnalysis';
+import { ofScope, per90, playerStatus } from './playerAnalysis';
+import { useGameState } from '../runtime/store';
 import { PlayerLink } from './PlayerSheet';
 import { Segments } from './Segments';
 import { TrophyIcon, type TrophyKind } from './TrophyIcon';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 
+/** Club career appearances from every own match (the view's tallies, →HIST-13). */
+function useCareerApps() {
+  const tallies = useGameState((state) => state.view?.tallies.players);
+  return (id: string) => ofScope(tallies?.[id]?.apps, 'career');
+}
 const ownCountry = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!.country;
 
 function SeasonContext({ code, record }: { code: string; record: SeasonArchive }) {
@@ -29,6 +35,7 @@ function SeasonContext({ code, record }: { code: string; record: SeasonArchive }
   );
 }
 function Leader({ player, index, label }: { player?: Player; index: number; label: string }) {
+  const careerApps = useCareerApps();
   return (
     <article>
       <h4>{label}</h4>
@@ -38,7 +45,7 @@ function Leader({ player, index, label }: { player?: Player; index: number; labe
             <PlayerLink id={player.id} name={player.name} /> · {player.career[index]}회
           </b>
           <p className={a.note}>
-            {player.position} · {playerStatus(player)} · {appearances(player.career)}경기 ·{' '}
+            {player.position} · {playerStatus(player)} · {careerApps(player.id)}경기 ·{' '}
             {number(player.career[10])}분 출전
           </p>
         </>
@@ -211,6 +218,7 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
   const leaders = clubLeaders(w.players, board),
     places = boardPlaces(leaders, board),
     apps = board.key === 'apps';
+  const careerApps = useCareerApps();
   return (
     <Panel title={board.title} note="우리 클럽 통산 · 모든 대회">
       {leaders.length ? (
@@ -239,7 +247,7 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
                     </span>
                   </td>
                   <td>{p.position}</td>
-                  <td>{appearances(p.career)}</td>
+                  <td>{careerApps(p.id)}</td>
                   <td>{apps ? `${number(p.career[10])}분` : number(p.career[board.index])}</td>
                   {!apps && <td>{per90(p.career, board.index)?.toFixed(2) ?? '—'}</td>}
                 </tr>

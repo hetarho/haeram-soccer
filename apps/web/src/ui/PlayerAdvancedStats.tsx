@@ -13,7 +13,11 @@ export function PlayerAdvancedStats({
   player: Player;
   scope: 'season' | 'career';
 }) {
-  const { matches, minutes, totals } = playerAdvanced(w, player.id, scope);
+  const { matches, minutes, totals, spatialMatches, spatialMinutes } = playerAdvanced(
+    w,
+    player.id,
+    scope,
+  );
   if (!matches)
     return (
       <p className={s.note} data-testid="player-advanced">
@@ -50,6 +54,31 @@ export function PlayerAdvancedStats({
       per90(totals[PD.highTurnovers], minutes),
     ],
   ];
+  // The grid engine's counters, over its matches only, so older matches do not dilute the rates.
+  if (spatialMatches) {
+    const count = (
+      term: string,
+      label: string,
+      index: number,
+    ): [string, string, string, string] => [
+      term,
+      label,
+      String(totals[index]),
+      per90(totals[index], spatialMinutes, 1),
+    ];
+    rows.push(
+      count('box-entry', '박스 진입', PD.boxEntries),
+      count('line-breaking', '라인 브레이킹 패스', PD.lineBreakingPasses),
+      [
+        'xt',
+        '위협도 기여(xT)',
+        (totals[PD.xtAdded] / 1000).toFixed(2),
+        per90(totals[PD.xtAdded] / 1000, spatialMinutes),
+      ],
+      count('cut-back', '컷백', PD.cutBacks),
+      count('progressive-carry', '전진 운반', PD.progressiveCarries),
+    );
+  }
   return (
     <section className={s.advanced} aria-label="고급 지표" data-testid="player-advanced">
       <h4>고급 지표</h4>
@@ -75,6 +104,9 @@ export function PlayerAdvancedStats({
       </table>
       <p className={s.note}>
         고급 지표가 기록된 {matches}경기 · {minutes}분 기준
+        {spatialMatches && spatialMatches < matches
+          ? ` · 박스 진입부터 전진 운반까지는 ${spatialMatches}경기 · ${spatialMinutes}분 기준`
+          : ''}
         {minutes < 180 ? ' · 표본이 적어 비율이 크게 흔들릴 수 있어요' : ''}
       </p>
     </section>

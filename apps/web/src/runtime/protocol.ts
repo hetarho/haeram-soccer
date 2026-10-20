@@ -22,6 +22,7 @@ import type { financialBreakdown } from '../../../../packages/engine/src/finance
 import type { NewsItem } from '../../../../packages/engine/src/news';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
+import type { Tallies } from '../ui/playerAnalysis';
 import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
 import { transferOffers, sponsorSlots } from '../../../../packages/engine/src/operations';
 const index = z.number().int().min(0).max(15);
@@ -265,6 +266,8 @@ export interface View {
   finance?: ReturnType<typeof financialBreakdown>;
   /** Club news derived from the full career; the projected world keeps only recent records. */
   news: NewsItem[];
+  /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
+  tallies: Tallies;
 }
 export interface Reply {
   requestId: string;

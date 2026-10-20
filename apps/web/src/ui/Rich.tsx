@@ -88,7 +88,9 @@ import {
 } from './ClubStaff';
 import { PageTabs, TabPanel } from './PageTabs';
 import { TrainingView } from './TrainingView';
-import { appearances, explorePlayers, playerStatus } from './playerAnalysis';
+import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
+import { bansOf, banText } from './discipline';
+import { yellowWarning } from '../../../../packages/engine/src/discipline';
 import { PlayerLink } from './PlayerSheet';
 import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
@@ -578,6 +580,9 @@ function PlayerFlags({ w, player }: { w: World; player: Player }) {
   const out = injuryDaysLeft(w, player);
   const flags = [
     out > 0 && player.injury ? `부상 · ${player.injury.label} · ${Math.ceil(out / 7)}주` : '',
+    // Bans and a warning one yellow short of a league ban sit by the injury (→WEB-68, CLUB-45).
+    ...bansOf(w, player.id).map(banText),
+    yellowWarning(w, player) ? '경고 누적 주의' : '',
     player.retiring !== undefined ? '시즌 후 은퇴' : '',
     player.unhappy ? `언해피 · ${UNHAPPY_REASON[player.unhappy.reason]}` : '',
     player.transferRequest ? '이적 요청' : '',
@@ -585,8 +590,8 @@ function PlayerFlags({ w, player }: { w: World; player: Player }) {
   if (!flags.length) return null;
   return (
     <em className={s.playerFlags}>
-      {flags.map((flag) => (
-        <i key={flag}>{flag}</i>
+      {flags.map((flag, i) => (
+        <i key={`${i}:${flag}`}>{flag}</i>
       ))}
     </em>
   );
@@ -848,6 +853,7 @@ function Roster({ state, client }: Props) {
   const talkPlayer = active.find((p) => p.id === talkId),
     talk = talkPlayer && talkFor(w, talkPlayer);
   const { scope } = view;
+  const tallies = v.tallies.players;
   const listed = explorePlayers(w.players, { ...view, query: playerQuery });
   const summary = rosterViewSummary(view);
   const lastPage = Math.max(0, Math.ceil(listed.length / 25) - 1),
@@ -911,7 +917,7 @@ function Roster({ state, client }: Props) {
                       {contractLine(p.until, w.year)}
                     </>
                   ) : (
-                    `${playerStatus(p)} · 통산 ${appearances(p.career)}경기 ${p.career[0]}골`
+                    `${playerStatus(p)} · 통산 ${ofScope(tallies[p.id]?.apps, 'career')}경기 ${p.career[0]}골`
                   )}
                 </small>
                 {p.status === 'active' && <PlayerFlags w={w} player={p} />}
@@ -1000,7 +1006,11 @@ function Roster({ state, client }: Props) {
                         <td>{p.status === 'active' ? p.adaptation.toFixed(2) : '—'}</td>
                         <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
                         <td>{number(p.potential)}</td>
-                        <td>{appearances(stats)}</td>
+                        <td>
+                          {ofScope(tallies[p.id]?.apps, scope)}
+                          {ofScope(tallies[p.id]?.sub, scope) > 0 &&
+                            ` (교체 ${ofScope(tallies[p.id]?.sub, scope)})`}
+                        </td>
                         <td>{stats[0]}</td>
                         <td>{stats[1]}</td>
                         <td>{number(p.fatigue)}</td>

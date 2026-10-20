@@ -197,22 +197,34 @@ export interface PlayerAdvanced {
   matches: number;
   minutes: number;
   totals: number[];
+  /**
+   * Matches and minutes of the grid engine (rules 4.0.0, records with `lineCounts`): only they count
+   * box entries, line-breaking passes, xT, cut-backs and progressive carries (→MATCH-13).
+   */
+  spatialMatches: number;
+  spatialMinutes: number;
 }
 
 /** Sums one player's advanced counters over the season or his whole own-club career. */
 export function playerAdvanced(w: World, id: string, scope: 'season' | 'career'): PlayerAdvanced {
   const totals = Array<number>(PLAYER_DETAIL_SIZE).fill(0);
   let matches = 0,
-    minutes = 0;
+    minutes = 0,
+    spatialMatches = 0,
+    spatialMinutes = 0;
   for (const m of w.ownMatches) {
     if (scope === 'season' && m.year !== w.year) continue;
     const line = m.players.find((p) => p.id === id);
     if (!line?.detail) continue;
     matches++;
     minutes += line.metrics[10];
+    if (m.lineCounts) {
+      spatialMatches++;
+      spatialMinutes += line.metrics[10];
+    }
     line.detail.forEach((value, index) => (totals[index] += value));
   }
-  return { matches, minutes, totals };
+  return { matches, minutes, totals, spatialMatches, spatialMinutes };
 }
 
 /** Per-90 rate text with the minute denominator respected; no minutes means no rate. */

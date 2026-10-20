@@ -46,11 +46,20 @@ for (const viewport of [
     const profile = sheet.getByRole('region', { name: '선수 프로필' });
     await expect(profile.getByTestId('profile-attributes')).toContainText('위치선정');
     await expect(profile.getByTestId('profile-attributes')).toContainText('공중볼 처리');
+    // The mental group: 판단력 and 침착성 (→PLAYER-2).
+    await expect(profile.getByTestId('profile-attributes')).toContainText('판단력');
+    await expect(profile.getByTestId('profile-attributes')).toContainText('침착성');
     await expect(profile.getByRole('img', { name: /^포지션 [A-Z]+ 최상/ })).toBeVisible();
     await expect(profile.getByTestId('profile-effective')).toContainText('실효 OVR');
     await expect(profile.getByTestId('profile-adaptation')).toHaveText(/적응도 \d\.\d\d · ×[\d.]+/);
     // His own personality is exact.
     await expect(profile.getByTestId('profile-personality')).not.toContainText('~');
+    // Cards and bans, and the season heat map, before a match is played (→WEB-59, HIST-16).
+    await expect(sheet.getByTestId('player-discipline')).toContainText(
+      '이번 시즌 경고 0 · 퇴장 0 · 통산 경고 0 · 퇴장 0',
+    );
+    await expect(sheet.getByTestId('player-discipline')).toContainText('출장 정지 없음');
+    await expect(sheet.getByTestId('player-heat')).toContainText('터치 위치가 기록된 경기');
     expect(await sideways(sheet)).toBeLessThanOrEqual(1);
     await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
 

@@ -4,14 +4,24 @@ import { PlayingCoachReview } from './PlayingCoachReview';
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../packages/engine/src/contracts';
+import { yellowWarning } from '../../../../packages/engine/src/discipline';
+import { seasonHeat } from '../../../../packages/engine/src/material';
 import { useGameState } from '../runtime/store';
 import { Attributes } from './Attributes';
 import { clubRanks } from './careerRecords';
 import { Dialog } from './Dialog';
-import { number, percent } from './format';
+import { number, percent, seasonName } from './format';
 import { worldSelector } from './liveState';
 import { PlayerAdvancedStats } from './PlayerAdvancedStats';
-import { appearances, playerStatus, type PlayerScope } from './playerAnalysis';
+import { bansOf, banText } from './discipline';
+import { Select } from './Select';
+import {
+  appearanceText,
+  ofScope,
+  playerStatus,
+  type PlayerScope,
+  type PlayerTally,
+} from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerProfile } from './PlayerProfile';
 import { openCoachSheet, openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
@@ -29,12 +39,15 @@ export function PlayerSheet({
   scope: initial,
   onClose,
   client,
+  tally,
 }: {
   w: World;
   player: Player;
   scope: PlayerScope;
   onClose: () => void;
   client: GameClient;
+  /** His appearances, cards and season heat over every own match (the view's tallies). */
+  tally?: PlayerTally;
 }) {
   const active = player.status === 'active';
   const [chosen, setChosen] = useState<PlayerScope>(initial);
@@ -88,7 +101,7 @@ export function PlayerSheet({
       <section className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
-          출전 {appearances(career)}경기 · {career[0]}골 · {career[1]}도움
+          출전 {appearanceText(tally, 'career')} · {career[0]}골 · {career[1]}도움
           {player.position === 'GK' ? ` · ${career[9]}선방` : ''}
         </p>
         <div className={a.chips}>
@@ -129,7 +142,7 @@ export function PlayerSheet({
       <PlayerPerformance player={player} scope={scope} />
       <Attributes
         rows={[
-          ['출전', `${appearances(stats)}경기`],
+          ['출전', appearanceText(tally, scope)],
           ['득점', stats[0]],
           ['도움', stats[1]],
           ['누적 출전 분', stats[10]],
@@ -147,8 +160,105 @@ export function PlayerSheet({
         {scope === 'career' ? '우리 클럽 통산' : '이번 시즌 모든 대회'}
       </p>
       <PlayerAdvancedStats w={w} player={player} scope={scope} />
+      <Discipline w={w} player={player} tally={tally} />
+      <SeasonHeat w={w} player={player} tally={tally} />
       <button onClick={onClose}>닫기</button>
     </Dialog>
+  );
+}
+
+/** Cards this season and over the club career, and the bans still to serve (→WEB-59, HIST-16). */
+function Discipline({ w, player, tally }: { w: World; player: Player; tally?: PlayerTally }) {
+  const active = player.status === 'active';
+  const cards = (scope: PlayerScope) =>
+    `경고 ${ofScope(tally?.yellow, scope)} · 퇴장 ${ofScope(tally?.red, scope)}`;
+  const bans = active ? bansOf(w, player.id) : [];
+  return (
+    <section className={a.clubCareer} aria-label="징계" data-testid="player-discipline">
+      <h3>징계</h3>
+      <p className={a.careerLine}>
+        {active && `이번 시즌 ${cards('season')} · `}통산 {cards('career')}
+      </p>
+      {active && (
+        <div className={a.chips}>
+          {bans.length
+            ? bans.map((ban, i) => <span key={i}>{banText(ban)}</span>)
+            : '출장 정지 없음'}
+          {yellowWarning(w, player) && <span>경고 누적 주의</span>}
+        </div>
+      )}
+    </section>
+  );
+}
+/** The pitch in his attack frame: 8 bands toward the goal on the right, 5 lanes across. */
+function HeatGrid({ cells }: { cells: number[] }) {
+  const most = Math.max(1, ...cells);
+  return (
+    <div
+      role="img"
+      aria-label={`터치 ${cells.reduce((sum, n) => sum + n, 0)}회 · 오른쪽으로 공격`}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(8, 1fr)',
+        gridAutoFlow: 'column',
+        gridTemplateRows: 'repeat(5, 1fr)',
+        aspectRatio: '105 / 68',
+        maxWidth: 420,
+        gap: 1,
+        background: 'var(--line)',
+        border: '1px solid var(--line-strong)',
+      }}
+    >
+      {cells.map((n, i) => (
+        <i
+          key={i}
+          style={{
+            background: `color-mix(in srgb, var(--accent) ${Math.round((n / most) * 85)}%, var(--surface))`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+/** This season's heat map from its matches, earlier seasons' from the archive (→MATCH-5). */
+function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: PlayerTally }) {
+  const seasons = [
+    ...(tally?.heat ? [{ year: w.year, cells: tally.heat }] : []),
+    ...w.history
+      .map((archive) => ({ year: archive.year, cells: seasonHeat(archive, player.id)?.cells }))
+      .filter((season): season is { year: number; cells: number[] } => !!season.cells)
+      .reverse(),
+  ];
+  const [year, setYear] = useState(seasons[0]?.year);
+  const shown = seasons.find((season) => season.year === year) ?? seasons[0];
+  return (
+    <section className={a.clubCareer} aria-label="시즌 히트맵" data-testid="player-heat">
+      <h3>시즌 히트맵</h3>
+      {shown ? (
+        <>
+          {seasons.length > 1 && (
+            <label>
+              시즌{' '}
+              <Select
+                aria-label="히트맵 시즌"
+                value={shown.year}
+                onValueChange={(value) => setYear(Number(value))}
+              >
+                {seasons.map((season) => (
+                  <option key={season.year} value={season.year}>
+                    {seasonName(season.year)}
+                  </option>
+                ))}
+              </Select>
+            </label>
+          )}
+          <HeatGrid cells={shown.cells} />
+          <p className={a.note}>{seasonName(shown.year)} 우리 클럽 경기의 터치 위치예요.</p>
+        </>
+      ) : (
+        <p className={a.note}>터치 위치가 기록된 경기가 아직 없어요.</p>
+      )}
+    </section>
   );
 }
 
@@ -165,15 +275,27 @@ const selectPlayerWorld = worldSelector([
   'lineup',
   'manager',
   'staff',
+  'history',
+  'discipline',
+  'fixtures',
 ]);
 /** The sheet of the player asked for, over the world in play (loaded when a sheet opens). */
 export function OpenPlayerSheet({ id, client }: { id: string; client: GameClient }) {
   const w = useGameState(selectPlayerWorld);
   const scope = usePlayerSheet((state) => state.scope);
   const close = usePlayerSheet((state) => state.close);
+  const tally = useGameState((state) => state.view?.tallies.players[id]);
   const player = w?.players.find((p) => p.id === id);
   if (!w || !player) return null;
   return (
-    <PlayerSheet key={id} w={w} player={player} scope={scope} onClose={close} client={client} />
+    <PlayerSheet
+      key={id}
+      w={w}
+      player={player}
+      scope={scope}
+      onClose={close}
+      client={client}
+      tally={tally}
+    />
   );
 }

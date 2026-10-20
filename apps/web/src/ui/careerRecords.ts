@@ -22,7 +22,7 @@ function bestFinish(history: readonly SeasonArchive[]) {
 
 /**
  * The club's all-time boards, read from every player's club career; sold and retired players keep
- * theirs. Appearances rank by minutes, which only ever count whole matches (→ appearances).
+ * theirs. The appearance board ranks by minutes played; match counts come from the view's tallies.
  */
 export const LEADER_BOARDS = [
   { key: 'apps', title: '역대 최다 출전', short: '출전', index: 10 },

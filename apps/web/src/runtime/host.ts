@@ -32,6 +32,7 @@ import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { requestSchema, type CodecJob, type Request, type Reply, type View } from './protocol';
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
+import { tallies } from '../ui/playerAnalysis';
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
   ok: false,
@@ -141,6 +142,7 @@ export class Host {
           : {}),
       },
       totalMatches: w.ownMatches.length,
+      tallies: tallies(w),
       supportUsed: w.events.filter((event) => event.year === w.year && event.kind === 'support')
         .length,
       milestones: clubMilestones(w),

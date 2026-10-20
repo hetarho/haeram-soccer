@@ -1,9 +1,13 @@
 import { Select } from './Select';
 import { ClubLink } from './ClubLink';
 import { PlayerLink } from './PlayerSheet';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
+import { useGameState } from '../runtime/store';
+import { banText, leagueDiscipline } from './discipline';
 import { seasonName } from './format';
+import { leagueIds, type LeagueChoice } from './league';
+import { worldSelector } from './liveState';
 import { rankedScorers, scorerTrend } from './scorers';
 import s from './Scorers.module.css';
 
@@ -375,3 +379,71 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
     </section>
   );
 }, sameScorerState);
+
+const selectDisciplineWorld = worldSelector([
+  'clubs',
+  'scorerSeason',
+  'year',
+  'playerClub',
+  'discipline',
+  'players',
+  'seed',
+]);
+/**
+ * The selected league's 징계 table for the season in progress (→WEB-40, LEAGUE-15): league yellows
+ * and current bans from the discipline state, league reds from this season's records.
+ */
+export function DisciplineTable({ league }: { league?: LeagueChoice }) {
+  const w = useGameState(selectDisciplineWorld)!;
+  const reds = useGameState((state) => state.view?.tallies.leagueReds);
+  const rows = useMemo(
+    () => leagueDiscipline(w, leagueIds(w, league), reds ?? {}),
+    [w, league, reds],
+  );
+  return (
+    <section className={s.panel} aria-label="리그 징계 기록" data-testid="league-discipline">
+      <div className={s.head}>
+        <div>
+          <h3>징계</h3>
+          <p>{seasonName(w.year)} · 리그 경고·퇴장과 남은 출장 정지</p>
+        </div>
+      </div>
+      {rows.length ? (
+        <div className={s.tableWrap}>
+          <table className={s.standings} aria-label="리그 징계 기록표">
+            <thead>
+              <tr>
+                <th scope="col">선수</th>
+                <th scope="col">클럽</th>
+                <th scope="col">경고</th>
+                <th scope="col">퇴장</th>
+                <th scope="col">출장 정지</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id} className={row.club === w.playerClub ? s.own : ''}>
+                  <th scope="row" className={s.player}>
+                    {row.club === w.playerClub ? (
+                      <PlayerLink id={row.id} name={row.name} scope="season" />
+                    ) : (
+                      row.name
+                    )}
+                  </th>
+                  <td className={s.club}>
+                    <ClubLink w={w} id={row.club} crest={14} />
+                  </td>
+                  <td>{row.yellows}</td>
+                  <td>{row.reds}</td>
+                  <td>{row.bans.map(banText).join(' · ') || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className={s.empty}>이번 시즌 리그 경고·퇴장이나 출장 정지가 아직 없어요.</p>
+      )}
+    </section>
+  );
+}

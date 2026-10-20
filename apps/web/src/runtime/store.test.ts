@@ -19,6 +19,7 @@ function view(): View {
     coaches: {},
     milestones: clubMilestones(world),
     totalMatches: 0,
+    tallies: { players: {}, leagueReds: {} },
     supportUsed: 0,
     managers: [],
     transfers: [],

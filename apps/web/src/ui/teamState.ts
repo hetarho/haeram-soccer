@@ -350,9 +350,15 @@ export function teamStates(w: World): TeamStateItem[] {
     mood = moraleState(morale);
   const trust = Math.round(w.manager.trust),
     interim = w.manager.interim;
-  const squad = activePlayers(w).length;
-  const injured = activePlayers(w).filter((p) => isInjured(w, p)).length;
-  const fit = squad - injured;
+  const active = activePlayers(w),
+    squad = active.length;
+  // Injured and suspended (→CLUB-45): a player with a ban to serve in any competition.
+  const banned = new Set(w.discipline?.bans.map((ban) => ban.player));
+  const injured = active.filter((p) => isInjured(w, p)).length,
+    suspended = active.filter((p) => banned.has(p.id)).length;
+  const out = active.filter((p) => isInjured(w, p) || banned.has(p.id)).length,
+    fit = squad - out;
+  const missing = out ? `부상 ${injured} · 정지 ${suspended}` : '';
   const registered = squadRegistration(w);
   return [
     {
@@ -430,12 +436,12 @@ export function teamStates(w: World): TeamStateItem[] {
       key: 'squad',
       label: '선수단',
       value: registered.value,
-      status: squad < 20 ? '부족' : registered.full ? '가득' : injured ? `부상 ${injured}` : '여유',
-      tone: fit < 14 || squad < 16 ? 'bad' : squad < 20 || injured >= 3 ? 'warn' : 'good',
+      status: squad < 20 ? '부족' : registered.full ? '가득' : missing || '여유',
+      tone: fit < 14 || squad < 16 ? 'bad' : squad < 20 || out >= 3 ? 'warn' : 'good',
       advice:
-        squad < 20 || fit < 14 || injured >= 3
+        squad < 20 || fit < 14 || out >= 3
           ? {
-              text: `선수 ${squad}명${injured ? ` · 부상 ${injured}명` : ''} · ${registered.detail} · 부상이나 피로가 겹치면 선발을 채우기 어려워요.`,
+              text: `선수 ${squad}명${out ? ` · 부상 ${injured}명 · 출장 정지 ${suspended}명` : ''} · ${registered.detail} · 부상·출장 정지나 피로가 겹치면 선발을 채우기 어려워요.`,
               actions: quick(w, 'squad'),
             }
           : undefined,

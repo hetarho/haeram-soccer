@@ -173,6 +173,38 @@ describe('registration-aware squad state', () => {
     for (const p of w.players.slice(16)) p.status = 'sold';
     expect(teamStates(w).find((s) => s.key === 'squad')!.tone).toBe('bad');
   });
+  it('counts suspended players with the injured', () => {
+    const w = world();
+    const [hurt, banned, both] = w.players;
+    hurt.injury = { year: w.year, day: 100, label: 'synthetic injury' };
+    both.injury = { year: w.year, day: 100, label: 'synthetic injury' };
+    w.discipline = {
+      year: w.year,
+      yellows: {},
+      bans: [
+        { player: banned.id, club: w.playerClub, matches: 1, scope: 'league', reason: 'yellows' },
+        { player: both.id, club: w.playerClub, matches: 2, scope: 'domestic', reason: 'dissent' },
+        // Another club's ban is not ours.
+        { player: 'npc', club: 'other', matches: 3, scope: 'domestic', reason: 'violent' },
+      ],
+      out: [],
+    };
+    const squad = () => teamStates(w).find((s) => s.key === 'squad')!;
+    // Three of twenty are out, one of them both injured and banned: a warning, not yet critical.
+    expect(squad()).toMatchObject({ status: '부상 2 · 정지 2', tone: 'warn' });
+    expect(squad().advice!.text).toContain('부상 2명 · 출장 정지 2명');
+    // Fewer than fourteen available is critical, bans counted.
+    for (const p of w.players.slice(3, 6)) p.status = 'sold';
+    for (const p of w.players.slice(6, 10))
+      w.discipline.bans.push({
+        player: p.id,
+        club: w.playerClub,
+        matches: 1,
+        scope: 'europe',
+        reason: 'yellows',
+      });
+    expect(squad().tone).toBe('bad');
+  });
   it('uses counted and exempt players for an observed modern rule and discloses fallback estimation', () => {
     const w = world();
     expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).toContain(

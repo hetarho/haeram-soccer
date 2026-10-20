@@ -27,7 +27,7 @@ import { useLeagueSeason, useMatchView, useNavigation, type Page, type PastTab }
 import type { PitchControls } from './Pitch';
 import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
-import { ScorerStandings, ScorerHistory } from './ScorerPanels';
+import { DisciplineTable, ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { FixtureNotebook } from './LazyFixtureNotebook';
 /** A closed season's pages load when one is opened, outside the first-play entry (→ARCH-28). */
@@ -378,6 +378,7 @@ const PlayerPane = memo(function PlayerPane({
       ) : (
         <ScorerStandings w={w} />
       )}
+      {part === 'scorers' && <DisciplineTable league={league} />}
     </>
   );
 });
@@ -704,6 +705,9 @@ export const LiveSeason = memo(function LiveSeason({
             playerPart={playerPart}
             onPlayerPart={setPlayerPart}
           />
+          {pastTab === 'scorers' && playerPart === 'scorers' && (
+            <p className={s.muted}>지난 시즌 징계 기록은 보관하지 않아요.</p>
+          )}
         </Suspense>
       )}
       {preparing && page === 'match' && (

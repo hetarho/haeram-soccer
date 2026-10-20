@@ -10,7 +10,7 @@ import {
   leaderBoard,
   trophyCabinet,
 } from './careerRecords';
-import { appearances, playerStatus } from './playerAnalysis';
+import { playerStatus } from './playerAnalysis';
 
 const world = () =>
   createWorld({
@@ -180,10 +180,5 @@ describe('all-time boards', () => {
     const last = outfield[10];
     expect(clubLeaders(w.players, leaderBoard('assists'))).toHaveLength(10);
     expect(clubRanks(w.players, last.id).some(({ board }) => board.key === 'assists')).toBe(false);
-  });
-
-  it('counts appearances as whole matches of 90 minutes', () => {
-    expect(appearances([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90 * 17])).toBe(17);
-    expect(appearances(Array<number>(11).fill(0))).toBe(0);
   });
 });
