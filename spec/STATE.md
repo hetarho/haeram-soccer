@@ -98,11 +98,11 @@
 - 261020 suggest T218 MATCH-23: in a fresh ENG amateur league on the grid the leading scorers reach 34–47 league goals in 30 matches (best club 87 goals; league 2.77 a match) → check the per-player goal spread at lower tiers alongside the grid tactic-balance task
 - 261020 decided T271 ARCH-30 MATCH-22: dda59a3's red unit and journey checks were T218's own-league grid cost, not a hang — feature-replay ran past its own 240 s limit (282 s on CI; T218 raised only the config's) and the promise-reload mediation and joint contract authority journeys spend 22–28 s on CI simulating half a season or 35 rounds in Node before the page opens → feature-replay is one case per career (new on the config's 300 s, retained 480 s for its 133 s locally) and both journeys take `test.slow()` like the other season-simulating journeys (alt: `OWN_LEAGUE_ENGINE = 'summary'` ahead of T224 | fixtures that simulate less); T224 revisits these limits
 - 261020 decided T271 SAVE-2 ARCH-12: the century checksum mismatch was the pinned brotli encoder, not the data — upstream compress.c's `encodeWithDictionary` fed its FINISH loop no input and copied every chunk to one offset, so a stream ended after the first meta-block (T218's 16.1 MB century kept 13.9 MB) → `patches/brotli@2.1.0.patch` fixes both sites in the compiled `build/encode.js`; the output equals Node's native brotli and is unchanged for inputs that fit one meta-block (alt: rebuild encode.js with emsdk | a codec that writes several streams)
-- 261020 parked T271 SAVE-4 ARCH-14: with the codec fixed the baseline century checkpoint is 2,378,780 B against the code's 1,572,864 B (total 4,758,072 of 3,670,016; rules 3 was 1,404,316) because T218's own grid matches keep about 10 incidents and 13.6 lines each and the club played 25% more of them, so `pnpm run benchmark` stays red until SAVE-4's 3 MiB active copy (T231) and the rules-4 benchmark (T232) land, and the job now takes about 4 h on CI; needs: schedule T231/T232 ahead of T219–T230 (create-task deps) or accept a red benchmark job until then
 - 261020 suggest T271 -: report both compress.c bugs upstream to foliojs/brotli.js (FINISH must keep the unconsumed input; later chunks go after `output_buffer_size`) and drop the compiled-code hunk once a fixed release is pinned
 - 261020 suggest T271 ARCH-5 ARCH-9: the century benchmark world diverged between Node 26.8.1 (local) and the pinned 24.12.0 (CI) after 60 seasons (retained people 15,088 against 15,087 at 70, 20,605 against 20,600 at 100) → replay one seed on both Node versions and, if a grid float (`Math.hypot` and kin) differs, move the outcome-critical geometry to the fixed-point ARCH-9 asks for
 - 261020 decided T234: start the identity track (T234–T255) early while the grid chain runs? → keep the T233 gate (alt: re-point T234 to T218 and run T234 → T236/T238 → T246 in a worktree) — docs/CLUB-IDENTITY-CONTRACT.md §9 says to read T233's result first with no parallel lanes; only four small tasks could move, at the cost of conflicts on contracts types/schema with T218 and on the golden fixture
 - 261020 suggest T225 ARCH-28: entry JS/CSS measures about 255,661 of 256,000 gzip bytes on 35492d5 (refactor-261019 lanes + T216–T218 + T271) → make the grid playback path lazy before T225 adds match-theatre UI, or the CI benchmark's entry check turns red
+- 261020 decided T271 SAVE-4 ARCH-14: the benchmark job red on the 1.5 MiB checkpoint limit (century 2,378,780 B since T218) → move T231 ahead of T219 (dep T218, T219 now dep T231) and give it the benchmark's active-copy-only total; T232 measures on rules 4.0.0 after T230 (alt: T231 and T232 both first, which measures before T219–T229 add discipline, post-match material and heat maps | keep the order and a red benchmark for twelve tasks) — owner: reorder only when it costs little; T231 shares no file with T219–T229 and only `persistence.ts`/`client.ts` with T230, and SAVE-4's 3 MiB does not depend on rules 4.0.0
 
 ## ideation
 | id | st |
@@ -140,7 +140,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T218 | todo |
+| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T231 | todo |
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
@@ -152,8 +152,8 @@
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | todo |
 | T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
-| T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T230 | todo |
-| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T231 | todo |
+| T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T218 | todo |
+| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 | T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T233 | todo |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T234 | todo |
@@ -187,9 +187,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- decide parked T271 (benchmark storage budget: T231/T232 first, or a red benchmark job until then); then implement-task T219
+- implement-task T231 (its green CI benchmark closes T271); then T219
 
 ## log
+- 261020 create-task T271 decision: T231 moves ahead of T219 (dep T218) with the benchmark's active-copy-only total; T232 dep T230.
 - 261020 T271 blocked: fixed the pinned brotli encoder that cut the century checkpoint after its first meta-block (checksum mismatch), split feature-replay per career and gave the two Node-heavy journeys `test.slow()`; the benchmark now fails the 1.5 MiB checkpoint budget at 2,378,780 B (parked: T231/T232).
 - 261020 fix e2e live-state: wait for the run to leave 8월 1일 instead of the transient 8월 3일, which a late x2 step skips by carrying its owed days (red since 5659b91, Firefox then Chromium). The 57d81a3 benchmark miss is runner speed, not a lane: same engine and century save, EPYC 7763 ran the storage benchmark 1.6× slower than the 9V45 that passed b477308 (century load 3.4 s there, 5 s limit).
 - 261020 create-architecture ARCH r13: ARCH-30✎ tasks never run browser specs (per-task e2e took too long); Chromium journeys only in the batch run right before a push to main, which confirms e2e acceptance items.
@@ -209,4 +210,3 @@
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
 - 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
 - 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.
-- 261019 T213 done (w6pm): cards, second yellow, reds with ten men, dissent; batch checks pass (1119 unit, 19 contract, build).
