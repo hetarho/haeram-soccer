@@ -85,5 +85,8 @@ export const level = clubs(77),
   giant = clubs(95),
   minnow = clubs(58);
 
-/** A grid sample runs about 20 s alone; a loaded machine doubles that. */
-export const SLOW = 120000;
+/**
+ * A grid sample runs 70–80 s alone since T218's own matches; the full suite on a loaded machine
+ * pushes it past 120 s (261020: three timeouts at load 20, each passing alone), so allow 6 minutes.
+ */
+export const SLOW = 360000;
