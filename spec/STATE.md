@@ -18,6 +18,7 @@
 | r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
+- 261021 decided MATCH-28 T272: how the equivalence gate treats metrics both paths hold constant and metrics a condition's rules make impossible (strict, so no league condition could pass even grid against grid) → equal constants are equivalent by their zero difference and stay listed as constant; MATCH-6/MATCH-20-impossible metrics are not applicable for that condition, listed and outside its verdict; applicability only from rules, never from measured absence (alt: keep the strict gate and judge release from the constant list | equal constants only, without per-condition applicability)
 - 261021 decided T250 T251 T252 T253 T254 T255 T275 T283 T286: the owner's settings and home commits raised WEB r95–r99 under the open identity and follow-up tasks → bases to WEB@99 with contents unchanged; WEB-74 now discards only central-settings drafts on dismissal and keeps other policy drafts, which T251's retained club-design draft already follows, and WEB-10/11/18/50/51/52/79 move settings, the next-match row and the watch entry, not kits or crests (alt: re-plan T251 and T253 against the new home layout, which changes none of their acceptance)
 - 261021 decided T240 T241 T242 T243 T244 T245 T247 T248 T249 T250 T251 T252 T253 T254 T255: the owner's planning commits raised WEB r94 SAVE r50 ARCH r16 under the open identity tasks → bases bumped with contents unchanged; ARCH-31, SAVE-23, WEB-32 and WEB-89 govern the full match model, match pacing and numerical comparisons, not identity (alt: re-plan the identity tasks against the full-model rules, which T273 and later already own after T255)
 - 261020 decided T235 T240 T245 T250 T252: owner asked for parallel work (p7x5, "자동모드 병렬로") while every open task sits behind T232 → T233 → T235 → T237 → one work group after T233 with lanes identity-base (T235 T237 T239), then identity-engine (T240–T244) beside identity-editor (T245 T247–T249), then identity-founding (T250 T251) beside identity-match-kit (T252 T253), then T254 and T255 lane-less (alt: T239 in the engine lane, which holds the editor lane until the whole engine chain integrates because T249 needs T239 | re-point T235 to T232 to run beside T233, which collides on docs/SAVE-FORMAT.md and tests/fixtures/portable-v1.json) — the parallel lanes share no touched file, deps and contents unchanged
@@ -146,7 +147,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 14 | 14 | - | 0 |
+| MATCH | 15 | 15 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -197,6 +198,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
+- 261021 update-ssot MATCH start (T272 decision request)
 - 261021 r3m9 T250–T255, T275, T283, T286 bases to WEB@99 after the owner's 73b0e42 (contents unchanged; their WEB-50 cites the match view, not the moved watch entry).
 - 261021 T287–T291 push gate on 0084882, rebased onto 19907a6: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; typecheck, lint, format, catalog validation, build and spec lint pass. Browser checks confirm full-width compact NEXT MATCH above progress, inline notifications and discard-on-dismiss settings. Frozen install refreshed the stale local Brotli patch; source changes were unnecessary.
 - 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
@@ -215,5 +218,3 @@
 - 261021 update-ssot WEB r97 start: owner clarified manual mode should hide only background settings; restore observation and delegation controls.
 - 261021 T288 done: manual draft hides observation/delegation/background controls, keeps mode picker, validation and pending-work disclosure; WEB r96, 6 tests/typecheck/lint/format/build pass; browser specs updated for batch, business rules unchanged.
 - 261021 create-task WEB r96 → T288; T288 start at 4af396f, standalone manual-settings presentation follow-up.
-- 261021 update-ssot WEB r96 start: simplify manual settings presentation; preserve independent business responsibilities pending any explicit policy change.
-- 261021 T287 done: central settings order/spacing and discard-on-close (WEB r95); 3 unit tests, typecheck, changed-file lint/format, build pass; browser specs updated for batch; full lint/format blocked by unrelated temporary scripts.
