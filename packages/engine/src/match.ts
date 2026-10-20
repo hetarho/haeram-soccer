@@ -477,7 +477,13 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
  * Which engine plays fixtures between other clubs of the own league, whose players are recorded
  * (→MATCH-22); T224 sets it from the measured season budget.
  */
-export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'grid';
+// T224: grid 42.7 s a season v rules 3.0.0 5.1 s (8.4×, over 125%); summary 8.4 s (docs/CALIBRATION.md).
+export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'summary';
+let ownLeagueEngine: 'grid' | 'summary' = OWN_LEAGUE_ENGINE;
+/** Measurement only (scripts/season-throughput.ts): plays the own league on the other path. */
+export function setOwnLeagueEngine(engine: 'grid' | 'summary') {
+  ownLeagueEngine = engine;
+}
 
 /**
  * The own club's matches play the grid engine, and so do own-league fixtures while
@@ -493,7 +499,7 @@ export function simulateMatch(
   decide?: DecideRule,
 ): MatchPlayback {
   const own = f.home === w.playerClub || f.away === w.playerClub;
-  if (own || (keepPlayers && OWN_LEAGUE_ENGINE === 'grid')) {
+  if (own || (keepPlayers && ownLeagueEngine === 'grid')) {
     // Lines are always kept here: recordMatch saves the own ones, the scorer table reads the rest.
     const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
     const result = playGrid(setup);
@@ -503,7 +509,7 @@ export function simulateMatch(
       squads: setup.rosters,
     };
   }
-  return summaryMatch(prepareMatch(w, f));
+  return summaryMatch(prepareMatch(w, f), keepPlayers);
 }
 
 /**
@@ -698,12 +704,16 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
 
 /**
  * Team-level minutes for fixtures the grid engine does not play (→MATCH-22): a calibrated chance
- * model without the touches, on the same strength curve.
+ * model without the touches, on the same strength curve. With `keepPlayers` (the own league) the
+ * starters get lines of 90 minutes with the shots, goals and assists the model already chose.
  */
-function summaryMatch(setup: MatchSetup) {
+function summaryMatch(setup: MatchSetup, keepPlayers = false) {
   const { f, r, squads, strength, tactics, profiles, possessionChance } = setup;
   const { skill, shapeChance, chooseReceiver } = matchSkills(setup);
   const metrics: [number[], number[]] = [zeroMetrics(), zeroMetrics()];
+  const starters = squads.map((squad) => [...new Set(squad.slice(0, 11))]);
+  const lines = starters.map((squad) => squad.map(() => zeroMetrics()));
+  const line = (side: Side, slot: number) => lines[side][Math.min(slot, lines[side].length - 1)]!;
   const highlights: MatchRecord['highlights'] = [];
   for (let minute = 1; minute <= 90; minute++) {
     const side: Side = r() < possessionAt(possessionChance, metrics) ? 0 : 1;
@@ -746,14 +756,21 @@ function summaryMatch(setup: MatchSetup) {
     const goal = goalChance(xg, shooting, skill(other, 0, KEEP, minute));
     const shot = r();
     metrics[side][4]++;
+    line(side, shooter)[4]++;
     if (shot >= targetChance(goal, shooting)) continue;
     metrics[side][5]++;
+    line(side, shooter)[5]++;
     if (shot >= goal) {
       metrics[other][9]++;
+      line(other, 0)[9]++;
       continue;
     }
     metrics[side][0]++;
-    if (!solo) metrics[side][1]++;
+    line(side, shooter)[0]++;
+    if (!solo) {
+      metrics[side][1]++;
+      line(side, made.creator!)[1]++;
+    }
     highlights.push({
       minute,
       side,
@@ -763,13 +780,21 @@ function summaryMatch(setup: MatchSetup) {
   }
   metrics[0][10] = 90;
   metrics[1][10] = 90;
+  for (const side of lines) for (const row of side) row[10] = 90;
   const record: MatchRecord = {
     ...f,
     score: { home: metrics[0][0], away: metrics[1][0] },
     metrics,
-    players: [],
+    players: keepPlayers
+      ? starters.flatMap((squad, side) =>
+          squad.map((p, slot) => ({ id: p.id, metrics: lines[side][slot]! })),
+        )
+      : [],
     highlights,
     tactics,
+    ...(keepPlayers && {
+      lineCounts: [starters[0].length, starters[1].length] as [number, number],
+    }),
   };
   return { record, frames: [], squads };
 }

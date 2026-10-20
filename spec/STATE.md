@@ -16,9 +16,10 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T234 |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T03:01Z | T224 |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T04:56Z | - |
 
 ## inbox
+- 261020 decided T224 MATCH-22 SAVE-5: `'summary'` left own-league fixtures without player lines and `validateWorld` refused every world on the scorer-table check → `summaryMatch` names the starters' lines now from the shooter and creator its chance model already picks, no new random draws (alt: T221's separate scorer stream, which needs T219–T220 first and leaves saves broken until then | keep `'grid'` against MATCH-22 at 8.4× the season budget) — saves had to stay loadable, and reusing the model's own picks leaves every score unchanged
 - 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
 - 261020 decided T231 SAVE-4: the 32 MiB inflate limit failed inside the pinned brotli decoder, whose patch capped output at 16 MiB → raise the patch's cap to 32 MiB (alt: keep brotli payloads at 16 MiB while gzip allows 32) — SAVE-4 sets one decompressed limit; T218's century already inflates to 16.1 MB
 - 261019 decided review/outside-t216-t255-261019: which findings of the side review to adopt while T216–T255 run → adopt the P1 and P2 findings whose fix stays outside every T216–T255 touch and the grid, contracts, adapters and runtime modules and changes no SSOT rule, contract, save format or migration: F1–F5 and F7–F14; F6 and every P3 stay [?] (alt: P1 only, leaving the duplicated rules to drift during the rebuild | P3 dead-code and formatting cleanups too, which adds visible text changes and no protection) — the P2s are drift risks the rebuild will lean on, and each fix is file-disjoint from the open tasks
@@ -152,7 +153,6 @@
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T223 | Post-match material and season heat maps | MATCH HIST | T218 | doing |
-| T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T231 | todo |
 | T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T218 | doing |
 | T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
 | T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
@@ -193,9 +193,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T224 (own-league engine), then T219; T232's manual benchmark run closes T271
+- update-ssot MATCH (MATCH-26: grid-only counters for own-league players on the probabilistic path), then implement-task T219; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T224 done: own league on the probabilistic path (grid 42.7 s a season = 8.4× rules 3.0.0's 5.1 s; summary 8.4 s), whose own-league fixtures now carry the starters' lines from the chance model's shooter/creator so the scorer table stays exact; MATCH-26 open.
 - 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
