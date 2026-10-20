@@ -14,6 +14,7 @@ import {
   compareDistributions,
   comparePerformance,
   compareRelationship,
+  conditionOf,
   CORPUS_CONFIG,
   corpusFixtureIds,
   COUNTER_INDEXES,
@@ -27,6 +28,7 @@ import {
   outcomeTarget,
   rareEventPower,
   requiredRareEvents,
+  ruleExclusions,
   seedOverlap,
   validateCorpusConfig,
   validateRegistry,
@@ -142,12 +144,21 @@ describe('match parity registry', () => {
     expect(observe([bare], red)).toMatchObject({ missing: 0, zeros: 2 });
 
     const report = buildEquivalenceReport({
+      condition: 'core:equal-top-tier',
       reference: Array.from({ length: 40 }, () => zero),
       candidate: Array.from({ length: 40 }, () => bare),
     });
     expect(report.metrics.find((m) => m.id === 'td.keyPasses')!.status).toBe('missing');
-    expect(report.metrics.find((m) => m.id === 'season.championPpg')!.status).toBe('missing');
+    expect(report.blocking).toContain('td.keyPasses');
     expect(report.passed).toBe(false);
+    // A season condition without season samples has its measures missing, never passed.
+    const seasons = buildEquivalenceReport({
+      condition: 'season:league-20',
+      reference: [],
+      candidate: [],
+    });
+    expect(seasons.metrics.find((m) => m.id === 'season.championPpg')!.status).toBe('missing');
+    expect(seasons.passed).toBe(false);
     const targets = buildTargetReport([bare]);
     expect(targets.find((t) => t.id === 'crosses')!.status).toBe('missing');
     expect(targets.find((t) => t.id === 'passForward')!.status).toBe('missing');
@@ -203,9 +214,17 @@ describe('match parity registry', () => {
 
   it('reports constant and underpowered variables', () => {
     const fill = (n: number, value: number) => obs(Array(n).fill(value));
+    // Both paths held at one value: equivalent by the zero difference, listed as constant.
     const constant = compareDistributions(mean, fill(50, 90), fill(50, 90));
-    expect(constant).toMatchObject({ status: 'constant', reason: 'both paths constant and equal' });
-    expect(compareDistributions(mean, fill(50, 0), fill(50, 0)).status).toBe('constant');
+    expect(constant).toMatchObject({
+      status: 'equivalent',
+      constant: true,
+      reason: 'both paths constant and equal',
+    });
+    expect(compareDistributions(mean, fill(50, 0), fill(50, 0))).toMatchObject({
+      status: 'equivalent',
+      constant: true,
+    });
     // A constant reference keeps MATCH-28's 5% margin: a candidate held elsewhere differs.
     const none = compareDistributions(mean, fill(50, 5), fill(50, 0));
     expect(none.status).toBe('different');
@@ -213,10 +232,10 @@ describe('match parity registry', () => {
     // …and one that mostly matches it can be shown equivalent once the sample resolves it.
     const mostly = obs(Array.from({ length: 20000 }, (_, i) => (i % 20 === 0 ? 4 : 5)));
     expect(compareDistributions(mean, fill(20000, 5), mostly).status).toBe('equivalent');
-    // A reference constant at 0 leaves no margin: only a resolved difference is reported.
+    // A reference constant at 0 leaves no margin: nothing but a resolved difference is decided.
     const near = obs([...Array(46).fill(0), 1, 1, -1, -1]);
     expect(compareDistributions(mean, fill(50, 0), near)).toMatchObject({
-      status: 'constant',
+      status: 'insufficient',
       reason: 'reference constant at 0: no margin',
     });
     expect(compareDistributions(mean, fill(50, 0), fill(50, 2)).status).toBe('different');
@@ -232,7 +251,11 @@ describe('match parity registry', () => {
     expect(compareDistributions(rare, events(1000, 0), events(1000, 3)).status).toBe(
       'underpowered',
     );
-    expect(compareDistributions(rare, events(1000, 0), events(1000, 0)).status).toBe('constant');
+    // No events on either path is a measured absence, not a rule: still unresolved.
+    expect(compareDistributions(rare, events(1000, 0), events(1000, 0))).toMatchObject({
+      status: 'underpowered',
+      reason: `no events on either path, ${REQUIRED_RARE_EVENTS} needed`,
+    });
     expect(compareDistributions(rare, events(10000, 600), events(10000, 610)).status).toBe(
       'equivalent',
     );
@@ -264,6 +287,65 @@ describe('match parity registry', () => {
     // Pilot spread is per match: two sides of a match averaged before the spread is taken.
     const paired = { ...obs([1, 3, 2, 4, 6, 8]), clusters: [0, 0, 1, 1, 2, 2] };
     expect(clusterSpread(paired)).toBeCloseTo(Math.sqrt(7), 10);
+  });
+
+  it('leaves rule-impossible metrics out of a condition verdict', () => {
+    // Applicability comes from MATCH-6/20 rules only.
+    expect(Object.keys(conditionOf('core:equal-top-tier').notApplicable).sort()).toEqual([
+      'outcome.extraTime',
+      'outcome.shootout',
+    ]);
+    expect(conditionOf('knockout:single-match').notApplicable).toEqual({});
+    expect(conditionOf('rare:extra-time').notApplicable).toEqual({});
+    expect(Object.keys(conditionOf('era:1950').notApplicable)).toContain('incident.sub');
+    expect(Object.keys(conditionOf('era:1965').notApplicable)).not.toContain('incident.sub');
+    expect(ruleExclusions({ year: 2024, decide: { awayGoals: false } })).toEqual({});
+
+    const under = (condition: string) =>
+      Array.from({ length: 40 }, (_, i) => ({
+        ...sample(record({ metrics: [team(i % 3, 10 + (i % 5)), team(i % 2, 12)] })),
+        condition,
+      }));
+    const league = under('core:equal-top-tier');
+    const report = buildEquivalenceReport({
+      condition: 'core:equal-top-tier',
+      reference: league,
+      candidate: league,
+    });
+    const status = (id: string) => report.metrics.find((m) => m.id === id)!.status;
+    expect(status('outcome.extraTime')).toBe('not-applicable');
+    expect(report.notApplicable).toEqual(
+      expect.arrayContaining([
+        { id: 'outcome.extraTime', reason: 'no tie that must produce a winner (MATCH-6)' },
+        { id: 'outcome.shootout', reason: 'no tie that must produce a winner (MATCH-6)' },
+      ]),
+    );
+    // Equal constants pass and stay listed; neither kind blocks the verdict.
+    expect(report.constants).toEqual(expect.arrayContaining(['team.minutes', 'team.passes']));
+    for (const id of ['outcome.extraTime', 'outcome.shootout', 'team.minutes'])
+      expect(report.blocking).not.toContain(id);
+    expect(report.metrics.some((m) => METRIC_BY_ID.get(m.id)!.family === 'season')).toBe(false);
+    // The same absence under a knockout tie is measured, not ruled out: it stays unresolved.
+    const tie = under('knockout:single-match');
+    const knockout = buildEquivalenceReport({
+      condition: 'knockout:single-match',
+      reference: tie,
+      candidate: tie,
+    });
+    expect(knockout.metrics.find((m) => m.id === 'outcome.extraTime')!.status).toBe('underpowered');
+    expect(knockout.blocking).toContain('outcome.extraTime');
+    // An era without substitutions rules them out.
+    const early = under('era:1950');
+    expect(
+      buildEquivalenceReport({
+        condition: 'era:1950',
+        reference: early,
+        candidate: early,
+      }).metrics.find((m) => m.id === 'incident.sub'),
+    ).toMatchObject({ status: 'not-applicable', reason: 'no substitutions in 1950 (MATCH-20)' });
+    expect(() =>
+      buildEquivalenceReport({ condition: 'era:1950', reference: league, candidate: early }),
+    ).toThrow(/drawn under core:equal-top-tier/);
   });
 
   it('measures rare events per match, not per player line', () => {

@@ -420,6 +420,7 @@ const legacyPath = `simulateMatch, own-league dispatch ${OWN_LEAGUE_ENGINE}`;
 const parity = buildParityReport({
   provenance,
   partition: 'calibration',
+  condition: core.id,
   reference: { path: 'grid (buildGridSetup + playGrid)', samples: reference },
   candidate: { path: legacyPath, samples: legacy },
 });
@@ -427,6 +428,7 @@ const candidateParity = candidateFn
   ? buildParityReport({
       provenance,
       partition: 'calibration',
+      condition: core.id,
       reference: { path: 'grid (buildGridSetup + playGrid)', samples: reference },
       candidate: { path: 'simulateAggregate', samples: candidate },
     })
@@ -509,7 +511,7 @@ console.log(
     `wrote ${out} (${settings.mode}, ${report.elapsedMs} ms)`,
     `median ms: summary ${by('fixture.summary')?.toFixed(3)}, grid ${by('fixture.grid')?.toFixed(1)}, settlement ${by('settlement.npc')?.toFixed(3)}`,
     `season s: baseline ${((by('season.baseline') ?? NaN) / 1000).toFixed(2)}, active ${((by('season.active-management') ?? NaN) / 1000).toFixed(2)}`,
-    `pilot ${settings.pilot} matches: ${JSON.stringify(statuses)}`,
+    `pilot ${settings.pilot} matches: ${JSON.stringify(statuses)}, constants ${parity.equivalence.constants.join(' ')}, blocking ${parity.equivalence.blocking.length}`,
     `checks: ${JSON.stringify(checks)}`,
   ].join('\n'),
 );

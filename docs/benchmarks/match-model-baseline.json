@@ -27,14 +27,14 @@
     }
   ],
   "provenance": {
-    "date": "2026-10-20T17:24:20.541Z",
+    "date": "2026-10-20T17:31:53.648Z",
     "source": {
-      "gitHead": "87c089d479ffc36c7ac8cce141740932637be110",
+      "gitHead": "86f72f81fe7e55a2ca65b503eab36eb2cba5ca87",
       "gitDirty": true,
       "fingerprint": {
         "algorithm": "sha256",
-        "sha256": "2217f7385f0cedca7e34d4edc8a6d472b4c80becc44705b62272a8c2dce8c033",
-        "files": 332,
+        "sha256": "5922e9645698ff5fbf9505707251c061b51318bfd915bfaaf76c885811861161",
+        "files": 340,
         "scope": [
           "packages",
           "apps/web/src/adapters",
@@ -247,12 +247,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.016198,
-        "meanMs": 0.0170035,
-        "p90Ms": 0.0186665,
-        "minMs": 0.0138955,
-        "maxMs": 0.028375,
-        "totalMs": 0.204042
+        "medianMs": 0.0187193,
+        "meanMs": 0.0188212,
+        "p90Ms": 0.0218125,
+        "minMs": 0.0154585,
+        "maxMs": 0.0243125,
+        "totalMs": 0.225854
       },
       {
         "id": "preparation.grid",
@@ -260,12 +260,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.514084,
-        "meanMs": 0.538979,
-        "p90Ms": 0.58477,
-        "minMs": 0.461,
-        "maxMs": 0.79225,
-        "totalMs": 6.46775
+        "medianMs": 0.598541,
+        "meanMs": 0.595479,
+        "p90Ms": 0.664021,
+        "minMs": 0.495146,
+        "maxMs": 0.804021,
+        "totalMs": 7.14575
       },
       {
         "id": "fixture.summary",
@@ -273,12 +273,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.165625,
-        "meanMs": 0.17633,
-        "p90Ms": 0.233166,
-        "minMs": 0.13027,
-        "maxMs": 0.245958,
-        "totalMs": 2.11596
+        "medianMs": 0.161323,
+        "meanMs": 0.168356,
+        "p90Ms": 0.225167,
+        "minMs": 0.130271,
+        "maxMs": 0.235105,
+        "totalMs": 2.02027
       },
       {
         "id": "fixture.summary-lines",
@@ -286,12 +286,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 0.135,
-        "meanMs": 0.137545,
-        "p90Ms": 0.152105,
-        "minMs": 0.1145,
-        "maxMs": 0.177958,
-        "totalMs": 1.65054
+        "medianMs": 0.146084,
+        "meanMs": 0.150533,
+        "p90Ms": 0.172562,
+        "minMs": 0.129667,
+        "maxMs": 0.203626,
+        "totalMs": 1.8064
       },
       {
         "id": "fixture.grid",
@@ -299,12 +299,12 @@
         "samples": 12,
         "warmup": 2,
         "repetitions": 2,
-        "medianMs": 37.9316,
-        "meanMs": 38.2566,
-        "p90Ms": 40.9011,
-        "minMs": 33.9079,
-        "maxMs": 48.8582,
-        "totalMs": 459.08
+        "medianMs": 37.008,
+        "meanMs": 37.7324,
+        "p90Ms": 41.7757,
+        "minMs": 33.8589,
+        "maxMs": 49.4704,
+        "totalMs": 452.788
       },
       {
         "id": "observation.grid",
@@ -312,12 +312,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 64.2182,
-        "meanMs": 65.421,
-        "p90Ms": 69.8985,
-        "minMs": 58.4095,
-        "maxMs": 81.9533,
-        "totalMs": 785.052
+        "medianMs": 63.4371,
+        "meanMs": 65.1632,
+        "p90Ms": 71.9075,
+        "minMs": 58.6226,
+        "maxMs": 81.0253,
+        "totalMs": 781.959
       },
       {
         "id": "observation.frames",
@@ -325,12 +325,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 14.7017,
-        "meanMs": 15.9934,
-        "p90Ms": 20.3865,
-        "minMs": 13.5595,
-        "maxMs": 22.413,
-        "totalMs": 191.921
+        "medianMs": 14.7007,
+        "meanMs": 15.7947,
+        "p90Ms": 21.5183,
+        "minMs": 13.0897,
+        "maxMs": 23.411,
+        "totalMs": 189.537
       },
       {
         "id": "settlement.npc",
@@ -338,12 +338,12 @@
         "samples": 24,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.0219795,
-        "meanMs": 0.110108,
-        "p90Ms": 0.069625,
-        "minMs": 0.003291,
-        "maxMs": 2.01092,
-        "totalMs": 2.64259
+        "medianMs": 0.0233545,
+        "meanMs": 0.114198,
+        "p90Ms": 0.062334,
+        "minMs": 0.003583,
+        "maxMs": 2.12875,
+        "totalMs": 2.74075
       },
       {
         "id": "settlement.own",
@@ -351,12 +351,12 @@
         "samples": 12,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 0.601,
-        "meanMs": 0.807931,
-        "p90Ms": 1.85004,
-        "minMs": 0.408875,
-        "maxMs": 2.39096,
-        "totalMs": 9.69517
+        "medianMs": 1.33302,
+        "meanMs": 1.69668,
+        "p90Ms": 2.92817,
+        "minMs": 0.924708,
+        "maxMs": 3.97204,
+        "totalMs": 20.3601
       },
       {
         "id": "season.baseline",
@@ -364,12 +364,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3282.07,
-        "meanMs": 3282.07,
-        "p90Ms": 3282.07,
-        "minMs": 3282.07,
-        "maxMs": 3282.07,
-        "totalMs": 3282.07
+        "medianMs": 3191.36,
+        "meanMs": 3191.36,
+        "p90Ms": 3191.36,
+        "minMs": 3191.36,
+        "maxMs": 3191.36,
+        "totalMs": 3191.36
       },
       {
         "id": "codec.encode",
@@ -377,12 +377,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 75.7457,
-        "meanMs": 75.7457,
-        "p90Ms": 85.8617,
-        "minMs": 65.6297,
-        "maxMs": 85.8617,
-        "totalMs": 151.491
+        "medianMs": 75.5142,
+        "meanMs": 75.5142,
+        "p90Ms": 89.5852,
+        "minMs": 61.4432,
+        "maxMs": 89.5852,
+        "totalMs": 151.028
       },
       {
         "id": "codec.decode",
@@ -390,12 +390,12 @@
         "samples": 2,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 98.2448,
-        "meanMs": 98.2448,
-        "p90Ms": 108.261,
-        "minMs": 88.2286,
-        "maxMs": 108.261,
-        "totalMs": 196.49
+        "medianMs": 98.1285,
+        "meanMs": 98.1285,
+        "p90Ms": 106.81,
+        "minMs": 89.4465,
+        "maxMs": 106.81,
+        "totalMs": 196.257
       },
       {
         "id": "season.active-management",
@@ -403,12 +403,12 @@
         "samples": 1,
         "warmup": 0,
         "repetitions": 1,
-        "medianMs": 3312.11,
-        "meanMs": 3312.11,
-        "p90Ms": 3312.11,
-        "minMs": 3312.11,
-        "maxMs": 3312.11,
-        "totalMs": 3312.11
+        "medianMs": 3336.99,
+        "meanMs": 3336.99,
+        "p90Ms": 3336.99,
+        "minMs": 3336.99,
+        "maxMs": 3336.99,
+        "totalMs": 3336.99
       }
     ],
     "categories": {
@@ -417,7 +417,7 @@
           "preparation.summary",
           "preparation.grid"
         ],
-        "totalMs": 6.67179
+        "totalMs": 7.3716
       },
       "computation": {
         "components": [
@@ -425,41 +425,41 @@
           "fixture.summary-lines",
           "fixture.grid"
         ],
-        "totalMs": 462.846
+        "totalMs": 456.615
       },
       "observation": {
         "components": [
           "observation.grid",
           "observation.frames"
         ],
-        "totalMs": 976.973
+        "totalMs": 971.495
       },
       "settlement": {
         "components": [
           "settlement.npc",
           "settlement.own"
         ],
-        "totalMs": 12.3378
+        "totalMs": 23.1009
       },
       "season": {
         "components": [
           "season.baseline",
           "season.active-management"
         ],
-        "totalMs": 6594.18
+        "totalMs": 6528.35
       },
       "codec": {
         "components": [
           "codec.encode",
           "codec.decode"
         ],
-        "totalMs": 347.981
+        "totalMs": 347.285
       }
     }
   },
   "memory": {
-    "peakHeapBytes": 207832872,
-    "peakRssBytes": 428802048
+    "peakHeapBytes": 196191784,
+    "peakRssBytes": 406175744
   },
   "seasons": [
     {
@@ -467,8 +467,8 @@
       "seed": "release-century-baseline",
       "seasons": 1,
       "year": 1951,
-      "checkpointChars": 66601,
-      "checkpointBytes": 133242,
+      "checkpointChars": 67195,
+      "checkpointBytes": 134430,
       "withinCheckpointLimit": true
     },
     {
@@ -476,8 +476,8 @@
       "seed": "release-century-active-management",
       "seasons": 1,
       "year": 1951,
-      "checkpointChars": 68023,
-      "checkpointBytes": 136086,
+      "checkpointChars": 68605,
+      "checkpointBytes": 137250,
       "withinCheckpointLimit": true
     }
   ],
@@ -489,14 +489,14 @@
       "performance": 1
     },
     "provenance": {
-      "date": "2026-10-20T17:24:20.541Z",
+      "date": "2026-10-20T17:31:53.648Z",
       "source": {
-        "gitHead": "87c089d479ffc36c7ac8cce141740932637be110",
+        "gitHead": "86f72f81fe7e55a2ca65b503eab36eb2cba5ca87",
         "gitDirty": true,
         "fingerprint": {
           "algorithm": "sha256",
-          "sha256": "2217f7385f0cedca7e34d4edc8a6d472b4c80becc44705b62272a8c2dce8c033",
-          "files": 332,
+          "sha256": "5922e9645698ff5fbf9505707251c061b51318bfd915bfaaf76c885811861161",
+          "files": 340,
           "scope": [
             "packages",
             "apps/web/src/adapters",
@@ -4389,6 +4389,8 @@
       ]
     },
     "equivalence": {
+      "condition": "core:equal-top-tier",
+      "level": "match",
       "metrics": [
         {
           "id": "team.goals",
@@ -4909,7 +4911,8 @@
             "p90": 90,
             "p99": 90
           },
-          "status": "constant",
+          "status": "equivalent",
+          "constant": true,
           "reason": "both paths constant and equal"
         },
         {
@@ -7901,8 +7904,8 @@
             "p90": 0,
             "p99": 0
           },
-          "status": "constant",
-          "reason": "no events on either path"
+          "status": "not-applicable",
+          "reason": "no tie that must produce a winner (MATCH-6)"
         },
         {
           "id": "outcome.shootout",
@@ -7933,8 +7936,8 @@
             "p90": 0,
             "p99": 0
           },
-          "status": "constant",
-          "reason": "no events on either path"
+          "status": "not-applicable",
+          "reason": "no tie that must produce a winner (MATCH-6)"
         },
         {
           "id": "outcome.addedMinutes",
@@ -8451,166 +8454,6 @@
             "margin": 0.08,
             "status": "insufficient"
           }
-        },
-        {
-          "id": "season.championPpg",
-          "comparison": "mean-cdf",
-          "reference": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "candidate": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "status": "missing",
-          "reason": "no season samples"
-        },
-        {
-          "id": "season.bottomPpg",
-          "comparison": "mean-cdf",
-          "reference": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "candidate": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "status": "missing",
-          "reason": "no season samples"
-        },
-        {
-          "id": "season.goalsPerMatch",
-          "comparison": "mean-cdf",
-          "reference": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "candidate": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "status": "missing",
-          "reason": "no season samples"
-        },
-        {
-          "id": "season.topScorerGoals",
-          "comparison": "mean-cdf",
-          "reference": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "candidate": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "status": "missing",
-          "reason": "no season samples"
-        },
-        {
-          "id": "career.topScorerGoals",
-          "comparison": "mean-cdf",
-          "reference": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "candidate": {
-            "n": 0,
-            "clusters": 0,
-            "missing": 0,
-            "undefinedRatios": 0,
-            "zeros": 0,
-            "mean": null,
-            "sd": 0,
-            "p10": null,
-            "p50": null,
-            "p90": null,
-            "p99": null
-          },
-          "status": "missing",
-          "reason": "no season samples"
         }
       ],
       "relationships": [
@@ -8685,9 +8528,9 @@
         "metrics": {
           "insufficient": 17,
           "different": 18,
-          "constant": 3,
-          "missing": 71,
-          "not-applicable": 1,
+          "equivalent": 1,
+          "missing": 66,
+          "not-applicable": 3,
           "underpowered": 3
         },
         "relationships": {
@@ -8695,9 +8538,139 @@
           "missing": 5
         }
       },
+      "constants": [
+        "team.minutes"
+      ],
+      "notApplicable": [
+        {
+          "id": "player.possession",
+          "reason": "not measured at this level"
+        },
+        {
+          "id": "outcome.extraTime",
+          "reason": "no tie that must produce a winner (MATCH-6)"
+        },
+        {
+          "id": "outcome.shootout",
+          "reason": "no tie that must produce a winner (MATCH-6)"
+        }
+      ],
+      "blocking": [
+        "team.goals",
+        "team.assists",
+        "team.passes",
+        "team.completed",
+        "team.shots",
+        "team.onTarget",
+        "team.tackles",
+        "team.interceptions",
+        "team.dribbles",
+        "team.saves",
+        "team.possession",
+        "team.xg",
+        "td.keyPasses",
+        "td.bigChances",
+        "td.bigChancesScored",
+        "td.boxShots",
+        "td.finalThirdPasses",
+        "td.finalThirdCompleted",
+        "td.progressivePasses",
+        "td.takeOns",
+        "td.highTurnovers",
+        "td.buildUpPasses",
+        "td.pressActions",
+        "td.boxEntries",
+        "td.frontOfBoxEntries",
+        "td.lineBreakingPasses",
+        "td.xtAdded",
+        "td.crosses",
+        "td.crossesCompleted",
+        "td.cutBacks",
+        "td.throughBalls",
+        "td.throughBallsCompleted",
+        "td.progressiveCarries",
+        "td.fouls",
+        "td.yellowCards",
+        "td.redCards",
+        "td.corners",
+        "td.offsides",
+        "td.throwIns",
+        "td.goalKicks",
+        "td.freeKicks",
+        "td.penalties",
+        "td.penaltiesScored",
+        "player.goals",
+        "player.assists",
+        "player.passes",
+        "player.completed",
+        "player.shots",
+        "player.onTarget",
+        "player.tackles",
+        "player.interceptions",
+        "player.dribbles",
+        "player.saves",
+        "player.minutes",
+        "pd.xg",
+        "pd.xa",
+        "pd.keyPasses",
+        "pd.bigChancesCreated",
+        "pd.finalThirdPasses",
+        "pd.finalThirdCompleted",
+        "pd.progressivePasses",
+        "pd.takeOns",
+        "pd.highTurnovers",
+        "pd.boxEntries",
+        "pd.frontOfBoxEntries",
+        "pd.lineBreakingPasses",
+        "pd.xtAdded",
+        "pd.crosses",
+        "pd.crossesCompleted",
+        "pd.cutBacks",
+        "pd.throughBalls",
+        "pd.throughBallsCompleted",
+        "pd.progressiveCarries",
+        "pd.fouls",
+        "pd.foulsWon",
+        "pd.yellowCards",
+        "pd.redCards",
+        "pd.offsides",
+        "participation.lines",
+        "participation.minutes",
+        "incident.yellow",
+        "incident.secondYellow",
+        "incident.red",
+        "incident.sub",
+        "incident.injury",
+        "outcome.homeWin",
+        "outcome.draw",
+        "outcome.awayWin",
+        "outcome.goals",
+        "outcome.goalDifference",
+        "outcome.addedMinutes",
+        "ratio.passCompletion",
+        "ratio.shotAccuracy",
+        "ratio.conversion",
+        "ratio.xgPerShot",
+        "ratio.finalThirdAccuracy",
+        "ratio.crossCompletion",
+        "ratio.throughBallCompletion",
+        "ratio.takeOnSuccess",
+        "ratio.bigChanceConversion",
+        "ratio.penaltyConversion",
+        "ratio.ppda",
+        "ratio.fieldTilt",
+        "ratio.possessionShare",
+        "team.shots ~ team.goals",
+        "team.xg ~ team.goals",
+        "team.possession ~ team.passes",
+        "td.finalThirdPasses ~ team.shots",
+        "td.boxEntries ~ td.boxShots",
+        "td.keyPasses ~ team.assists",
+        "td.fouls ~ incident.yellow"
+      ],
       "passed": false
     }
   },
   "candidateParity": null,
-  "elapsedMs": 11790
+  "elapsedMs": 11708
 }

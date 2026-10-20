@@ -766,6 +766,10 @@ export interface ParityCondition {
   family: ConditionFamily;
   label: string;
   rare: boolean;
+  /** Fixture conditions compare match metrics; season conditions compare the season measures. */
+  level: 'match' | 'season';
+  /** Metrics the condition's own rules make impossible, each with its rule (→MATCH-28). */
+  notApplicable: Readonly<Record<string, string>>;
   params: Readonly<Record<string, unknown>>;
 }
 const TACTICS: readonly Tactic[] = ['possession', 'press', 'counter', 'balanced'];
@@ -781,13 +785,43 @@ const TIER_BANDS: readonly (readonly [string, number, number])[] = [
 ];
 /** Rule seasons where substitutions or cards change (→MATCH-19/20), and the modern core year. */
 const ERA_YEARS = [1950, 1965, 1967, 1970, 1987, 1995, 1996, 2008, 2022, 2024];
+/** The core condition's fixture; every family but era and knockout varies one factor around it. */
+const CORE_FIXTURE = { year: 2024, round: 1, kind: 'league' } as const;
+
+/**
+ * Metrics a condition's own rules make impossible (→MATCH-28): extra time and shoot-outs outside a
+ * tie that must produce a winner (→MATCH-6), substitutions in an era that allows none (→MATCH-20).
+ * Read from the condition's rules only, never from what a sample happened to record.
+ */
+export function ruleExclusions(rules: { year: number; decide?: unknown }): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (rules.decide === undefined) {
+    out['outcome.extraTime'] = 'no tie that must produce a winner (MATCH-6)';
+    out['outcome.shootout'] = 'no tie that must produce a winner (MATCH-6)';
+  }
+  if (eraRules(rules.year).maxSubs === 0)
+    out['incident.sub'] = `no substitutions in ${rules.year} (MATCH-20)`;
+  return out;
+}
 const condition = (
   family: ConditionFamily,
   key: string,
   label: string,
   params: Record<string, unknown>,
   rare = false,
-): ParityCondition => ({ id: `${family}:${key}`, family, label, rare, params });
+): ParityCondition => {
+  const fixture = params.fixture as { year: number } | undefined;
+  const year = (params.year as number | undefined) ?? fixture?.year ?? CORE_FIXTURE.year;
+  return {
+    id: `${family}:${key}`,
+    family,
+    label,
+    rare,
+    level: family === 'season' ? 'season' : 'match',
+    notApplicable: ruleExclusions({ year, decide: params.decide }),
+    params,
+  };
+};
 
 /**
  * Corpus sizes, the condition matrix and the seed partitions. Families vary one factor around the
@@ -825,7 +859,7 @@ export const CORPUS_CONFIG = {
        * instead, so its band readings are not this condition's.
        */
       tactics: 'club',
-      fixture: { year: 2024, round: 1, kind: 'league' },
+      fixture: CORE_FIXTURE,
     }),
     ...GAP_BUCKETS.map((gap) =>
       condition('gap', String(gap), `home-minus-away gap ${gap} (home/away by sign)`, {
@@ -915,7 +949,7 @@ export function validateCorpusConfig(config: {
   calibrationPerCondition: number;
   validation: { minimum: number; maximum: number };
   rarePerCondition: number;
-  conditions: readonly { id: string }[];
+  conditions: readonly { id: string; notApplicable: Readonly<Record<string, string>> }[];
 }): string[] {
   const errors: string[] = [];
   const [a, b] = [config.partitions.calibration.prefix, config.partitions.validation.prefix];
@@ -928,7 +962,16 @@ export function validateCorpusConfig(config: {
   if (config.rarePerCondition <= 0) errors.push('rare-event size must be positive');
   const ids = config.conditions.map((c) => c.id);
   if (new Set(ids).size !== ids.length) errors.push('condition ids must be unique');
+  for (const c of config.conditions)
+    for (const id of Object.keys(c.notApplicable))
+      if (!METRIC_BY_ID.has(id)) errors.push(`${c.id} excludes unknown metric ${id}`);
   return errors;
+}
+/** A declared condition by id. */
+export function conditionOf(id: string): ParityCondition {
+  const found = CORPUS_CONFIG.conditions.find((c) => c.id === id);
+  if (!found) throw new Error(`unknown parity condition ${id}`);
+  return found;
 }
 
 /** Standard normal quantile (Acklam's rational approximation). */
@@ -1336,19 +1379,23 @@ function describe(o: Observations): Distribution {
   };
 }
 
-/** Only `equivalent` passes; every other status is reported as what it is. */
+/**
+ * Only `equivalent` passes and `not-applicable` stays outside a verdict; every other status is
+ * reported as what it is.
+ */
 export type ComparisonStatus =
   | 'equivalent'
   | 'different'
   | 'insufficient'
   | 'underpowered'
-  | 'constant'
   | 'unidentifiable'
   | 'missing'
   | 'not-applicable';
 export interface MetricComparison {
   id: string;
   status: ComparisonStatus;
+  /** Both paths held the same value: equivalent by the zero difference, listed as constant. */
+  constant?: true;
   comparison: Comparison;
   reference: Distribution;
   candidate: Distribution;
@@ -1391,8 +1438,13 @@ export function compareDistributions(
   if (d.comparison === 'rate-ratio') {
     const events: [number, number] = [sum(reference.values), sum(candidate.values)];
     const required = requiredRareEvents();
+    // No events is a measured absence, not a rule: the rate stays unresolved (→MATCH-28).
     if (events[0] === 0 && events[1] === 0)
-      return { ...base, status: 'constant', reason: 'no events on either path' };
+      return {
+        ...base,
+        status: 'underpowered',
+        reason: `no events on either path, ${required} needed`,
+      };
     if (events[0] === 0 || events[1] === 0)
       return { ...base, status: 'underpowered', reason: 'one path has no events' };
     // Events per match: player lines a match differ between paths that substitute differently.
@@ -1418,13 +1470,18 @@ export function compareDistributions(
       status: 'underpowered',
       reason: `fewer than ${PARITY_CONFIG.minimumSamples} matches on a path`,
     };
-  // Both paths held at one value is reported as such, never counted as evidence of equivalence.
+  // Both paths held at one value: equivalent by that zero difference, and listed as constant.
   if (
     base.reference.sd === 0 &&
     base.candidate.sd === 0 &&
     base.candidate.mean === base.reference.mean
   )
-    return { ...base, status: 'constant', reason: 'both paths constant and equal' };
+    return {
+      ...base,
+      status: 'equivalent',
+      constant: true,
+      reason: 'both paths constant and equal',
+    };
   if (d.comparison === 'proportion') {
     const p = [base.reference.mean, base.candidate.mean];
     const [lr, ur] = wilson(p[0]!, reference.values.length);
@@ -1458,14 +1515,13 @@ export function compareDistributions(
       : meanStatus === 'equivalent' && cdfStatus === 'equivalent'
         ? 'equivalent'
         : 'insufficient';
-  // A reference constant at 0 leaves a margin of 0 (5% of nothing, 0.1 of no spread): only a
-  // difference can be resolved. A reference constant elsewhere keeps its 5% margin, so a candidate
-  // held at another value or outside that margin is different.
+  // A reference constant elsewhere keeps its 5% margin, so a candidate held at another value or
+  // outside that margin is different. One constant at 0 leaves a margin of 0 (5% of nothing, 0.1
+  // of no spread) that no interval fits: only a difference can be resolved.
   const noMargin = margin === 0 && resolved !== 'different';
-  const status: ComparisonStatus = noMargin ? 'constant' : resolved;
   return {
     ...base,
-    status,
+    status: resolved,
     ...(noMargin && { reason: 'reference constant at 0: no margin' }),
     difference: {
       estimate,
@@ -2010,37 +2066,72 @@ const tally = <T extends { status: string }>(rows: readonly T[]) =>
     {},
   );
 
-/** Path equivalence of every registered metric and relationship (→MATCH-28). */
+/**
+ * Path equivalence of one condition's metrics and relationships (→MATCH-28): a fixture condition
+ * compares the match metrics, a season condition the season measures. Metrics the condition's
+ * rules make impossible are not applicable: listed with their rule and left out of the verdict.
+ * Equal constants pass by their zero difference and are listed; every other status blocks.
+ */
 export function buildEquivalenceReport(input: {
+  condition: string;
   reference: readonly MatchSample[];
   candidate: readonly MatchSample[];
   referenceSeasons?: readonly SeasonSample[];
   candidateSeasons?: readonly SeasonSample[];
 }) {
-  const metrics = METRIC_REGISTRY.map((d) =>
-    d.family === 'season'
-      ? compareDistributions(
-          d,
-          observeSeasons(input.referenceSeasons ?? [], d),
-          observeSeasons(input.candidateSeasons ?? [], d),
-        )
-      : compareDistributions(d, observe(input.reference, d), observe(input.candidate, d)),
-  ).map((c) =>
-    // A season measure without season samples is unmeasured, not a constant.
-    METRIC_BY_ID.get(c.id)!.family === 'season' && !c.reference.n && !c.candidate.n
-      ? { ...c, status: 'missing' as const, reason: 'no season samples' }
-      : c,
+  const condition = conditionOf(input.condition);
+  for (const s of [...input.reference, ...input.candidate])
+    if (s.condition !== condition.id)
+      throw new Error(`${s.record.id} was drawn under ${s.condition}, not ${condition.id}`);
+  const seasonLevel = condition.level === 'season';
+  const metrics = METRIC_REGISTRY.filter((d) => (d.family === 'season') === seasonLevel).map(
+    (d): MetricComparison => {
+      const [reference, candidate] =
+        d.family === 'season'
+          ? [
+              observeSeasons(input.referenceSeasons ?? [], d),
+              observeSeasons(input.candidateSeasons ?? [], d),
+            ]
+          : [observe(input.reference, d), observe(input.candidate, d)];
+      const rule = condition.notApplicable[d.id];
+      if (rule)
+        return {
+          ...compareDistributions({ ...d, applies: false }, reference, candidate),
+          reason: rule,
+        };
+      const c = compareDistributions(d, reference, candidate);
+      // A season measure without season samples is unmeasured.
+      return d.family === 'season' && !c.reference.n && !c.candidate.n
+        ? { ...c, status: 'missing', reason: 'no season samples' }
+        : c;
+    },
   );
-  const relationships = PARITY_CONFIG.relationships.map((pair) =>
-    compareRelationship(pair, input.reference, input.candidate),
-  );
+  const relationships = seasonLevel
+    ? []
+    : PARITY_CONFIG.relationships.map((pair): RelationshipComparison => {
+        const rule = pair.map((id) => condition.notApplicable[id]).find(Boolean);
+        return rule
+          ? { pair, status: 'not-applicable', reason: rule }
+          : compareRelationship(pair, input.reference, input.candidate);
+      });
+  const blocks = (status: ComparisonStatus) =>
+    status !== 'equivalent' && status !== 'not-applicable';
+  const blocking = [
+    ...metrics.filter((m) => blocks(m.status)).map((m) => m.id),
+    ...relationships.filter((r) => blocks(r.status)).map((r) => r.pair.join(' ~ ')),
+  ];
   return {
+    condition: condition.id,
+    level: condition.level,
     metrics,
     relationships,
     summary: { metrics: tally(metrics), relationships: tally(relationships) },
-    passed:
-      metrics.every((m) => m.status === 'equivalent' || m.status === 'not-applicable') &&
-      relationships.every((r) => r.status === 'equivalent'),
+    constants: metrics.filter((m) => m.constant).map((m) => m.id),
+    notApplicable: metrics
+      .filter((m) => m.status === 'not-applicable')
+      .map((m) => ({ id: m.id, reason: m.reason ?? 'not measured at this level' })),
+    blocking,
+    passed: blocking.length === 0,
   };
 }
 
@@ -2070,12 +2161,14 @@ export interface Provenance {
 export function buildParityReport(input: {
   provenance: Provenance;
   partition: Partition;
+  condition: string;
   reference: { path: string; samples: readonly MatchSample[]; seasons?: readonly SeasonSample[] };
   candidate: { path: string; samples: readonly MatchSample[]; seasons?: readonly SeasonSample[] };
 }) {
   const errors = validateCorpusConfig(CORPUS_CONFIG);
   if (errors.length) throw new Error(errors.join('; '));
   const equivalence = buildEquivalenceReport({
+    condition: input.condition,
     reference: input.reference.samples,
     candidate: input.candidate.samples,
     referenceSeasons: input.reference.seasons,
