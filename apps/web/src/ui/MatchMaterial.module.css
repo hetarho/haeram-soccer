@@ -1,0 +1,215 @@
+/* Post-match material (→WEB-84): the theatre's pitch colours, night-broadcast tokens (→WEB-38). */
+.material {
+  min-width: 0;
+  margin: 12px 0;
+}
+.figure {
+  margin: 8px 0 12px;
+  min-width: 0;
+}
+.pitch {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.9;
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+.grass {
+  fill: #253b31;
+}
+.stripe {
+  fill: #2b4538;
+}
+.stripeAlt {
+  fill: #304b3d;
+}
+.lines {
+  fill: none;
+  stroke: #d7dcc598;
+  stroke-width: 0.45;
+}
+.arrow {
+  fill: none;
+  stroke: #d7dcc5c0;
+  stroke-width: 0.6;
+}
+.heat {
+  fill: var(--warm);
+  stroke: none;
+}
+.picked {
+  fill: none;
+  stroke: var(--focus);
+  stroke-width: 0.6;
+  stroke-dasharray: 1.4 0.8;
+}
+.shot {
+  stroke-width: 0.6;
+  fill-opacity: 0.08;
+}
+.ownShot {
+  stroke: var(--text);
+  fill: var(--text);
+}
+.otherShot {
+  stroke: var(--cool);
+  fill: var(--cool);
+}
+.shot.goal {
+  fill-opacity: 0.92;
+}
+.link {
+  stroke: var(--text);
+  stroke-opacity: 0.55;
+  stroke-linecap: round;
+}
+.node circle {
+  fill: var(--accent-fill);
+  stroke: var(--on-accent);
+  stroke-width: 0.5;
+}
+.node text {
+  fill: var(--on-accent);
+  font-family: var(--display);
+  font-size: 4.2px;
+  font-weight: 700;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.thirdLine {
+  stroke: var(--gold);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.6 1;
+}
+.bar {
+  fill: var(--warm);
+  fill-opacity: 0.85;
+}
+.barText {
+  fill: var(--text);
+  font-family: var(--display);
+  font-size: 4.2px;
+  text-anchor: end;
+}
+.caption {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-family: var(--display);
+  overflow-wrap: anywhere;
+}
+.missing {
+  margin: 8px 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.key {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.ownKey {
+  background: var(--text);
+}
+.otherKey {
+  background: var(--cool);
+}
+.picker {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2px 14px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.roster li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.roster b {
+  display: inline-block;
+  min-width: 18px;
+  color: var(--text);
+}
+.sentences {
+  margin: 10px 0;
+  padding: 0 0 0 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.thirds {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--display);
+  font-variant-numeric: tabular-nums;
+}
+.thirds caption {
+  padding: 4px 0;
+  text-align: left;
+  color: var(--text-muted);
+}
+.thirds th,
+.thirds td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+.thirds th[scope='row'] {
+  text-align: left;
+  color: var(--text-muted);
+}
+.playerLink {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  font: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

@@ -1,9 +1,15 @@
+import { lazy, Suspense, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { kindLabel, seasonName } from './format';
 import { matchComparison, PD, share, sideLines } from './advanced';
 import { Term } from './Term';
 import s from './Analysis.module.css';
+
+// The maps load when opened here or from a fixture row, as their own chunk (→ARCH-28).
+export const MatchMaterial = lazy(() =>
+  import('./MatchMaterial').then((module) => ({ default: module.MatchMaterial })),
+);
 
 /** Final analysis of one recorded match: both teams side by side, then our players (→WEB-22). */
 export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
@@ -20,6 +26,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
         ((a.detail?.[PD.xg] ?? 0) + (a.detail?.[PD.xa] ?? 0)) ||
       a.id.localeCompare(b.id),
   );
+  const [material, setMaterial] = useState(false);
   const rows = matchComparison(record);
   const hundredths = (value: number) => (value / 100).toFixed(2);
   const grid = !!record.lineCounts;
@@ -49,6 +56,16 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
           <small>원정 · {tacticLabel[record.tactics[1]]}</small>
         </b>
       </div>
+      <div className={s.controls}>
+        <button type="button" aria-expanded={material} onClick={() => setMaterial((open) => !open)}>
+          경기 자료
+        </button>
+      </div>
+      {material && (
+        <Suspense fallback={<p className={s.note}>경기 자료를 펼치는 중…</p>}>
+          <MatchMaterial record={record} w={w} />
+        </Suspense>
+      )}
       <ul className={s.compare} aria-label="두 팀 지표 비교">
         {rows.map((row) => (
           <li key={row.label}>

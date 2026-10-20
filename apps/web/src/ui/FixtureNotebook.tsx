@@ -1,6 +1,6 @@
 import { Select } from './Select';
 import { ClubLink } from './ClubLink';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { fixtureDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -8,7 +8,7 @@ import { ownSeasonFixtures } from './fixtures';
 import { resultFor } from './scouting';
 import { competitionLabel, kindLabel } from './format';
 import { Dialog } from './Dialog';
-import { MatchReport } from './MatchReport';
+import { MatchMaterial, MatchReport } from './MatchReport';
 import s from './Analysis.module.css';
 
 export function FixtureNotebook({ w, client }: { w: World; client: GameClient }) {
@@ -17,7 +17,11 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
     [kind, setKind] = useState('all'),
     [venue, setVenue] = useState('all'),
     [page, setPage] = useState(0);
-  const [selected, setSelected] = useState<{ id: string; year: number }>();
+  const [selected, setSelected] = useState<{
+    id: string;
+    year: number;
+    view: 'report' | 'material';
+  }>();
   const [loaded, setLoaded] = useState<{ id: string; record?: MatchRecord; error?: string }>();
   useEffect(() => {
     setPage(0);
@@ -132,14 +136,24 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                           우리 {result.result} {result.own}–{result.other}
                         </b>
                         <p className={s.note}>정규 90분 결과</p>
-                        <button
-                          onClick={() => {
-                            setLoaded(undefined);
-                            setSelected({ id: f.id, year: f.year });
-                          }}
-                        >
-                          이 경기 분석 보기
-                        </button>
+                        <div className={s.controls}>
+                          <button
+                            onClick={() => {
+                              setLoaded(undefined);
+                              setSelected({ id: f.id, year: f.year, view: 'report' });
+                            }}
+                          >
+                            이 경기 분석 보기
+                          </button>
+                          <button
+                            onClick={() => {
+                              setLoaded(undefined);
+                              setSelected({ id: f.id, year: f.year, view: 'material' });
+                            }}
+                          >
+                            경기 자료
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <b>킥오프를 기다립니다</b>
@@ -166,8 +180,16 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
         )}
       </details>
       {selected && (
-        <Dialog label="일정 경기 분석" onClose={() => setSelected(undefined)} wide>
-          {detail?.record ? (
+        <Dialog
+          label={selected.view === 'material' ? '일정 경기 자료' : '일정 경기 분석'}
+          onClose={() => setSelected(undefined)}
+          wide
+        >
+          {detail?.record && selected.view === 'material' ? (
+            <Suspense fallback={<p className={s.note}>경기 자료를 펼치는 중…</p>}>
+              <MatchMaterial record={detail.record} w={w} />
+            </Suspense>
+          ) : detail?.record ? (
             <MatchReport record={detail.record} w={w} />
           ) : (
             <p className={s.note} role={detail?.error ? 'alert' : 'status'}>
