@@ -1,0 +1,751 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-20T12:55:05.041Z",
+  "sourceCommit": "e7cb37cb6e13eb1f11d3613c8667df4fcac920e7",
+  "group": {
+    "id": "identity",
+    "branch": "work/identity",
+    "status": "active",
+    "createdAt": "2026-10-20T12:24:30.735Z",
+    "limits": {
+      "workers": 2,
+      "reviewers": 1,
+      "maxPending": 4
+    },
+    "push": "main",
+    "review": "risky",
+    "lastRun": {
+      "id": "232b50a3-de11-4978-82df-135a0b941518",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-20T12:24:52.237Z",
+      "stoppedAt": "2026-10-20T12:55:04.349Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+          "role": "worker",
+          "error": "T237: 태스크 result에 limits 기록이 필요합니다."
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total": 18,
+    "completed": 0,
+    "remaining": 18,
+    "running": 0,
+    "review": 0,
+    "blocked": 3,
+    "unassigned": 15
+  },
+  "tasks": [
+    {
+      "id": "T235",
+      "title": "Version design-bearing checkpoint envelopes without changing gameplay rules",
+      "dep": [
+        "T233",
+        "T234"
+      ],
+      "lane": "identity-base",
+      "status": "blocked"
+    },
+    {
+      "id": "T237",
+      "title": "Generate complete stable identities and previewable founding drafts",
+      "dep": [
+        "T235",
+        "T236"
+      ],
+      "lane": "identity-base",
+      "status": "blocked"
+    },
+    {
+      "id": "T239",
+      "title": "Select readable saved shirts and automatic goalkeeper colours",
+      "dep": [
+        "T238",
+        "T237"
+      ],
+      "lane": "identity-base",
+      "status": "blocked"
+    },
+    {
+      "id": "T240",
+      "title": "Apply own-club identity edits atomically through the existing worker command",
+      "dep": [
+        "T237",
+        "T235"
+      ],
+      "lane": "identity-engine",
+      "status": "todo"
+    },
+    {
+      "id": "T241",
+      "title": "Persist a kit role for exactly the validated next own fixture",
+      "dep": [
+        "T240",
+        "T239"
+      ],
+      "lane": "identity-engine",
+      "status": "todo"
+    },
+    {
+      "id": "T242",
+      "title": "Freeze actual shirt and crest appearance at own-match settlement",
+      "dep": [
+        "T241",
+        "T239"
+      ],
+      "lane": "identity-engine",
+      "status": "todo"
+    },
+    {
+      "id": "T243",
+      "title": "Preserve appearance snapshots in bounded compact checkpoint streams",
+      "dep": [
+        "T242",
+        "T235"
+      ],
+      "lane": "identity-engine",
+      "status": "todo"
+    },
+    {
+      "id": "T244",
+      "title": "Install missing identities only through validated writer activation",
+      "dep": [
+        "T243",
+        "T237",
+        "T236"
+      ],
+      "lane": "identity-engine",
+      "status": "todo"
+    },
+    {
+      "id": "T245",
+      "title": "Render one-to-three-colour crests consistently in club and slot views",
+      "dep": [
+        "T237",
+        "T236"
+      ],
+      "lane": "identity-editor",
+      "status": "todo"
+    },
+    {
+      "id": "T247",
+      "title": "Make identity editing a pure isolated draft reducer",
+      "dep": [
+        "T237"
+      ],
+      "lane": "identity-editor",
+      "status": "todo"
+    },
+    {
+      "id": "T248",
+      "title": "Build accessible controlled crest and shirt editing panels",
+      "dep": [
+        "T245",
+        "T246",
+        "T247"
+      ],
+      "lane": "identity-editor",
+      "status": "todo"
+    },
+    {
+      "id": "T249",
+      "title": "Preview the actual selected shirt pairing on grass without simulating a match",
+      "dep": [
+        "T239",
+        "T246",
+        "T248"
+      ],
+      "lane": "identity-editor",
+      "status": "todo"
+    },
+    {
+      "id": "T250",
+      "title": "Found a club with exactly the previewed identity and shirts",
+      "dep": [
+        "T244",
+        "T249"
+      ],
+      "lane": "identity-founding",
+      "status": "todo"
+    },
+    {
+      "id": "T251",
+      "title": "Edit club design through a game-scoped draft and one explicit apply",
+      "dep": [
+        "T240",
+        "T250"
+      ],
+      "lane": "identity-founding",
+      "status": "todo"
+    },
+    {
+      "id": "T252",
+      "title": "Select a warned fixture-specific shirt without changing saved designs",
+      "dep": [
+        "T241",
+        "T249"
+      ],
+      "lane": "identity-match-kit",
+      "status": "todo"
+    },
+    {
+      "id": "T253",
+      "title": "Render actual recorded shirt patterns and stable historical crests in matches",
+      "dep": [
+        "T242",
+        "T245",
+        "T246",
+        "T252"
+      ],
+      "lane": "identity-match-kit",
+      "status": "todo"
+    },
+    {
+      "id": "T254",
+      "title": "Verify identity continuity across save, slots, readonly and failed writes",
+      "dep": [
+        "T251",
+        "T253",
+        "T243",
+        "T244"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T255",
+      "title": "Validate the complete identity feature against release and century budgets",
+      "dep": [
+        "T254"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "group": "identity",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "lane": "identity-base",
+      "owner": "232b50a3-de11-4978-82df-135a0b941518/worker-1",
+      "contributors": [
+        "232b50a3-de11-4978-82df-135a0b941518/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T237: 태스크 result에 limits 기록이 필요합니다.",
+      "createdAt": "2026-10-20T12:24:52.609Z",
+      "startCommit": "e7cb37cb6e13eb1f11d3613c8667df4fcac920e7",
+      "dispatch": {
+        "id": "a77aeff8-983d-4e1b-8082-de791785fa18",
+        "runner": "232b50a3-de11-4978-82df-135a0b941518",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-20T12:40:01.068Z",
+        "finishedAt": "2026-10-20T12:55:03.551Z",
+        "error": "T237: 태스크 result에 limits 기록이 필요합니다.",
+        "summary": "T237 is done: every new world now gives all 732 clubs a complete crest and home/away/third shirts. A founding can install an exact, explicitly previewed own design, and an invalid one is refused before any world is built. All the checks named in the task passed.\n\n**What changed**\n- New engine leaf `packages/engine/src/club-identity.ts`. The UI can import it without the engine barrel or zod.\n  - `createIdentityDraft` builds the founding draft from country, seed and colour only:\n    - The requested primary in its own spelling, plus the secondary the old crest generator gives the own club.\n    - One of the six preset crests, chosen by `hash(seed:identity-template:country) % 6`.\n    - Fixed shirts: home stripes in the two colours, away plain white trimmed with the primary, third plain navy trimmed with the secondary.\n  - `presetCrests` returns the six complete ready-made crests.\n  - `identityOf` returns a club's stored identity, or the default it would get from its old crest, without changing anything.\n  - `installMissingIdentities` computes the full old-crest map first, then fills only clubs that have no identity, and reports whether anything changed.\n- `createWorld` rejects an explicit founding identity that fails the shared schema or whose first colour is not exactly the founding colour. After the season is prepared it installs every missing identity, then stores a copy of the explicit draft as the own club's.\n- `ensureRepresentatives` gives identities only to the European clubs it adds.\n- The worker's found request accepts an optional `identity`; callers sending only a colour still work.\n\n**Checks run**\n- `club-identity.test.ts` and `crests.test.ts`: 19 passed.\n- The golden updater, after Prettier, leaves `portable-v1.json` byte-identical, so no score, player, money, calendar or revision changed.\n- `test:contract`: 37 passed.\n- Related engine and worker tests: 51 passed.\n- `vitest --changed 7193efd`: 180 files, 1188 passed, 4 skipped. I ran this before moving the founding-identity check from `createBase` to `createWorld`; afterwards I re-ran the affected files, the contract tests and the golden updater.\n- Typecheck, lint, format:check and build all passed.\n\n**Measurements**\n- At founding the encoded save grows from 32,236 to 44,260 characters (about 24 KB) for 732 clubs.\n- The lazy `settlement` bundle is 66.8 KB gzip, against 65.6 KB at the base. My first attempt put the schema check in `world.ts`, which pulled zod into that bundle (+29 KB gzip), so the check now lives in `createWorld`.\n\n**Limits**\n- I edited one file outside this task's list: two cases in `packages/contracts/src/identity.contract.test.ts` assumed `createWorld` makes no identities. Their setup now removes identities first; the assertions are unchanged.\n- `protocol.test.ts` (also outside the list) has no identity case. I checked the request schema with a one-off script instead.\n- A scripted founding without `identity` gets the old-crest default rather than one of the six presets, as the contract specifies. The founding UI (T250) must send the previewed draft.\n- Every save and every UI view now carries all 732 identities. Their effect on the 100-season capacity and on view publishing was not measured here; that is T255.\n- Worlds saved before this change stay without identities until T244 adds them when the writing tab activates a save.\n- Not run, left to the batch gate: the full `test:unit`, `validate:catalogs`, and Chromium Playwright.\n\nNothing was committed."
+      },
+      "steps": [
+        {
+          "taskId": "T235",
+          "commit": "7193efd034c4a46c37eaec841fc5d998e2466212",
+          "at": "2026-10-20T12:40:00.995Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-20T12:38:08.446Z",
+              "finishedAt": "2026-10-20T12:40:00.525Z"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 430,
+      "at": "2026-10-20T12:24:30.741Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "identity",
+        "branch": "work/identity",
+        "status": "preparing",
+        "createdAt": "2026-10-20T12:24:30.735Z",
+        "limits": {
+          "workers": 2,
+          "reviewers": 1,
+          "maxPending": 4
+        },
+        "push": "main",
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 431,
+      "at": "2026-10-20T12:24:31.184Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 432,
+      "at": "2026-10-20T12:24:52.243Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "232b50a3-de11-4978-82df-135a0b941518",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-20T12:24:52.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 433,
+      "at": "2026-10-20T12:24:52.609Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+        "group": "identity",
+        "taskId": "T235",
+        "tasks": [
+          "T235",
+          "T237",
+          "T239"
+        ],
+        "lane": "identity-base",
+        "owner": "232b50a3-de11-4978-82df-135a0b941518/worker-1",
+        "contributors": [
+          "232b50a3-de11-4978-82df-135a0b941518/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-20T12:24:52.609Z",
+        "startCommit": "e7cb37cb6e13eb1f11d3613c8667df4fcac920e7"
+      }
+    },
+    {
+      "sequence": 434,
+      "at": "2026-10-20T12:24:52.898Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 435,
+      "at": "2026-10-20T12:24:53.065Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "37bdecac-88dd-4174-a6ef-babde0ab9f42",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T12:24:53.065Z"
+        }
+      }
+    },
+    {
+      "sequence": 436,
+      "at": "2026-10-20T12:24:53.230Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "37bdecac-88dd-4174-a6ef-babde0ab9f42",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T12:24:53.065Z"
+        }
+      }
+    },
+    {
+      "sequence": 437,
+      "at": "2026-10-20T12:38:07.121Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 438,
+      "at": "2026-10-20T12:38:07.978Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 439,
+      "at": "2026-10-20T12:38:08.011Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T235",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 440,
+      "at": "2026-10-20T12:40:00.999Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T237",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T235",
+            "commit": "7193efd034c4a46c37eaec841fc5d998e2466212",
+            "at": "2026-10-20T12:40:00.995Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-20T12:38:08.446Z",
+                "finishedAt": "2026-10-20T12:40:00.525Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 441,
+      "at": "2026-10-20T12:40:01.009Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "37bdecac-88dd-4174-a6ef-babde0ab9f42",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T12:24:53.065Z",
+          "finishedAt": "2026-10-20T12:40:01.009Z",
+          "error": null,
+          "summary": "T235 is done. Saves are now written as checkpoint container (envelope) schema 2, and schemas 1 and 2 can both be read. World.schema and the worker protocol stay 1.\n\n**Changes**\n- `packages/contracts/src/versions.ts`:\n  - Adds `CURRENT_CHECKPOINT_SCHEMA = 2`, the list `SUPPORTED_CHECKPOINT_SCHEMAS = [1, 2]`, the type `CheckpointSchema` and the check `isCheckpointSchema`.\n  - `envelopeEngine` now returns nothing for an unreadable container. A save in a future container is therefore no longer taken as an earlier-rules career, even if its header names an old engine version.\n- `repository.ts`: `Envelope.schema` now accepts 1 or 2.\n- `persistence.ts`:\n  - `encode` writes container 2.\n  - The envelope reader checks the allowed list before decompressing. Any other container is a compatibility error, not corruption.\n  - After the checksum and JSON decode, `assertIdentityFormatVersions` runs on the save's world data before unpacking. A newer identity version is reported as a compatibility error before unpacking can call it corruption.\n- `recognizedLegacy` reads containers 1 and 2, and still returns false for any other container. Engine versions, catalog pins, codecs, checksum, the commit protocol and the SAVE-4 storage limits are unchanged.\n- `docs/SAVE-FORMAT.md`: new container-schema section covering how old and new readers behave and the identity version check.\n\n**Tests**\n- `persistence.test.ts`:\n  - A small helper builds a real schema-1 save with genuine compressed bytes and checksum.\n  - It loads without being rewritten; the next save is container 2 and reloads; the schema-1 copy is left untouched.\n  - Future containers (0, 3, 99) and a nested identity version 2 are compatibility errors. The version-2 identity is caught even when the rest of the save is damaged, which proves the check runs before unpacking.\n  - When the newest save comes from a newer version, it stays protected and is never replaced by the valid older save, with or without the manifest.\n- `legacyReset.test.ts`: new case `unknown envelope never grants legacy reset permission`. A real legacy payload with an old engine header in an unreadable container is never reset, in either the indexed or the unindexed layout.\n\n**Checks run**\n- The two target test files: 53 passed.\n- Seven related adapter, runtime and contract test files: 80 passed.\n- `vitest --changed` from the base commit: 181 files, 1185 passed, 4 skipped. This was nearly the whole unit suite, because `versions.ts` is imported almost everywhere.\n- typecheck, lint, format:check and build all passed.\n\n**Limits**\n- A container-2 save with a legacy engine header is still treated as legacy and can be reset. I first restricted that to container 1, but that broke `client.test.ts` and `tests/e2e/save-upgrade.spec.ts`. Both files build their legacy saves with `encode` and are outside this task's files, so I kept the existing behaviour. The committed `legacy-rules3` fixture still covers container 1.\n- `scripts/freeze-legacy-fixture.ts` would now write container 2 if run again.\n- Not run here, left to the batch gate: the full `test:unit`, `test:contract`, `validate:catalogs`, and Chromium Playwright. `save-upgrade.spec.ts` and `recovery.spec.ts` read this envelope but were not changed.\n\nThe task file's acceptance boxes and result are filled in. Nothing was committed."
+        }
+      }
+    },
+    {
+      "sequence": 442,
+      "at": "2026-10-20T12:40:01.068Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a77aeff8-983d-4e1b-8082-de791785fa18",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-20T12:40:01.068Z"
+        }
+      }
+    },
+    {
+      "sequence": 443,
+      "at": "2026-10-20T12:40:01.230Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a77aeff8-983d-4e1b-8082-de791785fa18",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-20T12:40:01.068Z"
+        }
+      }
+    },
+    {
+      "sequence": 444,
+      "at": "2026-10-20T12:55:03.191Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 445,
+      "at": "2026-10-20T12:55:03.534Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T237: 태스크 result에 limits 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 446,
+      "at": "2026-10-20T12:55:03.551Z",
+      "type": "attempt",
+      "group": "identity",
+      "attemptId": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+      "taskId": "T237",
+      "tasks": [
+        "T235",
+        "T237",
+        "T239"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a77aeff8-983d-4e1b-8082-de791785fa18",
+          "runner": "232b50a3-de11-4978-82df-135a0b941518",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-20T12:40:01.068Z",
+          "finishedAt": "2026-10-20T12:55:03.551Z",
+          "error": "T237: 태스크 result에 limits 기록이 필요합니다.",
+          "summary": "T237 is done: every new world now gives all 732 clubs a complete crest and home/away/third shirts. A founding can install an exact, explicitly previewed own design, and an invalid one is refused before any world is built. All the checks named in the task passed.\n\n**What changed**\n- New engine leaf `packages/engine/src/club-identity.ts`. The UI can import it without the engine barrel or zod.\n  - `createIdentityDraft` builds the founding draft from country, seed and colour only:\n    - The requested primary in its own spelling, plus the secondary the old crest generator gives the own club.\n    - One of the six preset crests, chosen by `hash(seed:identity-template:country) % 6`.\n    - Fixed shirts: home stripes in the two colours, away plain white trimmed with the primary, third plain navy trimmed with the secondary.\n  - `presetCrests` returns the six complete ready-made crests.\n  - `identityOf` returns a club's stored identity, or the default it would get from its old crest, without changing anything.\n  - `installMissingIdentities` computes the full old-crest map first, then fills only clubs that have no identity, and reports whether anything changed.\n- `createWorld` rejects an explicit founding identity that fails the shared schema or whose first colour is not exactly the founding colour. After the season is prepared it installs every missing identity, then stores a copy of the explicit draft as the own club's.\n- `ensureRepresentatives` gives identities only to the European clubs it adds.\n- The worker's found request accepts an optional `identity`; callers sending only a colour still work.\n\n**Checks run**\n- `club-identity.test.ts` and `crests.test.ts`: 19 passed.\n- The golden updater, after Prettier, leaves `portable-v1.json` byte-identical, so no score, player, money, calendar or revision changed.\n- `test:contract`: 37 passed.\n- Related engine and worker tests: 51 passed.\n- `vitest --changed 7193efd`: 180 files, 1188 passed, 4 skipped. I ran this before moving the founding-identity check from `createBase` to `createWorld`; afterwards I re-ran the affected files, the contract tests and the golden updater.\n- Typecheck, lint, format:check and build all passed.\n\n**Measurements**\n- At founding the encoded save grows from 32,236 to 44,260 characters (about 24 KB) for 732 clubs.\n- The lazy `settlement` bundle is 66.8 KB gzip, against 65.6 KB at the base. My first attempt put the schema check in `world.ts`, which pulled zod into that bundle (+29 KB gzip), so the check now lives in `createWorld`.\n\n**Limits**\n- I edited one file outside this task's list: two cases in `packages/contracts/src/identity.contract.test.ts` assumed `createWorld` makes no identities. Their setup now removes identities first; the assertions are unchanged.\n- `protocol.test.ts` (also outside the list) has no identity case. I checked the request schema with a one-off script instead.\n- A scripted founding without `identity` gets the old-crest default rather than one of the six presets, as the contract specifies. The founding UI (T250) must send the previewed draft.\n- Every save and every UI view now carries all 732 identities. Their effect on the 100-season capacity and on view publishing was not measured here; that is T255.\n- Worlds saved before this change stay without identities until T244 adds them when the writing tab activates a save.\n- Not run, left to the batch gate: the full `test:unit`, `validate:catalogs`, and Chromium Playwright.\n\nNothing was committed."
+        }
+      }
+    },
+    {
+      "sequence": 447,
+      "at": "2026-10-20T12:55:04.349Z",
+      "type": "group",
+      "group": "identity",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "232b50a3-de11-4978-82df-135a0b941518",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-20T12:24:52.237Z",
+          "stoppedAt": "2026-10-20T12:55:04.349Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "714a9163-cb71-461b-bb7e-9fde29ef490c",
+              "role": "worker",
+              "error": "T237: 태스크 result에 limits 기록이 필요합니다."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
