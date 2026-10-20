@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
-import {
-  advanceDays,
-  advanceRound,
-  prepareSeason,
-  simulateSeason,
-} from '../../../../packages/engine/src/index';
+import { advanceDays, advanceRound, simulateSeason } from '../../../../packages/engine/src/index';
 import { featureState } from '../../../../tests/fixtures/feature-state';
-import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
 import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
 import { base64, pack, unpack } from './packing';
@@ -27,7 +21,8 @@ import {
   CATALOG_VERSION,
   CURRENT_CATALOG,
 } from '../../../../packages/catalogs/src/index';
-import type { Founding, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
+import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -42,14 +37,6 @@ class Memory implements StoragePort {
     this.data.delete(k);
   }
 }
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Archive United',
-  color: '#126044',
-  seed: 'save-test',
-  level: 'normal',
-};
-const world = () => simulatedWorld(FOUNDING);
 /** The founded world after `rounds` observed rounds (`advanceRound(w)`), built once. */
 const observed = (rounds: number): World =>
   cachedWorld(`observed:${rounds}`, () => {
@@ -58,26 +45,6 @@ const observed = (rounds: number): World =>
     return w;
   });
 const features = () => cachedWorld('feature-state', () => featureState());
-// The original compact1 unsigned stream, used to exercise historical save compatibility.
-function legacyIntegers(values: number[], width: number) {
-  const count = values.length / width;
-  const columns = Array.from(
-    { length: values.length },
-    (_, index) => values[(index % count) * width + Math.floor(index / count)],
-  );
-  const bytes: number[] = [];
-  for (let value of columns) {
-    do {
-      const next = value % 128;
-      value = Math.floor(value / 128);
-      bytes.push(next + (value ? 128 : 0));
-    } while (value);
-  }
-  let encoded = '';
-  for (let offset = 0; offset < bytes.length; offset += 32768)
-    encoded += String.fromCharCode(...bytes.slice(offset, offset + 32768));
-  return btoa(encoded);
-}
 describe('recoverable persistence', () => {
   it('roundtrips active schedule, exact money and all match/player facts losslessly', async () => {
     const w = observed(2);
@@ -284,56 +251,6 @@ describe('recoverable persistence', () => {
     expect(loaded?.errors.join(' ')).toContain('계보');
   });
 });
-it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
-  const w = cachedWorld('season from 2000', () => {
-    const w = world();
-    w.year = 2000;
-    w.currency = 'GBP';
-    w.manager.since = 1997;
-    w.manager.until = 2003;
-    for (const p of w.players) {
-      p.born = 1978;
-      p.joined = w.year;
-    }
-    // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
-    delete w.people;
-    prepareSeason(w);
-    simulateSeason(w);
-    return w;
-  });
-  expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);
-  expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
-  const legacy = pack(w);
-  legacy.standings = legacyIntegers(
-    w.history
-      .flatMap((history) => [
-        history.standings.flat(),
-        ...history.europe.flatMap((europe) => [
-          (europe.standings || []).flat(),
-          (europe.secondStandings || []).flat(),
-        ]),
-      ])
-      .flat(),
-    6,
-  );
-  delete legacy.standingsDeltas;
-  expect(canonical(unpack(legacy))).toBe(canonical(w));
-});
-it('builds a codec checkpoint of a 10-season career that decodes to the same world', async () => {
-  const w = cachedWorld('ten rich seasons', () => {
-    const w = world();
-    for (let season = 0; season < 10; season++) {
-      w.cash = '999999999999999';
-      simulateSeason(w);
-    }
-    return w;
-  });
-  expect(w.history).toHaveLength(10);
-  const { raw, envelope } = await checkpoint(w, 5, 4);
-  expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
-  expect(JSON.parse(raw)).toEqual(envelope);
-  expect(canonical((await decode(raw)).world)).toBe(canonical(w));
-}, 600000);
 it('keeps a signed slot contract through a load and never signs that slot twice, so checkpoints still load', async () => {
   const w = world();
   w.intervention = 4;
@@ -561,22 +478,6 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
   }
   expect(canonical(restored)).toBe(canonical(original));
   expect(canonical((await decode(await encode(restored))).world)).toBe(canonical(original));
-});
-
-it('roundtrips one transferred league scorer with both real club contributions', async () => {
-  const { w, playerId } = cachedWorld('transferred scorer', () => transferredScorerWorld());
-  const raw = await encode(w, 1, 0),
-    loaded = await decode(raw);
-  expect(canonical(loaded.world)).toBe(canonical(w));
-  expect(loaded.world.scorerSeason!.players.find((p) => p.id === playerId)!.clubs).toHaveLength(2);
-  const closed = cachedWorld('transferred scorer season', () => {
-    const { w } = cachedWorld('transferred scorer', () => transferredScorerWorld());
-    simulateSeason(w);
-    return w;
-  });
-  const archived = await decode(await encode(closed, 2, 1));
-  expect(canonical(archived.world)).toBe(canonical(closed));
-  expect(archived.world.history.at(-1)!.scorers!.some((p) => p.clubs?.length === 2)).toBe(true);
 });
 
 it('validates Brotli envelope checksums, world metadata and future codecs before activation', async () => {

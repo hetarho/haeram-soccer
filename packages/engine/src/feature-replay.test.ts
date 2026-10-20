@@ -1,52 +1,16 @@
 import { expect, it } from 'vitest';
-import { canonical, type World } from '../../contracts/src/index';
+import { canonical } from '../../contracts/src/index';
 import { Host } from '../../../apps/web/src/runtime/host';
-import type { Body } from '../../../apps/web/src/runtime/protocol';
-import { encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { createWorld, currentDay, advanceDays } from './index';
 import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { command, facts, readAndReload } from './feature-replay.testkit';
 
-let serial = 0;
-async function send(host: Host, body: Body) {
-  const reply = await host.handle({
-    protocol: 1,
-    session: 'feature-replay',
-    requestId: `request-${++serial}`,
-    expectedRevision: host.world?.revision ?? -1,
-    generation: 1,
-    parentGeneration: 0,
-    body,
-  });
-  expect(reply.ok, reply.error).toBe(true);
-  return reply;
-}
-const command = (host: Host, command: Extract<Body, { type: 'command' }>['command']) =>
-  send(host, { type: 'command', command });
-function facts(world: World) {
-  const copy = structuredClone(world);
-  copy.revision = 0;
-  // Command acknowledgements differ with batching; every canonical gameplay fact must match.
-  copy.receiptIds = [];
-  copy.settings!.mode = 'automatic';
-  return canonical(copy);
-}
-async function readAndReload(host: Host) {
-  const before = canonical(host.world!);
-  const person = host.world!.players[0].id;
-  await send(host, { type: 'person-career', person });
-  await send(host, { type: 'recruitment-history' });
-  expect(canonical(host.world!)).toBe(before);
-  await send(host, { type: 'inspect', raw: await encode(host.world!), activate: true });
-  expect(canonical(host.world!)).toBe(before);
-}
-// Each career is its own case with its own limit. The new one takes about 11 s and keeps the
-// config's limit; the retained one is built over three and a half seasons and then crosses a
-// season close, which with the own league on the grid engine (T218) takes about 130 s here and
-// about twice that in CI's parallel suite (both careers together ran 282 s there), until T224
-// cuts the grid's cost.
-for (const retained of [false, true])
+// Each career is its own case with its own limit, in its own file so the two run side by side.
+// The new one takes about 11 s and keeps the config's limit; the retained one is in
+// feature-replay.retained.test.ts.
+for (const retained of [false])
   it(
     `keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (${retained ? 'retained' : 'new'} career)`,
     async () => {

@@ -12,7 +12,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Founding, World } from '../../packages/contracts/src/types';
 import { advanceRound, createWorld, simulateSeason } from '../../packages/engine/src/index';
@@ -24,11 +24,11 @@ import { advanceRound, createWorld, simulateSeason } from '../../packages/engine
  * (after a season close, a few rounds in, ten seasons on) takes it from here instead of
  * simulating it again. Each state is built once per source tree: kept in memory for the file
  * and on disk under `node_modules/.cache/haeram-worlds/<source hash>` for every other file and
- * run. The key covers every non-test `.ts`/`.json` source under `packages/*\/src`, catalog data,
- * `apps/*\/src` and `tests/fixtures`, the id, the builder's code and the calling test file, so a
- * changed engine, adapter, builder or test rebuilds it. Directories of other source trees older
- * than two days are removed. Values must survive JSON (worlds do, exactly). Each call returns a
- * fresh copy.
+ * run. The source hash covers every `.ts`/`.json` source under `packages/*\/src`, catalog data,
+ * `apps/*\/src` and `tests/fixtures` except tests and testkits; the key adds the id, the
+ * builder's code and the calling file with its testkit, so a changed engine, adapter, builder,
+ * testkit or test rebuilds it. Directories of other source trees older than two days are
+ * removed. Values must survive JSON (worlds do, exactly). Each call returns a fresh copy.
  *
  * `HAERAM_WORLD_CACHE=off` keeps the cache in memory only; `HAERAM_WORLD_CACHE=<dir>` moves it.
  */
@@ -43,7 +43,8 @@ function walk(dir: string, out: string[]) {
   for (const name of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, name.name);
     if (name.isDirectory()) walk(path, out);
-    else if (/\.(ts|json)$/.test(name.name) && !/\.test\.ts$/.test(name.name)) out.push(path);
+    else if (/\.(ts|json)$/.test(name.name) && !/\.(test|testkit)\.ts$/.test(name.name))
+      out.push(path);
   }
 }
 
@@ -75,6 +76,17 @@ function callerFile() {
     if (file !== SELF && file.startsWith(ROOT) && !file.includes('node_modules')) return file;
   }
   return undefined;
+}
+
+/**
+ * The calling file's text and its testkit's (`<base>.testkit.ts` beside `<base>[.part].test.ts`):
+ * test helpers stay out of the source hash, so a changed testkit rebuilds only its own tests' states.
+ */
+function scopeText(file: string) {
+  const kit = join(dirname(file), `${basename(file).split('.')[0]}.testkit.ts`);
+  return kit !== file && existsSync(kit)
+    ? Buffer.concat([readFileSync(file), Buffer.from('\0'), readFileSync(kit)])
+    : readFileSync(file);
 }
 
 const sleeper = new Int32Array(new SharedArrayBuffer(4));
@@ -158,7 +170,7 @@ function cached<T>(id: string, build: () => T, scope: string | undefined): T {
     .update('\0')
     .update(build.toString())
     .update('\0')
-    .update(scope ? readFileSync(scope) : '')
+    .update(scope ? scopeText(scope) : '')
     .digest('hex');
   let json = memory.get(key);
   if (json === undefined) {

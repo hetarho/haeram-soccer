@@ -1,93 +1,15 @@
-import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
-import type { Fixture, Tactic, World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
 import {
   BUILD_PRESETS,
-  clubOf,
   createWorld,
   operate,
   fatigueCost,
-  npcTactic,
   recordMatch,
-  setLineup,
   simulateMatch,
-  startingSquad,
-  tacticalProfile,
   TACTICS,
 } from './index';
-
-interface Build {
-  passing: number;
-  defense: number;
-  attack: number;
-  stamina: number;
-  fatigue?: number;
-}
-
-function scenario(build: Build, opponentTactic: Tactic = 'balanced') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Build Laboratory',
-    color: '#112233',
-    seed: 'build-samples',
-    level: 'normal' as const,
-  });
-  w.manager.ability = 50;
-  // Every outfielder plays every outfield position alike, so each tactic's formation reads the
-  // build's qualities whoever fills a slot: finishing, passing, defending and stamina.
-  for (const player of w.players) {
-    for (const a of ATTRIBUTES) player.attrs[a] = 55;
-    if (player.position !== 'GK') {
-      player.positions = Object.fromEntries(
-        POSITIONS.filter((position) => position !== 'GK').map((position) => [position, 3]),
-      );
-      player.attrs.finishing = build.attack;
-      player.attrs.passing = build.passing;
-      player.attrs.tackling = player.attrs.positioning = build.defense;
-    }
-    player.attrs.stamina = build.stamina;
-    player.fatigue = build.fatigue || 0;
-  }
-  // Every preset uses exactly this XI, so comparisons cannot select different players.
-  setLineup(
-    w,
-    startingSquad(w, clubOf(w)).map((player) => player.id),
-  );
-  const opponent = w.clubs.find(
-    (club) => club.id !== w.playerClub && npcTactic(club) === opponentTactic,
-  )!;
-  // Generated squads rate at their club strength; 55 fields an XI rated about like ours.
-  opponent.strength = 55;
-  const fixture: Fixture = {
-    id: 'build-fixture',
-    year: w.year,
-    round: 1,
-    kind: 'league',
-    home: w.playerClub,
-    away: opponent.id,
-    country: 'ENG',
-    groupKey: 'sample',
-  };
-  return { w, fixture };
-}
-
-function sample(w: World, fixture: Fixture, tactic: Tactic, count = 160) {
-  w.tactic = tactic;
-  const totals = { margin: 0, shots: 0, concededShots: 0, possession: 0, passes: 0, attempts: 0 };
-  for (let index = 0; index < count; index++) {
-    const match = simulateMatch(w, { ...fixture, id: `sample:${index}` }).record;
-    totals.margin += match.score.home - match.score.away;
-    totals.shots += match.metrics[0][4];
-    totals.concededShots += match.metrics[1][4];
-    totals.possession += match.metrics[0][11];
-    totals.passes += match.metrics[0][3];
-    totals.attempts += match.metrics[0][2];
-  }
-  return totals;
-}
-
-const baseline: Build = { passing: 55, defense: 55, attack: 55, stamina: 55 };
+import { baseline, sample, scenario } from './build.testkit';
 
 describe('tactical roster tradeoffs', () => {
   it('turns midfield passing into actual possession and pass completion', () => {
@@ -106,65 +28,6 @@ describe('tactical roster tradeoffs', () => {
       sample(weak.w, weak.fixture, 'balanced').concededShots,
     );
   });
-
-  it('requires fresh stamina for effective pressing instead of granting free chances', () => {
-    const weak = scenario({ ...baseline, stamina: 20 }, 'possession');
-    const strong = scenario({ ...baseline, stamina: 95 }, 'possession');
-    const tired = scenario({ ...baseline, stamina: 95, fatigue: 90 }, 'possession');
-    const freshShots = sample(strong.w, strong.fixture, 'press').shots;
-    expect(freshShots).toBeGreaterThan(sample(weak.w, weak.fixture, 'press').shots);
-    expect(freshShots).toBeGreaterThan(sample(tired.w, tired.fixture, 'press').shots);
-    const players = startingSquad(strong.w, clubOf(strong.w));
-    const pressed = tacticalProfile(players, 'press', 'counter');
-    const balanced = tacticalProfile(players, 'balanced', 'counter');
-    expect(pressed.defense).toBeLessThan(balanced.defense);
-    expect(pressed.shot).toBeLessThan(tacticalProfile(players, 'press', 'possession').shot);
-  });
-
-  // The grid engine's tactics are not balanced yet: press beats every other tactic at equal
-  // strength (STATE inbox 261019 suggest T216 MATCH-8), so the cases preferring another tactic
-  // wait for that tuning.
-  const tradeoffs = [
-    {
-      name: 'passing midfield against balanced opponents',
-      build: { passing: 95, defense: 55, attack: 55, stamina: 35 },
-      opponent: 'balanced' as const,
-      preferred: 'possession' as const,
-    },
-    {
-      name: 'defenders and finishers against pressing opponents',
-      build: { passing: 25, defense: 95, attack: 95, stamina: 35 },
-      opponent: 'press' as const,
-      preferred: 'counter' as const,
-    },
-    {
-      name: 'fresh high-stamina players against possession opponents',
-      build: { passing: 55, defense: 50, attack: 75, stamina: 95 },
-      opponent: 'possession' as const,
-      preferred: 'press' as const,
-    },
-    {
-      name: 'tired players exposed to counterattacks',
-      build: { passing: 55, defense: 55, attack: 65, stamina: 55, fatigue: 80 },
-      opponent: 'counter' as const,
-      preferred: 'balanced' as const,
-    },
-  ];
-  const favors = ({ build, opponent, preferred }: (typeof tradeoffs)[number]) => {
-    const { w, fixture } = scenario(build, opponent);
-    const outcomes = TACTICS.map((tactic) => ({ tactic, ...sample(w, fixture, tactic) }));
-    const winner = outcomes.find((outcome) => outcome.tactic === preferred)!;
-    for (const alternative of outcomes.filter((outcome) => outcome.tactic !== preferred))
-      expect(winner.margin).toBeGreaterThan(alternative.margin);
-  };
-  it.each(tradeoffs.filter((c) => c.preferred === 'press'))(
-    'favors a different tradeoff for $name',
-    favors,
-  );
-  it.skip.each(tradeoffs.filter((c) => c.preferred !== 'press'))(
-    'favors a different tradeoff for $name',
-    favors,
-  );
 
   it('gives pressing a strictly higher bounded fatigue cost at every stamina level', () => {
     for (let stamina = 0; stamina <= 100; stamina++) {

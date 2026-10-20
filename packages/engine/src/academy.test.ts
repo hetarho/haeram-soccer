@@ -5,7 +5,7 @@ import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Line, Player, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf } from './player';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 import {
   ACADEMY_LIMIT,
   ACADEMY_READINESS_LABEL,
@@ -31,24 +31,7 @@ import {
   youthAdvice,
   FOUNDING_YEAR,
 } from './index';
-
-function world(seed = 'youth-academy') {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Nursery End',
-    color: '#556b2f',
-    seed,
-    level: 'easy' as const,
-  });
-  w.cash = '999999999';
-  return w;
-}
-
-/** Plays the season up to its last round as `simulateSeason` does, which then plays that round and closes. */
-function lastRound(w: World) {
-  while (w.round < 45 && !w.bankrupt) advanceRound(w, undefined, false);
-  return w;
-}
+import { lastRound, world } from './academy.testkit';
 
 /** Runs the intake as the daily club business would on 15 March. */
 function intake(w: World) {
@@ -358,26 +341,6 @@ describe('season boundary', () => {
     expect(keepers.players.some((player) => player.id === keeper.id)).toBe(false);
     expect(academyPlayers(keepers).some((player) => player.id === keeper.id)).toBe(true);
     expect(keepers.inbox!.at(-1)!.detail).toContain('자리가 없어');
-  });
-
-  it('carries prospects across a real season close', () => {
-    const { w, first } = cachedWorld('academy-close', () => {
-      const w = world('academy-close');
-      w.intervention = 1;
-      w.settings = legacySettings(1);
-      simulateSeason(w);
-      const first = academyPlayers(w).map((player) => player.id);
-      w.intervention = 2;
-      w.settings = legacySettings(2);
-      return { w: lastRound(w), first };
-    });
-    expect(first.length).toBe(3);
-    simulateSeason(w);
-    expect(
-      academyPlayers(w).some((player) => player.id.includes(`:academy:${FOUNDING_YEAR + 1}:`)),
-    ).toBe(true);
-    expect(academyPlayers(w).every((player) => w.year - player.born < 22)).toBe(true);
-    validateWorld(w);
   });
 });
 

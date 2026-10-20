@@ -3,7 +3,7 @@ import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/spons
 import { describe, it, expect, vi } from 'vitest';
 import { Host } from './host';
 import { build } from './codec';
-import type { Body, CodecJob } from './protocol';
+import type { CodecJob } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -11,7 +11,6 @@ import {
   lineupPreset,
   operate,
   simulateMatch,
-  simulateSeason,
   recordMatch,
   addEvent,
   clubNews,
@@ -20,34 +19,8 @@ import {
 } from '../../../../packages/engine/src/index';
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { headToHead } from './headToHead';
-import type { World } from '../../../../packages/contracts/src/types';
-import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
-const input = {
-  country: 'ENG' as const,
-  name: 'Worker Athletic',
-  color: '#223344',
-  seed: 'worker',
-  level: 'normal' as const,
-};
-const req = (id: string, revision: number, body: Body) => ({
-  protocol: 1,
-  session: 'session',
-  requestId: id,
-  expectedRevision: revision,
-  generation: 1,
-  parentGeneration: 0,
-  body,
-});
-/**
- * Gives a host that has just founded `input` the world that founding grows into after `played`
- * (built once from the same founding, cached), as if simulated in place: same world, same receipts.
- */
-function playOn(h: Host, played: World) {
-  expect(canonical({ ...h.world!, receiptIds: [] })).toBe(canonical(simulatedWorld(input)));
-  played.receiptIds = h.world!.receiptIds;
-  h.world = played;
-}
+import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { input, playOn, req } from './host.testkit';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
   const jobs: CodecJob[] = [];
@@ -116,103 +89,6 @@ describe('worker command protocol', () => {
     expect(r.archive?.matches).toEqual([]);
     expect(r.view).toBeUndefined();
     expect(founded.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
-  });
-  it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(h, simulatedWorld(input, { seasons: 1 }));
-    const season = h.world!.history[0];
-    expect(season.brackets?.length).toBeGreaterThan(0);
-    expect(season.scorers?.length).toBeGreaterThan(0);
-    const r = await h.handle(
-      req('closed', h.world!.revision, { type: 'archive', year: season.year }),
-    );
-    const projection = await h.handle(
-      req('projection', h.world!.revision, { type: 'command', command: { type: 'read-inbox' } }),
-    );
-    const projected = projection.view!.world.history[0];
-    expect(projected).not.toHaveProperty('brackets');
-    expect(projected).not.toHaveProperty('scorers');
-    expect(projected.ranks).toEqual(season.ranks);
-    expect(projected.eloRange).toEqual(season.eloRange);
-    expect(r.archive?.season).toEqual(season);
-    expect(h.world!.history[0].brackets).toBe(season.brackets);
-  });
-  it('reads archives between queued simulation steps without revisions, receipts or a projection', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    const w = h.world!,
-      before = canonical(w),
-      expected = {
-        season: undefined,
-        matches: w.ownMatches.filter((m) => m.year === w.year),
-        events: w.events.filter((e) => e.year === w.year),
-        managers: w.events.filter((e) => e.kind.startsWith('manager-')),
-      };
-    const stale = {
-      ...req('old-archive', -1, { type: 'archive', year: w.year }),
-      session: 'expired',
-    };
-    expect((await h.handle(stale)).ok).toBe(false);
-    expect(canonical(w)).toBe(before);
-    let advanced = false;
-    const step = h
-      .handle(
-        req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
-      )
-      .then((reply) => {
-        advanced = true;
-        return reply;
-      });
-    const read = await h.handle(req('archive', -1, { type: 'archive', year: w.year }));
-    expect(advanced).toBe(false);
-    expect(read.ok).toBe(true);
-    expect(read.view).toBeUndefined();
-    expect(read.archive).toEqual(expected);
-    expect((await step).ok).toBe(true);
-    expect(w.receiptIds).not.toContain('archive');
-  });
-  it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(
-      h,
-      cachedWorld('legacy-season', () => {
-        const w = createWorld(input);
-        w.settings = legacySettings(4);
-        return simulateSeason(w);
-      }),
-    );
-    const w = h.world!,
-      met = w.ownMatches.find((m) => m.kind === 'lower')!,
-      club = met.home === w.playerClub ? met.away : met.home,
-      expected = headToHead(w.ownMatches, w.playerClub, club);
-    expect(expected.played).toBe(
-      w.ownMatches.filter((m) => m.home === club || m.away === club).length,
-    );
-    // The read is answered before the command sent ahead of it, whatever revision it names.
-    let advanced = false;
-    const step = h
-      .handle(
-        req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
-      )
-      .then((reply) => {
-        advanced = true;
-        return reply;
-      });
-    const read = await h.handle(req('h2h', -1, { type: 'head-to-head', club }));
-    expect(advanced).toBe(false);
-    expect(read.ok).toBe(true);
-    expect(read.view).toBeUndefined();
-    expect(read.headToHead).toEqual(expected);
-    expect((await step).ok).toBe(true);
-    expect(w.receiptIds).not.toContain('h2h');
-    const stale = { ...req('old', -1, { type: 'head-to-head', club }), session: 'expired' };
-    expect((await h.handle(stale)).ok).toBe(false);
-    for (const other of [w.playerClub, 'XXX:none'])
-      expect((await h.handle(req(other, -1, { type: 'head-to-head', club: other }))).ok).toBe(
-        false,
-      );
   });
   it('ends a multi-day step on the day news arrives or our match is played', async () => {
     const h = new Host();

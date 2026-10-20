@@ -1,13 +1,10 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
-import { canonical, validateWorld, type World } from '../../contracts/src/index';
+import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   advanceDays,
   advanceRound,
   advanceToNextMatch,
   clubOf,
-  closeSeason,
-  createWorld,
   currentDay,
   daysUntilNextMatch,
   fixtureDay,
@@ -17,22 +14,10 @@ import {
   seasonDate,
   SEASON_END_DAY,
   seasonLength,
-  simulateSeason,
 } from './index';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { world } from './calendar.testkit';
 
-function world(country: 'ENG' | 'BEL' = 'ENG') {
-  const w = createWorld({
-    country,
-    name: 'Calendar United',
-    color: '#223344',
-    seed: 'calendar',
-    level: 'easy' as const,
-  });
-  w.settings = legacySettings(2);
-  w.cash = '999999999999';
-  return w;
-}
 describe('persistent season calendar', () => {
   it('advances off days without playing fixtures or charging weekly costs', () => {
     const w = world();
@@ -131,25 +116,6 @@ describe('persistent season calendar', () => {
     validateWorld(w);
   });
 
-  it('retains identical match, player and season facts when the fast path skips motion', () => {
-    const observed = world('BEL');
-    const fast = structuredClone(observed);
-    const watched = advanceToNextMatch(observed);
-    const skipped = advanceToNextMatch(fast, undefined, false);
-    expect(watched?.frames.length).toBeGreaterThan(0);
-    expect(skipped?.frames).toEqual([]);
-    expect(skipped?.record).toEqual(watched?.record);
-    expect(skipped?.record.players.length).toBeGreaterThan(0);
-    expect(canonical(fast)).toBe(canonical(observed));
-    while (observed.round < 46) advanceRound(observed);
-    closeSeason(observed);
-    observed.revision++;
-    simulateSeason(fast);
-    expect(canonical(fast)).toBe(canonical(observed));
-    expect(fast.history).toHaveLength(1);
-    expect(fast.rankHistory?.filter((s) => s.year === FOUNDING_YEAR)).toHaveLength(47);
-  });
-
   it('closes the season the day after its final round and keeps previous league memberships frozen', () => {
     // The rounds only lead to the final one; the day after it, the close, is the subject.
     const w = cachedWorld('final-round', () => {
@@ -180,40 +146,6 @@ describe('persistent season calendar', () => {
     const snapshot = canonical(w);
     advanceToNextMatch(w);
     expect(canonical(w)).toBe(snapshot);
-  });
-
-  it.each([
-    ['ENG', 'haeram-demo'],
-    ['ESP', 'one-order'],
-  ] as const)('every progression mode records the same facts (%s %s)', (code, seed) => {
-    const input = {
-      country: code,
-      name: 'Order FC',
-      color: '#335577',
-      seed,
-      level: 'easy' as const,
-    };
-    const start = createWorld(input);
-    const year = start.year;
-    // Halfway through the second season, on its 23rd league match day.
-    const done = (w: World) => w.year > year && w.round === 23;
-    // Movement frames change no fact (see the fast path above); skipping them keeps this quick.
-    const days = structuredClone(start);
-    while (!done(days)) advanceDays(days, 1, undefined, false);
-    // The season command plays the first season round by round and closes it once the final
-    // round is played: the very calls the host's advance commands make, so the round and season
-    // modes share it and part only in the second season.
-    const closed = simulatedWorld(input, { seasons: 1 });
-    const rounds = structuredClone(closed);
-    while (!done(rounds)) advanceRound(rounds, undefined, false);
-    const season = structuredClone(closed);
-    while (!done(season)) advanceDays(season, 1, undefined, false);
-    // The revision counts commands and days differently per mode; it is a counter, not a fact.
-    const facts = (w: World) => canonical({ ...w, revision: 0, receiptIds: [] });
-    expect(days.history).toHaveLength(1);
-    expect(currentDay(days)).toBe(23 * 7);
-    expect(facts(rounds)).toBe(facts(days));
-    expect(facts(season)).toBe(facts(days));
   });
 
   it('uses the correct leap-year season length and rejects a corrupted calendar', () => {

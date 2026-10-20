@@ -190,6 +190,7 @@
 - implement-task T231 (T232's manual benchmark run closes T271); then T219
 
 ## log
+- 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
 - 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
 - 261020 update ARCH r14 (owner): ARCH-23✎ the 100-season and first-play benchmarks (about 90 min a push since T218) leave the push CI for a manually dispatched `benchmark.yml`; verify.yml and benchmark.yml changed with the revision. T231/T233/T255 name the CI benchmark job as evidence → that is now a manual dispatch or a local `pnpm run benchmark`.
 - 261020 create-task T271 decision: T231 moves ahead of T219 (dep T218) with the benchmark's active-copy-only total; T232 dep T230.
@@ -209,4 +210,3 @@
 - 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
 - 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
-- 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.

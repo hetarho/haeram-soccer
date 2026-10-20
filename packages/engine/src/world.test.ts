@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
-import { COUNTRIES } from '../../catalogs/src/index';
 import { validateWorld } from '../../contracts/src/schema';
 import { canonical } from '../../contracts/src/index';
 import {
@@ -12,7 +11,6 @@ import {
   clubOf,
   recordMatch,
   operate,
-  FOUNDING_YEAR,
   activePlayers,
   clubStyle,
   DIFFICULTY_LEVELS,
@@ -26,26 +24,7 @@ import type { World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
-const input = {
-  country: 'ENG' as const,
-  name: 'Haeram Forge',
-  color: '#24664f',
-  seed: 'portable-world-1',
-  level: 'normal' as const,
-};
-function assertCapacities(w: ReturnType<typeof createWorld>) {
-  for (const cp of COUNTRIES)
-    cp.groups.forEach((groups, tier) =>
-      groups.forEach((count, group) =>
-        expect(
-          w.clubs.filter(
-            (c) =>
-              c.country === cp.code && c.tier === tier && c.group === group && !c.representative,
-          ),
-        ).toHaveLength(count),
-      ),
-    );
-}
+import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
   it('level offsets the founding XI and scales only the cash', () => {
     const at = (level: 'easy' | 'normal' | 'hard' | 'extreme') =>
@@ -144,32 +123,6 @@ describe('world progression', () => {
         observed.record.metrics[side][2],
       );
     }
-  });
-  it('conserves league capacities across promotions and retains records', () => {
-    // The world after each of four seasons (checks only read it, so one chain plays them all).
-    const seasons = [1, 2, 3, 4].map((seasons) => simulatedWorld(input, { seasons }));
-    for (const after of seasons) {
-      assertCapacities(after);
-      validateWorld(after);
-    }
-    const w = seasons[3];
-    expect(new Set(w.ownMatches.map((m) => m.id)).size).toBe(w.ownMatches.length);
-    expect(w.ownMatches.length).toBeLessThan(300);
-    expect(w.history).toHaveLength(4);
-    for (const season of w.history) {
-      const leagueMatches = w.ownMatches.filter(
-        (match) => match.year === season.year && ['league', 'lower'].includes(match.kind),
-      );
-      expect(leagueMatches).toHaveLength(season.played);
-      expect(
-        leagueMatches.reduce(
-          (sum, match) => sum + (match.home === w.playerClub ? match.score.home : match.score.away),
-          0,
-        ),
-      ).toBe(season.gf);
-    }
-    expect(w.year).toBe(FOUNDING_YEAR + 4);
-    expect(w.history[0].year).toBe(FOUNDING_YEAR);
   });
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
     // The season up to its close, which retires the goalkeepers.
