@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T08:33Z | T232 |
+| p7x5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T11:04Z | 2026-10-20T11:04Z | T232 |
 
 ## inbox
+- 261020 decided ARCH-30 ARCH-23 ARCH-21: ARCH r13–r15 were already carried out by the owner's fix commits (benchmark.yml, three unit shards, `tests/fixtures/worlds.ts`) → no new task; the todo tasks follow them in place: T250–T254 drop playwright from their task checks and leave their specs to the batch Chromium run, T254 leaves Firefox/WebKit to CI, T255 no longer runs `pnpm run verify`, T232/T233/T255 take the storage benchmark from a local `pnpm run benchmark` instead of a CI benchmark job, T240/T242/T254 take simulated worlds from `tests/fixtures/worlds.ts` (alt: one task that re-checks every ARCH-30 rule in the repo, which has nothing left to change)
 - 261020 decided T221 MATCH-19: a Poisson yellow draw that hit an already booked player made about 0.13 extra sendings-off a team (target 0.07 with second yellows in it) → cautions go to unbooked players and second yellows come only as 30% of the red draw (alt: keep natural second yellows and lower the red mean, which still overshoots) — the grid's measured red rate already includes second yellows
 - 261020 suggest T232 ARCH-28 MATCH-22: a season measures 11.2 s on the summary path after T219–T223 (T224: 8.4 s; rules 3.0.0: 5.1 s) on a machine shared with another session's e2e → T232's century run should record the season time and whether MATCH-22's own-league choice still holds
 - 261020 suggest ARCH-30: `calibration.grid-equal` and `calibration.grid-giant` take about 78 s alone and passed vitest's 120 s limit under a full local run (also seen by k4p2 at load 20) → per-case limits or smaller samples before CI shards hit it
@@ -136,7 +137,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 15 | 12 | ARCH-30✎ ARCH-23✎ ARCH-21✎ | 2 |
+| ARCH | 15 | 15 | - | 2 |
 | WEB | 93 | 93 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
@@ -158,7 +159,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
+| T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | doing@261020.p7x5 |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
 | T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
@@ -172,9 +173,9 @@
 | T247 | Make identity editing a pure isolated draft reducer | KIT WEB | T237 | todo |
 | T248 | Build accessible controlled crest and shirt editing panels | KIT WEB | T245 T246 T247 | todo |
 | T249 | Preview the actual selected shirt pairing on grass without simulating a match | KIT WEB ARCH | T239 T246 T248 | todo |
-| T250 | Found a club with exactly the previewed identity and shirts | KIT WEB SAVE | T244 T249 | todo |
-| T251 | Edit club design through a game-scoped draft and one explicit apply | KIT WEB SAVE | T240 T250 | todo |
-| T252 | Select a warned fixture-specific shirt without changing saved designs | KIT WEB SAVE | T241 T249 | todo |
+| T250 | Found a club with exactly the previewed identity and shirts | KIT WEB SAVE ARCH | T244 T249 | todo |
+| T251 | Edit club design through a game-scoped draft and one explicit apply | KIT WEB SAVE ARCH | T240 T250 | todo |
+| T252 | Select a warned fixture-specific shirt without changing saved designs | KIT WEB SAVE ARCH | T241 T249 | todo |
 | T253 | Render actual recorded shirt patterns and stable historical crests in matches | KIT WEB SAVE ARCH | T242 T245 T246 T252 | todo |
 | T254 | Verify identity continuity across save, slots, readonly and failed writes | KIT WEB SAVE ARCH | T251 T253 T243 T244 | todo |
 | T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
@@ -191,6 +192,8 @@
 - implement-task T232 (century benchmark, closes T271), then T233; T232's manual benchmark run closes T271
 
 ## log
+- 261020 create-task ARCH r13..r15: no new task (already in the repo); T232 T233 T235 T237 T239 T240 T242 T243 T244 T249 T250–T255 to ARCH@15, task checks without browser specs, local benchmark instead of a CI benchmark job, shared test worlds.
+- 261020 create-task ARCH start
 - 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
 - 261020 T222 done: level knockout ties play extra time and a kick-by-kick shoot-out on both paths; cups and Europe pass each tie's rule, the coin flips are gone, Elo reads the 90-minute score.
 - 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
@@ -209,26 +212,3 @@
 - 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
 - 261020 create-task MATCH-26: no task — T224's summary lines already record only minutes, shots, shots on target, goals, assists and saves, and nothing estimates grid-only counters.
 - 261020 update-ssot MATCH r13: MATCH-26✎ grid-only counters stay absent on the probabilistic path.
-- 261020 fix save entry: T231's larger SaveRepository put the entry at 256,348 of ARCH-28's 256,000 gzip bytes (main 255,661) → the commit path moved to `checkpointWriter.ts`, which the client injects as a lazy import (a dynamic import inside repository.ts split rolldown's preload helper into its own 749 B entry chunk); entry 255,963 B, 37 B headroom.
-- 261020 T224 done: own league on the probabilistic path (grid 42.7 s a season = 8.4× rules 3.0.0's 5.1 s; summary 8.4 s), whose own-league fixtures now carry the starters' lines from the chance model's shooter/creator so the scorer table stays exact; MATCH-26 open.
-- 261020 T231 done: one active checkpoint in slot:a with the committed predecessor in IndexedDB (`checkpoints/previous`), two-slot fallback refusing `previous-unavailable` when both do not fit, two-slot layouts migrate on the next commit; checkpoint 3 MiB, import 8 MiB, inflate 32 MiB (brotli patch decoder cap too); benchmark total counts the active copy only.
-- 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
-- 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
-- 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
-- 261020 update ARCH r14 (owner): ARCH-23✎ the 100-season and first-play benchmarks (about 90 min a push since T218) leave the push CI for a manually dispatched `benchmark.yml`; verify.yml and benchmark.yml changed with the revision. T231/T233/T255 name the CI benchmark job as evidence → that is now a manual dispatch or a local `pnpm run benchmark`.
-- 261020 create-task T271 decision: T231 moves ahead of T219 (dep T218) with the benchmark's active-copy-only total; T232 dep T230.
-- 261020 T271 blocked: fixed the pinned brotli encoder that cut the century checkpoint after its first meta-block (checksum mismatch), split feature-replay per career and gave the two Node-heavy journeys `test.slow()`; the benchmark now fails the 1.5 MiB checkpoint budget at 2,378,780 B (parked: T231/T232).
-- 261020 fix e2e live-state: wait for the run to leave 8월 1일 instead of the transient 8월 3일, which a late x2 step skips by carrying its owed days (red since 5659b91, Firefox then Chromium). The 57d81a3 benchmark miss is runner speed, not a lane: same engine and century save, EPYC 7763 ran the storage benchmark 1.6× slower than the 9V45 that passed b477308 (century load 3.4 s there, 5 s limit).
-- 261020 create-architecture ARCH r13: ARCH-30✎ tasks never run browser specs (per-task e2e took too long); Chromium journeys only in the batch run right before a push to main, which confirms e2e acceptance items.
-- 261020 T218 done (v7m3): own matches and own-league fixtures play the grid engine; observed ones carry `buildFrames` frames under the contract `MatchEvent`/`MatchFrame`, rosters with the bench; duel chain and motion.ts removed; scorers count substitutes (11–16 appearances a match); golden regenerated; 1123 unit, 19 contract and every Chromium journey pass.
-- 261019 T261 T262 T263 integrated
-- 261019 T258 T259 T260 integrated
-- 261019 T267 T268 T269 integrated
-- 261019 T264 T265 T266 integrated
-- 261019 T270 integrated
-- 261019 create-task review/outside-t216-t255-261019: T258–T270, four lanes of three (ui-entry-desk, ui-league-tabs, engine-money, engine-checks) plus lane-less T270; review converted.
-- 261019 review-code outside-t216-t255-261019 ready: 23 findings (1 P1, 13 P2, 9 P3); P1/P2 adopted except F6 (parked); typecheck, lint, 1132 unit tests pass at f10d7ba.
-- 261019 review-code outside-t216-t255-261019 start (v7m3 side review: code outside T216–T255 touches, for a parallel refactor batch)
-- 261019 fix web: drop the duplicate lazy settings wrapper that 049879b added in ProgressControls beside 83ffc27's; the entry overage began at da97fe0, hidden by the T256 script break.
-- 261019 fix web entry budget: the responsibility settings dialog loads when opened; entry JS/CSS 256,377 → 254,413 of 256,000 gzip bytes (ARCH), 43 Chromium journeys that open it pass.
-- 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
