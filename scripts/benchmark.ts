@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { cpus, platform, arch } from 'node:os';
+import { brotliCompressSync, constants as zlib } from 'node:zlib';
 import {
   activeTrainingFocus,
   createWorld,
@@ -26,8 +27,34 @@ import {
 } from '../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../tests/fixtures/retained-workload';
 import { payloadBytes } from '../apps/web/src/adapters/compression';
+import { pack } from '../apps/web/src/adapters/packing';
 const measurements: Record<string, unknown>[] = [];
 const workloads: Record<string, unknown>[] = [];
+/**
+ * The packed checkpoint's streams (top-level keys, objects one level down) by canonical JSON size
+ * and by their size compressed alone with the checkpoint's brotli settings (→SAVE-2). Streams
+ * compress jointly in the real payload, so the alone sizes rank them; they do not add up to it.
+ */
+function streamSizes(w: World) {
+  const streams: { stream: string; bytes: number; brotliBytes: number }[] = [];
+  const add = (stream: string, value: unknown) => {
+    const bytes = Buffer.from(canonical(value), 'utf8');
+    streams.push({
+      stream,
+      bytes: bytes.length,
+      brotliBytes: brotliCompressSync(bytes, {
+        params: { [zlib.BROTLI_PARAM_QUALITY]: 11, [zlib.BROTLI_PARAM_LGWIN]: 24 },
+      }).length,
+    });
+  };
+  for (const [key, value] of Object.entries(pack(w)))
+    if (value && typeof value === 'object' && !Array.isArray(value))
+      for (const [sub, inner] of Object.entries(value)) {
+        if (inner !== undefined) add(`${key}.${sub}`, inner);
+      }
+    else if (value !== undefined) add(key, value);
+  return streams.sort((a, b) => b.brotliBytes - a.brotliBytes).slice(0, 15);
+}
 function sourceFingerprint() {
   const paths = execFileSync(
     'git',
@@ -65,6 +92,7 @@ const gitHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' })
 const gitDirty = !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim();
 let peakObservedHeapBytes = 0;
 let worstCheckpointBytes = 0;
+let worst = { label: '', world: '' };
 /** The world as a load reads it (→SAVE-10); these rules sign by slot, so a load changes nothing. */
 const loadedCanonical = (w: World) => canonical(validateWorld(w, LOAD_CATALOG));
 async function measure(w: World, label: string) {
@@ -137,6 +165,7 @@ async function measure(w: World, label: string) {
   );
   if (checkpointBytes > worstCheckpointBytes) {
     worstCheckpointBytes = checkpointBytes;
+    worst = { label, world: worldCanonical };
     writeFileSync('.tmp/release-storage-worst-world.json', worldCanonical);
     writeFileSync('.tmp/release-storage-worst.haeram-save.json', raw);
     writeFileSync(
@@ -149,7 +178,11 @@ async function measure(w: World, label: string) {
     writeFileSync('.tmp/release-storage-failure.haeram-save.json', raw);
     writeFileSync(
       '.tmp/release-storage-failure-metrics.json',
-      JSON.stringify({ ...result, sourceFingerprint: source }, null, 2) + '\n',
+      JSON.stringify(
+        { ...result, streams: streamSizes(JSON.parse(worldCanonical)), sourceFingerprint: source },
+        null,
+        2,
+      ) + '\n',
     );
     throw new Error('Long-career storage budget failed: ' + JSON.stringify(result));
   }
@@ -188,6 +221,8 @@ if (!crossed.restored.promises?.some((p) => p.status === 'pending'))
 for (const variant of ['baseline', 'active-management']) {
   const workloadStart = performance.now();
   let trainingSelections = 0;
+  // Engine time of the career's seasons alone: no checkpoint codec, replay check or mid-career branch.
+  let simulationMs = 0;
   const w = createWorld({
     country: 'ENG',
     name: variant === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
@@ -198,6 +233,7 @@ for (const variant of ['baseline', 'active-management']) {
   await measure(w, variant + ' founding');
   for (let n = 0; n < 100; n++) {
     const before = retainedFacts(w);
+    const seasonStart = performance.now();
     if (variant === 'active-management') {
       const code = clubOf(w).country;
       const available = (cost: string) => BigInt(w.cash) > BigInt(cost) + BigInt(operatingCost(w));
@@ -227,6 +263,7 @@ for (const variant of ['baseline', 'active-management']) {
       trainingSelections++;
     }
     simulateSeason(w);
+    simulationMs += performance.now() - seasonStart;
     assertRetained(w, before);
     if (w.history.length !== n + 1) throw new Error('Missing completed season archive');
     if ((n + 1) % 10 === 0)
@@ -297,6 +334,8 @@ for (const variant of ['baseline', 'active-management']) {
         : 'balanced',
     elapsedMs: Math.round(elapsedMs),
     completedSeasonsPerSecond: Math.round((100000 / elapsedMs) * 100) / 100,
+    simulationMs: Math.round(simulationMs),
+    simulationSecondsPerSeason: Math.round(simulationMs / 100) / 1000,
     ownedMatches: w.ownMatches.length,
     ownedMatchesPerSecond: Math.round((w.ownMatches.length * 100000) / elapsedMs) / 100,
     allRetainedFactsPreserved: true,
@@ -320,7 +359,7 @@ if (sourceFingerprint().sha256 !== source.sha256)
   throw new Error('Source changed during storage verification; rerun after edits settle');
 const report = {
   phase:
-    'T010 complete engine, including money/personnel/commercial operations and all continental summaries',
+    'T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries',
   synthetic: true,
   date: new Date().toISOString(),
   node: process.version,
@@ -341,6 +380,11 @@ const report = {
   checkpointLimit: CHECKPOINT_LIMIT,
   totalLimit: TOTAL_LIMIT,
   measurements,
+  worstCheckpoint: {
+    label: worst.label,
+    checkpointBytes: worstCheckpointBytes,
+    streams: streamSizes(JSON.parse(worst.world)),
+  },
   workloads,
   centuryCheckpointSha256: createHash('sha256')
     .update(readFileSync('.tmp/release-century.haeram-save.json'))
@@ -357,5 +401,5 @@ const report = {
 };
 mkdirSync('docs/benchmarks', { recursive: true });
 writeFileSync('docs/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');
-writeFileSync('docs/benchmarks/T178-rules3-storage.json', JSON.stringify(report, null, 2) + '\n');
+writeFileSync('docs/benchmarks/T232-rules4-storage.json', JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
