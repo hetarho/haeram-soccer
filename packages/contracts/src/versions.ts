@@ -1,6 +1,6 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '3.0.0';
+export const CURRENT_ENGINE_VERSION = '4.0.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -63,8 +63,12 @@ export const CURRENT_ENGINE_VERSION = '3.0.0';
  * and a volunteer to the scout's). 2.0.0 is the player model (→PLAYER): 14 attributes, sided
  * positions with levels, roles, traits, adaptation and other clubs' 조직력, formations, four
  * difficulty levels; it starts new careers, and earlier versions are no longer read (→SAVE-16).
+ * 4.0.0 plays the own club's matches touch by touch on the grid engine (every other fixture on the
+ * probabilistic path), gives players 16 attributes, adds cards and suspensions, in-match
+ * substitutions and injuries, extra time and shoot-outs and post-match material; it starts new
+ * careers, and a recognized earlier career is cleared once on writer activation (→SAVE-18, SAVE-19).
  */
-/** Only rules 3.0.0: an earlier career is never converted into the player model (→SAVE-16). */
+/** Only rules 4.0.0: an earlier career is never converted (→SAVE-16, SAVE-19). */
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [CURRENT_ENGINE_VERSION];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
 export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
@@ -82,6 +86,7 @@ export const PRIOR_CATALOG_HASHES: Readonly<Record<string, string>> = {
 export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   ...Array.from({ length: 23 }, (_, minor) => `1.${minor}.0`),
   '2.0.0',
+  '3.0.0',
 ];
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 

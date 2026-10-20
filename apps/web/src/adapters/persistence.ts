@@ -49,11 +49,11 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
   };
   return JSON.stringify(e);
 }
-async function readCheckpoint(
-  raw: string,
-  supported: readonly string[],
-  validateExpandedWorld = false,
-) {
+/**
+ * Everything a checkpoint is checked for before its payload means anything: header, versions,
+ * catalog pin, codec, bounded decompression and checksum, then the JSON it carries.
+ */
+async function readEnvelope(raw: string, supported: readonly string[]) {
   if (raw.length > 8 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
@@ -101,26 +101,35 @@ async function readCheckpoint(
   const bytes = await decodePayload(e.codec, e.payload);
   if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
   return {
-    value: unpack(
-      JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)),
-      validateExpandedWorld,
-    ),
+    json: JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown,
     envelope: e,
   };
 }
-/** Integrity and known historical metadata, independently of the new world schema. */
+async function readCheckpoint(
+  raw: string,
+  supported: readonly string[],
+  validateExpandedWorld = false,
+) {
+  const { json, envelope } = await readEnvelope(raw, supported);
+  return { value: unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld), envelope };
+}
+/**
+ * Integrity and known historical metadata, independently of today's unpacking and world schema:
+ * an earlier rules' career is recognized even though this version can no longer read it (→SAVE-18).
+ */
 export async function recognizedLegacy(raw: string): Promise<boolean> {
   try {
-    const { value, envelope } = await readCheckpoint(raw, LEGACY_ENGINE_VERSIONS);
-    if (!value || typeof value !== 'object') return false;
-    const world = value as Partial<World>;
+    const { json, envelope } = await readEnvelope(raw, LEGACY_ENGINE_VERSIONS);
+    const packed = json as { format?: unknown; world?: Partial<World> } | null;
+    const world = packed?.world;
     return (
+      packed?.format === 'compact1' &&
+      !!world &&
+      typeof world === 'object' &&
       world.id === envelope.worldId &&
       world.engine === envelope.engine &&
       world.catalog === envelope.catalog &&
-      world.catalogHash === envelope.catalogHash &&
-      Number.isSafeInteger(world.year) &&
-      Array.isArray(world.clubs)
+      world.catalogHash === envelope.catalogHash
     );
   } catch {
     return false;

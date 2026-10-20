@@ -231,10 +231,10 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   });
 });
 
-describe('rules 3.0.0 (→SAVE-10, →SAVE-16)', () => {
+describe('rules 4.0.0 (→SAVE-10, →SAVE-16, →SAVE-19)', () => {
   it('refuses every recognized earlier gameplay version', () => {
     const w = world();
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['3.0.0']);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['4.0.0']);
     for (const engine of LEGACY_ENGINE_VERSIONS)
       expect(() => upgradeWorldRules({ ...w, engine }, CURRENT_CATALOG)).toThrow(
         SaveCompatibilityError,

@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T08:05Z | T230 |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T08:33Z | T232 |
 
 ## inbox
 - 261020 decided T221 MATCH-19: a Poisson yellow draw that hit an already booked player made about 0.13 extra sendings-off a team (target 0.07 with second yellows in it) → cautions go to unbooked players and second yellows come only as 30% of the red draw (alt: keep natural second yellows and lower the red mean, which still overshoots) — the grid's measured red rate already includes second yellows
@@ -158,7 +158,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T230 | Rules 4.0.0: new careers, robust legacy reset and notice | SAVE PLAYER | T229 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T233 T234 | todo |
@@ -189,9 +188,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T230 (rules 4.0.0), then T232 (century benchmark, closes T271), T233; T232's manual benchmark run closes T271
+- implement-task T232 (century benchmark, closes T271), then T233; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T230 done: rules 4.0.0; rules 3.0.0 and earlier careers are recognized from their envelope alone, cleared once on writer activation and announced with how many were cleared.
 - 261020 T222 done: level knockout ties play extra time and a kick-by-kick shoot-out on both paths; cups and Europe pass each tie's rule, the coin flips are gone, Elo reads the 90-minute score.
 - 261020 T221 done: fixtures off the grid book, send off and injure named starters at the grid's measured rates; discipline lookups are indexed (a season 44.6 → 11.2 s once every fixture carried cards).
 - 261020 T229 done (k4p2): player sheet 징계 and season heat maps, appearances = own records with minutes (substitutes as 교체 n), new counters in advanced stats, ban and warning badges, 부상·정지 on the home tile, the league 징계 table; the worker sends per-player `tallies` because the UI world holds only the last 30 own matches.

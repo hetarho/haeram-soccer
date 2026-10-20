@@ -1,8 +1,12 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { envelopeEngine } from '../../../../packages/contracts/src/versions';
+import {
+  envelopeEngine,
+  SaveCompatibilityError,
+} from '../../../../packages/contracts/src/versions';
 import { decodePayload } from './compression';
+import { decode, recognizedLegacy } from './persistence';
 import type { Envelope } from './repository';
 // A genuine rules 3.0.0 envelope frozen by scripts/freeze-legacy-fixture.ts (→SAVE-19). Only its
 // header, payload and checksum are asserted: today's unpack no longer reads rules 3.0.0 counters.
@@ -23,5 +27,11 @@ describe('legacy rules 3.0.0 fixture', () => {
     };
     expect(packed.format).toBe('compact1');
     expect(packed.world).toMatchObject({ id: envelope.worldId, engine: '3.0.0' });
+  });
+  it('is recognized as an earlier career and refused by rules 4.0.0', async () => {
+    expect(await recognizedLegacy(raw)).toBe(true);
+    const refusal = decode(raw);
+    await expect(refusal).rejects.toBeInstanceOf(SaveCompatibilityError);
+    await expect(refusal).rejects.toThrow('규칙 4.0.0 커리어만');
   });
 });

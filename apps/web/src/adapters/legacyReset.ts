@@ -10,13 +10,16 @@ const recognizedLegacy = async (raw: string) =>
   (await import('./persistence')).recognizedLegacy(raw);
 const CLEANUP = 'haeram-soccor:legacy-cleanup';
 
-/** Called only with the writer lock. Each mutation rechecks ownership and its source bytes. */
+/**
+ * Called only with the writer lock. Each mutation rechecks ownership and its source bytes. Returns
+ * how many games it cleared, for the owner's one notice (→SAVE-18).
+ */
 export async function resetLegacy(
   storage: StoragePort,
   parked: ParkedStore | undefined,
   canWrite: () => boolean,
-) {
-  if (!canWrite()) return;
+): Promise<number> {
+  if (!canWrite()) return 0;
   // A protected or empty unindexed career must not incidentally create a device owner/index.
   if (
     !storage.getItem(GAMES_KEY) &&
@@ -25,7 +28,8 @@ export async function resetLegacy(
       LEGACY_ENGINE_VERSIONS.includes(envelopeEngine(storage.getItem(key) ?? '') ?? ''),
     )
   )
-    return;
+    return 0;
+  let cleared = 0;
   let indexed = false;
   try {
     const record = JSON.parse(storage.getItem(GAMES_KEY) ?? 'null');
@@ -77,13 +81,14 @@ export async function resetLegacy(
           : [];
     // A mixed active pair cannot establish that its game as a whole is legacy.
     if (!raw.length || !(await Promise.all(raw.map(recognizedLegacy))).every(Boolean)) continue;
-    if (!canWrite()) return;
+    if (!canWrite()) return cleared;
     const fresh = index.read();
     if (fresh.slots[slot]?.id !== entry.id || fresh.active !== current.active) continue;
     fresh.slots[slot] = null;
     if (fresh.active === slot) fresh.active = null;
     if (parked) storage.setItem(CLEANUP, JSON.stringify([entry.id]));
     index.write(fresh);
+    cleared++;
     await cleanup();
   }
   // Manifest is removed only if its selected envelope is recognized. Protected selected saves
@@ -115,9 +120,16 @@ export async function resetLegacy(
         storage.removeItem(manifestKey);
     }
   }
+  let removedActive = false;
   for (const key of ACTIVE_SAVE_KEYS.slice(1)) {
     const raw = storage.getItem(key);
-    if (raw && (await recognizedLegacy(raw)) && canWrite() && storage.getItem(key) === raw)
+    if (raw && (await recognizedLegacy(raw)) && canWrite() && storage.getItem(key) === raw) {
       storage.removeItem(key);
+      removedActive = true;
+    }
   }
+  // A career from before game slots had no index entry to count; an old predecessor removed from
+  // beside a protected checkpoint is not a cleared career.
+  const gone = ACTIVE_SAVE_KEYS.slice(1).every((key) => storage.getItem(key) === null);
+  return cleared || (removedActive && gone ? 1 : 0);
 }

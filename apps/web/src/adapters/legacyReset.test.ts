@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { encode, Saves } from './persistence';
@@ -69,7 +70,7 @@ describe('bounded writer legacy reset', () => {
       parked = new Parked(),
       index = new GameIndexStore(storage);
     const legacy = await saved('2.0.0'),
-      current = await saved('3.0.0'),
+      current = await saved('4.0.0'),
       future = await saved('9.0.0');
     storage.setItem(ACTIVE_SAVE_KEYS[1], legacy);
     storage.setItem(ACTIVE_SAVE_KEYS[2], legacy);
@@ -84,7 +85,7 @@ describe('bounded writer legacy reset', () => {
     index.write({
       owner: { kind: 'device', id: 'owner' },
       active: 0,
-      slots: [entry('old', '2.0.0'), entry('new', '3.0.0'), entry('future', '9.0.0')],
+      slots: [entry('old', '2.0.0'), entry('new', '4.0.0'), entry('future', '9.0.0')],
     });
     await parked.put('old', legacy);
     await parked.put('new', current);
@@ -157,8 +158,8 @@ describe('bounded writer legacy reset', () => {
     expect(await saves.load()).toBeNull();
     expect(saves.incompatibleCheckpoint).toBe(false);
     expect(saves.incompatibleBackup).toBeUndefined();
-    await saves.commit(await saved('3.0.0'));
-    expect((await saves.load())?.world.engine).toBe('3.0.0');
+    await saves.commit(await saved('4.0.0'));
+    expect((await saves.load())?.world.engine).toBe('4.0.0');
   });
   it('preserves unknown older versions, corrupt legacy and protected selected manifests', async () => {
     for (const raw of [
@@ -187,7 +188,7 @@ describe('bounded writer legacy reset', () => {
 
 it('does not create device metadata while preserving current, future or unclassified corrupt data', async () => {
   for (const raw of [
-    await saved('3.0.0'),
+    await saved('4.0.0'),
     await saved('9.0.0'),
     JSON.stringify({ ...JSON.parse(await saved('2.0.0')), checksum: '0'.repeat(64) }),
   ]) {
@@ -199,4 +200,30 @@ it('does not create device metadata while preserving current, future or unclassi
     await resetLegacy(storage, undefined, () => true);
     expect(storage.data).toEqual(before);
   }
+});
+
+it('clears the frozen real rules 3.0.0 save and reports it', async () => {
+  // A genuine rules 3.0.0 envelope (scripts/freeze-legacy-fixture.ts) that 4.0.0 cannot unpack.
+  const raw = readFileSync(
+    new URL('../../../../tests/fixtures/legacy-rules3.haeram-save.json', import.meta.url),
+    'utf8',
+  );
+  const storage = new Memory();
+  const envelope = JSON.parse(raw);
+  storage.setItem(ACTIVE_SAVE_KEYS[1], raw);
+  storage.setItem(
+    ACTIVE_SAVE_KEYS[0],
+    JSON.stringify({
+      slot: 0,
+      worldId: envelope.worldId,
+      generation: envelope.generation,
+      parentGeneration: envelope.parentGeneration,
+    }),
+  );
+  storage.setItem('other-app', 'keep');
+  expect(await resetLegacy(storage, undefined, () => true)).toBe(1);
+  expect(ACTIVE_SAVE_KEYS.map((key) => storage.getItem(key))).toEqual([null, null, null]);
+  expect(storage.getItem('other-app')).toBe('keep');
+  // Nothing left to clear: no second notice.
+  expect(await resetLegacy(storage, undefined, () => true)).toBe(0);
 });

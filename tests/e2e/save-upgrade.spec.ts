@@ -71,7 +71,7 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  expect(JSON.parse(await exportRaw(page)).engine).toBe('3.0.0');
+  expect(JSON.parse(await exportRaw(page)).engine).toBe('4.0.0');
 });
 
 test('earlier rules import refused', async ({ page }) => {
@@ -85,7 +85,7 @@ test('earlier rules import refused', async ({ page }) => {
     buffer: Buffer.from(earlier),
   });
   await expect(page.getByRole('alert')).toContainText(
-    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 3.0.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 4.0.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);

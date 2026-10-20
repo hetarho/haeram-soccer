@@ -6,7 +6,7 @@ import { CURRENT_ENGINE_VERSION } from '../packages/contracts/src/versions';
 // real old save (→SAVE-19, →SAVE-18). Only today's 3.0.0 code may write it; the file is then frozen.
 const FIXTURE = 'tests/fixtures/legacy-rules3.haeram-save.json';
 async function main() {
-  if (CURRENT_ENGINE_VERSION !== '3.0.0') {
+  if ((CURRENT_ENGINE_VERSION as string) !== '3.0.0') {
     console.error(
       `Refusing to freeze: rules are ${CURRENT_ENGINE_VERSION}, the fixture is a rules 3.0.0 artefact.`,
     );

@@ -3,6 +3,7 @@ import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbPreviousStore } from '../adapters/previousStore';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
+  CURRENT_ENGINE_VERSION,
   envelopeEngine,
   isEarlierEngine,
   SaveCompatibilityError,
@@ -251,11 +252,15 @@ export class GameClient {
         import('../adapters/legacyReset'),
         import('../adapters/games'),
       ]);
-      await resetLegacy(
+      const cleared = await resetLegacy(
         localStorage,
         IndexedDbParkedStore.available() ? new IndexedDbParkedStore() : undefined,
         () => !this.state.readonly && !this.failed,
       );
+      if (cleared > 0)
+        notificationStore.add(
+          `이전 규칙 커리어 ${cleared}개를 정리했어요. 새 경기 엔진(규칙 ${CURRENT_ENGINE_VERSION})으로 새 커리어를 시작하세요.`,
+        );
     }
     const result = await this.saves.load();
     if (result) {
