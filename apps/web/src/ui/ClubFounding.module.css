@@ -158,6 +158,49 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
+/* The crest's 꾸미기 entry beside the create action: one row, one height (→WEB-10/15). */
+.launch {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+}
+.design {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 2px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.design svg {
+  flex: 0 0 auto;
+}
+.designNote {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+  font-family: var(--display);
+}
+.designActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.designActions button {
+  min-height: 48px;
+}
+.use {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
 .play {
   background: var(--accent-fill);
   color: var(--on-accent);
