@@ -76,6 +76,25 @@ export function settleStarts(w: World, xi: readonly Player[], tactic: Tactic) {
   });
 }
 
+/**
+ * Substitutes who came on settle a little by the slot of the player each replaced: the
+ * substitute's match gain (→PLAYER-12).
+ */
+export function settleSubs(
+  w: World,
+  subs: readonly { id: string; slot: number }[],
+  tactic: Tactic,
+) {
+  const slots = FORMATIONS[tactic].slots;
+  for (const sub of subs) {
+    const p = w.players.find((one) => one.id === sub.id);
+    const slot = slots[sub.slot];
+    if (!p || !slot) continue;
+    const gain = MATCH_GAIN.sub * settleRate(w, p) * gainLevelFactor(p.positions, slot.position);
+    p.adaptation = adaptationAfter(p.adaptation, gain);
+  }
+}
+
 /** A new manager in charge: every own player loses part of how settled he was (→PLAYER-13). */
 export function onManagerChange(w: World, before: Manager, after: Manager) {
   if (before.id === after.id) return;

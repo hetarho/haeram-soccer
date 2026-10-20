@@ -1,7 +1,7 @@
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
 import { careerDate, closeEmployment, retainPerson } from './person-careers';
 import { invalidateNpcSquads } from './world';
-import type { MatchRecord, PersonCareer, Player, Position, World } from '../../contracts/src/types';
+import type { PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
 import { activePlayers, addEvent, fatigueLoad, isInjured, overall, ownStarters } from './world';
@@ -80,7 +80,10 @@ function announceNpcRetirements(w: World) {
 }
 
 function careerLine(w: World, p: Player) {
-  const apps = w.ownMatches.filter((m) => m.players.some((line) => line.id === p.id)).length;
+  // A match counts when he played in it (→HIST-13), not when an unused substitute was listed.
+  const apps = w.ownMatches.filter((m) =>
+    m.players.some((line) => line.id === p.id && line.metrics[10]! > 0),
+  ).length;
   return `우리 클럽 ${apps}경기 ${p.career[0]}골 ${p.career[1]}도움`;
 }
 
@@ -173,18 +176,6 @@ export const TRAINING_INJURY = 0.005;
 export function trainingInjuryChance(p: Player) {
   return TRAINING_INJURY * (1 + fatigueLoad(p.fatigue) * INJURY.fatigue);
 }
-/** After an own match: each own player who played may pick up an injury, from the match stream. */
-export function injuriesAfterMatch(w: World, m: MatchRecord) {
-  const side = m.home === w.playerClub ? 0 : 1;
-  const r = random(`${w.seed}:injury:${m.id}`);
-  const pressing = m.tactics[side] === 'press';
-  for (const line of m.players) {
-    const p = w.players.find((player) => player.id === line.id);
-    if (!p || p.status !== 'active' || !line.metrics[10] || isInjured(w, p)) continue;
-    if (r() >= injuryChance(p, pressing)) continue;
-    injure(w, p, r);
-  }
-}
 /** A settled round of 하드 트레이닝: each player in it may get hurt, from his own stream (→CLUB-23). */
 export function trainingInjuries(w: World, players: readonly Player[]) {
   for (const p of players) {
@@ -194,8 +185,8 @@ export function trainingInjuries(w: World, players: readonly Player[]) {
     injure(w, p, r, '훈련 중 ');
   }
 }
-/** An injury of the table's bands, reported to the inbox (→CLUB-23). */
-function injure(w: World, p: Player, r: () => number, where = '') {
+/** Days out and the name of an injury drawn from the table's bands (→CLUB-23). */
+export function drawInjury(r: () => number) {
   let u = r(),
     band: (typeof INJURY.bands)[number] = INJURY.bands[INJURY.bands.length - 1];
   for (const b of INJURY.bands) {
@@ -205,8 +196,14 @@ function injure(w: World, p: Player, r: () => number, where = '') {
     }
     u -= b.share;
   }
-  const days = integer(r, band.days[0], band.days[1]),
-    label = band.label[integer(r, 0, band.label.length - 1)];
+  return {
+    days: integer(r, band.days[0], band.days[1]),
+    label: band.label[integer(r, 0, band.label.length - 1)],
+  };
+}
+/** An injury of the table's bands, reported to the inbox (→CLUB-23). */
+export function injure(w: World, p: Player, r: () => number, where = '') {
+  const { days, label } = drawInjury(r);
   p.injury = { year: w.year, day: dayCountedFrom(w, w.year) + days, label };
   const back = seasonDayLabel(w.year, p.injury.day);
   addEvent(

@@ -9,7 +9,7 @@ import { qualifyManagers } from './manager-entry';
 import { refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
 import { atCareerDate } from './person-careers';
 import { materializePeople, movePerson, returnLoan } from './npc-continuity';
-import { settleClubRounds, settleCohesion, settleStarts } from './adaptation';
+import { settleClubRounds, settleCohesion, settleStarts, settleSubs } from './adaptation';
 import { seasonTour } from './bases';
 import { advanceEconomy } from './economy';
 import {
@@ -22,7 +22,7 @@ import { advanceCups, cupKey, finishCups, prepareCups } from './cups';
 import { archivedRounds, finalOf, ownReached, type Settlement } from './knockout';
 import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
-import { announceRetirements, clearHealed, injuriesAfterMatch, retireAtClose } from './careers';
+import { announceRetirements, clearHealed, drawInjury, injure, retireAtClose } from './careers';
 import { gate, settleLeagueMerit, settleRound } from './settlement';
 import { assessOperatingExpenses } from './finance';
 import { reduceSeasonMaterial } from './material';
@@ -34,6 +34,8 @@ import type {
   CupRun,
   Fixture,
   MatchPlayback,
+  MatchRecord,
+  Player,
   TableRow,
   World,
 } from '../../contracts/src/types';
@@ -74,7 +76,7 @@ import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
 import { drawShortlist } from './signings';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
-import { applyDiscipline, closeDisciplineSeason, serveBans } from './discipline';
+import { applyDiscipline, closeDisciplineSeason, recordNpcInjury, serveBans } from './discipline';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -294,8 +296,11 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const saved = { ...m, players, ...(lineCounts ? { lineCounts } : {}) };
     w.ownMatches.push(saved);
     gate(w, m);
-    // Every starter settles a little by the slot he played (→PLAYER-12).
-    settleStarts(w, playback.squads[ownSide].slice(0, 11), m.tactics[ownSide]);
+    // Every starter settles a little by the slot he played, a substitute by the slot of the
+    // player he replaced (→PLAYER-12).
+    const xi = playback.squads[ownSide].slice(0, 11);
+    settleStarts(w, xi, m.tactics[ownSide]);
+    settleSubs(w, substitutes(m, ownSide, xi), m.tactics[ownSide]);
     // A pressing manager adds load; a synergy built for pressing takes some of it off.
     const extraLoad = managerStyleEffects(w).fatigueCost - synergyEffects(w).fatigueRelief;
     for (const line of saved.players) {
@@ -303,9 +308,16 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
       if (p) {
         p.season = addMetrics(p.season, line.metrics);
         p.career = addMetrics(p.career, line.metrics);
-        p.fatigue = clamp(
-          p.fatigue + fatigueCost(p, m.tactics[m.home === w.playerClub ? 0 : 1]) + extraLoad,
-        );
+        // Fatigue by the minutes he played.
+        const minutes = line.metrics[10]!;
+        if (minutes > 0)
+          p.fatigue = clamp(
+            p.fatigue +
+              Math.max(
+                1,
+                Math.round(((fatigueCost(p, m.tactics[ownSide]) + extraLoad) * minutes) / 90),
+              ),
+          );
       }
     }
     const side = m.home === w.playerClub ? 0 : 1;
@@ -314,7 +326,36 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     club.fans = fansAfterMatch(club.fans, win, buildEffects(w).winFans);
     moraleAfterMatch(w, saved);
     settleWinBonus(w, saved);
-    injuriesAfterMatch(w, saved);
+  }
+  injuriesFromMatch(w, m);
+}
+/** The own substitutes who came on, each with the XI slot of the player he replaced. */
+function substitutes(m: MatchRecord, side: 0 | 1, xi: readonly Player[]) {
+  const slotOf = new Map(xi.map((p, i) => [p.id, i]));
+  const subs: { id: string; slot: number }[] = [];
+  for (const x of m.incidents ?? []) {
+    if (x.kind !== 'sub' || x.side !== side || !x.other) continue;
+    const slot = slotOf.get(x.player);
+    if (slot === undefined) continue;
+    // A substitute replaced later takes the same slot on to his own replacement.
+    slotOf.set(x.other, slot);
+    subs.push({ id: x.other, slot });
+  }
+  return subs;
+}
+/**
+ * The match's injuries (→MATCH-21): an own player is hurt by CLUB-23's bands and reported, another
+ * club's player is out for days drawn from the same bands (→LEAGUE-15).
+ */
+function injuriesFromMatch(w: World, m: MatchRecord) {
+  for (const x of m.incidents ?? []) {
+    if (x.kind !== 'injury') continue;
+    const r = random(`${w.seed}:injury:${m.id}:${x.player}`);
+    const club = x.side === 0 ? m.home : m.away;
+    if (club === w.playerClub) {
+      const p = w.players.find((one) => one.id === x.player);
+      if (p && p.status === 'active') injure(w, p, r);
+    } else recordNpcInjury(w, x.player, club, drawInjury(r).days);
   }
 }
 export function resolveTie(w: World, f: Fixture) {

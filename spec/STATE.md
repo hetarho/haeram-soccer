@@ -16,9 +16,10 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:50Z | T229 |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T05:55Z | T220 |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T06:43Z | T221 |
 
 ## inbox
+- 261020 suggest ARCH-30: `calibration.grid-equal` and `calibration.grid-giant` take about 78 s alone and passed vitest's 120 s limit under a full local run (also seen by k4p2 at load 20) → per-case limits or smaller samples before CI shards hit it
 - 261020 decided T219 MATCH-19: which competition a league-yellow ban covers → the league only (scope `league`), cup and European accumulation their own competition, red cards every domestic competition (alt: league yellows ban domestically like a red) — MATCH-19 counts yellows per competition and names only the red ban as covering every domestic competition
 - 261020 decided T219: `closeSeason` played the lower-promotion playoff after `retireAtClose`, so a club could field nobody → `promote` runs before `retireAtClose` (alt: let a club short of eleven forfeit | change only the test world) — the playoff belongs to the season just played, as `promote`'s own comment says
 - 261020 decided MATCH-26: grid-only counters for own-league players on the probabilistic path → leave them absent (alt: estimate by position at real rates, which shows invented figures as measured and needs per-position tables) — T224 kept the own league on that path; the owner's own players always play the grid
@@ -157,7 +158,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T229 | Player sheet, squad, home and league views for discipline | WEB CLUB LEAGUE HIST | T228 | doing |
@@ -192,9 +192,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T220, then T221, T222 (k4p2 runs T223 → T227 beside them); T232's manual benchmark run closes T271
+- implement-task T221, then T222; T232's manual benchmark run closes T271
 
 ## log
+- 261020 T220 done: own matches settle substitutes' adaptation and fatigue by minutes, match injuries reach own players (CLUB-23 bands) and other clubs' `out` list, farewells count matches actually played.
 - 261020 T228 done (k4p2): the preparation dialog lists the manager's bench, penalty/free-kick/corner takers and unavailable players with reasons for the next own fixture, plus the era's substitution rule; starters and presets skip banned players; the tactic lab reads `ownTacticalProfile` and draws each tactic on a compact FormationPitch.
 - 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
 - 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
