@@ -1,0 +1,80 @@
+.view {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+/*
+ * The apply bar stays at the top edge of the content region while the editor scrolls under it; the
+ * floating news button owns the bottom edge (→WEB-51).
+ */
+.bar {
+  position: sticky;
+  top: var(--task-offset, 0px);
+  z-index: 20;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--surface);
+  min-width: 0;
+}
+.bar[data-changed='true'] {
+  border-color: var(--accent);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  min-width: 0;
+}
+.row svg {
+  flex: 0 0 auto;
+}
+.status {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.actions button {
+  min-height: 44px;
+  padding: 6px 12px;
+}
+.apply {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.alert {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--danger);
+  border-radius: 2px;
+}
+.alert p,
+.done {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.alert > button {
+  justify-self: start;
+  min-height: 44px;
+}
+.note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}

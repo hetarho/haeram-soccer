@@ -382,6 +382,8 @@ const selectContentWorld = worldSelector([
   'year',
   'round',
   'playerClub',
+  // Each club's applied identity rides on its club, so an applied design reaches every crest at
+  // once (→WEB-49).
   'clubs',
   'tables',
   'fixtures',
