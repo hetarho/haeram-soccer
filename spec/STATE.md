@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T234 |
 | - |
 
 ## inbox
@@ -100,11 +101,11 @@
 - 261020 decided T271 SAVE-2 ARCH-12: the century checksum mismatch was the pinned brotli encoder, not the data — upstream compress.c's `encodeWithDictionary` fed its FINISH loop no input and copied every chunk to one offset, so a stream ended after the first meta-block (T218's 16.1 MB century kept 13.9 MB) → `patches/brotli@2.1.0.patch` fixes both sites in the compiled `build/encode.js`; the output equals Node's native brotli and is unchanged for inputs that fit one meta-block (alt: rebuild encode.js with emsdk | a codec that writes several streams)
 - 261020 suggest T271 -: report both compress.c bugs upstream to foliojs/brotli.js (FINISH must keep the unconsumed input; later chunks go after `output_buffer_size`) and drop the compiled-code hunk once a fixed release is pinned
 - 261020 suggest T271 ARCH-5 ARCH-9: the century benchmark world diverged between Node 26.8.1 (local) and the pinned 24.12.0 (CI) after 60 seasons (retained people 15,088 against 15,087 at 70, 20,605 against 20,600 at 100) → replay one seed on both Node versions and, if a grid float (`Math.hypot` and kin) differs, move the outcome-critical geometry to the fixed-point ARCH-9 asks for
-- 261020 decided T234: start the identity track (T234–T255) early while the grid chain runs? → keep the T233 gate (alt: re-point T234 to T218 and run T234 → T236/T238 → T246 in a worktree) — docs/CLUB-IDENTITY-CONTRACT.md §9 says to read T233's result first with no parallel lanes; only four small tasks could move, at the cost of conflicts on contracts types/schema with T218 and on the golden fixture
 - 261020 suggest T225 ARCH-28: entry JS/CSS measures about 255,661 of 256,000 gzip bytes on 35492d5 (refactor-261019 lanes + T216–T218 + T271) → make the grid playback path lazy before T225 adds match-theatre UI, or the CI benchmark's entry check turns red
 - 261020 decided T271 SAVE-4 ARCH-14: the benchmark job red on the 1.5 MiB checkpoint limit (century 2,378,780 B since T218) → move T231 ahead of T219 (dep T218, T219 now dep T231) and give it the benchmark's active-copy-only total; T232 measures on rules 4.0.0 after T230 (alt: T231 and T232 both first, which measures before T219–T229 add discipline, post-match material and heat maps | keep the order and a red benchmark for twelve tasks) — owner: reorder only when it costs little; T231 shares no file with T219–T229 and only `persistence.ts`/`client.ts` with T230, and SAVE-4's 3 MiB does not depend on rules 4.0.0
 - 261020 decided T224 MATCH-22: the grid's own-league cost (a season 1.8 → 10 s since T218) slows every season, the unit suite and CI → move T224 (measure, then MATCH-22's 125% rule sets `OWN_LEAGUE_ENGINE`) to right after T231 (dep T231; T219 now dep T224, T225 dep T223) and have it update the tests and golden facts if it picks `'summary'` (alt: set `'summary'` now without measuring | keep T224 after T223 and the slow runs until then) — owner chose the measured route; the own club's matches stay on the grid either way, and T221 already gives the probabilistic path cards, injuries and named lines
 
+- 261020 decided T234 T236 T238 T246: owner asked for parallel work beside the grid chain until 17:00 → re-point T234 to T218 and run T234 → T236/T238 → T246 in worktree k4p2 (replaces this morning's keep-the-T233-gate answer; alt: keep the gate and idle) — their touches (packages/contracts identity leaf + types/schema, engine identity-legacy/kit-patterns, web crests/kitPainting) share no file with T219–T224; T235 and later stay behind T233 because they need the codec, storage and grid renderer
 ## ideation
 | id | st |
 |---|---|
@@ -156,7 +157,7 @@
 | T231 | One active localStorage checkpoint, previous copy in IndexedDB | SAVE ARCH | T218 | todo |
 | T232 | Century storage benchmark on rules 4.0.0 (explore 2h) | SAVE ARCH HIST | T230 | todo |
 | T233 | Grid engine rebuild: documents, golden facts, full verification | MATCH SAVE ARCH | T232 | todo |
-| T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T233 | todo |
+| T234 | Define bounded club identity and appearance DTOs | KIT SAVE ARCH | T218 | doing |
 | T235 | Version design-bearing checkpoint envelopes without changing gameplay rules | SAVE ARCH | T234 | todo |
 | T236 | Extract the existing crest generator without changing its output | KIT ARCH | T234 | todo |
 | T237 | Generate complete stable identities and previewable founding drafts | KIT WEB SAVE ARCH | T235 T236 | todo |
