@@ -2,7 +2,7 @@ import { useMemo, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import { CrestMark } from './ClubCrest';
 import { colourDistance, contrast, type Crest } from './crests';
-import { recordedGoals } from './moments';
+import { goalFrame, recordedGoals } from './moments';
 import t from './Pitch.module.css';
 
 type Chart = 'possession' | 'xg' | 'shots';
@@ -105,10 +105,7 @@ export function MatchCharts({
   const labelAt = (m: number) => frames[m - 1]?.label ?? String(m);
   // Each goal sits on the first frame whose score includes it.
   const goals = recordedGoals(playback.record)
-    .map((goal) => ({
-      ...goal,
-      at: frames.findIndex((f) => f.score.home >= goal.home && f.score.away >= goal.away) + 1,
-    }))
+    .map((goal) => ({ ...goal, at: goalFrame(frames, goal) + 1 }))
     .filter((goal) => goal.at > 0 && goal.at <= shown);
   const active = focus !== undefined && focus <= shown ? focus : undefined;
   const latest = shown ? [series[0][shown - 1], series[1][shown - 1]] : [0, 0];
@@ -206,16 +203,21 @@ export function MatchCharts({
               </text>
             </g>
           ))}
-          {['45', '90'].map((label) => {
-            const m = frames.findIndex((f) => f.label === label) + 1;
-            return (
+          {(
+            [
+              // The second half starts after the first half's added minutes; the 90′ tick marks
+              // the last regulation frame, its added minutes included.
+              ['45', frames.findIndex((f) => f.period >= 2) + 1],
+              ['90', frames.findLastIndex((f) => f.period <= 2) + 1],
+            ] as const
+          ).map(
+            ([label, m]) =>
               m > 0 && (
                 <text key={label} x={x(m)} y={H - 3} textAnchor="middle" className={t.tick}>
                   {label}′
                 </text>
-              )
-            );
-          })}
+              ),
+          )}
           {shown > 0 &&
             [1, 0].map((side) => (
               <g key={side}>

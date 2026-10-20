@@ -78,9 +78,11 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   );
   await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
+  // A minute takes 4 s × its pace (mean 1, about 0.6–1.6): the first lasts well past 1.7 s and
+  // ends within 4 × 1.6 s plus slack.
   await page.waitForTimeout(1700);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 5000 });
+  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 8000 });
   for (const value of ['2×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
     await speed.click();

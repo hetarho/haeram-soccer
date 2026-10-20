@@ -41,6 +41,20 @@
 .awayTeam {
   justify-content: flex-end;
 }
+/* One red card per player sent off, beside the side's name. */
+.reds {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+}
+.reds i {
+  width: 7px;
+  height: 10px;
+  border-radius: 1px;
+  /* A referee's red card, not the interface's warning colour. */
+  background: #e5383b;
+  box-shadow: 0 0 0 1px var(--surface-deep);
+}
 .shortName {
   display: none;
 }

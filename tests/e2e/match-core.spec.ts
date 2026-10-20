@@ -99,6 +99,12 @@ for (const viewport of [
     reference.settings!.responsibilities.sales = 'delegated';
     reference.settings!.responsibilities.recruitment = 'delegated';
     const first = advanceToNextMatch(reference)!;
+    const incidents = first.record.incidents ?? [];
+    const sentOff = [0, 1].map(
+      (side) =>
+        incidents.filter((i) => i.side === side && (i.kind === 'red' || i.kind === 'secondYellow'))
+          .length,
+    );
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByText('고급 설정', { exact: true }).click();
@@ -148,6 +154,13 @@ for (const viewport of [
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    // The scoreboard carries one red mark per player sent off; the event line its minute label.
+    await expect(page.getByTestId('red-cards-home').locator('i')).toHaveCount(sentOff[0]);
+    await expect(page.getByTestId('red-cards-away').locator('i')).toHaveCount(sentOff[1]);
+    await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(
+      /^90(\+\d+)?′$/,
+    );
+    await expect(page.getByTestId('match-latest-event').locator('p')).not.toBeEmpty();
     await expectCompactMatch(page, viewport);
     const side = first.record.home === reference.playerClub ? 0 : 1;
     const ownGoals = side === 0 ? first.record.score.home : first.record.score.away;
@@ -169,6 +182,8 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeVisible();
+    // The scrubber reads the presented frame's label against the last one.
+    await expect(page.getByText(/^(90(\+\d+)?)′ \/ \1′$/)).toBeVisible();
     const actionBounds = await page.getByTestId('match-next-action').boundingBox();
     const detailBounds = await page
       .getByRole('slider', { name: '경기 시간', exact: true })
@@ -182,6 +197,10 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
     await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
+    if (sentOff[0] + sentOff[1])
+      await expect(page.getByTestId('match-bench').filter({ hasText: '(퇴장)' })).not.toHaveCount(
+        0,
+      );
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expectCompactMatch(page, viewport);
     await nav.getByRole('button', { name: '리그', exact: true }).click();
@@ -209,6 +228,18 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByText('주요 장면 탐색', { exact: true }).click();
+    // Red cards and substitutions join the goals, labelled with their minute (45+n, 90+n).
+    await expect(page.getByTestId('recorded-incident')).toHaveCount(
+      incidents.filter((i) => i.kind === 'red' || i.kind === 'secondYellow' || i.kind === 'sub')
+        .length,
+    );
+    for (const incident of incidents.filter((i) => i.kind === 'sub'))
+      await expect(
+        page
+          .getByTestId('recorded-incident')
+          .filter({ hasText: `${incident.minute}${incident.added ? `+${incident.added}` : ''}′` })
+          .filter({ hasText: '↔' }),
+      ).not.toHaveCount(0);
     await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);

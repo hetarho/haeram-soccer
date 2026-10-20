@@ -24,7 +24,7 @@ import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
 import { useProgression, type ProgressionController } from '../runtime/progression';
 import { useLeagueSeason, useMatchView, useNavigation, type Page, type PastTab } from './state';
-import { Pitch, type PitchControls } from './Pitch';
+import type { PitchControls } from './Pitch';
 import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { ScorerStandings, ScorerHistory } from './ScorerPanels';
@@ -34,6 +34,8 @@ import { FixtureNotebook } from './LazyFixtureNotebook';
 const ClosedSeason = lazy(() =>
   import('./PastSeason').then((module) => ({ default: module.ClosedSeason })),
 );
+/** The match theatre loads when the match pane first renders, outside the entry (→ARCH-28). */
+const Pitch = lazy(() => import('./Pitch').then((module) => ({ default: module.Pitch })));
 import { seasonName } from './format';
 import {
   leagueIds,
@@ -234,27 +236,29 @@ const MatchPane = memo(function MatchPane({
         </span>
       )}
       <section>
-        <Pitch
-          playback={playback}
-          world={w}
-          onFinish={onFinish}
-          onPlaybackStart={onPlaybackStart}
-          onPresentationChange={onPresentationChange}
-          lead={
-            <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
-              <span aria-hidden="true">‹</span>
-            </button>
-          }
-          actions={(controls) => (
-            <div className={t.coreActions}>
-              <MatchFeedback finished={finished} />
-              <div className={t.nextActions}>
-                <button onClick={onPrepare}>전술·선발 준비</button>
-                <NextMatchAction client={client} controller={controller} controls={controls} />
+        <Suspense fallback={<div className={s.pitch} aria-busy="true" />}>
+          <Pitch
+            playback={playback}
+            world={w}
+            onFinish={onFinish}
+            onPlaybackStart={onPlaybackStart}
+            onPresentationChange={onPresentationChange}
+            lead={
+              <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
+                <span aria-hidden="true">‹</span>
+              </button>
+            }
+            actions={(controls) => (
+              <div className={t.coreActions}>
+                <MatchFeedback finished={finished} />
+                <div className={t.nextActions}>
+                  <button onClick={onPrepare}>전술·선발 준비</button>
+                  <NextMatchAction client={client} controller={controller} controls={controls} />
+                </div>
               </div>
-            </div>
-          )}
-        />
+            )}
+          />
+        </Suspense>
       </section>
       {presentation.details &&
         finished &&

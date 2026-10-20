@@ -1,17 +1,40 @@
-import type { MatchRecord } from '../../../../packages/contracts/src/types';
-import { recordedGoals, type Moment } from './moments';
+import type { MatchFrame, MatchRecord } from '../../../../packages/contracts/src/types';
+import { goalFrame, incidentFrame, recordedGoals, recordedIncidents, type Moment } from './moments';
 import s from './Analysis.module.css';
+
+const incidentText = { sub: '교체', secondYellow: '경고 누적 퇴장', red: '퇴장' } as const;
 
 export function MatchMoments({
   record,
+  frames,
+  names,
   onSeek,
   live = false,
 }: {
   record: MatchRecord;
+  /** The playback's frames: they give each moment its minute label (`45+2`). */
+  frames: MatchFrame[];
+  /** Player names by ID; incidents name players by ID. */
+  names?: Map<string, string>;
   onSeek: (moment: Moment) => void;
   live?: boolean;
 }) {
+  const name = (id?: string) => (id && names?.get(id)) || id || '선수';
   const goals = recordedGoals(record);
+  // Goals, red cards and substitutions in match order, each labelled as its frame reads.
+  // A moment seeks to the frame it lands on; without one, to its recorded minute.
+  const moments = [
+    ...goals.map((goal) => {
+      const at = goalFrame(frames, goal);
+      const label = frames[at]?.label ?? `${goal.minute}`;
+      return { at, goal, incident: undefined, label, seek: label };
+    }),
+    ...recordedIncidents(record).map((incident) => {
+      const at = incidentFrame(frames, incident);
+      const seek = frames[at]?.label ?? incident.label;
+      return { at, goal: undefined, incident, label: incident.label, seek };
+    }),
+  ].sort((a, b) => a.at - b.at);
   return (
     <details className={s.disclosure}>
       <summary>주요 장면 탐색</summary>
@@ -22,16 +45,32 @@ export function MatchMoments({
           <button onClick={() => onSeek('fullTime')}>경기 종료 · 90분</button>
         </div>
         <ol className={s.momentList}>
-          {goals.map((goal, i) => (
+          {moments.map(({ goal, incident, label, seek }, i) => (
             <li key={i}>
-              <button data-testid="recorded-goal" onClick={() => onSeek(goal.minute)}>
-                <b>
-                  {goal.minute}′ · {goal.player}
-                </b>
-                <span>
-                  {goal.side === 0 ? '홈' : '원정'} 득점 · {goal.home}–{goal.away}
-                </span>
-              </button>
+              {goal ? (
+                <button data-testid="recorded-goal" onClick={() => onSeek(seek)}>
+                  <b>
+                    {label}′ · {goal.player}
+                  </b>
+                  <span>
+                    {goal.side === 0 ? '홈' : '원정'} 득점 · {goal.home}–{goal.away}
+                  </span>
+                </button>
+              ) : (
+                incident && (
+                  <button data-testid="recorded-incident" onClick={() => onSeek(seek)}>
+                    <b>
+                      {label}′ ·{' '}
+                      {incident.kind === 'sub'
+                        ? `${name(incident.player)} ↔ ${name(incident.other)}`
+                        : name(incident.player)}
+                    </b>
+                    <span>
+                      {incident.side === 0 ? '홈' : '원정'} {incidentText[incident.kind]}
+                    </span>
+                  </button>
+                )
+              )}
             </li>
           ))}
         </ol>

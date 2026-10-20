@@ -30,8 +30,8 @@ import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
 import { crestOf, inkOn, kits } from './crests';
-import { sampleAt } from './moments';
-import { presentationAdvance, WATCH_SPEEDS } from './presentationClock';
+import { incidentFrame, sampleAt, sentOff } from './moments';
+import { paceStarts, presentationAt, presentationTime, WATCH_SPEEDS } from './presentationClock';
 import s from './App.module.css';
 import t from './Pitch.module.css';
 
@@ -99,6 +99,22 @@ export function latestEvent(
   return undefined;
 }
 
+/**
+ * The sample position of a minute position: each minute's samples share its time evenly, so the
+ * clock spends the minute's pace on them (`firsts` holds each minute's first sample, then the
+ * sample count).
+ */
+function toSample(firsts: number[], position: number) {
+  const i = Math.min(Math.floor(position), firsts.length - 2);
+  return i < 0 ? 0 : firsts[i]! + (position - i) * (firsts[i + 1]! - firsts[i]!);
+}
+/** The minute position of a sample position: the inverse of `toSample`. */
+function fromSample(firsts: number[], samples: Sample[], index: number) {
+  const frame = samples[Math.floor(index)]?.frame ?? 0;
+  const count = (firsts[frame + 1] ?? 0) - (firsts[frame] ?? 0);
+  return count > 0 ? frame + (index - firsts[frame]!) / count : 0;
+}
+
 /** The side's keeper: the slot-0 starter while he is on the pitch, else whoever stands in slot 0. */
 export function keeperOf(playback: MatchPlayback, frame: MatchFrame | undefined, side: 0 | 1) {
   const onPitch = frame?.onPitch?.[side] ?? [];
@@ -135,6 +151,7 @@ export function Pitch({
 }) {
   const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
+  /** Presentation time in ms at 1x: a minute lasts 4000 ms × its pace (→WEB-32). */
   const clock = useRef(0);
   const last = useRef(0);
   const lastUi = useRef(0);
@@ -168,6 +185,15 @@ export function Pitch({
       }) || []
     );
   }, [p]);
+  // Where each minute starts on the presentation clock, and each minute's first sample.
+  const starts = useMemo(() => paceStarts(p?.frames.map((frame) => frame.pace) ?? []), [p]);
+  const firsts = useMemo(() => {
+    const list: number[] = [];
+    samples.forEach((sample, i) => {
+      if (list.length <= sample.frame) list.push(i);
+    });
+    return [...list, samples.length];
+  }, [samples]);
   // Every recorded ball position of the match, so a fast pass is drawn at its real speed.
   const track = useMemo(() => p?.frames.flatMap((frame) => frame.ballTrack || []) || [], [p]);
   // Each player's place in his matchday roster (starters, then the bench) numbers his dot.
@@ -175,13 +201,8 @@ export function Pitch({
     () => new Map(p?.squads.flatMap((squad) => squad.map((player, i) => [player.id, i] as const))),
     [p],
   );
-  // The inspector lists who took the pitch: the starters and the substitutes who came on.
-  const played = useMemo(
-    () =>
-      new Set([
-        ...(p?.squads.flatMap((squad) => squad.slice(0, 11).map((player) => player.id)) ?? []),
-        ...(p?.frames.flatMap((f) => [...(f.onPitch?.[0] ?? []), ...(f.onPitch?.[1] ?? [])]) ?? []),
-      ]),
+  const names = useMemo(
+    () => new Map(p?.squads.flatMap((squad) => squad.map((player) => [player.id, player.name]))),
     [p],
   );
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
@@ -197,6 +218,28 @@ export function Pitch({
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedId = selectedPlayer?.id;
   const selectedMotion = sample?.players?.[selectedSide]?.find((m) => m.id === selectedId);
+  // The inspector lists the players on the pitch now by ID (the starters before any are recorded),
+  // then each side's bench: everyone else of the matchday squad.
+  const onPitch = ([0, 1] as const).map((side) => {
+    const ids = frame?.onPitch[side].length
+      ? frame.onPitch[side]
+      : (p?.squads[side].slice(0, 11).map((player) => player.id) ?? []);
+    return new Set(ids);
+  });
+  const reds = p ? sentOff(p.record, p.frames, sample?.frame ?? 0) : [0, 0];
+  // Why a player has left the pitch so far: sent off, substituted or injured.
+  const gone = new Map(
+    (p?.record.incidents ?? []).flatMap((incident) =>
+      incident.kind === 'yellow' || incidentFrame(p!.frames, incident) > (sample?.frame ?? 0)
+        ? []
+        : [
+            [
+              incident.player,
+              incident.kind === 'sub' ? '교체' : incident.kind === 'injury' ? '부상' : '퇴장',
+            ] as const,
+          ],
+    ),
+  );
   const traits = selectedPlayer ? motionTraits(selectedPlayer) : undefined;
   const latestGoal = p?.record.highlights
     .filter((event) => event.minute <= (frame?.minute ?? 0))
@@ -248,12 +291,9 @@ export function Pitch({
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
       const end = Math.max(0, samples.length - 1);
-      if (p && !paused)
-        clock.current = Math.min(
-          end,
-          clock.current + presentationAdvance(elapsed, speed, samples.length, p.frames.length),
-        );
-      const index = Math.min(end, Math.floor(clock.current));
+      if (p && !paused) clock.current = Math.min(starts.at(-1)!, clock.current + elapsed * speed);
+      const position = Math.min(end, toSample(firsts, presentationAt(starts, clock.current)));
+      const index = Math.min(end, Math.floor(position + 1e-6));
       const element = canvas.current;
       // Keep replay time, but leave hidden/inert views out of layout and painting work. The final
       // whistle still lands, so home knows an unwatched match has ended.
@@ -265,13 +305,13 @@ export function Pitch({
         raf = requestAnimationFrame(draw);
         return;
       }
-      if (time - lastUi.current > 120 || clock.current === end) {
+      if (time - lastUi.current > 120 || index === end) {
         setSampleIndex(index);
         lastUi.current = time;
       }
       const current = samples[index];
       const next = samples[Math.min(end, index + 1)] || current;
-      const mix = clock.current - index;
+      const mix = Math.max(0, position - index);
       const ctx = element?.getContext('2d');
       if (element && ctx) {
         const width = element.clientWidth;
@@ -415,11 +455,25 @@ export function Pitch({
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [p, samples, track, numbers, paused, speed, homeKit, awayKit, inspect, selectedId]);
+  }, [
+    p,
+    samples,
+    starts,
+    firsts,
+    track,
+    numbers,
+    paused,
+    speed,
+    homeKit,
+    awayKit,
+    inspect,
+    selectedId,
+  ]);
 
   const seek = (index: number) => {
-    clock.current = Math.max(0, Math.min(samples.length - 1, index));
-    setSampleIndex(Math.floor(clock.current));
+    const target = Math.max(0, Math.min(samples.length - 1, index));
+    clock.current = presentationTime(starts, fromSample(firsts, samples, target));
+    setSampleIndex(Math.floor(target));
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };
   const reveal = () => {
@@ -432,6 +486,20 @@ export function Pitch({
     setPaused(finished ? false : !paused);
   };
   const playLabel = finished ? '다시 보기' : paused ? '재생' : '일시정지';
+  // One red mark per player sent off up to the presented minute (→WEB-50).
+  const redMarks = (side: 0 | 1) =>
+    reds[side] > 0 && (
+      <i
+        className={t.reds}
+        role="img"
+        aria-label={`퇴장 ${reds[side]}명`}
+        data-testid={side === 0 ? 'red-cards-home' : 'red-cards-away'}
+      >
+        {Array.from({ length: reds[side] }, (_, i) => (
+          <i key={i} />
+        ))}
+      </i>
+    );
   return (
     <div className={`${s.pitch} ${t.pitch}`} data-testid="pitch-theatre">
       <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
@@ -442,9 +510,11 @@ export function Pitch({
           <b className={t.shortName} aria-hidden="true">
             {home?.short || 'HOME'}
           </b>
+          {redMarks(0)}
         </span>
         <strong>{frame ? `${frame.score.home} : ${frame.score.away}` : '— : —'}</strong>
         <span className={`${t.team} ${t.awayTeam}`}>
+          {redMarks(1)}
           <b className={t.fullName}>{away?.name || 'AWAY'}</b>
           <b className={t.shortName} aria-hidden="true">
             {away?.short || 'AWAY'}
@@ -571,6 +641,8 @@ export function Pitch({
           <MatchMoments
             live={!summary}
             record={p.record}
+            frames={p.frames}
+            names={names}
             onSeek={(moment) => {
               seek(sampleAt(p.frames, samples, moment));
               setPaused(true);
@@ -622,7 +694,7 @@ export function Pitch({
                 {p?.squads.map((squad, side) => (
                   <optgroup key={side} label={side === 0 ? home?.name : away?.name}>
                     {squad.flatMap((player, i) =>
-                      played.has(player.id)
+                      onPitch[side]!.has(player.id) || selection === `${side}:${i}`
                         ? [
                             <option key={player.id} value={`${side}:${i}`}>
                               {i + 1}. {player.name} · {player.position}
@@ -641,9 +713,25 @@ export function Pitch({
                   목표입니다.
                 </>
               ) : (
-                '지금은 경기장에 없는 선수입니다.'
+                `지금은 경기장에 없는 선수입니다${selectedId && gone.has(selectedId) ? ` (${gone.get(selectedId)})` : ''}.`
               )}
             </p>
+            {p?.squads.map((squad, side) => {
+              const bench = squad.flatMap((player, i) =>
+                onPitch[side]!.has(player.id)
+                  ? []
+                  : [
+                      `${i + 1}. ${player.name}${gone.has(player.id) ? ` (${gone.get(player.id)})` : ''}`,
+                    ],
+              );
+              return (
+                !!bench.length && (
+                  <p key={side} className={s.muted} data-testid="match-bench">
+                    {(side === 0 ? home : away)?.short} 벤치 · {bench.join(', ')}
+                  </p>
+                )
+              );
+            })}
             <div className={s.motionTraits}>
               {(
                 [
