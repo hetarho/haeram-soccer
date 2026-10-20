@@ -74,6 +74,7 @@ const titles: Record<Command['type'], string> = {
   'contract-decline': '선수의 계약 요구를 거절했어요',
   'sign-sponsor': '후원 계약을 맺었어요',
   'club-identity': '구단 디자인을 적용했어요',
+  'match-kit': '다음 경기 유니폼을 정했어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',

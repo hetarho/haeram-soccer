@@ -19,6 +19,8 @@ import {
   createWorld,
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
+import type { KitRole } from '../../../../packages/contracts/src/identity';
+import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { cachedWorld } from '../../../../tests/fixtures/worlds';
@@ -338,6 +340,55 @@ describe('own-club design requests (→KIT-9, SAVE-6)', () => {
     expect(canonical(h.world)).toBe(before);
     expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
     expect(h.world!.receiptIds).not.toContain('stale');
+  });
+});
+
+describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
+  const kit = (id: string, revision: number, fixtureId: string, role: KitRole | null) =>
+    req(id, revision, { type: 'command', command: { type: 'match-kit', fixtureId, role } });
+  it('duplicate kit receipt has one effect and the saved checkpoint keeps the choice', async () => {
+    const { host: h, jobs } = withCodec();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const next = nextOwnFixture(h.world!)!;
+    const first = kit('kit', 0, next.id, 'third');
+    const [chosen, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
+    expect(chosen.ok, chosen.error).toBe(true);
+    expect(duplicate).toBe(chosen);
+    expect(h.world!.revision).toBe(1);
+    expect(h.world!.receiptIds.filter((id) => id === 'kit')).toHaveLength(1);
+    expect(chosen.view!.world.kitChoice).toEqual({ fixtureId: next.id, role: 'third' });
+    // The owner decision's save builds a validated checkpoint that restores the choice.
+    await h.handle(req('save', -1, { type: 'save' }));
+    const checkpoint = await build(jobs[0]);
+    if (!checkpoint.ok) throw new Error(checkpoint.error);
+    expect((await decode(checkpoint.raw)).world.kitChoice).toEqual(h.world!.kitChoice);
+    // Back to automatic, then the first request again: its stored answer, never a second effect.
+    expect((await h.handle(kit('auto', 1, next.id, null))).ok).toBe(true);
+    expect(await h.handle(first)).toBe(chosen);
+    expect(h.world!.kitChoice).toBeUndefined();
+    expect(h.world!.revision).toBe(2);
+  });
+  it('stale kit request does not overwrite newer work', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const w = h.world!;
+    const next = nextOwnFixture(w)!;
+    expect((await h.handle(kit('newer', 0, next.id, 'away'))).ok).toBe(true);
+    const before = canonical(w);
+    // Chosen against revision 0, it arrives after the newer choice.
+    const stale = await h.handle(kit('stale', 0, next.id, 'third'));
+    expect(stale.ok).toBe(false);
+    expect(stale.error).toContain('오래된 요청');
+    // At the current revision but naming a later fixture: refused, never moved to another match.
+    const later = w.fixtures.find(
+      (f) => !f.score && f.id !== next.id && (f.home === w.playerClub || f.away === w.playerClub),
+    )!;
+    const moved = await h.handle(kit('later', 1, later.id, 'third'));
+    expect(moved.ok).toBe(false);
+    expect(moved.error).toContain(KIT_FIXTURE_CHANGED);
+    expect(canonical(w)).toBe(before);
+    expect(w.kitChoice).toEqual({ fixtureId: next.id, role: 'away' });
+    expect(w.receiptIds.filter((id) => id === 'stale' || id === 'later')).toEqual([]);
   });
 });
 

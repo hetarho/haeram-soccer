@@ -1,12 +1,16 @@
-import type { ClubIdentity } from '../../contracts/src/identity';
+import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../contracts/src/identity';
 import { clubIdentitySchema } from '../../contracts/src/identitySchema';
 import type { World } from '../../contracts/src/types';
+import { nextOwnFixture } from './calendar';
 import { clubOf } from './world';
 
 /**
  * The owner's identity commands (docs/CLUB-IDENTITY-CONTRACT.md §5). Presentation only (KIT-13):
  * no event, news, cash, game day or sporting draw. `operate` counts the one revision.
  */
+
+/** The refusal when the named fixture is no longer our next one (WEB-88). */
+export const KIT_FIXTURE_CHANGED = '다음 경기가 변경됐어요. 유니폼을 다시 골라 주세요.';
 
 /**
  * KIT-9: applies a complete design to the own club — the command names no club — as a copy, and
@@ -24,4 +28,18 @@ export function applyClubIdentity(w: World, identity: ClubIdentity) {
   const club = clubOf(w);
   club.identity = structuredClone(identity);
   club.color = identity.colours[0];
+}
+
+/**
+ * KIT-6: our shirt role for the next own fixture in any competition, named by ID and checked
+ * against the calendar now, never against a list the caller cached; `null` returns that fixture to
+ * automatic selection and leaves a choice named for another fixture alone. Only the choice is
+ * stored: saved designs stay as they are, and a clash stays the selector's warning (KIT-7).
+ */
+export function chooseMatchKit(w: World, fixtureId: string, role: KitRole | null) {
+  if (role !== null && !KIT_ROLES.includes(role)) throw new Error('유니폼을 확인해 주세요.');
+  const next = nextOwnFixture(w);
+  if (!next || next.id !== fixtureId) throw new Error(KIT_FIXTURE_CHANGED);
+  if (role) w.kitChoice = { fixtureId, role };
+  else if (w.kitChoice?.fixtureId === fixtureId) delete w.kitChoice;
 }

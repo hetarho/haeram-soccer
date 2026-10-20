@@ -15,7 +15,10 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
 import { clubBuildSchema, gameSettingsSchema } from '../../../../packages/contracts/src/schema';
-import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
+import {
+  clubIdentitySchema,
+  kitRoleSchema,
+} from '../../../../packages/contracts/src/identitySchema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
@@ -198,6 +201,8 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('accept-condition') }),
   // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
   z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
+  // The engine's role vocabulary, or null for automatic selection (→KIT-6).
+  z.strictObject({ type: z.literal('match-kit'), fixtureId: ref, role: kitRoleSchema.nullable() }),
 ]);
 export const requestSchema = z.object({
   protocol: z.literal(1),

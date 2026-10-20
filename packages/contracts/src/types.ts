@@ -1,5 +1,5 @@
 import type { ClubBuild } from './build';
-import type { ClubIdentity, FixtureKitChoice, MatchAppearance } from './identity';
+import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
 import type {
   Attributes,
   Line,
@@ -1248,4 +1248,6 @@ export type Command =
    */
   | { type: 'build'; build: ClubBuild; name?: string }
   /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
-  | { type: 'club-identity'; identity: ClubIdentity };
+  | { type: 'club-identity'; identity: ClubIdentity }
+  /** Our shirt role for the named next own fixture (→KIT-6); `null` returns it to automatic. */
+  | { type: 'match-kit'; fixtureId: string; role: KitRole | null };

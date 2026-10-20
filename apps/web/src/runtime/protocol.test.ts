@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
+import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
 import { DIRECTION_INFO, DIRECTION_KEYS } from '../../../../packages/engine/src/direction';
 import { requestSchema } from './protocol';
@@ -71,6 +72,23 @@ it('accepts only a complete own-club design and no club target (→KIT-9)', () =
       expect(accepts({ type: 'club-identity', identity: malformed }), colour).toBe(false);
   expect(accepts({ type: 'club-identity', identity: { ...identity, version: 2 } })).toBe(false);
   expect(accepts({ type: 'club-identity' })).toBe(false);
+});
+
+it('takes a next-fixture kit role in the engine vocabulary or null, nothing else (→KIT-6)', () => {
+  const accepts = (command: unknown) =>
+    requestSchema.safeParse(request({ type: 'command', command })).success;
+  for (const role of [...KIT_ROLES, null]) {
+    const body = { type: 'command', command: { type: 'match-kit', fixtureId: 'f:1', role } };
+    expect(requestSchema.parse(request(body)).body).toEqual(body);
+  }
+  for (const role of ['', 'fourth', 'goalkeeper', 'Home', undefined, 0])
+    expect(accepts({ type: 'match-kit', fixtureId: 'f:1', role }), String(role)).toBe(false);
+  expect(accepts({ type: 'match-kit', fixtureId: 'f:1' })).toBe(false);
+  for (const fixtureId of ['', 'x'.repeat(101), 7, undefined])
+    expect(accepts({ type: 'match-kit', fixtureId, role: 'home' })).toBe(false);
+  expect(accepts({ type: 'match-kit', fixtureId: 'f:1', role: 'home', club: 'ENG:rival' })).toBe(
+    false,
+  );
 });
 
 it('preserves stable retained-coach identities beyond the original candidate slots', () => {
