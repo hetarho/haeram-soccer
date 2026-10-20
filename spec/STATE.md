@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T246 |
+| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T04:40Z | T225 |
 | - |
 
 ## inbox
@@ -166,7 +166,6 @@
 | T243 | Preserve appearance snapshots in bounded compact checkpoint streams | SAVE KIT ARCH | T242 T235 | todo |
 | T244 | Install missing identities only through validated writer activation | KIT SAVE ARCH | T243 T237 T236 | todo |
 | T245 | Render one-to-three-colour crests consistently in club and slot views | KIT WEB SAVE | T237 T236 | todo |
-| T246 | Draw readable cached shirt sprites from the shared pattern geometry | KIT WEB ARCH | T238 | todo |
 | T247 | Make identity editing a pure isolated draft reducer | KIT WEB | T237 | todo |
 | T248 | Build accessible controlled crest and shirt editing panels | KIT WEB | T245 T246 T247 | todo |
 | T249 | Preview the actual selected shirt pairing on grass without simulating a match | KIT WEB ARCH | T239 T246 T248 | todo |
@@ -189,6 +188,7 @@
 - implement-task T231 (T232's manual benchmark run closes T271); then T224 (own-league engine), then T219
 
 ## log
+- 261020 T246 done (k4p2): `ui/kitPainting.ts` paints cached shirt sprites (≤128, keyed by pattern, colours, size and DPR) from `kit-patterns.ts`; `KitSwatch` names the shirt for screen readers; nothing in the entry imports them yet.
 - 261020 T234 T236 T238 done (k4p2): identity contract leaf (`identity.ts`, strict `identitySchema.ts`, optional Club/Founding identity, World.kitChoice, MatchRecord.appearance, future-version preflight); the legacy crest map moved unchanged to `engine/identity-legacy.ts` behind the `ui/crests.ts` facade; `engine/kit-patterns.ts` holds the eight shirt geometries; entry 255,868 of 256,000 gzip bytes.
 - 261020 create-task T224 decision: T224 moves to right after T231 (T219 dep T224, T225 dep T223) and updates tests and golden facts if it picks `'summary'`.
 - 261020 fix tests: the 16 heaviest unit test files split into 54 parts (≤ ~2 min each where a single case allows) with shared `<base>.testkit.ts` helpers; testkits leave the world cache's source hash and key only their own tests. Same 1178 tests; a cold local run stays CPU-bound (1054 s), single cases set the floor (retained replay 416 s, 10-season codec 410 s).
