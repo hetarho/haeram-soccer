@@ -255,7 +255,6 @@ test('the live Canvas wears the recorded stripes, checks and keeper colours at p
   ).toHaveCount(1);
 });
 
-// Needs T251's 구단 운영 › 구단 디자인 tab (identity-founding lane) in the tree under test.
 test('a design applied while the match is paused mid-match leaves its recorded shirts on the pitch', async ({
   page,
 }) => {
@@ -278,12 +277,21 @@ test('a design applied while the match is paused mid-match leaves its recorded s
     .getByRole('button', { name: '구단 운영', exact: true })
     .click();
   await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
-  await page
+  // The editor loads lazily with the tab (T251).
+  const design = page.getByRole('region', { name: '구단 디자인', exact: true });
+  await expect(design.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await design
     .getByRole('group', { name: '편집할 유니폼', exact: true })
     .getByRole('button', { name: '홈 유니폼', exact: true })
     .click();
-  await page.getByRole('textbox', { name: '주색 색 코드', exact: true }).fill(edited);
-  await page.getByRole('button', { name: '적용', exact: true }).click();
+  await design.getByLabel('주색 색 코드', { exact: true }).fill(edited);
+  await design
+    .getByRole('group', { name: '구단 디자인 적용', exact: true })
+    .getByRole('button', { name: '적용', exact: true })
+    .click();
+  const outcome = page.getByTestId('action-outcome');
+  await expect(outcome).toContainText('구단 디자인을 적용했어요');
+  await outcome.getByRole('button', { name: '확인', exact: true }).click();
   await expect
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);
