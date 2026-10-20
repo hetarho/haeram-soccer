@@ -1,7 +1,13 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { Manager, ManagerStyle, ManagerTrait, World } from '../../contracts/src/types';
+import type {
+  Founding,
+  Manager,
+  ManagerStyle,
+  ManagerTrait,
+  World,
+} from '../../contracts/src/types';
 import {
   advanceRound,
   clubManager,
@@ -30,15 +36,16 @@ import {
   yearlyStaff,
 } from './index';
 import { ratio } from './primitives';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
-const world = (seed = 'market') =>
-  createWorld({
-    country: 'ENG',
-    name: 'Market FC',
-    color: '#334455',
-    seed,
-    level: 'easy' as const,
-  });
+const founding = (seed: string): Founding => ({
+  country: 'ENG',
+  name: 'Market FC',
+  color: '#334455',
+  seed,
+  level: 'easy' as const,
+});
+const world = (seed = 'market') => simulatedWorld(founding(seed));
 
 describe('manager market (STAFF-17)', () => {
   it('opens with the season four and drops the man the owner hires', () => {
@@ -110,12 +117,10 @@ describe('manager market (STAFF-17)', () => {
   });
 
   it('moves every four rounds within 4-8 free agents, the same for the same seed', () => {
-    const a = world('moving'),
-      b = world('moving');
-    for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) {
-      advanceRound(a, undefined, false);
-      advanceRound(b, undefined, false);
-    }
+    // One run comes from the shared cache, built in its own pass; the other is played here.
+    const a = simulatedWorld(founding('moving'), { rounds: MARKET_REFRESH_ROUNDS * 3 }),
+      b = createWorld(founding('moving'));
+    for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) advanceRound(b, undefined, false);
     expect(a.managerMarket).toBeDefined();
     expect(a.managerMarket!.round).toBe(MARKET_REFRESH_ROUNDS * 3);
     expect(a.managerMarket!.free.length).toBeGreaterThanOrEqual(FREE_AGENTS.min);
@@ -125,11 +130,31 @@ describe('manager market (STAFF-17)', () => {
   });
 
   it('lets struggling clubs of our league sack their managers into the pool', () => {
+    const sackings = (w: World) => w.events.filter((e) => e.kind === 'rival-sacking').length;
+    /** One step of `simulateSeason`: a round, or the close once the rounds are played. */
+    const step = (w: World) => {
+      if (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      else simulateSeason(w);
+    };
+    // The first seed's season up to the step whose market refresh sacks somebody; that step
+    // is played here.
+    const before = cachedWorld('before-first-sacking', () => {
+      for (let n = 0; n < 6; n++) {
+        const w = world(`sacking-${n}`);
+        for (let closed = false; !closed;) {
+          const snapshot = JSON.stringify(w);
+          closed = w.round >= 46 || !!w.bankrupt;
+          step(w);
+          if (sackings(w)) return JSON.parse(snapshot) as World;
+        }
+      }
+      return null;
+    });
     let sacked = 0;
-    for (let n = 0; n < 6 && !sacked; n++) {
-      const w = world(`sacking-${n}`);
-      simulateSeason(w);
-      sacked += w.events.filter((e) => e.kind === 'rival-sacking').length;
+    if (before) {
+      const w = before;
+      step(w);
+      sacked += sackings(w);
       const changed = Object.keys(w.managerMarket?.clubs ?? {});
       if (sacked) {
         expect(changed.length).toBeGreaterThan(0);

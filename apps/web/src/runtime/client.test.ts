@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { advanceRound, createWorld, simulateSeason } from '../../../../packages/engine/src/index';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
@@ -511,7 +511,7 @@ describe('background worker publication', () => {
 
   it('activates an explicit import while ignoring unsolicited stale worker responses', async () => {
     const client = await start(),
-      replacement = createWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });
+      replacement = simulatedWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });
     await client.importFile(await encode(replacement));
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(0);
@@ -524,12 +524,7 @@ describe('background worker publication', () => {
 });
 
 async function legacyCheckpoint(withHistory = false) {
-  const legacy = createWorld(founding);
-  if (withHistory) simulateSeason(legacy);
-  else {
-    advanceRound(legacy, undefined, false);
-    advanceRound(legacy, undefined, false);
-  }
+  const legacy = simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 });
   legacy.engine = '1.0.0';
   legacy.revision = 17;
   legacy.cash = '98765432101234567890';
@@ -600,7 +595,7 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
       expect(client.state.errorCode).toBe('save-compatibility');
       expect(client.state.view).toBeUndefined();
       expect(storage.data).toEqual(before);
-      const replacement = createWorld({ ...founding, seed: 'explicit-recovery' });
+      const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery' });
       await client.importFile(await encode(replacement));
       expect(client.state.error).toBeUndefined();
       expect(client.state.view?.world.id).toBe(replacement.id);
@@ -654,7 +649,7 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     expect(client.state.errorCode).toBe('save-compatibility');
     expect(client.state.view).toBeUndefined();
     storage.fail = 'haeram-soccor:manifest';
-    const replacement = createWorld({ ...founding, seed: 'explicit-recovery-quota' });
+    const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
     await client.importFile(await encode(replacement));
     expect(client.state.error).toContain('Quota');
     expect(client.state.view?.world.id).toBe(replacement.id);

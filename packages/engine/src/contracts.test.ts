@@ -21,7 +21,6 @@ import {
   closeSeason,
   clubOf,
   contractTalks,
-  createWorld,
   currentDay,
   delegated,
   divisionFor,
@@ -64,6 +63,7 @@ import {
   wageBill,
 } from './index';
 import { professionalStart } from './testing';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
@@ -75,7 +75,7 @@ const founding = {
   level: 'normal' as const,
 };
 function world(country: 'ENG' | 'ESP' = 'ENG') {
-  const w = createWorld({ ...founding, country });
+  const w = simulatedWorld({ ...founding, country });
   w.settings = legacySettings(2); // This suite explicitly exercises delegated contract policy.
   return w;
 }
@@ -89,6 +89,13 @@ const amount = (value: string) => Number(BigInt(value));
 /** Money in whole currency units, comparable across the 1971 decimalisation. */
 const major = (w: World, value: string) =>
   amount(value) / currency(clubOf(w).country, w.year).units;
+/** The club started in the lowest professional division, its founding season's 46 rounds played. */
+const professionalSeason = () =>
+  cachedWorld('professional-season', () => {
+    const w = professionalStart(world());
+    while (w.round < 46) advanceRound(w, undefined, false);
+    return w;
+  });
 
 describe('market wages (→CLUB-25)', () => {
   it('pays a top-flight player rated 80 six to ten times one rated 60', () => {
@@ -388,7 +395,7 @@ describe('contract talks (→CLUB-26)', () => {
       return { w, p, floor, market, item: talkItems(w, p.id)[0] };
     };
     // 표준 is 110% of the market wage, no minimum OVR and no age limit.
-    expect(talkRuleOf(createWorld(founding))).toEqual(TALK_RULE_DEFAULT);
+    expect(talkRuleOf(simulatedWorld(founding))).toEqual(TALK_RULE_DEFAULT);
     expect(TALK_RULE_DEFAULT).toEqual({ maxPay: 1.1, minOvr: 0 });
     expect(answer('standard').item.title).toContain('받아들였어요');
     const kept = answer('keepAll');
@@ -999,8 +1006,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(activePlayers(w).some((p) => p.clauses!.promotion)).toBe(true);
     expect(activePlayers(w).some((p) => p.clauses!.relegation)).toBe(true);
     // A squad left short at the close is refilled with players who sign their own clauses.
-    const close = professionalStart(world());
-    while (close.round < 46) advanceRound(close, undefined, false);
+    const close = professionalSeason();
     for (const p of activePlayers(close).slice(0, 4)) p.status = 'sold';
     const kept = new Set(activePlayers(close).map((p) => p.id));
     closeSeason(close);
@@ -1039,8 +1045,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
   });
 
   it('cuts the clause wages at the close that relegates the club', () => {
-    const w = professionalStart(world());
-    while (w.round < 46) advanceRound(w, undefined, false);
+    const w = professionalSeason();
     // The own club finishes last of its division.
     const league = ownLeagueClubs(w).filter((c) => c.id !== w.playerClub);
     league.forEach((c, i) => (w.tables[c.id].points = 200 - i));
@@ -1072,10 +1077,15 @@ describe('ambition unhappiness (→CLUB-27)', () => {
     // Only meeting his floor or a sale ends the other kind.
     expect(declined!.unhappy).toMatchObject({ reason: 'renewal-declined' });
     // The season's close runs it.
-    const season = world();
-    operate(season, { type: 'intervention', level: 1 });
-    const p = activePlayers(season)[0]!;
-    while (season.round < 46) advanceRound(season, undefined, false);
+    // The owner's founding season's 46 rounds are built once; the close is lived here.
+    const { season, id } = cachedWorld('owner-season', () => {
+      const season = world();
+      operate(season, { type: 'intervention', level: 1 });
+      const id = activePlayers(season)[0]!.id;
+      while (season.round < 46) advanceRound(season, undefined, false);
+      return { season, id };
+    });
+    const p = season.players.find((player) => player.id === id)!;
     p.unhappy = { reason: 'ambition', year: season.year, day: 30 };
     closeSeason(season);
     expect(p.unhappy).toBeUndefined();

@@ -17,7 +17,9 @@ import { movePerson } from './npc-continuity';
 import { openNeed, openNeeds, takeWindowNeeds } from './replacements';
 import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
-function world(count = 20) {
+import { cachedWorld } from '../../../tests/fixtures/worlds';
+const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
+function found(count: number) {
   const w = createWorld({
     country: 'ENG',
     name: 'Replacement Rovers',
@@ -108,9 +110,13 @@ describe('replacement needs', () => {
     expect(validateWorld(JSON.parse(canonical(w))).replacementNeeds).toEqual(w.replacementNeeds);
   });
   it('opens a summer need for an expiring starter after the close top-up', () => {
-    const w = world();
-    w.settings!.responsibilities.recruitment = 'direct';
-    while (w.round < 46) advanceRound(w, undefined, false);
+    // Owner-held recruitment after 46 unobserved rounds, just before the close under test.
+    const w = cachedWorld('direct-round-46', () => {
+      const w = world();
+      w.settings!.responsibilities.recruitment = 'direct';
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     for (const p of activePlayers(w)) {
       p.until = w.year + 5;
       p.born = w.year - 22;

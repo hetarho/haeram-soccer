@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { SaveCompatibilityError } from '../../../../packages/contracts/src/versions';
 import { featureState } from '../../../../tests/fixtures/feature-state';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { packCareers, unpackCareers } from './careerPacking';
 import { readCareerOrder } from './careerOrder';
 import { readCareerProfiles } from './careerProfiles';
 const fixture = () => {
-  const world = featureState();
+  const world = cachedWorld('feature-state', () => featureState());
   const coach = Object.values(world.people!).find((person) =>
     person.employment.some((job) => job.role !== 'player' && job.club !== world.playerClub),
   )!;
@@ -32,7 +32,7 @@ const noGlobalDictionary = () => {
 };
 describe('versioned lossless career relationships', () => {
   it('round trips complete generated origins, name templates and seeded scalar references', () => {
-    const world = createWorld({
+    const world = simulatedWorld({
       country: 'ENG',
       name: 'Dictionary origins',
       color: '#224466',

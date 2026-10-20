@@ -8,7 +8,6 @@ import {
   broadcastQuote,
   CASH_WARNING_ROUNDS,
   clubOf,
-  createWorld,
   FINANCE_CONFIG,
   financialBreakdown,
   footballQuote,
@@ -23,9 +22,10 @@ import {
 } from './index';
 import { legacySettings } from './responsibilities';
 import { professionalStart } from './testing';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
-  const w = createWorld({
+  const w = simulatedWorld({
     country,
     name: 'Ledger Town',
     color: '#335544',
@@ -34,6 +34,15 @@ function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
   });
   w.settings = legacySettings(2);
   return w;
+}
+/** A world after its season's league rounds, played unobserved: the close is left to the test. */
+function beforeClose(id: string, setup: (w: World) => void) {
+  return cachedWorld(id, () => {
+    const w = world();
+    setup(w);
+    while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+    return w;
+  });
 }
 const finance = (w: World) => (w.inbox || []).filter((item) => item.kind === 'finance');
 
@@ -74,9 +83,12 @@ describe('league income sized for a 46-game season', () => {
 
 describe('no income from the following alone', () => {
   it('books no fan income and no league result bonus, and names every season line', () => {
-    const w = world();
-    clubOf(w).fans = 2_000_000;
-    while (w.round < 46) advanceRound(w, undefined, false);
+    const w = cachedWorld('followed-season', () => {
+      const w = world();
+      clubOf(w).fans = 2_000_000;
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     const season = w.events.filter((e) => e.year === w.year);
     expect(season.some((e) => e.kind === 'fan-income')).toBe(false);
     expect(season.some((e) => e.kind === 'league-share')).toBe(true);
@@ -117,12 +129,22 @@ describe('business delegation and cash warnings', () => {
   });
 
   it('signs again once a contract has run its term, valued anew', () => {
-    const w = world();
-    w.intervention = 4;
-    w.settings = legacySettings(4);
-    advanceDays(w, 1);
-    const first = w.sponsors![0];
-    for (let season = 0; season < 3; season++) simulateSeason(w);
+    const start = () => {
+      const w = world();
+      w.intervention = 4;
+      w.settings = legacySettings(4);
+      advanceDays(w, 1);
+      return w;
+    };
+    const first = start().sponsors![0];
+    // The same club two seasons and a third's league rounds on; the third close runs here.
+    const w = cachedWorld('delegated-third-close', () => {
+      const w = start();
+      for (let season = 0; season < 2; season++) simulateSeason(w);
+      while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      return w;
+    });
+    simulateSeason(w);
     expect(w.events.filter((e) => e.kind === 'sponsor-end')).toHaveLength(1);
     expect(w.sponsors).toEqual([
       expect.objectContaining({ slot: 'local', from: w.year, until: w.year + 3 }),
@@ -131,15 +153,16 @@ describe('business delegation and cash warnings', () => {
   });
 
   it('reminds an owner of empty open slots when a season starts, but not a delegating one', () => {
-    const owner = world();
+    const owner = beforeClose('owner-before-close', () => {});
     simulateSeason(owner);
     // Other season-start notices (a promotion clause's wage change) never ask for attention.
     const reminders = finance(owner).filter((item) => item.year === owner.year && item.attention);
     expect(reminders).toEqual([expect.objectContaining({ title: '후원 계약이 비어 있어요' })]);
     expect(reminders[0]!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
-    const delegated = world();
-    delegated.intervention = 4;
-    delegated.settings = legacySettings(4);
+    const delegated = beforeClose('delegated-before-close', (w) => {
+      w.intervention = 4;
+      w.settings = legacySettings(4);
+    });
     simulateSeason(delegated);
     expect(finance(delegated).every((item) => !item.attention)).toBe(true);
   });

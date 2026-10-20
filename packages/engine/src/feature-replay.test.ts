@@ -6,6 +6,7 @@ import { encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { createWorld, currentDay, advanceDays } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 let serial = 0;
 async function send(host: Host, body: Body) {
@@ -49,18 +50,22 @@ for (const retained of [false, true])
   it(
     `keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (${retained ? 'retained' : 'new'} career)`,
     async () => {
-      const seed = retained
-        ? retainedWorkload().w
-        : createWorld({
-            country: 'ENG',
-            name: 'Feature Replay',
-            color: '#224466',
-            seed: 'feature-replay',
-            level: 'easy',
-          });
-      for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
-      // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
-      if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);
+      // The starting career is setup, built once; the replays below are the test.
+      const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
+        const seed = retained
+          ? retainedWorkload().w
+          : createWorld({
+              country: 'ENG',
+              name: 'Feature Replay',
+              color: '#224466',
+              seed: 'feature-replay',
+              level: 'easy',
+            });
+        for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
+        // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
+        if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);
+        return seed;
+      });
       seed.settings!.mode = 'manual';
       seed.settings!.observations = { matchEve: true, windowOpen: false };
       const manual = new Host(),

@@ -5,6 +5,7 @@ import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Line, Player, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf } from './player';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 import {
   ACADEMY_LIMIT,
   ACADEMY_READINESS_LABEL,
@@ -16,7 +17,6 @@ import {
   advanceRound,
   autoTrainingAdvice,
   basicStaff,
-  createWorld,
   developAcademy,
   makePlayer,
   operate,
@@ -33,7 +33,7 @@ import {
 } from './index';
 
 function world(seed = 'youth-academy') {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Nursery End',
     color: '#556b2f',
@@ -41,6 +41,12 @@ function world(seed = 'youth-academy') {
     level: 'easy' as const,
   });
   w.cash = '999999999';
+  return w;
+}
+
+/** Plays the season up to its last round as `simulateSeason` does, which then plays that round and closes. */
+function lastRound(w: World) {
+  while (w.round < 45 && !w.bankrupt) advanceRound(w, undefined, false);
   return w;
 }
 
@@ -140,8 +146,9 @@ describe('youth academy intake', () => {
   });
 
   it('runs during simulated seasons exactly once a year and stays valid', () => {
-    const w = world('academy-seasons');
-    simulateSeason(w);
+    const w = cachedWorld('academy-seasons', () =>
+      lastRound(simulateSeason(world('academy-seasons'))),
+    );
     simulateSeason(w);
     const intakes = w.events.filter(
       (event) => event.kind === 'youth-intake' && event.title.includes('입단'),
@@ -354,14 +361,17 @@ describe('season boundary', () => {
   });
 
   it('carries prospects across a real season close', () => {
-    const w = world('academy-close');
-    w.intervention = 1;
-    w.settings = legacySettings(1);
-    simulateSeason(w);
-    const first = academyPlayers(w).map((player) => player.id);
+    const { w, first } = cachedWorld('academy-close', () => {
+      const w = world('academy-close');
+      w.intervention = 1;
+      w.settings = legacySettings(1);
+      simulateSeason(w);
+      const first = academyPlayers(w).map((player) => player.id);
+      w.intervention = 2;
+      w.settings = legacySettings(2);
+      return { w: lastRound(w), first };
+    });
     expect(first.length).toBe(3);
-    w.intervention = 2;
-    w.settings = legacySettings(2);
     simulateSeason(w);
     expect(
       academyPlayers(w).some((player) => player.id.includes(`:academy:${FOUNDING_YEAR + 1}:`)),

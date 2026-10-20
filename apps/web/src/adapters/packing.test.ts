@@ -1,30 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
-import {
-  advanceRound,
-  createWorld,
-  placeBid,
-  simulateSeason,
-  transferOffers,
-} from '../../../../packages/engine/src/index';
+import { placeBid, transferOffers } from '../../../../packages/engine/src/index';
+import { featureState } from '../../../../tests/fixtures/feature-state';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { base64, pack, unbase64, unpack } from './packing';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { Founding, World } from '../../../../packages/contracts/src/types';
 import { packBitColumns } from './bitpacking';
 import { packCareerRows } from './careerPacking';
 
-const career = () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Compact Athletic',
-    color: '#126044',
-    seed: 'compact-streams',
-    level: 'normal' as const,
-  });
-  advanceRound(w, undefined, false);
-  advanceRound(w, undefined, false);
-  return w;
+const COMPACT: Founding = {
+  country: 'ENG',
+  name: 'Compact Athletic',
+  color: '#126044',
+  seed: 'compact-streams',
+  level: 'normal',
 };
+/** Two unobserved rounds into the founded career. */
+const career = () => simulatedWorld(COMPACT, { rounds: 2 });
 
 // Historical compact1 uses unsigned LEB128 columns and one interleaved actor stream.
 function legacyIntegers(values: number[]) {
@@ -41,8 +34,7 @@ function legacyIntegers(values: number[]) {
 
 describe('lossless career stream compaction', () => {
   it('keeps the direction rows, the strategy and the manager market through a pack round trip', () => {
-    const w = career();
-    for (let round = 2; round < 8; round++) advanceRound(w, undefined, false);
+    const w = simulatedWorld(COMPACT, { rounds: 8 });
     w.direction = {
       renewal: 'coreOnly',
       school: 'positional',
@@ -311,14 +303,15 @@ describe('lossless career stream compaction', () => {
   });
 
   it('streams archived bracket ties and rejects counts that disagree with the stream', () => {
-    const w = simulateSeason(
-      createWorld({
+    const w = simulatedWorld(
+      {
         country: 'ENG',
         name: 'Bracket Athletic',
         color: '#126044',
         seed: 'compact-brackets',
         level: 'normal' as const,
-      }),
+      },
+      { seasons: 1 },
     );
     const rounds = w.history[0].brackets!.flatMap((b) => b.rounds);
     expect(rounds.length).toBeGreaterThan(0);
@@ -392,8 +385,7 @@ describe('lossless career stream compaction', () => {
 });
 
 it('feature-state-lossless-roundtrip retains version-one shared career rows and their strict checks', async () => {
-  const { featureState } = await import('../../../../tests/fixtures/feature-state');
-  const w = featureState(),
+  const w = cachedWorld('feature-state', () => featureState()),
     current = pack(w);
   const indices = new Map(current.dict.map((value, index) => [value, index]));
   const id = (value: string) => {

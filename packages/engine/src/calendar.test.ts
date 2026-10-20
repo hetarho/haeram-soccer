@@ -19,6 +19,7 @@ import {
   seasonLength,
   simulateSeason,
 } from './index';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 function world(country: 'ENG' | 'BEL' = 'ENG') {
   const w = createWorld({
@@ -150,8 +151,12 @@ describe('persistent season calendar', () => {
   });
 
   it('closes the season the day after its final round and keeps previous league memberships frozen', () => {
-    const w = world();
-    for (let n = 0; n < 46; n++) advanceRound(w);
+    // The rounds only lead to the final one; the day after it, the close, is the subject.
+    const w = cachedWorld('final-round', () => {
+      const w = world();
+      for (let n = 0; n < 46; n++) advanceRound(w);
+      return w;
+    });
     expect(currentDay(w)).toBe(SEASON_END_DAY);
     const snapshots = structuredClone(w.rankHistory);
     advanceDays(w, 1);
@@ -181,29 +186,27 @@ describe('persistent season calendar', () => {
     ['ENG', 'haeram-demo'],
     ['ESP', 'one-order'],
   ] as const)('every progression mode records the same facts (%s %s)', (code, seed) => {
-    const start = createWorld({
+    const input = {
       country: code,
       name: 'Order FC',
       color: '#335577',
       seed,
       level: 'easy' as const,
-    });
+    };
+    const start = createWorld(input);
     const year = start.year;
     // Halfway through the second season, on its 23rd league match day.
     const done = (w: World) => w.year > year && w.round === 23;
     // Movement frames change no fact (see the fast path above); skipping them keeps this quick.
     const days = structuredClone(start);
     while (!done(days)) advanceDays(days, 1, undefined, false);
-    // The host's advance and season commands close the season once the final round is played.
-    const rounds = structuredClone(start);
-    while (!done(rounds)) {
-      if (rounds.round === 46) {
-        closeSeason(rounds);
-        rounds.revision++;
-      } else advanceRound(rounds, undefined, false);
-    }
-    const season = structuredClone(start);
-    simulateSeason(season);
+    // The season command plays the first season round by round and closes it once the final
+    // round is played: the very calls the host's advance commands make, so the round and season
+    // modes share it and part only in the second season.
+    const closed = simulatedWorld(input, { seasons: 1 });
+    const rounds = structuredClone(closed);
+    while (!done(rounds)) advanceRound(rounds, undefined, false);
+    const season = structuredClone(closed);
     while (!done(season)) advanceDays(season, 1, undefined, false);
     // The revision counts commands and days differently per mode; it is a counter, not a fact.
     const facts = (w: World) => canonical({ ...w, revision: 0, receiptIds: [] });

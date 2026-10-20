@@ -1,6 +1,6 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
-import type { PolicyLevel, World } from '../../contracts/src/types';
+import type { Founding, PolicyLevel, World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   COUNTRIES,
@@ -56,25 +56,48 @@ import {
 } from './index';
 import { professionalStart, sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+
+const FOUNDING: Founding = {
+  country: 'ENG',
+  name: 'Budget Athletic',
+  color: '#335544',
+  seed: 'finance',
+  level: 'easy',
+};
 
 function world() {
-  return createWorld({
-    country: 'ENG',
-    name: 'Budget Athletic',
-    color: '#335544',
-    seed: 'finance',
-    level: 'easy' as const,
+  return simulatedWorld(FOUNDING);
+}
+
+/**
+ * A professional start after its 46 league rounds, played unobserved, with the round and the
+ * season's operating-expenses entry after each one.
+ */
+function playedProfessional() {
+  return cachedWorld('professional-season', () => {
+    const w = professionalStart(world());
+    const rounds: { round: number; expenses: string | undefined }[] = [];
+    for (let round = 1; round <= 46; round++) {
+      advanceRound(w, undefined, false);
+      const entry = w.events.find((e) => e.year === w.year && e.kind === 'operating-expenses');
+      rounds.push({ round: w.round, expenses: entry?.amount });
+    }
+    while (w.round < 46) advanceRound(w, undefined, false);
+    return { w, rounds };
   });
 }
 
 describe('earned, auditable club finances', () => {
   it('earns a larger surplus from commercial choices in a season with identical sporting results', () => {
-    const unmanaged = world();
-    const managed = world();
-    operate(managed, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    operate(managed, { type: 'ticket', price: 0.12 });
-    simulateSeason(unmanaged);
-    simulateSeason(managed);
+    const unmanaged = simulatedWorld(FOUNDING, { seasons: 1 });
+    const managed = cachedWorld('commercial-season', () => {
+      const w = world();
+      operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+      operate(w, { type: 'ticket', price: 0.12 });
+      simulateSeason(w);
+      return w;
+    });
     const before = unmanaged.history[0];
     const after = managed.history[0];
     expect([after.won, after.drawn, after.lost, after.rank]).toEqual([
@@ -167,18 +190,29 @@ describe('earned, auditable club finances', () => {
   });
 
   it('earns sponsor money once per played league match instead of receiving a full annual grant', () => {
-    const w = professionalStart(world());
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    const annual = w.sponsors![0].annual;
-    const paid = (world: typeof w) =>
+    const start = () => {
+      const w = professionalStart(world());
+      operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+      return w;
+    };
+    const signed = start();
+    const annual = signed.sponsors![0].annual;
+    const paid = (world: typeof signed) =>
       world.events.filter((event) => event.kind === 'sponsor:local').map((event) => event.amount);
-    expect(w.income).toBe('0');
-    advanceDays(w, 6, undefined, false);
-    expect(paid(w)).toEqual([]);
-    advanceRound(w, undefined, false);
-    expect(paid(w)).toHaveLength(1);
-    expect(BigInt(paid(w)[0]!)).toBeLessThan(BigInt(annual) / 40n);
-    while (w.round < 46) advanceRound(w, undefined, false);
+    expect(signed.income).toBe('0');
+    advanceDays(signed, 6, undefined, false);
+    expect(paid(signed)).toEqual([]);
+    // The same start, its first league round and then the whole season played.
+    const { first, w } = cachedWorld('sponsored-season', () => {
+      const w = start();
+      advanceDays(w, 6, undefined, false);
+      advanceRound(w, undefined, false);
+      const first = structuredClone(w);
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return { first, w };
+    });
+    expect(paid(first)).toHaveLength(1);
+    expect(BigInt(paid(first)[0]!)).toBeLessThan(BigInt(annual) / 40n);
     // One ledger entry of the season holds every installment, adding up to the annual amount.
     expect(paid(w)).toEqual([annual]);
     expect(w.sponsors![0].lastPaid).toBe(w.year);
@@ -258,10 +292,13 @@ describe('earned, auditable club finances', () => {
   });
 
   it('logs every receipt and expense, sums to the season books, and pays the merit once', () => {
-    const w = world();
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    operate(w, { type: 'policy', key: 'localInvest', level: 2 });
-    for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
+    const w = cachedWorld('sponsored-8-rounds', () => {
+      const w = world();
+      operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+      operate(w, { type: 'policy', key: 'localInvest', level: 2 });
+      for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
+      return w;
+    });
     settleLeagueMerit(w, 1, 24);
     const snapshot = canonical(w);
     settleLeagueMerit(w, 1, 24);
@@ -283,14 +320,17 @@ describe('earned, auditable club finances', () => {
   });
 
   it('names owner requests and win bonuses in the season ledger, leaving no catch-all line', () => {
-    const w = world();
-    operate(w, { type: 'care', kind: 'meeting' });
-    operate(w, { type: 'care', kind: 'camp' });
-    operate(w, { type: 'care', kind: 'friendly' });
-    while (!w.events.some((event) => event.kind === 'win-bonus') && w.round < 46) {
-      if (careOffer(w, 'win-bonus').available) operate(w, { type: 'care', kind: 'win-bonus' });
-      advanceRound(w, undefined, false);
-    }
+    const w = cachedWorld('owner-requests', () => {
+      const w = world();
+      operate(w, { type: 'care', kind: 'meeting' });
+      operate(w, { type: 'care', kind: 'camp' });
+      operate(w, { type: 'care', kind: 'friendly' });
+      while (!w.events.some((event) => event.kind === 'win-bonus') && w.round < 46) {
+        if (careOffer(w, 'win-bonus').available) operate(w, { type: 'care', kind: 'win-bonus' });
+        advanceRound(w, undefined, false);
+      }
+      return w;
+    });
     const total = (kind: string) =>
       w.events
         .filter((event) => event.kind === kind)
@@ -336,25 +376,35 @@ describe('earned, auditable club finances', () => {
   });
 
   it('books renewals and hires the delegated staff make at the close to the new season', () => {
-    const w = world();
-    w.cash = '999999999';
-    w.intervention = 4;
-    w.settings = legacySettings(4);
-    // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
-    // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
-    w.direction = { coaches: 'elite' };
-    w.staff = w.staff!.map((member) =>
-      member.role === 'attack'
-        ? { ...member, ability: 90, wage: quote(clubOf(w).country, w.year, 90), until: w.year + 1 }
-        : member.role === 'defense'
+    // The season's league rounds are played ahead; the close runs here.
+    const w = cachedWorld('delegated-staff-before-close', () => {
+      const w = world();
+      w.cash = '999999999';
+      w.intervention = 4;
+      w.settings = legacySettings(4);
+      // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
+      // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
+      w.direction = { coaches: 'elite' };
+      w.staff = w.staff!.map((member) =>
+        member.role === 'attack'
           ? {
               ...member,
-              ability: 40,
-              wage: quote(clubOf(w).country, w.year, 15),
+              ability: 90,
+              wage: quote(clubOf(w).country, w.year, 90),
               until: w.year + 1,
             }
-          : member,
-    );
+          : member.role === 'defense'
+            ? {
+                ...member,
+                ability: 40,
+                wage: quote(clubOf(w).country, w.year, 15),
+                until: w.year + 1,
+              }
+            : member,
+      );
+      while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      return w;
+    });
     simulateSeason(w);
     const renewal = w.events.find((event) => event.kind === 'staff-renew')!;
     expect(renewal.year).toBe(w.year);
@@ -396,10 +446,9 @@ describe('earned, auditable club finances', () => {
 
 describe('the league distribution', () => {
   it('pays the division’s equal share in league-round installments that sum to the season’s share', () => {
-    const w = professionalStart(world());
-    const share = leagueShare(w);
+    const share = leagueShare(professionalStart(world()));
     expect(BigInt(share)).toBeGreaterThan(0n);
-    while (w.round < 46) advanceRound(w, undefined, false);
+    const { w } = playedProfessional();
     // One ledger entry a season, grown by every round's installment.
     const entries = w.events.filter((e) => e.year === w.year && e.kind === 'league-share');
     expect(entries).toHaveLength(1);
@@ -479,19 +528,28 @@ describe('the league distribution', () => {
   });
 
   it('keeps half the lost share for the one season after a relegation', () => {
-    const w = world();
-    simulateSeason(w);
-    // The season just closed was played a division higher: the club went down into this one.
-    const tier = clubOf(w).tier,
-      last = w.history.length - 1;
-    w.history[last] = { ...w.history[last], tier: tier - 1 };
-    const lost = BigInt(leagueShare(w, tier - 1)) - BigInt(leagueShare(w, tier));
+    const relegated = () => {
+      const w = simulatedWorld(FOUNDING, { seasons: 1 });
+      // The season just closed was played a division higher: the club went down into this one.
+      const last = w.history.length - 1;
+      w.history[last] = { ...w.history[last], tier: clubOf(w).tier - 1 };
+      return w;
+    };
+    const start = relegated();
+    const tier = clubOf(start).tier,
+      last = start.history.length - 1;
+    const lost = BigInt(leagueShare(start, tier - 1)) - BigInt(leagueShare(start, tier));
     const parachute = ratio(lost.toString(), 500n, 1000n);
     expect(BigInt(parachute)).toBeGreaterThan(0n);
-    expect(parachutePayment(w)).toBe(parachute);
-    const line = financeProjection(w).seasonLines.find((row) => row.key === 'parachute');
+    expect(parachutePayment(start)).toBe(parachute);
+    const line = financeProjection(start).seasonLines.find((row) => row.key === 'parachute');
     expect(line).toMatchObject({ label: '강등 보전금', amount: parachute });
-    while (w.round < 46) advanceRound(w, undefined, false);
+    // The same world after the season's league rounds.
+    const w = cachedWorld('relegated-season', () => {
+      const w = relegated();
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     const paid = w.events.filter((e) => e.year === w.year && e.kind === 'parachute');
     expect(paid).toHaveLength(1);
     expect(paid[0].amount).toBe(parachute);
@@ -553,8 +611,8 @@ describe('operating expenses (→ECON-30)', () => {
   });
 
   it('pays them each league round as a fixed cost on their own ledger line', () => {
-    const w = professionalStart(world()),
-      costs = operatingCosts(w);
+    const start = professionalStart(world()),
+      costs = operatingCosts(start);
     expect(BigInt(costs.annual)).toBe(
       [
         costs.playerWages,
@@ -567,9 +625,9 @@ describe('operating expenses (→ECON-30)', () => {
       ].reduce((sum, part) => sum + BigInt(part), 0n),
     );
     // Fixed costs and the runway read the annual total.
-    expect(operatingCost(w)).toBe(costs.annual);
+    expect(operatingCost(start)).toBe(costs.annual);
     expect(costs.payments.expenses).toBe(roundShare(costs.expenses, 1));
-    while (w.round < 46) advanceRound(w, undefined, false);
+    const { w } = playedProfessional();
     // One ledger entry a season, grown by every round's installment.
     expect(entries(w)).toHaveLength(1);
     expect(entries(w)[0].amount).toBe(costs.expenses);
@@ -687,23 +745,24 @@ describe('operating expenses (→ECON-30)', () => {
     });
     for (const amount of ['0', '1', '45', season, '123456789012345678901'])
       expect(scaleOperatingExpenses(amount, 1)).toBe(amount);
+    // The same start's 46 rounds, each as it was played.
+    const played = playedProfessional();
     for (let round = 1; round <= 46; round++) {
-      advanceRound(w, undefined, false);
-      expect(w.round).toBe(round);
+      const after = played.rounds[round - 1];
+      expect(after.round).toBe(round);
       // The installments so far are the season amount's share of the rounds played, to the unit.
-      expect(entries(w)[0].amount).toBe(ratio(season, BigInt(round), 46n));
+      expect(after.expenses).toBe(ratio(season, BigInt(round), 46n));
     }
-    expect(entries(w)[0].amount).toBe(season);
-    expect(entries(w)[0].detail).not.toContain('선수단 투자');
+    expect(entries(played.w)[0].amount).toBe(season);
+    expect(entries(played.w)[0].detail).not.toContain('선수단 투자');
   });
 
   /** The configured share of a turnover (→ECON-30). */
   const shareOf = (turnover: string) =>
     ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
   it('raises the floor from the first round after a promotion', () => {
-    const w = world(),
-      amateur = clubOf(w).tier;
-    while (w.round < 46) advanceRound(w, undefined, false);
+    const amateur = clubOf(world()).tier,
+      w = simulatedWorld(FOUNDING, { rounds: 46 });
     const before = operatingCosts(w).expenses;
     expect(entries(w)[0].amount).toBe(before);
     // The amateur champions go up into the last professional division, after a season whose
@@ -737,13 +796,8 @@ describe('operating expenses (→ECON-30)', () => {
 
   describe('after a completed season', () => {
     // One played season, closed with extra ledger entries of its final round.
-    let played: World | undefined;
     const close = (extra: Record<string, bigint> = {}) => {
-      if (!played) {
-        played = world();
-        while (played.round < 46) advanceRound(played, undefined, false);
-      }
-      const w = structuredClone(played);
+      const w = simulatedWorld(FOUNDING, { rounds: 46 });
       for (const [kind, amount] of Object.entries(extra)) {
         w.events.push({
           year: w.year,
@@ -818,13 +872,23 @@ describe('operating expenses (→ECON-30)', () => {
     });
 
     it('loads a world saved without the amount at the floor of the division played now', () => {
-      const rich = close({ 'cup-prize': 50_000_000n });
-      expect(BigInt(rich.operatingExpenses!)).toBeGreaterThan(BigInt(floorOf(rich)));
-      for (let i = 0; i < 3; i++) advanceRound(rich, undefined, false);
       // As rules 1.15 saved it (and a 1.16 world from before the field).
-      const legacy: World = { ...structuredClone(rich), engine: '1.15.0' };
-      delete legacy.operatingExpenses;
-      const loaded = validateWorld(legacy, LOAD_CATALOG);
+      const load = (w: World) => {
+        const legacy: World = { ...structuredClone(w), engine: '1.15.0' };
+        delete legacy.operatingExpenses;
+        return validateWorld(legacy, LOAD_CATALOG);
+      };
+      // A rich close, three rounds into its season, and that load's season played out.
+      const { closed, rich, played } = cachedWorld('loaded-season', () => {
+        const rich = close({ 'cup-prize': 50_000_000n });
+        const closed = structuredClone(rich);
+        for (let i = 0; i < 3; i++) advanceRound(rich, undefined, false);
+        const played = load(rich);
+        while (played.round < 46) advanceRound(played, undefined, false);
+        return { closed, rich, played };
+      });
+      expect(BigInt(closed.operatingExpenses!)).toBeGreaterThan(BigInt(floorOf(closed)));
+      const loaded = load(rich);
       expect(loaded.operatingExpenses).toBeUndefined();
       expect(seasonOperatingExpenses(loaded)).toBe(floorOf(rich));
       // Everything else reads as it did before the load: the floor is this season's amount.
@@ -835,9 +899,8 @@ describe('operating expenses (→ECON-30)', () => {
       expect(validateWorld(structuredClone(rich)).operatingExpenses).toBe(rich.operatingExpenses);
       expect(() => validateWorld({ ...structuredClone(rich), operatingExpenses: '-1' })).toThrow();
       // The next season start records it from the turnover again.
-      while (loaded.round < 46) advanceRound(loaded, undefined, false);
-      closeSeason(loaded);
-      expect(loaded.operatingExpenses).toBe(assessOperatingExpenses(loaded));
+      closeSeason(played);
+      expect(played.operatingExpenses).toBe(assessOperatingExpenses(played));
     });
   });
 });

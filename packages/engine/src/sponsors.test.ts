@@ -7,8 +7,8 @@ import { currency, LOAD_CATALOG, priceIndex } from '../../catalogs/src/index';
 import {
   activePlayers,
   advanceDays,
+  advanceRound,
   clubOf,
-  createWorld,
   currentDay,
   financialBreakdown,
   operate,
@@ -21,10 +21,11 @@ import {
   sponsorSlots,
 } from './index';
 import { professionalStart } from './testing';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** A club founded in 1950, moved to `year` and to the lowest professional division if asked. */
 function club({ year, professional = false }: { year?: number; professional?: boolean } = {}) {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Slot Town',
     color: '#335544',
@@ -63,6 +64,97 @@ function squadOf(w: World, skill: number) {
     for (const a of ATTRIBUTES) p.attrs[a] = skill;
     p.potential = skill;
   }
+}
+/** The season's 45 rounds before its last, unobserved: a test plays the last and the close. */
+function toFinalRound(w: World) {
+  while (w.round < 45) advanceRound(w, undefined, false);
+  return w;
+}
+
+/** A local contract signed at founding, the club then made far bigger than it signed as. */
+function localGrown() {
+  const w = club();
+  operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+  const signed = structuredClone(w.sponsors![0]);
+  clubOf(w).fans *= 20;
+  clubOf(w).reputation += 30;
+  return { w, signed };
+}
+/** That club after its first and second closes, and at the third season's final round. */
+const localFirst = () =>
+  cachedWorld('local-first', () => {
+    const { w } = localGrown();
+    simulateSeason(w);
+    return w;
+  });
+const localSecond = () =>
+  cachedWorld('local-second', () => {
+    const w = localFirst();
+    simulateSeason(w);
+    return w;
+  });
+const localLast = () => cachedWorld('local-last', () => toFinalRound(localSecond()));
+
+/** A club with a rules 1.15 sponsor, and the club a load makes of it. */
+function migrated() {
+  const w = club();
+  const annual = quote('ENG', w.year, 300);
+  // Rules 1.15 kept one sponsor; a load moves it into its slot (→SAVE-10).
+  w.sponsor = {
+    name: 'Slot Cooperative',
+    kind: 'stable',
+    annual,
+    bonus: '0',
+    until: w.year + 2,
+    lastPaid: w.year - 1,
+    index: w.priceIndex,
+  };
+  return { w, annual, loaded: validateWorld(structuredClone(w), LOAD_CATALOG) };
+}
+/** The loaded club after its first close, and at the second season's final round. */
+const migratedFirst = () =>
+  cachedWorld('migrated-first', () => {
+    const { loaded } = migrated();
+    simulateSeason(loaded);
+    return loaded;
+  });
+const migratedLast = () => cachedWorld('migrated-last', () => toFinalRound(migratedFirst()));
+
+/** A professional club with an indexed local contract of five seasons. */
+function indexedLocal() {
+  const w = club({ professional: true });
+  operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 });
+  return w;
+}
+
+/** A 1979 amateur club whose delegated staff have lived its first day. */
+function delegatedSponsors() {
+  const w = club({ year: 1979 });
+  w.intervention = 4;
+  w.settings = legacySettings(4);
+  advanceDays(w, 1, undefined, false);
+  return w;
+}
+
+/** An owner's local contract in its final season, and the same club delegating business. */
+function endingClubs() {
+  const owner = club();
+  operate(owner, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+  owner.sponsors![0].until = owner.year + 1;
+  const delegated = structuredClone(owner);
+  delegated.intervention = 4;
+  delegated.settings = legacySettings(4);
+  return { owner, delegated };
+}
+
+/** A club under 해외 마케팅 5 signing an exclusive local contract, and the same club a plain one. */
+function exclusiveAndPlain() {
+  const w = club();
+  w.policy = { support: 3, recruitment: 3, globalMarketing: 5 };
+  const plain = structuredClone(w);
+  operate(w, { type: 'sign-sponsor', slot: 'local', offer: 1 });
+  operate(plain, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+  return { w, plain };
 }
 
 describe('sponsor contracts by slot', () => {
@@ -107,18 +199,16 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('keeps an amount fixed through its term, and a renewal values it anew', () => {
-    const w = club();
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    const signed = structuredClone(w.sponsors![0]);
-    expect(signed).toMatchObject({ kind: 'stable', from: w.year, until: w.year + 3 });
+    const { w: start, signed } = localGrown();
+    expect(signed).toMatchObject({ kind: 'stable', from: start.year, until: start.year + 3 });
     // A bigger club is offered more, but the signed amount does not move.
-    clubOf(w).fans *= 20;
-    clubOf(w).reputation += 30;
-    expect(BigInt(sponsorOffers(w, 'local')[0].annual)).toBeGreaterThan(BigInt(signed.annual));
-    for (let season = 0; season < 3; season++) {
-      simulateSeason(w);
-      expect(paidIn(w, 'local', w.year - 1, '지역 후원')).toBe(BigInt(signed.annual));
-    }
+    expect(BigInt(sponsorOffers(start, 'local')[0].annual)).toBeGreaterThan(BigInt(signed.annual));
+    // The first two seasons are built once; the third's last round and close, which end it, here.
+    for (const closed of [localFirst(), localSecond()])
+      expect(paidIn(closed, 'local', closed.year - 1, '지역 후원')).toBe(BigInt(signed.annual));
+    const w = localLast();
+    simulateSeason(w);
+    expect(paidIn(w, 'local', w.year - 1, '지역 후원')).toBe(BigInt(signed.annual));
     expect(w.sponsors).toBeUndefined();
     expect(w.events.filter((e) => e.kind === 'sponsor-end')).toHaveLength(1);
     const offer = sponsorOffers(w, 'local')[0];
@@ -128,11 +218,14 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('cuts every running contract’s remaining seasons by 30% on relegation', () => {
-    const w = club({ professional: true });
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 });
-    expect(w.sponsors![0]).toMatchObject({ kind: 'indexed', until: w.year + 5 });
+    const start = indexedLocal();
+    expect(start.sponsors![0]).toMatchObject({ kind: 'indexed', until: start.year + 5 });
     // A squad this weak finishes in the last division's bottom two and drops to the amateur league.
-    squadOf(w, 5);
+    const w = cachedWorld('relegated', () => {
+      const w = indexedLocal();
+      squadOf(w, 5);
+      return toFinalRound(w);
+    });
     simulateSeason(w);
     expect(w.lower).toBe(true);
     // Four seasons were left; 70% of them, rounded, remain.
@@ -143,26 +236,16 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('pays a sponsor migrated from rules 1.15 on to its end', () => {
-    const w = club();
-    const annual = quote('ENG', w.year, 300);
-    // Rules 1.15 kept one sponsor; a load moves it into its slot (→SAVE-10).
-    w.sponsor = {
-      name: 'Slot Cooperative',
-      kind: 'stable',
-      annual,
-      bonus: '0',
-      until: w.year + 2,
-      lastPaid: w.year - 1,
-      index: w.priceIndex,
-    };
-    const loaded = validateWorld(structuredClone(w), LOAD_CATALOG);
-    expect(loaded.sponsor).toBeUndefined();
-    expect(loaded.sponsors).toEqual([
+    const { w, annual, loaded: start } = migrated();
+    expect(start.sponsor).toBeUndefined();
+    expect(start.sponsors).toEqual([
       expect.objectContaining({ slot: 'local', annual, from: w.year, until: w.year + 2 }),
     ]);
-    simulateSeason(loaded);
-    expect(paidIn(loaded, 'local', w.year, '지역 후원')).toBe(BigInt(annual));
-    expect(loaded.sponsors).toHaveLength(1);
+    // The first season is built once; the second's last round and close, which end it, here.
+    const first = migratedFirst();
+    expect(paidIn(first, 'local', w.year, '지역 후원')).toBe(BigInt(annual));
+    expect(first.sponsors).toHaveLength(1);
+    const loaded = migratedLast();
     simulateSeason(loaded);
     expect(paidIn(loaded, 'local', w.year + 1, '지역 후원')).toBe(BigInt(annual));
     expect(loaded.sponsors).toBeUndefined();
@@ -170,21 +253,22 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('has delegated staff fill every open slot at once, and pays the kit bonus for promotion', () => {
-    const w = club({ year: 1979 });
-    w.intervention = 4;
-    w.settings = legacySettings(4);
-    advanceDays(w, 1, undefined, false);
-    expect(w.sponsors?.map((contract) => [contract.slot, contract.kind])).toEqual([
+    const start = delegatedSponsors();
+    expect(start.sponsors?.map((contract) => [contract.slot, contract.kind])).toEqual([
       ['local', 'stable'],
       ['kit', 'stable'],
       ['shirt', 'stable'],
     ]);
-    expect(w.inbox?.filter((item) => item.kind === 'finance')).toEqual([
+    expect(start.inbox?.filter((item) => item.kind === 'finance')).toEqual([
       expect.objectContaining({ title: '운영팀이 후원 계약 3건을 맺었어요', attention: false }),
     ]);
-    const kit = w.sponsors![1];
+    const kit = start.sponsors![1];
     // A squad this strong wins the amateur league and goes up.
-    squadOf(w, 95);
+    const w = cachedWorld('promoted', () => {
+      const w = delegatedSponsors();
+      squadOf(w, 95);
+      return toFinalRound(w);
+    });
     simulateSeason(w);
     expect(w.lower).toBe(false);
     expect(paidIn(w, 'shirt', 1979, '메인 스폰서 경기 보너스')).toBeGreaterThan(0n);
@@ -192,12 +276,15 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('tells an owner on 1 April of a contract in its final season, but not a delegating one', () => {
-    const owner = club();
-    operate(owner, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    owner.sponsors![0].until = owner.year + 1;
-    const delegated = structuredClone(owner);
-    delegated.intervention = 4;
-    delegated.settings = legacySettings(4);
+    // Both clubs are built once up to 31 March; 1 April and the days after are lived here.
+    const { owner, delegated } = cachedWorld('march', () => {
+      const clubs = endingClubs(),
+        march = seasonDayOf(clubs.owner.year, 4, 1) - 1;
+      for (const w of [clubs.owner, clubs.delegated])
+        while (currentDay(w) < march)
+          advanceDays(w, Math.min(300, march - currentDay(w)), undefined, false);
+      return clubs;
+    });
     const april = seasonDayOf(owner.year, 4, 1);
     for (const w of [owner, delegated]) {
       while (currentDay(w) < april)
@@ -216,15 +303,18 @@ describe('sponsor contracts by slot', () => {
   });
 
   it('names each slot’s ledger line and lets an exclusive contract halve 해외 마케팅’s fans', () => {
-    const w = club();
-    w.policy = { support: 3, recruitment: 3, globalMarketing: 5 };
-    const plain = structuredClone(w);
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 1 });
-    expect(w.sponsors![0].kind).toBe('exclusive');
-    operate(plain, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    expect(plain.sponsors![0].kind).not.toBe('exclusive');
-    advanceDays(w, 30, undefined, false);
-    advanceDays(plain, 30, undefined, false);
+    const start = exclusiveAndPlain();
+    expect(start.w.sponsors![0].kind).toBe('exclusive');
+    expect(start.plain.sponsors![0].kind).not.toBe('exclusive');
+    // Their first 29 days are built once; the 30th is lived here.
+    const { w, plain } = cachedWorld('month', () => {
+      const clubs = exclusiveAndPlain();
+      advanceDays(clubs.w, 29, undefined, false);
+      advanceDays(clubs.plain, 29, undefined, false);
+      return clubs;
+    });
+    advanceDays(w, 1, undefined, false);
+    advanceDays(plain, 1, undefined, false);
     expect(clubOf(w).fans).toBeLessThan(clubOf(plain).fans);
     const books = financialBreakdown(w);
     expect(books.income.find((row) => row.key === 'sponsor:local')).toMatchObject({

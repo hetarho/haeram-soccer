@@ -18,6 +18,7 @@ import {
   settleLeagueMerit,
   sponsorAnnual,
 } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 function world(seed = 'projection') {
   const w = createWorld({
@@ -30,6 +31,49 @@ function world(seed = 'projection') {
   // The squad stays fixed, so every realised bill can be compared exactly.
   return w;
 }
+/** The starting worlds the tests play rounds from. */
+const setups = {
+  plain: () => world(),
+  sponsored: () => {
+    const w = world();
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    return w;
+  },
+  academy: () => {
+    const w = world();
+    operate(w, { type: 'policy', key: 'academy', level: 3 });
+    return w;
+  },
+  recorded: () => {
+    const w = world();
+    // An amount recorded at the season's start, three times the division's floor (→ECON-30).
+    w.operatingExpenses = (BigInt(operatingCosts(w).expenses) * 3n).toString();
+    return w;
+  },
+  dearer: () => {
+    const w = world();
+    w.manager.wage = (BigInt(w.manager.wage) + 46000n).toString();
+    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+    return w;
+  },
+  support: () => {
+    const w = played('plain', 10);
+    operate(w, { type: 'policy', key: 'support', level: 5 });
+    return w;
+  },
+};
+/**
+ * A setup's world once the season has reached each round in `spans` in turn (unobserved), built
+ * once on the one before it. The rounds only produce the bills and payments the projection is
+ * compared with.
+ */
+function played(setup: keyof typeof setups, ...spans: number[]): World {
+  return cachedWorld(`${setup}:${spans.join('>')}`, () => {
+    const w = spans.length > 1 ? played(setup, ...spans.slice(0, -1)) : setups[setup]();
+    for (let n = w.round; n < spans.at(-1)!; n++) advanceRound(w, undefined, false);
+    return w;
+  });
+}
 const sum = (values: string[]) => values.reduce((total, value) => total + BigInt(value), 0n);
 const lineOf = (lines: { key: string; low: string; high: string; amount: string }[], key: string) =>
   lines.find((line) => line.key === key)!;
@@ -38,9 +82,7 @@ const eventsTotal = (w: World, kind: string) =>
 
 describe('finance projection', () => {
   it('never changes the world and keeps every range ordered', () => {
-    const w = world();
-    operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-    for (let i = 0; i < 6; i++) advanceRound(w, undefined, false);
+    const w = played('sponsored', 6);
     const before = structuredClone(w);
     const projection = financeProjection(w);
     expect(w).toEqual(before);
@@ -72,8 +114,7 @@ describe('finance projection', () => {
   });
 
   it('charges the annual operating bill over a year and the remaining rounds by season end', () => {
-    const w = world();
-    operate(w, { type: 'policy', key: 'academy', level: 3 });
+    let w = setups.academy();
     const start = financeProjection(w),
       first = operatingCosts(w),
       bill = BigInt(first.annual) - BigInt(first.expenses);
@@ -82,7 +123,7 @@ describe('finance projection', () => {
     expect(lineOf(start.seasonLines, 'operating').amount).toBe(`${-bill}`);
     expect(lineOf(start.lines, 'expenses').amount).toBe(`-${first.expenses}`);
     expect(lineOf(start.seasonLines, 'expenses').amount).toBe(`-${first.expenses}`);
-    for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
+    w = played('academy', 10);
     const costs = operatingCosts(w),
       unpaid = (part: string) => (BigInt(part) - BigInt(ratio(part, 10n, 46n))).toString(),
       remaining = sum(
@@ -105,17 +146,18 @@ describe('finance projection', () => {
     // The remaining bills are exactly what the rounds then charge.
     const paidBefore = eventsTotal(w, 'operating-cost'),
       expensesBefore = eventsTotal(w, 'operating-expenses');
-    while (w.round < 46) advanceRound(w, undefined, false);
+    w = played('academy', 10, 46);
     expect(eventsTotal(w, 'operating-cost') - paidBefore).toBe(remaining);
     expect(eventsTotal(w, 'operating-expenses') - expensesBefore).toBe(remainingExpenses);
   });
 
   it('reads the operating expenses recorded for the season, in the projection and the runway', () => {
-    const w = world();
+    let w = world();
     // An amount recorded at the season's start, three times the division's floor (→ECON-30).
     const floor = operatingCosts(w).expenses,
       recorded = (BigInt(floor) * 3n).toString();
     w.operatingExpenses = recorded;
+    expect(w).toEqual(setups.recorded());
     const costs = operatingCosts(w);
     expect(costs.expenses).toBe(recorded);
     const projection = financeProjection(w);
@@ -131,13 +173,12 @@ describe('finance projection', () => {
       Math.min(999, Number((BigInt(w.cash) * 46n) / BigInt(costs.annual))),
     );
     // The rounds then charge exactly what the projection carried.
-    for (let i = 0; i < 5; i++) advanceRound(w, undefined, false);
+    w = played('recorded', 5);
     expect(eventsTotal(w, 'operating-expenses')).toBe(BigInt(ratio(recorded, 5n, 46n)));
   });
 
   it('the projection and a support preview carry the operating-expense factor', () => {
-    const w = world();
-    for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
+    let w = played('plain', 10);
     const standard = operatingCosts(w),
       base = financeProjection(w),
       preview = policyPreview(w, 'support', 5),
@@ -172,28 +213,29 @@ describe('finance projection', () => {
     );
     // The rounds then charge exactly what the projection carried.
     const before = eventsTotal(w, 'operating-expenses');
-    while (w.round < 46) advanceRound(w, undefined, false);
+    expect(w).toEqual(setups.support());
+    w = played('support', 46);
     expect(eventsTotal(w, 'operating-expenses') - before).toBe(unpaid(costs.expenses));
   });
 
   it('carries the league share a year ahead and the rest of it to season end', () => {
-    const w = world();
+    let w = world();
     const share = leagueShare(w);
     expect(lineOf(financeProjection(w).lines, 'share').amount).toBe(share);
-    for (let i = 0; i < 10; i++) advanceRound(w, undefined, false);
+    w = played('plain', 10);
     const mid = financeProjection(w);
     expect(lineOf(mid.lines, 'share').amount).toBe(share);
     const projected = BigInt(lineOf(mid.seasonLines, 'share').amount);
     expect(projected).toBe(BigInt(share) - BigInt(ratio(share, 10n, 46n)));
     // The remaining installments are exactly what the rounds then pay.
     const paid = eventsTotal(w, 'league-share');
-    while (w.round < 46) advanceRound(w, undefined, false);
+    w = played('plain', 10, 46);
     expect(eventsTotal(w, 'league-share') - paid).toBe(projected);
     expect(lineOf(financeProjection(w).seasonLines, 'share').amount).toBe('0');
   });
 
   it('lowers the outlook by exactly a higher cost and counts the remaining sponsor installments', () => {
-    const w = world();
+    let w = world();
     const base = financeProjection(w);
     w.manager.wage = (BigInt(w.manager.wage) + 46000n).toString();
     const dearer = financeProjection(w);
@@ -206,22 +248,23 @@ describe('finance projection', () => {
     expect(lineOf(signed.seasonLines, 'sponsor').amount).toBe(annual);
     // A three-season contract keeps paying at the same point of next season.
     expect(lineOf(signed.lines, 'sponsor').amount).toBe(annual);
-    for (let i = 0; i < 12; i++) advanceRound(w, undefined, false);
+    expect(w).toEqual(setups.dearer());
+    w = played('dearer', 12);
     const projected = BigInt(lineOf(financeProjection(w).seasonLines, 'sponsor').amount);
     const paid = eventsTotal(w, 'sponsor:local');
-    while (w.round < 46) advanceRound(w, undefined, false);
+    w = played('dearer', 12, 46);
     expect(eventsTotal(w, 'sponsor:local') - paid).toBe(projected);
     expect(lineOf(financeProjection(w).seasonLines, 'sponsor').amount).toBe('0');
   });
 
   it('expects home gates net of hosting costs and leaves uncertain income at zero on the low side', () => {
-    const w = world();
+    let w = world();
     const home = w.fixtures.filter((f) => f.home === w.playerClub && f.year === w.year).length;
     const gate = lineOf(financeProjection(w).lines, 'gate');
     expect(home).toBeGreaterThan(0);
     expect(BigInt(gate.low)).toBeGreaterThan(0n);
     expect(BigInt(gate.high) % BigInt(home)).toBe(0n);
-    for (let i = 0; i < 46; i++) advanceRound(w, undefined, false);
+    w = played('plain', 10, 46);
     const done = financeProjection(w);
     expect(lineOf(done.seasonLines, 'gate').amount).toBe('0');
     expect(lineOf(done.seasonLines, 'performance').high).toBe('0');
@@ -229,8 +272,7 @@ describe('finance projection', () => {
   });
 
   it('prices the merit like the season close does, by the current rank', () => {
-    const w = world();
-    for (let i = 0; i < 20; i++) advanceRound(w, undefined, false);
+    const w = played('plain', 10, 20);
     const { rank, clubs } = currentLeagueRank(w);
     expect(rank).toBeGreaterThan(0);
     expect(lineOf(financeProjection(w).lines, 'merit').high).toBe(leagueMerit(w, rank, clubs));

@@ -15,10 +15,14 @@ import {
   recordMatch,
   addEvent,
   clubNews,
+  advanceRound,
+  createWorld,
 } from '../../../../packages/engine/src/index';
 import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { headToHead } from './headToHead';
+import type { World } from '../../../../packages/contracts/src/types';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Athletic',
@@ -35,6 +39,15 @@ const req = (id: string, revision: number, body: Body) => ({
   parentGeneration: 0,
   body,
 });
+/**
+ * Gives a host that has just founded `input` the world that founding grows into after `played`
+ * (built once from the same founding, cached), as if simulated in place: same world, same receipts.
+ */
+function playOn(h: Host, played: World) {
+  expect(canonical({ ...h.world!, receiptIds: [] })).toBe(canonical(simulatedWorld(input)));
+  played.receiptIds = h.world!.receiptIds;
+  h.world = played;
+}
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
   const jobs: CodecJob[] = [];
@@ -107,7 +120,7 @@ describe('worker command protocol', () => {
   it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    simulateSeason(h.world!);
+    playOn(h, simulatedWorld(input, { seasons: 1 }));
     const season = h.world!.history[0];
     expect(season.brackets?.length).toBeGreaterThan(0);
     expect(season.scorers?.length).toBeGreaterThan(0);
@@ -162,8 +175,14 @@ describe('worker command protocol', () => {
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    h.world!.settings = legacySettings(4);
-    simulateSeason(h.world!);
+    playOn(
+      h,
+      cachedWorld('legacy-season', () => {
+        const w = createWorld(input);
+        w.settings = legacySettings(4);
+        return simulateSeason(w);
+      }),
+    );
     const w = h.world!,
       met = w.ownMatches.find((m) => m.kind === 'lower')!,
       club = met.home === w.playerClub ? met.away : met.home,
@@ -369,9 +388,19 @@ describe('worker command protocol', () => {
   it('simulates a fast season without sending empty observation playback', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    h.world!.cash = '999999999999';
+    // The season command plays every round as `advanceRound(w, undefined, false)`: the first 45
+    // are built once, the last and the close run here through the command.
+    playOn(
+      h,
+      cachedWorld('rich-45-rounds', () => {
+        const w = createWorld(input);
+        w.cash = '999999999999';
+        while (w.round < 45) advanceRound(w, undefined, false);
+        return w;
+      }),
+    );
     const result = await h.handle(
-      req('season', 0, { type: 'command', command: { type: 'season', count: 1 } }),
+      req('season', h.world!.revision, { type: 'command', command: { type: 'season', count: 1 } }),
     );
     expect(result.ok).toBe(true);
     expect(result.playback).toBeUndefined();
@@ -387,35 +416,45 @@ describe('durable milestone projection', () => {
   it('keeps earlier preparation and a cup win when recent UI records no longer contain either', async () => {
     const host = new Host();
     await host.handle(req('milestone-found', -1, { type: 'found', input }));
-    const world = host.world!;
-    operate(world, { type: 'lineup', ids: lineupPreset(world, 'strongest') });
-    operate(world, { type: 'lineup', ids: null });
-    const fixture = nextOwnFixture(world)!;
-    let won = false,
-      losses = 0;
-    for (let i = 0; i < 400 && losses < 30; i++) {
-      const playback = simulateMatch(
-        world,
-        { ...fixture, id: `milestone-cup-${i}`, kind: 'cup' },
-        false,
-        true,
-      );
-      const own =
-        playback.record.home === world.playerClub
-          ? playback.record.score.home
-          : playback.record.score.away;
-      const other =
-        playback.record.home === world.playerClub
-          ? playback.record.score.away
-          : playback.record.score.home;
-      if (!won && own > other) {
-        recordMatch(world, playback);
-        won = true;
-      } else if (won && own <= other) {
-        recordMatch(world, playback);
-        losses++;
+    // A cup win, then thirty cup matches without one: built once and cached.
+    const {
+      world: played,
+      won,
+      losses,
+    } = cachedWorld('cup-win-then-losses', () => {
+      const world = createWorld(input);
+      operate(world, { type: 'lineup', ids: lineupPreset(world, 'strongest') });
+      operate(world, { type: 'lineup', ids: null });
+      const fixture = nextOwnFixture(world)!;
+      let won = false,
+        losses = 0;
+      for (let i = 0; i < 400 && losses < 30; i++) {
+        const playback = simulateMatch(
+          world,
+          { ...fixture, id: `milestone-cup-${i}`, kind: 'cup' },
+          false,
+          true,
+        );
+        const own =
+          playback.record.home === world.playerClub
+            ? playback.record.score.home
+            : playback.record.score.away;
+        const other =
+          playback.record.home === world.playerClub
+            ? playback.record.score.away
+            : playback.record.score.home;
+        if (!won && own > other) {
+          recordMatch(world, playback);
+          won = true;
+        } else if (won && own <= other) {
+          recordMatch(world, playback);
+          losses++;
+        }
       }
-    }
+      return { world, won, losses };
+    });
+    playOn(host, played);
+    const world = host.world!;
     expect(won).toBe(true);
     expect(losses).toBe(30);
     for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '기록 보관', '후속 기록');

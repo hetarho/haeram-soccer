@@ -12,8 +12,9 @@ concurrency:
   # main keeps a started run so every code push to main gets a result while parallel sessions push;
   # GitHub still replaces older pending runs with the newest one.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-# The checks and each browser's journeys run as parallel jobs: the run takes as long as its
-# slowest job instead of the sum of every step. The benchmarks run on demand in benchmark.yml.
+# The checks, the unit test shards and each browser's journeys run as parallel jobs: the run takes
+# as long as its slowest job instead of the sum of every step. The benchmarks run on demand in
+# benchmark.yml.
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -28,10 +29,36 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm run lint
       - run: pnpm run format:check
-      - run: pnpm run test:unit
       - run: pnpm run test:contract
       - run: pnpm run validate:catalogs
       - run: pnpm run build
+
+  unit:
+    name: unit (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { shard: 1/3, slug: '1' }
+          - { shard: 2/3, slug: '2' }
+          - { shard: 3/3, slug: '3' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Simulated test worlds (tests/fixtures/worlds.ts) keyed by the source tree: a run whose
+      # engine did not change reads them instead of simulating again.
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/haeram-worlds
+          key: haeram-worlds-${{ matrix.slug }}-${{ github.sha }}
+          restore-keys: haeram-worlds-${{ matrix.slug }}-
+      - run: pnpm run test:unit --shard=${{ matrix.shard }}
 
   e2e:
     name: e2e (${{ matrix.browser }} ${{ matrix.shard }})

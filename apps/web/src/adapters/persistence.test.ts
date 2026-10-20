@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { createWorld, advanceRound, simulateSeason } from '../../../../packages/engine/src/index';
+import {
+  advanceDays,
+  advanceRound,
+  prepareSeason,
+  simulateSeason,
+} from '../../../../packages/engine/src/index';
+import { featureState } from '../../../../tests/fixtures/feature-state';
+import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, Saves, type StoragePort } from './persistence';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
@@ -19,6 +27,7 @@ import {
   CATALOG_VERSION,
   CURRENT_CATALOG,
 } from '../../../../packages/catalogs/src/index';
+import type { Founding, World } from '../../../../packages/contracts/src/types';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -33,14 +42,22 @@ class Memory implements StoragePort {
     this.data.delete(k);
   }
 }
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Archive United',
-    color: '#126044',
-    seed: 'save-test',
-    level: 'normal' as const,
+const FOUNDING: Founding = {
+  country: 'ENG',
+  name: 'Archive United',
+  color: '#126044',
+  seed: 'save-test',
+  level: 'normal',
+};
+const world = () => simulatedWorld(FOUNDING);
+/** The founded world after `rounds` observed rounds (`advanceRound(w)`), built once. */
+const observed = (rounds: number): World =>
+  cachedWorld(`observed:${rounds}`, () => {
+    const w = rounds > 1 ? observed(rounds - 1) : world();
+    advanceRound(w);
+    return w;
   });
+const features = () => cachedWorld('feature-state', () => featureState());
 // The original compact1 unsigned stream, used to exercise historical save compatibility.
 function legacyIntegers(values: number[], width: number) {
   const count = values.length / width;
@@ -63,16 +80,16 @@ function legacyIntegers(values: number[], width: number) {
 }
 describe('recoverable persistence', () => {
   it('roundtrips active schedule, exact money and all match/player facts losslessly', async () => {
-    const w = world();
-    advanceRound(w);
-    advanceRound(w);
+    const w = observed(2);
     w.cash = '98765432101234567890';
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
   });
   it('roundtrips off days and compact rank snapshots and preserves older saves without these fields', async () => {
-    const { advanceDays } = await import('../../../../packages/engine/src/index');
-    const w = world();
-    advanceDays(w, 10);
+    const w = cachedWorld('ten days', () => {
+      const w = world();
+      advanceDays(w, 10);
+      return w;
+    });
     expect(w.calendar?.day).toBe(10);
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
     const legacy = structuredClone(w);
@@ -89,8 +106,7 @@ describe('recoverable persistence', () => {
     await expect(decode(await encode(w))).rejects.toThrow('순위 추이');
   });
   it('roundtrips compact actual scorer history and legacy saves without scorer tracking', async () => {
-    const w = world();
-    for (let round = 0; round < 4; round++) advanceRound(w, undefined, false);
+    const w = simulatedWorld(FOUNDING, { rounds: 4 });
     expect(w.scorerSeason!.history).toHaveLength(5);
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
     const legacy = structuredClone(w);
@@ -100,8 +116,7 @@ describe('recoverable persistence', () => {
     expect(canonical(loaded)).toBe(canonical(legacy));
   });
   it('reads legacy inline events and preserves optional fields in dictionary-packed financial receipts', () => {
-    const w = world();
-    advanceRound(w, undefined, false);
+    const w = simulatedWorld(FOUNDING, { rounds: 1 });
     w.events.push({
       year: w.year,
       round: w.round,
@@ -125,9 +140,7 @@ describe('recoverable persistence', () => {
     expect(() => unpack(broken)).toThrow('통계 누락');
   });
   it('reads legacy varint match statistics without the optional bit column encoding', () => {
-    const w = world();
-    advanceRound(w, undefined, false);
-    advanceRound(w, undefined, false);
+    const w = simulatedWorld(FOUNDING, { rounds: 2 });
     const packed = pack(w);
     const values = w.ownMatches.flatMap((match) => [
       ...match.metrics[0],
@@ -165,8 +178,7 @@ describe('recoverable persistence', () => {
     expect(canonical(unpack(packed))).toBe(canonical(w));
   });
   it('rejects scorer totals and historical player references that contradict actual fixtures', async () => {
-    const w = world();
-    advanceRound(w, undefined, false);
+    const w = simulatedWorld(FOUNDING, { rounds: 1 });
     const goals = structuredClone(w);
     goals.scorerSeason!.players[0].goals++;
     await expect(decode(await encode(goals))).rejects.toThrow('득점 순위와 실제 경기');
@@ -175,8 +187,7 @@ describe('recoverable persistence', () => {
     await expect(decode(await encode(history))).rejects.toThrow('득점 순위 추이');
   });
   it('writes dense checkpoints and still loads earlier Base64 checkpoints', async () => {
-    const w = world();
-    advanceRound(w);
+    const w = observed(1);
     const dense = JSON.parse(await encode(w));
     expect(dense.codec).toBe('gzip-cjk14');
     const legacy = JSON.stringify({
@@ -201,10 +212,9 @@ describe('recoverable persistence', () => {
   it('commits manifest last and retains previous world on quota failure', async () => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
+    await saves.save(world());
     const before = port.getItem('haeram-soccor:manifest');
-    advanceRound(w);
+    const w = observed(1);
     port.fail = 'haeram-soccor:manifest';
     await expect(saves.save(w)).rejects.toThrow('Quota');
     expect(port.getItem('haeram-soccor:manifest')).toBe(before);
@@ -213,9 +223,8 @@ describe('recoverable persistence', () => {
   it('recovers the previous slot and preserves it on the next commit', async () => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
-    advanceRound(w);
+    await saves.save(world());
+    const w = observed(1);
     await saves.save(w);
     port.data.set('haeram-soccor:slot:b', 'corrupt');
     const recovery = new Saves(port);
@@ -229,9 +238,8 @@ describe('recoverable persistence', () => {
     async (manifest) => {
       const port = new Memory();
       const saves = new Saves(port);
-      const w = world();
-      await saves.save(w);
-      advanceRound(w);
+      await saves.save(world());
+      const w = observed(1);
       await saves.save(w);
       if (manifest === null) port.removeItem('haeram-soccor:manifest');
       else port.setItem('haeram-soccor:manifest', manifest);
@@ -241,8 +249,9 @@ describe('recoverable persistence', () => {
       expect(loaded?.recovered).toBe(true);
       expect(loaded?.world.round).toBe(1);
       expect(recovery.generationInfo).toEqual({ generation: 3, parentGeneration: 2 });
-      advanceRound(loaded!.world);
-      await recovery.save(loaded!.world);
+      // The loaded world is the observed first round, so its next round is the cached second.
+      expect(canonical(loaded!.world)).toBe(canonical(w));
+      await recovery.save(observed(2));
       expect((await new Saves(port).load())?.world.round).toBe(2);
       expect((await decode(port.getItem('haeram-soccor:slot:b')!)).world.round).toBe(1);
     },
@@ -250,9 +259,8 @@ describe('recoverable persistence', () => {
   it('commits a codec checkpoint by its envelope and never writes one older than the last commit', async () => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
-    advanceRound(w);
+    await saves.save(world());
+    const w = observed(1);
     const second = await checkpoint(w, 2, 1);
     await saves.commit(second.raw, { envelope: second.envelope });
     const before = new Map(port.data);
@@ -265,9 +273,8 @@ describe('recoverable persistence', () => {
   it('reports recovery when the selected manifest parent disagrees with the checkpoint', async () => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
-    advanceRound(w);
+    await saves.save(world());
+    const w = observed(1);
     await saves.save(w);
     const manifest = JSON.parse(port.getItem('haeram-soccor:manifest')!);
     port.setItem('haeram-soccor:manifest', JSON.stringify({ ...manifest, parentGeneration: 0 }));
@@ -278,20 +285,22 @@ describe('recoverable persistence', () => {
   });
 });
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
-  const { prepareSeason, simulateSeason } = await import('../../../../packages/engine/src/index');
-  const w = world();
-  w.year = 2000;
-  w.currency = 'GBP';
-  w.manager.since = 1997;
-  w.manager.until = 2003;
-  for (const p of w.players) {
-    p.born = 1978;
-    p.joined = w.year;
-  }
-  // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
-  delete w.people;
-  prepareSeason(w);
-  simulateSeason(w);
+  const w = cachedWorld('season from 2000', () => {
+    const w = world();
+    w.year = 2000;
+    w.currency = 'GBP';
+    w.manager.since = 1997;
+    w.manager.until = 2003;
+    for (const p of w.players) {
+      p.born = 1978;
+      p.joined = w.year;
+    }
+    // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
+    delete w.people;
+    prepareSeason(w);
+    simulateSeason(w);
+    return w;
+  });
   expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);
   expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
   const legacy = pack(w);
@@ -311,12 +320,14 @@ it('preserves first and second European phases and global standings in a histori
   expect(canonical(unpack(legacy))).toBe(canonical(w));
 });
 it('builds a codec checkpoint of a 10-season career that decodes to the same world', async () => {
-  const { simulateSeason } = await import('../../../../packages/engine/src/index');
-  const w = world();
-  for (let season = 0; season < 10; season++) {
-    w.cash = '999999999999999';
-    simulateSeason(w);
-  }
+  const w = cachedWorld('ten rich seasons', () => {
+    const w = world();
+    for (let season = 0; season < 10; season++) {
+      w.cash = '999999999999999';
+      simulateSeason(w);
+    }
+    return w;
+  });
   expect(w.history).toHaveLength(10);
   const { raw, envelope } = await checkpoint(w, 5, 4);
   expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
@@ -324,7 +335,6 @@ it('builds a codec checkpoint of a 10-season career that decodes to the same wor
   expect(canonical((await decode(raw)).world)).toBe(canonical(w));
 }, 600000);
 it('keeps a signed slot contract through a load and never signs that slot twice, so checkpoints still load', async () => {
-  const { advanceDays } = await import('../../../../packages/engine/src/index');
   const w = world();
   w.intervention = 4;
   advanceDays(w, 1);
@@ -337,15 +347,17 @@ it('keeps a signed slot contract through a load and never signs that slot twice,
   expect(canonical((await decode(raw)).world)).toBe(canonical(loaded));
 });
 it('rejects broken counters and historical club references before activation', async () => {
-  const { simulateSeason } = await import('../../../../packages/engine/src/index');
-  const w = world();
-  advanceRound(w);
+  const w = observed(1);
   const tampered = structuredClone(w);
   tampered.ownMatches[0].metrics[0][0]++;
   await expect(decode(await encode(tampered))).rejects.toThrow('경기 지표');
-  simulateSeason(w);
-  w.history[0].champions[0].club = 'missing-club';
-  await expect(decode(await encode(w))).rejects.toThrow('우승 기록 참조');
+  const closed = cachedWorld('observed round then season', () => {
+    const w = observed(1);
+    simulateSeason(w);
+    return w;
+  });
+  closed.history[0].champions[0].club = 'missing-club';
+  await expect(decode(await encode(closed))).rejects.toThrow('우승 기록 참조');
 });
 
 describe('compatible rule upgrades', () => {
@@ -432,9 +444,8 @@ describe('incompatible checkpoint protection', () => {
   ])('blocks fallback and writes for an unsupported selected %s', async (field, value) => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
-    advanceRound(w);
+    await saves.save(world());
+    const w = observed(1);
     await saves.save(w);
     const selected = 'haeram-soccor:slot:b';
     const future = JSON.stringify({ ...JSON.parse(port.getItem(selected)!), [field]: value });
@@ -453,9 +464,8 @@ describe('incompatible checkpoint protection', () => {
     async (manifest) => {
       const port = new Memory();
       const saves = new Saves(port);
-      const w = world();
-      await saves.save(w);
-      advanceRound(w);
+      await saves.save(world());
+      const w = observed(1);
       await saves.save(w);
       const future = JSON.stringify({
         ...JSON.parse(port.getItem('haeram-soccor:slot:b')!),
@@ -511,9 +521,8 @@ describe('incompatible checkpoint protection', () => {
   ])('recovers the newest valid checkpoint after a damaged manifest %j', async (metadata) => {
     const port = new Memory();
     const saves = new Saves(port);
-    const w = world();
-    await saves.save(w);
-    advanceRound(w);
+    await saves.save(world());
+    const w = observed(1);
     await saves.save(w);
     port.data.set('haeram-soccor:manifest', JSON.stringify({ ...metadata, worldId: w.id }));
     const recovery = await new Saves(port).load();
@@ -524,11 +533,10 @@ describe('incompatible checkpoint protection', () => {
 });
 
 it('feature-state-lossless-roundtrip and continued-career-parity preserve roles, money, draws and promise judgements', async () => {
-  const { featureState } = await import('../../../../tests/fixtures/feature-state');
-  const { advanceDays, operate } = await import('../../../../packages/engine/src/index');
+  const { operate } = await import('../../../../packages/engine/src/index');
   const { judgePromises } = await import('../../../../packages/engine/src/promises');
   const { encourageCoaching } = await import('../../../../packages/engine/src/coaching-entry');
-  const original = featureState(),
+  const original = features(),
     restored = (await decode(await encode(original))).world;
   expect(canonical(restored)).toBe(canonical(original));
   const player = Object.values(original.playingCoachProposals!)[0].person;
@@ -556,21 +564,23 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
 });
 
 it('roundtrips one transferred league scorer with both real club contributions', async () => {
-  const { transferredScorerWorld } = await import('../../../../tests/fixtures/transferred-scorer');
-  const { w, playerId } = transferredScorerWorld();
+  const { w, playerId } = cachedWorld('transferred scorer', () => transferredScorerWorld());
   const raw = await encode(w, 1, 0),
     loaded = await decode(raw);
   expect(canonical(loaded.world)).toBe(canonical(w));
   expect(loaded.world.scorerSeason!.players.find((p) => p.id === playerId)!.clubs).toHaveLength(2);
-  simulateSeason(w);
-  const archived = await decode(await encode(w, 2, 1));
-  expect(canonical(archived.world)).toBe(canonical(w));
+  const closed = cachedWorld('transferred scorer season', () => {
+    const { w } = cachedWorld('transferred scorer', () => transferredScorerWorld());
+    simulateSeason(w);
+    return w;
+  });
+  const archived = await decode(await encode(closed, 2, 1));
+  expect(canonical(archived.world)).toBe(canonical(closed));
   expect(archived.world.history.at(-1)!.scorers!.some((p) => p.clubs?.length === 2)).toBe(true);
 });
 
 it('validates Brotli envelope checksums, world metadata and future codecs before activation', async () => {
-  const { featureState } = await import('../../../../tests/fixtures/feature-state');
-  const w = featureState();
+  const w = features();
   const e = JSON.parse(await encode(w));
   e.codec = 'brotli-bmp127';
   e.payload = bmpText(brotliCompressSync(new TextEncoder().encode(canonical(pack(w)))));
@@ -585,8 +595,7 @@ it('validates Brotli envelope checksums, world metadata and future codecs before
 });
 
 it('rejects malformed compact optional shapes and expanded person facts on the full-world validation path', async () => {
-  const { featureState } = await import('../../../../tests/fixtures/feature-state');
-  const w = featureState(),
+  const w = features(),
     envelope = JSON.parse(await encode(w));
   for (const corrupt of [
     (p: ReturnType<typeof pack>) => {

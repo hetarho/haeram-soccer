@@ -3,6 +3,7 @@ import { COUNTRIES, currency, priceIndex } from '../../catalogs/src/index';
 import type { CountryCode, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { AMATEUR_CLUBS, createWorld, finishCups, finishEurope, prepareSeason } from './index';
 import { knockoutStage, type CupStage } from './stages';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 /** Seasons that span every domestic cup size and each continental format and calendar change. */
 const YEARS = [1950, 1955, 1960, 1971, 1991, 1993, 1994, 1997, 1999, 2004, 2009, 2021, 2024];
@@ -16,41 +17,53 @@ function liveStage(competition: string, rounds: KnockoutRound[], f: Fixture): Cu
     : { competition, label: round.label };
 }
 
+/**
+ * The domestic cups and continental competitions of a `code`-founded club's season in each of
+ * `YEARS`, every round played and drawn.
+ */
+function seasonsOf(code: CountryCode) {
+  return cachedWorld(`stage-seasons-${code}`, () => {
+    const baseline = createWorld({
+      country: code,
+      name: 'Stage Rovers',
+      seed: `stages-${code}`,
+      color: '#224433',
+      level: 'normal' as const,
+    });
+    return YEARS.map((year) => {
+      // Each is a fresh synthetic epoch, not thirteen jumps through one retained career.
+      const w = structuredClone(baseline);
+      delete w.people;
+      w.year = year;
+      w.manager.since = year;
+      w.manager.until = year + 3;
+      for (const player of w.players) {
+        player.born = year - 24;
+        player.joined = year;
+        player.until = year + 2;
+      }
+      w.currency = currency(code, year).code;
+      w.priceIndex = priceIndex(code, year).value;
+      prepareSeason(w);
+      finishCups(w);
+      finishEurope(w);
+      return { year, cups: w.cups!, europe: w.europe };
+    });
+  });
+}
+
 describe('cup stages from fixture IDs', () => {
   it.each(['ENG', 'GER', 'BEL'] as CountryCode[])(
     'names every %s-founded season knockout and phase match as its live round did',
     (code) => {
-      const baseline = createWorld({
-        country: code,
-        name: 'Stage Rovers',
-        seed: `stages-${code}`,
-        color: '#224433',
-        level: 'normal' as const,
-      });
       const seen = new Set<string>();
-      for (const year of YEARS) {
-        // Each is a fresh synthetic epoch, not thirteen jumps through one retained career.
-        const w = structuredClone(baseline);
-        delete w.people;
-        w.year = year;
-        w.manager.since = year;
-        w.manager.until = year + 3;
-        for (const player of w.players) {
-          player.born = year - 24;
-          player.joined = year;
-          player.until = year + 2;
-        }
-        w.currency = currency(code, year).code;
-        w.priceIndex = priceIndex(code, year).value;
-        prepareSeason(w);
-        finishCups(w);
-        finishEurope(w);
-        for (const cup of w.cups!)
+      for (const { year, cups, europe } of seasonsOf(code)) {
+        for (const cup of cups)
           for (const f of cup.fixtures) {
             expect(knockoutStage(f), f.id).toEqual(liveStage('cup', cup.rounds, f));
             expect(knockoutStage(f, year)).toEqual(knockoutStage(f));
           }
-        for (const t of w.europe)
+        for (const t of europe)
           for (const f of t.fixtures) {
             const stage = knockoutStage(f, year)!;
             seen.add(stage.label);
@@ -66,7 +79,7 @@ describe('cup stages from fixture IDs', () => {
               });
             else expect(stage, f.id).toEqual(liveStage(t.key, t.rounds!, f));
           }
-        for (const cup of w.cups!) for (const round of cup.rounds) seen.add(round.label);
+        for (const cup of cups) for (const round of cup.rounds) seen.add(round.label);
       }
       expect([...seen].sort()).toEqual(
         [

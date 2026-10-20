@@ -14,6 +14,7 @@ import { nextEventDays, advanceToNextEvent } from './next-event';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 function world() {
   const w = createWorld({
     country: 'ENG',
@@ -113,8 +114,12 @@ describe('ordered manual next-event settlement', () => {
     expect(w.ownMatches).toHaveLength(0);
   });
   it('continues through season close and ordinary reports to the following fixture eve', () => {
-    const w = world();
-    while (w.round < 46 && !w.critical && !w.bankrupt) advanceRound(w, undefined, false);
+    // The season's rounds only lead to its end; the step through the close is the subject.
+    const w = cachedWorld('final-round', () => {
+      const w = world();
+      while (w.round < 46 && !w.critical && !w.bankrupt) advanceRound(w, undefined, false);
+      return w;
+    });
     expect(w.round).toBe(46);
     const year = w.year,
       count = w.ownMatches.length;
@@ -126,29 +131,33 @@ describe('ordered manual next-event settlement', () => {
     expect(w.history.at(-1)?.year).toBe(year);
   });
   it('uses the same daily calendar across leap day', () => {
-    const w = world();
     const year = 1963,
-      shift = year - w.year;
-    w.year = year;
-    // Fresh synthetic founding epoch; no played career is being moved.
-    delete w.people;
-    w.currency = currency('ENG', year).code;
-    w.priceIndex = priceIndex('ENG', year).value;
-    w.manager.since = year;
-    w.manager.until = year + 3;
-    if (w.manager.born !== undefined) w.manager.born += shift;
-    for (const p of w.players) {
-      p.born += shift;
-      if (p.joined !== undefined) p.joined += shift;
-      p.until += shift;
-    }
-    for (const member of w.staff || []) {
-      member.since += shift;
-      member.until += shift;
-    }
-    prepareSeason(w);
-    const leap = seasonDayOf(year, 2, 29);
-    advanceDays(w, leap - 1, undefined, false);
+      leap = seasonDayOf(year, 2, 29);
+    // The days before the leap day only lead there; the step across it is the subject.
+    const w = cachedWorld('leap-eve', () => {
+      const w = world(),
+        shift = year - w.year;
+      w.year = year;
+      // Fresh synthetic founding epoch; no played career is being moved.
+      delete w.people;
+      w.currency = currency('ENG', year).code;
+      w.priceIndex = priceIndex('ENG', year).value;
+      w.manager.since = year;
+      w.manager.until = year + 3;
+      if (w.manager.born !== undefined) w.manager.born += shift;
+      for (const p of w.players) {
+        p.born += shift;
+        if (p.joined !== undefined) p.joined += shift;
+        p.until += shift;
+      }
+      for (const member of w.staff || []) {
+        member.since += shift;
+        member.until += shift;
+      }
+      prepareSeason(w);
+      advanceDays(w, leap - 1, undefined, false);
+      return w;
+    });
     const daily = structuredClone(w);
     advanceToNextEvent(w);
     do {

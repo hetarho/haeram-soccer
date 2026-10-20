@@ -7,7 +7,6 @@ import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import {
   advanceRound,
   clubOf,
-  createWorld,
   gateProjection,
   marketingFanGain,
   marketWage,
@@ -30,9 +29,10 @@ import {
   driftFans,
   baseEffects,
 } from './index';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 function world(policy?: Partial<ClubPolicy>) {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Policy Athletic',
     color: '#2a4d3c',
@@ -73,6 +73,13 @@ const offerFees = (w: World) =>
     .slice(1)
     .reduce((total, offer) => total + BigInt(offer.fee), 0n);
 const withoutPolicy = (w: World) => canonical({ ...w, policy: undefined });
+/** `w` after `rounds` unobserved rounds. */
+function played(w: World, rounds: number) {
+  for (let round = 0; round < rounds; round++) advanceRound(w, undefined, false);
+  return w;
+}
+/** The club without a policy, three rounds in: built once. */
+const plainThree = () => cachedWorld('plain-3', () => played(world(), 3));
 
 describe('club operating policy', () => {
   it('reproduces the pre-policy club exactly when absent or at the defaults', () => {
@@ -110,12 +117,13 @@ describe('club operating policy', () => {
       expect(absent.year - offer.player.born).toBeGreaterThanOrEqual(18);
       expect(absent.year - offer.player.born).toBeLessThanOrEqual(30);
     }
-    for (let round = 0; round < 4; round++) {
-      advanceRound(absent, undefined, false);
-      advanceRound(explicit, undefined, false);
-    }
-    expect(withoutPolicy(explicit)).toBe(withoutPolicy(absent));
-    expect(absent.events.some((event) => event.detail.includes('마케팅'))).toBe(false);
+    // Three rounds of each are built once; the fourth is played here.
+    const absentPlayed = plainThree(),
+      explicitPlayed = cachedWorld('defaults-3', () => played(world({}), 3));
+    advanceRound(absentPlayed, undefined, false);
+    advanceRound(explicitPlayed, undefined, false);
+    expect(withoutPolicy(explicitPlayed)).toBe(withoutPolicy(absentPlayed));
+    expect(absentPlayed.events.some((event) => event.detail.includes('마케팅'))).toBe(false);
   });
 
   it('describes eight ordered decisions with five levels each (the tour three) and their real effects', () => {
@@ -221,12 +229,11 @@ describe('club operating policy', () => {
     expect(developed(high)).toBeGreaterThan(developed(standard));
     expect(developed(standard)).toBeGreaterThan(developed(low));
 
-    const generousSeason = academy({ support: 5 }),
-      frugalSeason = academy({ support: 1 });
-    for (let round = 0; round < 6; round++) {
-      advanceRound(generousSeason, undefined, false);
-      advanceRound(frugalSeason, undefined, false);
-    }
+    // Five rounds of each are built once; the sixth is played here.
+    const generousSeason = cachedWorld('generous-5', () => played(academy({ support: 5 }), 5)),
+      frugalSeason = cachedWorld('frugal-5', () => played(academy({ support: 1 }), 5));
+    advanceRound(generousSeason, undefined, false);
+    advanceRound(frugalSeason, undefined, false);
     expect(developed(generousSeason)).toBeGreaterThan(developed(frugalSeason));
     expect(fatigue(generousSeason)).toBeLessThan(fatigue(frugalSeason));
     const bills = (w: World) =>
@@ -320,14 +327,15 @@ describe('club operating policy', () => {
       `지역·글로벌 투자 ${moneyLabel(direct, bill.payments.investment!)}`,
     );
 
-    for (let round = 0; round < 6; round++) {
-      advanceRound(loud, undefined, false);
-      advanceRound(quiet, undefined, false);
-    }
-    expect(clubOf(loud).fans).toBeGreaterThan(clubOf(quiet).fans);
-    expect(BigInt(loud.expense)).toBeGreaterThan(BigInt(quiet.expense));
-    expect(BigInt(loud.cash)).toBeLessThan(BigInt(quiet.cash));
-    validateWorld(loud);
+    // Five rounds of each are built once; the sixth is played here.
+    const loudSeason = cachedWorld('loud-5', () => played(world({ globalMarketing: 5 }), 5)),
+      quietSeason = cachedWorld('quiet-5', () => played(plainThree(), 2));
+    advanceRound(loudSeason, undefined, false);
+    advanceRound(quietSeason, undefined, false);
+    expect(clubOf(loudSeason).fans).toBeGreaterThan(clubOf(quietSeason).fans);
+    expect(BigInt(loudSeason.expense)).toBeGreaterThan(BigInt(quietSeason.expense));
+    expect(BigInt(loudSeason.cash)).toBeLessThan(BigInt(quietSeason.cash));
+    validateWorld(loudSeason);
   });
 
   it('records a validated choice once and refuses unknown policies', () => {

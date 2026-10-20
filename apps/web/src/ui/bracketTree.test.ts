@@ -13,6 +13,7 @@ import {
   prepareSeason,
   tieAggregate,
 } from '../../../../packages/engine/src/index';
+import { cachedWorld } from '../../../../tests/fixtures/worlds';
 import { archivedKnockout, treeColumns, treeStart, type TreeColumn } from './bracketTree';
 
 function founded(country: CountryCode, year?: number) {
@@ -40,6 +41,15 @@ function founded(country: CountryCode, year?: number) {
   return w;
 }
 
+/** The founding (as `founded` makes it) with its cups or continental cups played to the end. */
+const finished = (country: CountryCode, competitions: 'cups' | 'europe', year?: number) =>
+  cachedWorld(`${competitions}-${country}-${year}`, () => {
+    const w = founded(country, year);
+    if (competitions === 'cups') finishCups(w);
+    else finishEurope(w);
+    return w;
+  });
+
 /** Each column's label with its drawn ties, byes and slots still to be drawn. */
 const shape = (columns: TreeColumn[] | undefined) =>
   columns?.map((column) => ({
@@ -53,8 +63,7 @@ describe('knockout tree', () => {
   it.each(['GER', 'FRA', 'ENG'] as CountryCode[])(
     'keeps the %s cup a list until the last 32, then draws 32강 to 결승',
     (code) => {
-      const w = founded(code);
-      finishCups(w);
+      const w = finished(code, 'cups');
       const rounds = w.cups!.find((cup) => cup.country === code)!.rounds;
       // A mass first round (8 ties and 56 byes in Germany) and the round of 64 stay off the tree.
       expect(rounds.map((round) => round.label).slice(0, 3)).toEqual(['1라운드', '64강', '32강']);
@@ -81,8 +90,7 @@ describe('knockout tree', () => {
   );
 
   it('puts the 2024 play-off and its byes before the round of 16', () => {
-    const w = founded('ENG', 2024);
-    finishEurope(w);
+    const w = finished('ENG', 'europe', 2024);
     const rounds = w.europe.find((t) => t.key === 'ucl')!.rounds!;
     // Drawn after the league phase: eight ties, eight seeds waiting, the rest to come.
     expect(shape(treeColumns(rounds.slice(0, 1)))).toEqual([
@@ -102,8 +110,7 @@ describe('knockout tree', () => {
   });
 
   it('skips the 1991 qualifying rounds: the final alone is the tree', () => {
-    const w = founded('ENG', 1991);
-    finishEurope(w);
+    const w = finished('ENG', 'europe', 1991);
     const rounds = w.europe.find((t) => t.key === 'ucl')!.rounds!;
     expect(rounds.map((round) => round.label)).toEqual(['예선 1라운드', '예선 2라운드', '결승']);
     expect(treeColumns(rounds.slice(0, 2))).toBeUndefined();
@@ -111,8 +118,12 @@ describe('knockout tree', () => {
   });
 
   it('rebuilds a closed 1980 season from its archived brackets with the same winners', () => {
-    const w = founded('ENG', 1980);
-    while (w.round < 46) advanceRound(w, undefined, false);
+    // The season played up to its close; the close itself runs here.
+    const w = cachedWorld('eng-1980-before-close', () => {
+      const w = founded('ENG', 1980);
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     const live = structuredClone(w);
     finishCups(live);
     finishEurope(live);

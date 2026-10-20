@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PersonCareer } from '../../contracts/src/types';
 import { createWorld } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 import {
   atCareerDate,
   careerDate,
@@ -154,27 +155,37 @@ it('ends a foreign coaching contract in skipped summer before recording the next
   const { advanceRound, closeSeason } = await import('./index');
   const { retirePerson } = await import('./careers');
   const { validateWorld } = await import('../../contracts/src/index');
-  const w = world(),
-    player = w.players[0],
-    person = w.people![player.id];
-  // Marked synthetic retiring candidate and foreign contract; all dates settle through real rounds.
-  player.born = 1910;
-  player.status = 'retired';
-  player.qualities = { understanding: 5, teaching: 5, judgement: 5 };
-  player.personality.professionalism = 5;
-  Object.assign(person, {
-    born: 1910,
-    qualities: { ...player.qualities },
-    professionalism: 5,
-    intention: { at: careerDate(w), draw: 0, willing: true },
+  // The season's rounds, cached: the person and his contract are found again in the copy.
+  const played = cachedWorld('foreign-contract', () => {
+    const w = world(),
+      player = w.players[0],
+      person = w.people![player.id];
+    // Marked synthetic retiring candidate and foreign contract; all dates settle through real rounds.
+    player.born = 1910;
+    player.status = 'retired';
+    player.qualities = { understanding: 5, teaching: 5, judgement: 5 };
+    player.personality.professionalism = 5;
+    Object.assign(person, {
+      born: 1910,
+      qualities: { ...player.qualities },
+      professionalism: 5,
+      intention: { at: careerDate(w), draw: 0, willing: true },
+    });
+    retirePerson(w, person);
+    const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
+    const job = openEmployment(w, person.id, person.coaching!.role, club);
+    job.contractUntil = { year: 1950, day: 324 };
+    job.wage = '101';
+    job.currency = w.currency;
+    for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
+    const at = person.employment.indexOf(job);
+    // The copy can stand for the live objects only while the world still holds them.
+    if (w.people![player.id] !== person || at < 0) throw new Error('the contract left the world');
+    return { w, id: player.id, club, at };
   });
-  retirePerson(w, person);
-  const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
-  const job = openEmployment(w, person.id, person.coaching!.role, club);
-  job.contractUntil = { year: 1950, day: 324 };
-  job.wage = '101';
-  job.currency = w.currency;
-  for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
+  const { w, club } = played,
+    person = w.people![played.id],
+    job = person.employment[played.at];
   // An old incumbent is replaced at the season boundary, after the last played day.
   w.managerMarket!.clubs[club] = [0, 1900];
   closeSeason(w);

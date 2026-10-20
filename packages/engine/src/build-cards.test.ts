@@ -43,9 +43,16 @@ import {
 } from './index';
 import { BUILD_OPTIONS, BUILD_SLOTS } from '../../contracts/src/build';
 import { clubBuildSchema } from '../../contracts/src/schema';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 const world = (seed = 'build-cards') =>
-  createWorld({ country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, level: 'easy' as const });
+  simulatedWorld({
+    country: 'ENG',
+    name: 'Build FC',
+    color: '#2a4d3c',
+    seed,
+    level: 'easy' as const,
+  });
 
 describe('manager styles', () => {
   it('offers four different schools a season, each a stable seeded order of all eight', () => {
@@ -128,8 +135,24 @@ describe('club builds', () => {
     expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
       '방향 카드',
     );
-    for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
-    validateWorld(w);
+    // The season then plays with that build: the same changes, then 46 rounds, built once.
+    const { before, after } = cachedWorld('build-season', () => {
+      const w = world();
+      operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
+      operate(w, { type: 'build', build: { revenue: 'commercial' } });
+      operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
+      operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
+      try {
+        operate(w, { type: 'build', build: { fans: 'nowhere' } as never });
+      } catch {
+        // Refused, as above.
+      }
+      const before = structuredClone(w);
+      for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
+      return { before, after: w };
+    });
+    expect(canonical(before)).toBe(canonical(w));
+    validateWorld(after);
   });
 
   it('offers thousands of builds where every card is a trade-off', () => {

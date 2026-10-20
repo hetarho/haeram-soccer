@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { encode, Saves } from './persistence';
 import { resetLegacy } from './legacyReset';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type GameEntry, type ParkedStore } from './games';
@@ -33,7 +33,7 @@ class Parked implements ParkedStore {
   }
 }
 async function saved(engine: string) {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Legacy',
     color: '#123456',

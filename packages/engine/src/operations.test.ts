@@ -12,6 +12,7 @@ import {
   staffCandidates,
   transferOffers,
 } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 const world = () => {
   const w = createWorld({
     country: 'ENG',
@@ -77,8 +78,8 @@ describe('club decisions', () => {
     expect(w.tactic).toBe('counter');
     expect(BigInt(w.cash)).toBeLessThan(before);
   });
-  it('settles recruitment, loans, sale and sponsorship once', () => {
-    const w = world();
+  /** Candidate 2 on loan and the local sponsor, each signed once; the second signing is refused. */
+  const loanAndSponsor = (w: ReturnType<typeof world>) => {
     w.cash = '999999999';
     const offer = transferOffers(w)[2];
     const before = BigInt(w.cash);
@@ -87,6 +88,11 @@ describe('club decisions', () => {
     expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('이미');
     operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 })).toThrow('남아');
+    return offer;
+  };
+  it('settles recruitment, loans, sale and sponsorship once', () => {
+    const w = world();
+    const offer = loanAndSponsor(w);
     const paid = () =>
       w.events
         .filter((e) => e.kind === 'sponsor:local')
@@ -98,8 +104,18 @@ describe('club decisions', () => {
     expect(w.events.filter((e) => e.kind === 'sponsor:local')).toHaveLength(1);
     expect(paid()).toBeGreaterThan(first);
     expect(first).toBeLessThan(BigInt(w.sponsors![0].annual));
-    simulateSeason(w);
-    expect(w.players.find((p) => p.id === offer.player.id)?.status).toBe('sold');
+    // The season's other rounds only lead to its close, where the loan ends: the same world,
+    // played on to its final round as the season command plays it, closes live.
+    const end = cachedWorld('loan-final-round', () => {
+      const w = world();
+      loanAndSponsor(w);
+      advanceRound(w);
+      advanceRound(w);
+      while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      return w;
+    });
+    simulateSeason(end);
+    expect(end.players.find((p) => p.id === offer.player.id)?.status).toBe('sold');
   });
   /** A campaign started before rules 1.19, as an older save holds it (→ECON-7). */
   const olderCampaign = (w: ReturnType<typeof world>) =>
@@ -112,29 +128,42 @@ describe('club decisions', () => {
       income: '0',
       fans: 0,
     });
+  /**
+   * An older campaign three of its four rounds in, with the commands' revision before it started:
+   * the rounds before its settling one only lead there. `busy` read and intervened first.
+   */
+  const campaignEve = (busy: boolean) =>
+    cachedWorld(`campaign-eve:${busy}`, () => {
+      const w = world();
+      if (busy) {
+        operate(w, { type: 'read-inbox' });
+        operate(w, { type: 'intervention', level: 1 });
+        operate(w, { type: 'read-inbox' });
+      }
+      const revision = w.revision;
+      olderCampaign(w);
+      for (let i = 0; i < 3; i++) advanceRound(w);
+      return { revision, w };
+    });
   it('refuses new campaigns, settles one started before and bounds support', () => {
-    const w = world();
-    expect(() => operate(w, { type: 'campaign', kind: 'outreach' })).toThrow(
+    expect(() => operate(world(), { type: 'campaign', kind: 'outreach' })).toThrow(
       '캠페인은 이제 없어요',
     );
-    olderCampaign(w);
-    for (let i = 0; i < 4; i++) advanceRound(w);
+    // A refused command changes nothing, so the campaign starts on a fresh world.
+    const { w } = campaignEve(false);
+    advanceRound(w);
     expect(w.campaigns).toHaveLength(0);
     expect(w.events.some((e) => e.kind === 'campaign-result')).toBe(true);
     for (let i = 0; i < 3; i++) operate(w, { type: 'support' });
     expect(() => operate(w, { type: 'support' })).toThrow('3회');
   });
   it('settles an older campaign by its round and kind, so earlier commands do not change its result', () => {
-    const plain = world(),
-      busy = world();
-    operate(busy, { type: 'read-inbox' });
-    operate(busy, { type: 'intervention', level: 1 });
-    operate(busy, { type: 'read-inbox' });
-    expect(busy.revision).toBe(plain.revision + 3);
-    for (const w of [plain, busy]) {
-      olderCampaign(w);
-      for (let i = 0; i < 4; i++) advanceRound(w);
-    }
+    const quiet = campaignEve(false),
+      eager = campaignEve(true);
+    expect(eager.revision).toBe(quiet.revision + 3);
+    const plain = quiet.w,
+      busy = eager.w;
+    for (const w of [plain, busy]) advanceRound(w);
     const result = (w: ReturnType<typeof world>) =>
       w.events.find((e) => e.kind === 'campaign-result');
     expect(result(plain)).toBeDefined();

@@ -1,8 +1,10 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
-import type { ManagerStyle, World } from '../../contracts/src/types';
+import type { Founding, ManagerStyle, World } from '../../contracts/src/types';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 import {
+  advanceRound,
   coachProspect,
   createWorld,
   dailyStaff,
@@ -23,8 +25,9 @@ import {
   STYLE_INFO,
 } from './index';
 
-function world(seed = 'manager-schools') {
-  const w = createWorld({
+/** The test club; `found` is `createWorld` for a world only searched through, so it is not kept on disk. */
+function world(seed = 'manager-schools', found: (input: Founding) => World = simulatedWorld) {
+  const w = found({
     country: 'ENG',
     name: 'Dugout Athletic',
     color: '#224466',
@@ -48,13 +51,21 @@ function market(seeds = 12, seasons = 30) {
 
 /** A new club whose first season offers a firefighter, with him hired. */
 function withFirefighter(seed: string) {
-  for (let n = 0; ; n++) {
-    const w = world(`${seed}-${n}`),
-      candidate = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
-    if (candidate < 0) continue;
-    operate(w, { type: 'hire', id: managerOffers(w)[candidate].id });
-    return w;
-  }
+  return cachedWorld(`firefighter:${seed}`, () => {
+    for (let n = 0; ; n++) {
+      const w = world(`${seed}-${n}`, createWorld),
+        candidate = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
+      if (candidate < 0) continue;
+      operate(w, { type: 'hire', id: managerOffers(w)[candidate].id });
+      return w;
+    }
+  });
+}
+
+/** Plays the season up to its last round as `simulateSeason` does, which then plays that round and closes. */
+function lastRound(w: World) {
+  while (w.round < 45 && !w.bankrupt) advanceRound(w, undefined, false);
+  return w;
 }
 
 /** Moves the clock to this season's 1 April and runs that day's staff business. */
@@ -162,10 +173,13 @@ describe('manager schools', () => {
 
 describe('the firefighter contract', () => {
   it('lets an unrenewed firefighter go at the close after a 1 April reminder', () => {
-    const w = withFirefighter('firefighter-leaves'),
-      hired = w.manager,
-      year = w.year;
+    const start = withFirefighter('firefighter-leaves'),
+      hired = start.manager,
+      year = start.year;
     expect(hired.until).toBe(year + 1);
+    const w = cachedWorld('firefighter-leaves', () =>
+      lastRound(withFirefighter('firefighter-leaves')),
+    );
     simulateSeason(w);
     const reminder = w.inbox!.find(
       (item) => item.kind === 'staff-renewal' && item.ref === hired.id,
@@ -223,14 +237,22 @@ describe('the firefighter contract', () => {
     // Extended past this season's close: nothing to renew until the next one.
     expect(managerRenewal(w)).toBeUndefined();
     expect(() => operate(w, { type: 'renew-manager' })).toThrow('재계약');
-    simulateSeason(w);
-    expect(w.manager.id).toBe(id);
-    expect(w.manager.interim).toBe(false);
-    expect(w.critical).toBeUndefined();
-    expect(w.inbox!.some((item) => item.ref === id && item.kind === 'staff-renewal')).toBe(false);
+    // The same renewal played on to the season's last round.
+    const season = cachedWorld('firefighter-stays', () => {
+      const w = withFirefighter('firefighter-stays');
+      operate(w, { type: 'renew-manager' });
+      return lastRound(w);
+    });
+    simulateSeason(season);
+    expect(season.manager.id).toBe(id);
+    expect(season.manager.interim).toBe(false);
+    expect(season.critical).toBeUndefined();
+    expect(season.inbox!.some((item) => item.ref === id && item.kind === 'staff-renewal')).toBe(
+      false,
+    );
     // One season at a time: his deal now ends at this season's close and can be renewed again.
-    expect(managerRenewal(w)?.until).toBe(w.year + 2);
-    validateWorld(w);
+    expect(managerRenewal(season)?.until).toBe(season.year + 2);
+    validateWorld(season);
   });
 
   it('refuses an unaffordable renewal without touching the club', () => {

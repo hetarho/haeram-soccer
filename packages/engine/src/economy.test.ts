@@ -3,12 +3,13 @@ import fc from 'fast-check';
 import type { CountryCode, TransferBid, World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
 import { currency } from '../../catalogs/src/index';
-import { advanceEconomy, createWorld } from './index';
+import { advanceEconomy } from './index';
 import { ratio } from './primitives';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** One club the year before its currency changes, holding every kind of live amount. */
 function beforeChange(country: CountryCode, year: number, amount: string) {
-  const w = createWorld({
+  const w = simulatedWorld({
     country,
     name: 'Ledger Rovers',
     color: '#445566',

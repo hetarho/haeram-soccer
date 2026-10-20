@@ -1,15 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import {
-  advanceRound,
-  createWorld,
-  activePlayers,
-  makePlayer,
-  npcSquad,
-  clubOf,
-  formationOf,
-} from './index';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { activePlayers, makePlayer, npcSquad, clubOf, formationOf } from './index';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { closeSeason } from './season';
 import { movePerson } from './npc-continuity';
@@ -17,14 +10,14 @@ import { lineOf } from './player';
 import { shortLine, SIGNING_CONFIG } from './signings';
 import { promotionAge } from './academy';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Twenty Rovers',
-    color: '#224433',
-    seed: 'squad-target',
-    level: 'easy',
-  });
+const FOUNDING = {
+  country: 'ENG',
+  name: 'Twenty Rovers',
+  color: '#224433',
+  seed: 'squad-target',
+  level: 'easy',
+} as const;
+const world = (rounds = 0) => simulatedWorld(FOUNDING, { rounds });
 function prospect(w: World, id: string, position: Position, age = 18, skill = 1) {
   const p = makePlayer(
     'ENG',
@@ -108,8 +101,8 @@ describe('twenty-player squad target', () => {
     expect(lineOf(generated.position)).toBe('DF');
   });
   it.each(['delegated', 'direct'] as const)('tops up sixteen players with academy %s', (mode) => {
-    const w = world();
-    while (w.round < 46) advanceRound(w, undefined, false);
+    // The founding world after 46 unobserved rounds, just before the close under test.
+    const w = world(46);
     thin(w);
     w.academy!.players = [];
     expect(activePlayers(w)).toHaveLength(16);

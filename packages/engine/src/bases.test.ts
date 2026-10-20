@@ -8,7 +8,6 @@ import {
   advanceRound,
   BASE_CONFIG,
   baseEffects,
-  createWorld,
   gateProjection,
   POLICY_DEFAULTS,
   policyEffects,
@@ -19,9 +18,10 @@ import {
   stepBase,
   transferOffers,
 } from './index';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 function world(policy?: Partial<ClubPolicy>) {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Bases Albion',
     color: '#2a4d3c',
@@ -33,10 +33,25 @@ function world(policy?: Partial<ClubPolicy>) {
   return w;
 }
 
-describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
-  it('stays absent and neutral for a club that never invests', () => {
+/** The club that never invests, four rounds in. */
+const fourRounds = () =>
+  cachedWorld('four-rounds', () => {
     const w = world();
     for (let round = 0; round < 4; round++) advanceRound(w, undefined, false);
+    return w;
+  });
+
+/** The same club at the end of its first season, before the close starts the next. */
+const seasonPlayed = () =>
+  cachedWorld('season-played', () => {
+    const w = fourRounds();
+    while (w.round < 46) advanceRound(w, undefined, false);
+    return w;
+  });
+
+describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
+  it('stays absent and neutral for a club that never invests', () => {
+    const w = fourRounds();
     expect('localBase' in w).toBe(false);
     expect('globalReach' in w).toBe(false);
     expect(baseEffects(w)).toEqual({
@@ -126,7 +141,9 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
   });
 
   it('pays a summer tour as the season starts, spreads the name and tires the rested squad', () => {
-    const w = world({ tour: 3 });
+    // The tour is the policy's as the close starts the next season: set for the close here.
+    const w = seasonPlayed();
+    w.policy = { ...POLICY_DEFAULTS, tour: 3 };
     expect(() => seasonTour(world())).not.toThrow();
     simulateSeason(w);
     const tour = w.events.find((event) => event.kind === 'tour')!;
@@ -135,7 +152,7 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
     expect(w.globalReach).toBeGreaterThanOrEqual(BASE_CONFIG.tourReach[2]);
     for (const player of activePlayers(w)) expect(player.fatigue).toBe(BASE_CONFIG.tourFatigue[2]);
     // No tour, no event, no fatigue.
-    const home = world();
+    const home = seasonPlayed();
     simulateSeason(home);
     expect(home.events.some((event) => event.kind === 'tour')).toBe(false);
     expect(activePlayers(home).every((player) => player.fatigue === 0)).toBe(true);

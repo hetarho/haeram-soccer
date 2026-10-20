@@ -39,17 +39,21 @@ import {
   untouchableVerdict,
 } from './index';
 import { sellPlayer } from './testing';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.';
 
-function world(seed = 'transfer-market') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Market Town',
-    color: '#224433',
-    seed,
-    level: 'easy' as const,
-  });
+function world(seed = 'transfer-market', fresh = false) {
+  const found = () =>
+    createWorld({
+      country: 'ENG',
+      name: 'Market Town',
+      color: '#224433',
+      seed,
+      level: 'easy' as const,
+    });
+  // Founding costs most of a test that plays no match: each seed is founded once and copied.
+  const w = fresh ? found() : cachedWorld(`founded:${seed}`, found);
   w.settings = legacySettings(2);
   w.cash = '999999999999';
   return w;
@@ -62,9 +66,16 @@ const share = (amount: string, percent: number) =>
   ((BigInt(amount) * BigInt(percent)) / 100n || 1n).toString();
 const outBids = (w: World) => (w.bids || []).filter((b) => b.direction === 'out');
 const inBids = (w: World) => (w.bids || []).filter((b) => b.direction === 'in');
+/** The default world after 45 unobserved rounds, one round before the season's last. */
+const round45 = () =>
+  cachedWorld('round-45', () => {
+    const w = world();
+    while (w.round < 45) advanceRound(w, undefined, false);
+    return w;
+  });
 /** Bids every fee-bearing candidate at a share of the asking fee and lets the clubs answer. */
-function bidAll(percent: number, seed?: string) {
-  const w = world(seed);
+function bidAll(percent: number, seed?: string, fresh = false) {
+  const w = world(seed, fresh);
   const offers = transferOffers(w);
   for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].fee, percent));
   const cash = BigInt(w.cash);
@@ -173,8 +184,12 @@ describe('transfer windows', () => {
   });
 
   it('opens the summer window at the season close and announces each opening once', () => {
-    const w = world();
-    while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
+    // The season lived day by day up to its last day; the close is played here.
+    const w = cachedWorld('last-day', () => {
+      const w = world();
+      while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
+      return w;
+    });
     expect(w).toMatchObject({ year: FOUNDING_YEAR, round: 46 });
     expect(transferWindow(w)).toMatchObject({ open: false, kind: 'summer', daysLeft: 1 });
     // The day after the final round closes the season and opens the next summer window.
@@ -193,7 +208,7 @@ describe('transfer windows', () => {
       [184, false],
     ]);
     // Whole-round jumps live through the same days without announcing twice.
-    const jumped = world();
+    const jumped = round45();
     while (jumped.round < 46) advanceRound(jumped, undefined, false);
     expect((jumped.inbox || []).filter((item) => item.kind.startsWith('window-'))).toHaveLength(3);
     jumped.calendar = { day: 153 };
@@ -275,8 +290,9 @@ describe('outgoing bids', () => {
   });
 
   it('answers modest bids with counters or refusals and is deterministic per seed', () => {
+    // One run from a world founded here, so the founding's determinism is checked too.
     const first = bidAll(80),
-      again = bidAll(80);
+      again = bidAll(80, undefined, true);
     expect(canonical(first.w)).toBe(canonical(again.w));
     const statuses = outBids(first.w).map((b) => b.status);
     expect(statuses).toContain('countered');
@@ -358,9 +374,11 @@ describe('outgoing bids', () => {
   });
 
   it('ends a negotiation left open by older rules once the window is closed', () => {
-    const w = world();
-    while (w.round < 45) advanceRound(w, undefined, false);
-    advanceDays(w, SEASON_END_DAY - 2 - currentDay(w));
+    const w = cachedWorld('two-days-before-the-end', () => {
+      const w = round45();
+      advanceDays(w, SEASON_END_DAY - 2 - currentDay(w));
+      return w;
+    });
     const offers = transferOffers(w);
     // 1.2.0 opened the summer window on 14 June, during the final rounds.
     const bid: TransferBid = {

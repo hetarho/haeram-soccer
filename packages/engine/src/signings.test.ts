@@ -33,19 +33,14 @@ import {
   transferOffers,
   transferWindowDays,
 } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 /**
  * A rich level-4 club on the winter window's opening day, half its season played with revenue far
  * beyond its wage bill, so only the rule under test holds the chief scout back.
  */
 function club(finance?: Direction['finance'], seed = 'staff-signings') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Scout Town',
-    color: '#224433',
-    seed,
-    level: 'easy' as const,
-  });
+  const w = founded(seed);
   w.intervention = 4;
   w.settings = legacySettings(4);
   w.cash = '999999999999';
@@ -55,6 +50,17 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
   if (finance) w.direction = { finance };
   return w;
 }
+/** The club as founded, built once per seed. */
+const founded = (seed: string) =>
+  cachedWorld(`founded:${seed}`, () =>
+    createWorld({
+      country: 'ENG',
+      name: 'Scout Town',
+      color: '#224433',
+      seed,
+      level: 'easy' as const,
+    }),
+  );
 const staffBids = (w: World) => (w.bids || []).filter((bid) => bid.staff);
 const reports = (w: World) =>
   (w.inbox || []).filter(
@@ -290,16 +296,10 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     drawShortlist(twin);
     expect(canonical(twin.shortlist)).toBe(again);
     // A club is founded on the summer opening with its shortlist, and saves it.
-    const founded = createWorld({
-      country: 'ENG',
-      name: 'Scout Town',
-      color: '#224433',
-      seed: 'shortlist',
-      level: 'easy' as const,
-    });
-    expect(founded.shortlist).toMatchObject({ year: founded.year, day: 0 });
-    expect(founded.shortlist!.entries.length).toBeGreaterThan(0);
-    expect(canonical(validateWorld(founded).shortlist)).toBe(canonical(founded.shortlist));
+    const founding = founded('shortlist');
+    expect(founding.shortlist).toMatchObject({ year: founding.year, day: 0 });
+    expect(founding.shortlist!.entries.length).toBeGreaterThan(0);
+    expect(canonical(validateWorld(founding).shortlist)).toBe(canonical(founding.shortlist));
   });
 
   it('drops a listed player who joins us or leaves the market list', () => {

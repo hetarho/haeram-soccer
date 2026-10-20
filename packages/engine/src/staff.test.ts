@@ -4,8 +4,10 @@ import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { footballIndex } from '../../catalogs/src/index';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 import type {
   ContractTerm,
+  Founding,
   ManagerStyle,
   Player,
   Staff,
@@ -79,8 +81,9 @@ const NEUTRAL = {
   bidAcceptance: 0,
 };
 
-function world(seed = 'coaching-staff') {
-  const w = createWorld({
+/** The test club; `found` is `createWorld` for a world only searched through, so it is not kept on disk. */
+function world(seed = 'coaching-staff', found: (input: Founding) => World = simulatedWorld) {
+  const w = found({
     country: 'ENG',
     name: 'Bootroom Rovers',
     color: '#334455',
@@ -89,6 +92,12 @@ function world(seed = 'coaching-staff') {
   });
   w.settings = legacySettings(2);
   w.cash = '999999999';
+  return w;
+}
+
+/** Plays the season up to its last round as `simulateSeason` does, which then plays that round and closes. */
+function lastRound(w: World) {
+  while (w.round < 45 && !w.bankrupt) advanceRound(w, undefined, false);
   return w;
 }
 
@@ -144,11 +153,18 @@ describe('coaching staff', () => {
   });
 
   it('plays a season identically with basic staff and with no staff at all (older saves)', () => {
-    const basic = world('neutral-season'),
-      old = world('neutral-season');
     // Before delegation existed the owner decided everything.
-    for (const w of [basic, old]) delete w.intervention;
-    delete old.staff;
+    const basic = cachedWorld('neutral-season:basic', () => {
+        const w = world('neutral-season');
+        delete w.intervention;
+        return lastRound(w);
+      }),
+      old = cachedWorld('neutral-season:old', () => {
+        const w = world('neutral-season');
+        delete w.intervention;
+        delete w.staff;
+        return lastRound(w);
+      });
     simulateSeason(basic);
     simulateSeason(old);
     expect(basic.staff).toHaveLength(8);
@@ -161,7 +177,8 @@ describe('coaching staff', () => {
   it('scales each department monotonically with ability and lifts it further with traits', () => {
     const baseline = world();
     const at = (role: StaffRole, ability: number, trait?: StaffTrait) =>
-      staffEffects(coach(structuredClone(baseline), role, ability, trait));
+      // `coach` replaces the staff list without touching its members, so a shallow copy will do.
+      staffEffects(coach({ ...baseline }, role, ability, trait));
     expect(departmentMultiplier(50)).toBe(1);
     expect(departmentMultiplier(70)).toBeCloseTo(1.1, 10);
     expect(departmentMultiplier(100)).toBe(1.25);
@@ -368,8 +385,7 @@ describe('coaching staff', () => {
   });
 
   it('keeps the club staffed through simulated seasons and stays valid', () => {
-    const w = world('staff-seasons');
-    simulateSeason(w);
+    const w = cachedWorld('staff-seasons', () => lastRound(simulateSeason(world('staff-seasons'))));
     simulateSeason(w);
     expect(w.staff!.map((member) => member.role)).toEqual(STAFF_ROLES);
     expect(w.staff!.every((member) => member.until === w.year + 1)).toBe(true);
@@ -545,13 +561,15 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   const coaches = (w: World, option: string) =>
     operate(w, { type: 'direction', key: 'coaches', option });
   /** The first test seed whose attack candidates satisfy `fits`, so a case never hangs on luck. */
-  const seedWhere = (prefix: string, fits: (abilities: number[]) => boolean) => {
-    for (let i = 0; i < 200; i++) {
-      const seed = `${prefix}-${i}`;
-      if (fits(staffCandidates(world(seed), 'attack').map((offer) => offer.ability))) return seed;
-    }
-    throw new Error(`no seed for ${prefix}`);
-  };
+  const seedWhere = (prefix: string, fits: (abilities: number[]) => boolean) =>
+    cachedWorld(`seed:${prefix}:${fits}`, () => {
+      for (let i = 0; i < 200; i++) {
+        const seed = `${prefix}-${i}`;
+        if (fits(staffCandidates(world(seed, createWorld), 'attack').map((offer) => offer.ability)))
+          return seed;
+      }
+      throw new Error(`no seed for ${prefix}`);
+    });
   /** A paid coach whose contract ended with the season just closed, the coaches delegated. */
   function expiring(seed: string, ability: number, option: string) {
     const w = world(seed);
@@ -771,16 +789,20 @@ describe('coach and manager careers', () => {
   });
 
   it('offers managers with ages and ceilings and grows the hired one each season', () => {
-    const w = world('manager-careers');
-    const offers = managerOffers(w);
+    const fresh = world('manager-careers');
+    const offers = managerOffers(fresh);
     for (const offer of offers) {
-      const age = w.year - offer.born!;
+      const age = fresh.year - offer.born!;
       expect(age).toBeGreaterThanOrEqual(32);
       expect(age).toBeLessThanOrEqual(64);
       expect(offer.potential!).toBeGreaterThanOrEqual(offer.ability);
       if (age >= 46) expect(offer.potential).toBe(offer.ability);
     }
-    w.manager = { ...w.manager, ability: 50, potential: 70, born: w.year - 34, interim: false };
+    const w = cachedWorld('manager-careers', () => {
+      const w = world('manager-careers');
+      w.manager = { ...w.manager, ability: 50, potential: 70, born: w.year - 34, interim: false };
+      return lastRound(w);
+    });
     simulateSeason(w);
     expect(w.manager.ability).toBeGreaterThan(50);
     expect(w.manager.ability).toBeLessThanOrEqual(70);
@@ -789,17 +811,23 @@ describe('coach and manager careers', () => {
   });
 
   it('retires a manager at 70 and keeps older saves without ages in place', () => {
-    const w = world('manager-retire');
-    w.manager = { ...w.manager, born: w.year - 69, potential: w.manager.ability };
+    const w = cachedWorld('manager-retire', () => {
+      const w = world('manager-retire');
+      w.manager = { ...w.manager, born: w.year - 69, potential: w.manager.ability };
+      return lastRound(w);
+    });
     simulateSeason(w);
     expect(w.critical).toBeDefined();
     expect(w.manager.interim).toBe(true);
-    const old = world('manager-no-age');
-    const { born: _born, potential: _potential, ...rest } = old.manager;
-    void _born;
-    void _potential;
-    old.manager = { ...rest, since: old.year };
-    const ability = old.manager.ability;
+    const { w: old, ability } = cachedWorld('manager-no-age', () => {
+      const old = world('manager-no-age');
+      const { born: _born, potential: _potential, ...rest } = old.manager;
+      void _born;
+      void _potential;
+      old.manager = { ...rest, since: old.year };
+      const ability = old.manager.ability;
+      return { w: lastRound(old), ability };
+    });
     simulateSeason(old);
     expect(old.manager.ability).toBe(ability);
   });
@@ -951,8 +979,12 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
   });
 
   it("lets delegated staff sign and renew coaches for 코치 기조's term", () => {
-    const seed = Array.from({ length: 200 }, (_, i) => `delegated-terms-${i}`).find((candidate) =>
-      staffCandidates(world(candidate), 'attack').some((offer) => offer.ability >= 65),
+    const seed = cachedWorld('seed:delegated-terms', () =>
+      Array.from({ length: 200 }, (_, i) => `delegated-terms-${i}`).find((candidate) =>
+        staffCandidates(world(candidate, createWorld), 'attack').some(
+          (offer) => offer.ability >= 65,
+        ),
+      ),
     )!;
     const w = world(seed);
     w.direction = { coaches: 'elite' };
@@ -1101,7 +1133,11 @@ describe('the 단장 (STAFF-20)', () => {
       ),
     ).toBe(true);
     expect(
-      Array.from({ length: 12 }, (_, i) => staffCandidates(world(`scouts-${i}`), 'scout'))
+      cachedWorld('scout-offers', () =>
+        Array.from({ length: 12 }, (_, i) =>
+          staffCandidates(world(`scouts-${i}`, createWorld), 'scout'),
+        ),
+      )
         .flat()
         .every((offer) => !offer.trait || offer.trait === 'spotter'),
     ).toBe(true);

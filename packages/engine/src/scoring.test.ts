@@ -14,6 +14,8 @@ import {
   simulateSeason,
   FOUNDING_YEAR,
 } from './index';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { transferredScorerWorld } from '../../../tests/fixtures/transferred-scorer';
 
 function world() {
   const w = createWorld({
@@ -26,11 +28,20 @@ function world() {
   w.cash = '999999999999';
   return w;
 }
+/** The world above after `rounds` unobserved rounds, each span built on the one before. */
+function afterRounds(rounds: number): ReturnType<typeof world> {
+  return cachedWorld(`rounds:${rounds}`, () => {
+    const spans = [1, 2, 7],
+      from = spans.filter((n) => n < rounds).at(-1),
+      w = from ? afterRounds(from) : world();
+    while (w.round < rounds) advanceRound(w, undefined, false);
+    return w;
+  });
+}
 
 describe('actual league scorer standings', () => {
   it('accounts for every real goal and starting appearance of every league club', () => {
-    const w = world();
-    for (let round = 0; round < 7; round++) advanceRound(w, undefined, false);
+    const w = afterRounds(7);
     // 조직력 moves with every settled round (→LEAGUE-12); the replay below needs the round's own.
     const cohesion = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
     advanceRound(w, undefined, false);
@@ -82,11 +93,15 @@ describe('actual league scorer standings', () => {
   });
 
   it('counts an appearance for every player who took the pitch, substitutes included', () => {
-    const w = world();
-    w.year = 2024;
-    w.currency = currency('ENG', 2024).code;
-    prepareSeason(w);
-    for (let round = 0; round < 4; round++) advanceRound(w, undefined, false);
+    const w = cachedWorld('modern:3', () => {
+      const w = world();
+      w.year = 2024;
+      w.currency = currency('ENG', 2024).code;
+      prepareSeason(w);
+      for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
+      return w;
+    });
+    advanceRound(w, undefined, false);
     const own = w.scorerSeason!.players.filter((p) => p.club === w.playerClub);
     const played = w.ownMatches
       .filter((m) => isScoringFixture(w, m))
@@ -117,8 +132,11 @@ describe('actual league scorer standings', () => {
   });
 
   it('preserves scorer references on off days and excludes cup goals from the league race', () => {
-    const w = world();
-    advanceDays(w, 7, undefined, false);
+    const w = cachedWorld('days:7', () => {
+      const w = world();
+      advanceDays(w, 7, undefined, false);
+      return w;
+    });
     const season = w.scorerSeason;
     const history = season!.history;
     const before = canonical(season);
@@ -133,9 +151,7 @@ describe('actual league scorer standings', () => {
   });
 
   it('starts older saves at the next actual league round without projecting past scorers', () => {
-    const w = world();
-    advanceRound(w, undefined, false);
-    advanceRound(w, undefined, false);
+    const w = afterRounds(2);
     delete w.scorerSeason;
     advanceDays(w, 1, undefined, false);
     expect(w.scorerSeason!.trackedSinceRound).toBe(3);
@@ -151,9 +167,13 @@ describe('actual league scorer standings', () => {
   });
 
   it('resets standings and competition membership when the season or league changes', () => {
-    const w = world();
-    advanceRound(w, undefined, false);
-    const previous = structuredClone(w.scorerSeason);
+    const previous = afterRounds(1).scorerSeason;
+    // The rest of the season is setup: only its close (simulateSeason's last step) runs here.
+    const w = cachedWorld('last-round', () => {
+      const w = afterRounds(1);
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     simulateSeason(w);
     expect(w.scorerSeason!.year).toBe(FOUNDING_YEAR + 1);
     expect(w.scorerSeason!.players).toEqual([]);
@@ -181,8 +201,10 @@ describe('actual league scorer standings', () => {
 
 describe('retained scorer transfers', () => {
   it('keeps one identity and exact per-club contributions through a real in-league sale', async () => {
-    const { transferredScorerWorld } = await import('../../../tests/fixtures/transferred-scorer');
-    const { w, playerId, buyer } = transferredScorerWorld();
+    const transferred = () => cachedWorld('transferred', () => transferredScorerWorld());
+    const fixture = transferred(),
+      { playerId, buyer } = fixture;
+    let w = fixture.w;
     const rows = w.scorerSeason!.players.filter((p) => p.id === playerId);
     expect(rows).toHaveLength(1);
     expect(rows[0].club).toBe(buyer);
@@ -212,6 +234,12 @@ describe('retained scorer transfers', () => {
       corrupt(copy);
       expect(() => validateWorld(copy)).toThrow();
     }
+    // The rest of the season is setup: only its close (simulateSeason's last step) runs here.
+    w = cachedWorld('transferred:last-round', () => {
+      const { w } = transferred();
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     simulateSeason(w);
     const archived = w.history.at(-1)!.scorers!.find((p) => p.name === rows[0].name)!;
     expect(archived).toBeDefined();

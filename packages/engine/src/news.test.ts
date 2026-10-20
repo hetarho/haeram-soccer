@@ -8,7 +8,6 @@ import {
   clubNews,
   clubOf,
   closeSeason,
-  createWorld,
   currentDay,
   dayCountedFrom,
   prepareCups,
@@ -18,15 +17,17 @@ import {
   trainingInjuries,
 } from './index';
 import type { NewsItem } from './news';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
-const world = (seed = 'news') =>
-  createWorld({
+const founding = (seed = 'news') =>
+  ({
     country: 'ENG',
     name: 'News United',
     color: '#24664f',
     seed,
-    level: 'easy' as const,
-  });
+    level: 'easy',
+  }) as const;
+const world = (seed = 'news') => simulatedWorld(founding(seed));
 const results = (w: World) =>
   w.ownMatches
     .filter((m) => m.year === w.year)
@@ -37,8 +38,7 @@ const results = (w: World) =>
     });
 
 describe('club news', () => {
-  const w = world();
-  for (let round = 0; round < 30; round++) advanceRound(w, undefined, false);
+  const w = simulatedWorld(founding(), { rounds: 30 });
   const news = clubNews(w);
 
   it('derives the same feed from the same facts, newest first, with unique stable IDs', () => {
@@ -71,8 +71,12 @@ describe('club news', () => {
   });
 
   it('turns a won league into a celebrated honour at the start of the next season', () => {
-    const champion = world('news-title');
-    while (champion.round < 46) advanceRound(champion, undefined, false);
+    // Any season's last round will do: the league table is forced below.
+    const champion = cachedWorld('last-round', () => {
+      const w = simulatedWorld(founding(), { rounds: 30 });
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     for (const id of Object.keys(champion.tables))
       if (id !== champion.playerClub) champion.tables[id].points = 0;
     champion.tables[champion.playerClub].points = 999;

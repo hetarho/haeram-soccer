@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import {
   advanceDays,
-  createWorld,
   facilityInvestmentPreview,
   fixedCostRunway,
   gateProjection,
@@ -13,9 +12,10 @@ import {
   ticketInvestmentPreview,
 } from './index';
 import { professionalStart } from './testing';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 function world() {
-  const w = createWorld({
+  const w = simulatedWorld({
     country: 'ENG',
     name: 'Investment United',
     color: '#224433',
@@ -51,15 +51,23 @@ describe('shared club investment forecasts', () => {
     expect(operatingCosts(w).maintenance).toBe(costs.maintenance);
     expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow('진행 중');
     expect(facilityInvestmentPreview(w, 'stadium').eligible).toBe(false);
-    advanceDays(w, 180, undefined, false);
-    expect(w.stadium).toBe(1);
-    expect(w.facilityWorks).toBeUndefined();
-    expect(gateProjection(w).capacity).toBe(5000);
-    expect(operatingCosts(w).maintenance).toBe(preview.maintenanceAfter);
+    // The same work 179 days on; its last day passes here.
+    const building = cachedWorld('stadium-work-day-179', () => {
+      const w = world();
+      operate(w, { type: 'facility', part: 'stadium' });
+      advanceDays(w, 179, undefined, false);
+      return w;
+    });
+    expect(building.stadium).toBe(0);
+    advanceDays(building, 1, undefined, false);
+    expect(building.stadium).toBe(1);
+    expect(building.facilityWorks).toBeUndefined();
+    expect(gateProjection(building).capacity).toBe(5000);
+    expect(operatingCosts(building).maintenance).toBe(preview.maintenanceAfter);
     expect(BigInt(preview.maintenanceAfter) - BigInt(costs.maintenance)).toBe(
       BigInt(preview.maintenanceIncrease),
     );
-    expect(w.events.some((event) => event.kind === 'facility-open')).toBe(true);
+    expect(building.events.some((event) => event.kind === 'facility-open')).toBe(true);
   });
 
   it('shows the true cash shortfall and cannot make an unaffordable investment', () => {

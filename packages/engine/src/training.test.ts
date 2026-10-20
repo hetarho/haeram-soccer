@@ -1,13 +1,14 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { Player, TrainingFocus } from '../../contracts/src/types';
+import type { Player, TrainingFocus, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { mainOvr, TRAINING_GAIN, weightsFor } from './player';
 import { settleRate } from './adaptation';
 import { TRAINING_INJURY, trainingInjuryChance } from './careers';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 import {
   activePlayers,
   advanceDays,
@@ -27,6 +28,10 @@ import {
 } from './index';
 
 function world(focus: TrainingFocus = 'balanced') {
+  return cachedWorld(`world:${focus}`, () => founded(focus));
+}
+
+function founded(focus: TrainingFocus) {
   const w = createWorld({
     country: 'ENG',
     name: 'Academy United',
@@ -55,6 +60,14 @@ function world(focus: TrainingFocus = 'balanced') {
   return w;
 }
 
+/** The hard-training world after its first round. */
+const firstRound = () =>
+  cachedWorld('hard:round-1', () => {
+    const w = world('hard');
+    advanceRound(w, undefined, false);
+    return w;
+  });
+
 const development = (w: ReturnType<typeof world>) =>
   w.players.reduce((sum, player) => sum + (player.developed || 0), 0);
 const ovr = (player: Player) => mainOvr(player);
@@ -69,21 +82,24 @@ describe('earned player growth and training choices', () => {
   });
 
   it('settles faster hard development against stronger recovery on the same seeded rounds', () => {
-    const balanced = world(),
-      youth = world('hard'),
-      recovery = world('recovery');
-    const fatigueOverRounds = new Map([
-      [balanced, 0],
-      [youth, 0],
-      [recovery, 0],
-    ]);
-    for (let round = 0; round < 6; round++)
-      for (const w of [balanced, youth, recovery]) {
+    /** One round of each world, the owner renewing the order and the fatigue summed after it. */
+    const play = (worlds: World[], sums: number[]) =>
+      worlds.forEach((w, i) => {
         // An order holds four rounds; the owner renews it every round here.
         w.trainingOrders = { assistant: { ...w.trainingOrders!.assistant!, rounds: 4 } };
         advanceRound(w, undefined, false);
-        fatigueOverRounds.set(w, fatigueOverRounds.get(w)! + fatigue(w));
-      }
+        sums[i] += fatigue(w);
+      });
+    // The first five rounds are cached; the sixth is played here.
+    const { worlds, sums } = cachedWorld('six-rounds', () => {
+      const worlds = [world(), world('hard'), world('recovery')],
+        sums = [0, 0, 0];
+      for (let round = 0; round < 5; round++) play(worlds, sums);
+      return { worlds, sums };
+    });
+    play(worlds, sums);
+    const [balanced, youth, recovery] = worlds;
+    const fatigueOverRounds = new Map(worlds.map((w, i) => [w, sums[i]]));
     expect(development(youth)).toBeGreaterThan(development(balanced));
     expect(development(balanced)).toBeGreaterThan(0);
     expect(development(recovery)).toBeGreaterThan(0);
@@ -113,8 +129,7 @@ describe('earned player growth and training choices', () => {
   });
 
   it('prevents a focus change or duplicate boundary from awarding extra growth or recovery', () => {
-    const w = world('hard');
-    advanceRound(w, undefined, false);
+    const w = firstRound();
     const before = canonical(w.players);
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
@@ -135,8 +150,7 @@ describe('earned player growth and training choices', () => {
   });
 
   it('preserves focus, actual development and the boundary guard across export/import', async () => {
-    const w = world('hard');
-    advanceRound(w, undefined, false);
+    const w = firstRound();
     const restored = (await decode(await encode(w, 1, 0))).world;
     expect(canonical(restored)).toBe(canonical(w));
     const before = canonical(restored);

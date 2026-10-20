@@ -2,6 +2,7 @@ import { lineOf } from './player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import type { World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import {
   advanceRound,
@@ -16,6 +17,7 @@ import {
   simulateSeason,
 } from './index';
 import { sellPlayer } from './testing';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
 function world(strong = false) {
   const w = createWorld({
@@ -60,7 +62,7 @@ describe('milestones from retained club facts', () => {
   });
 
   it('recognizes actual saved preparation, settled matches, wins and paid investments', () => {
-    const w = world(true);
+    let w = world(true);
     operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
     expect(byId(w, 'preparation').done).toBe(true);
     operate(w, { type: 'lineup', ids: null });
@@ -73,7 +75,20 @@ describe('milestones from retained club facts', () => {
     progressFacilityWorks(w);
     expect(byId(w, 'facilities').done).toBe(true);
     expect(w.ownMatches).toHaveLength(0);
-    advanceToNextMatch(w, undefined, false);
+    // The days up to the first match are setup, built once from this very world.
+    const played = cachedWorld('first-match', () => {
+      const w = world(true);
+      operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
+      operate(w, { type: 'lineup', ids: null });
+      operate(w, { type: 'facility', part: 'stadium' });
+      w.facilityWorks!.stadium!.day -= 180;
+      progressFacilityWorks(w);
+      const start = structuredClone(w);
+      advanceToNextMatch(w, undefined, false);
+      return { start, w };
+    });
+    expect(canonical(played.start)).toBe(canonical(w));
+    w = played.w;
     expect(w.ownMatches.length).toBeGreaterThan(0);
     const match = w.ownMatches[0],
       won =
@@ -90,23 +105,36 @@ describe('milestones from retained club facts', () => {
   });
 
   it('requires earned growth instead of a focus change and retains it after a player leaves', () => {
-    const w = world(),
-      prospect = w.players.find((player) => lineOf(player.position) === 'MF')!;
-    for (const player of w.players) {
-      player.born = w.year - 32;
-      w.people![player.id].born = player.born;
-      for (const a of ATTRIBUTES) player.attrs[a] = 40;
-      player.potential = 85;
-    }
-    prospect.born = w.year - 20;
-    w.people![prospect.id].born = prospect.born;
+    const prospectOf = (w: World) => w.players.find((player) => lineOf(player.position) === 'MF')!;
     // A round of 회복 grows him a little (×0.4), short of the milestone's whole point.
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
-    advanceRound(w, undefined, false);
+    const recovered = () =>
+      cachedWorld('growth:recovery', () => {
+        const w = world(),
+          prospect = prospectOf(w);
+        for (const player of w.players) {
+          player.born = w.year - 32;
+          w.people![player.id].born = player.born;
+          for (const a of ATTRIBUTES) player.attrs[a] = 40;
+          player.potential = 85;
+        }
+        prospect.born = w.year - 20;
+        w.people![prospect.id].born = prospect.born;
+        operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
+        advanceRound(w, undefined, false);
+        return w;
+      });
+    let w = recovered();
     expect(byId(w, 'player-growth').current).toBeLessThan(1);
     operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     expect(byId(w, 'player-growth').done).toBe(false);
-    for (let round = 0; round < 20; round++) advanceRound(w, undefined, false);
+    // The twenty rounds of hard training are setup, the same world built once.
+    w = cachedWorld('growth:hard', () => {
+      const w = recovered();
+      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+      for (let round = 0; round < 20; round++) advanceRound(w, undefined, false);
+      return w;
+    });
+    const prospect = prospectOf(w);
     expect(prospect.developed).toBeGreaterThanOrEqual(1);
     expect(byId(w, 'player-growth').done).toBe(true);
     // A fee-bearing sale needs an open transfer window: move the clock into the winter window.
@@ -121,11 +149,18 @@ describe('milestones from retained club facts', () => {
   });
 
   it('celebrates all milestones from an actual season and preserves archive evidence after decline', async () => {
-    const w = world(true);
-    operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
-    operate(w, { type: 'facility', part: 'stadium' });
-    for (const key of ['localInvest', 'globalMarketing'] as const)
-      operate(w, { type: 'policy', key, level: 5 });
+    // Each season's rounds are setup, built once; only its close (simulateSeason's last step) runs.
+    const promoting = () =>
+      cachedWorld('promoting:last-round', () => {
+        const w = world(true);
+        operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
+        operate(w, { type: 'facility', part: 'stadium' });
+        for (const key of ['localInvest', 'globalMarketing'] as const)
+          operate(w, { type: 'policy', key, level: 5 });
+        while (w.round < 46) advanceRound(w, undefined, false);
+        return w;
+      });
+    const w = promoting();
     simulateSeason(w);
     const milestones = clubMilestones(w),
       promotedTier = clubOf(w).tier;
@@ -139,17 +174,31 @@ describe('milestones from retained club facts', () => {
       expect(item.current).toBeLessThanOrEqual(item.target);
       expect(item.progress).toBe(100);
     }
-    const restored = (await decode(await encode(w, 1, 0))).world;
+    let restored = (await decode(await encode(w, 1, 0))).world;
     expect(clubMilestones(restored)).toEqual(milestones);
     expect(canonical(restored)).toBe(canonical(w));
     // Force a losing roster, then let the real league close and archive its relegation.
-    for (const player of restored.players) {
-      for (const a of ATTRIBUTES) player.attrs[a] = 5;
-      player.potential = 5;
-    }
-    for (const club of restored.clubs) if (club.id !== restored.playerClub) club.strength = 95;
-    restored.manager.ability = 0;
-    operate(restored, { type: 'lineup', ids: null });
+    const losing = (w: World) => {
+      for (const player of w.players) {
+        for (const a of ATTRIBUTES) player.attrs[a] = 5;
+        player.potential = 5;
+      }
+      for (const club of w.clubs) if (club.id !== w.playerClub) club.strength = 95;
+      w.manager.ability = 0;
+      operate(w, { type: 'lineup', ids: null });
+    };
+    losing(restored);
+    const declining = cachedWorld('declining:last-round', () => {
+      const w = promoting();
+      simulateSeason(w);
+      losing(w);
+      const start = structuredClone(w);
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return { start, w };
+    });
+    // The cached season starts from this very restored world.
+    expect(canonical(declining.start)).toBe(canonical(restored));
+    restored = declining.w;
     simulateSeason(restored);
     expect(clubOf(restored).tier).toBeGreaterThan(promotedTier);
     expect(byId(restored, 'promotion').done).toBe(true);

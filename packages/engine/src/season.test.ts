@@ -30,6 +30,7 @@ import {
   tieAggregate,
 } from './index';
 import { professionalStart } from './testing';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** A club whose first season is `year`, with a squad and manager of that time. */
 function founded(year?: number) {
@@ -57,9 +58,28 @@ function founded(year?: number) {
   return w;
 }
 
+/** Plays `w` to its last round, unobserved, and stops before the close. */
+function toLastRound(w: World) {
+  while (w.round < 46) advanceRound(w, undefined, false);
+  return w;
+}
+
+/** The archive club's first season (amateur, professional or in 1980) at its last round. */
+function archiveLastRound(start: 'amateur' | 'professional' | 1980) {
+  return cachedWorld(`archive-last-round-${start}`, () =>
+    toLastRound(
+      start === 1980
+        ? founded(1980)
+        : start === 'professional'
+          ? professionalStart(founded())
+          : founded(),
+    ),
+  );
+}
+
 /** Plays a season to its last round and closes it; `live` is the world as the close archived it. */
 function closedSeason(w: World) {
-  while (w.round < 46) advanceRound(w, undefined, false);
+  toLastRound(w);
   const live = structuredClone(w);
   finishCups(live);
   finishEurope(live);
@@ -68,67 +88,67 @@ function closedSeason(w: World) {
 }
 
 describe('closed season archive', () => {
-  it.each([
-    ['amateur', (w: World) => w],
-    ['professional', professionalStart],
-  ])('keeps the %s league scorers, the rank after every round and the Elo spread', (_, start) => {
-    const { w, live, season } = closedSeason(start(founded()));
-    const scorers = season.scorers!;
-    const table = live.scorerSeason!.players.filter((p) => p.goals > 0);
-    expect(scorers).toHaveLength(Math.min(10, table.length));
-    expect(scorers.length).toBeGreaterThan(0);
-    scorers.forEach((scorer, i) => {
-      expect(scorer.club).toBeGreaterThanOrEqual(0);
-      expect(scorer.club).toBeLessThan(w.clubs.length);
-      expect(table).toContainEqual(
-        expect.objectContaining({ ...scorer, club: w.clubs[scorer.club].id }),
+  it.each(['amateur', 'professional'] as const)(
+    'keeps the %s league scorers, the rank after every round and the Elo spread',
+    (start) => {
+      const { w, live, season } = closedSeason(archiveLastRound(start));
+      const scorers = season.scorers!;
+      const table = live.scorerSeason!.players.filter((p) => p.goals > 0);
+      expect(scorers).toHaveLength(Math.min(10, table.length));
+      expect(scorers.length).toBeGreaterThan(0);
+      scorers.forEach((scorer, i) => {
+        expect(scorer.club).toBeGreaterThanOrEqual(0);
+        expect(scorer.club).toBeLessThan(w.clubs.length);
+        expect(table).toContainEqual(
+          expect.objectContaining({ ...scorer, club: w.clubs[scorer.club].id }),
+        );
+        const next = scorers[i + 1];
+        if (next)
+          expect(
+            scorer.goals > next.goals ||
+              (scorer.goals === next.goals && scorer.appearances <= next.appearances),
+          ).toBe(true);
+      });
+      // Nobody left out scored more than the last one kept.
+      expect(table.filter((p) => p.goals > scorers.at(-1)!.goals).length).toBeLessThan(
+        scorers.length,
       );
-      const next = scorers[i + 1];
-      if (next)
-        expect(
-          scorer.goals > next.goals ||
-            (scorer.goals === next.goals && scorer.appearances <= next.appearances),
-        ).toBe(true);
-    });
-    // Nobody left out scored more than the last one kept.
-    expect(table.filter((p) => p.goals > scorers.at(-1)!.goals).length).toBeLessThan(
-      scorers.length,
-    );
 
-    // One rank per settled round, read from the snapshots the live rank graph draws.
-    const snapshots = w
-      .rankHistory!.filter(
-        (s) =>
-          s.year === season.year &&
-          s.round > 0 &&
-          s.tier === season.tier &&
-          s.group === season.group,
-      )
-      .sort((a, b) => a.round - b.round);
-    expect(season.ranks).toHaveLength(46);
-    expect(season.ranks).toEqual(
-      snapshots.map((s) => s.rows.findIndex(([i]) => w.clubs[i].id === w.playerClub) + 1),
-    );
-    expect(season.ranks!.at(-1)).toBe(season.rank);
+      // One rank per settled round, read from the snapshots the live rank graph draws.
+      const snapshots = w
+        .rankHistory!.filter(
+          (s) =>
+            s.year === season.year &&
+            s.round > 0 &&
+            s.tier === season.tier &&
+            s.group === season.group,
+        )
+        .sort((a, b) => a.round - b.round);
+      expect(season.ranks).toHaveLength(46);
+      expect(season.ranks).toEqual(
+        snapshots.map((s) => s.rows.findIndex(([i]) => w.clubs[i].id === w.playerClub) + 1),
+      );
+      expect(season.ranks!.at(-1)).toBe(season.rank);
 
-    const world = live.clubs.map(eloOf),
-      league = ownLeagueClubs(live).map(eloOf);
-    expect(season.eloRange).toEqual(
-      [Math.min(...world), Math.max(...world), Math.min(...league), Math.max(...league)].map(
-        Math.round,
-      ),
-    );
-    const [low, high, leagueLow, leagueHigh] = season.eloRange!;
-    expect(low).toBeLessThanOrEqual(leagueLow);
-    expect(leagueLow).toBeLessThanOrEqual(season.elo!);
-    expect(season.elo!).toBeLessThanOrEqual(leagueHigh);
-    expect(leagueHigh).toBeLessThanOrEqual(high);
-    // Decoding keeps every archived field.
-    expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
-  });
+      const world = live.clubs.map(eloOf),
+        league = ownLeagueClubs(live).map(eloOf);
+      expect(season.eloRange).toEqual(
+        [Math.min(...world), Math.max(...world), Math.min(...league), Math.max(...league)].map(
+          Math.round,
+        ),
+      );
+      const [low, high, leagueLow, leagueHigh] = season.eloRange!;
+      expect(low).toBeLessThanOrEqual(leagueLow);
+      expect(leagueLow).toBeLessThanOrEqual(season.elo!);
+      expect(season.elo!).toBeLessThanOrEqual(leagueHigh);
+      expect(leagueHigh).toBeLessThanOrEqual(high);
+      // Decoding keeps every archived field.
+      expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
+    },
+  );
 
   it('archives the 1980 cup and continental brackets from the last 32 to the final', () => {
-    const { w, live, season } = closedSeason(founded(1980));
+    const { w, live, season } = closedSeason(archiveLastRound(1980));
     const cup = live.cups!.find((c) => c.country === 'ENG')!;
     const sources = new Map([
       ['cup', { id: cupKey('ENG'), rounds: cup.rounds, fixtures: cup.fixtures }],
@@ -175,7 +195,7 @@ describe('closed season archive', () => {
   });
 
   it('rejects archived bracket rows and scorers that point nowhere or contradict their legs', () => {
-    const { w, season } = closedSeason(founded());
+    const { w, season } = closedSeason(archiveLastRound('amateur'));
     const corruptions: ((row: number[]) => void)[] = [
       (row) => (row[0] = w.clubs.length),
       (row) => (row[1] = w.clubs.length),
@@ -208,13 +228,17 @@ describe('closed season archive', () => {
   });
 
   it('renews no contract by itself: unrenewed players leave at the close (→CLUB-26, CLUB-28)', () => {
-    const w = founded();
-    // Unanswered talks stay open: nobody signs for the owner.
-    w.intervention = 1;
-    w.settings = legacySettings(1);
-    for (const p of w.players) p.until = w.year + 1;
-    const year = w.year,
-      before = new Map(w.players.map((p) => [p.id, { wage: p.wage, until: p.until }]));
+    const { w, year, contracts } = cachedWorld('unrenewed-last-round', () => {
+      const w = founded();
+      // Unanswered talks stay open: nobody signs for the owner.
+      w.intervention = 1;
+      w.settings = legacySettings(1);
+      for (const p of w.players) p.until = w.year + 1;
+      const year = w.year,
+        contracts = w.players.map((p) => [p.id, { wage: p.wage, until: p.until }] as const);
+      return { w: toLastRound(w), year, contracts };
+    });
+    const before = new Map(contracts);
     closedSeason(w);
     const founders = w.players.filter((p) => before.has(p.id)),
       left = founders.filter((p) => p.status === 'sold');
@@ -240,14 +264,17 @@ describe('closed season archive', () => {
   });
 
   it('refills a squad its expiring contracts emptied at its division’s level and wage (→CLUB-3, CLUB-25, CLUB-28)', () => {
-    const w = founded();
-    w.intervention = 1;
-    w.settings = legacySettings(1);
-    // An XI far above the amateur league and the division it goes up to.
-    for (const p of w.players) {
-      p.until = w.year + 1;
-      for (const a of ATTRIBUTES) p.attrs[a] = 90;
-    }
+    const w = cachedWorld('expiring-xi-last-round', () => {
+      const w = founded();
+      w.intervention = 1;
+      w.settings = legacySettings(1);
+      // An XI far above the amateur league and the division it goes up to.
+      for (const p of w.players) {
+        p.until = w.year + 1;
+        for (const a of ATTRIBUTES) p.attrs[a] = 90;
+      }
+      return toLastRound(w);
+    });
     const { live } = closedSeason(w);
     const own = clubOf(w),
       xi = rating(live, clubOf(live)),
@@ -273,12 +300,15 @@ describe('closed season archive', () => {
   });
 
   it('keeps no partial scorer table or rank series from a season tracked midway', () => {
-    const w = founded();
-    advanceRound(w, undefined, false);
-    advanceRound(w, undefined, false);
-    // An older save starts both records at the next round.
-    delete w.scorerSeason;
-    w.rankHistory = w.rankHistory!.filter((s) => s.round > 1);
+    const w = cachedWorld('tracked-midway-last-round', () => {
+      const w = founded();
+      advanceRound(w, undefined, false);
+      advanceRound(w, undefined, false);
+      // An older save starts both records at the next round.
+      delete w.scorerSeason;
+      w.rankHistory = w.rankHistory!.filter((s) => s.round > 1);
+      return toLastRound(w);
+    });
     const { season } = closedSeason(w);
     expect(season).not.toHaveProperty('scorers');
     expect(season).not.toHaveProperty('ranks');
@@ -287,22 +317,26 @@ describe('closed season archive', () => {
   });
 });
 
-/** A club founded in `code`, its first season (amateur unless `start` says) played to the last round. */
-function lastRound(code: CountryCode, start = (w: World) => w) {
-  const w = start(
-    createWorld({
-      country: code,
-      name: 'Archive Rovers',
-      color: '#2a4d3a',
-      seed: 'amateur-exchange',
-      level: 'normal' as const,
-    }),
-  );
-  // A round step stays put once the club is bankrupt: fail here rather than loop to the timeout.
-  while (w.round < 46) {
-    expect(w.bankrupt).toBeUndefined();
-    advanceRound(w, undefined, false);
-  }
+/** The exchange club founded in `code`. */
+const exchangeFounding = (code: CountryCode) => ({
+  country: code,
+  name: 'Archive Rovers',
+  color: '#2a4d3a',
+  seed: 'amateur-exchange',
+  level: 'normal' as const,
+});
+
+/** A club founded in `code`, its first season (amateur unless `professional`) played to the last round. */
+function lastRound(code: CountryCode, professional = false) {
+  // Exactly 46 round steps: one stays put once the club is bankrupt, which then never gets here.
+  const w = professional
+    ? cachedWorld(`professional-last-round-${code}`, () => {
+        const w = professionalStart(createWorld(exchangeFounding(code)));
+        for (let n = 0; n < 46; n++) advanceRound(w, undefined, false);
+        return w;
+      })
+    : simulatedWorld(exchangeFounding(code), { rounds: 46 });
+  expect(w.round, `bankrupt: ${JSON.stringify(w.bankrupt)}`).toBe(46);
   return w;
 }
 
@@ -377,11 +411,8 @@ function exchange(w: World) {
 }
 
 describe('amateur exchange (→LEAGUE-6)', () => {
-  let england: World | undefined;
-  const englandLastRound = () => structuredClone((england ??= lastRound('ENG')));
-
   it('sends the champions up for exactly the bottom two of the last division', () => {
-    const w = englandLastRound(),
+    const w = lastRound('ENG'),
       table = standAt(w, 1);
     const { last, up, down, bottom } = exchange(w);
     expect(down).toHaveLength(2);
@@ -397,7 +428,7 @@ describe('amateur exchange (→LEAGUE-6)', () => {
   });
 
   it('plays the own club third off for the last place', () => {
-    const w = englandLastRound(),
+    const w = lastRound('ENG'),
       year = w.year,
       table = standAt(w, 3);
     const { last, up, down, bottom } = exchange(w);
@@ -437,7 +468,7 @@ describe('amateur exchange (→LEAGUE-6)', () => {
   );
 
   it('keeps the strength order in a season the own club plays professionally', () => {
-    const w = lastRound('ENG', professionalStart);
+    const w = lastRound('ENG', true);
     // exchange() expects the strongest amateur clubs up in every country.
     expect(exchange(w).down).toHaveLength(2);
   });

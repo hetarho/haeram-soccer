@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
 import { finalRows, seasonSnapshots } from './seasonArchive';
 
@@ -14,7 +15,7 @@ const input = {
 
 describe('closed season tables', () => {
   it('reads an amateur season from its last snapshot only', () => {
-    const w = simulateSeason(createWorld(input)),
+    const w = simulatedWorld(input, { seasons: 1 }),
       season = w.history[0];
     expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
       Array.from({ length: 46 }, (_, i) => i + 1),
@@ -30,7 +31,9 @@ describe('closed season tables', () => {
   });
 
   it('rebuilds a professional table from the archived standings in the engine order', () => {
-    const w = simulateSeason(professionalStart(createWorld(input))),
+    const w = cachedWorld('professional-season', () =>
+        simulateSeason(professionalStart(createWorld(input))),
+      ),
       season = w.history[0];
     const kept = finalRows(w, season, season.standings)!;
     expect(kept).toHaveLength(24);
@@ -76,7 +79,7 @@ describe('closed season tables', () => {
   });
 
   it('marks a closed Italian amateur season for the six places three Serie C groups open', () => {
-    const w = simulateSeason(createWorld({ ...input, country: 'ITA' })),
+    const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }),
       season = w.history[0];
     const rows = finalRows(w, season, season.standings)!;
     expect(rows).toHaveLength(16);

@@ -25,6 +25,7 @@ import {
 import type { World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, ovrAt } from './player';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 const input = {
   country: 'ENG' as const,
   name: 'Haeram Forge',
@@ -47,7 +48,8 @@ function assertCapacities(w: ReturnType<typeof createWorld>) {
 }
 describe('world progression', () => {
   it('level offsets the founding XI and scales only the cash', () => {
-    const at = (level: 'easy' | 'normal' | 'hard' | 'extreme') => createWorld({ ...input, level });
+    const at = (level: 'easy' | 'normal' | 'hard' | 'extreme') =>
+      simulatedWorld({ ...input, level });
     const normal = at('normal');
     assertCapacities(normal);
     expect(validateWorld(normal).id).toBe(normal.id);
@@ -74,7 +76,7 @@ describe('world progression', () => {
   });
   it('founding squad covers the formation', () => {
     for (const seed of ['cover-1', 'cover-2', 'cover-3', 'cover-4', 'cover-5']) {
-      const w = createWorld({ ...input, seed });
+      const w = simulatedWorld({ ...input, seed });
       const active = activePlayers(w);
       expect(active).toHaveLength(20);
       for (const line of LINES)
@@ -87,7 +89,7 @@ describe('world progression', () => {
     }
   });
   it('npc squad fills the formation', () => {
-    const w = createWorld(input);
+    const w = simulatedWorld(input);
     for (const club of w.clubs.filter((c) => c.id !== w.playerClub).slice(0, 40)) {
       const squad = npcSquad(w.seed, w.year, club),
         slots = formationOf(clubStyle(club));
@@ -106,7 +108,7 @@ describe('world progression', () => {
   it('schedules every ordered home/away pair once including odd groups', () =>
     fc.assert(
       fc.property(fc.integer({ min: 3, max: 24 }), (n) => {
-        const w = createWorld(input);
+        const w = simulatedWorld(input);
         const f = fixturesFor(w.clubs.slice(0, n), 1901);
         expect(f).toHaveLength(n * (n - 1));
         expect(new Set(f.map((m) => m.home + ':' + m.away)).size).toBe(f.length);
@@ -122,7 +124,7 @@ describe('world progression', () => {
       { numRuns: 12 },
     ));
   it('observed and fast outcomes agree and all metric totals are event-backed', () => {
-    const w = createWorld(input),
+    const w = simulatedWorld(input),
       f = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     const fast = simulateMatch(w, f, false, true),
       observed = simulateMatch(w, f, true, true);
@@ -144,12 +146,13 @@ describe('world progression', () => {
     }
   });
   it('conserves league capacities across promotions and retains records', () => {
-    const w = createWorld(input);
-    for (let i = 0; i < 4; i++) {
-      simulateSeason(w);
-      assertCapacities(w);
-      validateWorld(w);
+    // The world after each of four seasons (checks only read it, so one chain plays them all).
+    const seasons = [1, 2, 3, 4].map((seasons) => simulatedWorld(input, { seasons }));
+    for (const after of seasons) {
+      assertCapacities(after);
+      validateWorld(after);
     }
+    const w = seasons[3];
     expect(new Set(w.ownMatches.map((m) => m.id)).size).toBe(w.ownMatches.length);
     expect(w.ownMatches.length).toBeLessThan(300);
     expect(w.history).toHaveLength(4);
@@ -169,13 +172,18 @@ describe('world progression', () => {
     expect(w.history[0].year).toBe(FOUNDING_YEAR);
   });
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
-    const w = createWorld(input);
-    w.cash = '999999999';
-    for (const p of w.players) {
-      p.born = w.year - (p.position === 'GK' ? 35 : 21);
-      w.people![p.id].born = p.born;
-    }
-    for (const candidate of [1, 2, 3, 5, 6, 7]) operate(w, { type: 'recruit', candidate });
+    // The season up to its close, which retires the goalkeepers.
+    const w = cachedWorld('retiring-goalkeepers-last-round', () => {
+      const w = createWorld(input);
+      w.cash = '999999999';
+      for (const p of w.players) {
+        p.born = w.year - (p.position === 'GK' ? 35 : 21);
+        w.people![p.id].born = p.born;
+      }
+      for (const candidate of [1, 2, 3, 5, 6, 7]) operate(w, { type: 'recruit', candidate });
+      while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      return w;
+    });
     simulateSeason(w);
     const active = w.players.filter((p) => p.status === 'active');
     expect(active.length).toBeGreaterThan(18);
@@ -183,7 +191,7 @@ describe('world progression', () => {
     expect(validateWorld(w).id).toBe(w.id);
   });
   it('settles an owned fixture once and lets supporters grow past any ceiling', () => {
-    const w = createWorld(input);
+    const w = simulatedWorld(input);
     clubOf(w).fans = 5000000;
     const f = w.fixtures.find((f) => f.home === w.playerClub)!;
     const p = simulateMatch(w, f, false, true);
@@ -206,7 +214,7 @@ describe('world progression', () => {
 it('never assigns the single goal scorer an assist for the same goal', () => {
   let checked = 0;
   for (let n = 0; n < 24; n++) {
-    const w = createWorld({ ...input, seed: `assist-rule-${n}` });
+    const w = simulatedWorld({ ...input, seed: `assist-rule-${n}` });
     const f = w.fixtures.find((f) => f.home === w.playerClub)!;
     const p = simulateMatch(w, f, false, true);
     for (const [side, score] of [

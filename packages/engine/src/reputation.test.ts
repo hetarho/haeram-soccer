@@ -1,12 +1,13 @@
 import { country } from '../../catalogs/src/index';
 import { describe, it, expect } from 'vitest';
-import { createWorld, clubOf, finishCups, finishEurope, advanceRound, closeSeason } from './index';
+import { clubOf, finishCups, finishEurope, advanceRound, closeSeason } from './index';
 import { divisionLevel, finishTerm, settleReputation, awardReputation } from './reputation';
 import { leagueFinishes } from './season';
 import { tieFixtures } from './knockout';
 import type { KnockoutRound, EuropeTournament } from '../../contracts/src/types';
+import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 const world = () =>
-  createWorld({
+  simulatedWorld({
     country: 'ENG',
     name: 'Standing Reputation',
     color: '#224466',
@@ -91,9 +92,13 @@ describe('standing-based reputation for every club', () => {
     expect(representative.reputation).toBe(42.25);
   });
   it('settles every native club exactly once at the actual close using old finishes and new tiers', () => {
-    const w = world();
-    w.cash = '999999999999';
-    while (w.round < 46) advanceRound(w, undefined, false);
+    // The founding season's 46 rounds are built once; the close is lived here.
+    const w = cachedWorld('final-round', () => {
+      const w = world();
+      w.cash = '999999999999';
+      while (w.round < 46) advanceRound(w, undefined, false);
+      return w;
+    });
     finishCups(w);
     finishEurope(w);
     const before = new Map(w.clubs.map((c) => [c.id, c.reputation])),

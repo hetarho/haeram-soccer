@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StandingSnapshot, TableRow, World } from '../../../../packages/contracts/src/types';
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import {
   archivedTimeline,
   clubDivision,
@@ -27,12 +28,21 @@ const input = {
   seed: 'league-insights',
   level: 'normal' as const,
 };
+/** Our club promoted into the professional pyramid at founding. */
+const professional = () => cachedWorld('professional', () => professionalStart(createWorld(input)));
+/** The professional founding after four observed rounds. */
+const fourRounds = () =>
+  cachedWorld('professional-4-rounds', () => {
+    const w = professionalStart(createWorld(input));
+    for (let i = 0; i < 4; i++) advanceRound(w);
+    return w;
+  });
 
 describe('league choice (WEB-65)', () => {
   it('opens on the own league, amateur one included, and names any other in the address', () => {
-    const amateur = createWorld(input);
+    const amateur = simulatedWorld(input);
     expect(leagueIds(amateur)).toEqual(ownLeagueIds(amateur));
-    const w = professionalStart(createWorld(input));
+    const w = professional();
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     expect(leagueIds(w, { code: own.country, tier: own.tier, group: own.group })).toEqual(
       ownLeagueIds(w),
@@ -49,8 +59,7 @@ describe('league choice (WEB-65)', () => {
 
 describe('league insight facts', () => {
   it('reconstructs each round from settled scores for old saves and matches the engine table', () => {
-    const w = professionalStart(createWorld(input));
-    for (let i = 0; i < 4; i++) advanceRound(w);
+    const w = fourRounds();
     delete w.rankHistory;
     const ids = ownLeagueIds(w),
       timeline = leagueTimeline(w, ids);
@@ -61,7 +70,7 @@ describe('league insight facts', () => {
   });
 
   it('uses the same tiebreaks as engine ranking and never mixes another league into form', () => {
-    const w = professionalStart(createWorld(input)),
+    const w = professional(),
       ids = ownLeagueIds(w);
     ids.forEach((id, i) => {
       w.tables[id] = {
@@ -94,8 +103,7 @@ describe('league insight facts', () => {
   });
 
   it('retains earlier rounds when a legacy save starts recording snapshots midseason', () => {
-    const w = professionalStart(createWorld(input));
-    for (let i = 0; i < 4; i++) advanceRound(w);
+    const w = fourRounds();
     const ids = ownLeagueIds(w);
     w.rankHistory = [
       {
@@ -116,7 +124,7 @@ describe('league insight facts', () => {
   });
 
   it('shows one direct promotion place in regional leagues and none at the top', () => {
-    const w = createWorld({ ...input, country: 'ITA' });
+    const w = simulatedWorld({ ...input, country: 'ITA' });
     const regional = w.clubs
       .filter((c) => c.country === 'ITA' && c.tier === 2 && c.group === 0 && !c.representative)
       .map((c) => c.id);
@@ -129,7 +137,7 @@ describe('league insight facts', () => {
 
   it('sends up as many amateur clubs as the last division relegates, the last by play-off', () => {
     // One League Two group drops two: the champions go up and 2nd–5th play off for the other.
-    const eng = createWorld(input);
+    const eng = simulatedWorld(input);
     expect(leagueRules(eng, ownLeagueIds(eng))).toMatchObject({
       automatic: 1,
       playoff: 4,
@@ -137,7 +145,7 @@ describe('league insight facts', () => {
       lower: true,
     });
     // Three Serie C groups drop six: the top five go up and 6th–9th play off for the sixth.
-    const ita = createWorld({ ...input, country: 'ITA' });
+    const ita = simulatedWorld({ ...input, country: 'ITA' });
     expect(leagueRules(ita, ownLeagueIds(ita))).toMatchObject({
       automatic: 5,
       playoff: 4,
@@ -147,7 +155,7 @@ describe('league insight facts', () => {
   });
 
   it("finds any club's own league and names where it plays, whoever opens its sheet", () => {
-    const w = createWorld(input),
+    const w = simulatedWorld(input),
       club = (id: string) => w.clubs.find((c) => c.id === id)!;
     // Our amateur league is the clubs in its fixtures, representatives included.
     const own = ownLeagueIds(w),
@@ -227,7 +235,7 @@ function snapshot(w: World, year: number, round: number, ids: string[]): Standin
 
 describe('rank history models', () => {
   it('archivedTimeline maps a stored snapshot to ranked rows', () => {
-    const w = professionalStart(createWorld(input)),
+    const w = professional(),
       ids = ownLeagueIds(w),
       reversed = [...ids].reverse();
     w.rankHistory = [
@@ -256,7 +264,7 @@ describe('rank history models', () => {
   });
 
   it('rankHistoryYears lists the current year then earlier own-league years, newest first', () => {
-    const w = professionalStart(createWorld(input)),
+    const w = professional(),
       ids = ownLeagueIds(w);
     w.rankHistory = [
       snapshot(w, w.year - 3, 5, ids),
@@ -274,7 +282,7 @@ describe('rank history models', () => {
 describe('league overview model', () => {
   /** Our league with our club placed `place` (0-based), every club two points below the last. */
   function placed(place: number) {
-    const w = professionalStart(createWorld(input)),
+    const w = professional(),
       others = ownLeagueIds(w).filter((id) => id !== w.playerClub),
       order = [...others.slice(0, place), w.playerClub, ...others.slice(place)];
     order.forEach((id, i) => {
@@ -313,7 +321,7 @@ describe('league overview model', () => {
 
   /** Plays our first league matches with these (own, opponent) scores, in round order. */
   function played(scores: [number, number][]) {
-    const w = professionalStart(createWorld(input)),
+    const w = professional(),
       ours = leagueFixtures(w, ownLeagueIds(w))
         .filter((f) => f.home === w.playerClub || f.away === w.playerClub)
         .sort((a, b) => a.round - b.round);

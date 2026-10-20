@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { currency } from '../../catalogs/src/index';
 import {
-  createWorld,
   europeanEras,
   leaguePhasePairs,
   prepareEurope,
@@ -16,8 +15,9 @@ import {
   DOMESTIC_CUP_ROUNDS,
   legsOf,
 } from './index';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 const world = () =>
-  createWorld({
+  simulatedWorld({
     country: 'FRA',
     name: 'Century Forge',
     seed: 'eras',

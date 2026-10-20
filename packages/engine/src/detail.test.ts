@@ -4,19 +4,23 @@ import { validateWorld } from '../../contracts/src/index';
 import type { Tactic, World } from '../../contracts/src/types';
 import { advanceRound, createWorld } from './index';
 import { professionalStart } from './testing';
+import { cachedWorld } from '../../../tests/fixtures/worlds';
 
+/** A professional season played to its last round with `tactic`, built once and shared. */
 function season(tactic: Tactic, seed: string) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Detail Athletic',
-    color: '#24664f',
-    seed,
-    level: 'normal' as const,
+  return cachedWorld(`season:${tactic}:${seed}`, () => {
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Detail Athletic',
+      color: '#24664f',
+      seed,
+      level: 'normal' as const,
+    });
+    professionalStart(w);
+    w.tactic = tactic;
+    for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
+    return w;
   });
-  professionalStart(w);
-  w.tactic = tactic;
-  for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
-  return w;
 }
 const sideOf = (w: World, m: World['ownMatches'][number]) => (m.home === w.playerClub ? 0 : 1);
 

@@ -12,6 +12,7 @@ import {
   createWorld,
   prepareSeason,
 } from '../../../../packages/engine/src/index';
+import { cachedWorld } from '../../../../tests/fixtures/worlds';
 import { cupRoute, nationName, runLine, runResult, type TieRow } from './cupRoute';
 
 const club = (id: string, country: string): Club => ({
@@ -302,23 +303,26 @@ describe('our cup road', () => {
   });
 
   it('agrees with the archived runs of a played 1980 season, the Cup Winners Cup included', () => {
-    const world = createWorld({
-      country: 'ENG',
-      name: 'Route Rovers',
-      color: '#2a4d3a',
-      seed: 'cup-route',
-      level: 'normal' as const,
+    const world = cachedWorld('eng-1980-closed', () => {
+      const world = createWorld({
+        country: 'ENG',
+        name: 'Route Rovers',
+        color: '#2a4d3a',
+        seed: 'cup-route',
+        level: 'normal' as const,
+      });
+      world.year = 1980;
+      world.currency = currency('ENG', 1980).code;
+      world.priceIndex = priceIndex('ENG', 1980).value;
+      world.manager.until = 1983;
+      for (const p of world.players) p.until = 1982;
+      // Last season's cup winners enter the Cup Winners Cup.
+      world.lastChampions = [{ country: 'ENG', club: 'ENG:0:0:0', cup: world.playerClub }];
+      prepareSeason(world);
+      while (world.round < 46) advanceRound(world, undefined, false);
+      closeSeason(world);
+      return world;
     });
-    world.year = 1980;
-    world.currency = currency('ENG', 1980).code;
-    world.priceIndex = priceIndex('ENG', 1980).value;
-    world.manager.until = 1983;
-    for (const p of world.players) p.until = 1982;
-    // Last season's cup winners enter the Cup Winners Cup.
-    world.lastChampions = [{ country: 'ENG', club: 'ENG:0:0:0', cup: world.playerClub }];
-    prepareSeason(world);
-    while (world.round < 46) advanceRound(world, undefined, false);
-    closeSeason(world);
     const archived = world.history.at(-1)!;
     const matches = world.ownMatches.filter((m) => m.year === 1980);
     expect(archived.runs!.map((run) => run.key).sort()).toEqual(['cup', 'cwc']);

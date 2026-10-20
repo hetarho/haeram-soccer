@@ -118,7 +118,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 14 | 12 | ARCH-30✎ ARCH-23✎ | 2 |
+| ARCH | 15 | 12 | ARCH-30✎ ARCH-23✎ ARCH-21✎ | 2 |
 | WEB | 93 | 93 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
@@ -190,6 +190,7 @@
 - implement-task T231 (T232's manual benchmark run closes T271); then T219
 
 ## log
+- 261020 fix tests: unit tests take simulated worlds from `tests/fixtures/worlds.ts` (cached per source tree, shared across files and runs) instead of re-simulating setup seasons in 44 heavy files; CI runs unit tests in three cached shards (ARCH r15 ARCH-21✎ ARCH-23✎). No assertion removed; 150 files, 1178 tests pass; cold local run 975 s (before 1027 s), inherent long cases remain (feature-replay, calendar progression parity, detail PPDA season).
 - 261020 update ARCH r14 (owner): ARCH-23✎ the 100-season and first-play benchmarks (about 90 min a push since T218) leave the push CI for a manually dispatched `benchmark.yml`; verify.yml and benchmark.yml changed with the revision. T231/T233/T255 name the CI benchmark job as evidence → that is now a manual dispatch or a local `pnpm run benchmark`.
 - 261020 create-task T271 decision: T231 moves ahead of T219 (dep T218) with the benchmark's active-copy-only total; T232 dep T230.
 - 261020 T271 blocked: fixed the pinned brotli encoder that cut the century checkpoint after its first meta-block (checksum mismatch), split feature-replay per career and gave the two Node-heavy journeys `test.slow()`; the benchmark now fails the 1.5 MiB checkpoint budget at 2,378,780 B (parked: T231/T232).
@@ -209,5 +210,3 @@
 - 261019 fix benchmark: the mobile latency sample in scripts/first-play.mjs taps the 관전 속도 radios instead of the pause/play buttons T256 removed.
 - 261019 T215 done (r5c2): all 37 MATCH-23 bands hold over 600 and 1,200 grid matches (26/37 at the h8t4 WIP); set-piece scene, deep back line, 50/50 fouls, xG pressure floor; 1132 unit tests pass.
 - 261019 T215 doing (r5c2), taken over from the closed h8t4 WIP on wip/h8t4.
-- 261019 T215 WIP (h8t4) on wip/h8t4: band script, diagnostics, coarse guards; 26/37 MATCH-23 bands hold (7 at the start); about 1 h 30 min of the 4 h timebox used.
-- 261019 T214 done (h8t4): in-match injuries, substitutions by era and manager policy, drop ball, regulation minutes; 101 grid tests pass.

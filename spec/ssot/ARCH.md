@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r14 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r15 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -135,6 +135,7 @@
   - Portable fixtures: command sequences and canonical expected facts consumed by the web engine now and the Dart engine later.
   - Playwright: founding → watch/advance → compare metrics → recruit/request tactics → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
+  - A unit test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per source tree and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
 - ARCH-22 [o] Scaffolding must provide these executable verification scripts.
   - `pnpm run typecheck`
   - `pnpm run lint`
@@ -149,7 +150,7 @@
   - `verify` runs type/lint/format, unit/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, unit and contract tests, catalog validation, production build); built-preview browser tests per browser (Chromium, Firefox, WebKit in two shards), each installing only its pinned browser. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit tests in three shards, each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser (Chromium, Firefox, WebKit in two shards), each installing only its pinned browser. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -214,6 +215,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r15 261020 ARCH-21✎ setup simulation in unit tests→shared simulated test worlds (`tests/fixtures/worlds.ts`), simulate only the verified step; ARCH-23✎ unit tests leave the checks job for three parallel shards with a cached world store
 - r14 261020 ARCH-23✎ storage and first-play benchmarks on every push→only on demand in a manually dispatched workflow; a storage or release gate task runs `pnpm run benchmark` locally or has the owner dispatch it
 - r13 261020 ARCH-30✎ task tier: covering Chromium specs for UI/journey/storage/worker changes→no browser specs, `pnpm run build` only; browser specs only in the batch run right before a push to main, which confirms acceptance items naming e2e specs (task: `- [v]` + specs in `- limits:`); `pnpm run verify` in a storage/release gate task→never in a task
 - r12 261019 ARCH-30+ verification tiers: task (typecheck/lint/format, changed-file unit tests, covering Chromium specs) / batch before a code push (CI checks job + Chromium journeys) / CI read once per push; a task no longer runs `pnpm run verify`
