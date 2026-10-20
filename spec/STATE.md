@@ -106,6 +106,8 @@
 - 261020 decided T224 MATCH-22: the grid's own-league cost (a season 1.8 → 10 s since T218) slows every season, the unit suite and CI → move T224 (measure, then MATCH-22's 125% rule sets `OWN_LEAGUE_ENGINE`) to right after T231 (dep T231; T219 now dep T224, T225 dep T223) and have it update the tests and golden facts if it picks `'summary'` (alt: set `'summary'` now without measuring | keep T224 after T223 and the slow runs until then) — owner chose the measured route; the own club's matches stay on the grid either way, and T221 already gives the probabilistic path cards, injuries and named lines
 
 - 261020 decided T234 T236 T238 T246: owner asked for parallel work beside the grid chain until 17:00 → re-point T234 to T218 and run T234 → T236/T238 → T246 in worktree k4p2 (replaces this morning's keep-the-T233-gate answer; alt: keep the gate and idle) — their touches (packages/contracts identity leaf + types/schema, engine identity-legacy/kit-patterns, web crests/kitPainting) share no file with T219–T224; T235 and later stay behind T233 because they need the codec, storage and grid renderer
+- 261020 decided T225 T226: what can run beside the grid chain once the identity track reaches its T233 gate? → move T225 to dep T218 and run T225 then T226 in worktree k4p2 (alt: idle after T246 | the entry-bundle refactor of engine leaves, which edits match.ts/world.ts under T219–T224) — both read only T218's contracts (`MatchFrame.period/label/pace/onPitch`, `MatchEvent.text`, incidents, `lineCounts`, the TD counters) and touch only apps/web/src/ui and their e2e specs; T227 keeps T226 → T223 since it needs material.ts
+
 ## ideation
 | id | st |
 |---|---|
@@ -148,7 +150,7 @@
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
 | T223 | Post-match material and season heat maps | MATCH HIST | T222 | todo |
 | T224 | Measure the grid engine's cost and choose the own-league path (explore 1h) | MATCH ARCH | T231 | todo |
-| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T223 | todo |
+| T225 | Match theatre: commentary, cards, added time, substitutions, pacing | WEB MATCH | T218 | doing |
 | T226 | Final analysis report, glossary and season figures | WEB MATCH | T225 | todo |
 | T227 | Shot map, heat maps, pass network and tactical report screens | WEB MATCH | T226 | todo |
 | T228 | Preparation: bench, set-piece takers, unavailable players, lab | WEB MATCH CLUB | T227 | todo |
