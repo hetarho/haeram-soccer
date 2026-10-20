@@ -1,10 +1,10 @@
 # HIST Durable metrics and history
-> r15 | Define the browser-demo rules for durable metrics and history.
+> r16 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
 - HIST-2 [o] Always retain all implemented-country season standings/champions/cup outcomes and European standings/honors. NPC past per-frame/per-action traces and full individual match-stat archives are not collected.
-- HIST-3 [o] NPC current-season stats and reproducible current roster support comparison. Career/season summaries, not duplicated object graphs, represent older NPC history.
+- HIST-3 [o] Complete NPC current-season team/player aggregates from settled fixtures and the reproducible current roster support comparison (→HIST-17). Career/season summaries, not duplicated object graphs, represent older NPC history.
 - HIST-4 [o] Archive compact IDs and numeric aggregates; UI pagination or chart sampling never deletes source records.
 - HIST-5 [o] Founding is the first history entry; promotion, relegation, tactics application/refusal, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts.
 - HIST-6 [o] Metric scopes separate domestic, European, current season and own career; ratios expose denominators and sample size.
@@ -49,11 +49,18 @@
   - per-match shot maps, heat maps, pass networks and tactical reports live for the current season only; at the season close they become one season heat map per own player, kept with the season (→MATCH-5).
   - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
 
+- HIST-17 [o] Complete numerical results on either engine path (→MATCH-26/27) enter the same world records and current-season comparison system.
+  - accumulate basic and advanced counters for every club and its named participating players under their stable identities (→WORLD-6/11), separated by competition. A transfer retains actual per-club contributions; retired or departed players' recorded contributions still reconcile with their club's totals.
+  - keep each aggregate's tracking boundary and actual appearances/minutes. Earlier supported careers start new counters at activation; absent historical values remain absent and never become synthetic zeros, replayed fixtures or invented past seasons.
+  - NPC per-frame/per-action traces and full individual match archives remain excluded (→HIST-2). Current-season aggregates replace transient full match records after settlement; older NPC retention remains →HIST-3/13/14, and own-match material and career retention remain →HIST-1/16.
+  - reductions and compact encoding must preserve exact supported facts within the existing century budgets (→SAVE-13). Failure to fit is an unresolved gate, not permission to prune records or silently omit a metric.
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## chg
+- r16 261020 HIST-3✎ unspecified NPC current statistics→complete settled team/player aggregates; HIST-17+ shared accumulation, identity/transfer conservation, tracking boundaries and bounded NPC retention
 - r15 261019 HIST-13✎ appearances as minutes / 90 with no substitutions→one per recorded match with minutes > 0, starters and substitutes alike; per-90 rates remain separate
 - r14 261019 HIST-8✎ no expiry/pruning→of retained facts, per-match maps follow their lifetime; HIST-16+ spatial counter and discipline totals, current-season maps reduced to season heat maps, NPC discipline current-season only
 - r13 261017 HIST-13✎ single-club scorer attribution→one player total with actual per-club contributions across in-league transfers
