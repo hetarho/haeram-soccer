@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T07:12Z | - |
 | - |
 | z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T06:43Z | T221 |
 
