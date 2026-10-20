@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
-import { placeBid, transferOffers } from '../../../../packages/engine/src/index';
+import {
+  advanceDays,
+  operate,
+  placeBid,
+  transferOffers,
+} from '../../../../packages/engine/src/index';
+import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { base64, pack, unbase64, unpack } from './packing';
@@ -431,4 +438,51 @@ it('feature-state-lossless-roundtrip retains version-one shared career rows and 
   expect(() =>
     unpack({ ...packed, careers: { ...packed.careers, version: 2 } } as unknown as typeof packed),
   ).toThrow();
+});
+
+/**
+ * A career whose own records wear every shirt role: a custom one-colour crest, home, away and
+ * third chosen for three matches with a design edit after the first, then a choice left pending.
+ */
+const identityCareer = () =>
+  cachedWorld('identity-career', () => {
+    const w = simulatedWorld(COMPACT);
+    const design = (primary: string): ClubIdentity => {
+      const own = w.clubs.find((club) => club.id === w.playerClub)!.identity!;
+      const { pattern, emblem } = own.crest;
+      return { ...own, colours: [primary], crest: { shape: 'diamond', pattern, emblem, primary } };
+    };
+    operate(w, { type: 'club-identity', identity: design('#AbCdEf') });
+    (['home', 'away', 'third'] as const).forEach((role, i) => {
+      if (i === 1) operate(w, { type: 'club-identity', identity: design('#5A3E8c') });
+      const next = nextOwnFixture(w)!;
+      operate(w, { type: 'match-kit', fixtureId: next.id, role });
+      advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);
+    });
+    operate(w, { type: 'match-kit', fixtureId: nextOwnFixture(w)!.id, role: 'away' });
+    return w;
+  });
+
+describe('identity data through pack (→SAVE-20, SAVE-22)', () => {
+  it('keeps custom designs, a pending kit choice and every recorded appearance', () => {
+    const w = identityCareer();
+    const own = (m: World['ownMatches'][number]) =>
+      m.appearance!.sides[m.home === w.playerClub ? 0 : 1];
+    expect(w.ownMatches.map((m) => own(m).role)).toEqual(['home', 'away', 'third']);
+    expect(w.ownMatches.map((m) => own(m).crest.primary)).toEqual([
+      '#AbCdEf',
+      '#5A3E8c',
+      '#5A3E8c',
+    ]);
+    expect(w.kitChoice?.role).toBe('away');
+    const packed = JSON.parse(JSON.stringify(pack(w)));
+    expect(packed.appearances.refs).toEqual([1, 2, 3]);
+    expect(packed.world.ownMatches).toEqual([]);
+    expect(canonical(validateWorld(unpack(packed)))).toBe(canonical(w));
+    // Without any appearance there is no side channel, and the rest packs as before.
+    const bare = structuredClone(w);
+    for (const m of bare.ownMatches) delete m.appearance;
+    expect('appearances' in pack(bare)).toBe(false);
+    expect(canonical(unpack(JSON.parse(JSON.stringify(pack(bare)))))).toBe(canonical(bare));
+  });
 });

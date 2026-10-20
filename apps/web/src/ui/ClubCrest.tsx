@@ -59,6 +59,12 @@ const EMBLEMS: Record<CrestEmblem, string> = {
 };
 const HOLLOW = new Set<CrestEmblem>(['ball', 'key', 'wheel', 'tower']);
 
+/**
+ * KIT-2/4: the field takes the primary, the pattern and the ring around the emblem disc the
+ * secondary, the emblem the accent, else the secondary. A crest without a secondary cuts those
+ * regions out of its primary as negative space, so no colour appears that was not chosen; the
+ * neutral outer outline is fixed for every crest.
+ */
 export const CrestMark = memo(function CrestMark({
   crest,
   size = 20,
@@ -73,7 +79,21 @@ export const CrestMark = memo(function CrestMark({
   className?: string;
 }) {
   const clip = `crest-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const holes = `${clip}-holes`;
+  const { primary, secondary, accent } = crest;
   const outline = SHAPES[crest.shape];
+  const pattern = PATTERNS[crest.pattern];
+  const emblem = (fill: string) => (
+    <path
+      transform="translate(14 19)"
+      d={EMBLEMS[crest.emblem]}
+      fill={fill}
+      fillRule={HOLLOW.has(crest.emblem) ? 'evenodd' : 'nonzero'}
+    />
+  );
+  const border = (
+    <path d={outline} fill="none" className={s.outline} strokeWidth="2.4" strokeLinejoin="round" />
+  );
   return (
     <svg
       className={`${s.crest} ${className || ''}`}
@@ -89,32 +109,37 @@ export const CrestMark = memo(function CrestMark({
         <clipPath id={clip}>
           <path d={outline} />
         </clipPath>
+        {secondary === undefined && (
+          // White keeps the primary; black cuts the pattern, the disc's ring and an emblem
+          // without an accent out of it.
+          <mask id={holes} maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="48">
+            <rect width="40" height="48" fill="#fff" />
+            {pattern && <path d={pattern} fill="#000" />}
+            <circle cx="20" cy="25" r="8.6" fill="#fff" stroke="#000" strokeWidth="1.8" />
+            {accent === undefined && emblem('#000')}
+          </mask>
+        )}
       </defs>
-      <g clipPath={`url(#${clip})`}>
-        <rect width="40" height="48" fill={crest.primary} />
-        {PATTERNS[crest.pattern] && <path d={PATTERNS[crest.pattern]} fill={crest.secondary} />}
-      </g>
-      <path
-        d={outline}
-        fill="none"
-        className={s.outline}
-        strokeWidth="2.4"
-        strokeLinejoin="round"
-      />
-      <circle
-        cx="20"
-        cy="25"
-        r="8.6"
-        fill={crest.primary}
-        stroke={crest.secondary}
-        strokeWidth="1.8"
-      />
-      <path
-        transform="translate(14 19)"
-        d={EMBLEMS[crest.emblem]}
-        fill={crest.secondary}
-        fillRule={HOLLOW.has(crest.emblem) ? 'evenodd' : 'nonzero'}
-      />
+      {secondary !== undefined ? (
+        <>
+          <g clipPath={`url(#${clip})`}>
+            <rect width="40" height="48" fill={primary} />
+            {pattern && <path d={pattern} fill={secondary} />}
+          </g>
+          {border}
+          <circle cx="20" cy="25" r="8.6" fill={primary} stroke={secondary} strokeWidth="1.8" />
+          {emblem(accent ?? secondary)}
+        </>
+      ) : (
+        <>
+          <g mask={`url(#${holes})`}>
+            <rect width="40" height="48" fill={primary} clipPath={`url(#${clip})`} />
+            <circle cx="20" cy="25" r="8.6" fill={primary} />
+          </g>
+          {border}
+          {accent !== undefined && emblem(accent)}
+        </>
+      )}
     </svg>
   );
 });

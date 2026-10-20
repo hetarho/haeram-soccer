@@ -1,5 +1,5 @@
 import type { ClubBuild } from './build';
-import type { ClubIdentity, FixtureKitChoice, MatchAppearance } from './identity';
+import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
 import type {
   Attributes,
   Line,
@@ -1246,4 +1246,8 @@ export type Command =
    * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
    * history (→WEB-61).
    */
-  | { type: 'build'; build: ClubBuild; name?: string };
+  | { type: 'build'; build: ClubBuild; name?: string }
+  /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
+  | { type: 'club-identity'; identity: ClubIdentity }
+  /** Our shirt role for the named next own fixture (→KIT-6); `null` returns it to automatic. */
+  | { type: 'match-kit'; fixtureId: string; role: KitRole | null };

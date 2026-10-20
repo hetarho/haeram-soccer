@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { expect, test } from '@playwright/test';
 import { expectHomeBounds, viewGeometry } from './layout';
 
@@ -73,7 +74,7 @@ for (const viewport of [
     expect((await viewGeometry(page)).scroll).toBe(0);
     expect(await page.evaluate(() => scrollY)).toBe(0);
 
-    await page.getByTestId('hub-play').click();
+    await watchNext(page);
     await expect(
       page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
     ).toBeVisible();

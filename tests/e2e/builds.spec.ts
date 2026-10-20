@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import {
@@ -98,7 +99,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
 
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   const match = page.getByTestId('match-theatre');
   await expect(match.getByText(opponent.name, { exact: true })).toBeVisible();
   const matchup =

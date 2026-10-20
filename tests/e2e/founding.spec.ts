@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Page } from '@playwright/test';
@@ -139,7 +140,9 @@ for (const viewport of [
     await create.click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
-    await expect(page.getByTestId('hub-play')).toBeEnabled();
+    await expect(
+      page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true }),
+    ).toBeEnabled();
     const actual = await exportWorld(page);
     const reference = createWorld(input);
     const club = actual.clubs.find((candidate) => candidate.id === actual.playerClub)!;
@@ -286,7 +289,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   const afterGuide = await exportWorld(page);
   expect(afterGuide).toEqual(before);
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })

@@ -1,3 +1,4 @@
+import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
@@ -15,7 +16,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
@@ -164,7 +165,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
@@ -188,7 +189,7 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
@@ -269,7 +270,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
@@ -328,7 +329,7 @@ test('jumps between recorded periods without changing the final result or calend
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const date = await page.getByTestId('game-date').innerText();
   const score = await page.getByTestId('match-score').locator('strong').innerText();
@@ -352,7 +353,7 @@ test('reveals the recorded match report only after choosing the final result', a
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
   await expect(report).toHaveCount(0);

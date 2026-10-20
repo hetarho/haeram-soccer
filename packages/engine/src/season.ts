@@ -77,6 +77,7 @@ import { drawShortlist } from './signings';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
 import { applyDiscipline, closeDisciplineSeason, recordNpcInjury, serveBans } from './discipline';
+import { captureAppearance } from './match-appearance';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -274,6 +275,8 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   const m = playback.record;
   const own = m.home === w.playerClub || m.away === w.playerClub;
   if (own && w.ownMatches.some((existing) => existing.id === m.id)) return;
+  // The shirts and crests worn, frozen before the live playback and the saved record share it.
+  if (own) captureAppearance(w, m);
   // Earlier bans serve this fixture before its own cards make new ones (→MATCH-19).
   serveBans(w, m);
   applyDiscipline(w, m);

@@ -15,11 +15,19 @@ import {
   addEvent,
   clubNews,
   advanceRound,
+  createIdentityDraft,
   createWorld,
+  identityOf,
 } from '../../../../packages/engine/src/index';
-import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
+import type { World } from '../../../../packages/contracts/src/types';
+import type { KitRole } from '../../../../packages/contracts/src/identity';
+import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
+import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
+import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
+import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
+import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
@@ -285,6 +293,207 @@ describe('worker command protocol', () => {
     expect(h.world!.ownMatches.some((m) => m.year === FOUNDING_YEAR && m.players.length > 0)).toBe(
       true,
     );
+  });
+});
+
+describe('own-club design requests (→KIT-9, SAVE-6)', () => {
+  const design = (color: string) =>
+    createIdentityDraft({ country: input.country, seed: input.seed, color });
+  const apply = (id: string, revision: number, color: string) =>
+    req(id, revision, {
+      type: 'command',
+      command: { type: 'club-identity', identity: design(color) },
+    });
+  it('duplicate identity receipt has one effect', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const first = apply('design', 0, '#aa2233');
+    const [applied, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
+    expect(applied.ok, applied.error).toBe(true);
+    expect(duplicate).toBe(applied);
+    expect(h.world!.revision).toBe(1);
+    expect(h.world!.receiptIds.filter((id) => id === 'design')).toHaveLength(1);
+    const own = (w = h.world!) => w.clubs.find((club) => club.id === w.playerClub)!;
+    expect(own(applied.view!.world as World).identity).toEqual(design('#aa2233'));
+    // After newer work the same request returns its stored answer, never a second effect.
+    expect((await h.handle(apply('newer', 1, '#3355aa'))).ok).toBe(true);
+    expect(await h.handle(first)).toBe(applied);
+    expect(h.world!.revision).toBe(2);
+    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
+    expect(clubOf(h.world!).color).toBe('#3355aa');
+    // Reloaded without the answers in memory, the saved receipt still refuses a replay.
+    const restored = new Host();
+    await restored.handle(
+      req('restore', -1, { type: 'inspect', raw: await encode(h.world!), activate: true }),
+    );
+    const replay = await restored.handle(apply('newer', 2, '#3355aa'));
+    expect(replay.ok).toBe(false);
+    expect(replay.error).toContain('이미 처리된 요청');
+    expect(restored.world!.revision).toBe(2);
+    expect(canonical(restored.world)).toBe(canonical(h.world));
+  });
+  it('stale identity request does not overwrite newer work', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    expect((await h.handle(apply('newer', 0, '#3355aa'))).ok).toBe(true);
+    const before = canonical(h.world);
+    // Drafted against revision 0, it arrives after the newer design was applied.
+    const stale = await h.handle(apply('stale', 0, '#aa2233'));
+    expect(stale.ok).toBe(false);
+    expect(stale.error).toContain('오래된 요청');
+    expect(canonical(h.world)).toBe(before);
+    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
+    expect(h.world!.receiptIds).not.toContain('stale');
+  });
+});
+
+describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
+  const kit = (id: string, revision: number, fixtureId: string, role: KitRole | null) =>
+    req(id, revision, { type: 'command', command: { type: 'match-kit', fixtureId, role } });
+  it('duplicate kit receipt has one effect and the saved checkpoint keeps the choice', async () => {
+    const { host: h, jobs } = withCodec();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const next = nextOwnFixture(h.world!)!;
+    const first = kit('kit', 0, next.id, 'third');
+    const [chosen, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
+    expect(chosen.ok, chosen.error).toBe(true);
+    expect(duplicate).toBe(chosen);
+    expect(h.world!.revision).toBe(1);
+    expect(h.world!.receiptIds.filter((id) => id === 'kit')).toHaveLength(1);
+    expect(chosen.view!.world.kitChoice).toEqual({ fixtureId: next.id, role: 'third' });
+    // The owner decision's save builds a validated checkpoint that restores the choice.
+    await h.handle(req('save', -1, { type: 'save' }));
+    const checkpoint = await build(jobs[0]);
+    if (!checkpoint.ok) throw new Error(checkpoint.error);
+    expect((await decode(checkpoint.raw)).world.kitChoice).toEqual(h.world!.kitChoice);
+    // Back to automatic, then the first request again: its stored answer, never a second effect.
+    expect((await h.handle(kit('auto', 1, next.id, null))).ok).toBe(true);
+    expect(await h.handle(first)).toBe(chosen);
+    expect(h.world!.kitChoice).toBeUndefined();
+    expect(h.world!.revision).toBe(2);
+  });
+  it('stale kit request does not overwrite newer work', async () => {
+    const h = new Host();
+    await h.handle(req('create', -1, { type: 'found', input }));
+    const w = h.world!;
+    const next = nextOwnFixture(w)!;
+    expect((await h.handle(kit('newer', 0, next.id, 'away'))).ok).toBe(true);
+    const before = canonical(w);
+    // Chosen against revision 0, it arrives after the newer choice.
+    const stale = await h.handle(kit('stale', 0, next.id, 'third'));
+    expect(stale.ok).toBe(false);
+    expect(stale.error).toContain('오래된 요청');
+    // At the current revision but naming a later fixture: refused, never moved to another match.
+    const later = w.fixtures.find(
+      (f) => !f.score && f.id !== next.id && (f.home === w.playerClub || f.away === w.playerClub),
+    )!;
+    const moved = await h.handle(kit('later', 1, later.id, 'third'));
+    expect(moved.ok).toBe(false);
+    expect(moved.error).toContain(KIT_FIXTURE_CHANGED);
+    expect(canonical(w)).toBe(before);
+    expect(w.kitChoice).toEqual({ fixtureId: next.id, role: 'away' });
+    expect(w.receiptIds.filter((id) => id === 'stale' || id === 'later')).toEqual([]);
+  });
+});
+
+/** A supported career saved before club identities: no designs, no recorded appearances. */
+function withoutIdentities(w: World) {
+  for (const club of w.clubs) delete club.identity;
+  for (const match of w.ownMatches) delete match.appearance;
+  return w;
+}
+const activate = (id: string, raw: string, upgrade = true) =>
+  req(id, -1, { type: 'inspect', raw, activate: true, upgrade });
+
+describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
+  it('inspect/read-only activation does not install identities or increment revision', async () => {
+    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    const raw = await encode(legacy);
+    const h = new Host();
+    const inspected = await h.handle(req('inspect', -1, { type: 'inspect', raw }));
+    expect(inspected.ok, inspected.error).toBe(true);
+    expect(inspected.upgraded).toBeUndefined();
+    expect(canonical(inspected.candidate)).toBe(canonical(legacy));
+    const metadata = await h.handle(req('meta', -1, { type: 'inspect', raw, metadataOnly: true }));
+    expect(metadata.worldMetadata).toEqual({ id: legacy.id, revision: legacy.revision });
+    expect(
+      (await h.handle(req('upgrade-only', -1, { type: 'inspect', raw, upgrade: true }))).ok,
+    ).toBe(false);
+    const readonly = await h.handle(activate('readonly', raw, false));
+    expect(readonly.ok, readonly.error).toBe(true);
+    expect(readonly.upgraded).toBeUndefined();
+    expect(readonly.raw).toBeUndefined();
+    expect(canonical(h.world)).toBe(canonical(legacy));
+    expect(h.world!.clubs.some((club) => club.identity)).toBe(false);
+  });
+
+  it('writer adoption preserves exact legacy crests and sporting facts', async () => {
+    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    expect(legacy.ownMatches.length).toBeGreaterThan(0);
+    const crests = legacyCrestMap({ ...legacy, clubs: legacy.clubs.slice() });
+    const h = new Host();
+    const reply = await h.handle(activate('adopt', await encode(legacy)));
+    expect(reply.ok, reply.error).toBe(true);
+    expect(reply.upgraded).toBe(true);
+    const w = h.world!;
+    expect(w.revision).toBe(legacy.revision + 1);
+    for (const club of w.clubs) {
+      expect(club.identity!.crest).toEqual(crests.get(club.id));
+      expect(club.identity).toEqual(identityOf(legacy, club.id));
+      expect(club.identity!.colours[0]).toBe(club.color);
+    }
+    // Nothing else moves: colours, sporting facts and the absence of every historical kit stay.
+    expect(w.ownMatches.every((m) => !('appearance' in m))).toBe(true);
+    expect(
+      canonical({
+        ...w,
+        revision: legacy.revision,
+        clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
+      }),
+    ).toBe(canonical(legacy));
+    // The validated candidate the client commits is the adopted world.
+    expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(w));
+    const again = new Host();
+    const repeat = await again.handle(activate('again', reply.raw!));
+    expect(repeat.ok, repeat.error).toBe(true);
+    expect(repeat.upgraded).toBeUndefined();
+    expect(repeat.raw).toBeUndefined();
+    expect(canonical(again.world)).toBe(canonical(w));
+  });
+
+  it('moves the revision once whatever upgrades together, and never past a safe integer', async () => {
+    const pinned = withoutIdentities(simulatedWorld(input));
+    pinned.revision = 9;
+    pinned.catalog = '2026-demo-2';
+    pinned.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-2'];
+    const h = new Host();
+    const both = await h.handle(activate('both', await encode(pinned)));
+    expect(both.ok, both.error).toBe(true);
+    expect(both.upgraded).toBe(true);
+    expect(h.world!.revision).toBe(10);
+    expect(h.world!.catalog).toBe(CATALOG_VERSION);
+    expect(h.world!.clubs.every((club) => club.identity)).toBe(true);
+    const top = withoutIdentities(simulatedWorld(input));
+    top.revision = Number.MAX_SAFE_INTEGER;
+    const full = new Host();
+    const refused = await full.handle(activate('top', await encode(top)));
+    expect(refused.ok).toBe(false);
+    expect(refused.error).toContain('revision');
+    expect(full.world).toBeUndefined();
+  });
+
+  it('leaves earlier gameplay and future designs to their compatibility rules', async () => {
+    const earlier = withoutIdentities(simulatedWorld(input));
+    earlier.engine = '3.0.0';
+    const future = simulatedWorld(input);
+    future.clubs[0].identity = { ...future.clubs[0].identity!, version: 2 as 1 };
+    for (const world of [earlier, future]) {
+      const h = new Host();
+      const reply = await h.handle(activate('incompatible', await encode(world)));
+      expect(reply.ok).toBe(false);
+      expect(reply.errorCode).toBe('save-compatibility');
+      expect(h.world).toBeUndefined();
+    }
   });
 });
 

@@ -16,6 +16,12 @@ import {
   legsOf,
 } from './index';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { KIT_ROLES } from '../../contracts/src/identity';
+import { nextOwnFixture } from './calendar';
+import { identityOf } from './club-identity';
+import { selectMatchKits } from './kit-selection';
+import { appearanceForFixture } from './match-appearance';
+import { operate } from './operations';
 const world = () =>
   simulatedWorld({
     country: 'FRA',
@@ -146,6 +152,31 @@ describe('historical evolution', () => {
     finishEurope(w);
     expect(w.ownMatches.some((m) => m.kind === 'europe')).toBe(true);
     expect(clubOf(w).reputation).toBeGreaterThanOrEqual(12);
+  });
+  it('records our continental ties through the shared appearance capture', () => {
+    const w = world();
+    w.year = 1975;
+    w.lastChampions = [
+      {
+        country: 'FRA',
+        club: w.clubs.find((c) => c.country === 'FRA' && c.tier === 0)!.id,
+        cup: w.playerClub,
+      },
+    ];
+    prepareEurope(w);
+    const first = nextOwnFixture(w)!;
+    expect(first.kind).toBe('europe');
+    const side = first.home === w.playerClub ? 0 : 1;
+    const auto = selectMatchKits(identityOf(w, first.home), identityOf(w, first.away));
+    const role = KIT_ROLES.find((r) => r !== auto.roles[side])!;
+    operate(w, { type: 'match-kit', fixtureId: first.id, role });
+    const expected = appearanceForFixture(w, first);
+    finishEurope(w);
+    const own = w.ownMatches.filter((m) => m.kind === 'europe');
+    expect(own.find((m) => m.id === first.id)!.appearance).toEqual(expected);
+    expect(expected.sides[side].role).toBe(role);
+    for (const m of own) expect(m.appearance!.sides.map((s) => s.club)).toEqual([m.home, m.away]);
+    expect('kitChoice' in w).toBe(false);
   });
   it('converts balances and fixed contracts once and preserves original historical units', () => {
     const w = world();

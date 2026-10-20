@@ -23,7 +23,15 @@ export interface SlotSummary {
   date: string;
   /** The season number in progress. */
   seasons: number;
-  crest: { shape: string; pattern: string; primary: string; secondary: string; emblem: string };
+  /** The own club's current crest: one to three colours, its secondary and accent optional. */
+  crest: {
+    shape: string;
+    pattern: string;
+    emblem: string;
+    primary: string;
+    secondary?: string;
+    accent?: string;
+  };
 }
 export interface GameEntry {
   id: string;
@@ -40,6 +48,7 @@ const object = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : undefined;
+const colour = (value: unknown) => typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value);
 function entryOf(value: unknown): GameEntry | null {
   const entry = object(value),
     summary = object(entry?.summary),
@@ -56,7 +65,9 @@ function entryOf(value: unknown): GameEntry | null {
     text(summary.date, 40) &&
     Number.isSafeInteger(summary.seasons) &&
     (summary.seasons as number) >= 0 &&
-    ['shape', 'pattern', 'primary', 'secondary', 'emblem'].every((key) => text(crest[key], 20));
+    ['shape', 'pattern', 'emblem'].every((key) => text(crest[key], 20)) &&
+    colour(crest.primary) &&
+    ['secondary', 'accent'].every((key) => crest[key] === undefined || colour(crest[key]));
   return valid ? (entry as unknown as GameEntry) : null;
 }
 export interface GameIndex {

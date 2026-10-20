@@ -36,6 +36,21 @@ export function seriesColour(kit: string) {
     colour = mix(kit, step * 0.1);
   return colour;
 }
+/** Fixed lines for an away side whose colours all look like home's: warm, else neutral ivory. */
+const FALLBACK_SERIES = ['#ff9257', '#f6f1e1'] as const;
+/**
+ * Both sides' line colours. Two lines must never look alike: the away line falls back to its
+ * crest's secondary, then its accent, when it has them, then to the fixed lines.
+ */
+export function seriesColours(kits: [string, string], away: Crest): [string, string] {
+  const home = seriesColour(kits[0]);
+  let line = seriesColour(kits[1]);
+  for (const candidate of [away.secondary, away.accent, ...FALLBACK_SERIES]) {
+    if (colourDistance(home, line) >= 120) break;
+    if (candidate !== undefined) line = seriesColour(candidate);
+  }
+  return [home, line];
+}
 
 /** Per-minute series for both sides, over the first `shown` frames (the presented ones) only. */
 export function chartSeries(playback: MatchPlayback, shown: number, chart: Chart) {
@@ -77,14 +92,7 @@ export function MatchCharts({
     () => chartSeries(playback, presented, chart),
     [playback, presented, chart],
   );
-  const colours = useMemo(() => {
-    const home = seriesColour(kits[0]);
-    let away = seriesColour(kits[1]);
-    // Two lines must never look alike: fall back to the away crest's other colour, then to warm.
-    if (colourDistance(home, away) < 120) away = seriesColour(crests[1].secondary);
-    if (colourDistance(home, away) < 120) away = '#ff9257';
-    return [home, away];
-  }, [kits, crests]);
+  const colours = useMemo(() => seriesColours(kits, crests[1]), [kits, crests]);
   const max =
     chart === 'possession'
       ? 100

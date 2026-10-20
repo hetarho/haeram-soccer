@@ -197,7 +197,8 @@ try {
   }
   const desktop = await referencePage({ width: 1440, height: 1000 });
   const desktopInit = await create(desktop.page);
-  await desktop.page.getByRole('button', { name: '다음 경기 관전' }).click();
+  await desktop.page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await desktop.page.getByRole('dialog', { name: '전체 메뉴' }).getByTestId('menu-watch').click();
   await expect(desktop.page.getByRole('button', { name: '결과 보기' })).toBeEnabled();
   const desktopFps = await fps(desktop.page);
   const firstPlayResources = Array.from(desktop.resources.values());
@@ -229,7 +230,8 @@ try {
   await desktop.context.close();
   const mobile = await referencePage({ width: 390, height: 844 }, 2);
   const mobileInit = await create(mobile.page);
-  await mobile.page.getByRole('button', { name: '다음 경기 관전' }).click();
+  await mobile.page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await mobile.page.getByRole('dialog', { name: '전체 메뉴' }).getByTestId('menu-watch').click();
   await expect(mobile.page.getByRole('button', { name: '결과 보기' })).toBeEnabled();
   const mobileFps = await fps(mobile.page);
   const mobileFirstPlayResources = Array.from(mobile.resources.values());
