@@ -41,6 +41,7 @@ export * from './cups';
 export * from './ratings';
 export * from './dynamics';
 export * from './careers';
+export * from './discipline';
 export * from './contracts';
 export * from './hiring';
 export * from './direction';

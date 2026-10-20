@@ -3,6 +3,7 @@ import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contr
 import { FORMATIONS, lineOf } from '../player';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
 import { prepareMatch } from '../match';
+import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
 
 export interface EraRules {
@@ -177,10 +178,10 @@ export function buildGridSetup(
   const { teams, squads, ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);
-  const benches = teams.map((club, side) => benchFor(w, club, squads[side], era)) as [
-    Player[],
-    Player[],
-  ];
+  // Nobody injured or banned for this fixture sits on the bench (→MATCH-19, →LEAGUE-15).
+  const benches = teams.map((club, side) =>
+    benchFor(w, club, squads[side], era, (p) => isUnavailable(w, p, club.id, f)),
+  ) as [Player[], Player[]];
   const bends = [0, 1].map((side) =>
     side === ownSide
       ? {

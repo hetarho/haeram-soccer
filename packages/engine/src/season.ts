@@ -74,6 +74,7 @@ import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
 import { drawShortlist } from './signings';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
+import { applyDiscipline, closeDisciplineSeason, serveBans } from './discipline';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -177,7 +178,11 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
   }
   w.round = 0;
   w.calendar = { day: 0 };
-  if (lifecycle) materializePeople(w);
+  // The season turns here only on a lifecycle run; a save's fixture rebuild changes nothing.
+  if (lifecycle) {
+    closeDisciplineSeason(w);
+    materializePeople(w);
+  }
   prepareScorers(w);
   w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
   w.cupWinners = {};
@@ -267,6 +272,9 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   const m = playback.record;
   const own = m.home === w.playerClub || m.away === w.playerClub;
   if (own && w.ownMatches.some((existing) => existing.id === m.id)) return;
+  // Earlier bans serve this fixture before its own cards make new ones (→MATCH-19).
+  serveBans(w, m);
+  applyDiscipline(w, m);
   settleElo(w, m);
   if (league) {
     settleTable(w.tables[m.home], m.score.home, m.score.away);
@@ -676,10 +684,11 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   const startersBeforeDepartures = [...ownStarters(w)];
-  retireAtClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
+  // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
+  retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
   if (own.tier !== oldTier)

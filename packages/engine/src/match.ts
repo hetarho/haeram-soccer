@@ -415,7 +415,7 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
   const home = findClub(w, f.home),
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
-  const squads: [Player[], Player[]] = [startingSquad(w, home), startingSquad(w, away)];
+  const squads: [Player[], Player[]] = [startingSquad(w, home, f), startingSquad(w, away, f)];
   const tactics: [Tactic, Tactic] = teams.map((c) =>
     c.id === w.playerClub ? w.tactic : npcTactic(c),
   ) as [Tactic, Tactic];
@@ -431,7 +431,7 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
   const context = [3 + (ownSide === 0 ? ownStrength(0) : 4), ownSide === 1 ? ownStrength(1) : 4];
   const form = matchForm(w, f);
-  const base = [rating(w, home) + context[0], rating(w, away) + context[1]];
+  const base = [rating(w, home, f) + context[0], rating(w, away, f) + context[1]];
   // The gap beyond what diminishing returns let count is taken off both sides evenly; the day's
   // form comes on top, so a far stronger side's bad day still shows.
   const gap = base[0] - base[1],

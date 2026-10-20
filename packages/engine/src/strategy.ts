@@ -1,10 +1,12 @@
-import type { Club, Player, Tactic, World } from '../../contracts/src/types';
+import type { Club, Fixture, Player, Tactic, World } from '../../contracts/src/types';
+import { isBanned } from './discipline';
 import {
   activePlayers,
   addEvent,
   clubStyle,
   fatigueLoad,
   formationOf,
+  isInjured,
   ownMultiplier,
   slotOvr,
 } from './world';
@@ -186,8 +188,13 @@ export function setLineup(w: World, ids: string[] | null) {
  * The rest preset values recovery more heavily, trading immediate quality for fresher starters;
  * both fill the formation's slots with the best remaining pairing first.
  */
-export function lineupPreset(w: World, preset: 'strongest' | 'rest'): string[] {
-  const players = activePlayers(w);
+export function lineupPreset(
+  w: World,
+  preset: 'strongest' | 'rest',
+  f?: Pick<Fixture, 'kind' | 'groupKey'>,
+): string[] {
+  // Injured players, and with a fixture those banned for its competition, are left out.
+  const players = activePlayers(w).filter((p) => !isInjured(w, p) && !(f && isBanned(w, p.id, f)));
   const slots = formationOf(w.tactic);
   const penalty = preset === 'rest' ? 0.8 : 0.2;
   const pairs = players.flatMap((p) =>

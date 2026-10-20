@@ -14,6 +14,7 @@ import {
 import type {
   Club,
   DifficultyLevel,
+  Fixture,
   Founding,
   Line,
   Manager,
@@ -28,6 +29,7 @@ import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { dayCountedFrom } from './calendar';
+import { isBanned, isUnavailable } from './discipline';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
 import { operatingExpensesAt } from './finance';
@@ -718,10 +720,11 @@ export function isInjured(w: World, p: Player) {
 }
 /**
  * The own club's starting XI: the manager's (or the owner's saved) choice among fit players; an
- * injured player plays only when too few are fit to field eleven.
+ * injured player plays only when too few are fit to field eleven. A player banned for the
+ * fixture's competition never plays it (→MATCH-19).
  */
-export function ownStarters(w: World) {
-  const active = activePlayers(w);
+export function ownStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
+  const active = f ? activePlayers(w).filter((p) => !isBanned(w, p.id, f)) : activePlayers(w);
   const fit = active.filter((p) => !isInjured(w, p));
   const xi = selectedLineup(fit, w.lineup, w.tactic, w.manager, w.year);
   return xi.length >= 11 || fit.length === active.length
@@ -740,11 +743,11 @@ export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic
  * no unhappiness, so it is summed once per cached lineup.
  */
 const npcBase = new WeakMap<Player[], { ovr: number; load: number }>();
-export function rating(w: World, c: Club) {
+export function rating(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
   const own = c.id === w.playerClub;
   const slots = formationOf(tacticOf(w, c));
   if (!own) {
-    const xi = startingSquad(w, c);
+    const xi = startingSquad(w, c, f);
     let base = npcBase.get(xi);
     if (!base) {
       base = { ovr: 0, load: 0 };
@@ -756,7 +759,7 @@ export function rating(w: World, c: Club) {
     }
     return Math.round((base.ovr * cohesionMultiplier(c) - base.load) / 11);
   }
-  const xi = ownStarters(w);
+  const xi = ownStarters(w, f);
   return Math.round(
     xi.reduce(
       (s, p, i) => s + slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
@@ -776,16 +779,40 @@ export function addEvent(w: World, kind: string, title: string, detail: string, 
 }
 
 const npcLineups = new WeakMap<Player[], Player[]>();
-export function startingSquad(w: World, c: Club) {
-  if (c.id === w.playerClub) return ownStarters(w);
+/**
+ * A club's XI for a fixture. Another club's squad is made one player per formation slot first
+ * (→WORLD-6): those eleven start, and one injured or banned for the fixture gives way to the best
+ * available of places 11–17 of his line at that slot, else to any available place (→LEAGUE-15).
+ */
+export function startingSquad(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
+  if (c.id === w.playerClub) return ownStarters(w, f);
   const ps = squad(w, c);
   let cached = npcLineups.get(ps);
   if (!cached) {
-    // Its squad is made one player per formation slot first (→WORLD-6): those eleven start.
     cached = ps.slice(0, formationOf(clubStyle(c)).length);
     npcLineups.set(ps, cached);
   }
-  return cached;
+  if (!f || !w.discipline) return cached;
+  const out = (p: Player) => isUnavailable(w, p, c.id, f);
+  if (!cached.some(out)) return cached;
+  const slots = formationOf(clubStyle(c));
+  const used = new Set(cached.filter((p) => !out(p)));
+  return cached.map((p, i) => {
+    if (!out(p)) return p;
+    const slot = slots[i]!;
+    const best = (pool: Player[]) =>
+      pool
+        .filter((q) => !used.has(q) && !out(q))
+        .sort((a, b) => slotOvr(b, slot) - slotOvr(a, slot) || compareIds(a.id, b.id))[0];
+    const bench = ps.slice(cached.length, 18);
+    const replacement =
+      best(bench.filter((q) => lineOf(q.position) === lineOf(slot.position))) ||
+      best(ps.slice(cached.length));
+    // Nobody left: the unavailable player's place stays as it was rather than leave a gap.
+    if (!replacement) return p;
+    used.add(replacement);
+    return replacement;
+  });
 }
 const clubMaps = new WeakMap<Club[], Map<string, Club>>();
 export function findClub(w: World, id: string) {

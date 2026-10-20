@@ -16,9 +16,11 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k4p2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T04:40Z | 2026-10-20T06:25Z | T228 |
 | - |
-| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T04:56Z | - |
+| z5k8 | hq-dev1-pve2-vm2 | autopilot | 2026-10-20T02:50Z | 2026-10-20T05:55Z | T220 |
 
 ## inbox
+- 261020 decided T219 MATCH-19: which competition a league-yellow ban covers → the league only (scope `league`), cup and European accumulation their own competition, red cards every domestic competition (alt: league yellows ban domestically like a red) — MATCH-19 counts yellows per competition and names only the red ban as covering every domestic competition
+- 261020 decided T219: `closeSeason` played the lower-promotion playoff after `retireAtClose`, so a club could field nobody → `promote` runs before `retireAtClose` (alt: let a club short of eleven forfeit | change only the test world) — the playoff belongs to the season just played, as `promote`'s own comment says
 - 261020 decided MATCH-26: grid-only counters for own-league players on the probabilistic path → leave them absent (alt: estimate by position at real rates, which shows invented figures as measured and needs per-position tables) — T224 kept the own league on that path; the owner's own players always play the grid
 - 261020 decided T224 MATCH-22 SAVE-5: `'summary'` left own-league fixtures without player lines and `validateWorld` refused every world on the scorer-table check → `summaryMatch` names the starters' lines now from the shooter and creator its chance model already picks, no new random draws (alt: T221's separate scorer stream, which needs T219–T220 first and leaves saves broken until then | keep `'grid'` against MATCH-22 at 8.4× the season budget) — saves had to stay loadable, and reusing the model's own picks leaves every score unchanged
 - 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
@@ -155,7 +157,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T219 | Suspensions, yellow accumulation and unavailable players | MATCH CLUB LEAGUE | T224 | todo |
 | T220 | Settle grid matches into the world | MATCH CLUB LEAGUE PLAYER | T219 | todo |
 | T221 | Probabilistic path: cards, injuries and named lines | MATCH LEAGUE | T220 | todo |
 | T222 | Extra time and penalty shoot-outs, played | MATCH | T221 | todo |
@@ -192,9 +193,10 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 
 ## next
-- implement-task T219; T232's manual benchmark run closes T271
+- implement-task T220, then T221, T222 (k4p2 runs T223 → T227 beside them); T232's manual benchmark run closes T271
 
 ## log
+- 261020 T219 done: yellow accumulation and red-card bans by MATCH-19 for every fixture, unavailable players left out of every XI and bench, own bans in the inbox; the promotion playoff now plays before season-close retirements.
 - 261020 T227 done (k4p2): `MatchMaterial` (lazy) draws the shot map, heat maps, pass network and tactical report on a 1.9:1 SVG pitch from the report's and the fixture notebook's 경기 자료; `materialView.ts` builds the view models; new Chromium journey match-material passes at 390×844.
 - 261020 T223 done (k4p2): `grid/record.ts` tallies own-match material in preallocated arrays (five one-line hooks in engine.ts; crosses now report their aerial winner), `material.ts` decodes shots, heat, network and report and `reduceSeasonMaterial` folds them into `SeasonArchive.heat` at the close; golden unchanged.
 - 261020 T225 T226 done (k4p2): the theatre shows red marks, `frame.label′`, event texts, paced minutes and the bench, and loads lazily from LiveSeason; the report adds the 12 grid rows, every own line and the glossary entries (loaded with the sheet), season PPDA over the detail matches; entry 243,858 of 256,000 gzip bytes; Chromium 185 passed.
