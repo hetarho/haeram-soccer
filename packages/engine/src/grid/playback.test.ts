@@ -112,6 +112,26 @@ describe('grid playback', () => {
     );
   });
 
+  it('shows each incident in a frame carrying its minute, none after the last frame (MATCH-24)', () => {
+    let seen = 0;
+    for (let n = 0; n < 6; n++) {
+      const watched = n ? watch(`stamp-${n}`) : { result, frames };
+      const shown = watched.frames.flatMap((f) =>
+        f.events!.filter((e) => ['card', 'sub', 'injury'].includes(e.kind)).map((e) => ({ f, e })),
+      );
+      const incidents = watched.result.record.incidents ?? [];
+      expect(shown).toHaveLength(incidents.length);
+      incidents.forEach((x, k) => {
+        const label = x.added ? `${x.minute}+${x.added}` : String(x.minute);
+        expect(shown[k]!.e.actor).toBe(x.player);
+        expect(shown[k]!.f.label, `${x.kind} ${label}`).toBe(label);
+        expect(watched.frames.some((f) => f.label === label)).toBe(true);
+        seen++;
+      });
+    }
+    expect(seen).toBeGreaterThan(20);
+  });
+
   it('averages pace to 1 and slows minutes with shots and set pieces', () => {
     const paces = frames.map((f) => f.pace);
     expect(paces.reduce((a, b) => a + b, 0) / paces.length).toBeCloseTo(1, 9);

@@ -626,6 +626,24 @@ function kindOf(e: TraceEntry): MatchEvent['kind'] {
 }
 
 /**
+ * The minute label of second `t` of a period (design §10.2): its match minute, and the added minute
+ * once past the period's length, at most the period's last frame when its `added` minutes are known.
+ * Incidents are stamped with it, so each carries the label of the frame that shows it (→MATCH-24).
+ */
+export function stampAt(
+  period: 1 | 2 | 3 | 4,
+  t: number,
+  added = Infinity,
+): { minute: number; added?: number } {
+  const length = LENGTH[period - 1]!;
+  const m = Math.max(0, Math.min(Math.floor(t / 60), length + added - 1)) + 1;
+  return {
+    minute: OFFSET[period - 1]! + Math.min(m, length),
+    ...(m > length ? { added: m - length } : {}),
+  };
+}
+
+/**
  * One frame per match minute of each period, added minutes included (design §10.2). `seed` is the
  * world seed; the flights' bend and loft come from `${seed}:${fixture}:ball-decisions`.
  */
@@ -732,7 +750,8 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
       // Counts at the minute's end.
       const last = P.entries[Math.max(0, lastAt(P.times, end))]!;
       const totals = last.totals;
-      const minute = OFFSET[p - 1]! + Math.min(m + 1, length);
+      const at = stampAt(p, 60 * m);
+      const minute = at.minute;
       const metrics = ([0, 1] as const).map((side) => {
         const line: Metrics = new Array(M.possession + 1).fill(0);
         for (let i = 0; i < M.minutes; i++) line[i] = totals[side * RUNNING + i] ?? 0;
@@ -885,10 +904,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         ],
         ballTrack,
         period: p,
-        label:
-          m < length
-            ? String(OFFSET[p - 1]! + m + 1)
-            : `${OFFSET[p - 1]! + length}+${m + 1 - length}`,
+        label: at.added ? `${at.minute}+${at.added}` : String(at.minute),
         pace: 0,
         onPitch,
       });

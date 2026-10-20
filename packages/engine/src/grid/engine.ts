@@ -34,6 +34,7 @@ import { createState, kickOff, other, slotOf, type GridState } from './state';
 import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
 import { Tracer, type TraceEntry } from './trace';
+import { stampAt } from './playback';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
 export const ACTION_SECONDS = {
@@ -93,12 +94,8 @@ export function playGrid(setup: GridSetup): GridResult {
   let penalty = false;
 
   const minute = () => Math.min(45, Math.floor(s.t / 60) + 1) + (s.period === 2 ? 45 : 0);
-  /** The match minute of an incident, with the added minute past the period's end. */
-  const stamp = () => {
-    const cap = s.period === 2 ? 90 : 45;
-    const base = Math.floor(s.t / 60) + 1 + (s.period === 2 ? 45 : 0);
-    return { minute: minute(), ...(base > cap ? { added: base - cap } : {}) };
-  };
+  /** The match minute of an incident: the label of the playback frame that shows it (→MATCH-24). */
+  const stamp = () => stampAt(s.period, s.t, added[s.period - 1]);
 
   /** Hands the ball to `(side, idx)` at `at` (or where he stands); a change of side is a regain and a loss. */
   function setOwner(side: 0 | 1, idx: number, at?: [number, number]) {
@@ -429,6 +426,7 @@ export function playGrid(setup: GridSetup): GridResult {
     const start: 0 | 1 = period === 1 ? 0 : 1;
     pending = { kind: 'kickoff', side: start, spot: CENTRE_SPOT, dead: 0 };
     for (let guard = 0; guard < 20000; guard++) {
+      const held = tally.incidents.length;
       let dt: number;
       let actor: Ref;
       let label: string;
@@ -535,14 +533,17 @@ export function playGrid(setup: GridSetup): GridResult {
       if (hurt) injure(hurt.side, hurt.idx);
       const [lo, hi] = ADDED_CONFIG.bounds[period - 1]!;
       const extra = Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
+      // Cards of a play take the minute it ends, as their trace entries follow it; subs keep the stoppage.
+      for (const i of tally.incidents.slice(held))
+        if (i.kind !== 'sub') Object.assign(i, stampAt(period, s.t, extra));
       if (s.t >= PERIOD_SECONDS + extra * 60) {
+        added.push(extra);
         // Dissent is drawn once per side at the end of each period.
         for (const side of [0, 1] as const) {
           const d = dissentAt(s, side, r);
           if (d) applyCard(side, d.player, d.card, 'dissent');
         }
         tracer.note(s, 0, -1, 'whistle');
-        added.push(extra);
         tally.spellTo(undefined);
         break;
       }
