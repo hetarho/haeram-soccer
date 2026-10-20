@@ -1,3 +1,4 @@
+import { openWatchMenu, watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -110,7 +111,7 @@ test('watching a match pauses the calendar and retains playback across page swit
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '다음 경기 관전' }).click();
+  await watchNext(page);
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
@@ -119,11 +120,12 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre has no season clock; the calendar waits while we watch.
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('mini-clock')).toHaveCount(0);
-  // Home leads back to the unfinished match instead of starting another.
+  // The menu leads back to the unfinished match instead of starting another.
   const theatre = page.getByTestId('match-theatre');
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
-  await expect(page.getByTestId('hub-play')).toHaveAccessibleName('경기로 돌아가기');
-  await page.getByTestId('hub-play').click();
+  const returning = await openWatchMenu(page);
+  await expect(returning).toHaveAccessibleName('경기로 돌아가기');
+  await returning.click();
   await expect(theatre.getByRole('heading', { name: '매치데이' })).toBeVisible();
   await expect(date).toHaveText(matchDay!);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -158,7 +160,11 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre's back control leads home, where the full clock is.
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(page.getByTestId('hub-play')).toHaveAccessibleName('다음 경기 관전');
+  await expect(await openWatchMenu(page)).toHaveAccessibleName('다음 경기 관전');
+  await page
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
 });
 

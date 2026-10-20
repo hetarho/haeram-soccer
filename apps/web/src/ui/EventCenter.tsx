@@ -456,14 +456,37 @@ const arrived = (at: number) =>
     minute: '2-digit',
   });
 
-/** One launcher for club decisions, system notifications and full-career club news. */
-export function CommunicationsCenter({
-  client,
-  floating,
-}: {
-  client: GameClient;
-  floating: boolean;
-}) {
+const unreadItems = (items: readonly { read?: boolean }[]) =>
+  items.filter((item) => !item.read).length;
+
+/** The clock entry shares the global dialog and its notification/news counts. */
+export function CommunicationsButton() {
+  const w = useGameState((state) => state.view?.world);
+  const notices = useNotifications((items) => items);
+  const fresh = useUnreadNewsCount();
+  const show = useNewsSheet((state) => state.show);
+  if (!w) return null;
+  const total = unreadItems(w.inbox || []) + unreadItems(notices) + fresh;
+  return (
+    <button
+      type="button"
+      className={newsStyle.launcher}
+      data-testid="communications-button"
+      aria-haspopup="dialog"
+      aria-label={`알림·뉴스${total ? ` · 새 소식 ${total}개` : ''}`}
+      onClick={(event) => {
+        event.currentTarget.focus();
+        show('notifications');
+      }}
+    >
+      <PixelIcon name="bell" size={20} />
+      {total > 0 && <b aria-hidden="true">{total > 99 ? '99+' : total}</b>}
+    </button>
+  );
+}
+
+/** One dialog host for club decisions, system notifications and full-career news. */
+export function CommunicationsCenter({ client }: { client: GameClient }) {
   const w = useGameState((state) => state.view?.world);
   const inbox = w?.inbox;
   const { open, tab, show, hide } = useNewsSheet();
@@ -474,8 +497,8 @@ export function CommunicationsCenter({
   const notices = useNotifications((items) => items);
   const items = [...(inbox || [])].reverse();
   const system = [...notices].reverse();
-  const worldUnread = items.filter((item) => !item.read).length;
-  const unread = worldUnread + system.filter((notice) => !notice.read).length;
+  const worldUnread = unreadItems(items);
+  const unread = worldUnread + unreadItems(system);
   if (!w) return null;
   const leaveTab = () => {
     if (tab === 'news') markNewsSeen(w.id, news);
@@ -490,7 +513,6 @@ export function CommunicationsCenter({
     leaveTab();
     show(next);
   };
-  const total = unread + fresh;
   const tabs = [
     ['notifications', '알림·결정', unread],
     ['news', '뉴스', fresh],
@@ -503,20 +525,6 @@ export function CommunicationsCenter({
   );
   return (
     <>
-      {floating && (
-        <button
-          className={newsStyle.fab}
-          data-testid="communications-button"
-          aria-label={`알림·뉴스${total ? ` · 새 소식 ${total}개` : ''}`}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            show('notifications');
-          }}
-        >
-          <PixelIcon name="bell" />
-          {total > 0 && <b aria-hidden="true">{total > 99 ? '99+' : total}</b>}
-        </button>
-      )}
       {open && (
         <Dialog
           label="알림·뉴스"

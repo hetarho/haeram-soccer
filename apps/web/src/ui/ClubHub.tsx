@@ -12,11 +12,9 @@ import { competitionLabel, number } from './format';
 import { cashState, teamStates, urgentState, type StateKey } from './teamState';
 import { RemedySheet, useRemedyRunner } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
-import type { ProgressionController } from '../runtime/progression';
 import { useMatchView, useNavigation } from './state';
 import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
-import { watchNextMatch } from './watch';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
@@ -24,7 +22,7 @@ import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
 
-function MatchAction({
+export function MatchAction({
   critical,
   next,
   onWatch,
@@ -47,24 +45,24 @@ function MatchAction({
   if (returning)
     return (
       <button
-        data-testid="hub-play"
+        data-testid="menu-watch"
         className={`${s.play} ${s.returning}`}
         aria-label="경기로 돌아가기"
-        aria-describedby="hub-play-hint"
+        aria-describedby="menu-watch-hint"
         onClick={onReturn}
       >
         <b>
           경기로 돌아가기 <span aria-hidden="true">▶</span>
         </b>
-        <small id="hub-play-hint">관전 중인 경기가 이어지고 있어요</small>
+        <small id="menu-watch-hint">관전 중인 경기가 이어지고 있어요</small>
       </button>
     );
   return (
     <button
-      data-testid="hub-play"
+      data-testid="menu-watch"
       className={s.play}
       aria-label={next ? '다음 경기 관전' : '다음 시즌 시작'}
-      aria-describedby="hub-play-hint"
+      aria-describedby="menu-watch-hint"
       disabled={pending || busy || readonly || !!error || critical}
       onClick={() => {
         if (pending) return;
@@ -75,7 +73,7 @@ function MatchAction({
       <b>
         {next ? '다음 경기 관전' : '다음 시즌 시작'} <span aria-hidden="true">▶</span>
       </b>
-      <small id="hub-play-hint">
+      <small id="menu-watch-hint">
         {next
           ? days
             ? `${days}일 진행 후 바로 킥오프`
@@ -83,6 +81,52 @@ function MatchAction({
           : '시즌 정산 후 새 일정 시작'}
       </small>
     </button>
+  );
+}
+
+export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
+  const next = nextOwnFixture(w);
+  const opponent = w.clubs.find(
+    (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
+  );
+  const last = w.ownMatches.at(-1);
+  const lastScore = last && [
+    last.home === w.playerClub ? last.score.home : last.score.away,
+    last.home === w.playerClub ? last.score.away : last.score.home,
+  ];
+  return (
+    <section className={s.fixture} aria-label="다음 경기">
+      <div className={s.fixtureInfo}>
+        <small>
+          NEXT MATCH
+          {next &&
+            ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${competitionLabel(w, next)}`}
+        </small>
+        <h3>
+          {opponent ? (
+            <>
+              vs <ClubLink w={w} id={opponent.id} crest={18} large />
+            </>
+          ) : (
+            <span>다음 시즌을 준비해요</span>
+          )}
+        </h3>
+        <p data-testid="hub-preparation">
+          {tacticLabel[w.tactic]} · {w.lineup ? '직접 고른 선발' : '감독 자동 선발'}
+          {lastScore && ` · 최근 ${lastScore[0]}–${lastScore[1]}`}
+        </p>
+      </div>
+      <button
+        className={s.prepare}
+        disabled={!!w.critical}
+        onClick={(event) => {
+          event.currentTarget.focus();
+          onPrepare();
+        }}
+      >
+        전술·선발 준비
+      </button>
+    </section>
   );
 }
 
@@ -185,17 +229,14 @@ function ClubScene({ w }: { w: World }) {
 export function ClubHub({
   w,
   client,
-  controller,
   journal,
 }: {
   w: World;
   client: GameClient;
-  controller: ProgressionController;
   journal: ReactNode;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
-  const setPage = useNavigation((state) => state.setPage);
   const [journalOpen, setJournalOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   useEffect(() => {
@@ -205,26 +246,17 @@ export function ClubHub({
     }
   }, [away, journalOpen, preparing]);
   const club = clubOf(w);
-  const next = nextOwnFixture(w);
-  const opponent = w.clubs.find(
-    (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
-  );
   const table = w.tables[w.playerClub];
   const ids = orderIds(ownLeagueIds(w), w.tables),
     played = !!w.tables[w.playerClub]?.played,
     rank = ids.indexOf(w.playerClub) + 1;
-  const watch = () => watchNextMatch(client, controller, () => setPage('match'));
   const progress = Math.min(
     100,
     Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
   );
-  const last = w.ownMatches.at(-1);
-  const lastScore = last && [
-    last.home === w.playerClub ? last.score.home : last.score.away,
-    last.home === w.playerClub ? last.score.away : last.score.home,
-  ];
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
+      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <div className={s.seasonOverview}>
         <div className={s.seasonMeter}>
           <span>
@@ -283,46 +315,6 @@ export function ClubHub({
         </button>
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
-      <section className={s.fixture} aria-label="다음 경기">
-        <div className={s.fixtureInfo}>
-          <small>
-            NEXT MATCH
-            {next &&
-              ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${competitionLabel(w, next)}`}
-          </small>
-          <h3>
-            {opponent ? (
-              <>
-                vs <ClubLink w={w} id={opponent.id} crest={22} large />
-              </>
-            ) : (
-              '다음 시즌을 준비해요'
-            )}
-          </h3>
-          <p data-testid="hub-preparation">
-            {tacticLabel[w.tactic]} · {w.lineup ? '직접 고른 선발' : '감독 자동 선발'}
-            {lastScore && ` · 최근 ${lastScore[0]}–${lastScore[1]}`}
-          </p>
-        </div>
-        <div className={s.fixtureActions}>
-          <button
-            className={s.prepare}
-            disabled={!!w.critical}
-            onClick={(event) => {
-              event.currentTarget.focus();
-              setPreparing(true);
-            }}
-          >
-            전술·선발 준비
-          </button>
-          <MatchAction
-            critical={!!w.critical}
-            next={!!next}
-            onWatch={watch}
-            onReturn={() => setPage('match')}
-          />
-        </div>
-      </section>
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {journalOpen && (

@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r14 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r15 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -192,6 +192,8 @@
   - version the metric inventory, condition sets, units, seed partitions, sample sizes, tolerances and 95% uncertainty intervals before tuning. Use separate calibration and validation samples. Missing coverage or insufficient evidence is reported as such, never a pass.
   - outcome-rate differences allow at most 3 percentage points; mean differences allow the larger of 5% of the reference mean magnitude or 0.1 reference standard deviations; distribution CDF differences allow 8 percentage points; supported pairwise correlation differences allow 0.1. Rare events require a dedicated comparison with a 20% relative rate margin and enough samples to resolve it. Equivalence requires its uncertainty interval to fit the margin, not merely overlap zero.
   - MATCH-2/23's intended targets remain authoritative where detailed play currently misses them. Fix and remeasure the reference rather than reproducing a known defect in the aggregate model. Recalibrate after movement, intentions, tactics or result-model changes; do not loosen targets to claim success.
+  - a metric both paths hold at the same value is equivalent by that zero difference and stays listed as constant; a constant reference whose candidate holds another value or leaves the margin is a difference.
+  - a metric a condition's own rules make impossible (extra time and shoot-outs outside →MATCH-6 ties, substitutions in →MATCH-20 eras without them) is declared not applicable for that condition, listed, and left out of its verdict. Applicability comes only from these rules, never from measured absence.
   - exact record invariants (→MATCH-27) have no statistical tolerance. Full-model activation requires the measured accuracy, compatibility, storage and speed gates together (→SAVE-23 and →ARCH-31).
 
 ## flow
@@ -202,6 +204,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r15 261021 MATCH-28✎ constant and rule-impossible metrics unspecified→equal constants equivalent and listed; metrics impossible under a condition's MATCH-6/MATCH-20 rules not applicable there, listed and outside its verdict
 - r14 261020 MATCH-1✎ all→own detailed; MATCH-12✎ auto pace/compressed flights→uniform speed/continuous routes; MATCH-13✎ own→all records; MATCH-16/17✎ targets→coordinated intentions; MATCH-22✎ optional grid/minute summary→non-own aggregate; MATCH-23✎ grid→both bands; MATCH-26✎ absent→full counters; MATCH-27+ consistency; MATCH-28+ equivalence
 - r13 261020 MATCH-26✎ open: absent or estimated by position→absent, the path records minutes, shots, goals, assists and saves only
 - r12 261019 MATCH-18✎ offside beyond the second-last defender in the opponent's half→receiving teammate beyond both the ball and the second-last opponent when the pass is played; restart unchanged

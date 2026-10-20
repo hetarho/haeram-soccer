@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r94 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r99 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -20,7 +20,7 @@
 
 - WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 선수단, 훈련 and 구단 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39).
   - The match view has no tab (→WEB-40).
-  - The HUD menu lists only what the tab bar does not show plus guide, intervention, notifications/news (→WEB-51), the metrics glossary (→WEB-53), save tools and 게임 슬롯 (→WEB-62).
+  - The HUD menu lists only what the tab bar does not show plus the watch/return action (→WEB-50), guide, intervention, notifications/news (→WEB-51), the metrics glossary (→WEB-53), save tools and 게임 슬롯 (→WEB-62).
   - Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates.
   - The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically.
   - Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
@@ -30,7 +30,9 @@
   - phones pack rows: no view repeats its tab's name as a title, and panels keep tight padding.
   - wording follows Korean football media: continental competitions are 클럽대항전 (never 대륙컵, which reads as a national-team tournament), morale is 분위기 (a bare 사기 also reads as fraud), money runway is 자금 여력 in weeks or months, and the squad-support policy is 선수단 투자. ← football fans read the game in the words of their own media
 
-- WEB-11 [o] Home leads with the current club: season rank, strength and record over the illustrated stadium scene (→WEB-72), team state (→WEB-44) and next-match preparation/watch. A compact season-progress strip shows elapsed calendar days as a percentage and a progress bar; club name, year and league identity stay in the HUD without a repeated home title.
+- WEB-11 [o] Home leads with the current club: season rank, strength and record over the illustrated stadium scene (→WEB-72), team state (→WEB-44) and next-match preparation. A compact season-progress strip shows elapsed calendar days as a percentage and a progress bar; club name, year and league identity stay in the HUD without a repeated home title.
+  - NEXT MATCH is a compact horizontal row: opponent/competition and the current tactic/lineup summary beside 전술·선발 준비. Use smaller readable text and tight spacing, preserve touch targets (→WEB-17) and avoid stretching the card to the stadium's height. It has no watch/return action; watching remains available through match events and the HUD menu (→WEB-42/50).
+  - Home content begins with NEXT MATCH, followed by the season-progress strip, the stadium scene and team state, in that visual and reading order on every screen.
   - The current competitive briefing names rank gaps, form and next rival; detailed fixtures/results remain in the league and the club season record.
   - 시즌 상세 opens the current club briefing and links to the selected club season in records. The compact progress strip is informational; there is no 시즌 진행 도구 entry or dialog (→WEB-80).
   - Cash lives in the HUD; pending business decisions live in the inbox. The scene keeps its current stadium step/capacity in HTML and at least 180px height.
@@ -52,6 +54,7 @@
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
 - WEB-18 [o] One clock on every management view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. On phones the full clock places date/status and settings above the mode and progression actions so their labels remain readable. The match theatre has no season-progression controls; its presentation speed follows →WEB-32.
+  - notifications/news (→WEB-51) sits beside the settings trigger in the clock's action group, within normal layout; both keep readable labels/counts and touch targets without overlapping content.
   - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
@@ -216,17 +219,17 @@
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "다음 경기 관전" after it ends.
   - details (moments, report, scrubber, player inspector, stats) open from the chart header.
-  - while a live playback is unfinished, home's watch action reads "경기로 돌아가기" and returns to it instead of starting another match.
+  - the HUD menu offers the same watch action without duplicating it in home's NEXT MATCH card. While a live playback is unfinished, it reads "경기로 돌아가기" and returns to it instead of starting another match; otherwise it watches the next match, or starts the next season when no fixture remains. Existing busy/read-only/error/critical protections remain in force.
 
-- WEB-51 [o] One floating notifications/news launcher opens one dialog with 알림·결정 and 뉴스 tabs on every play view except the match theatre; the HUD menu opens the same dialog, including from matches. Home has no headline card and the HUD has no separate inbox bell.
+- WEB-51 [o] One notifications/news launcher beside the clock's settings trigger opens one dialog with 알림·결정 and 뉴스 tabs on management views; the HUD menu opens the same dialog, including from matches or other views without a clock. Home has no headline card and the HUD has no separate inbox bell.
   - The launcher shows the combined unread club/system notification and NEW news count; each tab shows its own count. Opening one tab never marks the other tab read. Notifications retain 모두 읽음 and system notices; leaving a viewed news tab marks its newest headline seen per browser and world.
   - News is newest first with tag filters (경기, 기록, 선수, 순위, 분석, 구단, 이적, 유스), tone and weight. NEW marks items newer than the newest seen item. The full-career feed keeps stable item IDs and records (→HIST-11).
-  - The floating launcher hides while the operating-board draft panel is rendered; its reserved bottom space is released to that panel. Leaving the board or removing the draft restores the launcher. The HUD menu keeps notifications/news available throughout.
+  - The launcher stays visible while the operating-board draft panel is rendered. It occupies no floating or reserved bottom space, and the HUD menu keeps notifications/news available throughout.
   - Keyboard tab navigation, focus return, scrolling and the existing quiet-news preference remain available in the shared dialog.
 - WEB-52 [o] Achievements flagged by the news celebrate with a short banner and confetti over the play area: it never stops the clock, clears itself after about five seconds, queues when several arrive together and appears only for achievements earned while the view is open. ← keep phone controls visible
-  - The banner sits just above the news button, clear of the HUD and the clock, and files itself into that button.
+  - The banner sits near the play area's bottom edge, above phone navigation and clear of the HUD and the clock; its headline remains available behind the notifications/news button.
   - A tap on the banner dismisses it.
-  - On phones it is one line beside the news button — at most 44 CSS px tall, the headline cut with an ellipsis, no detail line — with a light confetti burst that falls once.
+  - On phones it is one line across the lower play area — at most 44 CSS px tall, the headline cut with an ellipsis, no detail line — with a light confetti burst that falls once.
   - "뉴스 표시 안 함" (in the inbox and the news sheet, kept per browser) turns banners off: achievements then only collect behind the news button.
   - Reduced motion shows the banner without confetti.
 - WEB-53 [o] A metrics glossary explains every advanced term with the industry definition (Opta, StatsBomb, FBref), this engine's exact count and how to read it, with typical ranges; it also maps the pitch's 40 named cells (→MATCH-14) and the per-touch tags (→MATCH-15) in the words the commentary uses. Metric names in reports, player details and the season review open their entry; the HUD menu opens the whole glossary.
@@ -337,6 +340,7 @@
 - WEB-74 [o] Ordinary navigation preserves unfinished UI work within the active game session: selected main/subview, player/candidate, season/competition filters, comparison selection, scroll position and unapplied policy draft.
   - A contextual setting or competition detour offers a named return to the originating task. A fresh entry uses the defined default; returning to ongoing work restores its context.
   - Browser back/forward and older deep links remain meaningful. State is scoped by world identity and resets when changing games; draft retention is not automatic application or game-state persistence.
+  - Closing the central responsibility/progression settings discards its unapplied changes under →WEB-79; this exception does not clear other policy drafts.
 - WEB-75 [o] Operational controls explain what they govern: present intervention, recurring investment, future staff/academy criteria or a construction project.
   - Show the responsible person/direct-or-delegated status and the next effect point: immediate candidate refresh, next round, intake, contract/appointment, season end or project completion, according to the existing owning-domain rule.
   - A preference does not claim to replace current staff, and an unused delegated criterion is labelled as such. Existing cost, risk, duration and outcome previews remain; reading a policy never changes facts.
@@ -360,6 +364,9 @@
 
 - WEB-79 [o] The clock's responsibility-settings entry opens the same central screen as other responsibility links (→WEB-18/45).
   - changes remain unapplied until explicit apply, with affected pending work disclosed before committing (→WEB-82). Opening or closing the screen never applies a choice.
+  - content order is progression mode and observation stops, the seven business responsibilities with any pending-work preview, then background progression. Section dividers have space on both sides, including before headings and explanatory text.
+  - the mode selector, observation choices and delegation controls remain visible and editable in both modes, subject to →WEB-76. A manual draft hides only background settings, since unattended progression is off (→WEB-64). Switching modes changes no observation, responsibility or background choices; returning to automatic reveals the same background draft. A required match-eve repair (→WEB-76) and any affected pending-work preview (→WEB-82) remain visible before apply.
+  - footer actions are 닫기 and 적용. Every dismissal (닫기, the header close control, Escape or the backdrop) discards all unapplied mode, observation, responsibility and background changes; reopening starts from the applied settings. No separate discard action is shown. A failed apply keeps the open draft available for retry.
   - apply validates the resulting manual-mode configuration (→WEB-76) and transfers only unresolved work under →WEB-82. Reports follow →WEB-42 without additional per-business-event stop switches.
 
 - WEB-80 [o] General progression controls are exclusive to the selected mode.
@@ -409,6 +416,11 @@
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## chg
+- r99 261021 WEB-11✎ NEXT MATCH after progress/stadium→before season progress; WEB-18✎ settings alone→settings and notifications together; WEB-51✎ floating launcher hidden for board drafts with bottom reserve→inline clock launcher remains visible without reserve; WEB-52✎ phone banner beside floating launcher→across lower play area above navigation
+- r98 261021 WEB-10✎ HUD menu without watch→watch/return action; WEB-11✎ tall next-match preparation/watch card→compact horizontal preparation-only row with smaller text; WEB-50✎ home watch/return→HUD-menu watch/return, match-event watching retained
+- r97 261021 WEB-79✎ manual hides observation/delegation/background controls→manual hides background settings only; observation and delegation controls stay editable in both modes
+- r96 261021 WEB-79✎ all settings shown in both modes→manual hides observation/delegation/background controls, keeps mode selector, validation repair and pending-work disclosure; game rules and draft values unchanged
+- r95 261021 WEB-74✎ retained responsibility drafts across dismissal→central settings discard on dismissal, other policy drafts retained; WEB-79✎ responsibilities before progression→progression, responsibilities, background with spaced dividers; retained draft and separate discard→close discards, footer close/apply only, failed apply retains draft
 - r94 261020 WEB-32✎ approximately 4 s per minute with automatic pacing→constant 4 s per 60 match seconds at selected speed; WEB-89+ complete own/other-club numerical comparisons with tracking coverage
 - r93 261019 WEB-18/50✎ match clock and pitch playback buttons→speed-only live observation; WEB-32✎ live manual pause→speed resumes detailed seek and visibility resumes playback, archived controls kept; WEB-81✎ preview replacement→stable pending preview with current-condition confirmation
 - r92 261019 WEB-47✎ unconditional whole-pitch PPDA beside advanced PPDA→MATCH-13 for advanced samples, marked whole-pitch approximation only without those counters

@@ -1,6 +1,7 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
+import { CommunicationsButton } from './EventCenter';
 import {
   currentDay,
   daysUntilNextMatch,
@@ -159,16 +160,19 @@ export const ProgressControls = memo(function ProgressControls({
         style={{ width: `${progress}%` }}
       />
       {buttons}
-      <button
-        type="button"
-        className={p.trigger}
-        aria-label="위임·진행 설정"
-        aria-haspopup="dialog"
-        data-testid="intervention-trigger"
-        onClick={useInterventionDialog.getState().show}
-      >
-        <b>설정</b>
-      </button>
+      <div className={p.settingsActions} role="group" aria-label="설정과 알림">
+        <button
+          type="button"
+          className={p.trigger}
+          aria-label="위임·진행 설정"
+          aria-haspopup="dialog"
+          data-testid="intervention-trigger"
+          onClick={useInterventionDialog.getState().show}
+        >
+          <b>설정</b>
+        </button>
+        <CommunicationsButton />
+      </div>
     </section>
   );
 });

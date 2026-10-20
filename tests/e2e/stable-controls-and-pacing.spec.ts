@@ -1,9 +1,10 @@
+import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 test.use({ viewport: { width: 390, height: 844 } });
 
-test('keeps both home controls stable over real automatic ticks and keeps running through preparation', async ({
+test('keeps home preparation stable over real automatic ticks and keeps running through preparation', async ({
   page,
 }) => {
   await page.goto('/');
@@ -13,27 +14,21 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // Keep daily progress uninterrupted: level 4 stops for no match eve or offer.
   await chooseLevel(page, 4);
-  const watch = page.getByTestId('hub-play'),
-    prepare = page
-      .getByTestId('club-hub')
-      .getByRole('button', { name: '전술·선발 준비', exact: true });
+  const prepare = page
+    .getByTestId('club-hub')
+    .getByRole('button', { name: '전술·선발 준비', exact: true });
   await page.evaluate(() => {
-    const watch = document.querySelector('[data-testid="hub-play"]')!;
     const prep = Array.from(document.querySelectorAll('[data-testid="club-hub"] button')).find(
       (e) => e.textContent?.trim() === '전술·선발 준비',
     )!;
-    const probe = { changes: 0, watch, prep };
+    const probe = { changes: 0, prep };
     (window as typeof window & { controlProbe?: typeof probe }).controlProbe = probe;
-    new MutationObserver((events) => {
-      probe.changes += events.length;
-    }).observe(watch, { attributes: true, attributeFilter: ['disabled', 'style', 'class'] });
     new MutationObserver((events) => {
       probe.changes += events.length;
     }).observe(prep, { attributes: true, attributeFilter: ['disabled', 'style', 'class'] });
   });
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', { timeout: 10000 });
-  await expect(watch).toBeEnabled();
   await expect(prepare).toBeEnabled();
   expect(
     await page.evaluate(
@@ -52,7 +47,7 @@ test('keeps both home controls stable over real automatic ticks and keeps runnin
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(sheet).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
-  await watch.click();
+  await watchNext(page);
   const theatre = page.getByTestId('match-theatre');
   await expect(theatre).toBeVisible();
   // Watching stops the run while the match is on; leaving the match resumes it untouched.
@@ -70,7 +65,7 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await page.getByTestId('hub-play').click();
+  await watchNext(page);
   const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
   await expect(speeds.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(
     'aria-checked',

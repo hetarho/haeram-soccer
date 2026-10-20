@@ -319,6 +319,29 @@ for (const viewport of [
     await page.getByTestId('intervention-trigger').click();
     const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
     await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('combobox', { name: '진행 모드', exact: true })).toBeInViewport();
+    await expect(dialog.locator('footer button')).toHaveText(['닫기', '적용']);
+    await expect(dialog.getByRole('button', { name: '변경 버리기', exact: true })).toHaveCount(0);
+    const sections = await dialog.locator('section[aria-label]').evaluateAll((elements) =>
+      elements.map((element) => {
+        const style = getComputedStyle(element);
+        return {
+          name: element.getAttribute('aria-label'),
+          top: element.getBoundingClientRect().top,
+          bottom: element.getBoundingClientRect().bottom,
+          paddingTop: parseFloat(style.paddingTop),
+        };
+      }),
+    );
+    expect(sections.map((section) => section.name)).toEqual([
+      '시간 진행 방식',
+      '업무 위임',
+      '자동 모드의 백그라운드 진행',
+    ]);
+    for (let i = 1; i < sections.length; i++) {
+      expect(sections[i].top - sections[i - 1].bottom).toBeGreaterThanOrEqual(16);
+      expect(sections[i].paddingTop).toBeGreaterThanOrEqual(16);
+    }
     if (viewport.width === 390) {
       await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeInViewport();
       await settle(page);
@@ -350,6 +373,11 @@ for (const viewport of [
     await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
     await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
       'data-value',
+      'direct',
+    );
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '선수 영입', exact: true }),
       'delegated',
     );
     await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
@@ -370,7 +398,8 @@ for (const viewport of [
     await expect(sale).not.toHaveAttribute('data-auto', 'true');
     await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
     await chooseOption(dialog.getByRole('combobox', { name: '선수 영입', exact: true }), 'direct');
-    await dialog.getByRole('button', { name: '변경 버리기', exact: true }).click();
+    await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
     await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
       'data-value',
       'delegated',
@@ -393,11 +422,24 @@ for (const viewport of [
     await page.getByTestId('intervention-trigger').click();
     await expect(dialog.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveAttribute(
       'data-value',
-      'manual',
+      'automatic',
     );
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await dialog.getByLabel('경기 전날 이벤트', { exact: true }).uncheck();
+    await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).not.toBeChecked();
     await dialog.getByRole('button', { name: '경기 전날 이벤트 켜기', exact: true }).click();
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+      'automatic',
+    );
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await expect(
+      dialog.getByRole('combobox', { name: '스태프 인사', exact: true }),
+    ).toHaveAttribute('data-value', 'delegated');
+    await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
     await dialog.getByRole('button', { name: '적용', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await closeSettingsOutcome(page);
@@ -406,10 +448,82 @@ for (const viewport of [
       'data-value',
       'manual',
     );
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await expect(dialog.getByRole('region', { name: '업무 위임', exact: true })).toBeVisible();
+    await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toBeEnabled();
+    await expect(
+      dialog.getByRole('region', { name: '자동 모드의 백그라운드 진행', exact: true }),
+    ).toHaveCount(0);
+    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
     await dialog.getByLabel('경기 전날 이벤트', { exact: true }).click();
     await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
     await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
+    await chooseOption(
+      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+      'automatic',
+    );
+    await expect(dialog.getByLabel('경기 전날 이벤트', { exact: true })).toBeChecked();
+    await expect(
+      dialog.getByRole('combobox', { name: '스태프 인사', exact: true }),
+    ).toHaveAttribute('data-value', 'delegated');
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  });
+  test(`settings dismissal discards all unapplied choices ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await foundQuiet(page);
+    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
+    for (const method of ['footer', 'header', 'escape', 'backdrop']) {
+      await page.getByTestId('intervention-trigger').click();
+      await dialog.getByLabel('이적시장 개장 이벤트', { exact: true }).check();
+      await dialog.getByRole('button', { name: '전체 위임', exact: true }).click();
+      await dialog.getByLabel('다른 탭에서도 계속 진행', { exact: true }).uncheck();
+      await chooseOption(dialog.getByRole('combobox', { name: '자리 비운 동안 진행 한도' }), 'off');
+      await chooseOption(
+        dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+        'manual',
+      );
+      await expect(dialog.getByRole('region', { name: '업무 위임', exact: true })).toBeVisible();
+      await expect(
+        dialog.getByRole('region', { name: '자동 모드의 백그라운드 진행', exact: true }),
+      ).toHaveCount(0);
+      await chooseOption(
+        dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+        'automatic',
+      );
+      await expect(dialog.getByLabel('다른 탭에서도 계속 진행', { exact: true })).not.toBeChecked();
+      await expect(
+        dialog.getByRole('combobox', { name: '자리 비운 동안 진행 한도' }),
+      ).toHaveAttribute('data-value', 'off');
+      await chooseOption(
+        dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+        'manual',
+      );
+      if (method === 'footer')
+        await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+      else if (method === 'header') await dialog.getByRole('button', { name: '창 닫기' }).click();
+      else if (method === 'escape') await page.keyboard.press('Escape');
+      else {
+        await settle(page);
+        const bounds = (await dialog.boundingBox())!;
+        expect(bounds.y).toBeGreaterThan(0);
+        await page.mouse.click(viewport.width / 2, bounds.y / 2);
+      }
+      await expect(dialog).toHaveCount(0);
+      await page.getByTestId('intervention-trigger').click();
+      await expect(
+        dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
+      ).toHaveAttribute('data-value', 'automatic');
+      await expect(dialog.getByLabel('이적시장 개장 이벤트', { exact: true })).not.toBeChecked();
+      await expect(
+        dialog.getByRole('combobox', { name: '선수 영입', exact: true }),
+      ).toHaveAttribute('data-value', 'direct');
+      await expect(dialog.getByLabel('다른 탭에서도 계속 진행', { exact: true })).toBeChecked();
+      await expect(
+        dialog.getByRole('combobox', { name: '자리 비운 동안 진행 한도' }),
+      ).toHaveAttribute('data-value', 'season');
+      await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+      await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    }
   });
   test(`central-responsibilities-explicit-apply pending handover ${viewport.width}`, async ({
     page,

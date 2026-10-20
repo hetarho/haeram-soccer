@@ -27,7 +27,7 @@
 }
 .card {
   position: absolute;
-  /* Just above the news button it files itself into, clear of the HUD and the clock. */
+  /* Lower play area, clear of the HUD, clock and phone navigation. */
   right: 24px;
   bottom: 88px;
   display: grid;
@@ -45,11 +45,11 @@
     drop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both,
     file 420ms cubic-bezier(0.5, 0, 0.9, 0.4) var(--file-at) forwards;
 }
-/* Phones get one line beside the news button, so the view stays readable (→WEB-52). */
+/* Phones get one compact line above navigation (→WEB-52). */
 @media (max-width: 760px) {
   .card {
     left: 12px;
-    right: 76px;
+    right: 12px;
     width: auto;
     bottom: calc(88px + env(safe-area-inset-bottom));
     display: flex;
@@ -122,7 +122,7 @@
     transform: translateY(24px) scale(0.92);
   }
 }
-/* The banner shrinks into the news button, where the headline stays. */
+/* The banner clears itself; its headline remains in notifications/news. */
 @keyframes file {
   to {
     opacity: 0;

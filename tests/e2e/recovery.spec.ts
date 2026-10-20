@@ -44,7 +44,11 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
     '읽기 전용',
   );
-  await expect(second.getByTestId('hub-play')).toBeDisabled();
+  await expect(await openWatchMenu(second)).toBeDisabled();
+  await second
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await page.bringToFront();
   const revision = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
@@ -52,7 +56,11 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByTestId('calendar')).toContainText('라운드 1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await expect(second.getByTestId('hub-play')).toBeEnabled();
+  await expect(await openWatchMenu(second)).toBeEnabled();
+  await second
+    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('button', { name: '창 닫기' })
+    .click();
   await second.close();
 });
 test('recovers prior checkpoint after active corruption without clearing another application key', async ({
@@ -221,7 +229,9 @@ test('a terminated real worker exposes recovery and retains the last committed c
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(manifest);
   await page.reload();
   await expect(page.getByTestId('calendar')).toContainText('라운드 0');
-  await expect(page.getByTestId('hub-play')).toBeEnabled();
+  await expect(
+    page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true }),
+  ).toBeEnabled();
 });
 test('a new game goes into another slot, both careers survive switching and back navigation works', async ({
   page,
@@ -231,7 +241,7 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page).toHaveURL(/\/people$/);
   await expect(page.getByRole('heading', { name: '선수단·스태프', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page.getByRole('button', { name: '다음 경기 관전' })).toBeVisible();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
   await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page).toHaveURL(/\/training$/);
@@ -352,3 +362,4 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   await expect(alarm).toBeVisible();
   await expect(notice).toBeVisible();
 });
+import { openWatchMenu } from './watch';

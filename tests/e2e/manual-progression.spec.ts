@@ -144,6 +144,9 @@ for (const authority of ['direct', 'delegated'] as const) {
     await expect(
       dialog.getByRole('checkbox', { name: '경기 전날 이벤트', exact: true }),
     ).not.toBeChecked();
+    await expect(
+      dialog.getByRole('button', { name: '경기 전날 이벤트 켜기', exact: true }),
+    ).toBeVisible();
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });
 }
