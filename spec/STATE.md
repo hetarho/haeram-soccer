@@ -204,6 +204,7 @@
 - Migrate legacy FORMAT reference notation separately before adopting typed reference markers.
 
 ## log
+- 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
 - 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
@@ -223,4 +224,3 @@
 - 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
 - 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
 - 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
-- 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.
