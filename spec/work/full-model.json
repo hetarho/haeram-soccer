@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T01:46:52.833Z",
-  "sourceCommit": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+  "snapshotAt": "2026-10-21T03:51:39.198Z",
+  "sourceCommit": "d7742d51983805f46bc99391707040386e9649dd",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+      "commit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T00:30:28.149Z"
+      "at": "2026-10-21T02:24:09.107Z"
     },
     "runner": {
       "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
@@ -75,22 +75,14 @@
   },
   "summary": {
     "total": 14,
-    "completed": 1,
-    "remaining": 13,
-    "running": 0,
-    "review": 0,
+    "completed": 2,
+    "remaining": 12,
+    "running": 1,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 13
+    "unassigned": 10
   },
   "tasks": [
-    {
-      "id": "T274",
-      "title": "Make candidate actions and restart preparation physically continuous",
-      "dep": [
-        "T273"
-      ],
-      "status": "todo"
-    },
     {
       "id": "T275",
       "title": "Render continuous paths at the owner's uniformly selected speed",
@@ -132,7 +124,7 @@
       "dep": [
         "T273"
       ],
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T280",
@@ -157,7 +149,7 @@
       "dep": [
         "T273"
       ],
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T283",
@@ -219,6 +211,8 @@
       "submittedBase": "9fa83603ead69eaef44f082ba31289efd797f3a0",
       "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
       "submittedAt": "2026-10-21T01:45:05.110Z",
+      "integratedCommit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+      "integratedAt": "2026-10-21T02:24:06.997Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -335,6 +329,223 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T01:36:37.790Z",
           "finishedAt": "2026-10-21T01:45:03.402Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T01:46:53.496Z",
+          "finishedAt": "2026-10-21T02:24:06.799Z"
+        }
+      ]
+    },
+    {
+      "id": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "group": "full-model",
+      "taskId": "T274",
+      "tasks": [
+        "T274"
+      ],
+      "lane": null,
+      "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+      "contributors": [
+        "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-21T02:24:09.453Z",
+      "startCommit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+      "verifiedCommit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+      "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
+      "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
+      "submittedAt": "2026-10-21T03:39:46.090Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1246 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1246,
+        "files": 13
+      },
+      "dispatch": {
+        "id": "33852963-2dcc-449d-bf4b-4c51264fd55c",
+        "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T03:46:09.748Z",
+        "finishedAt": "2026-10-21T03:51:37.718Z",
+        "error": null,
+        "summary": "T274 meets its acceptance. The change is large (1,246 lines, 13 files, all inside touches), so I checked the risky parts first. Without model metadata the old path is unchanged: I ran 12 fixtures (2024/1966/1950/2010, some knockout ties, half of them observed) on baseCommit d7742d5 and on beb6b9e from extracted copies, and the records, elapsed time, diagnostics and serialised traces hash identically. I also ran 60 candidate fixtures of my own (five eras including 1990, a third of them knockout ties). All 60 pass validateFullMatchRecord, and observed and unobserved runs settle identical records and elapsed time. Knots are in time order. Between consecutive trace entries in a period, no player moves faster than top speed; the only exceptions are the explicit substitution entries at benchPoint. GRID_MOVEMENT_CONFIG and GRID_BALL_CONFIG use the contract defaults (4/6 m/s², 180°/s; ball speeds 20/20/18/30/40). The retrieval (6 m/s) and placement (1.5 s) values are additions, and they are documented in the contract. Each restart is prepared once on the clock: dead time is the larger of the nominal value and what the preparation actually needs. Added-time credits come from the dead seconds actually charged, the wait beyond nominal is credited once, and the engine test confirms that dead time plus ball-in-play equals elapsed. lineMinutes rounds each entry/exit boundary once and keeps them in order, which fixes the 991 > 990 case without loosening the validator. The five named movement tests and the engine transition tests are present and meaningful. Band drift and the 1.9× cost are recorded for T278 and T285; renderer pacing is left to T275, which already owns knot playback. Only minor optional findings remain. The 'autopilot decisions awaiting the owner' risk refers to upstream planning decisions, not to anything T274 decided beyond what the contract allows."
+      },
+      "review": {
+        "id": "02c9a729-f937-4e12-8a64-74aa6f2003ad",
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T274 meets its acceptance. The change is large (1,246 lines, 13 files, all inside touches), so I checked the risky parts first. Without model metadata the old path is unchanged: I ran 12 fixtures (2024/1966/1950/2010, some knockout ties, half of them observed) on baseCommit d7742d5 and on beb6b9e from extracted copies, and the records, elapsed time, diagnostics and serialised traces hash identically. I also ran 60 candidate fixtures of my own (five eras including 1990, a third of them knockout ties). All 60 pass validateFullMatchRecord, and observed and unobserved runs settle identical records and elapsed time. Knots are in time order. Between consecutive trace entries in a period, no player moves faster than top speed; the only exceptions are the explicit substitution entries at benchPoint. GRID_MOVEMENT_CONFIG and GRID_BALL_CONFIG use the contract defaults (4/6 m/s², 180°/s; ball speeds 20/20/18/30/40). The retrieval (6 m/s) and placement (1.5 s) values are additions, and they are documented in the contract. Each restart is prepared once on the clock: dead time is the larger of the nominal value and what the preparation actually needs. Added-time credits come from the dead seconds actually charged, the wait beyond nominal is credited once, and the engine test confirms that dead time plus ball-in-play equals elapsed. lineMinutes rounds each entry/exit boundary once and keeps them in order, which fixes the 991 > 990 case without loosening the validator. The five named movement tests and the engine transition tests are present and meaningful. Band drift and the 1.9× cost are recorded for T278 and T285; renderer pacing is left to T275, which already owns knot playback. Only minor optional findings remain. The 'autopilot decisions awaiting the owner' risk refers to upstream planning decisions, not to anything T274 decided beyond what the contract allows.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/movement.ts:252 (T274 prepareRestart)",
+            "message": "After `advance`, prepareRestart always sets `gp.pos = spot`. If `reachSeconds` ever stops at `GRID_MOVEMENT_CONFIG.horizon` (300 s) without arriving, the taker would jump to the spot silently instead of the gap being noticed. This never happened in 60 candidate fixtures I checked for continuity. Consider asserting or capping explicitly, so a missed arrival shows up instead of being placed (useful when T278 tunes the config)."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:712 (T274 open-play least)",
+            "message": "The candidate branch repeats the jitter `secondsOf(played.key) * (0.85 + 0.3 * r())` that the pre-feature branch draws a few lines below. A shared helper or named constant would stop the two duration draws from drifting apart when T278 retunes them. Optional."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:301 (T274 substitution entry)",
+            "message": "The candidate path overwrites the substitute's position with benchPoint after changes.ts has copied the outgoing player's position (limit 4). This is correct as an explicit 'entry' transition. Moving the touchline entry point into changes.ts (outside T274's touches) would leave one owner for substitute placement, a natural cleanup for T276, which owns the 'unavailable/exit' part of the intention lifecycle."
+          }
+        ],
+        "commit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+        "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+        "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
+        "createdAt": "2026-10-21T03:46:09.068Z",
+        "finishedAt": "2026-10-21T03:51:37.695Z"
+      },
+      "steps": [
+        {
+          "taskId": "T274",
+          "commit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+          "at": "2026-10-21T03:39:46.049Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T03:30:42.948Z",
+              "finishedAt": "2026-10-21T03:39:45.534Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T03:30:42.948Z",
+          "finishedAt": "2026-10-21T03:39:45.534Z"
+        }
+      ]
+    },
+    {
+      "id": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "group": "full-model",
+      "taskId": "T279",
+      "tasks": [
+        "T279"
+      ],
+      "lane": null,
+      "owner": "f6n3-T279",
+      "contributors": [
+        "f6n3-T279"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-21T02:43:00.076Z",
+      "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2"
+    },
+    {
+      "id": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "group": "full-model",
+      "taskId": "T282",
+      "tasks": [
+        "T282"
+      ],
+      "lane": null,
+      "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+      "contributors": [
+        "f6n3-T282",
+        "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-21T02:43:02.895Z",
+      "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2",
+      "verifiedCommit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+      "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
+      "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+      "submittedAt": "2026-10-21T03:46:08.352Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1385 changed lines (limit 300)",
+          "outside touches: apps/web/src/adapters/bitpacking.ts apps/web/src/adapters/legacyReset.test.ts apps/web/src/runtime/host.test.ts packages/contracts/src/match-model.ts packages/contracts/src/versions.ts",
+          "review paths: docs/SAVE-FORMAT.md packages/contracts/src/versions.ts",
+          "reworked after a review or integration failure",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1385,
+        "files": 15
+      },
+      "dispatch": {
+        "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+        "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T03:27:38.389Z",
+        "finishedAt": "2026-10-21T03:46:08.375Z",
+        "error": null,
+        "summary": "T282 리뷰 지적 3건을 모두 고쳤습니다.\n(P2) `tests/fixtures/club-identity.ts`의 미래 컨테이너 케이스를 `envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`(4)로 옮겼습니다. 이제 다시 알 수 없는 컨테이너를 검사하고 '지원하지 않는 저장 스키마 버전' 오류가 납니다. 컨테이너와 모델 데이터가 어긋날 때의 문구도 '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.'로 바꿔 다른 호환성 오류와 맞췄습니다.\n(P3) `bitpacking.ts`가 `rangeBits`를 export하고, `packBitColumns`와 `matchModelPacking.ts`의 `bitsOf`가 이것을 함께 씁니다.\n(P3) `unpackSeason`은 이제 대회 표를 먼저 읽습니다. 클럽·선수 표는 대회 행이 선언한 합계로 행 수 상한을 걸고, 기여 표는 선수 행의 소속 수 합계로 상한을 겁니다. 그래서 조작된 대형 표는 행을 할당하기 전에 '표 차원' 오류로 거부됩니다. 이를 확인하는 단위 테스트(빈 열 100만 행)도 추가했습니다.\n\n실행한 검사는 typecheck, lint, format:check, build입니다. 어댑터 테스트 4개 파일은 93개 모두 통과했습니다. `vitest run --changed d7742d5`는 201개 파일에서 1368개 통과, 4개 건너뜀이었습니다.\n`tests/e2e/club-identity-continuity.spec.ts`는 브라우저 spec이라 여기서 돌리지 않았고 묶음 Chromium 실행으로 넘겼습니다. touches 밖에서 수정한 파일은 `tests/fixtures/club-identity.ts`와 `bitpacking.ts` 두 개이며, result limits에 적어 두었습니다."
+      },
+      "reviewHistory": [
+        {
+          "id": "2d1468a6-9922-4c33-b8ad-c4f3ee75d34a",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T282: the container-3 codec looks correct and well tested. It round-trips exactly, keeps optional fields present or absent, rejects bad input strictly, enables the writer only for model-bearing worlds (nothing in production creates those yet) and leaves commit/export recovery unchanged. The out-of-touches edits (versions.ts, match-model.ts, the legacyReset/host tests) are small and justified by T273's handoff. One blocking regression: the club-identity e2e 'envelope schema 3' future-checkpoint case now fails through the new container/payload mismatch error. That error's message does not contain the text the spec filters on, and the fixture no longer tests a future container at all.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/adapters/persistence.ts:140 / tests/fixtures/club-identity.ts:140 / tests/e2e/club-identity-continuity.spec.ts:463 (T282)",
+              "message": "`FUTURE_CHECKPOINTS['envelope schema 3']` re-labels a model-free container-2 payload as schema 3. Container 3 is now supported, so `readEnvelope` accepts it. The load then fails only in the new mismatch check, which throws SaveCompatibilityError('저장 컨테이너와 경기 모델 데이터가 맞지 않습니다. 원본 파일을 보관하세요.'). Saves.load rethrows that error, and the client shows String(error) in the role=alert banner. The e2e `newer save data (envelope schema 3) … stays protected` waits for an alert filtered by hasText '지원하지 않는', which this message does not contain, so the chromium verify step should time out. The unit `it.each(FUTURE_CHECKPOINTS)` still passes only because it checks the error class. The result's limits (3) defer this to the batch instead of resolving it. Separately, the fixture no longer exercises the future-container path (SAVE-11/SAVE-23) at all. Fix: move the fixture to `FULL_MODEL_CHECKPOINT_SCHEMA + 1` (key and comment, e.g. 'envelope schema 4') so it again tests an unknown container. Also consider wording the mismatch message consistently with the other compatibility messages. Then run the club-identity-continuity spec (or confirm it in the batch) before integration."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:76-87 (T282)",
+              "message": "`bitsOf` re-implements the `max - min` bit-width rule from `packBitColumns` (bitpacking.ts:42-56) to choose between the plain and sparse column forms. If the packer's header rule changes, the two can drift. A wrong choice only costs size, not correctness. Consider exporting the width helper from bitpacking.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:373-376 (T282)",
+              "message": "Club, player and contribution tables are read against the generic 1,000,000-row bound before their totals are compared with the competition rows. A checksum-valid crafted import with zero-bit columns (empty data) can therefore make the reader allocate tens of millions of cells (e.g. 1e6 × 47) from a tiny payload, and only then fail with '잔여 행'. Read `competitions` first and pass the summed club/player counts (and then the summed share counts) as `maxRows`, so oversized tables are rejected before allocation."
+            }
+          ],
+          "commit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+          "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+          "submissionId": "99fcb999-f0bb-4c9a-9a4b-2dd000cb0f87",
+          "createdAt": "2026-10-21T03:23:53.721Z",
+          "finishedAt": "2026-10-21T03:27:38.252Z",
+          "invalidatedAt": "2026-10-21T03:27:38.327Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T282",
+          "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+          "at": "2026-10-21T03:46:08.317Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T03:43:59.766Z",
+              "finishedAt": "2026-10-21T03:46:08.025Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T03:43:59.766Z",
+          "finishedAt": "2026-10-21T03:46:08.025Z"
         }
       ]
     }
@@ -1288,6 +1499,884 @@
       "group": "full-model",
       "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
       "taskId": "T273",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 292,
+      "at": "2026-10-21T02:24:06.934Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T01:46:53.496Z",
+            "finishedAt": "2026-10-21T02:24:06.799Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 293,
+      "at": "2026-10-21T02:24:06.997Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+        "integratedAt": "2026-10-21T02:24:06.997Z"
+      }
+    },
+    {
+      "sequence": 294,
+      "at": "2026-10-21T02:24:09.118Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T02:24:09.107Z"
+        }
+      }
+    },
+    {
+      "sequence": 295,
+      "at": "2026-10-21T02:24:09.453Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+        "group": "full-model",
+        "taskId": "T274",
+        "tasks": [
+          "T274"
+        ],
+        "lane": null,
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+        "contributors": [
+          "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T02:24:09.453Z",
+        "startCommit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d"
+      }
+    },
+    {
+      "sequence": 296,
+      "at": "2026-10-21T02:24:09.805Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 297,
+      "at": "2026-10-21T02:24:10.020Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "73d33985-f079-4ba2-a59d-0a07050a056b",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T02:24:10.019Z"
+        }
+      }
+    },
+    {
+      "sequence": 298,
+      "at": "2026-10-21T02:24:10.166Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "73d33985-f079-4ba2-a59d-0a07050a056b",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T02:24:10.019Z"
+        }
+      }
+    },
+    {
+      "sequence": 299,
+      "at": "2026-10-21T02:43:00.077Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+        "group": "full-model",
+        "taskId": "T279",
+        "tasks": [
+          "T279"
+        ],
+        "lane": null,
+        "owner": "f6n3-T279",
+        "contributors": [
+          "f6n3-T279"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T02:43:00.076Z",
+        "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2"
+      }
+    },
+    {
+      "sequence": 300,
+      "at": "2026-10-21T02:43:00.507Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 301,
+      "at": "2026-10-21T02:43:02.895Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "626befdd-2837-410e-978e-65dd0274e5f8",
+        "group": "full-model",
+        "taskId": "T282",
+        "tasks": [
+          "T282"
+        ],
+        "lane": null,
+        "owner": "f6n3-T282",
+        "contributors": [
+          "f6n3-T282"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T02:43:02.895Z",
+        "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2"
+      }
+    },
+    {
+      "sequence": 302,
+      "at": "2026-10-21T02:43:03.230Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 303,
+      "at": "2026-10-21T03:10:49.802Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 304,
+      "at": "2026-10-21T03:22:03.786Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+        "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
+        "submissionId": "99fcb999-f0bb-4c9a-9a4b-2dd000cb0f87",
+        "submittedAt": "2026-10-21T03:22:03.786Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1332 changed lines (limit 300)",
+            "outside touches: apps/web/src/adapters/legacyReset.test.ts apps/web/src/runtime/host.test.ts packages/contracts/src/match-model.ts packages/contracts/src/versions.ts",
+            "review paths: docs/SAVE-FORMAT.md packages/contracts/src/versions.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1332,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T282",
+            "commit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+            "at": "2026-10-21T03:22:03.726Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T03:10:50.073Z",
+                "finishedAt": "2026-10-21T03:22:03.368Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T03:10:50.073Z",
+            "finishedAt": "2026-10-21T03:22:03.368Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 305,
+      "at": "2026-10-21T03:23:52.863Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 306,
+      "at": "2026-10-21T03:23:53.053Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T274: 태스크 result에 verified 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 307,
+      "at": "2026-10-21T03:23:53.094Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "73d33985-f079-4ba2-a59d-0a07050a056b",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T02:24:10.019Z",
+          "finishedAt": "2026-10-21T03:23:53.093Z",
+          "error": "T274: 태스크 result에 verified 기록이 필요합니다.",
+          "summary": "T274 is done. The candidate model now gives every ball route and player move real match time, restarts included. When there is no model metadata, the old path runs unchanged.\n\n- **Movement**: `grid/movement.ts` adds `GRID_MOVEMENT_CONFIG` and `GRID_BALL_CONFIG` using the contract defaults, plus a shared scheduler (`stepToward`, `reachSeconds`, `advance`, `prepareRestart`). Top speed is still `speedOf` (pace and fatigue).\n- **Actions**: an action lasts the longest of three things: its drawn duration, the ball's flight, and the new owner's run to the ball. Receivers, interceptors, tackling players, loose-ball winners and carriers now move there instead of being placed.\n- **Restarts**: the ball is carried back from where it went dead and set down while the taker and the set-piece group (or the kick-off line-up after a goal) walk to their spots. Dead time is the nominal value or the time this actually takes, whichever is longer, never both. `playRestart` gets this through a `RestartPreparer` hook; the old behaviour is kept as `placeAtOnce`.\n- **Transitions**: players are placed directly only at a period's start. Substitutes come on from halfway on the touchline.\n- **One clock**: added-time credits are now the dead seconds actually charged.\n- **Minutes (the 991 > 990 case)**: `lineMinutes` in `record.ts` rounds each entry and exit once, in the order they happened. Candidate records also always carry `model` and `incidents`.\n- **Trace**: entries gain `knots` (retrieval, placement, kick, reception and so on) and `transition` (period, entry, exit). Observed and unobserved runs settle identical records.\n- **Docs**: both docs are updated.\n\n**Checks run**:\n- typecheck, lint and format:check passed.\n- `vitest run --changed f396ac9` passed in full: 194 files, 1,320 tests. I ran it in 6 shards to stay under the 10-minute command limit.\n- In ad-hoc measurements, 0 of 600 modern fixtures and 0 of 240 mixed-era/cup fixtures failed `validateFullMatchRecord`. The old path still had 2 sides over 990 in the same 600.\n\n**Drift for T278** (bands not changed):\n\n| measure | band | before | after |\n|---|---|---|---|\n| ball in play (min) | 54–58 | 57.3 | 58.5 |\n| goals | 2.6–2.9 | 2.75 | 2.94 |\n| throw-ins | 17–23 | 17.9 | 17.0 |\n\nBall in play and goals are now slightly above their bands; throw-ins sit at the lower edge. Fixture time went from 98 to 189 ms (about 1.9×); T285 should look at this.\n\n**Not done / limits**:\n- Browser specs and the batch gate were not run.\n- `buildFrames` (T275) still paces candidate traces the old way.\n- Change-of-intention knots wait for T276.\n- `changes.ts` is outside my file list, so it still copies the outgoing player's position to the substitute. `engine.ts` then moves him to the touchline on the candidate path.\n\nI couldn't read the spec format via the haeram CLI (permission was denied), so I copied T273's `- [v]` notation for the acceptance checks."
+        }
+      }
+    },
+    {
+      "sequence": 308,
+      "at": "2026-10-21T03:23:53.721Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2d1468a6-9922-4c33-b8ad-c4f3ee75d34a",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+          "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+          "submissionId": "99fcb999-f0bb-4c9a-9a4b-2dd000cb0f87",
+          "createdAt": "2026-10-21T03:23:53.721Z"
+        }
+      }
+    },
+    {
+      "sequence": 309,
+      "at": "2026-10-21T03:23:54.405Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "5f6bfb11-83ee-431e-a6b2-05b01321be75",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T03:23:54.405Z"
+        }
+      }
+    },
+    {
+      "sequence": 310,
+      "at": "2026-10-21T03:23:54.431Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "5f6bfb11-83ee-431e-a6b2-05b01321be75",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T03:23:54.405Z"
+        }
+      }
+    },
+    {
+      "sequence": 311,
+      "at": "2026-10-21T03:27:38.252Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T282: the container-3 codec looks correct and well tested. It round-trips exactly, keeps optional fields present or absent, rejects bad input strictly, enables the writer only for model-bearing worlds (nothing in production creates those yet) and leaves commit/export recovery unchanged. The out-of-touches edits (versions.ts, match-model.ts, the legacyReset/host tests) are small and justified by T273's handoff. One blocking regression: the club-identity e2e 'envelope schema 3' future-checkpoint case now fails through the new container/payload mismatch error. That error's message does not contain the text the spec filters on, and the fixture no longer tests a future container at all.",
+        "review": {
+          "id": "2d1468a6-9922-4c33-b8ad-c4f3ee75d34a",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T282: the container-3 codec looks correct and well tested. It round-trips exactly, keeps optional fields present or absent, rejects bad input strictly, enables the writer only for model-bearing worlds (nothing in production creates those yet) and leaves commit/export recovery unchanged. The out-of-touches edits (versions.ts, match-model.ts, the legacyReset/host tests) are small and justified by T273's handoff. One blocking regression: the club-identity e2e 'envelope schema 3' future-checkpoint case now fails through the new container/payload mismatch error. That error's message does not contain the text the spec filters on, and the fixture no longer tests a future container at all.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/adapters/persistence.ts:140 / tests/fixtures/club-identity.ts:140 / tests/e2e/club-identity-continuity.spec.ts:463 (T282)",
+              "message": "`FUTURE_CHECKPOINTS['envelope schema 3']` re-labels a model-free container-2 payload as schema 3. Container 3 is now supported, so `readEnvelope` accepts it. The load then fails only in the new mismatch check, which throws SaveCompatibilityError('저장 컨테이너와 경기 모델 데이터가 맞지 않습니다. 원본 파일을 보관하세요.'). Saves.load rethrows that error, and the client shows String(error) in the role=alert banner. The e2e `newer save data (envelope schema 3) … stays protected` waits for an alert filtered by hasText '지원하지 않는', which this message does not contain, so the chromium verify step should time out. The unit `it.each(FUTURE_CHECKPOINTS)` still passes only because it checks the error class. The result's limits (3) defer this to the batch instead of resolving it. Separately, the fixture no longer exercises the future-container path (SAVE-11/SAVE-23) at all. Fix: move the fixture to `FULL_MODEL_CHECKPOINT_SCHEMA + 1` (key and comment, e.g. 'envelope schema 4') so it again tests an unknown container. Also consider wording the mismatch message consistently with the other compatibility messages. Then run the club-identity-continuity spec (or confirm it in the batch) before integration."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:76-87 (T282)",
+              "message": "`bitsOf` re-implements the `max - min` bit-width rule from `packBitColumns` (bitpacking.ts:42-56) to choose between the plain and sparse column forms. If the packer's header rule changes, the two can drift. A wrong choice only costs size, not correctness. Consider exporting the width helper from bitpacking.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:373-376 (T282)",
+              "message": "Club, player and contribution tables are read against the generic 1,000,000-row bound before their totals are compared with the competition rows. A checksum-valid crafted import with zero-bit columns (empty data) can therefore make the reader allocate tens of millions of cells (e.g. 1e6 × 47) from a tiny payload, and only then fail with '잔여 행'. Read `competitions` first and pass the summed club/player counts (and then the summed share counts) as `maxRows`, so oversized tables are rejected before allocation."
+            }
+          ],
+          "commit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+          "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+          "submissionId": "99fcb999-f0bb-4c9a-9a4b-2dd000cb0f87",
+          "createdAt": "2026-10-21T03:23:53.721Z",
+          "finishedAt": "2026-10-21T03:27:38.252Z"
+        }
+      }
+    },
+    {
+      "sequence": 312,
+      "at": "2026-10-21T03:27:38.275Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "5f6bfb11-83ee-431e-a6b2-05b01321be75",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T03:23:54.405Z",
+          "finishedAt": "2026-10-21T03:27:38.274Z",
+          "error": null,
+          "summary": "T282: the container-3 codec looks correct and well tested. It round-trips exactly, keeps optional fields present or absent, rejects bad input strictly, enables the writer only for model-bearing worlds (nothing in production creates those yet) and leaves commit/export recovery unchanged. The out-of-touches edits (versions.ts, match-model.ts, the legacyReset/host tests) are small and justified by T273's handoff. One blocking regression: the club-identity e2e 'envelope schema 3' future-checkpoint case now fails through the new container/payload mismatch error. That error's message does not contain the text the spec filters on, and the fixture no longer tests a future container at all."
+        }
+      }
+    },
+    {
+      "sequence": 313,
+      "at": "2026-10-21T03:27:38.327Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+        "contributors": [
+          "f6n3-T282",
+          "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "2d1468a6-9922-4c33-b8ad-c4f3ee75d34a",
+            "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T282: the container-3 codec looks correct and well tested. It round-trips exactly, keeps optional fields present or absent, rejects bad input strictly, enables the writer only for model-bearing worlds (nothing in production creates those yet) and leaves commit/export recovery unchanged. The out-of-touches edits (versions.ts, match-model.ts, the legacyReset/host tests) are small and justified by T273's handoff. One blocking regression: the club-identity e2e 'envelope schema 3' future-checkpoint case now fails through the new container/payload mismatch error. That error's message does not contain the text the spec filters on, and the fixture no longer tests a future container at all.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/adapters/persistence.ts:140 / tests/fixtures/club-identity.ts:140 / tests/e2e/club-identity-continuity.spec.ts:463 (T282)",
+                "message": "`FUTURE_CHECKPOINTS['envelope schema 3']` re-labels a model-free container-2 payload as schema 3. Container 3 is now supported, so `readEnvelope` accepts it. The load then fails only in the new mismatch check, which throws SaveCompatibilityError('저장 컨테이너와 경기 모델 데이터가 맞지 않습니다. 원본 파일을 보관하세요.'). Saves.load rethrows that error, and the client shows String(error) in the role=alert banner. The e2e `newer save data (envelope schema 3) … stays protected` waits for an alert filtered by hasText '지원하지 않는', which this message does not contain, so the chromium verify step should time out. The unit `it.each(FUTURE_CHECKPOINTS)` still passes only because it checks the error class. The result's limits (3) defer this to the batch instead of resolving it. Separately, the fixture no longer exercises the future-container path (SAVE-11/SAVE-23) at all. Fix: move the fixture to `FULL_MODEL_CHECKPOINT_SCHEMA + 1` (key and comment, e.g. 'envelope schema 4') so it again tests an unknown container. Also consider wording the mismatch message consistently with the other compatibility messages. Then run the club-identity-continuity spec (or confirm it in the batch) before integration."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/adapters/matchModelPacking.ts:76-87 (T282)",
+                "message": "`bitsOf` re-implements the `max - min` bit-width rule from `packBitColumns` (bitpacking.ts:42-56) to choose between the plain and sparse column forms. If the packer's header rule changes, the two can drift. A wrong choice only costs size, not correctness. Consider exporting the width helper from bitpacking.ts."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/adapters/matchModelPacking.ts:373-376 (T282)",
+                "message": "Club, player and contribution tables are read against the generic 1,000,000-row bound before their totals are compared with the competition rows. A checksum-valid crafted import with zero-bit columns (empty data) can therefore make the reader allocate tens of millions of cells (e.g. 1e6 × 47) from a tiny payload, and only then fail with '잔여 행'. Read `competitions` first and pass the summed club/player counts (and then the summed share counts) as `maxRows`, so oversized tables are rejected before allocation."
+              }
+            ],
+            "commit": "4101ef1c69bbab647dfdd04462687c0f7bece19d",
+            "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+            "submissionId": "99fcb999-f0bb-4c9a-9a4b-2dd000cb0f87",
+            "createdAt": "2026-10-21T03:23:53.721Z",
+            "finishedAt": "2026-10-21T03:27:38.252Z",
+            "invalidatedAt": "2026-10-21T03:27:38.327Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 314,
+      "at": "2026-10-21T03:27:38.389Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T03:27:38.389Z"
+        }
+      }
+    },
+    {
+      "sequence": 315,
+      "at": "2026-10-21T03:27:38.526Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T03:27:38.389Z"
+        }
+      }
+    },
+    {
+      "sequence": 316,
+      "at": "2026-10-21T03:30:42.303Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 317,
+      "at": "2026-10-21T03:39:46.090Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+        "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
+        "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
+        "submittedAt": "2026-10-21T03:39:46.090Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1246 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1246,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T274",
+            "commit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+            "at": "2026-10-21T03:39:46.049Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T03:30:42.948Z",
+                "finishedAt": "2026-10-21T03:39:45.534Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T03:30:42.948Z",
+            "finishedAt": "2026-10-21T03:39:45.534Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 318,
+      "at": "2026-10-21T03:43:58.813Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 319,
+      "at": "2026-10-21T03:43:59.400Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 320,
+      "at": "2026-10-21T03:43:59.457Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 321,
+      "at": "2026-10-21T03:46:08.352Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+        "submittedAt": "2026-10-21T03:46:08.352Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1385 changed lines (limit 300)",
+            "outside touches: apps/web/src/adapters/bitpacking.ts apps/web/src/adapters/legacyReset.test.ts apps/web/src/runtime/host.test.ts packages/contracts/src/match-model.ts packages/contracts/src/versions.ts",
+            "review paths: docs/SAVE-FORMAT.md packages/contracts/src/versions.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1385,
+          "files": 15
+        },
+        "steps": [
+          {
+            "taskId": "T282",
+            "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+            "at": "2026-10-21T03:46:08.317Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T03:43:59.766Z",
+                "finishedAt": "2026-10-21T03:46:08.025Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T03:43:59.766Z",
+            "finishedAt": "2026-10-21T03:46:08.025Z"
+          }
+        ],
+        "verifiedCommit": "06e263a6021ac09f95031e10e654e5c1a360dfae"
+      }
+    },
+    {
+      "sequence": 322,
+      "at": "2026-10-21T03:46:08.375Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T03:27:38.389Z",
+          "finishedAt": "2026-10-21T03:46:08.375Z",
+          "error": null,
+          "summary": "T282 리뷰 지적 3건을 모두 고쳤습니다.\n(P2) `tests/fixtures/club-identity.ts`의 미래 컨테이너 케이스를 `envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`(4)로 옮겼습니다. 이제 다시 알 수 없는 컨테이너를 검사하고 '지원하지 않는 저장 스키마 버전' 오류가 납니다. 컨테이너와 모델 데이터가 어긋날 때의 문구도 '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.'로 바꿔 다른 호환성 오류와 맞췄습니다.\n(P3) `bitpacking.ts`가 `rangeBits`를 export하고, `packBitColumns`와 `matchModelPacking.ts`의 `bitsOf`가 이것을 함께 씁니다.\n(P3) `unpackSeason`은 이제 대회 표를 먼저 읽습니다. 클럽·선수 표는 대회 행이 선언한 합계로 행 수 상한을 걸고, 기여 표는 선수 행의 소속 수 합계로 상한을 겁니다. 그래서 조작된 대형 표는 행을 할당하기 전에 '표 차원' 오류로 거부됩니다. 이를 확인하는 단위 테스트(빈 열 100만 행)도 추가했습니다.\n\n실행한 검사는 typecheck, lint, format:check, build입니다. 어댑터 테스트 4개 파일은 93개 모두 통과했습니다. `vitest run --changed d7742d5`는 201개 파일에서 1368개 통과, 4개 건너뜀이었습니다.\n`tests/e2e/club-identity-continuity.spec.ts`는 브라우저 spec이라 여기서 돌리지 않았고 묶음 Chromium 실행으로 넘겼습니다. touches 밖에서 수정한 파일은 `tests/fixtures/club-identity.ts`와 `bitpacking.ts` 두 개이며, result limits에 적어 두었습니다."
+        }
+      }
+    },
+    {
+      "sequence": 323,
+      "at": "2026-10-21T03:46:09.068Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "02c9a729-f937-4e12-8a64-74aa6f2003ad",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+          "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+          "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
+          "createdAt": "2026-10-21T03:46:09.068Z"
+        }
+      }
+    },
+    {
+      "sequence": 324,
+      "at": "2026-10-21T03:46:09.748Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "33852963-2dcc-449d-bf4b-4c51264fd55c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T03:46:09.748Z"
+        }
+      }
+    },
+    {
+      "sequence": 325,
+      "at": "2026-10-21T03:46:09.780Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "33852963-2dcc-449d-bf4b-4c51264fd55c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T03:46:09.748Z"
+        }
+      }
+    },
+    {
+      "sequence": 326,
+      "at": "2026-10-21T03:51:37.695Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "02c9a729-f937-4e12-8a64-74aa6f2003ad",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T274 meets its acceptance. The change is large (1,246 lines, 13 files, all inside touches), so I checked the risky parts first. Without model metadata the old path is unchanged: I ran 12 fixtures (2024/1966/1950/2010, some knockout ties, half of them observed) on baseCommit d7742d5 and on beb6b9e from extracted copies, and the records, elapsed time, diagnostics and serialised traces hash identically. I also ran 60 candidate fixtures of my own (five eras including 1990, a third of them knockout ties). All 60 pass validateFullMatchRecord, and observed and unobserved runs settle identical records and elapsed time. Knots are in time order. Between consecutive trace entries in a period, no player moves faster than top speed; the only exceptions are the explicit substitution entries at benchPoint. GRID_MOVEMENT_CONFIG and GRID_BALL_CONFIG use the contract defaults (4/6 m/s², 180°/s; ball speeds 20/20/18/30/40). The retrieval (6 m/s) and placement (1.5 s) values are additions, and they are documented in the contract. Each restart is prepared once on the clock: dead time is the larger of the nominal value and what the preparation actually needs. Added-time credits come from the dead seconds actually charged, the wait beyond nominal is credited once, and the engine test confirms that dead time plus ball-in-play equals elapsed. lineMinutes rounds each entry/exit boundary once and keeps them in order, which fixes the 991 > 990 case without loosening the validator. The five named movement tests and the engine transition tests are present and meaningful. Band drift and the 1.9× cost are recorded for T278 and T285; renderer pacing is left to T275, which already owns knot playback. Only minor optional findings remain. The 'autopilot decisions awaiting the owner' risk refers to upstream planning decisions, not to anything T274 decided beyond what the contract allows.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/movement.ts:252 (T274 prepareRestart)",
+              "message": "After `advance`, prepareRestart always sets `gp.pos = spot`. If `reachSeconds` ever stops at `GRID_MOVEMENT_CONFIG.horizon` (300 s) without arriving, the taker would jump to the spot silently instead of the gap being noticed. This never happened in 60 candidate fixtures I checked for continuity. Consider asserting or capping explicitly, so a missed arrival shows up instead of being placed (useful when T278 tunes the config)."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:712 (T274 open-play least)",
+              "message": "The candidate branch repeats the jitter `secondsOf(played.key) * (0.85 + 0.3 * r())` that the pre-feature branch draws a few lines below. A shared helper or named constant would stop the two duration draws from drifting apart when T278 retunes them. Optional."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:301 (T274 substitution entry)",
+              "message": "The candidate path overwrites the substitute's position with benchPoint after changes.ts has copied the outgoing player's position (limit 4). This is correct as an explicit 'entry' transition. Moving the touchline entry point into changes.ts (outside T274's touches) would leave one owner for substitute placement, a natural cleanup for T276, which owns the 'unavailable/exit' part of the intention lifecycle."
+            }
+          ],
+          "commit": "beb6b9e76c11c5b2fde1aded967b0ebfe753be28",
+          "baseCommit": "d7742d51983805f46bc99391707040386e9649dd",
+          "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
+          "createdAt": "2026-10-21T03:46:09.068Z",
+          "finishedAt": "2026-10-21T03:51:37.695Z"
+        }
+      }
+    },
+    {
+      "sequence": 327,
+      "at": "2026-10-21T03:51:37.718Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "33852963-2dcc-449d-bf4b-4c51264fd55c",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T03:46:09.748Z",
+          "finishedAt": "2026-10-21T03:51:37.718Z",
+          "error": null,
+          "summary": "T274 meets its acceptance. The change is large (1,246 lines, 13 files, all inside touches), so I checked the risky parts first. Without model metadata the old path is unchanged: I ran 12 fixtures (2024/1966/1950/2010, some knockout ties, half of them observed) on baseCommit d7742d5 and on beb6b9e from extracted copies, and the records, elapsed time, diagnostics and serialised traces hash identically. I also ran 60 candidate fixtures of my own (five eras including 1990, a third of them knockout ties). All 60 pass validateFullMatchRecord, and observed and unobserved runs settle identical records and elapsed time. Knots are in time order. Between consecutive trace entries in a period, no player moves faster than top speed; the only exceptions are the explicit substitution entries at benchPoint. GRID_MOVEMENT_CONFIG and GRID_BALL_CONFIG use the contract defaults (4/6 m/s², 180°/s; ball speeds 20/20/18/30/40). The retrieval (6 m/s) and placement (1.5 s) values are additions, and they are documented in the contract. Each restart is prepared once on the clock: dead time is the larger of the nominal value and what the preparation actually needs. Added-time credits come from the dead seconds actually charged, the wait beyond nominal is credited once, and the engine test confirms that dead time plus ball-in-play equals elapsed. lineMinutes rounds each entry/exit boundary once and keeps them in order, which fixes the 991 > 990 case without loosening the validator. The five named movement tests and the engine transition tests are present and meaningful. Band drift and the 1.9× cost are recorded for T278 and T285; renderer pacing is left to T275, which already owns knot playback. Only minor optional findings remain. The 'autopilot decisions awaiting the owner' risk refers to upstream planning decisions, not to anything T274 decided beyond what the contract allows."
+        }
+      }
+    },
+    {
+      "sequence": 328,
+      "at": "2026-10-21T03:51:37.778Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

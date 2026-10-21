@@ -242,6 +242,55 @@ export class MaterialTally {
   }
 }
 
+/**
+ * The candidate model's whole minutes per line of a side (→MATCH-27): every entry and exit is
+ * rounded once from its regulation minute, in the order it happened (by elapsed seconds; an exit
+ * before an entry at the same moment, as added time shares its period's last minute), never earlier
+ * than the boundary before it and at least a minute after the player's own entry, then pulled back
+ * so that everyone after it still gets a minute before `end`. A line plays from its entry boundary
+ * to its exit boundary, so the side never sums past eleven times the match, however the boundaries
+ * round, and everyone who came on has at least one minute.
+ */
+export function lineMinutes(
+  state: GridState,
+  side: 0 | 1,
+  played: readonly number[],
+  end: number,
+): Map<number, number> {
+  const on = new Map<number, number>(),
+    off = new Map<number, number>();
+  const events: { idx: number; exit: boolean; at: number; minute: number; order: number }[] = [];
+  played.forEach((idx, order) => {
+    const gp = state.players[side][idx]!;
+    if (order < 11) on.set(idx, 0);
+    else events.push({ idx, exit: false, at: gp.onAt, minute: gp.onMin, order });
+    if (gp.offMin !== undefined)
+      events.push({ idx, exit: true, at: gp.offAt ?? gp.onAt, minute: gp.offMin, order });
+    else off.set(idx, end);
+  });
+  events.sort((a, b) => a.at - b.at || Number(b.exit) - Number(a.exit) || a.order - b.order);
+  const bound = new Array<number>(events.length);
+  let last = 0;
+  events.forEach((e, i) => {
+    let b = Math.max(Math.round(e.minute), last);
+    if (e.exit) b = Math.max(b, (on.get(e.idx) ?? 0) + 1);
+    else on.set(e.idx, b);
+    bound[i] = last = b;
+  });
+  let next = end;
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i]!;
+    let b = Math.min(bound[i]!, next);
+    if (e.exit) off.set(e.idx, b);
+    else {
+      b = Math.min(b, (off.get(e.idx) ?? end) - 1);
+      on.set(e.idx, b);
+    }
+    bound[i] = next = b;
+  }
+  return new Map(played.map((idx) => [idx, (off.get(idx) ?? end) - (on.get(idx) ?? 0)]));
+}
+
 export class Tally {
   private readonly lines: [number[][], number[][]];
   private readonly xg: [number, number] = [0, 0];
@@ -516,11 +565,14 @@ export class Tally {
       ...state.players[side].slice(0, 11).map((gp) => gp.idx),
       ...state.changes[side].entered,
     ]);
-    for (const side of sides)
+    for (const side of sides) {
+      const whole = setup.model ? lineMinutes(state, side, played[side]!, end) : undefined;
       for (const idx of played[side]!) {
         const gp = state.players[side][idx]!;
-        this.lines[side][idx]![M.minutes] = Math.max(1, Math.round((gp.offMin ?? end) - gp.onMin));
+        this.lines[side][idx]![M.minutes] =
+          whole?.get(idx) ?? Math.max(1, Math.round((gp.offMin ?? end) - gp.onMin));
       }
+    }
     const metrics = sides.map((side) => {
       const total = zeroMetrics();
       for (const line of this.lines[side])
@@ -548,7 +600,8 @@ export class Tally {
       metrics,
       players,
       highlights: this.highlights,
-      ...(this.incidents.length ? { incidents: this.incidents } : {}),
+      // The candidate model tracks incidents, so its record always carries the list (→MATCH-27).
+      ...(this.incidents.length || setup.model ? { incidents: this.incidents } : {}),
       xg: [Math.round(this.xg[0] * 100) / 100, Math.round(this.xg[1] * 100) / 100],
       detail: this.td,
       ...(setup.recordPlayers ? { lineCounts } : {}),

@@ -4,7 +4,8 @@ import { createWorld } from '../index';
 import { playGrid } from './engine';
 import { CELL_BASELINES } from './baselines';
 import { cellOf, type Point } from './pitch';
-import { crossArrival, M, Tally } from './record';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { crossArrival, lineMinutes, M, Tally } from './record';
 import { buildGridSetup } from './setup';
 import { createState } from './state';
 import { gridKit } from './testkit';
@@ -172,6 +173,62 @@ describe('grid advanced counters', () => {
     expect(away.td[TD.throwIns]).toBe(1);
     expect(away.td[TD.fouls]).toBe(1);
     expect(away.pd[3]![PD.fouls]).toBe(1);
+  });
+
+  it('rounds candidate minutes once per boundary so a side never passes eleven times the match', () => {
+    // A modern bench, so four substitutes are named.
+    const modern = buildGridSetup(
+      kit.w,
+      { ...kit.f, year: 2024 },
+      { observe: false, recordPlayers: true },
+    );
+    const state = createState(modern);
+    /** Entry and exit as [regulation minute, elapsed seconds]; added time keeps its period's last minute. */
+    type When = [number, number];
+    const at = (side: 0 | 1, idx: number, on?: When, off?: When) => {
+      const gp = state.players[side][idx]!;
+      if (on) [gp.onMin, gp.onAt] = on;
+      if (off) [gp.offMin, gp.offAt] = off;
+    };
+    const m = (minute: number): When => [minute, minute * 60];
+    // Off and on at 60.5 (per-line rounding gave 61 + 30), a substitute hurt within the minute he
+    // came on and replaced again, and a change in added time.
+    at(0, 3, undefined, m(60.5));
+    at(0, 11, m(60.5));
+    at(0, 7, undefined, m(75.2));
+    at(0, 13, m(75.2), m(75.4));
+    at(0, 14, m(75.6));
+    at(0, 5, undefined, m(90));
+    at(0, 12, m(90));
+    const played = [...state.players[0].slice(0, 11).map((gp) => gp.idx), 11, 13, 14, 12];
+    // The other side: a substitute comes on in first-half added time and is sent off in it, then a
+    // half-time change — all at minute 45, in the order they happened.
+    at(1, 2, undefined, [45, 2755]);
+    at(1, 11, [45, 2760], [45, 3000]);
+    at(1, 9, undefined, [45, 3300]);
+    at(1, 12, [45, 3300]);
+    const away = lineMinutes(state, 1, [...played.slice(0, 11), 11, 12], 90);
+    expect([2, 11, 9, 12].map((i) => away.get(i))).toEqual([45, 1, 46, 44]);
+    const minutes = lineMinutes(state, 0, played, 90);
+    expect(Object.fromEntries([3, 11, 7, 13, 14, 5, 12].map((i) => [i, minutes.get(i)]))).toEqual({
+      3: 61,
+      11: 29,
+      7: 75,
+      13: 1,
+      14: 14,
+      5: 89,
+      12: 1,
+    });
+    expect([...minutes.values()].reduce((a, b) => a + b, 0)).toBe(990);
+    expect(minutes.get(0)).toBe(90);
+    // The candidate record uses them and always carries its incident list.
+    state.changes[0].entered = [11, 13, 14, 12];
+    const record = new Tally({ ...modern, model: MATCH_MODEL_REVISION }).finish(state);
+    expect(record.incidents).toEqual([]);
+    expect(record.players.slice(0, 15).map((p) => p.metrics[M.minutes])).toEqual(
+      played.map((idx) => minutes.get(idx)),
+    );
+    expect(new Tally(modern).finish(createState(modern)).incidents).toBeUndefined();
   });
 
   it('fills every match consistently with the schema rules and plausible totals', () => {

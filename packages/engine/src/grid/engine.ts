@@ -29,13 +29,32 @@ import {
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { moveAll, startRuns } from './shape';
+import { holdSetPiece, moveAll, SHAPE_CONFIG, speedOf, startRuns } from './shape';
 import { attackFrame, PITCH } from './pitch';
-import { createState, kickOff, other, slotOf, type GridState } from './state';
+import {
+  createState,
+  kickOff,
+  kickOffPoint,
+  onPitch,
+  other,
+  slotOf,
+  type GridState,
+} from './state';
 import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
-import { Tracer, type TraceEntry } from './trace';
+import { shotEnd, Tracer, type TraceEntry } from './trace';
 import { stampAt } from './playback';
+import {
+  advance,
+  benchPoint,
+  flightSeconds,
+  prepareRestart,
+  reachSeconds,
+  type BallSpeed,
+  type MotionKnot,
+  type Move,
+  type Placement,
+} from './movement';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
 export const ACTION_SECONDS = {
@@ -77,9 +96,33 @@ type ActionKey = keyof typeof ACTION_SECONDS;
 const PERIOD_SECONDS = [45 * 60, 45 * 60, 15 * 60, 15 * 60] as const;
 const CENTRE_SPOT: [number, number] = [PITCH.length / 2, PITCH.width / 2];
 
+/** The speed a kick of an action travels at (candidate model, →MATCH-12). */
+const kickSpeed = (key: ActionKey | 'restart'): BallSpeed =>
+  key === 'shot'
+    ? 'shot'
+    : key === 'restart'
+      ? 'restart'
+      : key === 'clearance' || key === 'carry' || key === 'takeOn' || key === 'holdUp'
+        ? 'turnover'
+        : 'pass';
+
+/** How long an action takes on the candidate model and how everyone moves meanwhile. */
+interface Motion {
+  dt: number;
+  plan: Move[];
+  knots: MotionKnot[];
+}
+
 export function playGrid(setup: GridSetup): GridResult {
   const s: GridState = createState(setup);
   const r = setup.r;
+  /**
+   * The candidate model (→MATCH-12, SAVE-23): bounded movement, physically feasible action times
+   * and restarts prepared on the clock. Absent metadata keeps the pre-feature path untouched.
+   */
+  const candidate = setup.model !== undefined;
+  /** Added-time seconds of a stoppage: the pre-feature credit, or what the candidate clock really spent. */
+  const charge = (old: number, spent: number) => (candidate ? spent : old);
   const ctx = shotContext(s);
   const tally = new Tally(setup);
   const tracer = new Tracer(setup.observe, () => tally.running());
@@ -99,12 +142,17 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The match minute of an incident: the label of the playback frame that shows it (→MATCH-24). */
   const stamp = () => stampAt(s.period, s.t, added[s.period - 1]);
 
-  /** Hands the ball to `(side, idx)` at `at` (or where he stands); a change of side is a regain and a loss. */
+  /**
+   * Hands the ball to `(side, idx)` at `at` (or where he stands); a change of side is a regain and a
+   * loss. The pre-feature path puts him there at once; on the candidate model he runs there during
+   * the action (`motionOf`).
+   */
   function setOwner(side: 0 | 1, idx: number, at?: [number, number]) {
     const gp = s.players[side][idx]!;
-    if (at) gp.pos = [at[0], at[1]];
+    if (at && !candidate) gp.pos = [at[0], at[1]];
+    const where = at ?? gp.pos;
     if (s.possession !== side || !s.owner) {
-      if (s.owner) tally.regain(side, idx, attackFrame(side, gp.pos));
+      if (s.owner) tally.regain(side, idx, attackFrame(side, where));
       s.lastRegain = { side, at: s.elapsed };
       s.lastLoss = { side: other(side), at: s.elapsed };
       s.possessionSince = s.elapsed;
@@ -113,7 +161,7 @@ export function playGrid(setup: GridSetup): GridResult {
     }
     s.owner = [side, idx];
     s.possession = side;
-    s.ball = [gp.pos[0], gp.pos[1]];
+    s.ball = [where[0], where[1]];
   }
 
   function endOfPlay(side: 0 | 1, o: ShotOutcome): [number, number] {
@@ -154,20 +202,28 @@ export function playGrid(setup: GridSetup): GridResult {
       passer,
     });
     const foe = other(side);
+    // On the candidate model the ball rests where the shot ended until it is retrieved.
+    const rest = () => {
+      if (candidate) s.ball = shotEnd(s, side, shooter, o);
+    };
     if (o.result === 'goal') {
       s.score[side]++;
       tally.goal(side, shooter, minute(), passer);
-      credits[s.period - 1]! += ADDED_CONFIG.credits.goal;
+      credits[s.period - 1]! += charge(ADDED_CONFIG.credits.goal, RESTART_CONFIG.dead.goal);
       pending = { kind: 'kickoff', side: foe, spot: CENTRE_SPOT, dead: RESTART_CONFIG.dead.goal };
+      rest();
       return;
     }
     if (o.result === 'save') tally.save(foe, o.by ?? 0);
     const at = endOfPlay(side, o);
     if (o.then === 'hold') setOwner(foe, o.by ?? 0, s.players[foe][o.by ?? 0]!.pos);
-    else if (o.then === 'corner')
+    else if (o.then === 'corner') {
       pending = classifyOut({ at, lastTouch: foe, over: 'byline', blockedOrSaved: true });
-    else if (o.then === 'goalKick') pending = classifyOut({ at, lastTouch: side, over: 'byline' });
-    else {
+      rest();
+    } else if (o.then === 'goalKick') {
+      pending = classifyOut({ at, lastTouch: side, over: 'byline' });
+      rest();
+    } else {
       const loose: [number, number] = [
         side === 0 ? PITCH.length - 5 : 5,
         s.players[side][shooter]!.pos[1],
@@ -186,7 +242,8 @@ export function playGrid(setup: GridSetup): GridResult {
   ) {
     const gp = s.players[side][idx]!;
     tally.card(side, idx, card);
-    credits[s.period - 1]! += ADDED_CONFIG.credits.card;
+    // The candidate clock charges a card where it stops play (a foul's free kick), not here.
+    credits[s.period - 1]! += charge(ADDED_CONFIG.credits.card, 0);
     tally.incidents.push({
       ...stamp(),
       side,
@@ -194,7 +251,10 @@ export function playGrid(setup: GridSetup): GridResult {
       player: gp.player.id,
       reason,
     });
-    tracer.note(s, side, idx, card, { reason });
+    tracer.note(s, side, idx, card, {
+      reason,
+      ...(candidate && card !== 'yellow' ? { transition: 'exit' as const } : {}),
+    });
     if (card === 'yellow') {
       gp.yellow = true;
       return;
@@ -212,8 +272,8 @@ export function playGrid(setup: GridSetup): GridResult {
     leave(s, gp);
     s.changes[side].injured.push(idx);
     tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
-    tracer.note(s, side, idx, 'injury');
-    credits[s.period - 1]! += ADDED_CONFIG.credits.injury;
+    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit' } : {});
+    credits[s.period - 1]! += charge(ADDED_CONFIG.credits.injury, RESTART_CONFIG.dead.injury);
     if (pending) pending.dead += RESTART_CONFIG.dead.injury;
     else
       pending = {
@@ -238,9 +298,22 @@ export function playGrid(setup: GridSetup): GridResult {
           player: s.players[side][ch.out]!.player.id,
           other: s.players[side][ch.in]!.player.id,
         });
-        tracer.note(s, side, ch.out, 'sub', { other: ch.in });
+        // On the candidate model the substitute comes on from the touchline and walks in.
+        const entry = candidate ? benchPoint(side) : undefined;
+        if (entry) {
+          const inn = s.players[side][ch.in]!;
+          inn.pos = [entry[0], entry[1]];
+          inn.vel = undefined;
+        }
+        tracer.note(s, side, ch.out, 'sub', {
+          other: ch.in,
+          ...(entry ? { transition: 'entry' as const, to: entry } : {}),
+        });
         if (half) continue;
-        credits[s.period - 1]! += ADDED_CONFIG.credits.sub;
+        credits[s.period - 1]! += charge(
+          ADDED_CONFIG.credits.sub,
+          RESTART_CONFIG.dead.substitution,
+        );
         rs.dead += RESTART_CONFIG.dead.substitution;
       }
     }
@@ -261,7 +334,8 @@ export function playGrid(setup: GridSetup): GridResult {
           setOwner(side, o.receiver, o.to);
           s.lastPass = { dx, dy };
         } else {
-          s.players[side][idx]!.pos = [o.to[0], o.to[1]];
+          // A carry: at once on the pre-feature path, run with the ball on the candidate model.
+          if (!candidate) s.players[side][idx]!.pos = [o.to[0], o.to[1]];
           s.ball = [o.to[0], o.to[1]];
         }
         return;
@@ -278,12 +352,14 @@ export function playGrid(setup: GridSetup): GridResult {
         return;
       case 'out':
         pending = classifyOut(o);
+        if (candidate) s.ball = [o.at[0], o.at[1]];
         return;
       case 'foul': {
         const [fouledSide, fouled] = o.on ?? [side, idx];
         const fouler = other(fouledSide);
         tally.foul(fouler, o.by, fouled);
         pending = foulRestart(s, fouledSide, o.at);
+        if (candidate) s.ball = [o.at[0], o.at[1]];
         const verdict = cardForFoul(
           s,
           fouler,
@@ -294,6 +370,7 @@ export function playGrid(setup: GridSetup): GridResult {
         if (verdict.card !== 'none') {
           applyCard(fouler, o.by, verdict.card, verdict.reason ?? 'reckless');
           pending.dead += RESTART_CONFIG.dead.card;
+          credits[s.period - 1]! += charge(0, RESTART_CONFIG.dead.card);
         }
         return;
       }
@@ -307,6 +384,69 @@ export function playGrid(setup: GridSetup): GridResult {
   }
 
   const secondsOf = (kind: ActionKey | undefined) => ACTION_SECONDS[kind ?? 'short'];
+
+  /**
+   * Candidate model (→MATCH-12): the action `actor` played from `from` at `start`, already applied,
+   * lasts at least `least` and until its route is done — the ball's flight to where it ended at
+   * bounded speed and the new owner's run to it. The actor keeps the ball until the kick, timed so
+   * the ball lands as the action ends; the new owner runs to the ball, everyone else to his shape.
+   */
+  function motionOf(
+    actor: Ref,
+    from: readonly [number, number],
+    o: Outcome | 'offside',
+    speed: BallSpeed,
+    least: number,
+    start: number,
+  ): Motion {
+    const gp = s.players[actor[0]][actor[1]]!;
+    const carry = o !== 'offside' && o.kind === 'complete' && o.receiver === actor[1];
+    const legs: { to: [number, number]; speed: BallSpeed }[] = [];
+    if (!carry) {
+      const shot = o !== 'offside' && o.kind === 'shot';
+      const shooter = shot ? (o.shooter ?? actor[1]) : actor[1];
+      // A header or a cut-back's finish: the delivery reaches the shooter, who strikes it.
+      if (shooter !== actor[1]) {
+        const p = s.players[actor[0]][shooter]!.pos;
+        legs.push({ to: [p[0], p[1]], speed });
+      }
+      legs.push({ to: [s.ball[0], s.ball[1]], speed: shot ? 'shot' : speed });
+    }
+    const times: number[] = [];
+    let flight = 0,
+      p = from;
+    for (const leg of legs) {
+      flight += flightSeconds(p, leg.to, leg.speed);
+      times.push(flight);
+      p = leg.to;
+    }
+    const owner = pending || !s.owner ? undefined : s.players[s.owner[0]][s.owner[1]]!;
+    const ball: [number, number] = [s.ball[0], s.ball[1]];
+    const reach = owner ? reachSeconds(owner, ball, speedOf(s, owner)) : 0;
+    const dt = Math.max(least, flight, reach);
+    const plan: Move[] = [];
+    if (owner) plan.push({ gp: owner, to: ball });
+    if (owner !== gp) plan.push({ gp, holdUntil: dt - flight });
+    const knots: MotionKnot[] = [];
+    if (carry)
+      knots.push(
+        { kind: 'carry', at: start, ball: [from[0], from[1]] },
+        { kind: 'arrive', at: start + reach, ball },
+      );
+    else if (flight > 0) {
+      const kick = start + dt - flight;
+      knots.push({ kind: 'kick', at: kick, ball: [from[0], from[1]] });
+      legs.forEach((leg, i) =>
+        knots.push({
+          kind: i < legs.length - 1 ? 'touch' : owner ? 'receive' : 'arrive',
+          at: i < legs.length - 1 ? kick + times[i]! : start + dt,
+          ball: leg.to,
+        }),
+      );
+    } else if (o !== 'offside' && o.kind === 'tackled')
+      knots.push({ kind: 'tackle', at: start + dt, ball });
+    return { dt, plan, knots };
+  }
 
   /** One decision by the player on the ball; returns the timing key of what was played and its outcome. */
   function play(
@@ -326,6 +466,8 @@ export function playGrid(setup: GridSetup): GridResult {
             spot: [spot[0], spot[1]],
             dead: RESTART_CONFIG.dead.offside,
           };
+          // The flag goes up as the ball reaches him.
+          if (candidate) s.ball = [spot[0], spot[1]];
           tally.passEvent(side, idx, {
             from: attackFrame(side, s.players[side][idx]!.pos),
             to: attackFrame(side, spot),
@@ -443,16 +585,48 @@ export function playGrid(setup: GridSetup): GridResult {
         justBeat = undefined;
         const rs = pending;
         pending = undefined;
+        // Where the ball went dead; a period's start is an explicit transition, not running play.
+        const rest: [number, number] = [s.ball[0], s.ball[1]];
+        const transition = s.t === 0;
         stoppage(rs);
-        if (rs.kind === 'kickoff') kickOff(s, rs.side);
-        if (s.t === 0) tracer.note(s, rs.side, -1, 'whistle');
+        if (rs.kind === 'kickoff') kickOff(s, rs.side, !candidate || transition);
+        // The candidate transition lines up the kick-off taker too, before its whistle is traced.
+        if (candidate && transition && s.owner)
+          s.players[s.owner[0]][s.owner[1]]!.pos = [rs.spot[0], rs.spot[1]];
+        if (transition)
+          tracer.note(s, rs.side, -1, 'whistle', candidate ? { transition: 'period' } : {});
         tracer.hold();
         penalty = rs.kind === 'penalty';
         setPieceAt =
           rs.kind === 'corner' || rs.kind === 'freeKick' || rs.kind === 'indirectFreeKick'
             ? s.elapsed + rs.dead
             : undefined;
-        const res = playRestart(s, rs, r, ctx);
+        const nominal = rs.dead;
+        let knots: MotionKnot[] = [];
+        const res = playRestart(
+          s,
+          rs,
+          r,
+          ctx,
+          candidate && !transition
+            ? (_, restart, taker, scene) => {
+                const moves: Placement[] = scene ? [...scene.up, ...scene.marks] : [];
+                if (restart.kind === 'kickoff')
+                  for (const sd of [0, 1] as const)
+                    for (const gp of s.players[sd])
+                      if (onPitch(gp) && gp.slot >= 0)
+                        moves.push({ gp, to: kickOffPoint(setup, sd, gp.slot) });
+                knots = prepareRestart(s, restart, taker, rest, moves);
+                if (scene) holdSetPiece(scene, s.elapsed + SHAPE_CONFIG.setPiece.stay);
+              }
+            : undefined,
+        );
+        if (candidate) {
+          // A set piece is taken when the preparation ends; any wait past its nominal dead time is a delay.
+          if (setPieceAt !== undefined) setPieceAt = s.elapsed;
+          credits[s.period - 1]! += rs.dead - nominal;
+        }
+        const kickAt = s.elapsed;
         actor = [rs.side, res.taker];
         tally.material?.touch(rs.side, res.taker, rs.spot);
         const kind = res.kind === 'penalty' ? 'shot' : res.kind;
@@ -471,11 +645,22 @@ export function playGrid(setup: GridSetup): GridResult {
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        const motion = candidate
+          ? motionOf(
+              actor,
+              rs.spot,
+              res.outcome,
+              kickSpeed(kind === 'shot' ? 'shot' : 'restart'),
+              secondsOf(kind),
+              kickAt,
+            )
+          : undefined;
         tracer.act(s, rs.side, res.taker, {
           outcome: res.outcome,
           kind: res.kind,
           target: res.target,
           restart: rs,
+          ...(motion ? { knots: [...knots, ...motion.knots] } : {}),
         });
         penalty = false;
         tally.restart(
@@ -483,13 +668,22 @@ export function playGrid(setup: GridSetup): GridResult {
           rs.kind,
           res.kind === 'penalty' && res.outcome.kind === 'shot' && res.outcome.result === 'goal',
         );
-        dt = rs.dead + secondsOf(kind);
-        tally.diagnostics.ballInPlay += secondsOf(kind);
         label = rs.kind;
         outcomeLabel = res.outcome.kind;
-        s.t += dt;
-        s.elapsed += dt;
-        moveAll(s, 8);
+        if (motion) {
+          // The preparation is already on the clock (`prepareRestart`); only the kick's own time follows.
+          advance(s, motion.dt, motion.plan);
+          dt = rs.dead + motion.dt;
+          tally.diagnostics.ballInPlay += motion.dt;
+          s.t += motion.dt;
+          s.elapsed += motion.dt;
+        } else {
+          dt = rs.dead + secondsOf(kind);
+          tally.diagnostics.ballInPlay += secondsOf(kind);
+          s.t += dt;
+          s.elapsed += dt;
+          moveAll(s, 8);
+        }
       } else {
         const owner = s.owner!;
         prevBeat = justBeat;
@@ -514,22 +708,31 @@ export function playGrid(setup: GridSetup): GridResult {
         } else d = decide(s, owner[0], owner[1], tags, r);
         tracer.hold();
         const played = play(owner[0], owner[1], d);
+        // Tracing draws nothing, so the duration's draw may come before it.
+        const least = candidate ? secondsOf(played.key) * (0.85 + 0.3 * r()) : 0;
+        const motion = candidate
+          ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed)
+          : undefined;
         tracer.act(s, owner[0], owner[1], {
           outcome: played.outcome,
           kind: d.kind,
           target: d.target,
           lineBreaking: d.lineBreaking,
           tags,
+          ...(motion ? { knots: motion.knots } : {}),
         });
         actor = owner;
         label = d.action;
         outcomeLabel = played.outcome === 'offside' ? 'offside' : played.outcome.kind;
-        dt = secondsOf(played.key) * (0.85 + 0.3 * r());
+        if (motion) {
+          dt = motion.dt;
+          advance(s, dt, motion.plan);
+        } else dt = secondsOf(played.key) * (0.85 + 0.3 * r());
         s.t += dt;
         s.elapsed += dt;
         tally.possession(possessing, dt);
         tally.diagnostics.ballInPlay += dt;
-        moveAll(s, dt);
+        if (!motion) moveAll(s, dt);
       }
       tally.spellTo(s.possession);
       startRuns(s, s.possession, r);
@@ -578,6 +781,7 @@ export function playGrid(setup: GridSetup): GridResult {
     ...finished,
     tactics: setup.tactics,
     added,
+    ...(setup.model ? { model: setup.model } : {}),
     ...(regulation && { regulation }),
     ...(shootout && { shootout }),
   };

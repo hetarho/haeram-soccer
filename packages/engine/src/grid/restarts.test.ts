@@ -6,11 +6,13 @@ import {
   classifyOut,
   foulRestart,
   isOffside,
+  placeAtOnce,
   playRestart,
   RESTART_CONFIG,
   type Restart,
 } from './restarts';
 import { shotContext } from './resolve';
+import { SHAPE_CONFIG, type SetPieceScene } from './shape';
 import type { GridState } from './state';
 import { gridKit } from './testkit';
 
@@ -249,6 +251,49 @@ describe('grid restarts', () => {
       expect(s.players[0][9]!.pos).toEqual([52.5, 34]);
       expect([6, 7]).toContain(result.target);
     }
+  });
+
+  it('gets the taker and a delivery scene to the restart through its preparation', () => {
+    const calls: { taker: number; scene?: SetPieceScene; at: Point }[] = [];
+    const s = field();
+    put(s, 0, 9, [60, 30]);
+    const rs: Restart = { kind: 'corner', side: 0, spot: [105, 0.5], dead: 32 };
+    const result = playRestart(
+      s,
+      rs,
+      random('corner-prep'),
+      shotContext(s),
+      (st, r, taker, scene) => {
+        calls.push({ taker, scene, at: [...st.players[0][taker]!.pos] as Point });
+        placeAtOnce(st, r, taker, scene);
+      },
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.taker).toBe(result.taker);
+    // Nobody stands on the restart before the preparation runs.
+    expect(calls[0]!.at).not.toEqual([105, 0.5]);
+    const scene = calls[0]!.scene!;
+    expect(scene.up.length).toBeGreaterThan(3);
+    expect(scene.marks.length).toBeGreaterThan(3);
+    // The pre-feature preparation puts everyone on his spot at once and keeps the attackers up.
+    for (const { gp, to } of [...scene.up, ...scene.marks]) expect(gp.pos).toEqual(to);
+    for (const { gp } of scene.up)
+      expect(gp.run?.until).toBe(s.elapsed + 32 + SHAPE_CONFIG.setPiece.stay);
+    expect(s.players[0][result.taker]!.pos).toEqual([105, 0.5]);
+    // A throw-in has a taker and no scene.
+    calls.length = 0;
+    playRestart(
+      field(),
+      classifyOut({ at: [40, 0], lastTouch: 1, over: 'touch' }),
+      random('t'),
+      shotContext(s),
+      (st, r, taker, sc) => {
+        calls.push({ taker, scene: sc, at: [0, 0] });
+        placeAtOnce(st, r, taker, sc);
+      },
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.scene).toBeUndefined();
   });
 
   it('takes penalties and goal kicks and re-picks a taker who has left', () => {

@@ -272,12 +272,18 @@ export function startRuns(s: GridState, side: 0 | 1, r: () => number): void {
 const aerialOf = (s: GridState, gp: GridPlayer) =>
   0.6 * skill(s, gp.side, gp.idx, 'heading') + 0.4 * skill(s, gp.side, gp.idx, 'strength');
 
+/** Where a delivery into the box puts its players (engine frame): the attackers who go up, and their markers. */
+export interface SetPieceScene {
+  up: { gp: GridPlayer; to: [number, number] }[];
+  marks: { gp: GridPlayer; to: [number, number] }[];
+}
+
 /**
- * Sets the scene for a delivery into the box by `side`'s `taker`: its best headers take the box spots and one the
- * edge until `until` (match seconds), the rest hold the rest defence where they stand; the defenders mark them
- * goal-side, fill the six-yard line and the edge, and the most advanced stay upfield.
+ * The scene for a delivery into the box by `side`'s `taker`: its best headers take the box spots and one the
+ * edge, the rest hold the rest defence where they stand; the defenders mark them goal-side, fill the six-yard
+ * line and the edge, and the most advanced stay upfield. Reads the state and moves nobody.
  */
-export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: number): void {
+export function setPieceTargets(s: GridState, side: 0 | 1, taker: number): SetPieceScene {
   const P = SHAPE_CONFIG.setPiece;
   const foe = other(side);
   const outfield = (sd: 0 | 1) =>
@@ -286,12 +292,7 @@ export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: n
     .filter((gp) => gp.idx !== taker)
     .sort((a, b) => aerialOf(s, b) - aerialOf(s, a) || a.idx - b.idx)
     .slice(0, P.box.length + 1);
-  const spots = up.map((gp, i) => {
-    const at = (P.box[i] ?? P.edge) as Point;
-    gp.pos = toEngine(side, at);
-    gp.run = { kind: 'box', until, target: toEngine(side, at) };
-    return at;
-  });
+  const spots = up.map((_, i) => (P.box[i] ?? P.edge) as Point);
   const defenders = outfield(foe).sort(
     (a, b) => attackFrame(side, b.pos)[0] - attackFrame(side, a.pos)[0] || a.idx - b.idx,
   );
@@ -303,8 +304,20 @@ export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: n
     ...(P.zonal as readonly Point[]),
     [P.edge[0] + P.mark, P.edge[1]],
   ];
-  back.forEach((gp, i) => {
-    const at = marks[i];
-    if (at) gp.pos = toEngine(side, at);
-  });
+  return {
+    up: up.map((gp, i) => ({ gp, to: toEngine(side, spots[i]!) })),
+    marks: back.flatMap((gp, i) => (marks[i] ? [{ gp, to: toEngine(side, marks[i]) }] : [])),
+  };
+}
+
+/** The attackers who went up hold their box spots until `until` (match seconds) for the second ball. */
+export function holdSetPiece(scene: SetPieceScene, until: number): void {
+  for (const { gp, to } of scene.up) gp.run = { kind: 'box', until, target: [to[0], to[1]] };
+}
+
+/** The pre-feature set piece: everyone in `setPieceTargets`' scene stands on his spot at once. */
+export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: number): void {
+  const scene = setPieceTargets(s, side, taker);
+  for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
+  holdSetPiece(scene, until);
 }

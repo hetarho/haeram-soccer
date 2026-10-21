@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { createWorld } from '../index';
+import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
+import { benchPoint } from './movement';
 import { M } from './record';
-import { buildGridSetup } from './setup';
+import { RESTART_CONFIG } from './restarts';
+import { buildGridSetup, type DecideRule } from './setup';
 
 const w = createWorld({
   country: 'ENG',
@@ -19,6 +23,21 @@ const play = (id: string, observe = false, recordPlayers = true) =>
   playGrid(
     buildGridSetup(w, fixture(id), { observe, recordPlayers, tactics: ['balanced', 'balanced'] }),
   );
+/** A fixture on the candidate match model (→MATCH-12, SAVE-23), in a chosen era and as a knockout tie. */
+const candidate = (id: string, observe = false, year?: number, decide?: DecideRule) =>
+  playGrid(
+    buildGridSetup(
+      w,
+      { ...fixture(id), ...(year ? { year } : {}) },
+      {
+        observe,
+        recordPlayers: true,
+        model: MATCH_MODEL_REVISION,
+        ...(decide ? { decide } : {}),
+      },
+    ),
+  );
+const LEVEL: DecideRule = { awayGoals: false };
 
 describe('grid engine', () => {
   it('plays deterministically for a seed', () => {
@@ -144,5 +163,105 @@ describe('grid engine', () => {
       expect(missing / 2).toBeLessThanOrEqual(short);
     }
     expect(trace!.every((e, i) => i === 0 || e.elapsed >= trace![i - 1]!.elapsed)).toBe(true);
+  });
+
+  it('keeps the pre-feature path without model metadata', () => {
+    const { record, trace } = play('pre-feature', true);
+    expect(record.model).toBeUndefined();
+    expect(trace!.some((e) => e.knots || e.transition)).toBe(false);
+  });
+
+  it('settles the same candidate record whether observed or not', () => {
+    for (const id of ['cand-observe-1', 'cand-observe-2']) {
+      const quiet = candidate(id);
+      const watched = candidate(id, true);
+      expect(watched.record).toEqual(quiet.record);
+      expect(watched.elapsed).toBe(quiet.elapsed);
+      expect(watched.diagnostics).toEqual(quiet.diagnostics);
+    }
+  });
+
+  it('passes the full record check on every candidate match, minutes included', () => {
+    const years = [2024, 2010, 1966, 1950];
+    for (let i = 0; i < 40; i++) {
+      const { record } = candidate(
+        `cand-valid-${i}`,
+        false,
+        years[i % 4],
+        i % 4 === 0 ? LEVEL : undefined,
+      );
+      expect(record.model).toBe(MATCH_MODEL_REVISION);
+      expect(validateFullMatchRecord(record), record.id).toEqual([]);
+      const length = record.regulation ? 120 : 90;
+      for (const side of [0, 1] as const) {
+        const lines =
+          side === 0
+            ? record.players.slice(0, record.lineCounts![0])
+            : record.players.slice(record.lineCounts![0]);
+        expect(lines.reduce((n, p) => n + p.metrics[M.minutes]!, 0)).toBeLessThanOrEqual(
+          11 * length,
+        );
+      }
+    }
+  });
+
+  it('accounts dead time, ball in play and added time on one clock', () => {
+    for (let i = 0; i < 4; i++) {
+      const { trace, elapsed, diagnostics, record } = candidate(`cand-clock-${i}`, true);
+      // Every restart's preparation is its dead time, counted once beside the time in play.
+      const dead = trace!.reduce((n, e) => n + (e.outcome !== 'incident' ? (e.dead ?? 0) : 0), 0);
+      expect(dead + diagnostics.ballInPlay).toBeCloseTo(elapsed, 6);
+      for (const e of trace!)
+        if (e.knots?.[0]?.kind === 'retrieve')
+          expect(e.dead).toBeGreaterThanOrEqual(
+            Math.min(...Object.values(RESTART_CONFIG.dead)) - 1e-9,
+          );
+      const added = record.added!;
+      expect(elapsed).toBeGreaterThanOrEqual(5400 + (added[0]! + added[1]!) * 60);
+    }
+  });
+
+  it('marks substitution, injury, dismissal, goal and extra-time transitions', () => {
+    const seen = { entry: 0, injury: 0, dismissal: 0, goal: 0, extra: 0 };
+    for (let i = 0; i < 60 && Object.values(seen).some((n) => n === 0); i++) {
+      const { trace, record } = candidate(`cand-moment-${i}`, true, 2024, LEVEL);
+      const t = trace!;
+      t.forEach((e, k) => {
+        if (e.transition === 'entry') {
+          seen.entry++;
+          // The substitute stands on the touchline, at halfway on his side, when he comes on.
+          expect(e.to).toEqual(benchPoint(e.side));
+          const slot = Array.from(e.slots).indexOf(e.other!, e.side * 11);
+          expect([e.positions[slot * 2], e.positions[slot * 2 + 1]]).toEqual(benchPoint(e.side));
+          expect(Array.from(e.slots.slice(e.side * 11, e.side * 11 + 11))).not.toContain(e.idx);
+        }
+        if (e.action === 'injury' || e.action === 'red' || e.action === 'secondYellow') {
+          expect(e.transition).toBe('exit');
+          if (e.action === 'injury') seen.injury++;
+          else seen.dismissal++;
+          // He is gone from the pitch from then on.
+          const next = t.slice(k + 1).find((x) => x.outcome !== 'incident');
+          if (next)
+            expect(Array.from(next.slots.slice(e.side * 11, e.side * 11 + 11))).not.toContain(
+              e.idx,
+            );
+        }
+        if (e.action === 'kickoff' && e.knots?.[0]?.kind === 'retrieve') {
+          seen.goal++;
+          // After a goal the ball comes back from the net and everyone walks to the kick-off line-up.
+          expect([0, 105]).toContain(e.knots[0].ball[0]);
+          expect(e.knots[1]!.ball).toEqual([52.5, 34]);
+          expect(e.dead).toBeGreaterThanOrEqual(RESTART_CONFIG.dead.goal);
+        }
+      });
+      const periods = t.filter((e) => e.transition === 'period').map((e) => e.period);
+      expect(periods).toEqual(record.regulation ? [1, 2, 3, 4] : [1, 2]);
+      if (record.regulation) seen.extra++;
+    }
+    expect(seen.entry).toBeGreaterThan(0);
+    expect(seen.injury).toBeGreaterThan(0);
+    expect(seen.dismissal).toBeGreaterThan(0);
+    expect(seen.goal).toBeGreaterThan(0);
+    expect(seen.extra).toBeGreaterThan(0);
   });
 });

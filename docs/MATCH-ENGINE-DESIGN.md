@@ -39,6 +39,7 @@ Reference data:
 | `setup.ts`, `spots.ts` | `GridSetup`, `eraRules`, rosters, bench, takers, formation spots | T205 |
 | `state.ts` | `GridState`, `GridPlayer`, state creation, skill lookup | T205 |
 | `shape.ts` | tactic shapes, off-ball targets, movement, runs | T206 |
+| `movement.ts` | candidate model: bounded player motion, ball speeds, action timing, restart preparation | T274 |
 | `tags.ts` | per-touch tags | T207 |
 | `decide.ts` | action mix, target choice | T208 |
 | `resolve.ts` | duels and the xG model | T209 |
@@ -301,6 +302,8 @@ export const SHAPE_CONFIG = {
 
 The carrier moves only through his own action (§6.1). Positions are clamped to the pitch.
 
+On the candidate match model (`GridSetup.model` set) `movement.ts` replaces this step: players accelerate, brake and turn within `GRID_MOVEMENT_CONFIG` up to the same top speed, every action and restart lasts until its route is done and nobody is placed outside a period's start (docs/MATCH-MODEL-CONTRACT.md, "Detailed movement").
+
 ---
 
 ## 5. Tags (T207)
@@ -527,6 +530,8 @@ Dead time (seconds, counted on the clock, not as ball in play):
 | card | 25 |
 | offside | 22 |
 
+On the candidate match model these are the least a restart takes: `prepareRestart` carries the ball back to the spot and walks the taker and the set-piece or kick-off scene there, and the dead time grows when that takes longer.
+
 ### 7.3 Offside (MATCH-18)
 
 When a pass (not a throw-in, goal kick or corner) is played to a target in the opponent half who stands beyond the second-last opponent and beyond the ball:
@@ -636,6 +641,8 @@ playGrid(setup): GridResult
 
 Ball in play is the sum of action durations, with a target of 54–58 min a match.
 
+On the candidate match model a duration is the longest of this draw, the ball's flight at `GRID_BALL_CONFIG` speeds and the new owner's run to the ball; a restart's kick follows its preparation (§7.2), which is already on the clock.
+
 ### 8.3 Added time
 
 Each period counts credits:
@@ -649,6 +656,7 @@ Each period counts credits:
 | penalty | 60 |
 
 - `added = clamp(ceil(credits/60), min, max)`. First half 1–6, second half 2–10, extra-time halves 0–3.
+- On the candidate match model the credits are the dead seconds really charged: goal 55, substitution 30, injury 75, a card that stops play 25, and every restart's wait beyond its nominal dead time.
 - The period ends at the first dead ball or the first completed action after `45·60 + added·60` seconds.
 
 ### 8.4 Extra time and shoot-out (`shootout.ts`, T222)
@@ -744,7 +752,9 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restar
   kind? /* pass kind, or how a restart was played */, lineBreaking?, spot?, dead?, shotAt?, result?, xg?, header?, other?, reason?,
   cell?, tags?: { phase, orientation, betweenLines, pocket, inBehind, channel, overload },
   positions: Float32Array /* 22×2 engine-frame metres by slot, NaN when empty */, slots: Int8Array /* roster index per slot */,
-  targets: Float32Array, states: Uint8Array /* MOTION_STATES index */, totals: Float64Array /* Tally.running() */ }
+  targets: Float32Array, states: Uint8Array /* MOTION_STATES index */, totals: Float64Array /* Tally.running() */,
+  knots?: { kind, at /* elapsed s */, ball }[] /* candidate model: retrieve, place, kick, touch, receive, arrive, carry, tackle */,
+  transition?: 'period' | 'entry' | 'exit' /* candidate model: start whistle, substitution (entry point in `to`), injury or sending-off */ }
 ```
 
 ### 10.2 Frames
