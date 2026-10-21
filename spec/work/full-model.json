@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T08:00:19.246Z",
-  "sourceCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+  "snapshotAt": "2026-10-21T08:53:13.072Z",
+  "sourceCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,11 +15,11 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "f972fb709b96c711dd45953093790487b419dfb3",
+      "commit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T08:00:17.329Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          f972fb709b96c711dd45953093790487b419dfb3 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-21T08:53:10.857Z",
+      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          679cd2cb104b93cfbf0acc73be79eb433aa869ce -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
     },
     "runner": {
       "id": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
@@ -94,13 +94,13 @@
     }
   },
   "summary": {
-    "total": 24,
-    "completed": 6,
-    "remaining": 18,
+    "total": 19,
+    "completed": 7,
+    "remaining": 12,
     "running": 1,
     "review": 0,
     "blocked": 0,
-    "unassigned": 17
+    "unassigned": 11
   },
   "tasks": [
     {
@@ -182,53 +182,6 @@
         "T283",
         "T284",
         "T285"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T299",
-      "title": "Define presentation pack contracts and load registry resources",
-      "dep": [],
-      "status": "todo"
-    },
-    {
-      "id": "T300",
-      "title": "Structure the current Korean locale behind shared message services",
-      "dep": [
-        "T299"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T301",
-      "title": "Structure the current pixel concept as one theme resource pack",
-      "dep": [
-        "T299"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T302",
-      "title": "Connect registry-driven presentation settings to the shared app",
-      "dep": [
-        "T300",
-        "T301"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T303",
-      "title": "Prove resource-only locale/theme extension and document the pack contract",
-      "dep": [
-        "T302"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T305",
-      "title": "Prepare the manager-history view against explicit summary props",
-      "dep": [
-        "T304"
       ],
       "status": "todo"
     },
@@ -885,6 +838,8 @@
       "submittedBase": "01f281be328d7b1ba18e84d2d606420c9bab534b",
       "submissionId": "ce3233ed-78f3-445c-bb41-658727692cf2",
       "submittedAt": "2026-10-21T07:10:35.596Z",
+      "integratedCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+      "integratedAt": "2026-10-21T08:53:10.172Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1056,6 +1011,13 @@
           "startedAt": "2026-10-21T07:05:02.203Z",
           "finishedAt": "2026-10-21T07:10:35.195Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T08:30:45.956Z",
+          "finishedAt": "2026-10-21T08:53:09.984Z"
+        }
       ]
     },
     {
@@ -1177,6 +1139,80 @@
       "status": "doing",
       "createdAt": "2026-10-21T07:42:13.283Z",
       "startCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078"
+    },
+    {
+      "id": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "group": "full-model",
+      "taskId": "T305",
+      "tasks": [
+        "T305"
+      ],
+      "lane": null,
+      "owner": "f6n3-T305",
+      "contributors": [
+        "f6n3-T305"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-21T08:01:53.430Z",
+      "startCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+      "verifiedCommit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+      "submittedBase": "f972fb709b96c711dd45953093790487b419dfb3",
+      "submissionId": "5888dfb0-8424-4e3f-bfac-b2ac254fb16a",
+      "submittedAt": "2026-10-21T08:14:25.820Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1454 changed lines (limit 300)"
+        ],
+        "lines": 1454,
+        "files": 5
+      },
+      "review": {
+        "id": "3ea9b9f0-609a-4b4a-829e-aaf5280dc22b",
+        "owner": "f6n3-review3",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T305 meets its acceptance. Only the five declared new files and the T305 task file changed. ManagerHistory is a props-only presentation over T304 page DTOs: it makes no worker reads, mutates no state and does not navigate. managerHistoryView only words values T304 already computed (W-D-L, winRate with sampleSize as the denominator, runs, coverage, sharedSeason, provisionalFinishes); the only arithmetic is counting honour items by kind for the compact line. HIST-18/19 and WEB-92 are covered: shared-season finishes and honours carry the 'finalised during tenure, not his full-season W-D-L' note, provisional standings are labelled as not yet final, partial and unavailable coverage get explicit banners and notes with no synthetic zeros or no-achievement claim, the known service year and the tracking date have separate labels, reappointments stay as separate rows with readable departure details, and the 90-minute all-official scope is labelled. Controls are native buttons (global 44px min-height) with aria-expanded/aria-controls, and the stylesheet stacks to one column under 480px. The test passes (10/10) and covers the four required scenarios plus loading/error/empty/load-more states. Only optional P3 polish remains.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/managerHistoryView.ts:197,224 (T305)",
+            "message": "The compact honoursLine/finishesLine (e.g. '1부 최고 2위', '컵 우승 1') do not mark a shared season. The HIST-19 shared-season caveat only shows after the tenure is expanded. Consider a short marker on the collapsed line when any listed item has sharedSeason, so the summary itself identifies the shared season."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/ManagerHistory.tsx:162; apps/web/src/ui/managerHistoryView.ts:148 (T305)",
+            "message": "The toggle's screen-reader suffix and the source/accomplishment accessibleLabel use only the manager name. Same-name reappointments (Park Again x2) therefore get identical button labels. Adding the service period (row.service) would make each tenure's controls distinguishable for assistive technology."
+          }
+        ],
+        "commit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+        "baseCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+        "submissionId": "5888dfb0-8424-4e3f-bfac-b2ac254fb16a",
+        "createdAt": "2026-10-21T08:20:45.941Z",
+        "finishedAt": "2026-10-21T08:23:53.025Z"
+      },
+      "steps": [
+        {
+          "taskId": "T305",
+          "commit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+          "at": "2026-10-21T08:14:25.769Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T08:13:11.682Z",
+              "finishedAt": "2026-10-21T08:14:25.436Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T08:13:11.682Z",
+          "finishedAt": "2026-10-21T08:14:25.436Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -6283,6 +6319,228 @@
       "group": "full-model",
       "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
       "taskId": "T276",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 512,
+      "at": "2026-10-21T08:01:53.431Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+        "group": "full-model",
+        "taskId": "T305",
+        "tasks": [
+          "T305"
+        ],
+        "lane": null,
+        "owner": "f6n3-T305",
+        "contributors": [
+          "f6n3-T305"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T08:01:53.430Z",
+        "startCommit": "f972fb709b96c711dd45953093790487b419dfb3"
+      }
+    },
+    {
+      "sequence": 513,
+      "at": "2026-10-21T08:01:53.943Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 514,
+      "at": "2026-10-21T08:13:11.353Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 515,
+      "at": "2026-10-21T08:14:25.820Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+        "submittedBase": "f972fb709b96c711dd45953093790487b419dfb3",
+        "submissionId": "5888dfb0-8424-4e3f-bfac-b2ac254fb16a",
+        "submittedAt": "2026-10-21T08:14:25.820Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1454 changed lines (limit 300)"
+          ],
+          "lines": 1454,
+          "files": 5
+        },
+        "steps": [
+          {
+            "taskId": "T305",
+            "commit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+            "at": "2026-10-21T08:14:25.769Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T08:13:11.682Z",
+                "finishedAt": "2026-10-21T08:14:25.436Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T08:13:11.682Z",
+            "finishedAt": "2026-10-21T08:14:25.436Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 516,
+      "at": "2026-10-21T08:20:45.942Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3ea9b9f0-609a-4b4a-829e-aaf5280dc22b",
+          "owner": "f6n3-review3",
+          "status": "reviewing",
+          "commit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+          "baseCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+          "submissionId": "5888dfb0-8424-4e3f-bfac-b2ac254fb16a",
+          "createdAt": "2026-10-21T08:20:45.941Z"
+        }
+      }
+    },
+    {
+      "sequence": 517,
+      "at": "2026-10-21T08:23:53.026Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "3ea9b9f0-609a-4b4a-829e-aaf5280dc22b",
+          "owner": "f6n3-review3",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T305 meets its acceptance. Only the five declared new files and the T305 task file changed. ManagerHistory is a props-only presentation over T304 page DTOs: it makes no worker reads, mutates no state and does not navigate. managerHistoryView only words values T304 already computed (W-D-L, winRate with sampleSize as the denominator, runs, coverage, sharedSeason, provisionalFinishes); the only arithmetic is counting honour items by kind for the compact line. HIST-18/19 and WEB-92 are covered: shared-season finishes and honours carry the 'finalised during tenure, not his full-season W-D-L' note, provisional standings are labelled as not yet final, partial and unavailable coverage get explicit banners and notes with no synthetic zeros or no-achievement claim, the known service year and the tracking date have separate labels, reappointments stay as separate rows with readable departure details, and the 90-minute all-official scope is labelled. Controls are native buttons (global 44px min-height) with aria-expanded/aria-controls, and the stylesheet stacks to one column under 480px. The test passes (10/10) and covers the four required scenarios plus loading/error/empty/load-more states. Only optional P3 polish remains.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/managerHistoryView.ts:197,224 (T305)",
+              "message": "The compact honoursLine/finishesLine (e.g. '1부 최고 2위', '컵 우승 1') do not mark a shared season. The HIST-19 shared-season caveat only shows after the tenure is expanded. Consider a short marker on the collapsed line when any listed item has sharedSeason, so the summary itself identifies the shared season."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/ManagerHistory.tsx:162; apps/web/src/ui/managerHistoryView.ts:148 (T305)",
+              "message": "The toggle's screen-reader suffix and the source/accomplishment accessibleLabel use only the manager name. Same-name reappointments (Park Again x2) therefore get identical button labels. Adding the service period (row.service) would make each tenure's controls distinguishable for assistive technology."
+            }
+          ],
+          "commit": "86fdd04380c716e2bd34b945272c5291448bca8b",
+          "baseCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+          "submissionId": "5888dfb0-8424-4e3f-bfac-b2ac254fb16a",
+          "createdAt": "2026-10-21T08:20:45.941Z",
+          "finishedAt": "2026-10-21T08:23:53.025Z"
+        }
+      }
+    },
+    {
+      "sequence": 522,
+      "at": "2026-10-21T08:53:10.094Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T08:30:45.956Z",
+            "finishedAt": "2026-10-21T08:53:09.984Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 523,
+      "at": "2026-10-21T08:53:10.173Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+        "integratedAt": "2026-10-21T08:53:10.172Z"
+      }
+    },
+    {
+      "sequence": 524,
+      "at": "2026-10-21T08:53:10.877Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T08:53:10.857Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          679cd2cb104b93cfbf0acc73be79eb433aa869ce -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 525,
+      "at": "2026-10-21T08:53:10.985Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a79e039d-be2b-42ae-9c21-40a8b3b6a9be",
+      "taskId": "T305",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

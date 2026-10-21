@@ -1,0 +1,212 @@
+/* 감독 이력: one card per tenure, newest first; inherits the theme's fonts and colours. */
+.root {
+  min-width: 0;
+}
+.body {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.list > li {
+  min-width: 0;
+  scroll-margin-top: 12px;
+}
+.card {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface-2);
+  overflow-wrap: anywhere;
+}
+.head {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.identity h4 {
+  margin: 0;
+  font-size: 15px;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.tracking {
+  color: var(--text-faint);
+}
+.coverage,
+.provisional {
+  margin: 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--warm);
+  background: var(--warm-soft);
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.provisional {
+  border-left-color: var(--cool);
+  background: var(--cool-soft);
+}
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+.summary > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.summary dt {
+  color: var(--text-faint);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.summary dd {
+  display: grid;
+  margin: 0;
+  font-family: var(--display);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.summary small,
+.item small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.toggle {
+  justify-self: start;
+}
+.details {
+  display: grid;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.details[hidden] {
+  display: none;
+}
+.group {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.group h5 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 13px;
+}
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.items > li {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.item {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  font-weight: 400;
+}
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.legacy {
+  gap: 4px;
+  background: var(--surface);
+}
+.legacy small {
+  color: var(--text-faint);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.legacy p {
+  margin: 0;
+}
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.notice p {
+  margin: 0;
+  color: var(--danger);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 12px;
+  }
+  .summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .toggle,
+  .footer button,
+  .sources button {
+    width: 100%;
+  }
+  .toggle {
+    justify-self: stretch;
+  }
+}
