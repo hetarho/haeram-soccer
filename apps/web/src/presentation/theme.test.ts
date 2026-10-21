@@ -4,6 +4,7 @@ import pixelData from '../../public/presentation/themes/pixel.json';
 import registryData from '../../public/presentation/themes/index.json';
 import { createPresentationResources } from '../adapters/presentationResources';
 import { FACILITY_ERAS, validateThemePack } from './contracts';
+import { getFontSources } from './fonts';
 import { validateRegistry, resolvePackEntry } from './registry';
 import {
   collectThemeImageResources,
@@ -44,9 +45,10 @@ describe('theme resource resolution', () => {
       const resolver = createThemeResolver(loaded.pack, { url: loaded.url });
       expect(resolver.id).toBe(entry.id);
       for (const font of resolver.fonts)
-        expect(
-          readFileSync(new URL(`../../public${font.resource}`, import.meta.url)).length,
-        ).toBeGreaterThan(0);
+        for (const source of getFontSources(font))
+          expect(
+            readFileSync(new URL(`../../public${source.resource}`, import.meta.url)).length,
+          ).toBeGreaterThan(0);
     }
     expect(pixel.fonts.map((font) => font.resource)).toEqual([
       '/fonts/galmuri14.woff2',

@@ -389,6 +389,110 @@ describe('theme resource installation', () => {
 
 afterEach(() => vi.unstubAllGlobals());
 
+function fontBrowser(load: (source: string) => Promise<void>) {
+  const faces: { family: string; source: string; descriptors: FontFaceDescriptors }[] = [];
+  class FakeFontFace {
+    constructor(
+      readonly family: string,
+      readonly source: string,
+      readonly descriptors: FontFaceDescriptors,
+    ) {
+      faces.push(this);
+    }
+    async load() {
+      await load(this.source);
+      return this;
+    }
+  }
+  vi.stubGlobal('FontFace', FakeFontFace);
+  const foreign = {};
+  const fonts = new Set<unknown>([foreign]);
+  return {
+    faces,
+    fonts,
+    foreign,
+    ports: createBrowserThemePorts({ fonts } as unknown as Document),
+  };
+}
+
+it('browser font staging stops after primary success without requesting alternatives', async () => {
+  const browser = fontBrowser(async () => {});
+  const font = theme().fonts[0];
+  expect(font.fallbacks?.length).toBeGreaterThan(0);
+  const staged = await browser.ports.stageFont(font);
+  expect(browser.faces).toHaveLength(1);
+  expect(browser.faces[0].source).toContain('.woff2');
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+  staged.dispose();
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+});
+
+it('loads separate detached faces serially and owns only the first successful representation', async () => {
+  const gate = deferred();
+  const browser = fontBrowser(async (source) => {
+    if (source.includes('primary')) await gate.promise;
+    if (!source.includes('last')) throw new Error('Unsupported representation');
+  });
+  const request = browser.ports.stageFont({
+    family: 'Stable Alias',
+    weight: '600 900',
+    style: 'italic',
+    display: 'block',
+    resource: '/primary.woff2',
+    format: 'woff2',
+    fallbacks: [
+      { resource: '/second.woff', format: 'woff' },
+      { resource: '/last.ttf', format: 'truetype' },
+    ],
+  });
+  expect(browser.faces).toHaveLength(1);
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+  gate.resolve();
+  const staged = await request;
+  expect(browser.faces.map((face) => face.source)).toEqual([
+    'url("/primary.woff2") format("woff2")',
+    'url("/second.woff") format("woff")',
+    'url("/last.ttf") format("truetype")',
+  ]);
+  for (const face of browser.faces)
+    expect(face).toMatchObject({
+      family: 'Stable Alias',
+      descriptors: { weight: '600 900', style: 'italic', display: 'block' },
+    });
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+  staged.activate();
+  expect([...browser.fonts]).toEqual([browser.foreign, browser.faces[2]]);
+  staged.dispose();
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+});
+
+it('rejects a required face when all representations fail and retains the installed theme', async () => {
+  const memory = memoryPorts();
+  const previous = await installThemeResources(theme(), { ports: memory.ports });
+  const originalActive = [...memory.active];
+  const candidateStart = memory.resources.length;
+  const browser = fontBrowser(async () => {
+    throw new Error('Font unavailable');
+  });
+  const candidate = theme('next');
+  await expect(
+    prepareThemeResources(candidate, {
+      ports: { ...memory.ports, stageFont: browser.ports.stageFont },
+    }),
+  ).rejects.toMatchObject({
+    retryable: true,
+    cause: expect.any(AggregateError),
+  });
+  expect(browser.faces.length).toBe(
+    candidate.fonts.reduce((count, face) => count + 1 + (face.fallbacks?.length ?? 0), 0),
+  );
+  expect([...browser.fonts]).toEqual([browser.foreign]);
+  expect([...memory.active]).toEqual(originalActive);
+  expect([...memory.tokens.values()]).toEqual(['#111415']);
+  expect(memory.resources.slice(candidateStart).every((resource) => resource.disposed)).toBe(true);
+  previous!.dispose();
+});
+
 it('browser ports remove only the fonts and styles they own', async () => {
   class FakeFontFace {
     constructor(

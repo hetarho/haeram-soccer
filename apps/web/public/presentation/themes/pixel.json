@@ -83,7 +83,13 @@
       "weight": "400",
       "format": "woff2",
       "style": "normal",
-      "display": "swap"
+      "display": "swap",
+      "fallbacks": [
+        {
+          "resource": "/fonts/galmuri14.woff",
+          "format": "woff"
+        }
+      ]
     },
     {
       "family": "Galmuri11",
@@ -91,7 +97,13 @@
       "weight": "400",
       "format": "woff2",
       "style": "normal",
-      "display": "swap"
+      "display": "swap",
+      "fallbacks": [
+        {
+          "resource": "/fonts/galmuri11.woff",
+          "format": "woff"
+        }
+      ]
     },
     {
       "family": "Galmuri11",
@@ -99,7 +111,13 @@
       "weight": "600 900",
       "format": "woff2",
       "style": "normal",
-      "display": "swap"
+      "display": "swap",
+      "fallbacks": [
+        {
+          "resource": "/fonts/galmuri11-bold.woff",
+          "format": "woff"
+        }
+      ]
     }
   ],
   "images": {

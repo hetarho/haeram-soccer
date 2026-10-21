@@ -1,4 +1,5 @@
 import type { FontResource } from '../presentation/contracts';
+import { fontSourceCss, getFontSources } from '../presentation/fonts';
 import type { ThemeResolver } from '../presentation/theme';
 
 /** Staging may do I/O, but activation and disposal must be synchronous and reversible. */
@@ -42,20 +43,30 @@ export class ThemeInstallationError extends Error {
 export function createBrowserThemePorts(document: Document): ThemeInstallationPorts {
   return {
     async stageFont(font) {
-      const face = new FontFace(
-        font.family,
-        `url(${JSON.stringify(font.resource)})${font.format ? ` format("${font.format}")` : ''}`,
-        { weight: font.weight, style: font.style ?? 'normal', display: font.display ?? 'swap' },
-      );
-      await face.load();
-      return {
-        activate: () => {
-          document.fonts.add(face);
-        },
-        dispose: () => {
-          document.fonts.delete(face);
-        },
-      };
+      const failures: unknown[] = [];
+      // Separate detached faces avoid native multi-source FontFace stalls. Only the
+      // first successful representation becomes owned by the staged transaction.
+      for (const source of getFontSources(font)) {
+        try {
+          const face = new FontFace(font.family, fontSourceCss(source), {
+            weight: font.weight,
+            style: font.style ?? 'normal',
+            display: font.display ?? 'swap',
+          });
+          await face.load();
+          return {
+            activate: () => {
+              document.fonts.add(face);
+            },
+            dispose: () => {
+              document.fonts.delete(face);
+            },
+          };
+        } catch (error) {
+          failures.push(error);
+        }
+      }
+      throw new AggregateError(failures, `Unable to load theme font: ${font.family}`);
     },
     stageStylesheet(url) {
       return new Promise((resolve, reject) => {
