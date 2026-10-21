@@ -344,21 +344,39 @@ function passGroup(
     ahead && cellBand(from) >= 2 && cellBand(from) <= 5
       ? C.lineBreaking[kind as keyof typeof C.lineBreaking]
       : 0;
-  return {
-    period,
-    from,
-    to,
-    kind,
-    ...(setPiece && { setPiece }),
-    attempts,
-    completed,
-    lineBreaking: binomial(r, completed, breaking),
-    offside,
-    intercepted,
-    outTouch,
-    outByline,
-    cornersWon,
-  };
+  const lineBreaking = binomial(r, completed, breaking);
+  // Two literals with the same key order instead of a conditional spread: the spread built
+  // every group through the slow generic path (T285).
+  return setPiece
+    ? {
+        period,
+        from,
+        to,
+        kind,
+        setPiece,
+        attempts,
+        completed,
+        lineBreaking,
+        offside,
+        intercepted,
+        outTouch,
+        outByline,
+        cornersWon,
+      }
+    : {
+        period,
+        from,
+        to,
+        kind,
+        attempts,
+        completed,
+        lineBreaking,
+        offside,
+        intercepted,
+        outTouch,
+        outByline,
+        cornersWon,
+      };
 }
 
 /** Carries and take-ons from a cell, in proportion to the side's passes there (→MATCH-13). */

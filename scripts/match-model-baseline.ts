@@ -10,8 +10,14 @@
  *
  *   pnpm exec tsx scripts/match-model-baseline.ts --smoke
  *   pnpm exec tsx scripts/match-model-baseline.ts --fixtures 200 --seasons 100 --out FILE
+ *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 10 \
+ *     --paired-with BASELINE.json --out FILE
  *   options: --out FILE (default docs/benchmarks/match-model-baseline.json), --fixtures N (timed
- *            fixtures per path), --seasons N (per century profile), --pilot N (pilot matches per path)
+ *            fixtures per path), --seasons N (per century profile), --pilot N (pilot matches per path),
+ *            --model candidate (T285: the century seasons, own fixtures and settlement run on worlds
+ *            with the candidate model and its complete statistics; the codec is measured at the
+ *            last season's final round, while the season's ledger is full), --paired-with FILE (a
+ *            baseline report of this runner: ARCH-31's paired gates against it, →comparePerformance)
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -50,9 +56,24 @@ import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { decode, encode } from '../apps/web/src/adapters/persistence';
 import { SLOT } from '../apps/web/src/adapters/repository';
 import {
+  aggregatePlan,
+  aggregateRecord,
+  aggregateSkillAccess,
+  matchdayRosters,
+  settleParticipation,
+  simulateAggregate,
+  UNPLANNED,
+} from '../packages/engine/src/aggregate/engine';
+import { buildAggregateInput } from '../packages/engine/src/aggregate/input';
+import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
+import { aggregateStreams } from '../packages/engine/src/aggregate/team';
+import { eraRules } from '../packages/engine/src/grid/setup';
+import { withCandidateModel } from '../tests/fixtures/worlds';
+import {
   buildParityReport,
   buildPerformanceReport,
   calibrationSize,
+  comparePerformance,
   conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureId,
@@ -82,6 +103,15 @@ function count(name: string, fallback: number) {
 const out = args.includes('--out')
   ? args[args.indexOf('--out') + 1]!
   : 'docs/benchmarks/match-model-baseline.json';
+const model = args.includes('--model') ? args[args.indexOf('--model') + 1] : 'production';
+if (model !== 'production' && model !== 'candidate')
+  throw new Error('--model takes production or candidate');
+const candidateModel = model === 'candidate';
+const pairedWith = args.includes('--paired-with')
+  ? args[args.indexOf('--paired-with') + 1]!
+  : undefined;
+if (pairedWith && !candidateModel)
+  throw new Error('--paired-with gates a candidate run: add --model candidate');
 const settings = {
   mode: smoke ? 'smoke' : 'full',
   fixtures: count(
@@ -108,6 +138,7 @@ const SOURCE_SCOPE = [
   'packages',
   'apps/web/src/adapters',
   'scripts',
+  'tests/fixtures/worlds.ts',
   'package.json',
   'pnpm-lock.yaml',
   'pnpm-workspace.yaml',
@@ -190,9 +221,15 @@ function sampleMemory() {
   memory.peakRssBytes = Math.max(memory.peakRssBytes, m.rss);
 }
 /** Exact checks; null when the run had nothing to compare. */
-const checks: { repeatsIdentical: boolean | null; observedMatchesUnobserved: boolean | null } = {
+const checks: {
+  repeatsIdentical: boolean | null;
+  observedMatchesUnobserved: boolean | null;
+  /** The stage-by-stage replay settles each fixture's own `simulateAggregate` record. */
+  candidateStagesMatchWhole: boolean | null;
+} = {
   repeatsIdentical: settings.repetitions > 1 ? true : null,
   observedMatchesUnobserved: null,
+  candidateStagesMatchWhole: null,
 };
 /** A record without the post-match material, for comparing settled results. */
 const resultOf = (r: MatchRecord) => JSON.stringify({ ...r, material: undefined });
@@ -298,16 +335,95 @@ sampleMemory();
 /** A later aggregate path is measured when the engine exports it; nothing switches it on. */
 const adapter = (engine as Record<string, unknown>).simulateAggregate;
 const candidateFn =
-  typeof adapter === 'function'
-    ? (adapter as (w: World, f: Fixture) => { record: MatchRecord })
-    : undefined;
+  typeof adapter === 'function' ? (adapter as (w: World, f: Fixture) => MatchPlayback) : undefined;
 const revisionModule = '../packages/contracts/src/match-model.ts';
 const revision = await import(revisionModule).then(
   (m: { MATCH_MODEL_REVISION?: string }) => m.MATCH_MODEL_REVISION ?? null,
   () => null,
 );
-if (candidateFn)
-  measure('fixture.candidate', summarySet, (f) => candidateFn(world, f), playbackRecord);
+const candidatePlaybacks = candidateFn
+  ? measure('fixture.candidate', summarySet, (f) => candidateFn(world, f), playbackRecord)
+  : [];
+
+// ---- The candidate fixture's stages, own fixtures and settlement (T285) ---------------------------
+/**
+ * `playAggregate`'s regulation path stage by stage on the same fixtures (none of them is a
+ * knockout): preparation (prepareMatch and the matchday rosters), generation (participation plan,
+ * team facts and the red-card search), attribution (player lines) and the validated record. A
+ * fixture that needs a retry stream is left out of the stage samples; every replayed record must
+ * equal the fixture's own `simulateAggregate` record.
+ */
+let stageRetries = 0;
+if (candidateModel) {
+  const stage = new Map<PerformanceComponent, number[]>();
+  for (const f of summarySet.slice(0, settings.warmup)) simulateAggregate(world, f);
+  summarySet.forEach((f, i) => {
+    const runs = Array.from({ length: settings.repetitions }, () => {
+      const [prep, prepMs] = timed(() => {
+        const prepared = prepareMatch(world, f);
+        return { prepared, rosters: matchdayRosters(world, f, prepared, eraRules(f.year)) };
+      });
+      const { prepared, rosters } = prep;
+      const [generated, genMs] = timed(() => {
+        const base = buildAggregateInput(prepared, UNPLANNED, rosters);
+        const plan = aggregatePlan(world, prepared, rosters, eraRules(f.year));
+        const match = settleParticipation(
+          base,
+          plan,
+          aggregateStreams(world.seed, f.id),
+          90,
+          (participation) => aggregateSkillAccess(prepared, rosters, participation),
+        );
+        return { plan, match };
+      });
+      const { plan, match } = generated;
+      if (!match) return undefined;
+      const streams = aggregateStreams(world.seed, f.id);
+      // Attribution reads its own stream families, so fresh streams draw what playAggregate's did.
+      const [players, attrMs] = timed(() =>
+        attributePlayerFacts(match.input, plan, match.participation, match.facts, streams),
+      );
+      const [settled, recordMs] = timed(() =>
+        aggregateRecord(f, rosters, { ...match, plan, players, retry: 0 }),
+      );
+      return { settled, ms: [prepMs, genMs, attrMs, recordMs] };
+    });
+    if (runs.some((run) => !run)) {
+      stageRetries++;
+      return;
+    }
+    const same = resultOf(runs[0]!.settled) === resultOf(candidatePlaybacks[i]!.record);
+    checks.candidateStagesMatchWhole = (checks.candidateStagesMatchWhole ?? true) && same;
+    (
+      [
+        'candidate.preparation',
+        'candidate.generation',
+        'candidate.attribution',
+        'candidate.record',
+      ] as const
+    ).forEach((id, k) =>
+      stage.set(id, [...(stage.get(id) ?? []), median(runs.map((run) => run!.ms[k]!))]),
+    );
+  });
+  for (const [id, samplesMs] of stage)
+    timings.set(id, { id, samplesMs, warmup: settings.warmup, repetitions: settings.repetitions });
+  sampleMemory();
+
+  // Own fixtures through the candidate dispatch, on a copy that carries the candidate model.
+  const candidateWorld = withCandidateModel(structuredClone(world));
+  const ownSet = ownFixtures.slice(0, n);
+  for (const f of ownSet) prepareMatch(candidateWorld, f);
+  measure(
+    'fixture.own-candidate',
+    ownSet,
+    (f) => simulateMatch(candidateWorld, f, false, true),
+    playbackRecord,
+  );
+  // Each aggregate record settles once on the candidate world, ledger included (→MATCH-27).
+  for (const p of candidatePlaybacks)
+    record('settlement.candidate', timed(() => recordMatch(candidateWorld, p, true))[1]);
+  sampleMemory();
+}
 
 // ---- Complete seasons of both century profiles, then the codec --------------------------------------
 /** The active-management century workload's owner actions, as scripts/benchmark.ts runs them. */
@@ -337,34 +453,56 @@ function manage(w: World, season: number) {
 }
 const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
-  const w = createWorld({
+  const founded = createWorld({
     country: 'ENG',
     name: profile === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
     color: '#284e35',
     seed,
     level: 'easy',
   });
+  // The candidate model from founding: complete statistics tracked from the first day.
+  const w = candidateModel ? withCandidateModel(founded) : founded;
+  let raw: string | undefined;
   for (let season = 0; season < settings.seasons; season++) {
+    const last = season === settings.seasons - 1;
     const [, ms] = timed(() => {
       if (profile === 'active-management') manage(w, season);
-      simulateSeason(w);
+      // A candidate run stops the last season at its final round for the codec: the season's
+      // ledger is then at its fullest. simulateSeason plays the same rounds, then closes.
+      if (candidateModel && last)
+        while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
     });
-    record(`season.${profile}` as PerformanceComponent, ms);
+    if (candidateModel && last) {
+      const [encoded, encodeMs] = await timedAsync(() => encode(w, 2, 1));
+      const [, decodeMs] = await timedAsync(() => decode(encoded));
+      record('codec.encode', encodeMs);
+      record('codec.decode', decodeMs);
+      raw = encoded;
+    }
+    const closeMs = timed(() => simulateSeason(w))[1];
+    record(`season.${profile}` as PerformanceComponent, ms + closeMs);
     sampleMemory();
     if ((season + 1) % 10 === 0)
       console.error(`${profile}: ${season + 1}/${settings.seasons} seasons`);
   }
-  const [raw, encodeMs] = await timedAsync(() => encode(w, 2, 1));
-  const [, decodeMs] = await timedAsync(() => decode(raw));
-  record('codec.encode', encodeMs);
-  record('codec.decode', decodeMs);
+  if (!raw) {
+    const [encoded, encodeMs] = await timedAsync(() => encode(w, 2, 1));
+    const [, decodeMs] = await timedAsync(() => decode(encoded));
+    record('codec.encode', encodeMs);
+    record('codec.decode', decodeMs);
+    raw = encoded;
+  }
   // Conservative UTF-16 size of the active slot, as scripts/benchmark.ts counts it (→SAVE-4).
   const checkpointBytes = 2 * (raw.length + SLOT[0]!.length);
   seasons.push({
     profile,
     seed,
+    model,
     seasons: w.history.length,
     year: w.year,
+    checkpointAt: candidateModel
+      ? 'final round of the last season, before its close'
+      : 'after the close',
     checkpointChars: raw.length,
     checkpointBytes,
     withinCheckpointLimit: checkpointBytes <= PERFORMANCE_CONFIG.storage.checkpointBytes,
@@ -443,17 +581,43 @@ const pilotSizing = conditionValidationSize(pilotNeeds(reference, core));
 if (sourceFingerprint().sha256 !== source.sha256)
   throw new Error('Source changed during the measurement; rerun after edits settle');
 const components = [...timings.values()];
+const performanceReport = buildPerformanceReport({ components, provisional: true });
+/** ARCH-31's gates against a baseline report of this runner, when one is named. */
+const pairedComparison = pairedWith
+  ? (() => {
+      const baseline = JSON.parse(readFileSync(pairedWith, 'utf8')) as {
+        provenance: Provenance;
+        performance: Parameters<typeof comparePerformance>[0]['report'];
+        settings: unknown;
+      };
+      return {
+        baseline: {
+          file: pairedWith,
+          gitHead: baseline.provenance.source.gitHead,
+          fingerprint: baseline.provenance.source.fingerprint.sha256,
+          settings: baseline.settings,
+        },
+        ...comparePerformance(
+          { provenance: baseline.provenance, report: baseline.performance },
+          { provenance, report: performanceReport },
+        ),
+      };
+    })()
+  : null;
 const report = {
   kind: 'match-model-baseline',
   version: MATCH_PARITY_VERSION,
   mode: settings.mode,
+  model,
   provisional: true,
-  provisionalReason:
-    'Measured before T255 closed the identity feature; T273 records the release baseline on the post-T255 source before new football changes.',
+  provisionalReason: candidateModel
+    ? 'A T285 exploration run of the candidate model before T286 settles the final combined model: its timings guide optimisation and are not release evidence (→ARCH-31).'
+    : 'A baseline-path run of this source. T273 recorded the release baseline at 9f69553 (post-T255, before the match-model football changes); paired gates re-run that source on the measuring machine (→ARCH-31).',
   releaseEvidence: false,
-  pairedComparison: null,
-  pairedNote:
-    'No candidate run on this machine and toolchain exists yet; the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
+  pairedComparison,
+  pairedNote: pairedWith
+    ? 'Gates pair this run with the named baseline report only when machine, toolchain and worlds match; timings from a shared machine are context for T286, never release evidence.'
+    : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
       source: 'docs/CALIBRATION.md T224',
@@ -494,9 +658,11 @@ const report = {
     summaryLines: linesSet.length,
     observed: observedSet.length,
     seasonFixtures: world.fixtures.length,
+    /** Candidate stage samples left out because the fixture settled on a retry stream. */
+    candidateStageRetries: stageRetries,
   },
   checks,
-  performance: buildPerformanceReport({ components, provisional: true }),
+  performance: performanceReport,
   memory,
   seasons,
   parity,
@@ -516,6 +682,8 @@ console.log(
   [
     `wrote ${out} (${settings.mode}, ${report.elapsedMs} ms)`,
     `median ms: summary ${by('fixture.summary')?.toFixed(3)}, grid ${by('fixture.grid')?.toFixed(1)}, settlement ${by('settlement.npc')?.toFixed(3)}`,
+    `candidate ms: fixture ${by('fixture.candidate')?.toFixed(3)} (preparation ${by('candidate.preparation')?.toFixed(3)}, generation ${by('candidate.generation')?.toFixed(3)}, attribution ${by('candidate.attribution')?.toFixed(3)}, record ${by('candidate.record')?.toFixed(3)}), own ${by('fixture.own-candidate')?.toFixed(1)}, settlement ${by('settlement.candidate')?.toFixed(3)}`,
+    `paired: ${pairedComparison ? JSON.stringify(pairedComparison.gates.map((g) => [g.id, g.status, g.ratio === undefined ? null : Number(g.ratio.toFixed(3))])) : 'none'}`,
     `season s: baseline ${((by('season.baseline') ?? NaN) / 1000).toFixed(2)}, active ${((by('season.active-management') ?? NaN) / 1000).toFixed(2)}`,
     `pilot ${settings.pilot} matches: ${JSON.stringify(statuses)}, constants ${parity.equivalence.constants.join(' ')}, blocking ${parity.equivalence.blocking.length}`,
     `checks: ${JSON.stringify(checks)}`,
