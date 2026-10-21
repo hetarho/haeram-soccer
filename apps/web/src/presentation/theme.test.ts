@@ -104,7 +104,7 @@ describe('theme resource resolution', () => {
     expect(() => theme.facility({ era: 'heritage', kind: 'stadium', stage: -1 })).toThrow();
   });
 
-  it('resolves office roles through the selected theme, including shared era overrides', () => {
+  it('resolves overview roles through the selected theme, including shared era overrides', () => {
     const theme = createThemeResolver(pixel, { url });
     for (const era of FACILITY_ERAS) {
       expect(theme.facility({ era, kind: 'manager', stage: 0 }).src).toBe(
@@ -112,6 +112,9 @@ describe('theme resource resolution', () => {
       );
       expect(theme.facility({ era, kind: 'staff', stage: 0 }).src).toBe(
         '/art/scenes/staff-office-v1.webp',
+      );
+      expect(theme.facility({ era, kind: 'academy', stage: 0 }).src).toBe(
+        '/art/scenes/academy-v1.webp',
       );
     }
     const candidate = structuredClone(pixel);
@@ -126,6 +129,9 @@ describe('theme resource resolution', () => {
     );
     expect(other.facility({ era: 'heritage', kind: 'staff', stage: 0 }).src).toBe(
       '/presentation/themes/rooms/heritage/staff-0.webp',
+    );
+    expect(other.facility({ era: 'heritage', kind: 'academy', stage: 0 }).src).toBe(
+      '/presentation/themes/rooms/heritage/academy-0.webp',
     );
   });
 

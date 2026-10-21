@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r109 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r110 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -307,7 +307,7 @@
   - 1군 훈련 opens with the full-width training-ground illustration and completed-stage label beneath its tab bar, followed by active focus, the responsible assistant, who chose it, its reason/remaining rounds and a visible 제안·강행 action. The actual action location is described truthfully. Full balanced/recovery/hard comparisons and automatic rules are expandable reference information.
   - Owner interventions preserve coach judgement, acceptance/resignation chances, per-player cooldown and four-round duration (→STAFF-19). Explain next-round settlement rather than imply immediate ability/fatigue improvement or a permanent training programme.
   - A focused player-development list brings training, fatigue/adaptation, growth and OVR/POT together, with useful all/attention/growth views and the relevant player action. Avoid three mandatory full-squad passes. Adaptation facts, unsettled flags, complete growth factors and young-player accumulated growth remain inspectable, including links to the responsible staff, investment and facilities.
-  - 유소년 leads with prospects/readiness, next intake and active youth training/action. Preserve age groups, growth factors, OVR/POT/age, promotion/release eligibility and decision ownership (→CLUB-16/31/32).
+  - 유소년 opens with its dedicated academy illustration (→WEB-72), followed by prospects/readiness, next intake and active youth training/action. Preserve age groups, growth factors, OVR/POT/age, promotion/release eligibility and decision ownership (→CLUB-16/31/32).
   - Academy operations provide focused links to investment/intake/promotion criteria, the named youth director and academy construction, showing applied values and distinguishing recurring spend from a project. After promotion offer optional inspection/training/preparation of that actual player.
   - Detailed rules and formulas are disclosed behind the action. No new attribute-specific drills or delegation powers are implied.
 
@@ -332,6 +332,7 @@
   - Stadium, locker-room and training-ground scenes select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era. An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
   - The squad overview uses the current locker room. Manager and staff tabs have distinct original interior illustrations: a private manager office and a shared coaching workroom, viewed from the visiting owner's entrance. These room images use period-neutral paper/chalk/wood equipment, with no named people, branding, embedded facts or independent upgrade stat; each has one semantic stage (0), shared across calendar eras.
+  - The youth academy has an original, modest training-courtyard illustration with youth-sized equipment, warm academy windows and a practice pitch, viewed from the visiting owner's entrance. Its theme role is academy with semantic stage 0, shared across eras using period-neutral equipment. It does not imply construction completion, capacity, a new facility upgrade or player identities; actual academy facts remain in HTML.
   - Overview illustrations have a bounded responsive height, preserve the scene composition and use accessible HTML captions. Each room is a separate theme image role (→WEB-91).
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
   - Atmospheric artwork conveys the facility's relative scale and quality; authoritative stadium-stage labels, capacity, club identity, fixture and training figures come from the current world rather than baked-in numbers.
@@ -443,6 +444,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r110 261022 WEB-70✎ prospects-first youth tab→dedicated academy overview before prospects; WEB-72✎ no youth scene→original period-neutral academy image with one semantic stage
 - r109 261021 WEB-86✎ independent region/palette controls→three linked named colours and crest randomisation
 - r108 261021 WEB-72✎ manager locker-room/staff training reuse→original private-office/shared-workroom images, separate semantic roles with a single period-neutral stage
 - r107 261021 WEB-10✎ management intros/stacked rules→compact action-first views; WEB-43✎ text-led people tabs→facility overviews; WEB-70✎ mid-page art→training-ground first; WEB-72✎ preparation locker art only→squad/manager reuse and staff training view

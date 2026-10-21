@@ -126,6 +126,7 @@
     "facility.training.stage": "{stage}단계 훈련장",
     "facility.alt": "{era} {label} {theme}",
     "facility.manager": "감독실",
-    "facility.staff": "스태프 사무실"
+    "facility.staff": "스태프 사무실",
+    "facility.academy": "유소년 아카데미"
   }
 }

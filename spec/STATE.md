@@ -164,7 +164,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 109 | 109 | - | 0 |
+| WEB | 110 | 110 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -211,6 +211,8 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261022 T312 done (u6v1): original academy artwork applied above the youth tab; 35 focused cases, typecheck/lint/format/build and 82-asset validation pass. Browser journey updated for batch; local main commit, no push.
+- 261022 T312 start (u6v1): WEB r110 adds an original youth academy image and theme role above academy operations; existing identities and engine task owners are preserved.
 - 261021 T309 done (c9k2): three linked named colours and random crest; KIT r3 / WEB r109; remaining implementation touches disjoint; KIT-12 and WEB-49 unchanged; browser gate remains with the next code batch.
 - 261021 T311 committed on main (u6v1): original manager/staff office artwork and separate theme roles; 33 focused cases and task checks pass; browser batch pending.
 - 261021 T311 start (u6v1): WEB r108 replaces reused manager/staff scenes with original generated rooms.
@@ -229,5 +231,3 @@
 - 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
 - 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
-- 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
-- 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.

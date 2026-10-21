@@ -95,10 +95,14 @@ describe('facility artwork follows the current club', () => {
     expect(facilityScene('training', { ...base, trainingGround: 99 }).stage).toBe(5);
   });
 
-  it.each(['manager', 'staff'] as const)(
-    'keeps the %s room independent of era and facility upgrades',
-    (kind) => {
-      const expected = `/art/scenes/${kind}-office-v1.webp`;
+  it.each([
+    ['manager', 'manager-office-v1.webp', '감독실'],
+    ['staff', 'staff-office-v1.webp', '스태프 사무실'],
+    ['academy', 'academy-v1.webp', '유소년 아카데미'],
+  ] as const)(
+    'keeps the %s overview independent of era and facility upgrades',
+    (kind, file, label) => {
+      const expected = `/art/scenes/${file}`;
       for (const year of [1950, 1980, 2020]) {
         for (const level of [0, 3, 8, 99]) {
           const scene = facilityScene(kind, {
@@ -109,7 +113,7 @@ describe('facility artwork follows the current club', () => {
           });
           expect(scene.stage).toBe(0);
           expect(scene.src).toBe(expected);
-          expect(scene.alt).toContain(kind === 'manager' ? '감독실' : '스태프 사무실');
+          expect(scene.alt).toContain(label);
         }
       }
       const body = readFileSync(new URL(`../../public${expected}`, import.meta.url));

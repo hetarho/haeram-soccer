@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "tool": "built-in image_gen",
+  "generatedAt": "2026-10-22",
+  "assets": [
+    {
+      "kind": "academy",
+      "file": "/art/scenes/academy-v1.webp",
+      "width": 1086,
+      "height": 362,
+      "semanticStage": 0,
+      "eras": ["heritage", "terraces", "contemporary"],
+      "source": "exec-f61b5d9e-877a-4223-b381-dbdcaad420a3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: final bitmap environment illustration for the YOUTH ACADEMY tab header of a Korean football-club management game.\nPrimary request: create ONE original illustration of a modest football youth academy, viewed at eye level from the visiting club owner's entrance. Very wide horizontal panorama, exactly 3:1 aspect ratio, intended canvas 2172 by 724 pixels. Fill the entire canvas; no border, inset, collage, UI or mockup.\nScene: an intimate academy training courtyard opening onto a small practice pitch at blue-hour dusk. In the foreground a worn timber bench holds small leather football boots, neatly folded green and ivory training bibs and a canvas kit bag. A few weathered footballs, simple coloured cones and a compact practice goal make this clearly a youth-development environment rather than a professional stadium. Beside the pitch, a low brick-and-timber academy building has warm light in modest classroom windows, with an unlettered tactics chalkboard just inside. A little wooden equipment rack and soft floodlighting complete a believable lived-in club setting. Keep the bench, mini goal, academy building and pitch visible in a shallow panoramic composition; the important details sit in the middle horizontal band so the picture reads in a mobile banner.\nStyle: cohesive 16-bit football environmental pixel art, distinct square pixels, stepped edges, dithered shadows, rich but restrained material detail. Match a series of quiet dusk football-club interiors with aged wood, dark green tactics boards, brickwork and warm practical lamps. Not photorealistic, not a smooth digital painting, not vector art. Use natural dark grass green, charcoal, warm ivory, aged brown wood and muted brick, with blue-hour sky and soft warm window light.\nTimeless period-neutral surroundings: paper/chalk/wood/leather equipment suitable from the mid twentieth century onward, without computers or modern screens. Modest local club, no grand luxury campus or giant stands.\nConstraints: no people or faces, no real clubs, crests or brands, no writing, readable letters, numbers, signage, captions, watermark, game stats or interface elements. The youth academy is conveyed by equipment and architecture; do not invent actual player identities. Opaque background.",
+      "sourceWidth": 2171,
+      "sourceHeight": 724,
+      "bytes": 619736,
+      "sha256": "0eb49ae00f4dbb7c8ca964d4c146a7f404b311b17dcbf63e93ec15cd967f8a47",
+      "preparation": "Whole-scene nearest-neighbour downscale to a 3:1 banner, lossless WebP; no crop or semantic edits."
+    }
+  ]
+}

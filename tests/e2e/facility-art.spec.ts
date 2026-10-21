@@ -63,11 +63,14 @@ async function load(page: Page, world: World) {
 async function expectArt(page: Page, kind: string, era: string, stage: number) {
   const img = page.locator(`[data-facility-art="${kind}"] img`);
   const office = kind === 'manager' || kind === 'staff';
+  const source =
+    kind === 'academy'
+      ? '/art/scenes/academy-v1.webp'
+      : office
+        ? `/art/scenes/${kind}-office-v1.webp`
+        : `/art/scenes/${era}/${kind}-${stage}.webp`;
   await expect(img).toBeVisible();
-  await expect(img).toHaveAttribute(
-    'src',
-    office ? `/art/scenes/${kind}-office-v1.webp` : `/art/scenes/${era}/${kind}-${stage}.webp`,
-  );
+  await expect(img).toHaveAttribute('src', source);
   await expect(img).toHaveAttribute('alt', /픽셀아트$/);
   // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
@@ -137,6 +140,18 @@ for (const scenario of [
       .getByRole('region', { name: '훈련 방향', exact: true })
       .boundingBox())!;
     expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
+    const trainingTabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
+    await trainingTabs.getByRole('tab', { name: '유소년', exact: true }).click();
+    await expectArt(page, 'academy', scenario.era, 0);
+    await expect(overview).toHaveAccessibleName('유소년 아카데미');
+    const academyScene = (await overview.boundingBox())!;
+    const prospects = (await page
+      .getByRole('region', { name: '유소년 아카데미', exact: true })
+      .boundingBox())!;
+    expect(academyScene.y + academyScene.height).toBeLessThanOrEqual(prospects.y);
+    await expectHomeBounds(page);
+    await trainingTabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
+    await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
       [
         `/art/scenes/${scenario.era}/locker-${scenario.stadium}.webp`,
@@ -144,6 +159,7 @@ for (const scenario of [
         `/art/scenes/${scenario.era}/training-${scenario.training}.webp`,
         '/art/scenes/manager-office-v1.webp',
         '/art/scenes/staff-office-v1.webp',
+        '/art/scenes/academy-v1.webp',
       ].sort(),
     );
   });

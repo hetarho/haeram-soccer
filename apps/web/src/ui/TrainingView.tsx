@@ -138,7 +138,12 @@ export function TrainingView({ state, client }: Props) {
             </div>
           </>
         ) : (
-          <AcademyPanel w={w} client={client} />
+          <>
+            <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
+              유소년 총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
+            </FacilityOverview>
+            <AcademyPanel w={w} client={client} />
+          </>
         )}
       </TabPanel>
       {sheet && (!sheet.player || sheetPlayer) && (

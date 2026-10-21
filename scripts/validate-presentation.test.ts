@@ -146,14 +146,17 @@ describe('static presentation resource validation', () => {
     );
   });
 
-  it.each(['manager', 'staff'] as const)('reports a missing %s room image', async (kind) => {
-    const tree = deployment();
-    const missing = tree.resolver.facility({ era: 'heritage', kind, stage: 0 }).src;
-    rmSync(tree.file(missing));
-    await expect(validatePresentation(tree.root)).rejects.toThrow(
-      `Missing era stage asset ${tree.theme.id}/heritage.${kind}.0: ${missing}`,
-    );
-  });
+  it.each(['manager', 'staff', 'academy'] as const)(
+    'reports a missing %s overview image',
+    async (kind) => {
+      const tree = deployment();
+      const missing = tree.resolver.facility({ era: 'heritage', kind, stage: 0 }).src;
+      rmSync(tree.file(missing));
+      await expect(validatePresentation(tree.root)).rejects.toThrow(
+        `Missing era stage asset ${tree.theme.id}/heritage.${kind}.0: ${missing}`,
+      );
+    },
+  );
 
   it('reports a missing era stage asset', async () => {
     const tree = deployment();
