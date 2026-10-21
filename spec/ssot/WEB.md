@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r102 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r104 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -165,6 +165,7 @@
   - Existing /squad, /transfers, /manager and their older view values still open the corresponding tab; candidates still opens the manager market.
 
 - WEB-44 [o] Home separates statistics from state. The team-state card shows starters' fatigue, squad morale (shown as 분위기), the manager's standing (trust as 굳건/안정/흔들림/위기, or 대행 체제) and squad size with the injured and suspended counts, with good/ok/warning/critical tones. Cash is not a tile: it stays in the HUD and joins as the urgent advice when it runs short, winning ties because a club out of money cannot play on. The most urgent warning explains its effect, offers two one-tap remedies and a "more" entry.
+  - urgent advice, including squad-shortage messages, floats above the home page using the alert layer (→WEB-57), without taking space below the team-state tiles. Its remedies and more entry remain available. Runtime errors or critical club alerts take priority over this advice; tiles retain their actual state while the advice is suppressed.
   - tapping any state, or the HUD cash, opens its remedy sheet with 3–6 choices, each stating cost, effect and cooldown before commit; owner requests (→CLUB-20) also name who carries them out and list each result with its chance; unavailable choices say why (cooldown, cash, already applied, or the staff deciding it under the relevant responsibility →WEB-45).
   - fatigue: suggesting recovery training to the assistant, rest selection, rest days, recovery support, training camp, preparation sheet. morale: squad meeting, team-building day, win bonus, owner's visit, training camp, rest days. manager: public vote of confidence, manager office, candidates. cash: one step less on the costliest 지역 or 글로벌 investment row, lower squad investment, higher ticket price, friendly match, owner capital, the market. squad: market, academy, promote the best prospect.
   - squad size: warning under 20 players (→CLUB-40) or with 3+ injured or suspended, critical under 16 or with fewer than 14 available.
@@ -247,6 +248,7 @@
   - roster view settings (지표 범위, 포지션, 정렬, 최소 표본) sit behind one icon button in the roster panel header, with the number of active choices on it: a popover under the button on wide screens, the bottom sheet on phones; chips apply at once and 초기화 restores the defaults. Search stays visible, and the active choices are listed under it.
 - WEB-56 [o] Money trouble is shown, not stopped for: below 13 weeks of runway or in debt the HUD cash turns warning/red and a red band on every view states the weeks left or, in debt, the rounds left before bankruptcy (→ECON-24). Bankruptcy replaces every view with the game-over page: the club, the season it went under, seasons played, best finish, titles and peak supporters, with 기록 내보내기, 이 슬롯에서 새 게임 and 게임 슬롯 (→WEB-62).
 - WEB-57 [o] A manager's departure (→STAFF) leaves the interim in charge and asks one choice: 감독 선임하러 가기 (사람's 감독 with the manager market open) or 임시 감독으로 계속. Other blocking alerts keep one acknowledge button.
+  - Runtime errors and blocking club warnings appear in a persistent floating alert panel above the current page, outside its content layout. Keep their recovery/acknowledgement actions and underlying blockers; a warning never pushes the HUD, clock or content down. The panel stays within short/phone viewports, above mobile navigation, and may scroll internally. Ordinary dialogs retain their higher layer and focus handling.
 - WEB-58 [o] Every club name or crest opens its team sheet from one global host.
   - Entry points: tables, ties and trees, fixtures, results, scorers, records and the next-match card, the own club included.
   - League tables carry an OVR column: ours is the starting XI as home shows it, a rival's XI rating at its 조직력 (→LEAGUE-12).
@@ -418,6 +420,8 @@
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## chg
+- r104 261021 WEB-44✎ urgent advice below team-state tiles→floating home alert with unchanged remedies, behind higher-priority runtime/critical alerts
+- r103 261021 WEB-57✎ inline runtime-error/critical bands→persistent floating alerts outside page flow with existing recovery and acknowledgement actions
 - r102 261021 WEB-81✎ vertically stacked review and body actions→target/candidate summary, grouped opinions, horizontal choices, structured result and persistent footer actions
 - r101 261021 WEB-79✎ stacked observation checkboxes→two equal-width horizontal toggle cards with visible on/off state and full-card touch targets
 - r100 261021 WEB-17✎ 32px pace chips in a 44px track→44px pace dropdown; WEB-18✎ phone date/settings above mode/actions→single row with progression between date and settings, mode selector only in settings; four pace chips→one pace dropdown

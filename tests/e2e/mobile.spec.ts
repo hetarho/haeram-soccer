@@ -110,7 +110,7 @@ test('keeps confirmation actions and its close control inside a small mobile vie
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
-test('the HUD stays at the top when warning bands make the column taller than a low screen', async ({
+test('floating warnings leave the HUD and content fixed on low and phone screens', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 844, height: 390 });
@@ -121,7 +121,7 @@ test('the HUD stays at the top when warning bands make the column taller than a 
     seed: 'low-screen-hud',
     level: 'normal' as const,
   });
-  // In debt and without a manager: two bands sit under the HUD on every view.
+  // Debt retains its status band; the manager choice floats above the current page.
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
   await page.goto('/');
@@ -134,6 +134,28 @@ test('the HUD stays at the top when warning bands make the column taller than a 
       buffer: Buffer.from(await encode(fixture)),
     });
   await expect(page.getByTestId('cash-alarm')).toBeVisible();
+  const alerts = page.getByTestId('runtime-alerts');
+  await expect(alerts).toContainText('감독이 떠났어요');
+  expect(
+    await alerts.evaluate((element) => ({
+      portal: element.parentElement === document.body,
+      position: getComputedStyle(element).position,
+    })),
+  ).toEqual({ portal: true, position: 'fixed' });
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 844, height: 390 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await settle(page);
+    const bounds = (await alerts.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    const bottom = (await nav.isVisible()) ? (await nav.boundingBox())!.y : viewport.height;
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(bottom);
+  }
   await settle(page);
   const shell = () =>
     page.evaluate(() => ({
@@ -148,5 +170,10 @@ test('the HUD stays at the top when warning bands make the column taller than a 
   });
   expect(await shell()).toEqual({ main: 0, hud: 0 });
   for (let i = 0; i < 25; i++) await page.keyboard.press('Tab');
+  expect(await shell()).toEqual({ main: 0, hud: 0 });
+  const before = await page.getByTestId('view-scroller').boundingBox();
+  await alerts.getByRole('button', { name: '임시 감독으로 계속', exact: true }).click();
+  await expect(alerts).toHaveCount(0);
+  expect(await page.getByTestId('view-scroller').boundingBox()).toEqual(before);
   expect(await shell()).toEqual({ main: 0, hud: 0 });
 });

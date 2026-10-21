@@ -147,7 +147,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 16 | 16 | - | 2 |
-| WEB | 102 | 102 | - | 0 |
+| WEB | 104 | 104 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -199,6 +199,17 @@
 - FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
+- 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
+- 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
+- 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
+- 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
+- 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.
+- 261021 update-ssot WEB r104 start: the owner's 선수 19명 message is TeamState advice, separate from runtime warnings; float that exact source too.
+- 261021 T296 done: runtime warnings/errors float outside page flow; typecheck, affected units, targeted lint/format, build and spec lint pass; mobile/recovery browser coverage updated for the batch gate.
+- 261021 WEB r103 freshness: T275 T283 T286 bases to WEB@103; their cited match/record decisions are unchanged by runtime-alert placement.
+- 261021 create-task T296 and implement-task start on 6d31c81: portal runtime alerts above the page, preserving their actions and ordinary dialog layering.
+- 261021 update-ssot WEB r103 start: floating runtime warnings and errors; prior controller/settings/mediation work committed as 6d31c81.
 - 261021 T295 done: compact structured mediation review and stable confirm styling during pending previews; fast checks/build and a focused owner-requested Chromium appearance/blocking check pass.
 - 261021 WEB r102 freshness: T275 T283 T286 bases to WEB@102; their cited match/record decisions are unchanged by mediation presentation.
 - 261021 create-task T295 and implement-task start on 9f69553: compact mediation presentation while preserving preview freshness, decisions and retained history.
@@ -208,14 +219,3 @@
 - 261021 create-task T294 and implement-task start on 9f69553: preserve native checkbox semantics and existing stop/draft rules while presenting horizontal toggles.
 - 261021 update-ssot WEB r101 start: horizontal observation-stop toggle cards in central settings.
 - 261021 T293 done: single-row clock, settings-only mode and pace dropdown; affected units and build pass, browser specs updated for the batch gate; owner's HTTPS dev preview on 19501.
-- 261021 WEB r100 freshness: T275 T283 T286 bases to WEB@100; their cited match playback and record decisions are unchanged by WEB-17/18 clock layout.
-- 261021 create-task T293 and implement-task start on 9f69553: WEB r100 compact clock controls; unrelated full-model work remains in its own worktrees.
-- 261021 update-ssot WEB r100 start: compact clock row, settings-only mode selection and a pace dropdown.
-- 261021 r3m9 stopped: identity group integrated T240–T254 and T272 with CI green on every push; T255 done (benchmarks and CI 39517672764 on a3c9881); MATCH r15; report 261021-r3m9.
-- 261021 T255 done: final identity source passes the century storage benchmark with 101 design edits and a pending kit choice (worst checkpoint 2,406,812 B) and the browser benchmark with pattern rendering (entry 245,985 B gzip, load 4.4 s, p95 47 ms, 60 FPS).
-- 261020 T254 integrated
-- 261020 T252 T253 integrated
-- 261020 T250 T251 integrated
-- 261020 T272 integrated
-- 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
-- 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.

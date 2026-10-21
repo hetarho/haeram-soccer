@@ -21,6 +21,7 @@ import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
+import { FeedbackOverlay } from './FeedbackOverlay';
 
 export function MatchAction({
   critical,
@@ -144,6 +145,8 @@ function TeamState({
   onPrepare: () => void;
 }) {
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const runtimeError = useGameState((state) => !!state.error);
+  const home = useNavigation((state) => state.page === 'dashboard');
   const [sheet, setSheet] = useState<StateKey>();
   const run = useRemedyRunner(client, onPrepare);
   const states = teamStates(w),
@@ -172,19 +175,25 @@ function TeamState({
         ))}
       </ul>
       {urgent?.advice ? (
-        <div className={`${s.advice} ${s[urgent.tone]}`} role="status">
-          <p>{urgent.advice.text}</p>
-          <div>
-            {urgent.advice.actions.slice(0, 2).map((action) => (
-              <button key={action.label} disabled={acting} onClick={() => run(action)}>
-                {action.label}
-              </button>
-            ))}
-            <button className={s.moreRemedies} onClick={() => setSheet(urgent.key)}>
-              더 보기
-            </button>
-          </div>
-        </div>
+        home &&
+        !runtimeError &&
+        !w.critical && (
+          <FeedbackOverlay label="팀 상태 알림" testId="team-state-alert">
+            <div className={`${s.advice} ${s[urgent.tone]}`} role="status">
+              <p>{urgent.advice.text}</p>
+              <div>
+                {urgent.advice.actions.slice(0, 2).map((action) => (
+                  <button key={action.label} disabled={acting} onClick={() => run(action)}>
+                    {action.label}
+                  </button>
+                ))}
+                <button className={s.moreRemedies} onClick={() => setSheet(urgent.key)}>
+                  더 보기
+                </button>
+              </div>
+            </div>
+          </FeedbackOverlay>
+        )
       ) : (
         <p className={s.calm}>팀이 안정적이에요. 상태를 누르면 미리 챙길 방법을 볼 수 있어요.</p>
       )}
