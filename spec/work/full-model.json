@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T03:51:39.198Z",
-  "sourceCommit": "d7742d51983805f46bc99391707040386e9649dd",
+  "snapshotAt": "2026-10-21T06:05:34.408Z",
+  "sourceCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,72 +15,66 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+      "commit": "aeedd04e95ba9036ed1a9f4cb0b936026edb03ee",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T02:24:09.107Z"
-    },
-    "runner": {
-      "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.304 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.304 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.304 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-21T00:40:04.375Z"
+      "at": "2026-10-21T05:25:20.006Z",
+      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        aeedd04e95ba9036ed1a9f4cb0b936026edb03ee -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
     },
     "lastRun": {
-      "id": "a74865ee-36ac-4474-8c8d-a72d24e74a7a",
+      "id": "13ad746e-2d24-413b-aa88-3f96398350d4",
       "adapter": "builtin",
       "providers": {
         "worker": {
           "provider": "claude",
           "model": null,
-          "version": "2.1.304 (Claude Code)"
+          "version": "2.1.306 (Claude Code)"
         },
         "reviewer": {
           "provider": "claude",
           "model": null,
-          "version": "2.1.304 (Claude Code)"
+          "version": "2.1.306 (Claude Code)"
         }
       },
       "workers": [
         {
           "provider": "claude",
           "model": null,
-          "version": "2.1.304 (Claude Code)"
+          "version": "2.1.306 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-21T00:30:24.238Z",
-      "stoppedAt": "2026-10-21T00:30:24.975Z",
-      "dispatched": 0,
+      "startedAt": "2026-10-21T05:58:52.331Z",
+      "stoppedAt": "2026-10-21T06:05:33.859Z",
+      "dispatched": 2,
       "outcome": "needs-attention",
-      "failures": []
+      "failures": [
+        {
+          "attempt": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+          "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+          "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+          "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+          "commit": "58e34990e074636235483817174f01cdc06deb37",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
     }
   },
   "summary": {
-    "total": 14,
-    "completed": 2,
-    "remaining": 12,
-    "running": 1,
-    "review": 1,
+    "total": 19,
+    "completed": 3,
+    "remaining": 16,
+    "running": 0,
+    "review": 2,
     "blocked": 0,
-    "unassigned": 10
+    "unassigned": 14
   },
   "tasks": [
     {
@@ -97,7 +91,7 @@
       "dep": [
         "T274"
       ],
-      "status": "todo"
+      "status": "approved"
     },
     {
       "id": "T277",
@@ -124,7 +118,7 @@
       "dep": [
         "T273"
       ],
-      "status": "doing"
+      "status": "approved"
     },
     {
       "id": "T280",
@@ -142,14 +136,6 @@
         "T282"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T282",
-      "title": "Preserve full aggregates and model coverage in bounded checkpoints",
-      "dep": [
-        "T273"
-      ],
-      "status": "ready"
     },
     {
       "id": "T283",
@@ -186,6 +172,45 @@
         "T283",
         "T284",
         "T285"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T299",
+      "title": "Define presentation pack contracts and load registry resources",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T300",
+      "title": "Structure the current Korean locale behind shared message services",
+      "dep": [
+        "T299"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T301",
+      "title": "Structure the current pixel concept as one theme resource pack",
+      "dep": [
+        "T299"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T302",
+      "title": "Connect registry-driven presentation settings to the shared app",
+      "dep": [
+        "T300",
+        "T301"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T303",
+      "title": "Prove resource-only locale/theme extension and document the pack contract",
+      "dep": [
+        "T302"
       ],
       "status": "todo"
     }
@@ -359,6 +384,8 @@
       "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
       "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
       "submittedAt": "2026-10-21T03:39:46.090Z",
+      "integratedCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+      "integratedAt": "2026-10-21T04:13:49.843Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -430,6 +457,13 @@
           "startedAt": "2026-10-21T03:30:42.948Z",
           "finishedAt": "2026-10-21T03:39:45.534Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T03:51:39.354Z",
+          "finishedAt": "2026-10-21T04:13:49.648Z"
+        }
       ]
     },
     {
@@ -444,9 +478,149 @@
       "contributors": [
         "f6n3-T279"
       ],
-      "status": "doing",
+      "status": "approved",
+      "reason": "통합 후보의 spec 검증에 실패했습니다.",
       "createdAt": "2026-10-21T02:43:00.076Z",
-      "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2"
+      "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2",
+      "verifiedCommit": "58e34990e074636235483817174f01cdc06deb37",
+      "submittedBase": "f3c371830af2c9694edf8158a9af57e05b399d47",
+      "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+      "submittedAt": "2026-10-21T05:58:49.061Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "2074 changed lines (limit 300)",
+          "reworked after a review or integration failure",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 2074,
+        "files": 7
+      },
+      "dispatch": {
+        "id": "fa17c346-8a15-425d-8ccf-469d16e45f85",
+        "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T06:03:52.124Z",
+        "finishedAt": "2026-10-21T06:05:30.233Z",
+        "error": null,
+        "summary": "T279 is approved. I checked the three risk reasons first. (1) Rework: the earlier commit f4d050c was approved, and the integration failure that followed came from stale SSOT revisions on other tasks, not from T279 code. Between f4d050c and 58e3499 the aggregate module is byte-identical. The only T279 change is the task header moving from ARCH@16 to ARCH@17. (2) ARCH r17: the revision only adds ARCH-32 (locale and theme presentation packs), which does not apply to the kernel. The task's bases MATCH@15, PLAYER@9, STAFF@34 and ARCH@17 match the current SSOT revisions. (3) Interaction with the newly merged base: T274 changed grid/record.ts in two places, the per-player whole minutes (lineMinutes) and always keeping incidents in candidate records. Neither changes the team Tally definitions the ledger copies, and team M.minutes is the match length on both paths. T282's checkpointSchemaFor change does not touch the kernel. (4) Line count (2074): I re-read team.ts, ledger.ts and input.ts on their own. Effective skills come only through the injected accessor, with no second strength formula and no match.ts import. Streams are named per family and period. Draws are grouped binomial, multinomial and Poisson over the 40 cells, and loops run only over actual shots, fouls and corners. Every Metrics and TD counter comes from one ledger. ledgerIssues and teamFactsIssues refuse inconsistent facts instead of filling or clamping them. Extra time runs on its own period streams, so regulation facts do not change. Nothing calls the kernel, so dispatch is untouched. All named acceptance tests are present. I could not rerun the tests: the review checkout has no node_modules. The verification recorded for 58e3499 passed typecheck, lint, format and vitest (204 files, 1397 tests). The remaining notes are P3 items carried over from the earlier review; the rework did not change them."
+      },
+      "review": {
+        "id": "1977160f-3e4e-424d-8d6e-b903e0b30665",
+        "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T279 is approved. I checked the three risk reasons first. (1) Rework: the earlier commit f4d050c was approved, and the integration failure that followed came from stale SSOT revisions on other tasks, not from T279 code. Between f4d050c and 58e3499 the aggregate module is byte-identical. The only T279 change is the task header moving from ARCH@16 to ARCH@17. (2) ARCH r17: the revision only adds ARCH-32 (locale and theme presentation packs), which does not apply to the kernel. The task's bases MATCH@15, PLAYER@9, STAFF@34 and ARCH@17 match the current SSOT revisions. (3) Interaction with the newly merged base: T274 changed grid/record.ts in two places, the per-player whole minutes (lineMinutes) and always keeping incidents in candidate records. Neither changes the team Tally definitions the ledger copies, and team M.minutes is the match length on both paths. T282's checkpointSchemaFor change does not touch the kernel. (4) Line count (2074): I re-read team.ts, ledger.ts and input.ts on their own. Effective skills come only through the injected accessor, with no second strength formula and no match.ts import. Streams are named per family and period. Draws are grouped binomial, multinomial and Poisson over the 40 cells, and loops run only over actual shots, fouls and corners. Every Metrics and TD counter comes from one ledger. ledgerIssues and teamFactsIssues refuse inconsistent facts instead of filling or clamping them. Extra time runs on its own period streams, so regulation facts do not change. Nothing calls the kernel, so dispatch is untouched. All named acceptance tests are present. I could not rerun the tests: the review checkout has no node_modules. The verification recorded for 58e3499 passed typecheck, lint, format and vitest (204 files, 1397 tests). The remaining notes are P3 items carried over from the earlier review; the rework did not change them.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts (penalty, xg.max)",
+            "message": "T279 (carried over): shot conversion copies match.ts goalChance inline (clamp(xg*finishing, 0.01, 0.8)), and the penalty xG, maximum xG and penalty conversion are copied from the grid SHOT_CONFIG and resolvePenalty instead of shared. Penalty conversion also reads different skills from the grid's. Inject these through AggregateSkillAccess or import the shared config so the paths cannot drift apart (MATCH-13/26). T280 or T284 can take this."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/team.ts:453,486-497",
+            "message": "T279 (carried over): header shots, including set-piece headers, are finished with the side's finishing unit (a.shooting). Both existing paths use heading for headers (MATCH-11), and the aerial unit is already computed. Use it for headers."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/input.ts:84-115,240",
+            "message": "T279 (carried over): participationIssues does not reject an incident minute outside 1..length. sideCards silently drops a card at minute 0 or after the final minute. It also accepts a sent-off or substituted player who keeps a later stint, and one line holding two slots at once. Add these checks here or in T280's MATCH-27 planner/validator."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/ledger.ts:36",
+            "message": "T279 (carried over): inGoalAreaCell is exported but never used, and players' play traits (read by grid decide.ts for shots, take-ons and crosses) are not consumed. This does not block team facts. T280 should note it when it allocates actions by role."
+          }
+        ],
+        "commit": "58e34990e074636235483817174f01cdc06deb37",
+        "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+        "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+        "createdAt": "2026-10-21T06:03:51.320Z",
+        "finishedAt": "2026-10-21T06:05:30.201Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+          "owner": "f6n3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+              "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:486-497",
+              "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/input.ts:84-115",
+              "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+              "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+          "createdAt": "2026-10-21T04:54:06.509Z",
+          "finishedAt": "2026-10-21T05:19:28.352Z",
+          "invalidatedAt": "2026-10-21T05:19:30.336Z",
+          "invalidationReason": "integration failed"
+        },
+        {
+          "id": "5249bb3a-0faf-4aad-9d87-bced3f3249ce",
+          "owner": "integration",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Integration failed on the merged candidate.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "integration",
+              "message": "Merge the group branch into this workspace, fix the failure, and resubmit: 통합 후보의 spec 검증에 실패했습니다.\nT275: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT275: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT276: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT277: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT278: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT280: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT281: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT283: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT283: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT284: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT285: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT286: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT286: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+          "finishedAt": "2026-10-21T05:19:30.336Z",
+          "invalidatedAt": "2026-10-21T05:25:49.885Z",
+          "invalidationReason": "new submission"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T279",
+          "commit": "58e34990e074636235483817174f01cdc06deb37",
+          "at": "2026-10-21T05:58:49.012Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T05:46:22.808Z",
+              "finishedAt": "2026-10-21T05:58:48.606Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T05:46:22.808Z",
+          "finishedAt": "2026-10-21T05:58:48.606Z"
+        }
+      ]
     },
     {
       "id": "626befdd-2837-410e-978e-65dd0274e5f8",
@@ -461,7 +635,7 @@
         "f6n3-T282",
         "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-21T02:43:02.895Z",
       "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2",
@@ -469,6 +643,8 @@
       "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
       "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
       "submittedAt": "2026-10-21T03:46:08.352Z",
+      "integratedCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+      "integratedAt": "2026-10-21T04:37:36.200Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -482,17 +658,36 @@
         "files": 15
       },
       "dispatch": {
-        "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+        "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
         "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-21T03:27:38.389Z",
-        "finishedAt": "2026-10-21T03:46:08.375Z",
+        "startedAt": "2026-10-21T04:13:54.294Z",
+        "finishedAt": "2026-10-21T04:15:19.476Z",
         "error": null,
-        "summary": "T282 리뷰 지적 3건을 모두 고쳤습니다.\n(P2) `tests/fixtures/club-identity.ts`의 미래 컨테이너 케이스를 `envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`(4)로 옮겼습니다. 이제 다시 알 수 없는 컨테이너를 검사하고 '지원하지 않는 저장 스키마 버전' 오류가 납니다. 컨테이너와 모델 데이터가 어긋날 때의 문구도 '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.'로 바꿔 다른 호환성 오류와 맞췄습니다.\n(P3) `bitpacking.ts`가 `rangeBits`를 export하고, `packBitColumns`와 `matchModelPacking.ts`의 `bitsOf`가 이것을 함께 씁니다.\n(P3) `unpackSeason`은 이제 대회 표를 먼저 읽습니다. 클럽·선수 표는 대회 행이 선언한 합계로 행 수 상한을 걸고, 기여 표는 선수 행의 소속 수 합계로 상한을 겁니다. 그래서 조작된 대형 표는 행을 할당하기 전에 '표 차원' 오류로 거부됩니다. 이를 확인하는 단위 테스트(빈 열 100만 행)도 추가했습니다.\n\n실행한 검사는 typecheck, lint, format:check, build입니다. 어댑터 테스트 4개 파일은 93개 모두 통과했습니다. `vitest run --changed d7742d5`는 201개 파일에서 1368개 통과, 4개 건너뜀이었습니다.\n`tests/e2e/club-identity-continuity.spec.ts`는 브라우저 spec이라 여기서 돌리지 않았고 묶음 Chromium 실행으로 넘겼습니다. touches 밖에서 수정한 파일은 `tests/fixtures/club-identity.ts`와 `bitpacking.ts` 두 개이며, result limits에 적어 두었습니다."
+        "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity."
+      },
+      "review": {
+        "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/adapters/matchModelPacking.ts:371-394 (T282)",
+            "message": "The new bounds only reject a table that claims more rows than the competitions declare. A crafted, checksum-valid import can still declare up to 1,000 competitions × 1,000 clubs (and players capped at MAX_ROWS) in its tiny competitions table, then supply zero-bit club columns. The reader would then allocate up to 1e6 × 47 cells before the leftover-row check. The impact is only local memory pressure on a user-supplied file, behind the decompressed-size budget, so this is optional. A tighter per-section total (e.g. a summed club/player cap well below MAX_ROWS) could be considered when T286 settles the century-workload limits."
+          }
+        ],
+        "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+        "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+        "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+        "createdAt": "2026-10-21T04:13:53.626Z",
+        "finishedAt": "2026-10-21T04:15:19.451Z"
       },
       "reviewHistory": [
         {
@@ -546,6 +741,119 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T03:43:59.766Z",
           "finishedAt": "2026-10-21T03:46:08.025Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T04:15:21.215Z",
+          "finishedAt": "2026-10-21T04:37:36.012Z"
+        }
+      ]
+    },
+    {
+      "id": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "group": "full-model",
+      "taskId": "T276",
+      "tasks": [
+        "T276"
+      ],
+      "lane": null,
+      "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+      "contributors": [
+        "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+      ],
+      "status": "approved",
+      "reason": "통합 후보의 spec 검증에 실패했습니다.",
+      "createdAt": "2026-10-21T04:13:52.337Z",
+      "startCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+      "verifiedCommit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+      "submittedBase": "f3c371830af2c9694edf8158a9af57e05b399d47",
+      "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+      "submittedAt": "2026-10-21T05:46:19.680Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1304 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1304,
+        "files": 8
+      },
+      "dispatch": {
+        "id": "aef444e7-e2b8-41f5-aee1-3a597219a3b1",
+        "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T05:58:54.423Z",
+        "finishedAt": "2026-10-21T06:03:48.140Z",
+        "error": null,
+        "summary": "T276 meets its acceptance criteria. I checked the two risk reasons first. The large diff (1304 lines) stays inside the task's touches. The autopilot decisions waiting for the owner are group-level base raises; this task adds no new SSOT decision. intentions.ts implements the contract's lifecycle with a reason map to achieved/expired/infeasible/displaced. Its priority order is exit > restart > danger > committed > tactical. Runs go through the shared runPlan, so there is no second planner. The engine hooks cover turnover, restart, lost passes, substitution, injury and dismissal, and depart() clears references by roster index. Each trace entry carries the slot's intention, with targets matching the ones movement uses, and playback exposes them as IntentionObservation with player-ID partners. Calibration drift is recorded for T278, the extra fixture time for T285, and carrier use in decide.ts for T277, which owns it.\n\nI re-checked this independently rather than relying only on the worker's run. On base and head source trees exported to a scratch directory, the pre-feature path gave an identical SHA-256 hash over 96 matches (16 tactic pairings × 3 fixtures, observed and unobserved), covering records, elapsed time, positions, targets and states. On 32 candidate matches, observed and unobserved runs settled identical records. Every record passed validateFullMatchRecord. No held intention referenced an off-pitch player, and goalkeepers held only receive/carry. intentions.test.ts and shape.test.ts passed (18/18). The findings below are optional improvements only."
+      },
+      "review": {
+        "id": "e0b696de-2042-4837-8d55-d0b73611520a",
+        "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T276 meets its acceptance criteria. I checked the two risk reasons first. The large diff (1304 lines) stays inside the task's touches. The autopilot decisions waiting for the owner are group-level base raises; this task adds no new SSOT decision. intentions.ts implements the contract's lifecycle with a reason map to achieved/expired/infeasible/displaced. Its priority order is exit > restart > danger > committed > tactical. Runs go through the shared runPlan, so there is no second planner. The engine hooks cover turnover, restart, lost passes, substitution, injury and dismissal, and depart() clears references by roster index. Each trace entry carries the slot's intention, with targets matching the ones movement uses, and playback exposes them as IntentionObservation with player-ID partners. Calibration drift is recorded for T278, the extra fixture time for T285, and carrier use in decide.ts for T277, which owns it.\n\nI re-checked this independently rather than relying only on the worker's run. On base and head source trees exported to a scratch directory, the pre-feature path gave an identical SHA-256 hash over 96 matches (16 tactic pairings × 3 fixtures, observed and unobserved), covering records, elapsed time, positions, targets and states. On 32 candidate matches, observed and unobserved runs settled identical records. Every record passed validateFullMatchRecord. No held intention referenced an off-pitch player, and goalkeepers held only receive/carry. intentions.test.ts and shape.test.ts passed (18/18). The findings below are optional improvements only.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/trace.ts:281 (T276)",
+            "message": "Exit and restart intentions never reach the trace. A player who leaves (substitution, injury or dismissal) is skipped by snapshot() once he is off the pitch, and his slot now holds the substitute. Restart intentions start and end inside the preparer, between two trace entries. Across 32 candidate matches I measured zero traced substitution/injury/dismissal endings and zero held restart intentions. The engine still records them on GridPlayer.ended, so the acceptance is met, but playback and the inspector cannot show these reasons. Consider tracing the leaver's ended intention on his exit note, or recording this as a limit for T275/T277."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/intentions.ts:266 (T276)",
+            "message": "A receiver only commits to receiving after he owns the ball, so losePass() creates a receive intention and ends it as 'lost' straight away. If the intended receiver was on a run, setIntention first ends the run as 'replaced', and the synthetic 'lost' record then overwrites GridPlayer.ended, so the run's real ending is never recorded. Consider ending the existing intention directly as 'lost'. Alternatively, committing the receiver when the pass is played would make the lifecycle real rather than reconstructed."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/intentions.ts:485 (T276)",
+            "message": "In danger, free(gp, 'danger') lets a player who is tactically marking runner A be reassigned to mark runner B, leaving A unmarked until the next update. This is a coordination gap that T277's side-level assignment should close; mention it in the hand-off so it is not lost."
+          }
+        ],
+        "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+        "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+        "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+        "createdAt": "2026-10-21T05:58:53.583Z",
+        "finishedAt": "2026-10-21T06:03:48.110Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "fb87237b-3472-4e9f-93e6-0abf4c2a6e37",
+          "owner": "5ee9f009-adbb-4241-b101-e69bf29d75bd/reviewer-1",
+          "status": "reviewing",
+          "commit": "c803d0c27445ad0bd60279891de56ae14fc952c8",
+          "baseCommit": "b7e0fe6651cccd9c91254f7f5839746665b5733c",
+          "submissionId": "8ba9c510-abd6-4266-a7f5-e9b7cc75e096",
+          "createdAt": "2026-10-21T05:25:56.531Z",
+          "invalidatedAt": "2026-10-21T05:25:57.364Z",
+          "invalidationReason": "T276: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T276",
+          "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+          "at": "2026-10-21T05:46:19.629Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T05:31:35.873Z",
+              "finishedAt": "2026-10-21T05:46:19.264Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T05:31:35.873Z",
+          "finishedAt": "2026-10-21T05:46:19.264Z"
         }
       ]
     }
@@ -2381,6 +2689,1586 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 329,
+      "at": "2026-10-21T04:13:49.772Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T03:51:39.354Z",
+            "finishedAt": "2026-10-21T04:13:49.648Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 330,
+      "at": "2026-10-21T04:13:49.843Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+        "integratedAt": "2026-10-21T04:13:49.843Z"
+      }
+    },
+    {
+      "sequence": 331,
+      "at": "2026-10-21T04:13:52.034Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T04:13:52.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 332,
+      "at": "2026-10-21T04:13:52.337Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+        "group": "full-model",
+        "taskId": "T276",
+        "tasks": [
+          "T276"
+        ],
+        "lane": null,
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+        "contributors": [
+          "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T04:13:52.337Z",
+        "startCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4"
+      }
+    },
+    {
+      "sequence": 333,
+      "at": "2026-10-21T04:13:52.645Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 334,
+      "at": "2026-10-21T04:13:52.862Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T04:13:52.862Z"
+        }
+      }
+    },
+    {
+      "sequence": 335,
+      "at": "2026-10-21T04:13:53.021Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T04:13:52.862Z"
+        }
+      }
+    },
+    {
+      "sequence": 336,
+      "at": "2026-10-21T04:13:53.626Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+          "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+          "createdAt": "2026-10-21T04:13:53.626Z"
+        }
+      }
+    },
+    {
+      "sequence": 337,
+      "at": "2026-10-21T04:13:54.294Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T04:13:54.294Z"
+        }
+      }
+    },
+    {
+      "sequence": 338,
+      "at": "2026-10-21T04:13:54.324Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T04:13:54.294Z"
+        }
+      }
+    },
+    {
+      "sequence": 339,
+      "at": "2026-10-21T04:15:19.451Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:371-394 (T282)",
+              "message": "The new bounds only reject a table that claims more rows than the competitions declare. A crafted, checksum-valid import can still declare up to 1,000 competitions × 1,000 clubs (and players capped at MAX_ROWS) in its tiny competitions table, then supply zero-bit club columns. The reader would then allocate up to 1e6 × 47 cells before the leftover-row check. The impact is only local memory pressure on a user-supplied file, behind the decompressed-size budget, so this is optional. A tighter per-section total (e.g. a summed club/player cap well below MAX_ROWS) could be considered when T286 settles the century-workload limits."
+            }
+          ],
+          "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+          "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+          "createdAt": "2026-10-21T04:13:53.626Z",
+          "finishedAt": "2026-10-21T04:15:19.451Z"
+        }
+      }
+    },
+    {
+      "sequence": 340,
+      "at": "2026-10-21T04:15:19.476Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T04:13:54.294Z",
+          "finishedAt": "2026-10-21T04:15:19.476Z",
+          "error": null,
+          "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity."
+        }
+      }
+    },
+    {
+      "sequence": 341,
+      "at": "2026-10-21T04:15:19.549Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 342,
+      "at": "2026-10-21T04:37:36.137Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T04:15:21.215Z",
+            "finishedAt": "2026-10-21T04:37:36.012Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 343,
+      "at": "2026-10-21T04:37:36.200Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+        "integratedAt": "2026-10-21T04:37:36.200Z"
+      }
+    },
+    {
+      "sequence": 344,
+      "at": "2026-10-21T04:37:37.885Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T04:37:37.872Z"
+        }
+      }
+    },
+    {
+      "sequence": 345,
+      "at": "2026-10-21T04:45:02.186Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 346,
+      "at": "2026-10-21T04:46:14.830Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+        "submittedBase": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+        "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+        "submittedAt": "2026-10-21T04:46:14.830Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2074 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2074,
+          "files": 7
+        },
+        "steps": [
+          {
+            "taskId": "T279",
+            "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+            "at": "2026-10-21T04:46:14.796Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T04:45:02.465Z",
+                "finishedAt": "2026-10-21T04:46:14.531Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T04:45:02.465Z",
+            "finishedAt": "2026-10-21T04:46:14.531Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 347,
+      "at": "2026-10-21T04:54:06.509Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+          "owner": "f6n3-review",
+          "status": "reviewing",
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+          "createdAt": "2026-10-21T04:54:06.509Z"
+        }
+      }
+    },
+    {
+      "sequence": 355,
+      "at": "2026-10-21T05:11:21.636Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 356,
+      "at": "2026-10-21T05:11:21.864Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T276: 태스크 result에 limits 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 357,
+      "at": "2026-10-21T05:11:21.912Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T04:13:52.862Z",
+          "finishedAt": "2026-10-21T05:11:21.912Z",
+          "error": "T276: 태스크 result에 limits 기록이 필요합니다.",
+          "summary": "T276 is implemented. On the candidate match model, every player now holds a persistent intention, defined in the new `grid/intentions.ts`. The old path (no model set) is unchanged, so production is untouched: the release switch is still off.\n\n**What an intention is**\n- It has a kind, a priority (exit > restart > danger > committed > tactical), a target, an optional teammate or opponent, a start time and an expiry.\n- The last intention that ended is kept with its ending and its reason (`INTENTION_REASONS`).\n- Ordinary updates keep any intention that is still feasible. It ends on arrival, expiry, being unreachable, the carrier moving on, a lost pass, or a referenced player leaving. It is displaced by a higher priority, a turnover, an urgent danger, a restart, a substitution, an injury or a sending-off. When a player leaves, every intention that points at him ends.\n- Runs are now intentions. `GridPlayer.run` remains as a view of them. The old run starter and the new code share one `runPlan`, so there is no second planner.\n\n**How players choose**\n- Role and play-trait weights choose who presses, covers and runs.\n- 판단력 affects run timing, how soon a player recovers and which side he shows on; 침착성 affects whether he shows for a pressured carrier.\n- Fatigue (minutes played and 체력) lowers the odds of runs and pressing.\n- Random draws are keyed by fixture, decision, player and moment, never by the match stream or update order.\n\n**Engine, trace and playback**\n- Intentions update once per action, after it is applied and before anyone moves. The first version updated after movement: pressers chased the passer while the ball was in flight, which lowered tackles + interceptions to about 21 and raised goals to about 3.5.\n- Trace entries carry each slot's intention, the target the movement actually used, and a motion state taken from the intention. Playback attaches the intention to each player, with partners named by player ID.\n- Design doc §4.5 and §10 are updated.\n\n**Checks**\n- typecheck, lint and format:check pass.\n- The ARCH-30 `vitest --changed e1896bc` selection covered nearly the whole unit suite. It ran in 6 shards because one shell call is capped at 10 minutes: 195 files, 1,327 tests passed, 4 skipped.\n- A later type fix to the new test file was rechecked by running that file alone (7/7 pass).\n- The six required test names exist, plus one more for trace/playback consistency and for movement not jumping when an intention changes.\n\n**Measurement for T278** (600 equal-strength 2024 fixtures, all 16 tactic pairings)\n- This compares against T274's recorded candidate numbers, not a paired rerun. The old path on the same fixtures reproduces T274's old-path figures (goals 2.74 vs 2.75).\n- Candidate changes: goals 2.94 → 2.70, tackles + interceptions 27.6 → 25.5, ball in play 58.5 → 59.5 min, shots 11.6 → 11.9.\n- Several rows are still outside the MATCH-23 bands, and press still dominates other tactics.\n- Fixture time is about 1.36× T274's candidate figure.\n\n**Not done**\n- Not run, left for the batch gate: test:unit, test:contract, validate:catalogs, build and Chromium Playwright. Spec lint was not run either.\n- `decide.ts` is outside this task's files, so the carrier only reacts to teammates' runs in behind. Support and overlap intentions don't yet change his choice.\n- Side-level job assignment is left to T277.\n- No separate per-player knot list marks an intention change. Each trace entry carries the intention with its start, expiry and ending, and `docs/MATCH-MODEL-CONTRACT.md` still says those knots wait for T276.\n- T275 should read the new trace intentions when it paces candidate playback."
+        }
+      }
+    },
+    {
+      "sequence": 358,
+      "at": "2026-10-21T05:11:22.946Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T00:40:04.375Z",
+          "stoppedAt": "2026-10-21T05:11:22.945Z",
+          "dispatched": 11,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+              "role": "worker",
+              "error": "T274: 태스크 result에 verified 기록이 필요합니다."
+            },
+            {
+              "attempt": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+              "role": "worker",
+              "error": "T276: 태스크 result에 limits 기록이 필요합니다."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 359,
+      "at": "2026-10-21T05:11:24.772Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T05:11:24.760Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 362,
+      "at": "2026-10-21T05:12:58.598Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-10-21T05:18:21.592Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "c803d0c27445ad0bd60279891de56ae14fc952c8",
+        "submittedBase": "6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430",
+        "submissionId": "8ba9c510-abd6-4266-a7f5-e9b7cc75e096",
+        "submittedAt": "2026-10-21T05:18:21.592Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1304 changed lines (limit 300)"
+          ],
+          "lines": 1304,
+          "files": 8
+        },
+        "steps": [
+          {
+            "taskId": "T276",
+            "commit": "c803d0c27445ad0bd60279891de56ae14fc952c8",
+            "at": "2026-10-21T05:18:21.550Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T05:12:58.885Z",
+                "finishedAt": "2026-10-21T05:18:21.281Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T05:12:58.885Z",
+            "finishedAt": "2026-10-21T05:18:21.281Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 370,
+      "at": "2026-10-21T05:18:36.112Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "865ceda2-cc7e-4eb9-9a58-f72de5ba3314",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:18:36.096Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 371,
+      "at": "2026-10-21T05:18:37.083Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "865ceda2-cc7e-4eb9-9a58-f72de5ba3314",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:18:36.096Z",
+          "stoppedAt": "2026-10-21T05:18:37.083Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 372,
+      "at": "2026-10-21T05:18:38.920Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T05:18:38.909Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-10-21T05:19:28.353Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+          "owner": "f6n3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+              "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:486-497",
+              "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/input.ts:84-115",
+              "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+              "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+          "createdAt": "2026-10-21T04:54:06.509Z",
+          "finishedAt": "2026-10-21T05:19:28.352Z"
+        }
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-10-21T05:19:28.585Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-10-21T05:19:30.336Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "integrating",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "integration failed",
+        "review": {
+          "id": "5249bb3a-0faf-4aad-9d87-bced3f3249ce",
+          "owner": "integration",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Integration failed on the merged candidate.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "integration",
+              "message": "Merge the group branch into this workspace, fix the failure, and resubmit: 통합 후보의 spec 검증에 실패했습니다.\nT275: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT275: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT276: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT277: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT278: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT280: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT281: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT283: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT283: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT284: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT285: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT286: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT286: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+          "finishedAt": "2026-10-21T05:19:30.336Z"
+        },
+        "reviewHistory": [
+          {
+            "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+            "owner": "f6n3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+                "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:486-497",
+                "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/input.ts:84-115",
+                "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+                "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+              }
+            ],
+            "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+            "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+            "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+            "createdAt": "2026-10-21T04:54:06.509Z",
+            "finishedAt": "2026-10-21T05:19:28.352Z",
+            "invalidatedAt": "2026-10-21T05:19:30.336Z",
+            "invalidationReason": "integration failed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 380,
+      "at": "2026-10-21T05:25:20.036Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "aeedd04e95ba9036ed1a9f4cb0b936026edb03ee",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T05:25:20.006Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        aeedd04e95ba9036ed1a9f4cb0b936026edb03ee -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 381,
+      "at": "2026-10-21T05:25:49.886Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "changes_requested",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+            "owner": "f6n3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+                "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:486-497",
+                "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/input.ts:84-115",
+                "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+                "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+              }
+            ],
+            "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+            "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+            "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+            "createdAt": "2026-10-21T04:54:06.509Z",
+            "finishedAt": "2026-10-21T05:19:28.352Z",
+            "invalidatedAt": "2026-10-21T05:19:30.336Z",
+            "invalidationReason": "integration failed"
+          },
+          {
+            "id": "5249bb3a-0faf-4aad-9d87-bced3f3249ce",
+            "owner": "integration",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Integration failed on the merged candidate.",
+            "findings": [
+              {
+                "priority": "P1",
+                "where": "integration",
+                "message": "Merge the group branch into this workspace, fix the failure, and resubmit: 통합 후보의 spec 검증에 실패했습니다.\nT275: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT275: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT276: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT277: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT278: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT280: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT281: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT283: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT283: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT284: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT285: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT286: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT286: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요."
+              }
+            ],
+            "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+            "baseCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+            "finishedAt": "2026-10-21T05:19:30.336Z",
+            "invalidatedAt": "2026-10-21T05:25:49.885Z",
+            "invalidationReason": "new submission"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 382,
+      "at": "2026-10-21T05:25:50.686Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T279: ARCH@16가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+      }
+    },
+    {
+      "sequence": 383,
+      "at": "2026-10-21T05:25:52.936Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5ee9f009-adbb-4241-b101-e69bf29d75bd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:25:52.914Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 384,
+      "at": "2026-10-21T05:25:56.531Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "fb87237b-3472-4e9f-93e6-0abf4c2a6e37",
+          "owner": "5ee9f009-adbb-4241-b101-e69bf29d75bd/reviewer-1",
+          "status": "reviewing",
+          "commit": "c803d0c27445ad0bd60279891de56ae14fc952c8",
+          "baseCommit": "b7e0fe6651cccd9c91254f7f5839746665b5733c",
+          "submissionId": "8ba9c510-abd6-4266-a7f5-e9b7cc75e096",
+          "createdAt": "2026-10-21T05:25:56.531Z"
+        }
+      }
+    },
+    {
+      "sequence": 385,
+      "at": "2026-10-21T05:25:57.364Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "reviewing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T276: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "fb87237b-3472-4e9f-93e6-0abf4c2a6e37",
+            "owner": "5ee9f009-adbb-4241-b101-e69bf29d75bd/reviewer-1",
+            "status": "reviewing",
+            "commit": "c803d0c27445ad0bd60279891de56ae14fc952c8",
+            "baseCommit": "b7e0fe6651cccd9c91254f7f5839746665b5733c",
+            "submissionId": "8ba9c510-abd6-4266-a7f5-e9b7cc75e096",
+            "createdAt": "2026-10-21T05:25:56.531Z",
+            "invalidatedAt": "2026-10-21T05:25:57.364Z",
+            "invalidationReason": "T276: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 386,
+      "at": "2026-10-21T05:25:57.855Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "5ee9f009-adbb-4241-b101-e69bf29d75bd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:25:52.914Z",
+          "stoppedAt": "2026-10-21T05:25:57.855Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "reviewer",
+              "error": "T276: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 387,
+      "at": "2026-10-21T05:31:35.536Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 388,
+      "at": "2026-10-21T05:46:19.680Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "f3c371830af2c9694edf8158a9af57e05b399d47",
+        "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+        "submittedAt": "2026-10-21T05:46:19.680Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1304 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1304,
+          "files": 8
+        },
+        "steps": [
+          {
+            "taskId": "T276",
+            "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+            "at": "2026-10-21T05:46:19.629Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T05:31:35.873Z",
+                "finishedAt": "2026-10-21T05:46:19.264Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T05:31:35.873Z",
+            "finishedAt": "2026-10-21T05:46:19.264Z"
+          }
+        ],
+        "verifiedCommit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742"
+      }
+    },
+    {
+      "sequence": 389,
+      "at": "2026-10-21T05:46:22.295Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 400,
+      "at": "2026-10-21T05:58:49.061Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "f3c371830af2c9694edf8158a9af57e05b399d47",
+        "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+        "submittedAt": "2026-10-21T05:58:49.061Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2074 changed lines (limit 300)",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2074,
+          "files": 7
+        },
+        "steps": [
+          {
+            "taskId": "T279",
+            "commit": "58e34990e074636235483817174f01cdc06deb37",
+            "at": "2026-10-21T05:58:49.012Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T05:46:22.808Z",
+                "finishedAt": "2026-10-21T05:58:48.606Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T05:46:22.808Z",
+            "finishedAt": "2026-10-21T05:58:48.606Z"
+          }
+        ],
+        "verifiedCommit": "58e34990e074636235483817174f01cdc06deb37"
+      }
+    },
+    {
+      "sequence": 401,
+      "at": "2026-10-21T05:58:52.355Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:58:52.331Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 402,
+      "at": "2026-10-21T05:58:53.583Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e0b696de-2042-4837-8d55-d0b73611520a",
+          "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+          "status": "reviewing",
+          "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+          "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+          "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+          "createdAt": "2026-10-21T05:58:53.583Z"
+        }
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-10-21T05:58:54.423Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "aef444e7-e2b8-41f5-aee1-3a597219a3b1",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T05:58:54.423Z"
+        }
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-10-21T05:58:54.463Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "aef444e7-e2b8-41f5-aee1-3a597219a3b1",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T05:58:54.423Z"
+        }
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-10-21T06:03:48.110Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e0b696de-2042-4837-8d55-d0b73611520a",
+          "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T276 meets its acceptance criteria. I checked the two risk reasons first. The large diff (1304 lines) stays inside the task's touches. The autopilot decisions waiting for the owner are group-level base raises; this task adds no new SSOT decision. intentions.ts implements the contract's lifecycle with a reason map to achieved/expired/infeasible/displaced. Its priority order is exit > restart > danger > committed > tactical. Runs go through the shared runPlan, so there is no second planner. The engine hooks cover turnover, restart, lost passes, substitution, injury and dismissal, and depart() clears references by roster index. Each trace entry carries the slot's intention, with targets matching the ones movement uses, and playback exposes them as IntentionObservation with player-ID partners. Calibration drift is recorded for T278, the extra fixture time for T285, and carrier use in decide.ts for T277, which owns it.\n\nI re-checked this independently rather than relying only on the worker's run. On base and head source trees exported to a scratch directory, the pre-feature path gave an identical SHA-256 hash over 96 matches (16 tactic pairings × 3 fixtures, observed and unobserved), covering records, elapsed time, positions, targets and states. On 32 candidate matches, observed and unobserved runs settled identical records. Every record passed validateFullMatchRecord. No held intention referenced an off-pitch player, and goalkeepers held only receive/carry. intentions.test.ts and shape.test.ts passed (18/18). The findings below are optional improvements only.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/trace.ts:281 (T276)",
+              "message": "Exit and restart intentions never reach the trace. A player who leaves (substitution, injury or dismissal) is skipped by snapshot() once he is off the pitch, and his slot now holds the substitute. Restart intentions start and end inside the preparer, between two trace entries. Across 32 candidate matches I measured zero traced substitution/injury/dismissal endings and zero held restart intentions. The engine still records them on GridPlayer.ended, so the acceptance is met, but playback and the inspector cannot show these reasons. Consider tracing the leaver's ended intention on his exit note, or recording this as a limit for T275/T277."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/intentions.ts:266 (T276)",
+              "message": "A receiver only commits to receiving after he owns the ball, so losePass() creates a receive intention and ends it as 'lost' straight away. If the intended receiver was on a run, setIntention first ends the run as 'replaced', and the synthetic 'lost' record then overwrites GridPlayer.ended, so the run's real ending is never recorded. Consider ending the existing intention directly as 'lost'. Alternatively, committing the receiver when the pass is played would make the lifecycle real rather than reconstructed."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/intentions.ts:485 (T276)",
+              "message": "In danger, free(gp, 'danger') lets a player who is tactically marking runner A be reassigned to mark runner B, leaving A unmarked until the next update. This is a coordination gap that T277's side-level assignment should close; mention it in the hand-off so it is not lost."
+            }
+          ],
+          "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+          "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+          "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+          "createdAt": "2026-10-21T05:58:53.583Z",
+          "finishedAt": "2026-10-21T06:03:48.110Z"
+        }
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-10-21T06:03:48.140Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "aef444e7-e2b8-41f5-aee1-3a597219a3b1",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T05:58:54.423Z",
+          "finishedAt": "2026-10-21T06:03:48.140Z",
+          "error": null,
+          "summary": "T276 meets its acceptance criteria. I checked the two risk reasons first. The large diff (1304 lines) stays inside the task's touches. The autopilot decisions waiting for the owner are group-level base raises; this task adds no new SSOT decision. intentions.ts implements the contract's lifecycle with a reason map to achieved/expired/infeasible/displaced. Its priority order is exit > restart > danger > committed > tactical. Runs go through the shared runPlan, so there is no second planner. The engine hooks cover turnover, restart, lost passes, substitution, injury and dismissal, and depart() clears references by roster index. Each trace entry carries the slot's intention, with targets matching the ones movement uses, and playback exposes them as IntentionObservation with player-ID partners. Calibration drift is recorded for T278, the extra fixture time for T285, and carrier use in decide.ts for T277, which owns it.\n\nI re-checked this independently rather than relying only on the worker's run. On base and head source trees exported to a scratch directory, the pre-feature path gave an identical SHA-256 hash over 96 matches (16 tactic pairings × 3 fixtures, observed and unobserved), covering records, elapsed time, positions, targets and states. On 32 candidate matches, observed and unobserved runs settled identical records. Every record passed validateFullMatchRecord. No held intention referenced an off-pitch player, and goalkeepers held only receive/carry. intentions.test.ts and shape.test.ts passed (18/18). The findings below are optional improvements only."
+        }
+      }
+    },
+    {
+      "sequence": 409,
+      "at": "2026-10-21T06:03:48.216Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-10-21T06:03:50.339Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 411,
+      "at": "2026-10-21T06:03:51.320Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1977160f-3e4e-424d-8d6e-b903e0b30665",
+          "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+          "status": "reviewing",
+          "commit": "58e34990e074636235483817174f01cdc06deb37",
+          "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+          "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+          "createdAt": "2026-10-21T06:03:51.320Z"
+        }
+      }
+    },
+    {
+      "sequence": 412,
+      "at": "2026-10-21T06:03:52.124Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "fa17c346-8a15-425d-8ccf-469d16e45f85",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T06:03:52.124Z"
+        }
+      }
+    },
+    {
+      "sequence": 413,
+      "at": "2026-10-21T06:03:52.157Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "fa17c346-8a15-425d-8ccf-469d16e45f85",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T06:03:52.124Z"
+        }
+      }
+    },
+    {
+      "sequence": 414,
+      "at": "2026-10-21T06:05:30.201Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "1977160f-3e4e-424d-8d6e-b903e0b30665",
+          "owner": "13ad746e-2d24-413b-aa88-3f96398350d4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T279 is approved. I checked the three risk reasons first. (1) Rework: the earlier commit f4d050c was approved, and the integration failure that followed came from stale SSOT revisions on other tasks, not from T279 code. Between f4d050c and 58e3499 the aggregate module is byte-identical. The only T279 change is the task header moving from ARCH@16 to ARCH@17. (2) ARCH r17: the revision only adds ARCH-32 (locale and theme presentation packs), which does not apply to the kernel. The task's bases MATCH@15, PLAYER@9, STAFF@34 and ARCH@17 match the current SSOT revisions. (3) Interaction with the newly merged base: T274 changed grid/record.ts in two places, the per-player whole minutes (lineMinutes) and always keeping incidents in candidate records. Neither changes the team Tally definitions the ledger copies, and team M.minutes is the match length on both paths. T282's checkpointSchemaFor change does not touch the kernel. (4) Line count (2074): I re-read team.ts, ledger.ts and input.ts on their own. Effective skills come only through the injected accessor, with no second strength formula and no match.ts import. Streams are named per family and period. Draws are grouped binomial, multinomial and Poisson over the 40 cells, and loops run only over actual shots, fouls and corners. Every Metrics and TD counter comes from one ledger. ledgerIssues and teamFactsIssues refuse inconsistent facts instead of filling or clamping them. Extra time runs on its own period streams, so regulation facts do not change. Nothing calls the kernel, so dispatch is untouched. All named acceptance tests are present. I could not rerun the tests: the review checkout has no node_modules. The verification recorded for 58e3499 passed typecheck, lint, format and vitest (204 files, 1397 tests). The remaining notes are P3 items carried over from the earlier review; the rework did not change them.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts (penalty, xg.max)",
+              "message": "T279 (carried over): shot conversion copies match.ts goalChance inline (clamp(xg*finishing, 0.01, 0.8)), and the penalty xG, maximum xG and penalty conversion are copied from the grid SHOT_CONFIG and resolvePenalty instead of shared. Penalty conversion also reads different skills from the grid's. Inject these through AggregateSkillAccess or import the shared config so the paths cannot drift apart (MATCH-13/26). T280 or T284 can take this."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:453,486-497",
+              "message": "T279 (carried over): header shots, including set-piece headers, are finished with the side's finishing unit (a.shooting). Both existing paths use heading for headers (MATCH-11), and the aerial unit is already computed. Use it for headers."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/input.ts:84-115,240",
+              "message": "T279 (carried over): participationIssues does not reject an incident minute outside 1..length. sideCards silently drops a card at minute 0 or after the final minute. It also accepts a sent-off or substituted player who keeps a later stint, and one line holding two slots at once. Add these checks here or in T280's MATCH-27 planner/validator."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/ledger.ts:36",
+              "message": "T279 (carried over): inGoalAreaCell is exported but never used, and players' play traits (read by grid decide.ts for shots, take-ons and crosses) are not consumed. This does not block team facts. T280 should note it when it allocates actions by role."
+            }
+          ],
+          "commit": "58e34990e074636235483817174f01cdc06deb37",
+          "baseCommit": "f3c371830af2c9694edf8158a9af57e05b399d47",
+          "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+          "createdAt": "2026-10-21T06:03:51.320Z",
+          "finishedAt": "2026-10-21T06:05:30.201Z"
+        }
+      }
+    },
+    {
+      "sequence": 415,
+      "at": "2026-10-21T06:05:30.233Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "fa17c346-8a15-425d-8ccf-469d16e45f85",
+          "runner": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T06:03:52.124Z",
+          "finishedAt": "2026-10-21T06:05:30.233Z",
+          "error": null,
+          "summary": "T279 is approved. I checked the three risk reasons first. (1) Rework: the earlier commit f4d050c was approved, and the integration failure that followed came from stale SSOT revisions on other tasks, not from T279 code. Between f4d050c and 58e3499 the aggregate module is byte-identical. The only T279 change is the task header moving from ARCH@16 to ARCH@17. (2) ARCH r17: the revision only adds ARCH-32 (locale and theme presentation packs), which does not apply to the kernel. The task's bases MATCH@15, PLAYER@9, STAFF@34 and ARCH@17 match the current SSOT revisions. (3) Interaction with the newly merged base: T274 changed grid/record.ts in two places, the per-player whole minutes (lineMinutes) and always keeping incidents in candidate records. Neither changes the team Tally definitions the ledger copies, and team M.minutes is the match length on both paths. T282's checkpointSchemaFor change does not touch the kernel. (4) Line count (2074): I re-read team.ts, ledger.ts and input.ts on their own. Effective skills come only through the injected accessor, with no second strength formula and no match.ts import. Streams are named per family and period. Draws are grouped binomial, multinomial and Poisson over the 40 cells, and loops run only over actual shots, fouls and corners. Every Metrics and TD counter comes from one ledger. ledgerIssues and teamFactsIssues refuse inconsistent facts instead of filling or clamping them. Extra time runs on its own period streams, so regulation facts do not change. Nothing calls the kernel, so dispatch is untouched. All named acceptance tests are present. I could not rerun the tests: the review checkout has no node_modules. The verification recorded for 58e3499 passed typecheck, lint, format and vitest (204 files, 1397 tests). The remaining notes are P3 items carried over from the earlier review; the rework did not change them."
+        }
+      }
+    },
+    {
+      "sequence": 416,
+      "at": "2026-10-21T06:05:30.312Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 417,
+      "at": "2026-10-21T06:05:32.330Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 418,
+      "at": "2026-10-21T06:05:33.860Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "13ad746e-2d24-413b-aa88-3f96398350d4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T05:58:52.331Z",
+          "stoppedAt": "2026-10-21T06:05:33.859Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+              "submissionId": "9baf9e12-2bbd-40c0-bf91-91714d3d8303",
+              "commit": "76ab2f163abe1bd9632cdc91d29c82b4d2332742",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+              "submissionId": "3a770484-c598-4b96-aba7-42be5cb6b72f",
+              "commit": "58e34990e074636235483817174f01cdc06deb37",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]

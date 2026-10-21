@@ -134,7 +134,8 @@ const TRACKING: ReadonlySet<IntentionKind> = new Set(['press', 'mark', 'cover'])
 
 const C = INTENTION_CONFIG;
 const rank = (p: IntentionPriority) => INTENTION_PRIORITIES.indexOf(p);
-const gap = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
+const gap = (a: readonly number[], b: readonly number[]) =>
+  Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
 const inside = (p: readonly number[]): [number, number] => [
   clamp(p[0]!, 0, PITCH.length),
   clamp(p[1]!, 0, PITCH.width),
@@ -248,8 +249,11 @@ export function takeBall(
   });
 }
 
-/** The carrier runs with the ball to `to`. */
+/** The carrier runs with the ball to `to`; the reception that brought it to him is achieved if he reached it. */
 export function carryTo(s: GridState, gp: GridPlayer, to: readonly [number, number]): void {
+  const held = gp.intention;
+  if (held?.kind === 'receive' && gap(gp.pos, held.target) <= C.arrive)
+    endIntention(s, gp, 'arrival');
   setIntention(s, gp, {
     kind: 'carry',
     priority: 'committed',
@@ -260,18 +264,26 @@ export function carryTo(s: GridState, gp: GridPlayer, to: readonly [number, numb
 
 /**
  * A pass `passer` played to `receiver` did not reach him (intercepted, out, offside, won by the
- * other side): the receiving opportunity he committed to is cancelled as lost.
+ * other side): the opportunity is cancelled as lost — the intention he played for (a run) ends with
+ * that reason, or, with none, his receiving chance is recorded as lost.
  */
 export function losePass(s: GridState, side: 0 | 1, passer: number, receiver: number): void {
   const gp = s.players[side][receiver]!;
-  const taken = setIntention(s, gp, {
+  if (gp.intention) {
+    if (rank(gp.intention.priority) > rank('restart')) endIntention(s, gp, 'lost');
+    return;
+  }
+  gp.ended = {
     kind: 'receive',
     priority: 'committed',
     target: [gp.pos[0], gp.pos[1]],
     teammate: passer,
-    until: s.elapsed + C.seconds.receive,
-  });
-  if (taken) endIntention(s, gp, 'lost');
+    since: s.elapsed,
+    until: s.elapsed,
+    end: INTENTION_REASONS.lost,
+    reason: 'lost',
+    at: s.elapsed,
+  };
 }
 
 /** A restart is prepared: its taker and its scene commit to their places above everything but leaving. */
@@ -357,6 +369,8 @@ function verdict(
   switch (i.kind) {
     case 'receive':
     case 'carry':
+      // He may have reached the ball and played it on since the last update.
+      if (gap(gp.pos, i.target) <= C.arrive) return 'arrival';
       if (!isOwner(s, gp)) return 'lost';
       break;
     case 'support':
@@ -364,11 +378,15 @@ function verdict(
       break;
     case 'run':
       if (s.possession !== gp.side) return 'turnover';
+      // A committed run holds its spot (a box spot kept for the second ball) until it expires.
+      if (i.priority === 'committed') return undefined;
       break;
     case 'press':
       if (!foe || !isOwner(s, foe)) return 'moved';
       if (i.priority === 'danger') return danger ? undefined : 'cleared';
-      return gap(gp.pos, foe.pos) > C.pressLose * pressReach(s, gp.side) ? 'unreachable' : undefined;
+      return gap(gp.pos, foe.pos) > C.pressLose * pressReach(s, gp.side)
+        ? 'unreachable'
+        : undefined;
     case 'mark':
       if (!foe || (i.priority === 'danger' ? !danger : foe.intention?.kind !== 'run'))
         return 'cleared';
@@ -382,10 +400,12 @@ function verdict(
 }
 
 /**
- * After every action: ends the intentions that are achieved, expired or no longer feasible, follows
- * the references of the ones that hold, then lets the free players choose — the defending side
- * presses, covers, marks runners and recovers (an urgent danger displaces lower jobs), the side with
- * the ball shows for a pressured carrier and runs. An ordinary update keeps every feasible intention.
+ * Once per action, after it is applied and before anyone moves, so everyone reacts to the pass,
+ * carry or turnover as it happens: ends the intentions that are achieved, expired or no longer
+ * feasible, follows the references of the ones that hold, then lets the free players choose — the
+ * defending side presses, covers, marks runners and recovers (an urgent danger displaces lower
+ * jobs), the side with the ball shows for a pressured carrier and runs. An ordinary update keeps
+ * every feasible intention.
  */
 export function updateIntentions(s: GridState): void {
   const att = s.possession;
@@ -414,6 +434,12 @@ function defend(s: GridState, side: 0 | 1, carrier: GridPlayer, danger: boolean)
   const pressing = players.filter(
     (gp) => gp.intention?.kind === 'press' && gp.intention.opponent === carrier.idx,
   );
+  // A danger that starts while he already presses makes the first presser's job urgent.
+  const first = pressing[0];
+  if (danger && first && !pressing.some((gp) => gp.intention!.priority === 'danger')) {
+    first.intention!.priority = 'danger';
+    first.intention!.target = inside(intentionTarget(s, first));
+  }
   const wanted = s.setup.tactics[side] === 'press' ? 2 : 1;
   const candidates = players
     .filter((gp) => !pressing.includes(gp))
@@ -446,11 +472,10 @@ function defend(s: GridState, side: 0 | 1, carrier: GridPlayer, danger: boolean)
   // Cover: one defender or holding midfielder steps behind the first presser, a covering role first.
   const presser = pressing[0];
   if (
-    false &&
     presser &&
     !players.some((gp) => gp.intention?.kind === 'cover' && gp.intention.teammate === presser.idx)
   ) {
-    const point = coverPoint(s, side, presser);
+    const point = coverPoint(side, presser);
     // Only a man whose own place in the shape is near the cover point leaves it to cover.
     const cover = players
       .filter((gp) => {
@@ -497,7 +522,7 @@ function defend(s: GridState, side: 0 | 1, carrier: GridPlayer, danger: boolean)
     marker.gp.intention!.target = inside(intentionTarget(s, marker.gp));
   }
   // Recover: just after losing the ball, a free player far from his shape goes back to it; a better reader reacts sooner.
-  if (true || s.lastLoss?.side !== side || now - s.lastLoss.at >= C.recover.window) return;
+  if (s.lastLoss?.side !== side || now - s.lastLoss.at >= C.recover.window) return;
   for (const gp of players) {
     if (gp.intention) continue;
     const shape = targetOf(s, side, gp.idx);

@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r50 | Define the browser-demo rules for browser persistence and protocol.
+> r51 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -83,7 +83,14 @@
   - checkpoints carrying the new aggregates/model metadata declare a container version that an older reader must refuse instead of silently dropping fields. Preserve supported older container readers, future-version protection and failed-write/export recovery (→SAVE-5/11/13).
   - activating the full model requires →MATCH-28 and →ARCH-31 evidence. New full-model checkpoints round-trip all aggregate values, tracking boundaries, saved appearances and settled facts within →SAVE-4/13; a failed gate cannot be replaced by clearing careers or raising the limits.
 
+- SAVE-24 [o] Own-manager tenure/result attribution (→HIST-18/19) activates prospectively in supported careers and survives save, reload, export and import.
+  - new careers track from founding. A supported older career begins attribution at a recorded writer-activation boundary, retaining all older match/season/event/person facts and known service dates. Do not parse saved prose to invent missing identities, replay old fixtures, fabricate zero achievements or reset a career.
+  - activation follows the validated writer-upgrade and commit rules (→SAVE-3/6/10); a queued or revealed own-match playback completes before its attribution boundary changes. Read-only views neither activate tracking nor write an upgrade. Failure preserves the previous disk checkpoint and exportable in-memory state.
+  - persist tenure identities, exact tracking/date precision, match links and unique accomplishment-source attribution in a declared checkpoint container that older readers refuse. Continue reading supported pre-feature containers and preserve full-model metadata and future-version protection (→SAVE-11/23).
+  - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
+
 ## chg
+- r51 261021 SAVE-24+ prospective own-manager history activation, lossless attribution round trips and older-reader protection within existing budgets
 - r50 261020 SAVE-23+ prospective versioned full-match-model activation for supported careers, exact aggregates and coverage, safe playback boundary and older-reader protection
 - r49 261019 SAVE-3✎ IndexedDB-unavailable commit without a previous copy→verified localStorage predecessor or refusal before overwrite, preserving disk data/exportable memory; SAVE-14✎ always saves without IndexedDB→SAVE-3 bounded fallback and failure protection
 - r48 261019 SAVE-3✎ two localStorage slots a/b→one active localStorage checkpoint plus the previous copy in IndexedDB (slots a/b only without IndexedDB); SAVE-4✎ checkpoint 1.5→3 MiB, import file 4→8 MiB, decompressed 16→32 MiB, total 3.5 MiB unchanged; SAVE-13✎ without raising budgets→budgets per SAVE-4; SAVE-14✎ two-slot wording→active plus previous copy

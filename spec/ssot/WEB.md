@@ -1,8 +1,8 @@
 # WEB Browser game delivery
-> r104 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r106 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
-- WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
+- WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
 - WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, club identity and home/away/third shirts (→KIT-1/2/3), seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
@@ -20,13 +20,13 @@
 
 - WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 선수단, 훈련 and 구단 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39).
   - The match view has no tab (→WEB-40).
-  - The HUD menu lists only what the tab bar does not show plus the watch/return action (→WEB-50), guide, intervention, notifications/news (→WEB-51), the metrics glossary (→WEB-53), save tools and 게임 슬롯 (→WEB-62).
+  - The HUD menu lists only what the tab bar does not show plus the watch/return action (→WEB-50), guide, intervention, notifications/news (→WEB-51), the metrics glossary (→WEB-53), language/theme preferences (→WEB-90/91), save tools and 게임 슬롯 (→WEB-62).
   - Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates.
   - The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically.
   - Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
   - wider screens name the right tabs 선수단 (선수단·스태프), 훈련 (훈련·육성) and 구단 (구단 운영).
   - read-only ownership shows as a compact HUD badge that explains itself on tap, never a content banner.
-  - the page background and fixed bars are flat charcoal surfaces with fine neutral dividers (→WEB-38).
+  - the page background and fixed bars follow the active theme; the default pixel theme uses flat charcoal surfaces with fine neutral dividers (→WEB-38/91).
   - phones pack rows: no view repeats its tab's name as a title, and panels keep tight padding.
   - wording follows Korean football media: continental competitions are 클럽대항전 (never 대륙컵, which reads as a national-team tournament), morale is 분위기 (a bare 사기 also reads as fraud), money runway is 자금 여력 in weeks or months, and the squad-support policy is 선수단 투자. ← football fans read the game in the words of their own media
 
@@ -120,11 +120,11 @@
   - decisions made inside sheets are summarized together after every dialog closes, against the world each decision published.
   - reading inbox items never produces a card.
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
-- WEB-38 [o] Every playable screen uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy.
+- WEB-38 [o] The default pixel theme uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy; other theme packs use the common presentation boundary (→WEB-91).
   - Apply it to founding, game slots, the HUD and clock, home, match observation, league and cups, people and profiles, training, direction and finances, records, dialogs, dropdowns and notifications.
-  - Buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct.
+  - The default theme's buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct in every theme.
   - Match scores, time, team identity and the pitch lead the observation view. Home uses a compact season-progress strip, the stadium's actual stage (→WEB-11), season figures and the next fixture.
-  - Typography uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Compact supporting text is at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete Korean fallback coverage and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
+  - The default theme uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Every theme keeps compact supporting text at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete fallback coverage for supported locale text and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
   - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
 - WEB-39 [o] 구단 운영 holds the club's resources, applied policies and identity in page tabs 운영 방침, 시설, 재정, 후원 and 구단 디자인. Existing /direction?view= strategy/build/finance/sponsor identifiers retain their meaning; strategy is omitted. Older /business addresses and facility/marketing values still reach the corresponding view.
   - 운영 방침 is the department-first board (→WEB-60); a contextual policy entry opens the relevant department in a sheet over its task (→WEB-77), while direct board navigation remains available.
@@ -325,9 +325,9 @@
   | progression mode and background play | clock controls (→WEB-5/18) and background settings (→WEB-64) |
   - Event/remedy/player actions close their originating sheet and open the correct task or authoritative department sheet, optionally with a proposed value; only explicit commit changes facts. Training owner actions are never described as residing in the staff directory.
 
-- WEB-72 [o] Cohesive, lived-in pixel-art football backgrounds appear in the home stadium scene, match-preparation locker room and training-ground overview.
+- WEB-72 [o] The default pixel theme supplies cohesive, lived-in pixel-art football backgrounds for the home stadium scene, match-preparation locker room and training-ground overview; other themes supply the same semantic image slots (→WEB-91).
   - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
-  - Backgrounds stay subordinate to the interface through a light charcoal dim and reduced saturation. Apply these treatments only to the image, preserving the clarity of HTML text and controls.
+  - Backgrounds stay subordinate to the interface; the default theme uses a light charcoal dim and reduced saturation. Apply image treatments only to the image, preserving the clarity of HTML text and controls.
   - Select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era. An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
@@ -335,7 +335,7 @@
   - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
   - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
 
-- WEB-73 [o] UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching the painted pixel environments.
+- WEB-73 [o] The default theme's UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching its painted pixel environments; other themes replace resources behind the same semantic icon names (→WEB-91).
   - Apply the family to primary navigation, HUD menu and inbox, club news, dialog close controls, dropdown arrows/checks and trophy-cabinet symbols. Keep their established meanings distinct at small sizes.
   - Icons inherit the interface colour and remain decorative when an accessible label already names the control. Preserve focus, selection, target sizes and keyboard behaviour; club identity and analytical charts keep their own data-driven graphics.
 
@@ -413,13 +413,35 @@
   - probability-generated game facts are not shown as missing or estimates solely because of their engine path. Missing historical periods remain unavailable; partial tracking names its starting point and sample size, never a fabricated full season or zero.
   - retain existing navigation and load detail on request; no engine-selection control or new world-simulation settings are introduced.
 
+- WEB-90 [o] Locale availability comes from one central registry and its message resources; the foundation exposes only `ko-KR` and preserves current Korean presentation (→ARCH-32).
+  - Existing Korean labels in this SSOT describe the default locale. Shared translation and number/date-formatting services accept the selected registry locale; adding a locale resource and its registry entry requires no locale-specific components, switches or feature edits.
+  - Initially connect the shared shell/navigation, presentation settings and facility-image descriptions to the Korean message pack. Complete extraction of remaining feature/engine source copy and actual additional-language content are subsequent work; this foundation does not claim complete multilingual delivery.
+  - Previously stored titles, details, names and historical prose remain unchanged; no translation-key migration, retrospective translation, save-format change or relocalization of saved strings is required.
+  - Language and theme settings are accessible before founding, on game slots and in the HUD menu. Both controls derive their choices from their registry even when each has one option. Preferences apply to the browser across games, survive reload when storage is available, and remain usable in read-only game tabs without taking save ownership.
+  - A preference change preserves game facts, navigation, pending drafts, progression and playback position. An unavailable preference uses its registered default, and failed resource loading preserves a usable selection with retry (→ARCH-32).
+- WEB-91 [o] A theme replaces the interface concept through a shared data contract for typography, palette, component surfaces/shape, icons, image treatment and background image sets; it does not require a theme-specific screen implementation (→ARCH-32).
+  - The foundation registers only `pixel` and reuses the current fonts, icons and image files. New themes and newly produced artwork are subsequent work. Adding a theme uses its registry entry, JSON resource, optional stylesheet and assets, without adding or editing TSX components.
+  - Themes resolve the same stadium, locker-room and training-ground image roles for the eras and completed facility stages in →WEB-72. Keep the actual year/stage selection common; the selected theme supplies the resource paths and visual treatment.
+  - Theme changes leave the engine-driven live pitch, match trajectories, clock mapping, club colours, recorded shirts/crests and game data intact. They do not replace the playback renderer or introduce theme-dependent football rules.
+  - Preserve semantic status meanings, readable data, accessible HTML labels, keyboard/touch behavior, reduced-motion support and the supported layout bounds in every theme (→WEB-10/17/38/46/73). Missing resources and loading failures follow the shared pack policy (→ARCH-32).
+
+- WEB-92 [o] The records room's 감독 이력 shows what each manager achieved at our club alongside his service period (→HIST-18/19), retaining the appointment/departure story and current manager from →WEB-54.
+  - show a compact summary per tenure: name, service period, current/interim status, honours/promotions, best final league finishes, recorded match record and longest winning/unbeaten runs. Reappointments remain separate; a trophyless fully tracked tenure still has its actual results or an explicit no-accomplishment state.
+  - season/competition/division labels make each accomplishment understandable. A mid-season appointment's final table is labelled as a season result finalised during that tenure, not his personal full-season W-D-L. Current season standings remain explicitly provisional.
+  - mark partially tracked periods and unavailable old attribution; show neither synthetic zeros nor an assertion of no achievements where history is missing. Preserve older readable tenure events and distinguish loading, retryable error and genuinely empty records.
+  - each completed accomplishment opens its corresponding club-season record; returning restores the manager-history tab, inspected tenure and list position (→WEB-74). Keep the selected game/world boundary and the existing season-to-league return path.
+  - obtain the bounded summary on demand from the engine worker. Browsing or expanding a tenure never loads the whole career's match archives into regular UI updates, changes game facts or advances the clock. Preserve lazy records loading and the supported keyboard/touch/mobile layout (→ARCH-28, →WEB-17/38/73).
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
 - Policy: task → authoritative department sheet → review/apply that department → retained task; other departments' drafts remain unapplied.
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
+- Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r106 261021 WEB-92+ per-tenure manager accomplishments, honest incomplete-history states and contextual season-record navigation
+- r105 261021 WEB-1✎ Korean-only delivery→one default Korean locale behind an extensible registry; WEB-10✎ fixed charcoal/no presentation settings→theme surfaces and shared preferences; WEB-38/72/73✎ universal pixel styling→default pixel pack with shared theme semantics; WEB-90/91+ single-locale/single-theme foundation, resource-only extension and stored-text preservation
 - r104 261021 WEB-44✎ urgent advice below team-state tiles→floating home alert with unchanged remedies, behind higher-priority runtime/critical alerts
 - r103 261021 WEB-57✎ inline runtime-error/critical bands→persistent floating alerts outside page flow with existing recovery and acknowledgement actions
 - r102 261021 WEB-81✎ vertically stacked review and body actions→target/candidate summary, grouped opinions, horizontal choices, structured result and persistent footer actions

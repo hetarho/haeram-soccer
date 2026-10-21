@@ -216,7 +216,7 @@ function pressPoint(s: GridState, gp: GridPlayer, at: Point, urgent: boolean): [
 }
 
 /** Where a teammate covers `mate` of `side` (engine frame): `coverDepth` m behind him toward the own goal's centre. */
-export function coverPoint(s: GridState, side: 0 | 1, mate: GridPlayer): [number, number] {
+export function coverPoint(side: 0 | 1, mate: GridPlayer): [number, number] {
   const p = attackFrame(side, mate.pos);
   const dx = -p[0],
     dy = CENTRE - p[1];
@@ -241,7 +241,7 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
     const o = attackFrame(side, foe.pos);
     return toEngine(side, [Math.max(0, o[0] - SHAPE_CONFIG.markGoalSide), o[1]]);
   }
-  if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(s, side, mate);
+  if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate);
   return [i.target[0], i.target[1]];
 }
 

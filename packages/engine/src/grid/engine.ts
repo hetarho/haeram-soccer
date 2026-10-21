@@ -266,9 +266,12 @@ export function playGrid(setup: GridSetup): GridResult {
       player: gp.player.id,
       reason,
     });
+    // A sending-off ends his intention first, so his exit is traced with it.
+    const off = candidate && card !== 'yellow';
+    if (off) depart(s, gp, 'dismissal');
     tracer.note(s, side, idx, card, {
       reason,
-      ...(candidate && card !== 'yellow' ? { transition: 'exit' as const } : {}),
+      ...(off ? { transition: 'exit' as const, left: gp.ended } : {}),
     });
     if (card === 'yellow') {
       gp.yellow = true;
@@ -276,7 +279,6 @@ export function playGrid(setup: GridSetup): GridResult {
     }
     gp.sentOff = true;
     leave(s, gp);
-    if (candidate) depart(s, gp, 'dismissal');
     s.changes[side].reds++;
     coverGoal(s, side);
   }
@@ -289,7 +291,7 @@ export function playGrid(setup: GridSetup): GridResult {
     if (candidate) depart(s, gp, 'injury');
     s.changes[side].injured.push(idx);
     tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
-    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit' } : {});
+    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit', left: gp.ended } : {});
     credits[s.period - 1]! += charge(ADDED_CONFIG.credits.injury, RESTART_CONFIG.dead.injury);
     if (pending) pending.dead += RESTART_CONFIG.dead.injury;
     else
@@ -327,7 +329,7 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         tracer.note(s, side, ch.out, 'sub', {
           other: ch.in,
-          ...(entry ? { transition: 'entry' as const, to: entry } : {}),
+          ...(entry ? { transition: 'entry' as const, to: entry, left: out.ended } : {}),
         });
         if (half) continue;
         credits[s.period - 1]! += charge(
@@ -675,6 +677,8 @@ export function playGrid(setup: GridSetup): GridResult {
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        // Everyone reacts to the kick as it is played, before anyone moves (→MATCH-17).
+        if (candidate) updateIntentions(s);
         const motion = candidate
           ? motionOf(
               actor,
@@ -740,6 +744,8 @@ export function playGrid(setup: GridSetup): GridResult {
         const played = play(owner[0], owner[1], d);
         // Tracing draws nothing, so the duration's draw may come before it.
         const least = candidate ? secondsOf(played.key) * (0.85 + 0.3 * r()) : 0;
+        // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
+        if (candidate) updateIntentions(s);
         const motion = candidate
           ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed)
           : undefined;
@@ -765,8 +771,7 @@ export function playGrid(setup: GridSetup): GridResult {
         if (!motion) moveAll(s, dt);
       }
       tally.spellTo(s.possession);
-      if (candidate) updateIntentions(s);
-      else startRuns(s, s.possession, r);
+      if (!candidate) startRuns(s, s.possession, r);
       tracer.push(s, actor[0], actor[1], label, outcomeLabel, from);
       const hurt = drawInjury(s, dt, r);
       if (hurt) injure(hurt.side, hurt.idx);

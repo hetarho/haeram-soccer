@@ -71,6 +71,11 @@ export interface TraceEntry {
    * comes on at `to` on the touchline, `idx` leaves); `exit` for a player injured or sent off.
    */
   transition?: 'period' | 'entry' | 'exit';
+  /**
+   * Candidate model only: on an `exit` or `entry`, the intention the leaving player (`idx`) ended
+   * with and its reason (substitution, injury, dismissal), since he is no longer in a slot.
+   */
+  left?: EndedIntention;
   /** The actor's cell (his attack frame) and tags when he acted. */
   cell?: number;
   tags?: TraceTags;
@@ -266,7 +271,8 @@ function snapshot(
       if (!onPitch(gp) || gp.slot < 0 || gp.slot >= 11) return;
       const k = sd * 11 + gp.slot;
       const owner = s.owner !== undefined && s.owner[0] === sd && s.owner[1] === gp.idx;
-      const target = owner ? gp.pos : targetOf(s, sd, gp.idx, cache);
+      // An intention's target is the one his last movement used (a tracked one is refreshed before it).
+      const target = owner ? gp.pos : (gp.intention?.target ?? targetOf(s, sd, gp.idx, cache));
       positions[k * 2] = gp.pos[0];
       positions[k * 2 + 1] = gp.pos[1];
       targets[k * 2] = target[0];
@@ -359,7 +365,7 @@ export class Tracer {
     side: 0 | 1,
     idx: number,
     kind: 'yellow' | 'secondYellow' | 'red' | 'sub' | 'injury' | 'whistle',
-    extra: Pick<Detail, 'other' | 'reason' | 'transition' | 'to'> = {},
+    extra: Pick<Detail, 'other' | 'reason' | 'transition' | 'to' | 'left'> = {},
   ): void {
     if (!this.on) return;
     const n: Detail = { side, idx, action: kind, outcome: 'incident', ...extra };
