@@ -206,9 +206,9 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents: T280 merged from wip/full-model-T280 with its batch gate; T281 (owns the aggregate re-draw fallback) beside it, then T283 beside explore T278, T284, T285, T286, T306–T308.
-- known flaky Chromium checks on a loaded host: club-identity-founding "exact previewed design … after reload" (club-hub not visible within 5 s) and growth-core "19-player advice floats" (43.9999 px < 44 px); both passed on rerun of the same tree.
-- CI: 01406b2 (T277) passed every job.
+- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents (implementer plus separate reviewer each; gates on a clean detached worktree because other sessions edit the main checkout): explore T321 (detailed tactic pairings, MATCH-29) and explore T284 (aggregate calibration) run side by side, then T285, T286, T306–T308.
+- known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (43.9999 px < 44 px); Firefox CI — staff.spec.ts:80 and :247 failing at the mediation dialog's 단장 우선 radio `.check()` in `tests/e2e/events.ts` (604590a, 34ebd1b; 48/48 locally); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner (87 s normally).
+- CI: 9e67be5 passed every job.
 
 ## log
 - 261022 T320 integrated (h3t6): MATCH-29 bands and one evaluator for both engines; tactic measurements start from equal pre-match fatigue (T321, T284)
