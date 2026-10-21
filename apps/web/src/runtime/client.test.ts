@@ -200,6 +200,12 @@ describe('background worker publication', () => {
     expect(client.state.view!.world.tables).toBe(initialTables);
     expect(client.state.view?.world.calendar?.day).toBe(1);
     expect(client.state.savedRevision).toBe(client.state.view?.world.revision);
+    // The day came as the parts that changed (→ARCH-6), rebuilt into the host's whole view.
+    expect(command.request.viewBase).toBeDefined();
+    expect(command.reply.viewDelta?.world).not.toHaveProperty('history');
+    expect(canonical(client.state.view)).toBe(
+      canonical(structuredClone((worker.host as unknown as { view(): unknown }).view())),
+    );
   });
 
   it('serializes overlapping background ticks with current revisions and checkpoint generations', async () => {
