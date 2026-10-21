@@ -95,7 +95,7 @@ export const AGGREGATE_CONFIG = {
   },
   shots: {
     /** Scale on the reference shot share of a cell, per completed arrival of each kind. */
-    scale: 0.55,
+    scale: 0.565,
     kind: {
       short: 1,
       long: 0.9,

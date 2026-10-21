@@ -4,7 +4,7 @@ import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/
 import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
 import { M } from '../../packages/engine/src/grid/record';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
-import { aggregateRun, conditionedMatch } from '../match-parity';
+import { aggregateRun, conditionedMatch, rareEvents, settlementReport } from '../match-parity';
 import {
   buildCoverageReport,
   buildEquivalenceReport,
@@ -1013,6 +1013,44 @@ describe('aggregate measurement (T284)', () => {
     );
     expect(s.ledger!.shots.every((x) => ['GK', 'DF', 'MF', 'FW'].includes(x.line))).toBe(true);
     expect(s.freshness![0]).toBeGreaterThan(s.freshness![1]!);
+  });
+
+  it('reports rare events short of power and the red-card settlement as measured', () => {
+    // 600 matches with one red each: 600 events, past the 536 an 80%-power comparison needs; a
+    // second yellow in one match of five is 120 events, short of it and so not resolvable.
+    const matches = Array.from({ length: 600 }, (_, i) =>
+      sample(
+        record({
+          detail: [emptyTeamDetail(), emptyTeamDetail()],
+          incidents: [
+            { minute: 30, side: 0, player: 'SYN:H:1', kind: 'red', reason: 'dogso' },
+            ...(i % 5 === 0
+              ? [{ minute: 60, side: 1, player: 'SYN:A:1', kind: 'secondYellow' } as const]
+              : []),
+          ] as MatchRecord['incidents'],
+        }),
+      ),
+    );
+    const rare = rareEvents(matches);
+    expect(rare.redCards).toMatchObject({ events: 600, rate: 1, resolvable: true });
+    expect(rare.secondYellows).toMatchObject({ events: 120, resolvable: false });
+    expect(rare.secondYellows!.requiredEvents).toBe(REQUIRED_RARE_EVENTS);
+    expect(rare.extraTime).toMatchObject({ events: 0, resolvable: false });
+    // No event: the rule of three bounds the rate, never a zero-width interval.
+    expect(rare.extraTime!.ci).toEqual([0, 3 / 600]);
+    // Fixtures settled on a retry or on the fallback are counted apart from the first draws.
+    const settled = settlementReport(matches.slice(0, 4), [
+      { retry: 0, unreconciled: 0 },
+      { retry: 1, unreconciled: 0 },
+      { retry: 8, unreconciled: 2 },
+      { retry: 0, unreconciled: 0 },
+    ]);
+    expect(settled.retries).toEqual({ 0: 2, 1: 1, 8: 1 });
+    expect(settled.retried.events).toBe(2);
+    expect(settled.fallback.events).toBe(1);
+    expect(settled.unreconciledAnswers).toBe(2);
+    expect(settled.firstDraw.matches).toBe(2);
+    expect(settled.retriedDraw.matches).toBe(2);
   });
 
   it('declares the forced pairings neutral squad fatigue', () => {

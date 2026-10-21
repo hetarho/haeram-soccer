@@ -12,7 +12,8 @@
  *   docs/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
  *   report, kept apart from the intended-target errors; `--seasons N` also plays N founded worlds
- *   one season each through ordinary settlement (season:league-20; `--only season` plays only them)
+ *   one season each through ordinary settlement (season:league-20; `--only season` plays only them);
+ *   `--stress N` plays N core fixtures with the red-card settlement forced to its fallback
  *
  *   pnpm exec tsx scripts/match-parity.ts --tactics [--partition …] [--round N] [--matches N]
  *     [--out FILE]
@@ -62,6 +63,7 @@ import {
   matchdayRosters,
   playAggregate,
   type AggregateMatch,
+  type AggregateRebalanceLimits,
 } from '../packages/engine/src/aggregate/engine';
 import { slotAt } from '../packages/engine/src/aggregate/participation';
 import { inMatchFatigue } from '../packages/engine/src/grid/changes';
@@ -86,11 +88,13 @@ import {
   buildTargetReport,
   calibrationSize,
   conditionOf,
+  conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureId,
   describeTacticPairings,
   MATCH_PARITY_VERSION,
   PARITY_CONFIG,
+  pilotNeeds,
   rareComparisonPower,
   requiredRareEvents,
   SCORING_CONCENTRATION_TARGET,
@@ -248,9 +252,10 @@ export function aggregateRun(
   condition: string,
   decide?: DecideRule,
   conditioning: Conditioning = {},
+  limits?: AggregateRebalanceLimits,
 ): { sample: MatchSample; match: AggregateMatch } {
   const { prepared, rosters, gap } = conditionedMatch(w, f, conditioning);
-  const match = playAggregate(w, f, prepared, rosters, decide);
+  const match = playAggregate(w, f, prepared, rosters, decide, limits);
   return {
     match,
     sample: {
@@ -568,9 +573,17 @@ function summarise(job: Job) {
       reference: refSamples,
       candidate: samples.slice(0, job.reference),
     });
+    // What the equivalence would need, from this reference as the pilot (MATCH-28's power rule).
+    const needs = conditionValidationSize(pilotNeeds(refSamples, c));
     reference = {
       matches: job.reference,
       msPerMatch: refMs,
+      pilotValidationSize: {
+        size: needs.size,
+        sufficient: needs.sufficient,
+        limiting: needs.limiting,
+        unsized: needs.unsized,
+      },
       summary: eq.summary,
       constants: eq.constants,
       blocking: eq.blocking.length,
@@ -765,6 +778,60 @@ export function seasonSample(partition: Partition, round: number, index: number)
   };
 }
 
+/** The red-card settlement forced to its fallback on core fixtures (T281 limit 7, T284). */
+interface StressJob {
+  stress: number;
+  partition: Partition;
+  round: number;
+}
+/** One decision set and no retry: every disagreeing red-card answer settles on the fallback. */
+export const FORCED_EXHAUSTION: AggregateRebalanceLimits = {
+  rebalanceSearches: 1,
+  rebalanceRetries: 0,
+};
+
+/**
+ * How often the settlement's fallback would settle a fixture with a red-card answer against the
+ * score if the search stopped at its first plan, and with what bias: the same core fixtures under
+ * FORCED_EXHAUSTION and under the configured search, the fallback fixtures' scores beside their
+ * configured settlement (paired), so the frequency and the shift the fallback would carry are
+ * measured even though the configured search never reaches it.
+ */
+export function settlementStress(partition: Partition, round: number, count: number) {
+  const core = conditionOf('core:equal-top-tier');
+  const r = conditionClubs(core, partition, round);
+  const paired: { forced: MatchRecord; configured: MatchRecord; answers: number }[] = [];
+  let reds = 0;
+  for (let i = 0; i < count; i++) {
+    const { w, f } = conditionFixture(core, partition, round, i, r);
+    const forced = aggregateRun(w, f, core.id, undefined, {}, FORCED_EXHAUSTION);
+    const rec = forced.sample.record;
+    if ((rec.incidents ?? []).some((x) => x.kind === 'red' || x.kind === 'secondYellow')) reds++;
+    if (!forced.match.unreconciled) continue;
+    const configured = aggregateRun(w, f, core.id).sample.record;
+    paired.push({ forced: rec, configured, answers: forced.match.unreconciled.length });
+  }
+  const diff = (f: (x: MatchRecord) => number) =>
+    meanCi(paired.map((p) => f(p.forced) - f(p.configured)));
+  const homeWin = (x: MatchRecord) => (x.score.home > x.score.away ? 1 : 0);
+  const draw = (x: MatchRecord) => (x.score.home === x.score.away ? 1 : 0);
+  return {
+    limits: FORCED_EXHAUSTION,
+    matches: count,
+    matchesWithRed: reds,
+    fallback: rateCi(paired.length, count),
+    fallbackAmongRedMatches: rateCi(paired.length, reds),
+    unreconciledAnswers: paired.reduce((a, p) => a + p.answers, 0),
+    pairedAgainstConfigured: {
+      goals: diff((x) => x.score.home + x.score.away),
+      goalDifference: diff((x) => x.score.home - x.score.away),
+      homeWin: diff(homeWin),
+      draw: diff(draw),
+    },
+  };
+}
+type StressSummary = ReturnType<typeof settlementStress>;
+
 interface SeasonJob {
   season: number;
   partition: Partition;
@@ -898,13 +965,25 @@ async function runReport() {
     partition: text('partition', 'calibration') as Partition,
     round: option('round', 0),
   }));
-  // Reference jobs and whole seasons are the slow ones: start them first.
-  const queue: (Job | SeasonJob)[] = [
+  const stressCount = option('stress', 0);
+  const stressJobs: StressJob[] = stressCount
+    ? [
+        {
+          stress: stressCount,
+          partition: text('partition', 'calibration') as Partition,
+          round: option('round', 0),
+        },
+      ]
+    : [];
+  // Reference jobs, whole seasons and the settlement stress are the slow ones: start them first.
+  const queue: (Job | SeasonJob | StressJob)[] = [
+    ...stressJobs,
     ...seasonJobs,
     ...[...jobs].sort((a, b) => b.reference - a.reference),
   ];
   const done: Summary[] = [];
   const seasons: SeasonSummary[] = [];
+  let stress: StressSummary | undefined;
   await Promise.all(
     Array.from({ length: workers }, async () => {
       // Its own flag: grid-bands.ts, imported for the condition fixtures, answers `--worker`.
@@ -913,18 +992,27 @@ async function runReport() {
       });
       for (let job = queue.shift(); job; job = queue.shift()) {
         const next = job;
-        const message = await new Promise<Summary | SeasonSummary>((resolve, reject) => {
-          child.once('message', (m) => resolve(m as Summary | SeasonSummary));
-          child.once('exit', (code) =>
-            reject(
-              new Error(
-                `worker exited ${code} on ${'season' in next ? `season ${next.season}` : next.condition}`,
+        const message = await new Promise<Summary | SeasonSummary | StressSummary>(
+          (resolve, reject) => {
+            child.once('message', (m) => resolve(m as Summary | SeasonSummary | StressSummary));
+            child.once('exit', (code) =>
+              reject(
+                new Error(
+                  `worker exited ${code} on ${'season' in next ? `season ${next.season}` : 'stress' in next ? 'the settlement stress' : next.condition}`,
+                ),
               ),
-            ),
-          );
-          child.send(next);
-        });
+            );
+            child.send(next);
+          },
+        );
         child.removeAllListeners('exit');
+        if ('fallbackAmongRedMatches' in message) {
+          stress = message;
+          console.log(
+            `settlement stress: ${message.fallback.events} of ${message.matches} fixtures on the fallback`,
+          );
+          continue;
+        }
         if ('divisions' in message) {
           seasons.push(message);
           console.log(
@@ -1045,6 +1133,7 @@ async function runReport() {
             : 'not selected',
     })),
     seasons: seasons.length ? seasonsReport(seasons) : null,
+    settlementStress: stress ?? null,
     speed: {
       note: 'Wall time on a shared, loaded machine: context for T285, never a football or release claim.',
       elapsedSeconds: (performance.now() - started) / 1000,
@@ -1079,9 +1168,13 @@ async function runReport() {
 }
 
 if (args.includes('--aggregate-worker')) {
-  process.on('message', (job: Job | SeasonJob) =>
+  process.on('message', (job: Job | SeasonJob | StressJob) =>
     process.send!(
-      'season' in job ? seasonSample(job.partition, job.round, job.season) : summarise(job),
+      'season' in job
+        ? seasonSample(job.partition, job.round, job.season)
+        : 'stress' in job
+          ? settlementStress(job.partition, job.round, job.stress)
+          : summarise(job),
     ),
   );
 } else if (process.argv[1]?.endsWith('scripts/match-parity.ts')) {
