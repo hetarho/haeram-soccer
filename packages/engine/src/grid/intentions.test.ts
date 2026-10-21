@@ -3,11 +3,13 @@ import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { FORMATIONS } from '../player';
 import { playGrid } from './engine';
 import {
+  carryTo,
   depart,
   INTENTION_REASONS,
   inDanger,
   interruptAll,
   losePass,
+  restartTaken,
   setIntention,
   takeBall,
   updateIntentions,
@@ -122,6 +124,51 @@ describe('grid intentions', () => {
     run(s, nine, [104, 2], 1);
     updateIntentions(s);
     expectEnded(nine, 'run', 'unreachable');
+    // A carrier who reached his reception carries on: the reception is achieved, not displaced.
+    const ten = s.players[0][10]!;
+    takeBall(s, ten, [ten.pos[0], ten.pos[1]], 7);
+    carryTo(s, ten, [ten.pos[0] + 5, ten.pos[1]]);
+    expectEnded(ten, 'receive', 'arrival');
+    expect(ten.intention?.kind).toBe('carry');
+
+    // The players who went up for a delivery hold their box spots, standing on them, for the second
+    // ball until `setPiece.stay`; a turnover ends the hold earlier.
+    const stay = SHAPE_CONFIG.setPiece.stay;
+    const h = lab();
+    const up = [h.players[0][2]!, h.players[0][3]!];
+    const spots: [number, number][] = [
+      [98.5, 30.5],
+      [98.5, 37.5],
+    ];
+    up.forEach((gp, i) => (gp.pos = [...spots[i]!]));
+    restartTaken(
+      h,
+      up.map((gp, i) => ({ gp, to: spots[i]! })),
+      h.elapsed + stay,
+    );
+    for (let t = 1; t < stay; t++) {
+      h.elapsed = t;
+      updateIntentions(h);
+      up.forEach((gp, i) => {
+        expect(gp.intention).toMatchObject({ kind: 'run', run: 'box', priority: 'committed' });
+        expect(gp.run?.kind).toBe('box');
+        expect(targetOf(h, 0, gp.idx)).toEqual(spots[i]);
+      });
+    }
+    h.elapsed = stay;
+    updateIntentions(h);
+    expectEnded(up[0]!, 'run', 'expiry');
+    restartTaken(h, [{ gp: up[1]!, to: spots[1]! }], h.elapsed + stay);
+    interruptAll(h, 'turnover');
+    expectEnded(up[1]!, 'run', 'turnover');
+    // In play the hold never ends on arrival.
+    let holds = 0;
+    for (const { i } of tracedSlots())
+      if (i.kind === 'run' && i.run === 'box' && i.priority === 'committed') {
+        holds++;
+        if (ended(i)) expect(i.reason).not.toBe('arrival');
+      }
+    expect(holds).toBeGreaterThan(0);
   });
 
   it('interrupts on a turnover or urgent danger', () => {
@@ -170,17 +217,49 @@ describe('grid intentions', () => {
     updateIntentions(d);
     expect(inDanger(d, 0)).toBe(false);
     expectEnded(back, 'press', 'cleared');
+
+    // A danger that starts while he already presses makes his press urgent, the same intention.
+    const e = lab();
+    e.possession = 1;
+    e.owner = [1, 9];
+    const runner = e.players[1][9]!;
+    runner.pos = [40, 34];
+    e.ball = [40, 34];
+    e.players[0].forEach((gp, i) => i > 0 && i < 11 && (gp.pos = [60, 3 + 6 * i]));
+    const presser = e.players[0][5]!;
+    presser.pos = [42, 34];
+    setIntention(e, presser, {
+      kind: 'press',
+      priority: 'tactical',
+      target: [41, 34],
+      opponent: 9,
+      until: 6,
+    });
+    updateIntentions(e);
+    expect(presser.intention).toMatchObject({ kind: 'press', priority: 'tactical', since: 0 });
+    runner.pos = [20, 34];
+    e.ball = [20, 34];
+    presser.pos = [24, 34];
+    e.elapsed = 1;
+    updateIntentions(e);
+    expect(presser.intention).toMatchObject({ kind: 'press', priority: 'danger', since: 0 });
   });
 
   it('cancels a lost receiving opportunity', () => {
     const s = lab();
     const nine = s.players[0][9]!;
+    // The run he was played into ends as lost, keeping what he was doing.
     run(s, nine, [88, 30]);
     losePass(s, 0, 7, 9);
     expect(nine.intention).toBeUndefined();
     expect(nine.run).toBeUndefined();
-    expectEnded(nine, 'receive', 'lost');
-    expect(nine.ended?.teammate).toBe(7);
+    expectEnded(nine, 'run', 'lost');
+    expect(nine.ended?.target).toEqual([88, 30]);
+    // A teammate with nothing else in mind loses his chance to receive from the passer.
+    const ten = s.players[0][10]!;
+    losePass(s, 0, 7, 10);
+    expectEnded(ten, 'receive', 'lost');
+    expect(ten.ended?.teammate).toBe(7);
     // A ball he was taking goes to someone else.
     const six = s.players[0][6]!;
     takeBall(s, six, [60, 40], 7);
@@ -205,7 +284,7 @@ describe('grid intentions', () => {
     // In play: passes that did not arrive cancel the receivers' chances.
     let lost = 0;
     for (const { i, e } of tracedSlots())
-      if (ended(i) && i.kind === 'receive' && i.reason === 'lost') {
+      if (ended(i) && i.reason === 'lost') {
         lost++;
         expect(i.at).toBeLessThanOrEqual(e.elapsed);
       }
@@ -250,8 +329,14 @@ describe('grid intentions', () => {
       if (i.teammate !== undefined) expect(roster(side)).toContain(i.teammate);
       if (i.opponent !== undefined) expect(roster(side === 0 ? 1 : 0)).toContain(i.opponent);
     }
+    // Every exit and entry is traced with the intention the leaver ended with, and why he left.
     for (const { result } of watched)
-      changes += result.trace!.filter((e) => e.action === 'sub' || e.action === 'injury').length;
+      for (const e of result.trace!) {
+        if (e.transition !== 'exit' && e.transition !== 'entry') continue;
+        changes++;
+        expect(['substitution', 'injury', 'dismissal']).toContain(e.left?.reason);
+        expect(e.left!.at).toBeLessThanOrEqual(e.elapsed);
+      }
     expect(changes).toBeGreaterThan(0);
   });
 

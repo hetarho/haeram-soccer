@@ -266,9 +266,12 @@ export function playGrid(setup: GridSetup): GridResult {
       player: gp.player.id,
       reason,
     });
+    // A sending-off ends his intention first, so his exit is traced with it.
+    const off = candidate && card !== 'yellow';
+    if (off) depart(s, gp, 'dismissal');
     tracer.note(s, side, idx, card, {
       reason,
-      ...(candidate && card !== 'yellow' ? { transition: 'exit' as const } : {}),
+      ...(off ? { transition: 'exit' as const, left: gp.ended } : {}),
     });
     if (card === 'yellow') {
       gp.yellow = true;
@@ -276,7 +279,6 @@ export function playGrid(setup: GridSetup): GridResult {
     }
     gp.sentOff = true;
     leave(s, gp);
-    if (candidate) depart(s, gp, 'dismissal');
     s.changes[side].reds++;
     coverGoal(s, side);
   }
@@ -289,7 +291,7 @@ export function playGrid(setup: GridSetup): GridResult {
     if (candidate) depart(s, gp, 'injury');
     s.changes[side].injured.push(idx);
     tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
-    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit' } : {});
+    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit', left: gp.ended } : {});
     credits[s.period - 1]! += charge(ADDED_CONFIG.credits.injury, RESTART_CONFIG.dead.injury);
     if (pending) pending.dead += RESTART_CONFIG.dead.injury;
     else
@@ -327,7 +329,7 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         tracer.note(s, side, ch.out, 'sub', {
           other: ch.in,
-          ...(entry ? { transition: 'entry' as const, to: entry } : {}),
+          ...(entry ? { transition: 'entry' as const, to: entry, left: out.ended } : {}),
         });
         if (half) continue;
         credits[s.period - 1]! += charge(

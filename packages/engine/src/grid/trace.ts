@@ -71,6 +71,11 @@ export interface TraceEntry {
    * comes on at `to` on the touchline, `idx` leaves); `exit` for a player injured or sent off.
    */
   transition?: 'period' | 'entry' | 'exit';
+  /**
+   * Candidate model only: on an `exit` or `entry`, the intention the leaving player (`idx`) ended
+   * with and its reason (substitution, injury, dismissal), since he is no longer in a slot.
+   */
+  left?: EndedIntention;
   /** The actor's cell (his attack frame) and tags when he acted. */
   cell?: number;
   tags?: TraceTags;
@@ -360,7 +365,7 @@ export class Tracer {
     side: 0 | 1,
     idx: number,
     kind: 'yellow' | 'secondYellow' | 'red' | 'sub' | 'injury' | 'whistle',
-    extra: Pick<Detail, 'other' | 'reason' | 'transition' | 'to'> = {},
+    extra: Pick<Detail, 'other' | 'reason' | 'transition' | 'to' | 'left'> = {},
   ): void {
     if (!this.on) return;
     const n: Detail = { side, idx, action: kind, outcome: 'incident', ...extra };

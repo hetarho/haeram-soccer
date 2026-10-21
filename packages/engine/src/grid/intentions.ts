@@ -249,8 +249,11 @@ export function takeBall(
   });
 }
 
-/** The carrier runs with the ball to `to`. */
+/** The carrier runs with the ball to `to`; the reception that brought it to him is achieved if he reached it. */
 export function carryTo(s: GridState, gp: GridPlayer, to: readonly [number, number]): void {
+  const held = gp.intention;
+  if (held?.kind === 'receive' && gap(gp.pos, held.target) <= C.arrive)
+    endIntention(s, gp, 'arrival');
   setIntention(s, gp, {
     kind: 'carry',
     priority: 'committed',
@@ -261,18 +264,26 @@ export function carryTo(s: GridState, gp: GridPlayer, to: readonly [number, numb
 
 /**
  * A pass `passer` played to `receiver` did not reach him (intercepted, out, offside, won by the
- * other side): the receiving opportunity he committed to is cancelled as lost.
+ * other side): the opportunity is cancelled as lost — the intention he played for (a run) ends with
+ * that reason, or, with none, his receiving chance is recorded as lost.
  */
 export function losePass(s: GridState, side: 0 | 1, passer: number, receiver: number): void {
   const gp = s.players[side][receiver]!;
-  const taken = setIntention(s, gp, {
+  if (gp.intention) {
+    if (rank(gp.intention.priority) > rank('restart')) endIntention(s, gp, 'lost');
+    return;
+  }
+  gp.ended = {
     kind: 'receive',
     priority: 'committed',
     target: [gp.pos[0], gp.pos[1]],
     teammate: passer,
-    until: s.elapsed + C.seconds.receive,
-  });
-  if (taken) endIntention(s, gp, 'lost');
+    since: s.elapsed,
+    until: s.elapsed,
+    end: INTENTION_REASONS.lost,
+    reason: 'lost',
+    at: s.elapsed,
+  };
 }
 
 /** A restart is prepared: its taker and its scene commit to their places above everything but leaving. */
@@ -367,6 +378,8 @@ function verdict(
       break;
     case 'run':
       if (s.possession !== gp.side) return 'turnover';
+      // A committed run holds its spot (a box spot kept for the second ball) until it expires.
+      if (i.priority === 'committed') return undefined;
       break;
     case 'press':
       if (!foe || !isOwner(s, foe)) return 'moved';
@@ -421,6 +434,12 @@ function defend(s: GridState, side: 0 | 1, carrier: GridPlayer, danger: boolean)
   const pressing = players.filter(
     (gp) => gp.intention?.kind === 'press' && gp.intention.opponent === carrier.idx,
   );
+  // A danger that starts while he already presses makes the first presser's job urgent.
+  const first = pressing[0];
+  if (danger && first && !pressing.some((gp) => gp.intention!.priority === 'danger')) {
+    first.intention!.priority = 'danger';
+    first.intention!.target = inside(intentionTarget(s, first));
+  }
   const wanted = s.setup.tactics[side] === 'press' ? 2 : 1;
   const candidates = players
     .filter((gp) => !pressing.includes(gp))
