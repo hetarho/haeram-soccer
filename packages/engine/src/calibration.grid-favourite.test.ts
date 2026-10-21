@@ -18,6 +18,8 @@ describe.each([['grid', 'grid']] as const)('%s: calibrated outcomes', (_, path) 
 
   // T216: equal grid sides draw about 21% (1,600 fixtures), as press beats every other tactic
   // (docs/CALIBRATION.md, 격자 엔진 전력 곡선); run it for the grid once the tactics are balanced.
+  // T278 kept it skipped: the candidate model still draws 23.7% between equal clubs (600 held-out
+  // fixtures, 95% 20.4–27.2%) and press still beats counter 79/12/9 (docs/CALIBRATION.md, T278).
   it.skipIf(path === 'grid')(
     'gives equal sides real football’s share of draws',
     () => {

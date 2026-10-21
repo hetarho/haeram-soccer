@@ -104,13 +104,12 @@ export const DECISION_CONFIG = {
    */
   combination: { show: 0.6, release: 0.9, wait: 1.5 },
   /**
-   * Candidate model only (T278, →MATCH-23): the open-play cross and shot scales, the box band's shot
-   * weight and the lines' in place of `crossScale`, `shotScale`, `shotBox` and `shotLine`, against
-   * too many crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals.
+   * Candidate model only (T278, →MATCH-23): the open-play cross scale, the box band's shot weight
+   * and the lines' shot weights in place of `crossScale`, `shotBox` and `shotLine`, against too many
+   * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals.
    */
   candidate: {
     crossScale: 6.3,
-    shotScale: 0.19,
     shotBox: 0.52,
     shotLine: { GK: 0, DF: 1.2, MF: 3.8, FW: 0.76 },
   },
@@ -168,15 +167,15 @@ export function actionMix(
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
   mix.takeOn *= clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]);
+  const candidate = s.setup.model !== undefined;
   const crossFactor =
     clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) *
-    (s.setup.model !== undefined ? C.candidate.crossScale : C.crossScale);
+    (candidate ? C.candidate.crossScale : C.crossScale);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
-  const candidate = s.setup.model !== undefined;
   mix.shot *=
     (candidate ? C.candidate.shotLine : C.shotLine)[line] *
-    (candidate ? C.candidate.shotScale : C.shotScale) *
+    C.shotScale *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
   // Role and traits.

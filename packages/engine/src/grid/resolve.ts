@@ -111,8 +111,10 @@ export const DUEL_CONFIG = {
    */
   candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5 },
 } as const;
+/** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
+const onCandidate = (s: GridState) => s.setup.model !== undefined;
 /** How much more often a challenge is a foul on this fixture's model. */
-const foulScale = (s: GridState) => (s.setup.model !== undefined ? DUEL_CONFIG.candidate.foul : 1);
+const foulScale = (s: GridState) => (onCandidate(s) ? DUEL_CONFIG.candidate.foul : 1);
 
 /** Initial values (design §7.4). */
 export const SHOT_CONFIG = {
@@ -347,7 +349,7 @@ export function resolvePass(
     ]);
     return { kind: 'intercepted', by: marker.gp.idx, at };
   }
-  const loose = s.setup.model !== undefined ? DUEL_CONFIG.candidate.passLoose : P.lost.loose;
+  const loose = onCandidate(s) ? DUEL_CONFIG.candidate.passLoose : P.lost.loose;
   if (u < P.lost.intercepted + loose) return looseBall(s, toEngine(side, to), r, [side, target]);
   const exit = exitPoint(toEngine(side, from), toEngine(side, to));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
@@ -386,7 +388,7 @@ export function resolveShot(
   const xg = chanceXg(from, {
     ...opts,
     pressure: tags.pressure,
-    candidate: s.setup.model !== undefined,
+    candidate: onCandidate(s),
   });
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
@@ -584,7 +586,7 @@ export function resolveCutBack(
 /** The share of his fouls a defender keeps where the carrier stands (attack frame): in his box, his third, elsewhere. */
 const care = (s: GridState, c: Point) =>
   inBox(c)
-    ? s.setup.model !== undefined
+    ? onCandidate(s)
       ? DUEL_CONFIG.candidate.boxFoul
       : DUEL_CONFIG.boxFoul
     : c[0] >= BAND_EDGES[5]
@@ -691,7 +693,7 @@ export function resolveClearance(s: GridState, side: 0 | 1, idx: number, r: () =
   const K = DUEL_CONFIG.clearance;
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
-  const out = r() < (s.setup.model !== undefined ? DUEL_CONFIG.candidate.clearanceOut : K.out);
+  const out = r() < (onCandidate(s) ? DUEL_CONFIG.candidate.clearanceOut : K.out);
   const reach = K.reach[0] + (K.reach[1] - K.reach[0]) * r();
   const x = clamp(c[0] + reach, 0, PITCH.length);
   if (out) {
