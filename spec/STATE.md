@@ -16,7 +16,6 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T08:35Z | - |
 
 ## inbox
 - 261021 decided T301 T303: clean WebKit rejects the current WOFF2 representation while identical-glyph WOFF loads; native multi-source CSS also stalls there → implement data-declared ordered per-source FontFace attempts, preserving preferred WOFF2 for capable engines and a licensed WOFF compatibility representation. Extend explicit asset/preview touches; no other active attempt owns these paths, no browser-ID branches, and total font failure still retains the previous theme (alt: send the measured 74%-larger WOFF representation to every browser).
@@ -211,6 +210,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.
 - 261021 T299 T300 T301 T302 T303 integrated
 - 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
 - 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
@@ -219,7 +219,6 @@
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
-- 261021 update-ssot WEB and create-architecture ARCH start: one Korean locale and one current pixel theme, resource-only extension; create-task reserves T299-T303 in main without changing active full-model contracts.
 - 261021 T282 integrated
 - 261021 T274 integrated
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
