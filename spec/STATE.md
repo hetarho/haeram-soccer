@@ -146,6 +146,7 @@
 | match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | converted@261019 |
 | match-continuity-and-performance | converted@261021 |
+| manager-achievements | open@261021 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -201,9 +202,11 @@
 ## next
 - implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
 - Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- Migrate legacy FORMAT reference notation separately before adopting typed reference markers.
+- Continue ideation manager-achievements to choose accomplishment categories and tenure attribution; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 ideation manager-achievements recorded: accomplishments alongside own-club manager tenures adopted; titles, promotions, best finishes, presentation and mid-season attribution remain open.
+- 261021 ideation manager-achievements start: capture the owner's request to show what each manager achieved during his own-club tenure.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
 - 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
@@ -222,5 +225,3 @@
 - 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
 - 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
 - 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
-- 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
-- 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.
