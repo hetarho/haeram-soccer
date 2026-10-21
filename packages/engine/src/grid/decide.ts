@@ -103,6 +103,25 @@ export const DECISION_CONFIG = {
    * as often while it arrives.
    */
   combination: { show: 0.6, release: 0.9, wait: 1.5 },
+  /**
+   * Candidate model only (T278, →MATCH-23): the open-play cross scale, the box band's shot weight
+   * and the lines' shot weights in place of `crossScale`, `shotBox` and `shotLine`, against too many
+   * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals.
+   */
+  candidate: {
+    crossScale: 6.3,
+    shotBox: 0.52,
+    shotLine: { GK: 0, DF: 1.2, MF: 3.8, FW: 0.76 },
+  },
+  /**
+   * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
+   * scoring a forward pass `forward` more and a back pass `back` times as often.
+   */
+  direct: {
+    seconds: 8,
+    forward: { counter: 1.5 } as Partial<Record<Tactic, number>>,
+    back: 0.5,
+  },
 } as const;
 
 const DEG = Math.PI / 180;
@@ -148,14 +167,16 @@ export function actionMix(
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
   mix.takeOn *= clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]);
+  const candidate = s.setup.model !== undefined;
   const crossFactor =
-    clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) * C.crossScale;
+    clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) *
+    (candidate ? C.candidate.crossScale : C.crossScale);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
   mix.shot *=
-    C.shotLine[line] *
+    (candidate ? C.candidate.shotLine : C.shotLine)[line] *
     C.shotScale *
-    (tags.band === 6 ? C.shotBox : 1) *
+    (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
@@ -329,6 +350,14 @@ export function passOptions(
   }
   const count: Record<Direction, number> = { forward: 0, lateral: 0, back: 0 };
   for (const cand of candidates) count[cand.dir]++;
+  // Straight after a regain a breaking side goes forward (candidate model, →MATCH-8).
+  const D = DECISION_CONFIG.direct;
+  const direct =
+    s.setup.model !== undefined &&
+    s.lastRegain?.side === side &&
+    s.elapsed - s.lastRegain.at <= D.seconds
+      ? (D.forward[s.setup.tactics[side]] ?? 0)
+      : 0;
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
@@ -349,6 +378,7 @@ export function passOptions(
         : 0;
     const combo = combination(s, gp, idx, c);
     const score =
+      (dir === 'forward' ? direct : 0) +
       gain +
       P.open * open -
       P.risk * (opts.riskScale ?? 1) * risk -
@@ -360,7 +390,7 @@ export function passOptions(
           ? DECISION_CONFIG.combination.release
           : 0);
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
-    if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1);
+    if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'

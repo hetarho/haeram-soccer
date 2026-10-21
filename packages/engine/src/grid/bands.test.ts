@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Club, Tactic, World } from '../../../contracts/src/types';
 import { createWorld, rating } from '../index';
+import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { M } from './record';
 import { buildGridSetup } from './setup';
@@ -69,5 +71,44 @@ describe('grid engine distributions', () => {
     expect(ownHalf / shots).toBeLessThanOrEqual(0.01);
     expect(yellows / n).toBeGreaterThanOrEqual(2);
     expect(yellows / n).toBeLessThanOrEqual(6);
+  });
+
+  // T278: the candidate's continuous play stops as often as real football's (MATCH-23), and every
+  // record passes the full check; the bands themselves are scripts/grid-bands.ts --report readings.
+  it('keeps the candidate model’s stoppages and goals inside coarse guards', () => {
+    const pairs = equalPairs();
+    const n = 80;
+    let goals = 0,
+      fouls = 0,
+      throwIns = 0,
+      inPlay = 0;
+    for (let i = 0; i < n; i++) {
+      const { w, home, away } = pairs[i % pairs.length]!;
+      const f = {
+        ...w.fixtures[0]!,
+        id: `cand-guards:${i}`,
+        year: 2024,
+        home: home.id,
+        away: away.id,
+      };
+      const { record, diagnostics } = playGrid(
+        buildGridSetup(w, f, { observe: false, recordPlayers: true, model: MATCH_MODEL_REVISION }),
+      );
+      expect(validateFullMatchRecord(record)).toEqual([]);
+      goals += record.score.home + record.score.away;
+      for (const side of [0, 1] as const) {
+        fouls += record.detail![side]![TD.fouls]!;
+        throwIns += record.detail![side]![TD.throwIns]!;
+      }
+      inPlay += diagnostics.ballInPlay / 60;
+    }
+    expect(goals / n).toBeGreaterThanOrEqual(2.0);
+    expect(goals / n).toBeLessThanOrEqual(3.6);
+    expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
+    expect(fouls / n / 2).toBeLessThanOrEqual(14);
+    expect(throwIns / n / 2).toBeGreaterThanOrEqual(15.5);
+    expect(throwIns / n / 2).toBeLessThanOrEqual(24);
+    expect(inPlay / n).toBeGreaterThanOrEqual(53);
+    expect(inPlay / n).toBeLessThanOrEqual(58.5);
   });
 });

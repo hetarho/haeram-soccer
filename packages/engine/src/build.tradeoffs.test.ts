@@ -5,7 +5,8 @@ import { sample, scenario } from './build.testkit';
 describe('tactical roster tradeoffs', () => {
   // The grid engine's tactics are not balanced yet: press beats every other tactic at equal
   // strength (STATE inbox 261019 suggest T216 MATCH-8), so the cases preferring another tactic
-  // wait for that tuning.
+  // wait for that tuning. T278 measured the same on the candidate model (press 66–79% at home
+  // against counter and balanced, docs/CALIBRATION.md) and leaves them skipped.
   const tradeoffs = [
     {
       name: 'passing midfield against balanced opponents',

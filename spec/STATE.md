@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T15:15Z | T278 |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T15:59Z | T320 |
 
 ## inbox
 - 261022 decided T320 T321: T278 left press dominant (79/12/9 at home to counter) with MATCH-8 stating tradeoffs only in words → MATCH r16 adds MATCH-29: per-pairing draws 20–30%, win-share gap at most 12 pp, counter at least press head to head, each tactic's points within 0.15 of the mean, possession/xG-conceded/high-regain/freshness orderings; T320 registers them with one evaluator, then explore T321 tunes the detailed engine beside T284 (which also measures them on the aggregate path) before T286 (alt: interim engineering targets inside a task with the SSOT later | accept the imbalance at activation). New IDs start at T320 because T309–T314 are in other sessions' uncommitted work
@@ -186,11 +186,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | doing@261021.h3t6 |
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 | todo |
-| T320 | Register the tactic-pairing bands and one shared evaluator | MATCH ARCH | T278 | todo |
+| T320 | Register the tactic-pairing bands and one shared evaluator | MATCH ARCH | T278 | doing@261022.h3t6 |
 | T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
@@ -212,6 +211,7 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261022 T278 integrated (h3t6; explore exit: period-end fixed, 30/38 core MATCH-23 rows inside and 0 outside, draws, curve and MATCH-8 tactics unresolved → MATCH-29, T320, T321; one review round fixed the extra-time clock)
 - 261022 refresh T285 T306 bases only: MATCH r16 adds MATCH-29, which neither cites
 - 261022 create-task MATCH r16: T320 (MATCH-29 bands and shared evaluator) then explore T321 (detailed tactic pairings) beside T284; T284 and T286 gain MATCH-29 and the new deps
 - 261022 update-ssot MATCH r16: MATCH-29+ tactic-pairing bands at equal strength (from T278's unresolved press dominance)
@@ -231,4 +231,3 @@
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
-- 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.

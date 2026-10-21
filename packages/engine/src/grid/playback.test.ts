@@ -9,7 +9,7 @@ import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
 import { toUnits } from './pitch';
 import { ballPath, buildFrames } from './playback';
-import { buildGridSetup } from './setup';
+import { buildGridSetup, type DecideRule } from './setup';
 
 const w = createWorld({
   country: 'ENG',
@@ -21,7 +21,7 @@ const w = createWorld({
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
-const setupFor = (id: string, observe = true, candidate = false) =>
+const setupFor = (id: string, observe = true, candidate = false, decide?: DecideRule) =>
   buildGridSetup(
     w,
     { ...w.fixtures[0]!, id, home: home!.id, away: away!.id },
@@ -30,10 +30,11 @@ const setupFor = (id: string, observe = true, candidate = false) =>
       recordPlayers: true,
       tactics: ['press', 'possession'],
       ...(candidate ? { model: MATCH_MODEL_REVISION } : {}),
+      ...(decide ? { decide } : {}),
     },
   );
-const watch = (id: string, candidate = false) => {
-  const setup = setupFor(id, true, candidate);
+const watch = (id: string, candidate = false, decide?: DecideRule) => {
+  const setup = setupFor(id, true, candidate, decide);
   const result = playGrid(setup);
   return { setup, result, frames: buildFrames(result, setup, w.seed) };
 };
@@ -259,6 +260,42 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
         drawn++;
       });
     expect(drawn).toBeGreaterThan(300);
+  });
+
+  it("ends each period's last action inside its final minute, so it is drawn", () => {
+    let periods = 0;
+    // A knockout tie level after 90 minutes: `candidate-et-0` plays extra time.
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-0']) {
+      const extraTime = id === 'candidate-et-0';
+      const { result, frames } =
+        id === 'candidate-1'
+          ? watched
+          : watch(id, true, extraTime ? { awayGoals: false } : undefined);
+      expect(!!result.record.regulation).toBe(extraTime);
+      // The clock holds whole minutes: (90 or 120 + added) × 60 exactly.
+      const minutes = (extraTime ? 120 : 90) + result.record.added!.reduce((a, b) => a + b, 0);
+      expect(result.elapsed).toBe(minutes * 60);
+      for (const p of extraTime ? ([1, 2, 3, 4] as const) : ([1, 2] as const)) {
+        const entries = result.trace!.filter((e) => e.period === p);
+        const last = frames.filter((f) => f.period === p).at(-1)!;
+        const end = last.startSeconds! + 60;
+        const whistle = entries.at(-1)!.elapsed;
+        const knots = entries.flatMap((e) => e.knots?.map((k) => k.at) ?? []);
+        // The whistle comes after the final minute starts and by its end, with every knot before it.
+        expect(whistle).toBeGreaterThan(last.startSeconds!);
+        expect(whistle).toBeLessThanOrEqual(end);
+        expect(Math.max(...knots)).toBeLessThanOrEqual(whistle);
+        // A minute of the period draws its last knot at its own time.
+        const final = Math.max(...knots);
+        expect(
+          frames.some((f) => f.period === p && f.ballTimes!.includes(final)),
+          `period ${p} knot at ${final}`,
+        ).toBe(true);
+        periods++;
+      }
+      expect(frameTimeIssues(frames)).toEqual([]);
+    }
+    expect(periods).toBe(10);
   });
 
   it('preserves minute-boundary continuity', () => {
