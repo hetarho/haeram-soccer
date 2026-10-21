@@ -2,6 +2,7 @@
 import { MOTION_STATES, PLAYBACK_CONFIG } from './playback';
 import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
 import type { Outcome, ShotOutcome } from './resolve';
+import type { MotionKnot } from './movement';
 import type { Restart } from './restarts';
 import { pressers, targetOf, type ShapeCache } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
@@ -57,6 +58,18 @@ export interface TraceEntry {
   /** An incident's other player (the substitute who came on) and a card's reason. */
   other?: number;
   reason?: string;
+  /**
+   * Candidate model only (→MATCH-12): the ball's semantic knots for this entry at absolute elapsed
+   * seconds — retrieval and placement before a restart, the kick, touches on the way, the reception,
+   * arrival, carry or tackle — in time order.
+   */
+  knots?: MotionKnot[];
+  /**
+   * Candidate model only: an explicit transition, never running play. `period` at a period's
+   * start whistle (everyone stands at his kick-off spot); `entry` for a substitution (`other`
+   * comes on at `to` on the touchline, `idx` leaves); `exit` for a player injured or sent off.
+   */
+  transition?: 'period' | 'entry' | 'exit';
   /** The actor's cell (his attack frame) and tags when he acted. */
   cell?: number;
   tags?: TraceTags;
@@ -80,6 +93,7 @@ export interface TraceAction {
   lineBreaking?: boolean;
   tags?: Tags;
   restart?: Restart;
+  knots?: MotionKnot[];
 }
 
 type Snapshot = Pick<TraceEntry, 'ball' | 'positions' | 'slots' | 'targets' | 'states' | 'totals'>;
@@ -91,7 +105,12 @@ const STATE_INDEX = Object.fromEntries(MOTION_STATES.map((st, i) => [st, i])) as
 >;
 
 /** Where a shot ended: in the net, over the byline for a corner or a goal kick, else where the ball now is. */
-function shotEnd(s: GridState, side: 0 | 1, shooter: number, o: ShotOutcome): [number, number] {
+export function shotEnd(
+  s: GridState,
+  side: 0 | 1,
+  shooter: number,
+  o: ShotOutcome,
+): [number, number] {
   const y = attackFrame(side, s.players[side][shooter]!.pos)[1];
   const mid = PITCH.width / 2;
   if (o.result === 'goal') return toEngine(side, [PITCH.length, clamp(y, mid - 3, mid + 3)]);
@@ -106,6 +125,7 @@ function detailOf(s: GridState, side: 0 | 1, idx: number, a: TraceAction): Detai
   const foe = other(side);
   if (a.kind) d.kind = a.kind;
   if (a.lineBreaking) d.lineBreaking = true;
+  if (a.knots) d.knots = a.knots;
   if (a.restart) {
     d.spot = [a.restart.spot[0], a.restart.spot[1]];
     d.dead = a.restart.dead;
@@ -283,7 +303,7 @@ export class Tracer {
     side: 0 | 1,
     idx: number,
     kind: 'yellow' | 'secondYellow' | 'red' | 'sub' | 'injury' | 'whistle',
-    extra: { other?: number; reason?: string } = {},
+    extra: Pick<Detail, 'other' | 'reason' | 'transition' | 'to'> = {},
   ): void {
     if (!this.on) return;
     const n: Detail = { side, idx, action: kind, outcome: 'incident', ...extra };

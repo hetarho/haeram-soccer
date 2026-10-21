@@ -16,6 +16,8 @@ export interface GridPlayer {
   slot: number;
   /** Position in the engine frame (metres). */
   pos: [number, number];
+  /** Velocity in m/s (engine frame) under the candidate model's bounded movement (`movement.ts`); absent at rest. */
+  vel?: [number, number];
   onPitch: boolean;
   yellow: boolean;
   sentOff: boolean;
@@ -107,19 +109,26 @@ function fillBase(setup: GridSetup, gp: GridPlayer, slot: number): void {
 }
 
 /** Where a starter stands at kick-off: his spot in his own half, in the engine frame. */
-function kickOffPoint(setup: GridSetup, side: 0 | 1, slot: number): [number, number] {
+export function kickOffPoint(setup: GridSetup, side: 0 | 1, slot: number): [number, number] {
   const spot: Point = SPOTS[setup.tactics[side]][slot]!;
   const own: Point = [Math.min(spot[0], 50), spot[1]];
   const [x, y] = attackFrame(side, own);
   return [x, y];
 }
 
-/** Puts every player on the pitch at his kick-off spot and the ball on the centre spot for `side` (period starts and restarts after a goal). */
-export function kickOff(s: GridState, side: 0 | 1): void {
+/**
+ * Puts the ball on the centre spot for `side` and every player on the pitch at his kick-off spot
+ * (period starts and restarts after a goal). With `place` off the players stay where they are for
+ * the candidate model to walk them there (→MATCH-12).
+ */
+export function kickOff(s: GridState, side: 0 | 1, place = true): void {
   for (const sd of [0, 1] as const)
     for (const gp of s.players[sd])
       if (gp.onPitch && gp.slot >= 0) {
-        gp.pos = kickOffPoint(s.setup, sd, gp.slot);
+        if (place) {
+          gp.pos = kickOffPoint(s.setup, sd, gp.slot);
+          if (gp.vel) gp.vel = undefined;
+        }
         gp.run = undefined;
       }
   const slots = FORMATIONS[s.setup.tactics[side]].slots;
