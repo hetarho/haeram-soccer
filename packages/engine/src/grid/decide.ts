@@ -108,13 +108,14 @@ export const DECISION_CONFIG = {
    * Candidate model only (T278, →MATCH-23): the open-play cross scale, the box band's shot weight
    * and the lines' shot weights in place of `crossScale`, `shotBox` and `shotLine`, against too many
    * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals. T321
-   * gave the shadow striker his own weight and raised the midfield line's and lowered the forwards'
-   * so the lines' shares of goals hold.
+   * gave the shadow striker his own weight, raised the midfield and defence lines' and lowered the
+   * forwards' so the lines' shares of goals hold, and raised the box band's (0.52) against shots
+   * from the goal area.
    */
   candidate: {
     crossScale: 6.3,
-    shotBox: 0.52,
-    shotLine: { GK: 0, DF: 1.2, MF: 6.5, FW: 0.66 },
+    shotBox: 0.56,
+    shotLine: { GK: 0, DF: 1.3, MF: 7.5, FW: 0.62 },
     /**
      * Positions whose shot weight replaces their line's (T321, →MATCH-16): a 4-2-3-1 shadow
      * striker lives in the box like a forward, so the midfield line's weight made him take most
