@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r15 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r16 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -195,6 +195,18 @@
   - a metric both paths hold at the same value is equivalent by that zero difference and stays listed as constant; a constant reference whose candidate holds another value or leaves the margin is a difference.
   - a metric a condition's own rules make impossible (extra time and shoot-outs outside →MATCH-6 ties, substitutions in →MATCH-20 eras without them) is declared not applicable for that condition, listed, and left out of its verdict. Applicability comes only from these rules, never from measured absence.
   - exact record invariants (→MATCH-27) have no statistical tolerance. Full-model activation requires the measured accuracy, compatibility, storage and speed gates together (→SAVE-23 and →ARCH-31).
+- MATCH-29 [o] Both engines hold the tactic tradeoffs of →MATCH-8 within these bands for equal top-tier sides, each tactic pairing measured at both venues and pooled under →MATCH-28's seeds and 95% intervals. ← the owner's only tactical control must be a real choice whose fit matters without deciding the match alone
+  | measure (equal strength, venues pooled) | band |
+  |---|---|
+  | draws in each tactic pairing | 20–30% |
+  | gap between the two tactics' win shares in each pairing | at most 12 percentage points |
+  | counter against press | counter's win share at least press's |
+  | each tactic's points a match against the other three | within 0.15 of the four tactics' mean |
+  | possession share | possession highest and counter lowest of the four |
+  | xG conceded a match | balanced at most the mean of the other three |
+  | high regains / end-of-match freshness | press highest / press lowest of the four |
+  - a band holds only when its 95% interval lies inside it; an ordering holds only when each difference exceeds its interval.
+  - a miss is a defect of the engines' tactical behaviour, fixed and remeasured as →MATCH-28 requires; the bands are never widened to pass.
 
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
@@ -204,6 +216,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r16 261022 MATCH-29+ tactic pairings at equal strength: per-pairing draw and win-gap bands, counter at least press head to head, points within 0.15 of the mean, possession, xG-conceded, high-regain and freshness orderings
 - r15 261021 MATCH-28✎ constant and rule-impossible metrics unspecified→equal constants equivalent and listed; metrics impossible under a condition's MATCH-6/MATCH-20 rules not applicable there, listed and outside its verdict
 - r14 261020 MATCH-1✎ all→own detailed; MATCH-12✎ auto pace/compressed flights→uniform speed/continuous routes; MATCH-13✎ own→all records; MATCH-16/17✎ targets→coordinated intentions; MATCH-22✎ optional grid/minute summary→non-own aggregate; MATCH-23✎ grid→both bands; MATCH-26✎ absent→full counters; MATCH-27+ consistency; MATCH-28+ equivalence
 - r13 261020 MATCH-26✎ open: absent or estimated by position→absent, the path records minutes, shots, goals, assists and saves only

@@ -18,6 +18,7 @@
 | h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T15:15Z | T278 |
 
 ## inbox
+- 261022 decided T320 T321: T278 left press dominant (79/12/9 at home to counter) with MATCH-8 stating tradeoffs only in words → MATCH r16 adds MATCH-29: per-pairing draws 20–30%, win-share gap at most 12 pp, counter at least press head to head, each tactic's points within 0.15 of the mean, possession/xG-conceded/high-regain/freshness orderings; T320 registers them with one evaluator, then explore T321 tunes the detailed engine beside T284 (which also measures them on the aggregate path) before T286 (alt: interim engineering targets inside a task with the SSOT later | accept the imbalance at activation). New IDs start at T320 because T309–T314 are in other sessions' uncommitted work
 - 261021 decided T283: T281 left the aggregate ledger with appearances only while own data splits starts and substitute appearances, and T283 must use the same appearance semantics → T283 adds a `starts` counter through the contract, strict schema and container-3 packing (not yet written in production, so no migration) (alt: show NPC appearances without the split and label it unavailable)
 - 261021 decided T281: T280's review left `playAggregate` throwing after 8 unreconciled re-draws, which would abort a season once fixtures dispatch there → T281 (which already touches aggregate/engine.ts) ends the retries with a deterministic, validated settlement and a forced-exhaustion test; T284 measures the retry bias (alt: T284 owns the fallback, leaving T281's dispatch able to throw until then)
 - 261021 decided T281 T283 T284 T285 T286 T306 T307 T308: h3t6 on the MacBook runs the remaining tasks standalone with session subagents (implementer and a separate reviewer per task, T283 beside explore T278) instead of a new work group, since only T281/T283 could join a group and they run in sequence (alt: new work group for T281 T283)
@@ -168,7 +169,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 15 | 15 | - | 0 |
+| MATCH | 16 | 16 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -186,9 +187,11 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | doing@261021.h3t6 |
-| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
+| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 | todo |
+| T320 | Register the tactic-pairing bands and one shared evaluator | MATCH ARCH | T278 | todo |
+| T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -209,6 +212,9 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261022 refresh T285 T306 bases only: MATCH r16 adds MATCH-29, which neither cites
+- 261022 create-task MATCH r16: T320 (MATCH-29 bands and shared evaluator) then explore T321 (detailed tactic pairings) beside T284; T284 and T286 gain MATCH-29 and the new deps
+- 261022 update-ssot MATCH r16: MATCH-29+ tactic-pairing bands at equal strength (from T278's unresolved press dominance)
 - 261021 T283 integrated (h3t6; one review round fixed the phone sample and the other-league notice)
 - 261021 T281 integrated (h3t6; implementer and separate reviewer subagents, approved with P3 notes routed to T283 T284 T285 T286)
 - 261021 T280 integrated (h3t6, from wip/full-model-T280)
@@ -226,6 +232,3 @@
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
 - 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.
-- 261021 T299 T300 T301 T302 T303 integrated
-- 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
-- 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
