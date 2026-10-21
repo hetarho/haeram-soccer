@@ -74,7 +74,11 @@ export function contractLine(until: number, year: number) {
     ? `계약 이번 시즌(${seasonName(year)}) 끝까지`
     : `계약 ${seasonName(until - 1)} 시즌 끝까지`;
 }
-export const percent = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : '—');
+export const percent = (a: number, b: number) => {
+  if (!b) return '—';
+  const rounded = Math.round((a / b) * 100);
+  return `${localeFormatters?.decimal(rounded, { useGrouping: false, maximumFractionDigits: 0 }) ?? rounded}%`;
+};
 export const kindLabel: Record<string, string> = {
   league: '리그',
   lower: '아마추어 리그',

@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { compactMoney, contractLine, money, number, setLocaleFormatters, signed } from './format';
+import {
+  compactMoney,
+  contractLine,
+  money,
+  number,
+  percent,
+  setLocaleFormatters,
+  signed,
+} from './format';
 import { createLocaleFormatters } from '../presentation/locale';
 
 afterEach(() => setLocaleFormatters());
@@ -27,6 +35,10 @@ describe('the money notation', () => {
     expect(money('123456', 'ESP', 2000)).toBe('€1.234,56');
     expect(money('360000', 'ENG', 1901)).toBe('£1.500 0s 0d');
     expect(eur(-1_500_000)).toBe('−€1,50M');
+    setLocaleFormatters(createLocaleFormatters('ar-EG'));
+    expect(percent(1, 3)).toBe('٣٣%');
+    expect(percent(30, 1)).toBe('٣٠٠٠%');
+    expect(percent(1, 0)).toBe('—');
   });
   it('keeps whole units below 100,000 and drops shillings, pence and cents', () => {
     // 9,999,999 minor units: a cent short of €100,000.
