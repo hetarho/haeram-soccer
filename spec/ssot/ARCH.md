@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r16 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r17 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -204,9 +204,19 @@
   - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending does not make the model pass its release gate.
   - the final combined movement, intention and aggregate model must pass together. Reusing a reference measured before a relevant football change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
 
+- ARCH-32 [o] Locale and theme packs are data loaded through browser presentation adapters, independently of simulation and game checkpoints (→WEB-90/91).
+  - `apps/web/public/presentation/locales/index.json` is the sole list of available locales; `apps/web/public/presentation/themes/index.json` is the sole list of available themes. Each registry declares its default and entries with stable IDs, display labels and relative resource URLs. Shared consumers derive choices and loaders from these registries; supported-ID unions, component-specific lists and per-ID branches are not additional registries.
+  - A locale is a JSON message pack; a theme is a JSON pack of semantic visual tokens, font resources, image-slot mappings and icon resources, with an optional stylesheet. Adding a pack within this shared contract changes its registry entry and data/assets only, with at most three configuration/style files; it never adds or edits a TSX component or a loader branch for that ID. Image and font binaries are outside that configuration-file count.
+  - Pure contracts, validation, message interpolation and semantic resource resolution live in `apps/web/src/presentation`; browser adapters own fetch, resource installation and preference storage. React consumes stable presentation services/hooks. Simulation, contract facts, worker protocols and playback timing do not import pack registries, React state or the selected locale/theme.
+  - Browser adapters load the same-origin registries and requested resources at runtime from the static deployment; no runtime directory listing or executable pack code is required. A resource-only addition must also be deployed and is available on a fresh registry load without an application-code change. Assets keep the existing caching/deployment rules (→ARCH-23).
+  - Validate IDs, unique entries, default membership, resource shapes, message parameters and required semantic slots. An unknown saved selection falls back to the registered default; a failed change retains the last usable pack. A failed initial default load offers retry without changing game data. Load only the selected packs and currently needed assets; stale asynchronous completions cannot replace a newer selection.
+  - Locale/theme preferences are small namespaced browser settings, separate from world saves and worker commands; denied storage leaves session selection usable. Existing stored prose is returned unchanged. Rendering preferences cannot change seeded outcomes, canonical facts, progression or replay position (→ARCH-5/7/11/28).
+  - The foundation ships one `ko-KR` locale and one `pixel` theme using existing assets. Additional-language catalogs, new theme artwork, complete extraction of existing feature/engine copy, and historical-text conversion are subsequent work; unit/browser fixtures may simulate additional packs without registering them in the shipped product.
+
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
+- Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
 - Verification: task checks per task → batch checks before a code push → CI on every browser after it (→ARCH-30).
@@ -222,6 +232,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r17 261021 ARCH-32+ runtime JSON registries and presentation-only pack boundaries, resource-only extension, isolated preferences and one-pack foundation
 - r16 261020 ARCH-31+ paired complete-model accuracy and performance gates, NPC fixture time ≤50% and season engine time ≤80% of same-machine pre-change baseline, unchanged browser/storage budgets
 - r15 261020 ARCH-21✎ setup simulation in unit tests→shared simulated test worlds (`tests/fixtures/worlds.ts`), simulate only the verified step; ARCH-23✎ unit tests leave the checks job for three parallel shards with a cached world store
 - r14 261020 ARCH-23✎ storage and first-play benchmarks on every push→only on demand in a manually dispatched workflow; a storage or release gate task runs `pnpm run benchmark` locally or has the owner dispatch it
