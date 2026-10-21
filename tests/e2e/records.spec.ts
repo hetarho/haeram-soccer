@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason } from './record-navigation';
 import { expect, test, type Page } from '@playwright/test';
@@ -48,7 +49,7 @@ for (const [label, viewport] of [
       await page.getByRole('tab', { name: '감독 이력', exact: true }).click();
       await expect(page.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
       await expect(page.getByText(/ · 현재$/)).toBeVisible();
-      await page.getByRole('button', { name: '1초에 하루 속도 선택', exact: true }).click();
+      await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x1');
       await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
       await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', {
         timeout: 10000,

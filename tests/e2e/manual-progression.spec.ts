@@ -7,13 +7,10 @@ import {
   fixtureDay,
 } from '../../packages/engine/src/calendar';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
-import {
-  closeSettingsOutcome,
-  importResponsibilityCareer,
-  pendingAcquisitionCareer,
-} from './responsibility-fixtures';
+import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
+import { configureResponsibilities } from './events';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -27,13 +24,15 @@ for (const width of [1280, 390]) {
     });
     await importResponsibilityCareer(page, w);
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: /속도 선택$/ })).toHaveCount(4);
+    await expect(page.getByRole('combobox', { name: '자동 진행 배속', exact: true })).toBeVisible();
+    await expect(page.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toHaveCount(0);
-    await chooseOption(page.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
-    await closeSettingsOutcome(page);
+    await configureResponsibilities(page, { mode: 'manual' });
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /속도 선택$/ })).toHaveCount(0);
+    await expect(page.getByRole('combobox', { name: '자동 진행 배속', exact: true })).toHaveCount(
+      0,
+    );
     await expect(page.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
     await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
     await expect(page.getByRole('dialog', { name: '전체 메뉴' })).not.toContainText(
@@ -41,8 +40,7 @@ for (const width of [1280, 390]) {
     );
     await page.keyboard.press('Escape');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
-    await chooseOption(page.getByRole('combobox', { name: '진행 모드', exact: true }), 'automatic');
-    await closeSettingsOutcome(page);
+    await configureResponsibilities(page, { mode: 'automatic' });
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toHaveCount(0);
   });

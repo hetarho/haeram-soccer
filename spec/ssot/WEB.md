@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r99 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r102 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free Korean web game; Supabase and Flutter are deferred.
@@ -52,10 +52,10 @@
 
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
-- WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment and league exploration, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari; the clock's secondary pace chips are at least 32 px inside a 44 px track. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] One clock on every management view shows date/status, the selected progression mode, its progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. On phones the full clock places date/status and settings above the mode and progression actions so their labels remain readable. The match theatre has no season-progression controls; its presentation speed follows →WEB-32.
+- WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment, league exploration and the clock's pace dropdown, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
+- WEB-18 [o] One clock on every management view shows date/status, the selected mode's progression action and access to the central responsibility settings (→WEB-45); season progress runs along its lower edge. Date/status, progression actions and settings/notifications share one row on phones and wider screens, with progression actions between the date and settings. Mode selection is available only in the central settings dialog (→WEB-79). The match theatre has no season-progression controls; its presentation speed follows →WEB-32.
   - notifications/news (→WEB-51) sits beside the settings trigger in the clock's action group, within normal layout; both keep readable labels/counts and touch targets without overlapping content.
-  - automatic mode keeps play/pause and x1/x2/x5/x10: one day per 1/0.5/0.2/0.1 seconds. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
+  - automatic mode keeps play/pause and one pace dropdown showing the selected x1/x2/x5/x10 value: one day per 1/0.5/0.2/0.1 seconds. The dropdown options explain each pace. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait.
   - the manual move still settles intervening days in order (→LEAGUE-11), retains their facts and stops at the first configured event. Its presentation never bypasses pending owner decisions, critical blockers or save/worker errors.
@@ -365,6 +365,7 @@
 - WEB-79 [o] The clock's responsibility-settings entry opens the same central screen as other responsibility links (→WEB-18/45).
   - changes remain unapplied until explicit apply, with affected pending work disclosed before committing (→WEB-82). Opening or closing the screen never applies a choice.
   - content order is progression mode and observation stops, the seven business responsibilities with any pending-work preview, then background progression. Section dividers have space on both sides, including before headings and explanatory text.
+  - match-eve and transfer-window-opening stops are two equal-width toggle cards in one row, including on phones. Each full card is a touch target with a readable label, an on/off indicator and keyboard focus; explanatory text sits below the row. They retain the existing stop timing and explicit-apply behavior.
   - the mode selector, observation choices and delegation controls remain visible and editable in both modes, subject to →WEB-76. A manual draft hides only background settings, since unattended progression is off (→WEB-64). Switching modes changes no observation, responsibility or background choices; returning to automatic reveals the same background draft. A required match-eve repair (→WEB-76) and any affected pending-work preview (→WEB-82) remain visible before apply.
   - footer actions are 닫기 and 적용. Every dismissal (닫기, the header close control, Escape or the backdrop) discards all unapplied mode, observation, responsibility and background changes; reopening starts from the applied settings. No separate discard action is shown. A failed apply keeps the open draft available for retry.
   - apply validates the resulting manual-mode configuration (→WEB-76) and transfers only unresolved work under →WEB-82. Reports follow →WEB-42 without additional per-business-event stop switches.
@@ -376,6 +377,7 @@
   - ordinary match preparation, observation and playing through the forthcoming match remain available. These actions retain their normal decision/blocker protections and do not switch progression mode or start unattended manual play. Same-date stops follow →WEB-83.
 
 - WEB-81 [o] Mediation shows each person's actual explanation, the standing support policy, a case-specific support choice when owner-held, and any promise's target, deadline and recorded status (→CLUB-34/35, →STAFF-26). Delegated mediation reports the policy and result without an extra owner-only stop. Promise outcomes remain available through retained decisions (→HIST-15).
+  - the review leads with a compact target/candidate summary, groups the manager's request and director's financial explanation for comparison, and separates the case decision and expected result. The three support choices share one row; standing policy and its edit entry stay together. Wider screens place opinions beside the decision; phones retain readable compact sections. Close and confirm stay in the dialog footer while the content scrolls.
   - Changing the case-specific choice keeps the existing preview and its occupied space visible until the latest conditions arrive. Only a preview matching the current case, choice and world revision enables confirmation; pending or failed checks cannot confirm stale conditions.
 
 - WEB-82 [o] Explicitly applying a responsibility change transfers that category's unresolved work to its newly selected decision-maker, including decisions already waiting on the current date.
@@ -416,6 +418,9 @@
 - Identity: founding or club design → crest/shirt draft → pitch preview → explicit use/apply; preparation → optional fixture-level kit choice → observation.
 
 ## chg
+- r102 261021 WEB-81✎ vertically stacked review and body actions→target/candidate summary, grouped opinions, horizontal choices, structured result and persistent footer actions
+- r101 261021 WEB-79✎ stacked observation checkboxes→two equal-width horizontal toggle cards with visible on/off state and full-card touch targets
+- r100 261021 WEB-17✎ 32px pace chips in a 44px track→44px pace dropdown; WEB-18✎ phone date/settings above mode/actions→single row with progression between date and settings, mode selector only in settings; four pace chips→one pace dropdown
 - r99 261021 WEB-11✎ NEXT MATCH after progress/stadium→before season progress; WEB-18✎ settings alone→settings and notifications together; WEB-51✎ floating launcher hidden for board drafts with bottom reserve→inline clock launcher remains visible without reserve; WEB-52✎ phone banner beside floating launcher→across lower play area above navigation
 - r98 261021 WEB-10✎ HUD menu without watch→watch/return action; WEB-11✎ tall next-match preparation/watch card→compact horizontal preparation-only row with smaller text; WEB-50✎ home watch/return→HUD-menu watch/return, match-event watching retained
 - r97 261021 WEB-79✎ manual hides observation/delegation/background controls→manual hides background settings only; observation and delegation controls stay editable in both modes

@@ -1184,11 +1184,7 @@ export function App() {
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressControls
-            client={client}
-            controller={controller}
-            compact={page !== 'dashboard'}
-          />
+          <ProgressControls controller={controller} compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller ? (

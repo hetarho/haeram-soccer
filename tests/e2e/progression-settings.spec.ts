@@ -1,4 +1,4 @@
-import { chooseOption } from './select';
+import { chooseOption, selectOptions } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { continueSlot } from './slots';
 import {
@@ -22,7 +22,7 @@ async function foundQuiet(page: Page) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-test('mobile clock exposes every pace as a touch target and advances at the chosen speed', async ({
+test('mobile clock keeps actions in one row and advances at the dropdown pace', async ({
   page,
 }) => {
   // The paces are measured against match eves.
@@ -34,49 +34,40 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   const date = page.getByTestId('game-date');
   await expect(date).toHaveText('1950년 8월 1일');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
-  const pace = (label: string) =>
-    controls.getByRole('button', { name: `${label} 속도 선택`, exact: true });
-  const daily = pace('1초에 하루'),
-    double = pace('0.5초에 하루'),
-    five = pace('0.2초에 하루'),
-    ten = pace('0.1초에 하루'),
-    toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
+  const pace = controls.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+  const toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true }),
-    level = controls.getByRole('button', { name: '위임·진행 설정', exact: true });
+    settings = controls.getByRole('button', { name: '위임·진행 설정', exact: true }),
+    notifications = controls.getByTestId('communications-button');
   await settle(page);
-  // Play and the intervention level are full touch targets; the paces are smaller chips in a
-  // track, each still answering taps across the track's height.
-  for (const [control, min] of [
-    [toggle, 44],
-    [level, 44],
-    [daily, 32],
-    [double, 32],
-    [five, 32],
-    [ten, 32],
-  ] as const) {
-    const rect = await control.boundingBox();
-    expect(rect!.width).toBeGreaterThanOrEqual(min);
-    expect(rect!.height).toBeGreaterThanOrEqual(min);
-    expect(rect!.x).toBeGreaterThanOrEqual(0);
-    expect(rect!.x + rect!.width).toBeLessThanOrEqual(360);
-    expect(rect!.y + rect!.height).toBeLessThan(740);
-  }
   const toggleBox = (await toggle.boundingBox())!;
-  for (const chip of [daily, double, five, ten]) {
-    const rect = (await chip.boundingBox())!;
-    expect(rect.height).toBeLessThan(toggleBox.height);
-    const edge = await chip.evaluate((element) => {
-      const bounds = element.getBoundingClientRect();
-      const x = bounds.x + bounds.width / 2;
-      return [bounds.top - 4, bounds.bottom + 4].map((y) =>
-        element.contains(document.elementFromPoint(x, y)),
-      );
-    });
-    expect(edge).toEqual([true, true]);
+  for (const control of [toggle, pace, settings, notifications]) {
+    const rect = (await control.boundingBox())!;
+    expect(rect.width).toBeGreaterThanOrEqual(44);
+    expect(rect.height).toBeGreaterThanOrEqual(44);
+    expect(rect.x).toBeGreaterThanOrEqual(0);
+    expect(rect.x + rect.width).toBeLessThanOrEqual(360);
+    expect(rect.y + rect.height).toBeLessThan(740);
+    expect(rect.y).toBeCloseTo(toggleBox.y, 0);
+    expect(rect.height).toBeCloseTo(toggleBox.height, 0);
   }
-  await expect(daily).toHaveAttribute('aria-pressed', 'true');
-  // A pace tap only sets the pace (→WEB-18): the date stays until play.
-  await daily.click();
+  const dateBox = (await date.boundingBox())!;
+  expect(dateBox.x + dateBox.width).toBeLessThanOrEqual(toggleBox.x);
+  expect(dateBox.y).toBeLessThan(toggleBox.y + toggleBox.height);
+  expect(dateBox.y + dateBox.height).toBeGreaterThan(toggleBox.y);
+  await expect(controls.getByRole('combobox', { name: '진행 모드', exact: true })).toHaveCount(0);
+  const options = await selectOptions(pace);
+  expect(options.map((option) => option.value)).toEqual(['x1', 'x2', 'x5', 'x10']);
+  for (const [index, hint] of [
+    '1초에 하루',
+    '0.5초에 하루',
+    '0.2초에 하루',
+    '0.1초에 하루',
+  ].entries())
+    expect(options[index].label).toContain(hint);
+  await expect(pace).toHaveAttribute('data-value', 'x1');
+  // Selecting a pace only sets the pace (→WEB-18): the date stays until play.
+  await chooseOption(pace, 'x1');
   await page.waitForTimeout(1500);
   await expect(date).toHaveText('1950년 8월 1일');
   // Play starts the clock; stopping after the first tick advances exactly one day.
@@ -85,9 +76,8 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await stop.click();
   await expect(date).toHaveText('1950년 8월 2일');
   // x2 is a day every half second: it moves on and stops with the owner, short of the match eve.
-  await double.click();
-  await expect(double).toHaveAttribute('aria-pressed', 'true');
-  await expect(daily).toHaveAttribute('aria-pressed', 'false');
+  await chooseOption(pace, 'x2');
+  await expect(pace).toHaveAttribute('data-value', 'x2');
   await expect(date).toHaveText('1950년 8월 2일');
   await toggle.click();
   // A late step carries the day it owes with it (→WEB-18), so a slow runner may skip 8월 3일.
@@ -107,8 +97,8 @@ test('mobile clock exposes every pace as a touch target and advances at the chos
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stepped);
   // x10 runs on to the eve of our first match and the clock stops there.
-  await ten.click();
-  await expect(ten).toHaveAttribute('aria-pressed', 'true');
+  await chooseOption(pace, 'x10');
+  await expect(pace).toHaveAttribute('data-value', 'x10');
   await toggle.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
@@ -279,7 +269,7 @@ test('deciding the event that stopped a running clock plays on (→WEB-42)', asy
   await settings.getByRole('button', { name: '적용', exact: true }).click();
   await closeSettingsOutcome(page);
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
-  await clock.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true }).click();
+  await chooseOption(clock.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
   const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = clock.getByRole('button', { name: '자동 진행 정지', exact: true }),
     card = page.getByTestId('event-card');
@@ -320,6 +310,27 @@ for (const viewport of [
     const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('combobox', { name: '진행 모드', exact: true })).toBeInViewport();
+    const stops = dialog.getByRole('checkbox', {
+      name: /^(경기 전날 이벤트|이적시장 개장 이벤트)$/,
+    });
+    const stopBounds = await stops.evaluateAll((inputs) =>
+      inputs.map((input) => {
+        const rect = input.getBoundingClientRect();
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+      }),
+    );
+    expect(stopBounds).toHaveLength(2);
+    expect(stopBounds[0].y).toBeCloseTo(stopBounds[1].y, 0);
+    expect(stopBounds[0].width).toBeCloseTo(stopBounds[1].width, 0);
+    expect(stopBounds[0].x + stopBounds[0].width).toBeLessThan(stopBounds[1].x);
+    for (const rect of stopBounds) {
+      expect(rect.width).toBeGreaterThanOrEqual(44);
+      expect(rect.height).toBeGreaterThanOrEqual(44);
+      expect(rect.x).toBeGreaterThanOrEqual(0);
+      expect(rect.x + rect.width).toBeLessThanOrEqual(viewport.width);
+    }
+    await stops.first().focus();
+    await expect(stops.first()).toBeFocused();
     await expect(dialog.locator('footer button')).toHaveText(['닫기', '적용']);
     await expect(dialog.getByRole('button', { name: '변경 버리기', exact: true })).toHaveCount(0);
     const sections = await dialog.locator('section[aria-label]').evaluateAll((elements) =>

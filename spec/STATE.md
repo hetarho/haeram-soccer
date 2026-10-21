@@ -147,7 +147,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 16 | 16 | - | 2 |
-| WEB | 99 | 99 | - | 0 |
+| WEB | 102 | 102 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -199,6 +199,18 @@
 - FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 T295 done: compact structured mediation review and stable confirm styling during pending previews; fast checks/build and a focused owner-requested Chromium appearance/blocking check pass.
+- 261021 WEB r102 freshness: T275 T283 T286 bases to WEB@102; their cited match/record decisions are unchanged by mediation presentation.
+- 261021 create-task T295 and implement-task start on 9f69553: compact mediation presentation while preserving preview freshness, decisions and retained history.
+- 261021 update-ssot WEB r102 start: compact structured mediation review with persistent footer actions.
+- 261021 T294 done: horizontal observation toggles; settings units, typecheck, targeted lint/format, build and spec lint pass; browser geometry remains at the batch gate.
+- 261021 WEB r101 freshness: T275 T283 T286 bases to WEB@101; their cited match and record decisions are unchanged by central observation-toggle styling.
+- 261021 create-task T294 and implement-task start on 9f69553: preserve native checkbox semantics and existing stop/draft rules while presenting horizontal toggles.
+- 261021 update-ssot WEB r101 start: horizontal observation-stop toggle cards in central settings.
+- 261021 T293 done: single-row clock, settings-only mode and pace dropdown; affected units and build pass, browser specs updated for the batch gate; owner's HTTPS dev preview on 19501.
+- 261021 WEB r100 freshness: T275 T283 T286 bases to WEB@100; their cited match playback and record decisions are unchanged by WEB-17/18 clock layout.
+- 261021 create-task T293 and implement-task start on 9f69553: WEB r100 compact clock controls; unrelated full-model work remains in its own worktrees.
+- 261021 update-ssot WEB r100 start: compact clock row, settings-only mode selection and a pace dropdown.
 - 261021 r3m9 stopped: identity group integrated T240–T254 and T272 with CI green on every push; T255 done (benchmarks and CI 39517672764 on a3c9881); MATCH r15; report 261021-r3m9.
 - 261021 T255 done: final identity source passes the century storage benchmark with 101 design edits and a pending kit choice (worst checkpoint 2,406,812 B) and the browser benchmark with pattern rendering (entry 245,985 B gzip, load 4.4 s, p95 47 ms, 60 FPS).
 - 261020 T254 integrated
@@ -207,15 +219,3 @@
 - 261020 T272 integrated
 - 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
 - 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
-- 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
-- 261021 update-ssot MATCH start (T272 decision request)
-- 261021 r3m9 T250–T255, T275, T283, T286 bases to WEB@99 after the owner's 73b0e42 (contents unchanged; their WEB-50 cites the match view, not the moved watch entry).
-- 261021 T287–T291 push gate on 0084882, rebased onto 19907a6: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; typecheck, lint, format, catalog validation, build and spec lint pass. Browser checks confirm full-width compact NEXT MATCH above progress, inline notifications and discard-on-dismiss settings. Frozen install refreshed the stale local Brotli patch; source changes were unnecessary.
-- 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
-- 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
-- 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
-- 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
-- 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
-- 261021 T291 done: notifications beside settings without floating reserve, full-width NEXT MATCH above progress, WEB r99; 13 affected tests/typecheck/lint/format/build pass, browser layout checks updated for batch.
-- 261021 create-task WEB r99 → T291; T291 start at 4af396f, inline clock notifications and home order.
-- 261021 update-ssot WEB r99 start: notifications beside clock settings, NEXT MATCH above home progress; remove floating/draft-hiding launcher rules and retain compact lower achievement banners.

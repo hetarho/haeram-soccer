@@ -1909,7 +1909,7 @@
   display: flex;
   gap: 6px;
 }
-/* The play toggle stays a full touch target; the pace chips are styled in ProgressControls. */
+/* Play and the pace dropdown keep full touch targets. */
 .clockButtons button {
   min-width: 44px;
   min-height: 44px;

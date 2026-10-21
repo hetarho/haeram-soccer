@@ -1,74 +1,23 @@
-/* Clock controls: play, a recessed pace track, then settings and notifications together. */
-
-/* ===== Pace track: secondary chips that still take the track's height as their touch area. ===== */
-.paces {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 0 4px;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface-deep);
-  box-shadow: none;
+/* Date, progression and settings share one row on every management view. */
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
-/* Tripled to outrank the phone rule that lifts every main-column button to 48px. */
-.paces .pace.pace {
-  position: relative;
+
+.buttons {
+  align-items: center;
+}
+
+.buttons .pace.pace {
   flex: none;
-  min-width: 34px;
-  height: 34px;
-  min-height: 34px;
+  width: 64px;
+  height: 44px;
+  min-height: 44px;
   padding: 0 6px;
-  border-color: transparent;
-  border-radius: 2px;
-  background: transparent;
-  box-shadow: none;
-  color: var(--text-muted);
+  gap: 4px;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: -0.2px;
-  /* Scaling while a running track changes colour can crash WebKit's page process. */
-  transition: none;
   font-family: var(--display);
-}
-.paces .pace.pace::after {
-  content: '';
-  position: absolute;
-  inset: -6px -2px;
-}
-.paces .pace.pace[aria-pressed='true'] {
-  color: var(--gold);
-  border-color: var(--gold-edge);
-  background: var(--surface-2);
-  box-shadow: none;
-}
-.paces[data-running] .pace.pace[aria-pressed='true'] {
-  color: var(--on-accent);
-  border-color: var(--gold-edge);
-  background: var(--gold-fill);
-  box-shadow: none;
-}
-
-/* Four chips on a phone still leave the longest date ("2025년 11월 28일") its full width. */
-@media (max-width: 420px) {
-  .paces {
-    gap: 1px;
-    padding: 0 2px;
-  }
-  .paces .pace.pace {
-    min-width: 32px;
-    padding: 0 4px;
-  }
-}
-@media (max-width: 359px) {
-  .paces {
-    padding: 0 2px;
-  }
-  .paces .pace.pace {
-    min-width: 28px;
-    padding: 0 4px;
-  }
 }
 
 .settingsActions {
@@ -78,53 +27,27 @@
   flex: none;
 }
 
-/* ===== Settings trigger: "설정" opens the delegation and progression settings. ===== */
+/* Settings opens the central delegation and progression dialog. */
 .trigger {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   min-width: 45px;
   min-height: 44px;
   padding: 0 5px;
   border-radius: 2px;
 }
+
 @media (min-width: 761px) {
   .trigger {
     padding: 0 10px 0 12px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .paces .pace.pace[aria-pressed='true'] {
-    animation: none;
-  }
-}
-
-.mode [data-select-trigger] {
-  min-height: 44px;
-  padding: 0 6px;
-  gap: 4px;
-  font-size: 12px;
-}
-
-/* Keep the date readable alongside the shared selector on narrow screens. */
 @media (max-width: 760px) {
-  .controls {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-  .controls .calendar {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .controls .settingsActions {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .controls .buttons {
-    grid-column: 1 / -1;
-    grid-row: 2;
+  .buttons .pace.pace {
+    height: 48px;
+    min-height: 48px;
   }
 }

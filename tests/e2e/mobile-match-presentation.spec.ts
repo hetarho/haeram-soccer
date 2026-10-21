@@ -2,7 +2,7 @@ import { watchNext } from './watch';
 import { expect, test } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { chooseOption } from './select';
+import { configureResponsibilities } from './events';
 import { horizontalOverflow } from './layout';
 
 for (const width of [360, 390]) {
@@ -18,9 +18,13 @@ for (const width of [360, 390]) {
     world.settings!.responsibilities.sales = 'delegated';
     await importResponsibilityCareer(page, world);
     const date = await page.getByTestId('game-date').boundingBox();
-    const mode = await page.getByRole('combobox', { name: '진행 모드', exact: true }).boundingBox();
-    expect(date!.width).toBeGreaterThan(140);
-    expect(mode!.y).toBeGreaterThanOrEqual(date!.y + date!.height);
+    const pace = await page
+      .getByRole('combobox', { name: '자동 진행 배속', exact: true })
+      .boundingBox();
+    expect(date!.width).toBeGreaterThan(0);
+    expect(date!.x + date!.width).toBeLessThanOrEqual(pace!.x);
+    expect(date!.y).toBeLessThan(pace!.y + pace!.height);
+    expect(date!.y + date!.height).toBeGreaterThan(pace!.y);
     await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
     await expect(canvas).toBeVisible();
@@ -59,12 +63,10 @@ test('mobile result-only continuation preserves the exiting card position', asyn
   ) as (keyof typeof settings.responsibilities)[])
     settings.responsibilities[key] = 'delegated';
   await importResponsibilityCareer(page, world);
-  const mode = page.getByRole('combobox', { name: '진행 모드', exact: true });
-  await expect(mode).toHaveAttribute('data-select-trigger', '');
-  await chooseOption(mode, 'automatic');
-  await expect(mode).toHaveAttribute('data-value', 'automatic');
-  await chooseOption(mode, 'manual');
-  await expect(mode).toHaveAttribute('data-value', 'manual');
+  await configureResponsibilities(page, { mode: 'automatic' });
+  await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+  await configureResponsibilities(page, { mode: 'manual' });
+  await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
   for (let round = 0; round < 2; round++) {
     await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
     const card = page.getByTestId('event-card').filter({ hasText: '내일 경기' });
