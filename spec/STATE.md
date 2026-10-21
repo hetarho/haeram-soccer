@@ -15,8 +15,11 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T12:47Z | T281 |
 
 ## inbox
+- 261021 decided T281: T280's review left `playAggregate` throwing after 8 unreconciled re-draws, which would abort a season once fixtures dispatch there → T281 (which already touches aggregate/engine.ts) ends the retries with a deterministic, validated settlement and a forced-exhaustion test; T284 measures the retry bias (alt: T284 owns the fallback, leaving T281's dispatch able to throw until then)
+- 261021 decided T281–T308: h3t6 on the MacBook runs the remaining tasks standalone with session subagents (implementer and a separate reviewer per task, T283 beside explore T278) instead of a new work group, since only T281/T283 could join a group and they run in sequence (alt: new work group for T281 T283)
 - 261021 decided T278: T275's review found every period's last candidate action running up to 32 s past the period's final minute, undrawable under T273's 60 s minute, with no task owning it → T278 (which tunes the candidate engine's timing) ends the period's last action by the final minute, with a compact test, before T286 activation (alt: widen the frame contract's minute in T286, which changes the shared timestamp check)
 - 261021 decided T275: T275 waited only on docs/MATCH-ENGINE-DESIGN.md, which T277 also lists, while no T275 acceptance edits it → T275 drops it from touches and leaves playback-design gaps in its limits for T286, so it runs beside T277 (alt: run T275 after T277, idle until then)
 - 261021 decided T301 T303: clean WebKit rejects the current WOFF2 representation while identical-glyph WOFF loads; native multi-source CSS also stalls there → implement data-declared ordered per-source FontFace attempts, preserving preferred WOFF2 for capable engines and a licensed WOFF compatibility representation. Extend explicit asset/preview touches; no other active attempt owns these paths, no browser-ID branches, and total font failure still retains the previous theme (alt: send the measured 74%-larger WOFF representation to every browser).
@@ -182,7 +185,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
-| T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
 | T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
 | T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
@@ -203,12 +205,12 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- T280 (approved by review after four rounds, task checks passed; batch gate not run — it was stopped at 21:00 KST): take branch wip/full-model-T280 (25bae72), merge main, run the batch gate (unit, contract, catalogs, build, Chromium) and merge to main. Review P3 for T281/T284: the aggregate re-draw throws after 8 tries — season dispatch needs a fallback.
-- then T281 (needs T280 and T282), T283; explore T278 (now also owns the period-end overrun T275 found), T284, T285, then T286; T306 waits for T304 and T286, then T307/T308.
-- the full-model work group's runtime state lives only in this host's clone (hq-dev1); on another machine run the remaining tasks standalone or start a new group.
+- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents: T280 merged from wip/full-model-T280 with its batch gate; T281 (owns the aggregate re-draw fallback) beside it, then T283 beside explore T278, T284, T285, T286, T306–T308.
 - known flaky Chromium checks on a loaded host: club-identity-founding "exact previewed design … after reload" (club-hub not visible within 5 s) and growth-core "19-player advice floats" (43.9999 px < 44 px); both passed on rerun of the same tree.
-- CI: e1896bc passed every job; later code pushes (0e2b819 T279, 1b01b63 T276/T304/T305, 604590a T275, 01406b2 T277) not checked by this session.
+- CI: 01406b2 (T277) passed every job.
+
 ## log
+- 261021 T280 integrated (h3t6, from wip/full-model-T280)
 - 261021 f6n3 stopped at 21:00 KST as the owner asked: full-model integrated T273 T274 T275 T276 T277 T279 T282 T304 T305 into main; T280 approved, on wip/full-model-T280 awaiting its batch gate; report 261021-f6n3.
 - 261021 T277 integrated
 - 261021 T275 integrated

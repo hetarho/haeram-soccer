@@ -153,3 +153,73 @@ export const AGGREGATE_CONFIG = {
     press: { tempo: 1.02, direct: 1.05, through: 1.1, carries: 1, fouls: 1.2, press: 1.45 },
   } satisfies Record<Tactic, Record<string, number>>,
 } as const;
+
+/**
+ * The participation plan's rates (→MATCH-19/20/21, CLUB-23, MATCH-23): cards a side, per 90
+ * minutes on the pitch, and how the manager's stoppages fall. Injury chances are CLUB-23's own
+ * (careers.ts `injuryChance`) and the injury hazard's rise through the match grid/changes.ts's.
+ */
+export const AGGREGATE_PARTICIPATION_CONFIG = {
+  discipline: {
+    /** Cautions of unbooked players, second cautions and straight reds a side in 90 minutes. */
+    yellows: 1.8,
+    secondYellows: 0.03,
+    reds: 0.04,
+    /** How a caution comes about, and a straight red. */
+    yellowReasons: { reckless: 0.7, tactical: 0.18, dissent: 0.12 },
+    redReasons: { dogso: 0.5, serious: 0.35, violent: 0.15 },
+    /** How often each line is booked, relative to the others. */
+    line: { GK: 0.2, DF: 1.3, MF: 1.2, FW: 0.8 },
+  },
+  /** A side keeps at least this many on the pitch: a dismissal or an injury past it is not drawn. */
+  minimumPlayers: 7,
+  changes: {
+    /** Minutes between in-play stoppages the manager may use, and their jitter. */
+    every: 6,
+    jitter: 3,
+    /** A red card is answered at the stoppage this many minutes later (1 up to it). */
+    afterRed: 3,
+    /**
+     * Red-card rebalance decisions tried for one stretch of the match before it is drawn again on
+     * the fixture's next retry streams, and the retries allowed (→STAFF-45).
+     */
+    rebalanceSearches: 16,
+    rebalanceRetries: 8,
+  },
+} as const;
+
+/**
+ * Who is credited with the team facts (→MATCH-11, MATCH-26/27): a line's weight for an action by
+ * the band it starts in (the acting side's attack frame), times the role and trait weights of
+ * match.ts `actionWeight`, times the reading attribute's effective value over `attributeScale`
+ * raised to `attributePower`. Only shares come from these; the counts are the ledger's.
+ */
+export const AGGREGATE_ATTRIBUTION_CONFIG = {
+  attributeScale: 70,
+  attributePower: 2,
+  /** Passes and carries started in each band (own goal area … opponent goal area). */
+  pass: {
+    GK: [3, 1.2, 0.1, 0, 0, 0, 0, 0],
+    DF: [2, 2.2, 1.8, 0.9, 0.4, 0.2, 0.1, 0.1],
+    MF: [0.3, 0.8, 1.4, 1.8, 1.8, 1.4, 1, 0.8],
+    FW: [0, 0.1, 0.3, 0.7, 1.1, 1.5, 1.6, 1.6],
+  },
+  takeOn: { GK: 0, DF: 0.4, MF: 1, FW: 1.8 },
+  /** Crosses and cut-backs go to flank slots this much more than to central ones. */
+  wide: 4,
+  through: { GK: 0, DF: 0.2, MF: 1.5, FW: 1 },
+  /** Shots with the foot and headers (→MATCH-23: goals by line 50–60 / 27–37 / 8–15%). */
+  shot: { GK: 0, DF: 0.25, MF: 1.1, FW: 2.2 },
+  header: { GK: 0, DF: 0.8, MF: 0.8, FW: 2.2 },
+  /** Outside the box midfielders shoot relatively more. */
+  outsideShot: { GK: 0, DF: 0.3, MF: 1.6, FW: 1.1 },
+  /** Offsides by the receiver's line. */
+  offside: { GK: 0, DF: 0.05, MF: 0.5, FW: 2.5 },
+  /** Tackles, interceptions and fouls by the band they happen in (the defending side's frame). */
+  defend: {
+    GK: [0.3, 0.05, 0, 0, 0, 0, 0, 0],
+    DF: [2.2, 2.2, 1.8, 1, 0.5, 0.3, 0.2, 0.2],
+    MF: [0.6, 1, 1.4, 1.7, 1.6, 1.2, 0.8, 0.6],
+    FW: [0.1, 0.2, 0.3, 0.6, 0.9, 1.2, 1.3, 1.2],
+  },
+} as const;
