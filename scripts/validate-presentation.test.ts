@@ -158,15 +158,18 @@ describe('static presentation resource validation', () => {
     },
   );
 
-  it('reports a missing era stage asset', async () => {
-    const tree = deployment();
-    const stage = partTop('training');
-    const missing = tree.resolver.facility({ era: 'terraces', kind: 'training', stage }).src;
-    rmSync(tree.file(missing));
-    await expect(validatePresentation(tree.root)).rejects.toThrow(
-      `Missing era stage asset ${tree.theme.id}/terraces.training.${stage}: ${missing}`,
-    );
-  });
+  it.each(['training', 'academy'] as const)(
+    'reports a missing upper %s stage asset',
+    async (kind) => {
+      const tree = deployment();
+      const stage = partTop(kind);
+      const missing = tree.resolver.facility({ era: 'terraces', kind, stage }).src;
+      rmSync(tree.file(missing));
+      await expect(validatePresentation(tree.root)).rejects.toThrow(
+        `Missing era stage asset ${tree.theme.id}/terraces.${kind}.${stage}: ${missing}`,
+      );
+    },
+  );
 
   it('rejects malformed defaults and duplicate registry entries', async () => {
     const tree = deployment();

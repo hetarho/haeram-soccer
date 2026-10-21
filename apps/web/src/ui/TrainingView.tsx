@@ -140,6 +140,7 @@ export function TrainingView({ state, client }: Props) {
         ) : (
           <>
             <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
+              {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} ·{' '}
               유소년 총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
             </FacilityOverview>
             <AcademyPanel w={w} client={client} />

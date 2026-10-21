@@ -93,13 +93,12 @@ a second schema into tooling. A theme contains:
   stacks usable across concept changes. Cyclic aliases and undeclared primary faces fail validation.
 - `images.facility`: a local `pattern` containing `{era}`, `{kind}`, `{stage}`, plus optional
   `overrides` keyed as `era.kind.stage`. Current roles are stadium, locker, training, manager,
-  staff and academy, across
-  heritage, terraces and contemporary eras. `facilityStageTop` defines coverage: stadium/locker
-  and training follow the engine's owning `partTop` helper, while the manager office and staff
-  workroom have only stage 0. The academy overview also has one period-neutral image at stage 0;
-  its illustration does not assert the completion of academy construction. The pixel pack shares
-  each of these overview images across eras through explicit overrides. Pending construction
-  targets never select artwork.
+  staff and academy, across heritage, terraces and contemporary eras.
+  `facilityStageTop` and `facilityStage` share one semantic-to-engine part map. Stadium/locker,
+  training and academy use the owning `partTop`/`partLevel` rules, including completed academy
+  levels 0–5; pending construction never selects its target image. Manager/staff offices use
+  stage 0 and explicit shared-era overrides. All pixel-pack environments use native 240×80
+  artwork so the existing pixelated treatment keeps a consistent coarse logical grid.
 - `icons`: semantic roles from `THEME_ICON_ROLES`. Each has a `default` and optional named
   `variants`. Resources are SVG paths (`viewBox`, `layers`, optional `shapeRendering`) or local
   images (`resource`, optional dimensions). A missing variant uses that same role's default.

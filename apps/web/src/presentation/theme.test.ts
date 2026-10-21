@@ -108,14 +108,15 @@ describe('theme resource resolution', () => {
     const theme = createThemeResolver(pixel, { url });
     for (const era of FACILITY_ERAS) {
       expect(theme.facility({ era, kind: 'manager', stage: 0 }).src).toBe(
-        '/art/scenes/manager-office-v1.webp',
+        '/art/scenes/manager-office-v2.webp',
       );
       expect(theme.facility({ era, kind: 'staff', stage: 0 }).src).toBe(
-        '/art/scenes/staff-office-v1.webp',
+        '/art/scenes/staff-office-v2.webp',
       );
-      expect(theme.facility({ era, kind: 'academy', stage: 0 }).src).toBe(
-        '/art/scenes/academy-v1.webp',
-      );
+      for (let stage = 0; stage <= 5; stage++)
+        expect(theme.facility({ era, kind: 'academy', stage }).src).toBe(
+          `/art/scenes/${era}/academy-${stage}.webp`,
+        );
     }
     const candidate = structuredClone(pixel);
     candidate.id = 'office-theme';
@@ -132,6 +133,9 @@ describe('theme resource resolution', () => {
     );
     expect(other.facility({ era: 'heritage', kind: 'academy', stage: 0 }).src).toBe(
       '/presentation/themes/rooms/heritage/academy-0.webp',
+    );
+    expect(other.facility({ era: 'contemporary', kind: 'academy', stage: 5 }).src).toBe(
+      '/presentation/themes/rooms/contemporary/academy-5.webp',
     );
   });
 
