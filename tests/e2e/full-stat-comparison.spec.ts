@@ -95,14 +95,14 @@ for (const viewport of VIEWPORTS)
     await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
     const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
     await opener.click();
+    // One dialog whose title follows its scope, so the locator survives the rename.
+    const sheet = page.getByRole('dialog', { name: /^(우리|리그) 선수 비교$/ });
+    await expect(sheet).toHaveAccessibleName('우리 선수 비교');
     await chooseOption(
-      page
-        .getByRole('dialog', { name: '우리 선수 비교', exact: true })
-        .getByRole('combobox', { name: '비교 지표 범위', exact: true }),
+      sheet.getByRole('combobox', { name: '비교 지표 범위', exact: true }),
       'league',
     );
-    // The dialog names the scope it compares.
-    const sheet = page.getByRole('dialog', { name: '리그 선수 비교', exact: true });
+    await expect(sheet).toHaveAccessibleName('리그 선수 비교');
     await expect(sheet.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
     const b = sheet.getByRole('combobox', { name: '비교 선수 B', exact: true });
     const options = await selectOptions(b);
