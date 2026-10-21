@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r16 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r17 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -177,6 +177,8 @@
   | goals from set pieces without penalties / from penalties / headed | 20–28 / 6–9 / 14–20% |
   | goals by line FW / MF / DF | 50–60 / 27–37 / 8–15% |
   | ball in play (a match) | 54–58 min |
+  - rows that read ball positions or possession sequences (possessions and median passes in one, possessions ending in a shot, mean shot distance, shots from 30 m+ and from the own half) bind the detailed engine only: the aggregate path records no such facts (→MATCH-26).
+  - a top-tier 38-round league season holds: each club's top scorer takes 20–30% of its league goals on average, the league's top scorer scores 22–32 goals, and hat-tricks come at 0.02–0.05 a match.
 - MATCH-24 [o] The live event line narrates notable actions with their cell and tags in Korean football media's terms (하프스페이스, 라인 사이, 뒷공간, 아크 정면, 컷백, 니어/파 포스트, 레스트 디펜스, 세컨드 볼, 수적 우위, 라인 브레이킹, 역습, 게겐프레싱 and the like), derived from recorded events only; it never changes outcomes and uses no invented zone names.
 - MATCH-25 [o] After an own match its post-match material is shown and kept as →MATCH-5 allows: a shot map (place, xG, outcome, header or foot), heat maps for each player and side, a pass network (average positions and passes between pairs) and a tactical report — where attacks came from by lane and band, entries, where the ball was won and lost, set pieces and decisive duels. ← it gives the owner grounds for manager and signing decisions
 - MATCH-26 [o] The aggregate path produces the same complete numerical result contract as detailed play, with the same meanings and units (→MATCH-3/4/13/27).
@@ -207,6 +209,9 @@
   | high regains / end-of-match freshness | press highest / press lowest of the four |
   - a band holds only when its 95% interval lies inside it; an ordering holds only when each difference exceeds its interval.
   - a miss is a defect of the engines' tactical behaviour, fixed and remeasured as →MATCH-28 requires; the bands are never widened to pass.
+- MATCH-30 [o] Both engines hold every →MATCH-13 advanced counter at its real-football level for equal top-tier sides under MATCH-13's definitions; each counter's band and public source are kept in →docs/MATCH-BASELINES.md, and a counter with no comparable public source is listed as unbanded and held to →MATCH-28 parity only. ← an advanced counter without an intended level cannot show which engine is wrong
+  - both paths count a counter by the same definition before its band is read; a definition changes only in MATCH-13.
+  - a band is never set from either engine's own output.
 
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
@@ -216,6 +221,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r17 261022 MATCH-23✎ both engines hold every row→trace-only rows (possessions, passes in one, possessions ending in a shot, shot distance, 30 m+, own half) bind the detailed engine only; MATCH-23+ season scoring concentration (top-scorer share 20–30%, league top scorer 22–32, hat-tricks 0.02–0.05); MATCH-30+ advanced counters at sourced real-football bands, unsourced ones parity only
 - r16 261022 MATCH-29+ tactic pairings at equal strength: per-pairing draw and win-gap bands, counter at least press head to head, points within 0.15 of the mean, possession, xG-conceded, high-regain and freshness orderings
 - r15 261021 MATCH-28✎ constant and rule-impossible metrics unspecified→equal constants equivalent and listed; metrics impossible under a condition's MATCH-6/MATCH-20 rules not applicable there, listed and outside its verdict
 - r14 261020 MATCH-1✎ all→own detailed; MATCH-12✎ auto pace/compressed flights→uniform speed/continuous routes; MATCH-13✎ own→all records; MATCH-16/17✎ targets→coordinated intentions; MATCH-22✎ optional grid/minute summary→non-own aggregate; MATCH-23✎ grid→both bands; MATCH-26✎ absent→full counters; MATCH-27+ consistency; MATCH-28+ equivalence

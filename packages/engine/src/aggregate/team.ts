@@ -12,7 +12,7 @@ import { cellBand, cellLane } from '../grid/pitch';
 import { clamp, random } from '../primitives';
 import { AGGREGATE_CONFIG as C } from './config';
 import { participationIssues, sideCards, sideUnits, type AggregateUnits } from './input';
-import { deriveTeamFacts, inBoxCell } from './ledger';
+import { deriveTeamFacts, inBoxCell, inGoalAreaCell } from './ledger';
 import type {
   AggregateFouls,
   AggregateInput,
@@ -203,7 +203,7 @@ function completionShift(m: Match, p: Period, side: AggregateSide) {
     opp = m.input.sides[o];
   return (
     (p.units[side].passing - p.units[o].pressing) / C.completion.skillScale +
-    (own.profile.pass - opp.profile.pressure) / 100 +
+    ((own.profile.pass - opp.profile.pressure) / 100) * C.completion.profile +
     (own.strength - opp.strength) * C.completion.strength
   );
 }
@@ -438,7 +438,9 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
   const o = other(side),
     own = m.input.sides[side],
     opp = m.input.sides[o];
-  const margin = p.units[side].attack - p.units[o].defence;
+  // The margin flattens past about 15 points as key duels and finishing do (MATCH-11).
+  const s = C.shots.saturation;
+  const margin = s * Math.tanh((p.units[side].attack - p.units[o].defence) / s);
   const manShort =
     Math.max(0, 1 - C.manShort.attack * p.units[side].missing) *
     (1 + C.manShort.defence * p.units[o].missing);
@@ -448,7 +450,12 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
     1.8,
   );
   return {
-    rate: Math.exp(margin / C.shots.skillScale) * profile * m.latent.attack[side] * manShort,
+    rate:
+      Math.exp(margin / C.shots.skillScale) *
+      profile *
+      m.latent.attack[side] *
+      manShort *
+      tacticOf(m, o).guard,
     quality: Math.exp(margin / C.xg.matchupScale),
     shooting: p.units[side].shooting,
     keeping: p.units[o].keeping,
@@ -506,12 +513,23 @@ function shoot(
 function openPlayShots(m: Match, p: Period, side: AggregateSide, r: Rng) {
   const a = attackOf(m, p, side);
   const own = m.sides[side];
+  const shooting = tacticOf(m, side).shot;
   own.moves.forEach((move, index) => {
     if (move.period !== p.period || move.setPiece || move.completed === 0) return;
     if (cellBand(move.to) < 5) return;
+    const place = inGoalAreaCell(move.to)
+      ? C.shots.place.goalArea
+      : inBoxCell(move.to)
+        ? C.shots.place.box
+        : C.shots.place.outside;
     const rate = Math.min(
       0.9,
-      CELL_BASELINES[move.to]!.shot * C.shots.scale * C.shots.kind[move.kind] * a.rate,
+      CELL_BASELINES[move.to]!.shot *
+        C.shots.scale *
+        C.shots.kind[move.kind] *
+        place *
+        shooting *
+        a.rate,
     );
     const k = binomial(r, move.completed, rate);
     for (let i = 0; i < k; i++) {

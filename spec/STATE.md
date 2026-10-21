@@ -18,6 +18,10 @@
 | h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T16:29Z | T321 |
 
 ## inbox
+- 261022 decided T321 T323: T284's review found forced-tactic conditions keep each club's XI in the forced formation's slots (mean slot level 0.86–0.92, forced goals 2.49 v 2.74, tactic points shifted up to ~0.15), which tuning would bake into real worlds → both clubs' squads are built for the forced formation at equal strength (T321 in grid-bands, shared by the aggregate runner); T284's aggregate tactic values stay provisional for T323 (alt: re-pick each club's XI for the forced formation from its own squad, keeping some misfit)
+- 261022 decided T322 T323: T284 found MATCH-13's advanced counters without intended levels (the detailed engine ~40 through balls a team, parity 44–54 of 108 metrics different) → MATCH-30: both engines hold sourced real-football bands kept in docs/MATCH-BASELINES.md, unsourced counters parity only; T322 registers bands and one counting rule, explore T323 calibrates both engines (alt: the detailed engine as reference | unify definitions only)
+- 261022 decided MATCH-23: six rows need ball positions or possession sequences the aggregate path never records → they bind the detailed engine only (alt: make the aggregate generate positions and sequences only to fill the rows)
+- 261022 decided MATCH-23: T284 proposed season scoring concentration from Premier League 2013/14–2023/24 → ratified: club top scorer 20–30% of its league goals, league top scorer 22–32 goals a 38-round season, hat-tricks 0.02–0.05 a match; T322 records the source (alt: keep it a proposal)
 - 261022 decided T321 T284: T320 found grid-bands' forced tactics leave press-style clubs at pre-match fatigue 32 whatever they play, so the freshness ordering mixed squad state with tactic cost → both sides of a pairing start from the same pre-match fatigue and a forced tactic moves only in-match behaviour and cost; T284 adds a forced-tactic option to the aggregate measurement (alt: let a forced tactic also set the squad fatigue its weekly load implies)
 - 261022 decided T320 T321: T278 left press dominant (79/12/9 at home to counter) with MATCH-8 stating tradeoffs only in words → MATCH r16 adds MATCH-29: per-pairing draws 20–30%, win-share gap at most 12 pp, counter at least press head to head, each tactic's points within 0.15 of the mean, possession/xG-conceded/high-regain/freshness orderings; T320 registers them with one evaluator, then explore T321 tunes the detailed engine beside T284 (which also measures them on the aggregate path) before T286 (alt: interim engineering targets inside a task with the SSOT later | accept the imbalance at activation). New IDs start at T320 because T309–T314 are in other sessions' uncommitted work
 - 261021 decided T283: T281 left the aggregate ledger with appearances only while own data splits starts and substitute appearances, and T283 must use the same appearance semantics → T283 adds a `starts` counter through the contract, strict schema and container-3 packing (not yet written in production, so no migration) (alt: show NPC appearances without the split and label it unavailable)
@@ -170,7 +174,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 16 | 16 | - | 0 |
+| MATCH | 17 | 17 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -187,10 +191,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | doing@261022.h3t6 |
-| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 | todo |
+| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | doing@261022.h3t6 |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 | todo |
 | T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | doing@261022.h3t6 |
+| T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | todo |
+| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -206,11 +211,15 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents: T280 merged from wip/full-model-T280 with its batch gate; T281 (owns the aggregate re-draw fallback) beside it, then T283 beside explore T278, T284, T285, T286, T306–T308.
-- known flaky Chromium checks on a loaded host: club-identity-founding "exact previewed design … after reload" (club-hub not visible within 5 s) and growth-core "19-player advice floats" (43.9999 px < 44 px); both passed on rerun of the same tree.
-- CI: 01406b2 (T277) passed every job.
+- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents (implementer plus separate reviewer each; gates on a clean detached worktree because other sessions edit the main checkout): explore T321 (detailed tactic pairings, MATCH-29) and explore T284 (aggregate calibration) run side by side, then T285, T286, T306–T308.
+- known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (43.9999 px < 44 px); Firefox CI — staff.spec.ts:80 and :247 failing at the mediation dialog's 단장 우선 radio `.check()` in `tests/e2e/events.ts` (604590a, 34ebd1b; 48/48 locally); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner (87 s normally).
+- CI: 9e67be5 passed every job.
 
 ## log
+- 261022 T284 integrated (h3t6; explore exit: aggregate core MATCH-23 31/32 measurable rows inside and 0 outside, curve 1.8점, 0 invariant failures in 260,000; parity and advanced-counter bands unresolved → MATCH r17, T322, T323; review named the forced-tactic out-of-position confound)
+- 261022 create-task MATCH r17: T322 (sourced advanced-counter bands, one counting rule) then explore T323 (calibrate both engines, parity at a resolving size) before T286; T285 runs beside T321 first
+- 261022 update-ssot MATCH r17: MATCH-23 trace-only rows bind the detailed engine only and season scoring concentration joins it; MATCH-30+ sourced advanced-counter bands (from T284's decision requests)
+- 261022 refresh T285 T306 bases only: MATCH r17 changes nothing they cite
 - 261022 T320 integrated (h3t6): MATCH-29 bands and one evaluator for both engines; tactic measurements start from equal pre-match fatigue (T321, T284)
 - 261022 T278 integrated (h3t6; explore exit: period-end fixed, 30/38 core MATCH-23 rows inside and 0 outside, draws, curve and MATCH-8 tactics unresolved → MATCH-29, T320, T321; one review round fixed the extra-time clock)
 - 261022 refresh T285 T306 bases only: MATCH r16 adds MATCH-29, which neither cites
@@ -227,7 +236,3 @@
 - 261021 T276 integrated
 - 261021 T304 integrated
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
-- 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
-- 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
-- 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
-- 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
