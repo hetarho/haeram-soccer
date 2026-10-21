@@ -156,6 +156,16 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   });
   const revision = await advanceRound(page);
   await expect(page.getByRole('alert')).toContainText('저장 실패');
+  const alerts = page.getByTestId('runtime-alerts');
+  await expect(
+    alerts.getByRole('button', { name: '저장 다시 불러오기', exact: true }),
+  ).toBeVisible();
+  expect(
+    await alerts.evaluate((element) => ({
+      portal: element.parentElement === document.body,
+      position: getComputedStyle(element).position,
+    })),
+  ).toEqual({ portal: true, position: 'fixed' });
   // The status names the last committed save beside the revision this match reached.
   await expect(page.getByTestId('save-status')).toContainText(
     new RegExp(`(방금|초 전) 저장 · r${revision} ·`),
@@ -323,7 +333,7 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
     seed: 'parked-crisis',
     level: 'hard' as const,
   });
-  // In debt and without a manager: the red band and the manager notice sit under the HUD.
+  // In debt and without a manager: retain the cash band and the floating manager notice.
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
   await page.goto('/');

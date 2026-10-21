@@ -21,6 +21,7 @@ import {
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
+  checkpointSchemaFor,
   MATCH_MODEL_REVISION,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
@@ -693,13 +694,13 @@ it('consumes only an exact validated inspection without sharing a live world or 
   }
 });
 
-/** A container-2 checkpoint of `w` as written, without the writer's container selection. */
+/** A checkpoint of `w` in the container a writer selects for it, without validating `w` first. */
 async function sealed(w: World) {
   const bytes = new TextEncoder().encode(canonical(pack(w)));
   const { codec, payload } = await encodePayload(bytes);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return JSON.stringify({
-    schema: 2,
+    schema: checkpointSchemaFor(w),
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,

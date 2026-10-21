@@ -27,15 +27,14 @@ async function step(page: Page) {
 }
 /** One domestic round, allowing cup fixtures and real event stops between league fixtures. */
 export async function advanceOneRound(page: Page) {
-  const previous = await page
-    .getByRole('combobox', { name: '진행 모드', exact: true })
-    .getAttribute('data-value');
+  const wasManual =
+    (await page.getByRole('button', { name: '다음 이벤트', exact: true }).count()) > 0;
   await manual(page);
   const initial = await identity(page);
   for (let event = 0; event < 40; event++) {
     const now = await identity(page);
     if (now.year !== initial.year || now.round > initial.round) {
-      if (previous === 'automatic') await configureResponsibilities(page, { mode: 'automatic' });
+      if (!wasManual) await configureResponsibilities(page, { mode: 'automatic' });
       return;
     }
     await step(page);

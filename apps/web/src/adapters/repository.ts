@@ -25,7 +25,7 @@ export interface StoragePort {
   removeItem(key: string): void;
 }
 export interface Envelope {
-  /** Container 1 or 2 (identity-bearing); `World.schema` stays 1 either way. */
+  /** Container 1, 2 (identity-bearing) or 3 (match model); `World.schema` stays 1 in each. */
   schema: CheckpointSchema;
   engine: string;
   catalog: string;

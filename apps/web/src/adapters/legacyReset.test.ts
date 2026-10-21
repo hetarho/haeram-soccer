@@ -1,7 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
-import { envelopeEngine } from '../../../../packages/contracts/src/versions';
+import {
+  envelopeEngine,
+  FULL_MODEL_CHECKPOINT_SCHEMA,
+} from '../../../../packages/contracts/src/versions';
 import { encode, recognizedLegacy, Saves } from './persistence';
 import { resetLegacy } from './legacyReset';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type GameEntry, type ParkedStore } from './games';
@@ -211,10 +214,10 @@ it('unknown envelope never grants legacy reset permission', async () => {
     expect(await recognizedLegacy(raw)).toBe(true);
   }
   // An apparently older engine header over a genuine legacy payload, in a container this version
-  // cannot read.
-  for (const schema of [0, 3, 99]) {
+  // cannot read or in the match-model container, which earlier rules never wrote.
+  for (const schema of [0, FULL_MODEL_CHECKPOINT_SCHEMA, FULL_MODEL_CHECKPOINT_SCHEMA + 1, 99]) {
     const raw = JSON.stringify({ ...JSON.parse(legacy), schema });
-    expect(envelopeEngine(raw)).toBeUndefined();
+    expect(envelopeEngine(raw)).toBe(schema === FULL_MODEL_CHECKPOINT_SCHEMA ? '2.0.0' : undefined);
     expect(await recognizedLegacy(raw)).toBe(false);
     const unindexed = new Memory();
     unindexed.setItem(ACTIVE_SAVE_KEYS[1], raw);

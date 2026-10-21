@@ -561,6 +561,46 @@
   margin-left: 0;
   min-height: 48px;
 }
+.feedbackOverlay {
+  position: fixed;
+  z-index: 90;
+  right: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 10px;
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.feedbackOverlay > .error,
+.feedbackOverlay > .critical {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.feedbackOverlay button {
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: 0;
+}
+.feedbackOverlay .criticalActions {
+  margin-top: 0;
+}
+@media (max-width: 760px) {
+  .feedbackOverlay {
+    right: 12px;
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    max-height: calc(100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  .feedbackOverlay button {
+    min-height: 48px;
+  }
+}
 .progress {
   height: 4px;
   background: var(--surface-2);
@@ -1909,7 +1949,7 @@
   display: flex;
   gap: 6px;
 }
-/* The play toggle stays a full touch target; the pace chips are styled in ProgressControls. */
+/* Play and the pace dropdown keep full touch targets. */
 .clockButtons button {
   min-width: 44px;
   min-height: 44px;

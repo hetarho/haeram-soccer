@@ -60,6 +60,23 @@ test('direct-financial-conflict-review', async ({ page }) => {
   await expect(review.getByLabel('이번 중재 결과 미리보기')).toContainText('보강 약속');
   await expect(review).toContainText('마감');
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(review.getByLabel('중재 대상')).toBeVisible();
+  await expect(review.getByRole('region', { name: '감독과 단장 의견' })).toBeVisible();
+  await expect(
+    review.locator('footer').getByRole('button', { name: '이번 중재 결정 확정', exact: true }),
+  ).toBeInViewport();
+  const choices = await review.getByRole('radio').evaluateAll((inputs) =>
+    inputs.map((input) => {
+      const rect = input.getBoundingClientRect();
+      return { y: rect.y, width: rect.width, height: rect.height };
+    }),
+  );
+  expect(choices).toHaveLength(3);
+  for (const choice of choices) {
+    expect(choice.y).toBeCloseTo(choices[0].y, 0);
+    expect(choice.width).toBeGreaterThanOrEqual(44);
+    expect(choice.height).toBeGreaterThanOrEqual(44);
+  }
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await review.getByRole('button', { name: '이번 중재 결정 확정', exact: true }).click();
   await expect(review).toHaveCount(0);
@@ -104,12 +121,16 @@ test('support changes retain the preview and confirm only the latest conditions'
   const confirm = review.getByRole('button', { name: '이번 중재 결정 확정', exact: true });
   await expect(preview).toHaveAttribute('aria-busy', 'false');
   await expect(preview).toContainText('보강 약속');
+  await expect(confirm).toHaveCSS('opacity', '1');
+  await expect(confirm).toHaveCSS('filter', 'none');
   const original = await preview.elementHandle();
   const height = (await preview.boundingBox())!.height;
   await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
   await expect(preview).toHaveAttribute('aria-busy', 'true');
   await expect(preview).toContainText('보강 약속');
   await expect(confirm).toBeDisabled();
+  await expect(confirm).toHaveCSS('opacity', '1');
+  await expect(confirm).toHaveCSS('filter', 'none');
   expect((await preview.boundingBox())!.height).toBeGreaterThanOrEqual(height);
   await review.getByRole('radio', { name: '감독 우선', exact: true }).check();
   await expect(preview).toHaveAttribute('aria-busy', 'false');

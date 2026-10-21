@@ -1,4 +1,5 @@
 import { CashAlarm } from './CashAlarm';
+import { FeedbackOverlay } from './FeedbackOverlay';
 import { openClubSeason } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import {
@@ -754,46 +755,50 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   const home = useNavigation((state) => state.page === 'dashboard');
   const critical = playing ? state.view?.world.critical : undefined;
   const blocked = state.busy || state.readonly;
+  const error = state.error || localError;
   return (
     <>
-      {(state.error || localError) && (
-        <div className={s.error} role="alert">
-          {state.error || localError}{' '}
-          <button onClick={() => location.reload()}>저장 다시 불러오기</button>
-        </div>
+      {(error || critical) && (
+        <FeedbackOverlay>
+          {error && (
+            <div className={s.error} role="alert">
+              {error}
+              <button onClick={() => location.reload()}>저장 다시 불러오기</button>
+            </div>
+          )}
+          {critical === MANAGER_GONE ? (
+            <div className={s.critical} role="status">
+              감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
+              <div className={s.criticalActions}>
+                <button
+                  className={s.primary}
+                  disabled={blocked}
+                  onClick={() => {
+                    void client.acknowledge();
+                    openPeople('candidates');
+                  }}
+                >
+                  감독 선임하러 가기
+                </button>
+                <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                  임시 감독으로 계속
+                </button>
+              </div>
+            </div>
+          ) : (
+            critical && (
+              <div className={s.critical} role="status">
+                {critical}
+                <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                  알림 확인 후 계속
+                </button>
+              </div>
+            )
+          )}
+        </FeedbackOverlay>
       )}
-      {/* App notices arrive as system notifications in the HUD inbox, never over the view (→WEB-66). */}
+      {/* Routine notices remain in the inbox; debt retains its existing status band. */}
       {playing && !home && <CashAlarm />}
-      {critical === MANAGER_GONE ? (
-        // The interim manager can carry on, or the owner goes straight to the candidates.
-        <div className={s.critical} role="status">
-          감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
-          <div className={s.criticalActions}>
-            <button
-              className={s.primary}
-              disabled={blocked}
-              onClick={() => {
-                void client.acknowledge();
-                openPeople('candidates');
-              }}
-            >
-              감독 선임하러 가기
-            </button>
-            <button disabled={blocked} onClick={() => void client.acknowledge()}>
-              임시 감독으로 계속
-            </button>
-          </div>
-        </div>
-      ) : (
-        critical && (
-          <div className={s.critical} role="status">
-            {critical}
-            <button disabled={blocked} onClick={() => void client.acknowledge()}>
-              알림 확인 후 계속
-            </button>
-          </div>
-        )
-      )}
       {state.busy && (
         <div className={s.foregroundProgress}>
           <div
@@ -1175,20 +1180,18 @@ export function App() {
       <main className={s.main}>
         {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
         {!client && localError && (
-          <div className={s.error} role="alert">
-            {localError}
-          </div>
+          <FeedbackOverlay>
+            <div className={s.error} role="alert">
+              {localError}
+            </div>
+          </FeedbackOverlay>
         )}
         {client && screen === 'game' && (
           <RuntimeFeedback client={client} localError={localError} playing={playing} />
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressControls
-            client={client}
-            controller={controller}
-            compact={page !== 'dashboard'}
-          />
+          <ProgressControls controller={controller} compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller ? (

@@ -55,19 +55,14 @@ export const activeMatchModel = (w: Pick<World, 'matchModel'>): MatchModelRevisi
 export const carriesMatchModel = (w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>) =>
   !!w.matchModel || !!w.npcSeason || w.ownMatches.some((m) => m.model !== undefined);
 /**
- * The checkpoint container a world is written in (→SAVE-23): unactivated worlds keep the current
- * container. A world carrying full-model data needs `FULL_MODEL_CHECKPOINT_SCHEMA`, whose codec does
- * not exist yet, so writing one fails rather than letting an older reader drop its fields.
+ * The checkpoint container a world is written in (→SAVE-23): a world carrying full-model data needs
+ * `FULL_MODEL_CHECKPOINT_SCHEMA`, which an older reader refuses instead of dropping its fields;
+ * unactivated worlds keep the current container.
  */
-export function checkpointSchemaFor(
+export const checkpointSchemaFor = (
   w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>,
-): CheckpointSchema {
-  if (carriesMatchModel(w))
-    throw new Error(
-      `경기 모델 데이터는 저장 컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}가 필요하지만 아직 쓸 수 없습니다.`,
-    );
-  return CURRENT_CHECKPOINT_SCHEMA;
-}
+): CheckpointSchema =>
+  carriesMatchModel(w) ? FULL_MODEL_CHECKPOINT_SCHEMA : CURRENT_CHECKPOINT_SCHEMA;
 
 const count = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const day = z.number().int().min(0).max(365);

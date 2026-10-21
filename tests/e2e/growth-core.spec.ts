@@ -1,6 +1,10 @@
 import { watchNext } from './watch';
 import { expect, test, type Locator } from '@playwright/test';
 import { expectHomeBounds, viewGeometry } from './layout';
+import { createWorld } from '../../packages/engine/src/index';
+import { activePlayers } from '../../packages/engine/src/world';
+import { importResponsibilityCareer } from './responsibility-fixtures';
+import { chooseOption } from './select';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
@@ -18,6 +22,72 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
+  test(`19-player advice floats outside home at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const world = createWorld({
+      country: 'ENG',
+      name: 'Synthetic Thin Squad',
+      color: '#24543b',
+      seed: 'thin-squad-alert',
+      level: 'easy',
+    });
+    for (const player of activePlayers(world).slice(19)) player.status = 'sold';
+    world.cash = '999999999';
+    world.manager.trust = 80;
+    world.morale = 80;
+    for (const player of activePlayers(world)) player.fatigue = 0;
+    await importResponsibilityCareer(page, world);
+    const alert = page.getByTestId('team-state-alert');
+    await expect(alert).toContainText('선수 19명');
+    await expect(page.getByTestId('team-state')).not.toContainText('선수 19명');
+    expect(
+      await alert.evaluate((element) => ({
+        portal: element.parentElement === document.body,
+        position: getComputedStyle(element).position,
+        insideHome: !!element.closest('[data-testid="club-hub"]'),
+      })),
+    ).toEqual({ portal: true, position: 'fixed', insideHome: false });
+    const bounds = (await alert.boundingBox())!;
+    const nav = (await page.getByRole('navigation', { name: '모바일 게임 메뉴' }).boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(nav.y);
+    for (const button of await alert.getByRole('button').all()) await expectTouchSize(button);
+    await expectHomeBounds(page);
+    const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+    await menu.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await expect(alert).toHaveCount(0);
+    await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await expect(alert).toContainText('선수 19명');
+    await alert.getByRole('button', { name: '더 보기', exact: true }).click();
+    const remedies = page.getByRole('dialog', { name: '선수단 채우기', exact: true });
+    await expect(remedies).toBeVisible();
+    await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
+    await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+    const event = page.getByTestId('event-group');
+    await expect(event).toBeVisible({ timeout: 15000 });
+    const stacking = await event.evaluate((group) => {
+      const card = group.parentElement!;
+      const advice = document.querySelector('[data-testid="team-state-alert"]')!;
+      const eventBounds = card.getBoundingClientRect();
+      const adviceBounds = advice.getBoundingClientRect();
+      const left = Math.max(eventBounds.left, adviceBounds.left);
+      const right = Math.min(eventBounds.right, adviceBounds.right);
+      const top = Math.max(eventBounds.top, adviceBounds.top);
+      const bottom = Math.min(eventBounds.bottom, adviceBounds.bottom);
+      return {
+        overlaps: right > left && bottom > top,
+        eventOnTop: card.contains(
+          document.elementFromPoint((left + right) / 2, (top + bottom) / 2),
+        ),
+      };
+    });
+    expect(stacking).toEqual({ overlaps: true, eventOnTop: true });
+  });
+
   test(`growing club fits ${viewport.width}x${viewport.height} and opens real play and details`, async ({
     page,
   }) => {

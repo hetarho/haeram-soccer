@@ -17,7 +17,12 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    {
+      name: 'firefox',
+      // CI 39534910810 lost Firefox during initial navigation; restart its worker once.
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Firefox'] },
+    },
     // Software-rendered WebKit on CI runs the multi-round journeys two to three times slower;
     // one project budget replaces chasing whichever journey crosses 30 s next. Its web process
     // also stalls or crashes now and then (no paints, a click that never lands, "Page crashed")
