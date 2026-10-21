@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r17 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r18 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -67,8 +67,8 @@
   | final-third pass | pass attempt that starts in the attacking third, and its completions |
   | progressive pass | completed pass into a higher band |
   | take-on | attempted dribble past a marker (dribbles = successful ones) |
-  | high turnover | ball won while the opponent had it in its defensive third |
-  | PPDA | opponent pass attempts in its own two thirds ÷ own tackles+interceptions there |
+  | high turnover | a sequence that starts with a ball won in open play within 40 m of the opponent's goal (the published Opta convention) |
+  | PPDA | opponent pass attempts in its own 60% of the pitch ÷ own defensive actions there — tackles, interceptions, challenges and fouls (the published convention) |
   | field tilt | own final-third passes ÷ both sides' final-third passes |
   | box entry | a completed pass or carry that ends in the box |
   | front-of-box entry | a completed pass or carry that ends in the band in front of the box |
@@ -221,6 +221,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r18 261022 MATCH-13✎ high turnover ball won in the opponent's defensive third→a sequence starting with an open-play ball won within 40 m of its goal; PPDA own two thirds ÷ tackles+interceptions→own 60% ÷ tackles, interceptions, challenges and fouls (published conventions)
 - r17 261022 MATCH-23✎ both engines hold every row→trace-only rows (possessions, passes in one, possessions ending in a shot, shot distance, 30 m+, own half) bind the detailed engine only; MATCH-23+ season scoring concentration (top-scorer share 20–30%, league top scorer 22–32, hat-tricks 0.02–0.05); MATCH-30+ advanced counters at sourced real-football bands, unsourced ones parity only
 - r16 261022 MATCH-29+ tactic pairings at equal strength: per-pairing draw and win-gap bands, counter at least press head to head, points within 0.15 of the mean, possession, xG-conceded, high-regain and freshness orderings
 - r15 261021 MATCH-28✎ constant and rule-impossible metrics unspecified→equal constants equivalent and listed; metrics impossible under a condition's MATCH-6/MATCH-20 rules not applicable there, listed and outside its verdict
