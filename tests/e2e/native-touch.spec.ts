@@ -1,3 +1,4 @@
+import { marketFilters, marketRows, closeMarketPanel } from './market';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
@@ -182,13 +183,13 @@ for (const viewport of [
       .getByRole('tab', { name: '이적시장', exact: true });
     await expectTouchControl(marketTab, viewport);
     await marketTab.click();
-    const order = page.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
+    const filter = await marketFilters(page);
+    const order = filter.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
     await expectTouchControl(order, viewport);
     await chooseOption(order, 'potential');
     await expect(order).toHaveAttribute('data-value', 'potential');
-    await expect(
-      page.getByRole('region', { name: '선수 영입 데스크' }).getByRole('article'),
-    ).toHaveCount(8);
+    await closeMarketPanel(page, '영입 필터');
+    await expect(marketRows(page)).toHaveCount(8);
     await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .getByRole('button', { name: '리그', exact: true })

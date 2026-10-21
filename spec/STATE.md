@@ -164,7 +164,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 111 | 111 | - | 0 |
+| WEB | 112 | 112 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -211,7 +211,9 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261022 T314 done: table-first market, on-demand filters/information/negotiations and stable-ID detail; 15 focused tests, static checks and build passed. Browser journeys updated for the ARCH-30 batch.
 - 261022 T313 done (u6v1): 18 era/academy-level scenes plus two coarser offices, all native 240×80; actual-completion selection and captions; 36 focused cases and task checks pass, 99 assets validated. Commit this task only; T314 remains separately owned; browser batch pending.
+- 261022 T314 start (m7k2): update-ssot WEB r112 and create-task for the requested table-first market; preserve existing T313 artwork edits and other active work. WEB-43 is not cited by another active task.
 - 261022 T313 start (u6v1): WEB r111 gives academy actual completed-level/era artwork and matches all new art to the existing 240×80 grid; owner requested completion and a main commit.
 - 261022 T312 done (u6v1): original academy artwork applied above the youth tab; 35 focused cases, typecheck/lint/format/build and 82-asset validation pass. Browser journey updated for batch; local main commit, no push.
 - 261022 T312 start (u6v1): WEB r110 adds an original youth academy image and theme role above academy operations; existing identities and engine task owners are preserved.
@@ -229,5 +231,3 @@
 - 261021 T305 integrated
 - 261021 T276 integrated
 - 261021 T304 integrated
-- 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
-- 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.

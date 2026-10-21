@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r111 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r112 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -159,7 +159,8 @@
 - WEB-43 [o] 선수단·스태프 holds 선수, 이적시장, 감독 and 스태프 as page tabs, retaining /people?view= with players omitted and market/manager/coaches unchanged.
   - 선수, 감독 and 스태프 open with a full-width facility illustration beneath their tab bar (→WEB-72), followed by the people and their primary actions.
   - 선수 shows the current roster with OVR/position/adaptation, injuries/retirement, wage versus market wage, contract and unhappy reason, stance/talk actions, view settings/full metrics and current contract responsibility (→WEB-55/59/68). Current-player detail offers contextual training, contract where available and next-match preparation actions; former players remain historical.
-  - 이적시장 leads with the window/deadline, manager's outstanding slot requests and consequences, and actionable negotiations. Candidate filters/comparison and relevant candidates follow. The full scout shortlist retains draw/next-draw dates and named picks; full delegation/sale rules are disclosed below the operational content. Recruitment policy opens its exact department as a contextual sheet (→WEB-77).
+  - 이적시장 shows its window/deadline in one thin line and all current candidates in a compact table, without a preview limit. Each row exposes identity, position/age, OVR/POT and fee; tapping it opens full player, fit, cost and recruitment details. Comparison retains stable player selections.
+  - Market filters and sorting open from one labelled control. A separate information control discloses recruitment needs, manager requests/consequences, squad registration and recruitment policy; a labelled negotiation control exposes bids and actionable replies. These panels do not precede the candidate rows as expanded blocks. The scout shortlist retains draw/next-draw dates and named picks inside the information panel. Recruitment policy opens its exact department as a contextual sheet (→WEB-77); full delegation/sale rules remain disclosed there.
   - 감독 keeps present OVR/POT, school, contract/renewal terms, owner requests/tactics and replacement. Hiring candidates keep their effects, compensation, terms and explicit confirmation (→STAFF-17/18). Future appointment criteria are distinguished from replacing the present manager.
   - 스태프 distinguishes recruitment/administration (sporting director and chief scout) from football coaching departments. Each post keeps its actual member, trait/effect, contract/renewal, replacement candidates/costs and delegated hiring preview. Operational screens identify their responsible post and can open that post directly; the assistant and youth director link to actual training.
   - Decision responsibility names direct/automatic operation for the relevant central responsibility; relevant criteria show whether they are currently used and when (→WEB-45/75). Detailed rules do not precede the main action.
@@ -444,6 +445,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r112 261022 WEB-43✎ market expanded deadline/needs/policy/filters and candidate cards→thin deadline, complete compact candidate table, row details and on-demand filters/information/negotiations
 - r111 261022 WEB-72✎ one shared academy image→era/completed-level scenes; dense overview art→240×80 grid matching existing art; WEB-70✎ academy title only→completed-level caption
 - r110 261022 WEB-70✎ prospects-first youth tab→dedicated academy overview before prospects; WEB-72✎ no youth scene→original period-neutral academy image with one semantic stage
 - r109 261021 WEB-86✎ independent region/palette controls→three linked named colours and crest randomisation

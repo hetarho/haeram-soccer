@@ -1,3 +1,4 @@
+import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { chooseOption } from './select';
 import { test, expect, type Page } from '@playwright/test';
 import {
@@ -51,6 +52,7 @@ test('direct-financial-conflict-review', async ({ page }) => {
   const w = fixture(),
     record = w.mediations![0];
   await market(page, w);
+  await marketInfo(page);
   const commitments = page.getByRole('region', { name: '영입 중재와 보강 약속' });
   await commitments.getByRole('button', { name: '영입 중재 검토', exact: true }).click();
   const review = page.getByRole('dialog', { name: '영입 중재 검토' });
@@ -85,6 +87,7 @@ test('direct-financial-conflict-review', async ({ page }) => {
 test('case-support-is-not-standing-policy', async ({ page }) => {
   const w = fixture();
   await market(page, w);
+  await marketInfo(page);
   await page
     .getByRole('region', { name: '영입 중재와 보강 약속' })
     .getByRole('button', { name: '영입 중재 검토', exact: true })
@@ -112,6 +115,7 @@ test('support changes retain the preview and confirm only the latest conditions'
     };
   });
   await market(page, fixture());
+  await marketInfo(page);
   await page
     .getByRole('region', { name: '영입 중재와 보강 약속' })
     .getByRole('button', { name: '영입 중재 검토', exact: true })
@@ -174,6 +178,7 @@ test('retained-promise-status', async ({ page }) => {
   w.inbox = [];
   w.events = [];
   await market(page, w);
+  await marketInfo(page);
   await page.getByRole('button', { name: '전체 영입 결정 기록', exact: true }).click();
   const history = page.getByRole('dialog', { name: '영입 결정 기록' });
   for (const text of ['이행 대기', '이행 완료', '미이행', '취소'])
@@ -274,13 +279,14 @@ for (const arrival of ['none', 'loan', 'free'] as const)
           (arrival === 'free' ? o.freeAgent : !o.freeAgent),
       )!;
       expect(offer).toBeDefined();
-      await page
-        .getByTestId(`candidate-${offer.player.id}`)
+      const card = await marketCandidate(page, offer.player.id);
+      await card
         .getByRole('button', {
           name: arrival === 'free' ? '자유계약 영입' : '1시즌 임대',
           exact: true,
         })
         .click();
+      await closeMarketPanel(page, '영입 후보 상세');
     }
     const before = await exportedCareer(page);
     expect(before.promises![0].deadline).toEqual(promise.deadline);

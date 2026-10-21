@@ -3,6 +3,7 @@ import { RecruitmentCommitments } from './MediationReview';
 import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
+import { PixelIcon } from './PixelIcon';
 import { useState } from 'react';
 import type { Line, TransferBid, World } from '../../../../packages/contracts/src/types';
 import type { Personality } from '../../../../packages/contracts/src/player';
@@ -276,9 +277,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   );
   const [comparing, setComparing] = useState(false);
   const [message, setMessage] = useState('');
-  const [bidding, setBidding] = useState<Candidate>();
-  // A shortlisted candidate opened from 스카우트 명단 without a bid to make (→CLUB-33).
-  const [viewing, setViewing] = useState<Candidate>();
+  const [biddingId, setBiddingId] = useState<string>();
+  const [viewingId, setViewingId] = useState<string>();
+  const [panel, setPanel] = useState<'filters' | 'info' | 'negotiations'>();
   const [step, setStep] = useState(1);
   // 모두 보기 on the 이적 협상 list: closed bids past the first rows.
   const [expanded, setExpanded] = useState(false);
@@ -294,6 +295,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     buy: recruitmentPreview(w, offer),
     loan: recruitmentPreview(w, offer, true),
   }));
+  const viewing = candidates.find((candidate) => candidate.offer.player.id === viewingId);
+  const bidding = candidates.find((candidate) => candidate.offer.player.id === biddingId);
   const ordered = candidates
     .filter(
       ({ offer, buy }) =>
@@ -379,13 +382,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       selected={comparison.includes(candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.player.id)}
       onRecruit={(loan) => {
-        setViewing(undefined);
         void recruit(candidate, loan);
       }}
       onBid={() => {
-        setViewing(undefined);
+        setViewingId(undefined);
         setStep(1);
-        setBidding(candidate);
+        setBiddingId(candidate.offer.player.id);
       }}
       pending={pendingFor(candidate.offer.player.id)}
     />
@@ -405,156 +407,335 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         className={`${s.window} ${window.open ? s.windowOpen : ''}`}
         data-testid="transfer-window"
       >
-        <b>{window.label}</b>
-        <small>
-          {window.open
-            ? '이적료 영입·임대·매각이 가능해요. 자유계약 선수는 언제든 영입할 수 있어요.'
-            : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
-        </small>
+        <span aria-hidden="true" className={s.windowDot} />
+        <span>{window.label}</span>
       </div>
-      <RecruitmentNeeds w={w} offers={state.view!.transfers} onRole={setRole} />
-      {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
-      <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
-        <span>
-          영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
-        </span>
-        <small>운영 방침에서 바꿔요</small>
-      </button>
-      <div className={s.summary}>
-        <span>
-          선수단 정원 <b>{registered.value}</b>
-          <small>{registered.detail}</small>
-        </span>
-        <span>
-          협상 중 <b>{outgoing.length}건</b>
-        </span>
-      </div>
-      {board.length > 0 && (
-        <section className={s.negotiations} aria-label="진행 중인 협상">
-          <h3>이적 협상</h3>
-          {shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
-            <div key={bid.id} className={s.negotiation} data-status={bid.status}>
-              <span>
-                <b>
-                  {bidKind(bid)} · {player?.name || '선수'}
-                  {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
-                  {bid.direction === 'in' && player?.transferRequest ? ' · 이적 요청' : ''}
-                </b>
-                <small>
-                  {bid.direction === 'in' && other ? `${other.name} · ` : ''}
-                  {freeSigning(bid) ? (
-                    '자유계약 · 이적료 없음'
-                  ) : bid.status === 'countered' ? (
-                    <>역제안 {format(bid.counterFee || bid.fee)}</>
-                  ) : (
-                    format(bid.fee)
-                  )}{' '}
-                  · {BID_STATUS[bid.status]}
-                  {(bid.status === 'pending' || bid.status === 'countered') && ` · ${dueLabel}까지`}
-                  {bid.staff && bid.status === 'countered' && ' · 단장이 답해요'}
-                  {bid.direction === 'in' &&
-                    w.staff?.some((member) => member.person === bid.playerId) && (
-                      <>
-                        {' '}
-                        · 선수·코치 계약 함께 종료 · 코치 계약 종료 보상{' '}
-                        {format(
-                          releaseCost(
-                            w,
-                            w.staff.find((member) => member.person === bid.playerId),
-                          ),
-                        )}
-                      </>
-                    )}
-                </small>
-              </span>
-              {actionable && (
-                <span className={s.negotiationActions}>
-                  <button
-                    className={s.primary}
-                    disabled={blocked}
-                    onClick={() =>
-                      void client.command({ type: 'respond-bid', id: bid.id, accept: true })
-                    }
-                  >
-                    {bid.direction === 'in' ? '매각' : '수락'}
-                  </button>
-                  <button
-                    disabled={blocked}
-                    onClick={() =>
-                      void client.command({ type: 'respond-bid', id: bid.id, accept: false })
-                    }
-                  >
-                    거절
-                  </button>
-                </span>
-              )}
-            </div>
-          ))}
-          {shownBids.length < board.length && (
-            <button type="button" onClick={() => setExpanded(true)}>
-              {board.length}건 모두 보기
+      <header className={s.toolbar}>
+        <h3>
+          영입 후보{' '}
+          <span>
+            {ordered.length}
+            {ordered.length !== candidates.length ? ` / ${candidates.length}` : ''}명
+          </span>
+        </h3>
+        <div className={s.tools}>
+          {selectedComparison.length > 0 && (
+            <button
+              type="button"
+              aria-label={`선택한 ${selectedComparison.length}명 비교`}
+              disabled={selectedComparison.length !== 2}
+              onClick={() => setComparing(true)}
+            >
+              비교 {selectedComparison.length}/2
             </button>
           )}
-        </section>
-      )}
-      {registered.full && (
-        <p className={s.warning}>
-          선수단 정원 {registered.value} · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
-        </p>
-      )}
-      <div className={s.roles} role="group" aria-label="영입 포지션 선택">
-        {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
-          <button key={value} aria-pressed={role === value} onClick={() => setRole(value)}>
-            {value === 'all' ? '전체' : value}
-          </button>
-        ))}
-      </div>
-      <div className={s.filters}>
-        <button className={s.recommendation} onClick={() => setRole(recommended)}>
-          추천 포지션: {lineNames[recommended]} · {recommended}
-        </button>
-        <label>
-          후보 정렬{' '}
-          <Select
-            aria-label="영입 후보 정렬"
-            value={order}
-            onValueChange={(value) => setOrder(value as Order)}
+          <button
+            type="button"
+            aria-label="영입 필터"
+            aria-haspopup="dialog"
+            aria-expanded={panel === 'filters'}
+            onClick={() => setPanel('filters')}
           >
-            <option value="impact">즉시 전력</option>
-            <option value="potential">잠재력</option>
-            <option value="fee">낮은 이적료</option>
-          </Select>
-        </label>
-        <button aria-pressed={boostOnly} onClick={() => setBoostOnly(!boostOnly)}>
-          {w.lineup ? '수동 교체 보강 후보' : '선발 보강 후보'}
-        </button>
-      </div>
-      <div className={s.comparisonBar}>
-        <span>최근 선택한 두 명을 비교해요</span>
-        <button
-          disabled={selectedComparison.length !== 2}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            setComparing(true);
-          }}
-        >
-          선택한 {selectedComparison.length}명 비교
-        </button>
-      </div>
-      <p className={s.note}>
-        현재 선발의 약한 포지션을 추천해요. 전력·적합도는 선수 구성의 비교이며 경기 승리를 보장하지
-        않습니다.
-      </p>
+            <PixelIcon name="filter" size={16} />
+            필터
+            {(role !== 'all' || boostOnly || order !== 'impact') && (
+              <i className={s.activeDot} aria-label="적용 중" />
+            )}
+          </button>
+          <button
+            type="button"
+            aria-label={`이적 협상 · ${outgoing.length}건 진행 중${board.some(({ actionable }) => actionable) ? ' · 응답 필요' : ''}`}
+            aria-haspopup="dialog"
+            aria-expanded={panel === 'negotiations'}
+            onClick={() => setPanel('negotiations')}
+          >
+            협상
+            {bids.length > 0 && (
+              <span className={s.count}>
+                {board.filter(({ actionable }) => actionable).length || outgoing.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            className={s.infoTrigger}
+            aria-label="영입 정보 · 필요한 영입과 감독 요청"
+            aria-haspopup="dialog"
+            aria-expanded={panel === 'info'}
+            onClick={() => setPanel('info')}
+          >
+            <span aria-hidden="true">!</span>
+          </button>
+        </div>
+      </header>
       {message && (
         <p className={s.message} role="status">
           {message}
         </p>
       )}
-      <div className={s.cards} aria-label="영입 후보 목록">
-        {ordered.map(render)}
-      </div>
-      {!ordered.length && (
-        <p className={s.empty}>이 조건에 맞는 후보가 없어요. 포지션이나 보강 조건을 바꿔보세요.</p>
+      <table className={s.candidateTable} aria-label="영입 후보 목록">
+        <thead>
+          <tr>
+            <th scope="col">선수</th>
+            <th scope="col" className={s.ratingColumn}>
+              OVR
+            </th>
+            <th scope="col" className={s.potentialColumn}>
+              POT
+            </th>
+            <th scope="col" className={s.feeColumn}>
+              이적료
+            </th>
+            <th scope="col" className={s.wageColumn}>
+              연봉
+            </th>
+            <th scope="col" className={s.compareColumn}>
+              비교
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {ordered.map(({ offer }) => {
+            const player = offer.player;
+            const pending = pendingFor(player.id);
+            return (
+              <tr
+                key={player.id}
+                data-testid={`market-candidate-${player.id}`}
+                data-candidate-id={player.id}
+                data-line={lineOf(player.position)}
+                data-selected={selectedComparison.includes(player.id) || undefined}
+                onClick={(event) => {
+                  if ((event.target as Element).closest('button, input, a')) return;
+                  setViewingId(player.id);
+                }}
+              >
+                <td>
+                  <button
+                    type="button"
+                    className={s.playerName}
+                    aria-label={`${player.name} 상세 보기`}
+                    onClick={() => setViewingId(player.id)}
+                  >
+                    <b>{player.name}</b>
+                    <small>
+                      {player.position} · {w.year - player.born}세
+                      {!offer.available ? ' · 계약 완료' : pending ? ' · 협상 중' : ''}
+                    </small>
+                  </button>
+                </td>
+                <td>
+                  <OvrBadge value={overall(player)} />
+                </td>
+                <td className={s.potentialValue}>{Math.round(player.potential)}</td>
+                <td className={s.feeValue}>
+                  {offer.freeAgent ? <span className={s.freeTag}>자유계약</span> : plain(offer.fee)}
+                </td>
+                <td className={s.wageColumn}>{plain(player.wage)}</td>
+                <td>
+                  <button
+                    type="button"
+                    className={s.compareToggle}
+                    aria-label={`${player.name} 비교`}
+                    aria-pressed={selectedComparison.includes(player.id)}
+                    onClick={() => toggle(player.id)}
+                  >
+                    <span aria-hidden="true">
+                      {selectedComparison.includes(player.id) ? '✓' : '+'}
+                    </span>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+          {!ordered.length && (
+            <tr>
+              <td colSpan={6} className={s.empty}>
+                이 조건에 맞는 후보가 없어요. 필터를 바꿔보세요.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      {panel === 'filters' && (
+        <Dialog
+          label="영입 필터"
+          onClose={() => setPanel(undefined)}
+          actions={
+            <div className={s.bidActions}>
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('all');
+                  setOrder('impact');
+                  setBoostOnly(false);
+                }}
+              >
+                초기화
+              </button>
+              <button type="button" className={s.primary} onClick={() => setPanel(undefined)}>
+                {ordered.length}명 목록 보기
+              </button>
+            </div>
+          }
+        >
+          <div className={s.roles} role="group" aria-label="영입 포지션 선택">
+            {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
+              <button key={value} aria-pressed={role === value} onClick={() => setRole(value)}>
+                {value === 'all' ? '전체' : value}
+              </button>
+            ))}
+          </div>
+          <div className={s.filters}>
+            <button className={s.recommendation} onClick={() => setRole(recommended)}>
+              추천 포지션: {lineNames[recommended]} · {recommended}
+            </button>
+            <label>
+              후보 정렬{' '}
+              <Select
+                aria-label="영입 후보 정렬"
+                value={order}
+                onValueChange={(value) => setOrder(value as Order)}
+              >
+                <option value="impact">즉시 전력</option>
+                <option value="potential">잠재력</option>
+                <option value="fee">낮은 이적료</option>
+              </Select>
+            </label>
+            <button aria-pressed={boostOnly} onClick={() => setBoostOnly(!boostOnly)}>
+              {w.lineup ? '수동 교체 보강 후보' : '선발 보강 후보'}
+            </button>
+          </div>
+          <p className={s.note}>
+            현재 선발의 약한 포지션을 추천해요. 전력·적합도는 선수 구성의 비교이며 경기 승리를
+            보장하지 않습니다.
+          </p>
+        </Dialog>
+      )}
+      {panel === 'negotiations' && (
+        <Dialog label="이적 협상" onClose={() => setPanel(undefined)}>
+          {board.length > 0 && (
+            <section className={s.negotiations} aria-label="진행 중인 협상">
+              <h3>이적 협상</h3>
+              {shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
+                <div key={bid.id} className={s.negotiation} data-status={bid.status}>
+                  <span>
+                    <b>
+                      {bidKind(bid)} · {player?.name || '선수'}
+                      {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
+                      {bid.direction === 'in' && player?.transferRequest ? ' · 이적 요청' : ''}
+                    </b>
+                    <small>
+                      {bid.direction === 'in' && other ? `${other.name} · ` : ''}
+                      {freeSigning(bid) ? (
+                        '자유계약 · 이적료 없음'
+                      ) : bid.status === 'countered' ? (
+                        <>역제안 {format(bid.counterFee || bid.fee)}</>
+                      ) : (
+                        format(bid.fee)
+                      )}{' '}
+                      · {BID_STATUS[bid.status]}
+                      {(bid.status === 'pending' || bid.status === 'countered') &&
+                        ` · ${dueLabel}까지`}
+                      {bid.staff && bid.status === 'countered' && ' · 단장이 답해요'}
+                      {bid.direction === 'in' &&
+                        w.staff?.some((member) => member.person === bid.playerId) && (
+                          <>
+                            {' '}
+                            · 선수·코치 계약 함께 종료 · 코치 계약 종료 보상{' '}
+                            {format(
+                              releaseCost(
+                                w,
+                                w.staff.find((member) => member.person === bid.playerId),
+                              ),
+                            )}
+                          </>
+                        )}
+                    </small>
+                  </span>
+                  {actionable && (
+                    <span className={s.negotiationActions}>
+                      <button
+                        className={s.primary}
+                        disabled={blocked}
+                        onClick={() =>
+                          void client.command({ type: 'respond-bid', id: bid.id, accept: true })
+                        }
+                      >
+                        {bid.direction === 'in' ? '매각' : '수락'}
+                      </button>
+                      <button
+                        disabled={blocked}
+                        onClick={() =>
+                          void client.command({ type: 'respond-bid', id: bid.id, accept: false })
+                        }
+                      >
+                        거절
+                      </button>
+                    </span>
+                  )}
+                </div>
+              ))}
+              {shownBids.length < board.length && (
+                <button type="button" onClick={() => setExpanded(true)}>
+                  {board.length}건 모두 보기
+                </button>
+              )}
+            </section>
+          )}
+          {board.length === 0 && <p className={s.empty}>진행 중인 이적 협상이 없어요.</p>}
+        </Dialog>
+      )}
+      {panel === 'info' && (
+        <Dialog label="영입 정보" onClose={() => setPanel(undefined)}>
+          <p className={s.note}>
+            {window.open
+              ? '이적료 영입·임대·매각이 가능해요. 자유계약 선수는 언제든 영입할 수 있어요.'
+              : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
+          </p>
+          <RecruitmentNeeds
+            w={w}
+            offers={state.view!.transfers}
+            onRole={(line) => {
+              setRole(line);
+              setPanel(undefined);
+            }}
+          />
+          {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
+          <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
+            <span>
+              영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
+            </span>
+            <small>운영 방침에서 바꿔요</small>
+          </button>
+          <div className={s.summary}>
+            <span>
+              선수단 정원 <b>{registered.value}</b>
+              <small>{registered.detail}</small>
+            </span>
+            <span>
+              협상 중 <b>{outgoing.length}건</b>
+            </span>
+          </div>
+          {registered.full && (
+            <p className={s.warning}>
+              선수단 정원 {registered.value} · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
+            </p>
+          )}
+          <RecruitmentCommitments w={w} client={client} />
+          <ScoutShortlist
+            w={w}
+            offers={state.view!.transfers}
+            disabled={false}
+            onOpen={(index) => {
+              const candidate = candidates[index];
+              if (!candidate) return;
+              setPanel(undefined);
+              setViewingId(candidate.offer.player.id);
+            }}
+          />
+          <OfferAnswers w={w} />
+        </Dialog>
       )}
       {comparing && (
         <Dialog
@@ -581,10 +762,10 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       {bidding && outlook && (
         <Dialog
           label="이적 제안"
-          onClose={() => setBidding(undefined)}
+          onClose={() => setBiddingId(undefined)}
           actions={
             <div className={s.bidActions}>
-              <button onClick={() => setBidding(undefined)}>취소</button>
+              <button onClick={() => setBiddingId(undefined)}>취소</button>
               <button
                 className={s.primary}
                 disabled={blocked || BigInt(fee) > BigInt(w.cash) || BigInt(fee) < 1n}
@@ -598,7 +779,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                       ? `${bidding.offer.player.name}에게 ${text(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
                       : client.state.error || '제안을 보내지 못했어요.',
                   );
-                  setBidding(undefined);
+                  setBiddingId(undefined);
                 }}
               >
                 {plain(fee)} 제안 보내기
@@ -640,39 +821,28 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
-      <RecruitmentCommitments w={w} client={client} />
-      <OfferAnswers w={w} />
-      <ScoutShortlist
-        w={w}
-        offers={state.view!.transfers}
-        disabled={blocked}
-        onOpen={(index) => {
-          const candidate = candidates[index];
-          if (!candidate) return;
-          // A fee-bearing player in an open window opens the bid sheet, as his card's 이적 제안 does.
-          if (
-            window.open &&
-            !candidate.offer.freeAgent &&
-            candidate.offer.available &&
-            candidate.buy.eligible &&
-            !pendingFor(candidate.offer.player.id)
-          ) {
-            setStep(1);
-            setBidding(candidate);
-          } else setViewing(candidate);
-        }}
-      />
-      {viewing && (
+      {viewingId && (
         <Dialog
-          label="스카우트 명단 후보"
-          onClose={() => setViewing(undefined)}
+          label="영입 후보 상세"
+          onClose={() => setViewingId(undefined)}
           actions={
             <div className={s.close}>
-              <button onClick={() => setViewing(undefined)}>닫기</button>
+              <button onClick={() => setViewingId(undefined)}>닫기</button>
             </div>
           }
         >
-          {render(viewing)}
+          {message && (
+            <p className={s.message} role="status">
+              {message}
+            </p>
+          )}
+          {viewing ? (
+            render(viewing)
+          ) : (
+            <p role="status">
+              이 선수는 현재 이적시장 목록에서 빠졌어요. 다른 후보를 선택해 주세요.
+            </p>
+          )}
         </Dialog>
       )}
     </section>

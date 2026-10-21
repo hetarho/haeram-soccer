@@ -1,8 +1,7 @@
 .desk {
   min-width: 0;
 }
-.summary,
-.comparisonBar {
+.summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -64,15 +63,6 @@
 }
 .recommendation {
   background: var(--surface-2);
-}
-.comparisonBar {
-  margin: 10px 0;
-}
-.comparisonBar button {
-  min-height: 44px;
-  padding: 7px 10px;
-  font-size: 12px;
-  font-family: var(--display);
 }
 .note {
   margin: 9px 0;
@@ -304,29 +294,217 @@
 }
 
 .window {
-  display: grid;
-  gap: 2px;
-  margin-bottom: 10px;
-  padding: 10px 12px;
-  border-radius: 2px;
-  border: 1px solid var(--line-strong);
-  background: var(--surface-deep);
-}
-.window b {
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 28px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
   color: var(--text-muted);
-}
-.window small {
   font-size: 12px;
-  color: var(--text-faint);
+  line-height: 1.5;
   font-family: var(--display);
 }
+.windowDot,
+.activeDot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
 .windowOpen {
+  color: var(--accent-text);
+}
+.toolbar,
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.toolbar {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+.toolbar h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.toolbar h3 span {
+  margin-left: 3px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.tools {
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.tools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 8px;
+  font-family: var(--display);
+  font-size: 12px;
+}
+.tools button[aria-expanded='true'] {
   border-color: var(--accent);
+}
+.tools .infoTrigger {
+  padding: 6px;
+  color: var(--text-muted);
+}
+.infoTrigger > span {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-weight: 700;
+}
+.activeDot,
+.count {
+  color: var(--accent-text);
+}
+.candidateTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: var(--display);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.candidateTable th,
+.candidateTable td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.candidateTable th {
+  height: 28px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 500;
+}
+.candidateTable th:first-child,
+.candidateTable td:first-child {
+  padding-left: 0;
+  text-align: left;
+}
+.candidateTable th:first-child {
+  padding-left: 8px;
+}
+.candidateTable th:last-child,
+.candidateTable td:last-child {
+  padding-right: 0;
+  padding-left: 0;
+}
+.ratingColumn {
+  width: 54px;
+}
+.potentialColumn {
+  width: 42px;
+}
+.feeColumn {
+  width: 80px;
+}
+.wageColumn {
+  width: 88px;
+}
+.compareColumn {
+  width: 44px;
+}
+.candidateTable tbody tr {
+  cursor: pointer;
+}
+.candidateTable tbody tr:hover,
+.candidateTable tbody tr:focus-within,
+.candidateTable tbody tr[data-selected] {
   background: var(--surface-2);
 }
-.windowOpen b {
+.candidateTable td > span[data-tier] {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 3px;
+}
+.playerName {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  font-family: var(--display);
+}
+.playerName b,
+.playerName small {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.playerName b {
+  font-size: 13px;
+}
+.playerName small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.potentialValue {
+  color: var(--text-muted);
+}
+.feeValue {
+  white-space: nowrap;
+}
+.freeTag {
   color: var(--accent-text);
+  font-size: 11px;
+}
+.compareToggle {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 18px;
+}
+.compareToggle[aria-pressed='true'] {
+  color: var(--accent-text);
+}
+@media (max-width: 760px) {
+  .wageColumn {
+    display: none;
+  }
+  .ratingColumn {
+    width: 46px;
+  }
+  .potentialColumn {
+    width: 34px;
+  }
+  .feeColumn {
+    width: 64px;
+  }
+  .candidateTable th,
+  .candidateTable td {
+    padding-right: 3px;
+    padding-left: 3px;
+  }
 }
 .negotiations {
   display: grid;
