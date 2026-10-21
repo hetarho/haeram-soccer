@@ -16,6 +16,21 @@ export interface InstalledTheme {
   theme: ThemeResolver;
   dispose(): void;
 }
+export interface ThemePreparationOptions {
+  ports?: ThemeInstallationPorts;
+  /** Candidate-resolved URLs for mounted semantic icons/scenes, deduplicated before I/O. */
+  requiredImages?: readonly string[];
+}
+export interface ThemeCommitOptions {
+  previous?: InstalledTheme;
+  isCurrent?: () => boolean;
+}
+export interface PreparedThemeResources {
+  readonly theme: ThemeResolver;
+  commit(options?: ThemeCommitOptions): InstalledTheme | null;
+  /** Abandons staging; after commit the installed handle owns disposal instead. */
+  dispose(): void;
+}
 export class ThemeInstallationError extends Error {
   readonly retryable = true;
   constructor(readonly cause: unknown) {
@@ -103,24 +118,17 @@ export function createBrowserThemePorts(document: Document): ThemeInstallationPo
 }
 
 /**
- * Stage selected fonts/CSS/image icons and the caller's current scene needs, never all scene slots.
- * A stale request returns null without activation.
- * A failure leaves previous resources owned and usable; successful replacement releases them.
+ * Prepare selected resources without activating them or touching the installed theme.
+ * The caller can await this work, then commit and publish selection state synchronously.
  */
-export async function installThemeResources(
+export async function prepareThemeResources(
   theme: ThemeResolver,
-  options: {
-    ports?: ThemeInstallationPorts;
-    previous?: InstalledTheme;
-    isCurrent?: () => boolean;
-    /** Candidate-resolved URLs for mounted semantic icons/scenes, deduplicated before I/O. */
-    requiredImages?: readonly string[];
-  } = {},
-): Promise<InstalledTheme | null> {
+  options: ThemePreparationOptions = {},
+): Promise<PreparedThemeResources> {
   const ports = options.ports ?? createBrowserThemePorts(document);
   const staged: StagedThemeResource[] = [];
   let tokenStyle: { dispose(): void } | undefined;
-  const dispose = () => {
+  const release = () => {
     tokenStyle?.dispose();
     tokenStyle = undefined;
     for (const resource of staged.splice(0).reverse()) resource.dispose();
@@ -135,17 +143,50 @@ export async function installThemeResources(
     for (const result of results) if (result.status === 'fulfilled') staged.push(result.value);
     const failed = results.find((result) => result.status === 'rejected');
     if (failed?.status === 'rejected') throw failed.reason;
-    // No await may separate this check from font/CSS/token activation.
-    if (options.isCurrent && !options.isCurrent()) {
-      dispose();
-      return null;
-    }
-    for (const resource of staged) resource.activate();
-    tokenStyle = ports.installTokens(theme);
-    options.previous?.dispose();
-    return { theme, dispose };
   } catch (cause) {
-    dispose();
+    release();
     throw new ThemeInstallationError(cause);
   }
+
+  let state: 'staged' | 'committed' | 'disposed' = 'staged';
+  const dispose = () => {
+    if (state !== 'staged') return;
+    state = 'disposed';
+    release();
+  };
+  return {
+    theme,
+    dispose,
+    commit(settings = {}) {
+      if (state !== 'staged')
+        throw new ThemeInstallationError(new Error(`Cannot commit ${state} theme resources`));
+      try {
+        // No await separates this check, activation, or the caller's subsequent publication.
+        if (settings.isCurrent && !settings.isCurrent()) {
+          dispose();
+          return null;
+        }
+        for (const resource of staged) resource.activate();
+        tokenStyle = ports.installTokens(theme);
+        settings.previous?.dispose();
+        state = 'committed';
+        return { theme, dispose: release };
+      } catch (cause) {
+        dispose();
+        throw new ThemeInstallationError(cause);
+      }
+    },
+  };
+}
+
+/**
+ * Standalone convenience wrapper. State controllers use prepareThemeResources so synchronous
+ * commit and snapshot publication share a single call stack after preparation completes.
+ */
+export async function installThemeResources(
+  theme: ThemeResolver,
+  options: ThemePreparationOptions & ThemeCommitOptions = {},
+): Promise<InstalledTheme | null> {
+  const prepared = await prepareThemeResources(theme, options);
+  return prepared.commit(options);
 }

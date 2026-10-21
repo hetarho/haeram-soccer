@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import pixelData from '../../public/presentation/themes/pixel.json';
 import registryData from '../../public/presentation/themes/index.json';
+import { createPresentationResources } from '../adapters/presentationResources';
 import { FACILITY_ERAS, validateThemePack } from './contracts';
 import { validateRegistry, resolvePackEntry } from './registry';
 import {
@@ -14,24 +15,68 @@ import {
 const pixel = validateThemePack(pixelData);
 const url = '/presentation/themes/pixel.json';
 
+function resources(overrides: Record<string, unknown> = {}) {
+  return createPresentationResources({
+    baseUrl: '/',
+    fetch: async (resource) => ({
+      ok: true,
+      status: 200,
+      json: async () =>
+        Object.hasOwn(overrides, resource)
+          ? overrides[resource]
+          : JSON.parse(readFileSync(new URL(`../../public${resource}`, import.meta.url), 'utf8')),
+    }),
+  });
+}
+
 describe('theme resource resolution', () => {
-  it('ships only the registered pixel baseline with the existing image/font assets', () => {
-    const registry = validateRegistry(registryData, 'theme');
-    expect(registry.entries).toHaveLength(1);
-    expect(resolvePackEntry(registry)).toEqual({
+  it('validates every shipped theme and preserves baseline licensed assets', async () => {
+    const loader = resources();
+    const registry = await loader.loadRegistry('theme');
+    expect(resolvePackEntry(registry).id).toBe(registry.defaultId);
+    expect(registry.entries).toContainEqual({
       id: 'pixel',
       label: '픽셀아트',
       resource: 'pixel.json',
     });
+    for (const entry of registry.entries) {
+      const loaded = await loader.loadPack('theme', entry);
+      const resolver = createThemeResolver(loaded.pack, { url: loaded.url });
+      expect(resolver.id).toBe(entry.id);
+      for (const font of resolver.fonts)
+        expect(
+          readFileSync(new URL(`../../public${font.resource}`, import.meta.url)).length,
+        ).toBeGreaterThan(0);
+    }
     expect(pixel.fonts.map((font) => font.resource)).toEqual([
       '/fonts/galmuri14.woff2',
       '/fonts/galmuri11.woff2',
       '/fonts/galmuri11-bold.woff2',
     ]);
-    for (const font of pixel.fonts)
-      expect(
-        readFileSync(new URL(`../../public${font.resource}`, import.meta.url)).length,
-      ).toBeGreaterThan(0);
+  });
+
+  it('accepts a resource-only registry addition without changing shared consumers or checks', async () => {
+    const registryInput = structuredClone(registryData);
+    let id = 'resource-only-test';
+    while (registryInput.entries.some((registered) => registered.id === id)) id += '-extra';
+    const entry = { id, label: 'Test pack', resource: `${id}.json` };
+    registryInput.entries.push(entry);
+    const candidate = structuredClone(pixelData);
+    candidate.id = entry.id;
+    const loader = resources({
+      '/presentation/themes/index.json': registryInput,
+      [`/presentation/themes/${entry.resource}`]: candidate,
+    });
+    const registry = await loader.loadRegistry('theme');
+    const resolvedIds = [];
+    for (const registered of registry.entries) {
+      const loaded = await loader.loadPack('theme', registered);
+      resolvedIds.push(createThemeResolver(loaded.pack, { url: loaded.url }).id);
+    }
+    expect(resolvedIds).toEqual(registry.entries.map((registered) => registered.id));
+    expect(resolvedIds).toContain(entry.id);
+    expect(resolvePackEntry(registry).id).toBe(registry.defaultId);
+    expect(validateRegistry(registryInput, 'theme')).toEqual(registry);
   });
 
   it('resolves the current era and stage paths', () => {

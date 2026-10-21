@@ -5,6 +5,7 @@ import { createThemeResolver } from '../presentation/theme';
 import {
   createBrowserThemePorts,
   installThemeResources,
+  prepareThemeResources,
   ThemeInstallationError,
   type StagedThemeResource,
   type ThemeInstallationPorts,
@@ -19,11 +20,11 @@ function theme(id = 'pixel') {
 
 function memoryPorts() {
   const active = new Set<string>(['unowned']);
-  const resources: { id: string; disposed: boolean }[] = [];
+  const resources: { id: string; disposed: boolean; disposeCalls: number }[] = [];
   const events: string[] = [];
   let serial = 0;
   const make = (kind: string): StagedThemeResource => {
-    const record = { id: `${kind}:${serial++}`, disposed: false };
+    const record = { id: `${kind}:${serial++}`, disposed: false, disposeCalls: 0 };
     resources.push(record);
     events.push(`stage:${record.id}`);
     return {
@@ -33,6 +34,7 @@ function memoryPorts() {
       },
       dispose() {
         record.disposed = true;
+        record.disposeCalls++;
         active.delete(record.id);
       },
     };
@@ -65,6 +67,83 @@ function deferred() {
 }
 
 describe('theme resource installation', () => {
+  it('prepares without activation and disposes abandoned staging exactly once', async () => {
+    const memory = memoryPorts();
+    const previous = await installThemeResources(theme(), { ports: memory.ports });
+    const originalActive = [...memory.active];
+    const candidateStart = memory.resources.length;
+    const prepared = await prepareThemeResources(theme('next'), {
+      ports: memory.ports,
+      requiredImages: ['/art/scenes/heritage/stadium-0.webp'],
+    });
+    expect([...memory.active]).toEqual(originalActive);
+    expect([...memory.tokens.values()]).toEqual(['#111415']);
+    expect(memory.resources.slice(candidateStart).every((resource) => !resource.disposed)).toBe(
+      true,
+    );
+    prepared.dispose();
+    prepared.dispose();
+    expect(
+      memory.resources.slice(candidateStart).every((resource) => resource.disposeCalls === 1),
+    ).toBe(true);
+    expect([...memory.active]).toEqual(originalActive);
+    expect(() => prepared.commit({ previous: previous! })).toThrow(ThemeInstallationError);
+    previous!.dispose();
+  });
+
+  it('rejects currency invalidated by a preparation completion observer before commit', async () => {
+    const memory = memoryPorts();
+    const previous = await installThemeResources(theme(), { ports: memory.ports });
+    const originalActive = [...memory.active];
+    const candidateStart = memory.resources.length;
+    let current = true;
+    const request = prepareThemeResources(theme('next'), { ports: memory.ports });
+    void request.then(() => {
+      current = false;
+    });
+    const prepared = await request;
+    expect(current).toBe(false);
+    expect(prepared.commit({ previous: previous!, isCurrent: () => current })).toBeNull();
+    expect([...memory.active]).toEqual(originalActive);
+    expect([...memory.tokens.values()]).toEqual(['#111415']);
+    expect(
+      memory.resources.slice(candidateStart).every((resource) => resource.disposeCalls === 1),
+    ).toBe(true);
+    expect(() => prepared.commit()).toThrow(ThemeInstallationError);
+    previous!.dispose();
+  });
+
+  it('commits and transfers ownership synchronously for selection publication', async () => {
+    const memory = memoryPorts();
+    const previous = await installThemeResources(theme(), { ports: memory.ports });
+    const oldResources = [...memory.resources];
+    const prepared = await prepareThemeResources(theme('next'), { ports: memory.ports });
+    queueMicrotask(() => memory.events.push('microtask'));
+    const installed = prepared.commit({
+      previous: previous!,
+      isCurrent: () => {
+        memory.events.push('current');
+        return true;
+      },
+    });
+    memory.events.push('publish');
+    expect(installed).not.toBeInstanceOf(Promise);
+    expect(memory.events.at(-1)).toBe('publish');
+    expect(memory.events[memory.events.lastIndexOf('current') + 1]).toMatch(/^activate:/);
+    expect(oldResources.every((resource) => resource.disposeCalls === 1)).toBe(true);
+    expect([...memory.tokens.values()]).toEqual(['#fafafa']);
+    const installedActive = [...memory.active];
+    prepared.dispose();
+    expect(() => prepared.commit()).toThrow(ThemeInstallationError);
+    expect([...memory.active]).toEqual(installedActive);
+    await Promise.resolve();
+    expect(memory.events.at(-1)).toBe('microtask');
+    installed!.dispose();
+    installed!.dispose();
+    expect(memory.resources.every((resource) => resource.disposeCalls === 1)).toBe(true);
+    expect([...memory.active]).toEqual(['unowned']);
+  });
+
   it('retains the usable theme on a failed resource', async () => {
     const memory = memoryPorts();
     const previous = await installThemeResources(theme(), { ports: memory.ports });
