@@ -29,7 +29,17 @@ import {
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { holdSetPiece, moveAll, SHAPE_CONFIG, speedOf, startRuns } from './shape';
+import { moveAll, SHAPE_CONFIG, speedOf, startRuns } from './shape';
+import {
+  carryTo,
+  depart,
+  interruptAll,
+  losePass,
+  restartPlaces,
+  restartTaken,
+  takeBall,
+  updateIntentions,
+} from './intentions';
 import { attackFrame, PITCH } from './pitch';
 import {
   createState,
@@ -145,12 +155,17 @@ export function playGrid(setup: GridSetup): GridResult {
   /**
    * Hands the ball to `(side, idx)` at `at` (or where he stands); a change of side is a regain and a
    * loss. The pre-feature path puts him there at once; on the candidate model he runs there during
-   * the action (`motionOf`).
+   * the action (`motionOf`), committed to it as an intention; a change of side interrupts both
+   * sides' intentions as a turnover.
    */
-  function setOwner(side: 0 | 1, idx: number, at?: [number, number]) {
+  function setOwner(side: 0 | 1, idx: number, at?: [number, number], passer?: number) {
     const gp = s.players[side][idx]!;
     if (at && !candidate) gp.pos = [at[0], at[1]];
     const where = at ?? gp.pos;
+    if (candidate) {
+      if (s.possession !== side) interruptAll(s, 'turnover');
+      takeBall(s, gp, where, passer);
+    }
     if (s.possession !== side || !s.owner) {
       if (s.owner) tally.regain(side, idx, attackFrame(side, where));
       s.lastRegain = { side, at: s.elapsed };
@@ -251,9 +266,12 @@ export function playGrid(setup: GridSetup): GridResult {
       player: gp.player.id,
       reason,
     });
+    // A sending-off ends his intention first, so his exit is traced with it.
+    const off = candidate && card !== 'yellow';
+    if (off) depart(s, gp, 'dismissal');
     tracer.note(s, side, idx, card, {
       reason,
-      ...(candidate && card !== 'yellow' ? { transition: 'exit' as const } : {}),
+      ...(off ? { transition: 'exit' as const, left: gp.ended } : {}),
     });
     if (card === 'yellow') {
       gp.yellow = true;
@@ -270,9 +288,10 @@ export function playGrid(setup: GridSetup): GridResult {
     const gp = s.players[side][idx]!;
     gp.injured = true;
     leave(s, gp);
+    if (candidate) depart(s, gp, 'injury');
     s.changes[side].injured.push(idx);
     tally.incidents.push({ ...stamp(), side, kind: 'injury', player: gp.player.id });
-    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit' } : {});
+    tracer.note(s, side, idx, 'injury', candidate ? { transition: 'exit', left: gp.ended } : {});
     credits[s.period - 1]! += charge(ADDED_CONFIG.credits.injury, RESTART_CONFIG.dead.injury);
     if (pending) pending.dead += RESTART_CONFIG.dead.injury;
     else
@@ -291,6 +310,9 @@ export function playGrid(setup: GridSetup): GridResult {
       const plan = planChanges(s, side, r);
       applyChanges(s, side, plan);
       for (const ch of plan) {
+        // An injured player has already left with his own reason.
+        const out = s.players[side][ch.out]!;
+        if (candidate && !out.injured) depart(s, out, 'substitution');
         tally.incidents.push({
           ...stamp(),
           side,
@@ -307,7 +329,7 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         tracer.note(s, side, ch.out, 'sub', {
           other: ch.in,
-          ...(entry ? { transition: 'entry' as const, to: entry } : {}),
+          ...(entry ? { transition: 'entry' as const, to: entry, left: out.ended } : {}),
         });
         if (half) continue;
         credits[s.period - 1]! += charge(
@@ -331,11 +353,12 @@ export function playGrid(setup: GridSetup): GridResult {
           const from = s.players[side][idx]!.pos;
           const dx = (o.to[0] - from[0]) * (side === 0 ? 1 : -1);
           const dy = (o.to[1] - from[1]) * (side === 0 ? 1 : -1);
-          setOwner(side, o.receiver, o.to);
+          setOwner(side, o.receiver, o.to, idx);
           s.lastPass = { dx, dy };
         } else {
           // A carry: at once on the pre-feature path, run with the ball on the candidate model.
           if (!candidate) s.players[side][idx]!.pos = [o.to[0], o.to[1]];
+          else carryTo(s, s.players[side][idx]!, o.to);
           s.ball = [o.to[0], o.to[1]];
         }
         return;
@@ -466,8 +489,11 @@ export function playGrid(setup: GridSetup): GridResult {
             spot: [spot[0], spot[1]],
             dead: RESTART_CONFIG.dead.offside,
           };
-          // The flag goes up as the ball reaches him.
-          if (candidate) s.ball = [spot[0], spot[1]];
+          // The flag goes up as the ball reaches him, and his chance to receive it is gone.
+          if (candidate) {
+            s.ball = [spot[0], spot[1]];
+            losePass(s, side, idx, d.target);
+          }
           tally.passEvent(side, idx, {
             from: attackFrame(side, s.players[side][idx]!.pos),
             to: attackFrame(side, spot),
@@ -496,6 +522,7 @@ export function playGrid(setup: GridSetup): GridResult {
           kind: d.kind ?? 'short',
           lineBreaking: d.lineBreaking,
         });
+        if (candidate && o.kind !== 'complete') losePass(s, side, idx, d.target);
         apply(side, idx, o);
         return { key: d.kind ?? 'short', outcome: o };
       }
@@ -514,6 +541,7 @@ export function playGrid(setup: GridSetup): GridResult {
         const to = attackFrame(side, s.players[side][d.target]!.pos);
         const o = resolveCutBack(s, side, idx, d.target, r);
         tally.passEvent(side, idx, { from, to, ok: o.kind === 'complete', kind: 'cutBack' });
+        if (candidate && o.kind !== 'complete') losePass(s, side, idx, d.target);
         apply(side, idx, o);
         if (o.kind === 'complete') {
           const shot = resolveShot(s, side, d.target, computeTags(s, side, d.target), ctx, r, {
@@ -585,6 +613,8 @@ export function playGrid(setup: GridSetup): GridResult {
         justBeat = undefined;
         const rs = pending;
         pending = undefined;
+        // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
+        if (candidate) interruptAll(s, 'restart');
         // Where the ball went dead; a period's start is an explicit transition, not running play.
         const rest: [number, number] = [s.ball[0], s.ball[1]];
         const transition = s.t === 0;
@@ -616,8 +646,10 @@ export function playGrid(setup: GridSetup): GridResult {
                     for (const gp of s.players[sd])
                       if (onPitch(gp) && gp.slot >= 0)
                         moves.push({ gp, to: kickOffPoint(setup, sd, gp.slot) });
+                const gp = s.players[restart.side][taker]!;
+                restartPlaces(s, [{ gp, to: restart.spot }, ...moves.filter((m) => m.gp !== gp)]);
                 knots = prepareRestart(s, restart, taker, rest, moves);
-                if (scene) holdSetPiece(scene, s.elapsed + SHAPE_CONFIG.setPiece.stay);
+                restartTaken(s, scene?.up ?? [], s.elapsed + SHAPE_CONFIG.setPiece.stay);
               }
             : undefined,
         );
@@ -645,6 +677,8 @@ export function playGrid(setup: GridSetup): GridResult {
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);
+        // Everyone reacts to the kick as it is played, before anyone moves (→MATCH-17).
+        if (candidate) updateIntentions(s);
         const motion = candidate
           ? motionOf(
               actor,
@@ -710,6 +744,8 @@ export function playGrid(setup: GridSetup): GridResult {
         const played = play(owner[0], owner[1], d);
         // Tracing draws nothing, so the duration's draw may come before it.
         const least = candidate ? secondsOf(played.key) * (0.85 + 0.3 * r()) : 0;
+        // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
+        if (candidate) updateIntentions(s);
         const motion = candidate
           ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed)
           : undefined;
@@ -735,7 +771,7 @@ export function playGrid(setup: GridSetup): GridResult {
         if (!motion) moveAll(s, dt);
       }
       tally.spellTo(s.possession);
-      startRuns(s, s.possession, r);
+      if (!candidate) startRuns(s, s.possession, r);
       tracer.push(s, actor[0], actor[1], label, outcomeLabel, from);
       const hurt = drawInjury(s, dt, r);
       if (hurt) injure(hurt.side, hurt.idx);

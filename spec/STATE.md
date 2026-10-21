@@ -178,7 +178,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
-| T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
 | T277 | Connect player intentions through support, pressing and covering reactions | MATCH PLAYER STAFF ARCH | T276 | todo |
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
@@ -204,12 +203,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 24 | 5 | 19 | 0 | 1 | 0 | 2026-10-21T07:34:43.518Z | [history](work/full-model.json) |
+| full-model | 3 | 24 | 6 | 18 | 1 | 0 | 0 | 2026-10-21T08:00:19.246Z | [history](work/full-model.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T276 integrated
 - 261021 T304 integrated
 - 261021 T279 integrated
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
@@ -229,4 +229,3 @@
 - 261021 T282 integrated
 - 261021 T274 integrated
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
-- 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.

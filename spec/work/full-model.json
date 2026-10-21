@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T07:34:43.518Z",
-  "sourceCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+  "snapshotAt": "2026-10-21T08:00:19.246Z",
+  "sourceCommit": "f972fb709b96c711dd45953093790487b419dfb3",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,10 +15,11 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+      "commit": "f972fb709b96c711dd45953093790487b419dfb3",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T07:34:41.808Z"
+      "at": "2026-10-21T08:00:17.329Z",
+      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          f972fb709b96c711dd45953093790487b419dfb3 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
     },
     "runner": {
       "id": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
@@ -94,12 +95,12 @@
   },
   "summary": {
     "total": 24,
-    "completed": 5,
-    "remaining": 19,
-    "running": 0,
-    "review": 1,
+    "completed": 6,
+    "remaining": 18,
+    "running": 1,
+    "review": 0,
     "blocked": 0,
-    "unassigned": 18
+    "unassigned": 17
   },
   "tasks": [
     {
@@ -109,14 +110,6 @@
         "T274"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T276",
-      "title": "Retain and interrupt individual football intentions for explicit reasons",
-      "dep": [
-        "T274"
-      ],
-      "status": "ready"
     },
     {
       "id": "T277",
@@ -143,7 +136,7 @@
       "dep": [
         "T279"
       ],
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T281",
@@ -884,7 +877,7 @@
         "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
         "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-21T04:13:52.337Z",
       "startCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
@@ -914,6 +907,35 @@
         "finishedAt": "2026-10-21T07:10:35.633Z",
         "error": null,
         "summary": "I fixed the P2 regression from correction 52f9a9dc and handled all three P3 notes.\n\n**P2: box hold after set pieces.** Players who went up for a set piece now hold their box spot for the full 8 s again (`setPiece.stay`). Their hold was ending as \"arrived\" at the kick, because they were already standing on the spot. Now a held box run never ends on arrival, only at expiry, on a turnover or by a higher priority.\n- A new regression test checks that `targetOf` returns the spot for every second up to the stay, that the hold ends at the stay or on a turnover, and that in played matches it never ends on arrival.\n\n**P3 fixes:**\n- **Lost pass:** the run a player was played into now ends as `lost` and keeps its own record. Before, a fake receive overwrote it. A player with no intention gets a zero-length receive from the passer, ended `lost`.\n- **Carry after a reception:** the reception the carrier reached now ends as `arrival`, not `replaced`.\n- **Danger escalation:** a presser already on the carrier when danger starts is raised to danger priority and keeps the same intention.\n- **Traced exits:** exit and entry notes now carry `TraceEntry.left`, the leaver's ended intention with its reason (substitution, injury, sending-off). Restart intentions still never show in the traced slots; I recorded that as a limit for T275.\n\nThe design doc (§4.5 and the trace section) and the task result are updated.\n\n**Checks:** typecheck, lint and format pass. `vitest --changed fffc9ae` ran in 6 shards (one shell call is capped at 10 minutes): 196 files, 1,340 tests passed, 4 skipped, including all 7 tests in `intentions.test.ts`.\n\n**Remeasured for T278** (600 fixtures):\n- Set-piece goals rose from 19.2% to 20.1%, now inside the band. Headed goals rose to 20.8%, now 0.8 points above it.\n- Goals 2.74, tackles + interceptions 25.7.\n\nThe rerun's fixture time (432 ms) was taken while the machine was busy with other work, so it can't be compared with the earlier timings. Still to run, at the batch gate: test:unit, test:contract, validate:catalogs, build and Chromium Playwright. Spec lint has not been run."
+      },
+      "review": {
+        "id": "33ca83cd-3029-4979-a6bc-feb89c7779b2",
+        "owner": "f6n3-review2",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Re-review of T276 after correction 52f9a9dc. The P2 finding is fixed. verdict() now returns undefined for a committed run while the side keeps possession, so box holds set by restartTaken() last until setPiece.stay (expiry), a turnover or a higher priority, and no longer end as 'arrival' at the kick. A new regression test in intentions.test.ts checks the intention, the GridPlayer.run view and targetOf for each second up to stay, then expiry and the turnover ending. It also checks in play that no committed box hold ends as arrival. The three earlier P3s are addressed too. (1) Exit and entry notes now carry TraceEntry.left with the leaver's ended intention (substitution, injury, dismissal), and depart() now runs before the dismissal note. Restart intentions not being traced is recorded as a limit handed to T275. (2) losePass() ends the receiver's real intention (for example a run) as 'lost' without overwriting it, or records a zero-length receive when he holds none. carryTo() ends a reached reception as 'arrival'. (3) A tactical presser already on the carrier is raised to danger priority when danger starts. The design doc §4.5/§10.1 and the task result match the code. All correction changes in engine.ts are gated by `candidate`. losePass, carryTo and restartTaken are only called on the candidate path, so the pre-feature (production, release switch off) path is unchanged. No new draws were added. The trace copies intentions and only references gp.ended for `left`, so observation never mutates engine state; the observed/unobserved determinism test passes. Acceptance items 1-6 hold. Remeasured drift (headed goals 20.8%, press v counter home wins 92%, other out-of-band rows) is recorded for T278, and fixture time for T285. Ran pnpm exec vitest run packages/engine/src/grid: 19 files, 146 tests passed.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/playback.ts (T276)",
+            "message": "TraceEntry.left is traced but playback does not surface it, so the inspector or playback still cannot show why a leaver's intention ended. Consider passing it through when T275 paces candidate traces."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/intentions.ts:437-442 (T276)",
+            "message": "The danger escalation raises pressing[0], the lowest roster index among the current pressers, not necessarily the nearest or the earliest presser. This matters only under the press tactic, which has two pressers. T277's side-level assignment can refine it."
+          },
+          {
+            "priority": "P3",
+            "where": "docs/MATCH-ENGINE-DESIGN.md §4.5 measurements (T276)",
+            "message": "The press-versus-counter imbalance grew from 76% to 92% home wins after the correction. It is correctly handed to T278. Flag it explicitly there as the largest tactic-balance gap, against MATCH-8's tradeoff that counter gains against press."
+          }
+        ],
+        "commit": "3c37d2d3551ead42a0d0e63926520525bb93f100",
+        "baseCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+        "submissionId": "ce3233ed-78f3-445c-bb41-658727692cf2",
+        "createdAt": "2026-10-21T07:42:16.390Z",
+        "finishedAt": "2026-10-21T07:45:50.917Z"
       },
       "reviewHistory": [
         {
@@ -1087,6 +1109,8 @@
       "submittedBase": "01f281be328d7b1ba18e84d2d606420c9bab534b",
       "submissionId": "64c096d6-17eb-4c63-959d-d2ef78493c69",
       "submittedAt": "2026-10-21T06:50:33.642Z",
+      "integratedCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+      "integratedAt": "2026-10-21T08:00:16.646Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1129,7 +1153,30 @@
           "startedAt": "2026-10-21T06:48:57.555Z",
           "finishedAt": "2026-10-21T06:50:33.264Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T07:34:43.916Z",
+          "finishedAt": "2026-10-21T08:00:16.316Z"
+        }
       ]
+    },
+    {
+      "id": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "group": "full-model",
+      "taskId": "T280",
+      "tasks": [
+        "T280"
+      ],
+      "lane": null,
+      "owner": "f6n3-T280",
+      "contributors": [
+        "f6n3-T280"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-21T07:42:13.283Z",
+      "startCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078"
     }
   ],
   "history": [
@@ -6069,6 +6116,173 @@
       "group": "full-model",
       "attemptId": "cff8482e-581d-452f-b8dc-840d8ac758c7",
       "taskId": "T304",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 497,
+      "at": "2026-10-21T07:42:13.283Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+        "group": "full-model",
+        "taskId": "T280",
+        "tasks": [
+          "T280"
+        ],
+        "lane": null,
+        "owner": "f6n3-T280",
+        "contributors": [
+          "f6n3-T280"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T07:42:13.283Z",
+        "startCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078"
+      }
+    },
+    {
+      "sequence": 498,
+      "at": "2026-10-21T07:42:13.778Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 499,
+      "at": "2026-10-21T07:42:16.390Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "33ca83cd-3029-4979-a6bc-feb89c7779b2",
+          "owner": "f6n3-review2",
+          "status": "reviewing",
+          "commit": "3c37d2d3551ead42a0d0e63926520525bb93f100",
+          "baseCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+          "submissionId": "ce3233ed-78f3-445c-bb41-658727692cf2",
+          "createdAt": "2026-10-21T07:42:16.390Z"
+        }
+      }
+    },
+    {
+      "sequence": 502,
+      "at": "2026-10-21T07:45:50.917Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "33ca83cd-3029-4979-a6bc-feb89c7779b2",
+          "owner": "f6n3-review2",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Re-review of T276 after correction 52f9a9dc. The P2 finding is fixed. verdict() now returns undefined for a committed run while the side keeps possession, so box holds set by restartTaken() last until setPiece.stay (expiry), a turnover or a higher priority, and no longer end as 'arrival' at the kick. A new regression test in intentions.test.ts checks the intention, the GridPlayer.run view and targetOf for each second up to stay, then expiry and the turnover ending. It also checks in play that no committed box hold ends as arrival. The three earlier P3s are addressed too. (1) Exit and entry notes now carry TraceEntry.left with the leaver's ended intention (substitution, injury, dismissal), and depart() now runs before the dismissal note. Restart intentions not being traced is recorded as a limit handed to T275. (2) losePass() ends the receiver's real intention (for example a run) as 'lost' without overwriting it, or records a zero-length receive when he holds none. carryTo() ends a reached reception as 'arrival'. (3) A tactical presser already on the carrier is raised to danger priority when danger starts. The design doc §4.5/§10.1 and the task result match the code. All correction changes in engine.ts are gated by `candidate`. losePass, carryTo and restartTaken are only called on the candidate path, so the pre-feature (production, release switch off) path is unchanged. No new draws were added. The trace copies intentions and only references gp.ended for `left`, so observation never mutates engine state; the observed/unobserved determinism test passes. Acceptance items 1-6 hold. Remeasured drift (headed goals 20.8%, press v counter home wins 92%, other out-of-band rows) is recorded for T278, and fixture time for T285. Ran pnpm exec vitest run packages/engine/src/grid: 19 files, 146 tests passed.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/playback.ts (T276)",
+              "message": "TraceEntry.left is traced but playback does not surface it, so the inspector or playback still cannot show why a leaver's intention ended. Consider passing it through when T275 paces candidate traces."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/intentions.ts:437-442 (T276)",
+              "message": "The danger escalation raises pressing[0], the lowest roster index among the current pressers, not necessarily the nearest or the earliest presser. This matters only under the press tactic, which has two pressers. T277's side-level assignment can refine it."
+            },
+            {
+              "priority": "P3",
+              "where": "docs/MATCH-ENGINE-DESIGN.md §4.5 measurements (T276)",
+              "message": "The press-versus-counter imbalance grew from 76% to 92% home wins after the correction. It is correctly handed to T278. Flag it explicitly there as the largest tactic-balance gap, against MATCH-8's tradeoff that counter gains against press."
+            }
+          ],
+          "commit": "3c37d2d3551ead42a0d0e63926520525bb93f100",
+          "baseCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+          "submissionId": "ce3233ed-78f3-445c-bb41-658727692cf2",
+          "createdAt": "2026-10-21T07:42:16.390Z",
+          "finishedAt": "2026-10-21T07:45:50.917Z"
+        }
+      }
+    },
+    {
+      "sequence": 508,
+      "at": "2026-10-21T08:00:16.575Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "cff8482e-581d-452f-b8dc-840d8ac758c7",
+      "taskId": "T304",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T07:34:43.916Z",
+            "finishedAt": "2026-10-21T08:00:16.316Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 509,
+      "at": "2026-10-21T08:00:16.646Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "cff8482e-581d-452f-b8dc-840d8ac758c7",
+      "taskId": "T304",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "f972fb709b96c711dd45953093790487b419dfb3",
+        "integratedAt": "2026-10-21T08:00:16.646Z"
+      }
+    },
+    {
+      "sequence": 510,
+      "at": "2026-10-21T08:00:17.350Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "f972fb709b96c711dd45953093790487b419dfb3",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T08:00:17.329Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          f972fb709b96c711dd45953093790487b419dfb3 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 511,
+      "at": "2026-10-21T08:00:17.452Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
