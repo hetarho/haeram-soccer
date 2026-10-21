@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T05:18:37.566Z",
-  "sourceCommit": "6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430",
+  "snapshotAt": "2026-10-21T05:25:18.052Z",
+  "sourceCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,11 +15,11 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430",
+      "commit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T05:11:24.760Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        6e8d6c8bd55540bee27ad16b1f8e2e2e86b6f430 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-21T05:18:38.909Z",
+      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
     },
     "lastRun": {
       "id": "865ceda2-cc7e-4eb9-9a58-f72de5ba3314",
@@ -57,8 +57,8 @@
     "completed": 3,
     "remaining": 11,
     "running": 0,
-    "review": 2,
-    "blocked": 0,
+    "review": 1,
+    "blocked": 1,
     "unassigned": 9
   },
   "tasks": [
@@ -103,7 +103,7 @@
       "dep": [
         "T273"
       ],
-      "status": "reviewing"
+      "status": "changes_requested"
     },
     {
       "id": "T280",
@@ -424,8 +424,8 @@
       "contributors": [
         "f6n3-T279"
       ],
-      "status": "reviewing",
-      "reason": null,
+      "status": "changes_requested",
+      "reason": "integration failed",
       "createdAt": "2026-10-21T02:43:00.076Z",
       "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2",
       "verifiedCommit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
@@ -442,14 +442,60 @@
         "files": 7
       },
       "review": {
-        "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
-        "owner": "f6n3-review",
-        "status": "reviewing",
+        "id": "5249bb3a-0faf-4aad-9d87-bced3f3249ce",
+        "owner": "integration",
+        "status": "changes_requested",
+        "verdict": "changes_requested",
+        "summary": "Integration failed on the merged candidate.",
+        "findings": [
+          {
+            "priority": "P1",
+            "where": "integration",
+            "message": "Merge the group branch into this workspace, fix the failure, and resubmit: 통합 후보의 spec 검증에 실패했습니다.\nT275: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT275: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT276: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT277: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT278: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT280: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT281: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT283: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT283: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT284: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT285: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT286: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT286: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요."
+          }
+        ],
         "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
-        "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
-        "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
-        "createdAt": "2026-10-21T04:54:06.509Z"
+        "baseCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+        "finishedAt": "2026-10-21T05:19:30.336Z"
       },
+      "reviewHistory": [
+        {
+          "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+          "owner": "f6n3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+              "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:486-497",
+              "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/input.ts:84-115",
+              "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+              "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+          "createdAt": "2026-10-21T04:54:06.509Z",
+          "finishedAt": "2026-10-21T05:19:28.352Z",
+          "invalidatedAt": "2026-10-21T05:19:30.336Z",
+          "invalidationReason": "integration failed"
+        }
+      ],
       "steps": [
         {
           "taskId": "T279",
@@ -3154,6 +3200,152 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 372,
+      "at": "2026-10-21T05:18:38.920Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T05:18:38.909Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-10-21T05:19:28.353Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+          "owner": "f6n3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+              "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/team.ts:486-497",
+              "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/input.ts:84-115",
+              "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+              "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+          "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+          "createdAt": "2026-10-21T04:54:06.509Z",
+          "finishedAt": "2026-10-21T05:19:28.352Z"
+        }
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-10-21T05:19:28.585Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-10-21T05:19:30.336Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "integrating",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "integration failed",
+        "review": {
+          "id": "5249bb3a-0faf-4aad-9d87-bced3f3249ce",
+          "owner": "integration",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Integration failed on the merged candidate.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "integration",
+              "message": "Merge the group branch into this workspace, fix the failure, and resubmit: 통합 후보의 spec 검증에 실패했습니다.\nT275: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT275: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT276: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT277: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT278: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT280: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT281: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT283: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT283: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT284: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT285: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요.\nT286: base WEB@104 < 현재 r105 — implement 전 신선도 확인 필요.\nT286: base ARCH@16 < 현재 r17 — implement 전 신선도 확인 필요."
+            }
+          ],
+          "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+          "baseCommit": "2f5cbe0b592bfa9e0e8e4806f4d53dd7093c0633",
+          "finishedAt": "2026-10-21T05:19:30.336Z"
+        },
+        "reviewHistory": [
+          {
+            "id": "269eb42a-fe62-497f-9b49-d638d42ca3b0",
+            "owner": "f6n3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T279 meets its acceptance items. The aggregate kernel reads the prepared strength, possession chance, tactics and profiles unchanged and gets effective skills through an injected accessor, so there is no second strength formula and no import of match.ts. Its streams are named <seed>:<revision>:aggregate:<family>[:<period>]:<fixture>. It uses grouped binomial, multinomial and Poisson draws over the 40 cells. The only per-item loops run over actual shots, corners and fouls, with no minute or action loop. Every Metrics and TD counter is derived from one ledger under the grid Tally definitions; spot-checked buildUp/finalThird, high turnovers, press actions, box and front-of-box entries, xT, cards (second yellow counts one yellow and one red), restarts and possession out of 90. ledgerIssues and teamFactsIssues refuse tampered facts rather than repairing them. Extra time runs on its own period streams, so regulation facts stay the same. Nothing is wired into dispatch. The required named tests exist and pass (17/17); typecheck, eslint and prettier are clean. Results outside the MATCH-23 bands are correctly left to T284 and the contract-document gaps to T286. The remaining notes are P3.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:484-490, config.ts:136",
+                "message": "T279: the shot outcome inlines match.ts goalChance (clamp(xg*finishing, 0.01, 0.8)) instead of injecting it. AGGREGATE_CONFIG.penalty copies grid SHOT_CONFIG.penalty (base/min/max/xg 0.76) and xg.max copies SHOT_CONFIG.maxXg. The penalty conversion also differs from resolvePenalty: finishing-only shooting unit against reflexes+handling over 400, while the grid uses 0.6 finishing + 0.4 composure against reflexes over 300. Inject goalChance and a penalty helper through AggregateSkillAccess, or import the shared config, so the recorded penalty xG and the conversion cannot drift between paths (MATCH-13/26). T280/T284 can pick this up."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/team.ts:486-497",
+                "message": "T279: header shots (and set-piece headers) finish with the side's finishing unit (a.shooting). Both existing paths read heading for a header (MATCH-11; match.ts shapeChance uses HEAD for crosses, grid resolveShot uses heading), and the aerial unit is already computed. Use it for headers so strong aerial sides convert headers as they do on the other paths."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/input.ts:84-115",
+                "message": "T279: participationIssues checks stint bounds, roster and per-slot overlap. It does not reject: an incident minute outside 1..length (a card at 100' in a 90-minute plan is silently dropped by sideCards), a sent-off or substituted player who keeps a later stint, or one line holding two slots at once. T280's planner/validator (MATCH-27) should cover these, or add them here."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/ledger.ts:36, types.ts:36-48",
+                "message": "T279: inGoalAreaCell is exported but unused. Slot roles enter only implicitly through the tactic's formation (line/wide), and player play traits, which the grid's decide.ts mix reads for shots, take-ons and crosses, are not consumed. Not blocking for team facts; T280 should note this when it allocates by role."
+              }
+            ],
+            "commit": "f4d050c9885a3c88cf26dbb13762e6c0b30db453",
+            "baseCommit": "e9ae1de1608caf9f3eb70835cec056a6996975de",
+            "submissionId": "1d5235ee-af44-469c-9365-c2db0767400c",
+            "createdAt": "2026-10-21T04:54:06.509Z",
+            "finishedAt": "2026-10-21T05:19:28.352Z",
+            "invalidatedAt": "2026-10-21T05:19:30.336Z",
+            "invalidationReason": "integration failed"
+          }
+        ]
       }
     }
   ]
