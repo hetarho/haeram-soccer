@@ -7,7 +7,7 @@
 import { TD, TEAM_DETAIL_SIZE } from '../../../contracts/src/detail';
 import { CELL_BASELINES } from '../grid/baselines';
 import { cellBand, cellLane } from '../grid/pitch';
-import { M } from '../grid/record';
+import { COUNTER_ZONES, inBoxCell, isCutBack, M, mirrorBand } from '../grid/record';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_CONFIG } from './config';
 import {
@@ -22,22 +22,17 @@ import {
 } from './types';
 
 const CELLS = 40;
-/** The band where the final third starts, and the last band a side's build-up starts in. */
-const FINAL_THIRD_BAND = 5;
-/** A regain in the loser's bands up to these is a high turnover, a press action (→MATCH-13). */
-const HIGH_TURNOVER_BAND = 2;
-const PRESS_BAND = 4;
 const BIG_CHANCE = 30;
 
 export const isPassKind = (kind: AggregateMoveKind) =>
   (AGGREGATE_PASS_KINDS as readonly string[]).includes(kind);
-/** The box: the inner three lanes of the box and goal-area bands (grid/pitch.ts `inBox`). */
-export const inBoxCell = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) % 4 !== 0;
+export { inBoxCell };
 export const inGoalAreaCell = (cell: number) => cellBand(cell) === 7 && cellLane(cell) === 2;
 /** Expected-threat gain of a completed move between two cells, in thousandths. */
 export const xtGain = (from: number, to: number) =>
   Math.round(Math.max(0, CELL_BASELINES[to]!.xT - CELL_BASELINES[from]!.xT) * 1000);
-const cutBackZone = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !== 2;
+/** Where the kernel's pull-back flow (the `cutBack` kind) starts: the byline areas off centre. */
+const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !== 2;
 /** Kinds that always go forward; a short pass may go any way. */
 const forwardKinds: ReadonlySet<AggregateMoveKind> = new Set(['long', 'through']);
 
@@ -180,14 +175,18 @@ function moveIssues(
   if (m.cornersWon > m.outByline) issue(out, who, i, `: ${m.cornersWon} corners of ${m.outByline}`);
   const fromBand = cellBand(m.from),
     toBand = cellBand(m.to);
-  // Only a pass played forward can break a line or be caught offside.
+  // A line-breaking pass (MATCH-13) is a completed pass of any kind played beyond an opponent
+  // line, so it ends upfield of where it started; only a pass played forward can be offside.
+  const upfield = pass && toBand > fromBand;
   const ahead = (forwardKinds.has(m.kind) || m.kind === 'short') && toBand > fromBand;
-  if (m.lineBreaking > m.completed || (m.lineBreaking && !ahead))
+  if (m.lineBreaking > m.completed || (m.lineBreaking && !upfield))
     issue(out, who, i, `: ${m.lineBreaking} line-breaking ${m.kind} of ${m.completed}`);
   if (m.offside && !ahead) issue(out, who, i, `: offside ${m.kind} not played forward`);
   if (forwardKinds.has(m.kind) && toBand <= fromBand) issue(out, who, i, `: ${m.kind} not forward`);
   if (m.kind === 'cross' && !inBoxCell(m.to)) issue(out, who, i, ': cross outside the box');
-  if (m.kind === 'cutBack' && !(cutBackZone(m.from) && inBoxCell(m.to) && toBand <= fromBand))
+  // The kernel's pull-back flow (team.ts): from the byline areas into the box, never upfield.
+  // MATCH-13's cut-back counter reads the cells instead (`isCutBack`), whatever the kind.
+  if (m.kind === 'cutBack' && !(pullBackFrom(m.from) && inBoxCell(m.to) && toBand <= fromBand))
     issue(out, who, i, `: cut-back ${m.from}→${m.to}`);
   if (m.setPiece && m.kind !== 'cross')
     issue(out, who, i, `: ${m.setPiece} delivered as ${m.kind}`);
@@ -229,7 +228,7 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
     if (isPassKind(move.kind)) {
       m[M.passes] += move.attempts;
       m[M.completed] += done;
-      if (fromBand >= FINAL_THIRD_BAND) {
+      if (fromBand >= COUNTER_ZONES.finalThird) {
         t[TD.finalThirdPasses] += move.attempts;
         t[TD.finalThirdCompleted] += done;
       } else t[TD.buildUpPasses] += move.attempts;
@@ -244,7 +243,7 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
         t[TD.throughBalls] += move.attempts;
         t[TD.throughBallsCompleted] += done;
       }
-      if (move.kind === 'cutBack') t[TD.cutBacks] += done;
+      if (isCutBack(move.from, move.to)) t[TD.cutBacks] += done;
     } else {
       if (toBand > fromBand) t[TD.progressiveCarries] += done;
       if (move.kind === 'takeOn') {
@@ -253,19 +252,20 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
       }
     }
     if (inBoxCell(move.to) && !inBoxCell(move.from)) t[TD.boxEntries] += done;
-    if (toBand === FINAL_THIRD_BAND && fromBand < FINAL_THIRD_BAND) t[TD.frontOfBoxEntries] += done;
+    if (toBand === COUNTER_ZONES.finalThird && fromBand < COUNTER_ZONES.finalThird)
+      t[TD.frontOfBoxEntries] += done;
     t[TD.xtAdded] += done * xtGain(move.from, move.to);
   }
   // The ball this side won from the opponent: tackles on its carries and take-ons, interceptions
-  // of its passes where they were played to.
+  // of its passes where they were played to, read in this side's frame (MATCH-13's zones).
   for (const move of opp.moves) {
     const tackled = isPassKind(move.kind) ? 0 : move.attempts - move.completed;
-    const at = cellBand(isPassKind(move.kind) ? move.to : move.from);
+    const at = mirrorBand(cellBand(isPassKind(move.kind) ? move.to : move.from));
     const won = tackled + move.intercepted;
     m[M.tackles] += tackled;
     m[M.interceptions] += move.intercepted;
-    if (at <= HIGH_TURNOVER_BAND) t[TD.highTurnovers] += won;
-    if (at <= PRESS_BAND) t[TD.pressActions] += won;
+    if (at >= COUNTER_ZONES.highTurnover) t[TD.highTurnovers] += won;
+    if (at >= COUNTER_ZONES.press) t[TD.pressActions] += won;
     if (isPassKind(move.kind)) {
       t[TD.throwIns] += move.outTouch;
       t[TD.goalKicks] += move.outByline - move.cornersWon;

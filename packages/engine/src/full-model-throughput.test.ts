@@ -34,14 +34,17 @@ const facts = (w: World) => ({
 });
 
 /**
- * Digests of the source before T285's changes: the aggregate records recorded on 3679af8, the
- * candidate rounds re-recorded on d5d6a87 after T321 changed the candidate detailed engine (T285's
- * optimisations give the same digest on top of it). A change that alters football
- * outcomes refreshes them together with the calibration evidence (T284's report), never alone.
+ * Digests of the current football, so later semantics-preserving work can prove it unchanged: the
+ * aggregate records recorded on 3679af8 before T285's changes and the candidate rounds on d5d6a87
+ * after T321 (T285's optimisations gave the same digests on top of them), both re-recorded by T322,
+ * whose MATCH-13 counting rules (cut-backs from MATCH-14's zone, through balls and line-breaking
+ * passes where the players stand, restarts read in the pass zones) change recorded counters but no
+ * outcome. A change that alters football outcomes refreshes them together with the calibration
+ * evidence (T284's report), never alone.
  */
 const BEFORE = {
-  aggregateRecords: 'ecc34cfebe47e269',
-  candidateRounds: 'd0279522354463cd',
+  aggregateRecords: '20f18d306396498f',
+  candidateRounds: '9206b245f0162457',
 };
 
 describe('complete-result throughput (T285)', () => {

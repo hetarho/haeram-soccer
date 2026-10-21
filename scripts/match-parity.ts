@@ -44,15 +44,11 @@ import type {
 import {
   advanceRound,
   clamp,
-  cohesionMultiplier,
   createWorld,
   effectiveGap,
-  fatigueLoad,
-  formationOf,
   matchForm,
   prepareMatch,
   rating,
-  slotOvr,
   tacticalProfile,
 } from '../packages/engine/src/index';
 import {
@@ -82,9 +78,12 @@ import {
   coreFixturePairs,
   forcedFatigueApplied,
   forcedRosters,
+  rosterRating,
   type ConditionParams,
 } from './grid-bands';
 import {
+  ADVANCED_COUNTER_TARGET,
+  advancedCounterVerdicts,
   buildEquivalenceReport,
   buildInvariantReport,
   buildOutcomeTargetReport,
@@ -94,17 +93,22 @@ import {
   conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureId,
+  describeAdvancedCounters,
   describeTacticPairings,
+  DETAILED_ONLY_REASON,
   MATCH_PARITY_VERSION,
   PARITY_CONFIG,
+  hatTrickReading,
   pilotNeeds,
   rareComparisonPower,
   requiredRareEvents,
   SCORING_CONCENTRATION_TARGET,
+  scoringConcentrationVerdicts,
   tacticPairingVerdicts,
   TARGET_BANDS,
   type LedgerDiagnostics,
   type MatchSample,
+  type ParityCondition,
   type Partition,
 } from './lib/match-parity';
 
@@ -219,17 +223,11 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
     ];
   const squads: [Player[], Player[]] = [rosters[0].slice(0, 11), rosters[1].slice(0, 11)];
   const played: [Tactic, Tactic] = tactics ? [tactics[0], tactics[1]] : prepared.tactics;
-  const rated = ([0, 1] as const).map((side) => {
-    const club = prepared.teams[side];
-    const slots = formationOf(played[side]);
-    let ovr = 0,
-      load = 0;
-    squads[side].forEach((p, i) => {
-      ovr += slotOvr(p, slots[i]!);
-      load += fatigueLoad(p.fatigue) / 6;
-    });
-    return Math.round((ovr * cohesionMultiplier(club) - load) / 11);
-  });
+  // The XI rated at the formation it plays: grid-bands' `rosterRating`, so a forced pairing's gap
+  // is the same in both runners (`forcedGap`, CORPUS_CONFIG v3).
+  const rated = ([0, 1] as const).map((side) =>
+    rosterRating(prepared.teams[side], squads[side], played[side]),
+  );
   const context = [3 + 4, 4];
   const form = matchForm(w, f);
   const base = [rated[0]! + context[0]!, rated[1]! + context[1]!];
@@ -451,11 +449,15 @@ export function rareEvents(samples: readonly MatchSample[]) {
 }
 
 /**
- * Player scoring concentration of a sample set: braces and hat-tricks a match, and for each club
- * with 20+ goals in the sample its top scorer's share of the club's goals and his goals per 38
- * club matches, against the proposed SCORING_CONCENTRATION_TARGET.
+ * Player scoring concentration of a sample set: braces and hat-tricks a match (MATCH-23's hat-trick
+ * row: a verdict on the core condition, context elsewhere, `hatTrickReading`), and for each club with 20+ goals in the sample its top scorer's share of
+ * the club's goals and his goals per 38 club matches — context only, since MATCH-23 reads those
+ * over whole seasons (`seasonsReport`).
  */
-export function concentration(samples: readonly MatchSample[]) {
+export function concentration(
+  samples: readonly MatchSample[],
+  condition: Pick<ParityCondition, 'family'>,
+) {
   let braces = 0,
     hatTricks = 0;
   const clubs = new Map<string, { matches: number; goals: number; players: Map<string, number> }>();
@@ -485,6 +487,7 @@ export function concentration(samples: readonly MatchSample[]) {
   return {
     bracesPerMatch: braces / n,
     hatTricksPerMatch: rateCi(hatTricks, samples.length),
+    hatTricks: hatTrickReading(hatTricks, samples.length, condition),
     clubsWith20Goals: scored.length,
     topScorerShare: meanCi(scored.map((c) => top(c) / c.goals)),
     topScorerGoalsPer38: meanCi(scored.map((c) => (38 * top(c)) / c.matches)),
@@ -648,19 +651,24 @@ function summarise(job: Job) {
     shootouts: samples.filter((s) => s.record.shootout).length / n,
     goalsByLine,
     rare: rareEvents(samples),
-    concentration: concentration(samples),
+    concentration: concentration(samples, c),
     settlement: settlementReport(samples, settlement),
-    targets: buildTargetReport(samples).map((t) => ({
+    targets: buildTargetReport(samples, 'aggregate').map((t) => ({
       id: t.id,
       band: t.band,
       status: t.status,
       value: t.value,
       interval: t.interval,
       error: t.error,
-      ...(t.status === 'missing' && {
-        reason:
-          'the aggregate path records cells and team counts, not shot points or possession sequences',
-      }),
+      ...(t.status === 'detailed-only' && { reason: DETAILED_ONLY_REASON }),
+    })),
+    advancedCounters: advancedCounterVerdicts(samples).map((a) => ({
+      id: a.id,
+      status: a.status,
+      band: a.band,
+      value: a.value,
+      interval: a.interval,
+      ...(a.matchTarget && { matchTarget: a.matchTarget }),
     })),
     invariants: {
       failed: invariants
@@ -858,14 +866,16 @@ interface SeasonJob {
 type SeasonSummary = ReturnType<typeof seasonSample>;
 
 /**
- * The season measures over every sampled 20-club top division, with the proposed
- * scoring-concentration target beside them as context, never a verdict. The intervals treat each
- * division as one observation (a world's divisions in one season are not clustered by world);
- * bans and injuries are per season of a whole world.
+ * The season measures over every sampled 20-club top division, with MATCH-23's scoring
+ * concentration verdicts on the club top scorers' share and the league top scorer's goals (the
+ * hat-trick row is read per match, `concentration`). The intervals treat each division as one
+ * observation (a world's divisions in one season are not clustered by world); bans and injuries
+ * are per season of a whole world.
  */
 export function seasonsReport(samples: readonly SeasonSummary[]) {
   const divisions = samples.flatMap((s) => s.divisions);
   const read = (f: (d: (typeof divisions)[number]) => number) => meanCi(divisions.map(f));
+  const reading = (r: ReturnType<typeof meanCi>) => ({ value: r.mean, interval: r.ci, n: r.n });
   const lines = ['FW', 'MF', 'DF', 'GK'];
   return {
     seasons: samples.length,
@@ -879,10 +889,10 @@ export function seasonsReport(samples: readonly SeasonSummary[]) {
     clubTopScorerShare: read((d) => d.clubTopScorerShare),
     goalsByLine: Object.fromEntries(lines.map((l) => [l, read((d) => d.goalsByLine[l] ?? 0)])),
     multiClubPlayersPerDivision: read((d) => d.multiClubPlayers),
-    proposedConcentration: {
-      target: SCORING_CONCENTRATION_TARGET,
-      note: 'proposed by T284, not a MATCH decision: context, never a verdict',
-    },
+    scoringConcentration: scoringConcentrationVerdicts({
+      clubTopScorerShare: reading(read((d) => d.clubTopScorerShare)),
+      leagueTopScorerGoals: reading(read((d) => d.topScorerGoals)),
+    }).filter((v) => v.id !== 'hatTricksPerMatch'),
     reconciliation: {
       clubCompetitions: samples.reduce((a, s) => a + s.reconciled + s.unreconciled, 0),
       unreconciled: samples.reduce((a, s) => a + s.unreconciled, 0),
@@ -1143,7 +1153,18 @@ async function runReport() {
       knockouts:
         'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
       cellRows: TARGET_BANDS.filter((t) => t.reads === 'cells').map((t) => t.id),
-      unmeasurableRows: TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id),
+      detailedOnlyRows: {
+        rows: TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id),
+        reason: DETAILED_ONLY_REASON,
+      },
+      advancedCounters: {
+        target: ADVANCED_COUNTER_TARGET.version,
+        unbanded: Object.fromEntries(
+          ADVANCED_COUNTER_TARGET.counters.flatMap((c) =>
+            'unbanded' in c ? [[c.id, c.unbanded]] : [],
+          ),
+        ),
+      },
     },
     coverage: CORPUS_CONFIG.conditions.map((c) => ({
       condition: c.id,
@@ -1184,8 +1205,10 @@ async function runReport() {
       `${d.condition} targets inside ${d.targets.filter((t) => t.status === 'inside').length}/${d.targets.length}; outside ${d.targets
         .filter((t) => t.status === 'outside' || t.status === 'unresolved')
         .map((t) => `${t.id}=${t.value?.toFixed(3)}(${t.status[0]})`)
-        .join(' ')}`,
+        .join(' ')}; detailed-only ${d.targets.filter((t) => t.status === 'detailed-only').length}`,
     );
+  const core = done.find((x) => x.family === 'core');
+  if (core) for (const line of describeAdvancedCounters(core.advancedCounters)) console.log(line);
   if (curve) console.log(`outcome curve mean absolute error (−10…+40): ${curve.meanAbsoluteError}`);
   if (tacticPairings) for (const line of describeTacticPairings(tacticPairings)) console.log(line);
 }

@@ -2,10 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Fixture, MatchRecord, World } from '../../../contracts/src/types';
-import { M } from '../grid/record';
+import { BAND_EDGES, LANE_EDGES, type Point } from '../grid/pitch';
+import { M, Tally } from '../grid/record';
+import { createState, type GridState } from '../grid/state';
+import { gridKit } from '../grid/testkit';
 import { createWorld, ownLeagueClubs } from '../index';
 import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
-import { eraRules } from '../grid/setup';
+import { FORMATIONS, lineOf } from '../player';
+import { buildGridSetup, eraRules } from '../grid/setup';
 import { prepareMatch } from '../match';
 import {
   aggregatePlan,
@@ -17,9 +21,15 @@ import {
   simulateAggregate,
 } from './engine';
 import { buildAggregateInput } from './input';
+import { deriveTeamFacts, ledgerIssues } from './ledger';
 import { rebalanceIssues, scoreBefore } from './participation';
 import { aggregateStreams } from './team';
-import type { AggregateParticipation, AggregateSkillAccess } from './types';
+import type {
+  AggregateLedger,
+  AggregateMove,
+  AggregateParticipation,
+  AggregateSkillAccess,
+} from './types';
 
 /**
  * Fixtures between clubs nobody owns in a freshly founded world (→ARCH-21: a founding, no
@@ -495,4 +505,151 @@ describe('the shared validator against corrupted aggregate records (→MATCH-27)
     it(`rejects ${name}`, () => {
       expect(validateFullMatchRecord(corrupt()).length).toBeGreaterThan(0);
     });
+});
+
+/**
+ * One counting rule on both paths (→MATCH-13, MATCH-14, MATCH-30): the same synthetic actions
+ * (explicitly synthetic test data) counted by the detailed tally at the cells' centres, where the
+ * players stand, and by the aggregate ledger on the cells.
+ */
+describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
+  const kit = gridKit();
+  const setup = buildGridSetup(kit.w, kit.f, {
+    observe: false,
+    recordPlayers: true,
+    tactics: ['balanced', 'balanced'],
+    model: MATCH_MODEL_REVISION,
+  });
+  const cell = (band: number, lane: number) => band * 5 + lane;
+  /** The centre of a cell in the acting side's attack frame (MATCH-14's markings). */
+  const centre = (c: number): Point => {
+    const band = Math.floor(c / 5),
+      lane = c % 5;
+    return [
+      (BAND_EDGES[band]! + BAND_EDGES[band + 1]!) / 2,
+      (LANE_EDGES[lane]! + LANE_EDGES[lane + 1]!) / 2,
+    ];
+  };
+  const mirror = (p: Point): Point => [105 - p[0], 68 - p[1]];
+  /** A detailed tally whose opponents' lines stand at these x of side 0's attack frame. */
+  const tally = (at = { GK: 104, DF: 85, MF: 60, FW: 40 }) => {
+    const s: GridState = createState(setup);
+    const slots = FORMATIONS[setup.tactics[1]].slots;
+    s.players[1].slice(0, 11).forEach((gp, i) => {
+      gp.pos = [at[lineOf(slots[i]!.position) as keyof typeof at], 4 + 6 * i];
+    });
+    return { t: new Tally(setup, s), s };
+  };
+  const move = (m: Partial<AggregateMove>): AggregateMove => ({
+    period: 'regulation',
+    from: 0,
+    to: 0,
+    kind: 'short',
+    attempts: 1,
+    completed: 1,
+    lineBreaking: 0,
+    offside: 0,
+    intercepted: 0,
+    outTouch: 0,
+    outByline: 0,
+    cornersWon: 0,
+    ...m,
+  });
+  /** A one-period ledger with only these moves of each side. */
+  const ledger = (own: Partial<AggregateMove>[], opp: Partial<AggregateMove>[] = []) => {
+    const side = (moves: Partial<AggregateMove>[]) => ({
+      moves: moves.map(move),
+      shots: [],
+      fouled: [],
+      held: [1200],
+      cards: { yellow: 0, red: 0 },
+      cardFouls: 0,
+    });
+    return {
+      length: 90,
+      periods: ['regulation'],
+      sides: [side(own), side(opp)],
+    } as AggregateLedger;
+  };
+  const aggregate = (l: AggregateLedger) => {
+    expect(ledgerIssues(l)).toEqual([]);
+    return deriveTeamFacts(l).sides[0].detail;
+  };
+  /** Each pass group, played by the detailed tally once per attempt. */
+  const replay = (t: Tally, moves: Partial<AggregateMove>[]) => {
+    for (const m of moves.map(move))
+      for (let i = 0; i < m.attempts; i++)
+        t.passEvent(0, 7, {
+          from: centre(m.from),
+          to: centre(m.to),
+          ok: i < m.completed,
+          kind: m.kind === 'cross' ? 'cross' : 'short',
+        });
+  };
+
+  it("counts a cut-back only from MATCH-14's zone", () => {
+    const moves: Partial<AggregateMove>[] = [
+      // From the goal-area half-spaces into the box: cut-backs, whatever the kind.
+      { from: cell(7, 1), to: cell(6, 1), attempts: 2, completed: 1 },
+      { from: cell(7, 3), to: cell(7, 2), kind: 'cutBack' },
+      { from: cell(7, 1), to: cell(7, 2), kind: 'cross' },
+      // The kernel's pull-back flow from elsewhere is no cut-back (T284's zone).
+      { from: cell(6, 0), to: cell(6, 1), kind: 'cutBack', attempts: 3, completed: 3 },
+      { from: cell(7, 0), to: cell(7, 1), kind: 'cutBack' },
+      { from: cell(6, 1), to: cell(6, 2), kind: 'cutBack' },
+    ];
+    const { t, s } = tally();
+    replay(t, moves);
+    const grid = t.finish(s).detail![0]!;
+    const agg = aggregate(ledger(moves));
+    expect(agg[TD.cutBacks]).toBe(3);
+    expect(grid[TD.cutBacks]).toBe(agg[TD.cutBacks]);
+  });
+
+  it('counts a line-breaking pass by one rule on both paths', () => {
+    // Opponent midfielders deepest at 60 m (band 4), defenders at 85 m (band 5).
+    const moves: Partial<AggregateMove>[] = [
+      { from: cell(3, 2), to: cell(4, 2), attempts: 3, completed: 2, lineBreaking: 2 },
+      { from: cell(5, 1), to: cell(6, 2), kind: 'cross', lineBreaking: 1 },
+      { from: cell(4, 1), to: cell(4, 2) },
+      { from: cell(2, 2), to: cell(1, 2) },
+    ];
+    const { t, s } = tally();
+    replay(t, moves);
+    const grid = t.finish(s).detail![0]!;
+    const agg = aggregate(ledger(moves));
+    expect(agg[TD.lineBreakingPasses]).toBe(3);
+    expect(grid[TD.lineBreakingPasses]).toBe(agg[TD.lineBreakingPasses]);
+    // A pass that does not end upfield never breaks a line, nor more than its completions.
+    const lateral = ledger([{ from: cell(4, 1), to: cell(4, 2), lineBreaking: 1 }]);
+    expect(ledgerIssues(lateral).join()).toMatch(/line-breaking/);
+    const over = ledger([{ from: cell(3, 2), to: cell(4, 2), lineBreaking: 2 }]);
+    expect(ledgerIssues(over).join()).toMatch(/line-breaking/);
+  });
+
+  it("keeps PPDA's build-up zone the same on both paths", () => {
+    const own: Partial<AggregateMove>[] = [
+      { from: cell(4, 2), to: cell(4, 1), attempts: 3, completed: 3 },
+      { from: cell(5, 2), to: cell(5, 1), attempts: 2, completed: 2 },
+    ];
+    // The opponent's actions in its own frame: carries tackled in its band 4 (our band 3) and
+    // band 5 (our band 2), and a pass intercepted where it was played to, its band 2 (our band 5).
+    const opp: Partial<AggregateMove>[] = [
+      { from: cell(4, 2), to: cell(4, 2), kind: 'carry', attempts: 2, completed: 0 },
+      { from: cell(5, 2), to: cell(5, 2), kind: 'carry', completed: 0 },
+      { from: cell(1, 2), to: cell(2, 2), completed: 0, intercepted: 1 },
+    ];
+    const agg = aggregate(ledger(own, opp));
+    const { t, s } = tally();
+    replay(t, own);
+    for (const at of [cell(4, 2), cell(4, 2), cell(5, 2)]) t.tackle(0, 6, mirror(centre(at)));
+    t.interception(0, 5, mirror(centre(cell(2, 2))));
+    for (const at of [cell(4, 2), cell(4, 2), cell(5, 2), cell(2, 2)])
+      t.regain(0, 6, mirror(centre(at)));
+    const grid = t.finish(s).detail![0]!;
+    for (const k of [TD.buildUpPasses, TD.finalThirdPasses, TD.pressActions, TD.highTurnovers])
+      expect(grid[k]).toBe(agg[k]);
+    expect([agg[TD.buildUpPasses], agg[TD.finalThirdPasses]]).toEqual([3, 2]);
+    expect([agg[TD.pressActions], agg[TD.highTurnovers]]).toEqual([3, 1]);
+  });
 });

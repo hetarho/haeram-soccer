@@ -293,19 +293,24 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
       lanes.forEach((l, i) => {
         const to = cell(band, l);
         const k = i === 0 ? left : lateral - left;
-        group(c, to, cutBack(c, to) ? 'cutBack' : 'short', k, q(d.lateral, to));
+        group(c, to, pullBack(c, to) ? 'cutBack' : 'short', k, q(d.lateral, to));
       });
     }
     if (backward) {
       const to = cell(band - 1, lane);
-      group(c, to, cutBack(c, to) ? 'cutBack' : 'short', backward, q(d.back, to));
+      group(c, to, pullBack(c, to) ? 'cutBack' : 'short', backward, q(d.back, to));
     }
     carriesFrom(m, p, side, r, c, n);
   });
 }
 
-/** A pass from the byline zones back into the box (→MATCH-13). */
-const cutBack = (from: number, to: number) =>
+/**
+ * The generator's pull-back flow (the `cutBack` move kind): a lateral pass from the byline areas
+ * toward the centre into the box, which its chance model weights (`shots.kind`, `xg.kind`). It is
+ * how the kernel plays, not the counter: MATCH-13's cut-back is read off the cells
+ * (grid/record.ts `isCutBack`) by the ledger and the attribution alike, whatever the kind.
+ */
+const pullBack = (from: number, to: number) =>
   cellBand(from) >= 6 &&
   cellLane(from) !== 2 &&
   inBoxCell(to) &&
@@ -340,6 +345,8 @@ function passGroup(
   const cornersWon = binomial(r, outByline, C.failed.corner);
   const intercept = Math.min(1, C.failed.intercepted * (cellBand(from) <= 2 ? pressing : 1));
   const intercepted = binomial(r, rest, intercept);
+  // Where the kernel places line breaks (bands 2–5, forward kinds) is how it plays; the ledger
+  // holds any completed pass that ends upfield to MATCH-13's rule (ledger.ts `moveIssues`).
   const breaking =
     ahead && cellBand(from) >= 2 && cellBand(from) <= 5
       ? C.lineBreaking[kind as keyof typeof C.lineBreaking]

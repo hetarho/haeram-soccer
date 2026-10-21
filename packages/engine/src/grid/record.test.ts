@@ -5,11 +5,12 @@ import { MATERIAL_LAYOUT } from '../material';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { CELL_BASELINES } from './baselines';
-import { cellOf, type Point } from './pitch';
+import { BAND_EDGES, cellOf, type Point } from './pitch';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { crossArrival, lineMinutes, M, Tally } from './record';
+import { FORMATIONS, lineOf } from '../player';
+import { COUNTER_ZONES, crossArrival, isCutBack, lineMinutes, M, Tally } from './record';
 import { buildGridSetup } from './setup';
-import { createState } from './state';
+import { createState, type GridState } from './state';
 import { gridKit } from './testkit';
 
 const kit = gridKit();
@@ -294,6 +295,121 @@ describe('grid advanced counters', () => {
     expect(mean.crosses).toBeLessThan(30);
     expect(mean.entries).toBeGreaterThan(10);
     expect(mean.entries).toBeLessThan(60);
+  });
+});
+
+/**
+ * The candidate model's tally counts MATCH-13 by the rules both paths share (→MATCH-30): passes are
+ * classified where the players stand when they are played. Synthetic positions, marked as such.
+ */
+describe('candidate counting rules (→MATCH-13, MATCH-14, MATCH-30)', () => {
+  const candidate = buildGridSetup(kit.w, kit.f, {
+    observe: false,
+    recordPlayers: true,
+    tactics: ['balanced', 'balanced'],
+    model: MATCH_MODEL_REVISION,
+  });
+  /** A candidate tally whose opponents stand by line at these x (side 0's attack frame). */
+  const placed = (at: { GK: number; DF: number; MF: number; FW: number }) => {
+    const s: GridState = createState(candidate);
+    const slots = FORMATIONS[candidate.tactics[1]].slots;
+    s.players[1].slice(0, 11).forEach((gp, i) => {
+      gp.pos = [at[lineOf(slots[i]!.position)], 4 + 6 * i];
+    });
+    return { t: new Tally(candidate, s), s };
+  };
+  const counted = (t: Tally, s: GridState) => t.finish(s).detail![0]!;
+  const play = (t: Tally, from: Point, to: Point, ok = true, kind: 'short' | 'cross' = 'short') =>
+    t.passEvent(0, 7, { from, to, ok, kind });
+  const received = (receiver: number, to: [number, number]) =>
+    ({ target: receiver, outcome: { kind: 'complete', to, receiver } }) as const;
+
+  it("counts a cut-back only from MATCH-14's zone", () => {
+    const { t, s } = placed({ GK: 104, DF: 100, MF: 90, FW: 70 });
+    // The goal-area band's half-spaces are the zone; the box is where it goes.
+    expect(isCutBack(cellOf([101, 20]), cellOf([95, 34]))).toBe(true);
+    play(t, [101, 20], [95, 34]);
+    play(t, [101, 50], [102, 34]);
+    play(t, [101, 20], [95, 34], false);
+    // Beside the box at the byline, in the box's half-space, or out of the box: no cut-back.
+    play(t, [101, 8], [95, 34]);
+    play(t, [95, 20], [95, 34]);
+    play(t, [101, 20], [80, 34]);
+    // A pulled-back cross is a cross and a cut-back; the decision's label decides nothing.
+    play(t, [101, 20], [94, 30], true, 'cross');
+    t.passEvent(0, 7, { from: [90, 34], to: [95, 30], ok: true, kind: 'cutBack' });
+    const td = counted(t, s);
+    expect(td[TD.cutBacks]).toBe(3);
+    expect([td[TD.crosses], td[TD.crossesCompleted]]).toEqual([1, 1]);
+    // The pre-feature tally keeps the decision's label (its golden facts do not move).
+    const old = fresh();
+    old.passEvent(0, 7, { from: [90, 34], to: [95, 30], ok: true, kind: 'cutBack' });
+    play(old, [101, 20], [95, 34]);
+    expect(detail(old).td[TD.cutBacks]).toBe(1);
+  });
+
+  it('counts a line-breaking pass by one rule on both paths', () => {
+    // Midfielders deepest at 60, defenders at 85, the keeper behind them.
+    const { t, s } = placed({ GK: 102, DF: 85, MF: 60, FW: 40 });
+    play(t, [55, 30], [65, 30]); // beyond the midfield line
+    play(t, [80, 30], [88, 30]); // beyond the defensive line
+    play(t, [60, 30], [70, 30]); // from level with the midfield line: still played beyond it
+    play(t, [62, 30], [80, 30]); // already past the midfielders, short of the defenders
+    play(t, [55, 30], [65, 30], false); // not completed
+    play(t, [65, 30], [55, 30]); // back past the line
+    // The decision's flag decides nothing on the candidate model.
+    t.passEvent(0, 7, {
+      from: [20, 30],
+      to: [30, 30],
+      ok: true,
+      kind: 'short',
+      lineBreaking: true,
+    });
+    // A restart played as a pass counts by the same rule.
+    s.players[0][9]!.pos = [64, 30];
+    t.restartPass(0, 4, [50, 30], received(9, [64, 30]));
+    expect(counted(t, s)[TD.lineBreakingPasses]).toBe(4);
+  });
+
+  it('counts a through ball into the space beyond the deepest outfield defender', () => {
+    const { t, s } = placed({ GK: 104, DF: 85, MF: 60, FW: 40 });
+    play(t, [70, 30], [90, 30]); // in behind, completed
+    play(t, [70, 30], [92, 40], false); // in behind, not completed (an offside or a lost one)
+    play(t, [70, 30], [84, 30]); // to feet in front of the line
+    play(t, [88, 30], [95, 30]); // passed from beyond the line already
+    play(t, [70, 20], [92, 34], true, 'cross'); // a cross stays a cross
+    const td = counted(t, s);
+    expect([td[TD.throughBalls], td[TD.throughBallsCompleted]]).toEqual([2, 1]);
+  });
+
+  it("keeps PPDA's build-up zone the same on both paths", () => {
+    // The zones sit on MATCH-14's bands: the final third from 70 m, the press from 35 m.
+    expect(BAND_EDGES[COUNTER_ZONES.finalThird]).toBe(70);
+    expect(BAND_EDGES[COUNTER_ZONES.press]).toBe(35);
+    expect(BAND_EDGES[COUNTER_ZONES.highTurnover]).toBe(70);
+    const { t, s } = placed({ GK: 104, DF: 85, MF: 60, FW: 40 });
+    play(t, [69.9, 34], [75, 34]);
+    play(t, [70, 34], [75, 34]);
+    // Restarts played as passes count where they start, as every aggregate pass does.
+    s.players[0][2]!.pos = [20, 20];
+    t.restartPass(0, 0, [6, 34], received(2, [20, 20]));
+    t.restartPass(0, 3, [75, 0], { target: 2, outcome: { kind: 'held' } });
+    t.tackle(0, 6, [35, 34]);
+    t.interception(0, 5, [34.9, 34]);
+    t.regain(0, 6, [70, 30]);
+    t.regain(0, 6, [69.9, 30]);
+    const record = t.finish(s);
+    const td = record.detail![0]!;
+    expect([td[TD.buildUpPasses], td[TD.finalThirdPasses]]).toEqual([2, 2]);
+    expect(td[TD.pressActions]).toBe(1);
+    expect(td[TD.highTurnovers]).toBe(1);
+    // Every pass attempt is read in one zone or the other.
+    expect(td[TD.buildUpPasses]! + td[TD.finalThirdPasses]!).toBe(record.metrics[0]![M.passes]);
+    // The pre-feature tally leaves restarts out of the zones, as its golden facts record.
+    const old = fresh();
+    old.restartPass(0, 0, [6, 34], received(2, [20, 20]));
+    const before = detail(old).td;
+    expect([before[TD.buildUpPasses], before[TD.finalThirdPasses]]).toEqual([0, 0]);
   });
 });
 

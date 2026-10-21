@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
 import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
+import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
 import { M } from '../../packages/engine/src/grid/record';
+import { buildGridSetup } from '../../packages/engine/src/grid/setup';
+import { forcedGap, forceTacticRosters } from '../grid-bands';
 import { FORMATIONS, levelFactor } from '../../packages/engine/src/player';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
 import {
@@ -14,10 +17,13 @@ import {
   settlementReport,
 } from '../match-parity';
 import {
+  ADVANCED_COUNTER_TARGET,
+  advancedCounterVerdicts,
   buildCoverageReport,
   buildEquivalenceReport,
   buildInvariantReport,
   buildOutcomeTargetReport,
+  buildParityReport,
   buildPerformanceReport,
   buildTargetReport,
   calibrationSize,
@@ -30,8 +36,11 @@ import {
   CORPUS_CONFIG,
   corpusFixtureIds,
   COUNTER_INDEXES,
+  describeAdvancedCounters,
   describeTacticPairings,
   equivalencePower,
+  HAT_TRICK_CONTEXT,
+  hatTrickReading,
   INCIDENT_KINDS,
   MATCH_PARITY_VERSION,
   METRIC_BY_ID,
@@ -42,10 +51,12 @@ import {
   observe,
   outcomeTarget,
   pilotNeeds,
+  poissonReading,
   rareComparisonPower,
   requiredRareEvents,
   ruleExclusions,
   SCORING_CONCENTRATION_TARGET,
+  scoringConcentrationVerdicts,
   seedOverlap,
   TACTIC_PAIRING_TARGET,
   TARGET_BANDS,
@@ -1006,6 +1017,16 @@ describe('aggregate measurement (T284)', () => {
     expect(forced.rosters.flat().every((p) => p.fatigue === NEUTRAL_SQUAD_FATIGUE)).toBe(true);
     expect(plain.rosters[0].every((p) => p.fatigue === PRESS_LOAD_FATIGUE)).toBe(true);
     expect(forced.gap).toBe(plain.gap + 2);
+    // The detailed runner rates the same forced rosters at the formations played (CORPUS_CONFIG
+    // v3): both runners give a forced sample one gap.
+    const setup = buildGridSetup(w, f, {
+      observe: false,
+      recordPlayers: true,
+      model: MATCH_MODEL_REVISION,
+      tactics: ['counter', 'press'],
+    });
+    forceTacticRosters(w, f, setup, [press, other], NEUTRAL_SQUAD_FATIGUE);
+    expect(forcedGap([press, other], setup.rosters, setup.tactics)).toBe(forced.gap);
     expect(forced.prepared.profiles[1]!.pressure).toBeGreaterThan(0);
     // Each squad is built for its forced formation, as the detailed runner's (T321): every starter
     // plays his own position, and without a declared squad fatigue there is no freshness reading.
@@ -1123,7 +1144,174 @@ describe('aggregate measurement (T284)', () => {
   it('declares the forced pairings neutral squad fatigue', () => {
     for (const c of CORPUS_CONFIG.conditions.filter((x) => x.family === 'tactics'))
       expect((c.params as { fatigue: number }).fatigue).toBe(NEUTRAL_SQUAD_FATIGUE);
-    expect(CORPUS_CONFIG.version).toBe(2);
-    expect(SCORING_CONCENTRATION_TARGET.status).toBe('proposed');
+    // v3: forced rosters built for the forced formation, rated as fielded in both runners.
+    expect(CORPUS_CONFIG.version).toBe(3);
+  });
+});
+
+describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', () => {
+  /** Matches whose sides carry these team counters (each side the same), with player lines. */
+  const matches = (n: number, td: Partial<Record<keyof typeof TD, number>>, xa = 0) =>
+    Array.from({ length: n }, (_, i) => {
+      const side = () => {
+        const d = emptyTeamDetail();
+        for (const [k, v] of Object.entries(td)) d[TD[k as keyof typeof TD]] = v + (i % 3) - 1;
+        return d;
+      };
+      const line = (id: string) => {
+        const detail = emptyPlayerDetail();
+        detail[PD.xa] = xa;
+        return { id, metrics: zeroMetrics(), detail };
+      };
+      return sample(
+        record({
+          id: `synthetic:${i}`,
+          detail: [side(), side()],
+          players: [line('SYN:H:1'), line('SYN:A:1')],
+          lineCounts: [1, 1],
+        }),
+      );
+    });
+
+  it('names one band, MATCH-23 row or unbanded reason for every MATCH-13 counter', () => {
+    const counters = new Set(ADVANCED_COUNTER_TARGET.counters.map((c) => c.counter));
+    // MATCH-13's table, row by row.
+    for (const name of [
+      'key pass',
+      'xA',
+      'big chance',
+      'box shot',
+      'final-third pass',
+      'progressive pass',
+      'take-on',
+      'high turnover',
+      'PPDA',
+      'field tilt',
+      'box entry',
+      'front-of-box entry',
+      'line-breaking pass',
+      'xT added',
+      'cut-back',
+      'cross',
+      'through ball',
+      'progressive carry',
+    ])
+      expect(counters.has(name)).toBe(true);
+    for (const c of ADVANCED_COUNTER_TARGET.counters) {
+      expect(METRIC_BY_ID.has(c.reads)).toBe(true);
+      const kinds = ['band', 'matchTarget', 'unbanded'].filter((k) => k in c);
+      expect(kinds).toHaveLength(1);
+      if ('band' in c) {
+        expect(c.band[0]).toBeLessThan(c.band[1]);
+        expect(c.source).toMatch(/StatsBomb|FBref/);
+      }
+      if ('matchTarget' in c) expect(TARGET_BANDS.some((t) => t.id === c.matchTarget)).toBe(true);
+      if ('unbanded' in c) expect(c.unbanded.length).toBeGreaterThan(40);
+    }
+  });
+
+  it('gives MATCH-30 verdicts and lists the unbanded counters', () => {
+    // Synthetic levels: key passes and box shots inside, through balls far outside (T284's ~40).
+    const rows = advancedCounterVerdicts(
+      matches(60, { keyPasses: 9, boxShots: 7.2, throughBalls: 40, crosses: 16 }, 90),
+    );
+    const by = new Map(rows.map((r) => [r.id, r]));
+    expect(rows).toHaveLength(ADVANCED_COUNTER_TARGET.counters.length);
+    expect(by.get('keyPasses')).toMatchObject({ status: 'inside', value: 9 });
+    expect(by.get('boxShots')!.status).toBe('inside');
+    expect(by.get('throughBalls')).toMatchObject({ status: 'outside', value: 40 });
+    // xA is the sum of a side's player lines (90 hundredths), read per team.
+    expect(by.get('xa')!.status).toBe('inside');
+    expect(by.get('xa')!.value).toBeCloseTo(0.9, 9);
+    // A counter MATCH-23 bands reads that row.
+    expect(by.get('crosses')).toMatchObject({ status: 'inside', matchTarget: 'crosses' });
+    // Unbanded counters carry their reason and their measured level, never a verdict.
+    for (const id of ['lineBreakingPasses', 'ppda', 'highTurnovers', 'fieldTilt']) {
+      expect(by.get(id)!.status).toBe('unbanded');
+      expect(by.get(id)!.reason).toBeDefined();
+      expect(by.get(id)!.band).toBeUndefined();
+    }
+    expect(by.get('lineBreakingPasses')!.value).toBe(0);
+    // Too few matches are underpowered; a record without detail rows is missing.
+    expect(advancedCounterVerdicts(matches(10, { keyPasses: 9 }))[0]!.status).toBe('underpowered');
+    const bare = advancedCounterVerdicts([sample(record())]);
+    expect(bare.find((r) => r.id === 'keyPasses')!.status).toBe('missing');
+    const lines = describeAdvancedCounters(rows);
+    expect(lines[0]).toContain(
+      `target v${ADVANCED_COUNTER_TARGET.version}, ${MATCH_PARITY_VERSION}`,
+    );
+    expect(lines.some((l) => l.includes('ppda: unbanded'))).toBe(true);
+  });
+
+  it("lists MATCH-23's trace-only rows as detailed-only on the aggregate path", () => {
+    const set = matches(40, { crosses: 16 });
+    const detailed = buildTargetReport(set);
+    const aggregate = buildTargetReport(set, 'aggregate');
+    const traceOnly = TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id);
+    expect(traceOnly).toEqual([
+      'possessions',
+      'passesPerPossession',
+      'possessionShots',
+      'shotDistance',
+      'shotsFar',
+      'shotsOwnHalf',
+    ]);
+    for (const id of traceOnly) {
+      expect(detailed.find((t) => t.id === id)!.status).toBe('missing');
+      expect(aggregate.find((t) => t.id === id)!.status).toBe('detailed-only');
+    }
+    // Every other row reads the same on both paths.
+    for (const t of aggregate.filter((x) => !traceOnly.includes(x.id)))
+      expect(t).toEqual(detailed.find((x) => x.id === t.id));
+    // The parity report names each side's engine and reads its targets the same way.
+    const provenance: Provenance = {
+      date: '2026-10-22T00:00:00.000Z',
+      source: {
+        gitHead: 'synthetic',
+        gitDirty: false,
+        fingerprint: { algorithm: 'sha256', sha256: '0'.repeat(64), files: 1, scope: ['scripts'] },
+      },
+      toolchain: { node: 'v24.12.0' },
+      machine: { platform: 'test', arch: 'x', cpu: 'synthetic', logicalCpus: 1, memoryBytes: 1 },
+      seeds: {},
+      conditions: [],
+      partitions: {},
+    };
+    const parity = buildParityReport({
+      provenance,
+      partition: 'calibration',
+      condition: 'core:equal-top-tier',
+      reference: { path: 'synthetic grid', engine: 'detailed', samples: set },
+      candidate: { path: 'synthetic aggregate', engine: 'aggregate', samples: set },
+    });
+    expect(parity.targets.reference).toEqual(detailed);
+    expect(parity.targets.candidate).toEqual(aggregate);
+  });
+
+  it("holds scoring concentration to MATCH-23's ratified rows", () => {
+    expect(SCORING_CONCENTRATION_TARGET.source).toBe('MATCH-23');
+    const verdicts = scoringConcentrationVerdicts({
+      clubTopScorerShare: { value: 0.25, interval: [0.24, 0.26], n: 360 },
+      leagueTopScorerGoals: { value: 33, interval: [32.5, 33.5], n: 360 },
+      hatTricksPerMatch: poissonReading(300, 10000),
+    });
+    expect(verdicts.map((v) => [v.id, v.status])).toEqual([
+      ['clubTopScorerShare', 'inside'],
+      ['leagueTopScorerGoals', 'outside'],
+      ['hatTricksPerMatch', 'inside'],
+    ]);
+    const thin = scoringConcentrationVerdicts({
+      clubTopScorerShare: { value: 0.29, interval: [0.27, 0.31], n: 360 },
+      leagueTopScorerGoals: { value: 27, interval: [20, 34], n: 12 },
+    });
+    expect(thin.map((v) => v.status)).toEqual(['unresolved', 'underpowered', 'missing']);
+    // No hat-trick seen: the rule of three bounds the rate.
+    expect(poissonReading(0, 600).interval).toEqual([0, 3 / 600]);
+    // MATCH-23 states the hat-trick rate for a top-tier league season: a verdict on the core
+    // condition only, context on every other condition.
+    expect(hatTrickReading(300, 10000, conditionOf('core:equal-top-tier')).status).toBe('inside');
+    const gap = hatTrickReading(300, 10000, conditionOf('gap:20'));
+    expect(gap).toMatchObject({ status: 'context', note: HAT_TRICK_CONTEXT });
+    expect(gap.value).toBeCloseTo(0.03, 9);
   });
 });

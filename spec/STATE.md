@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T20:01Z | T322 |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T22:32Z | T324 |
 
 ## inbox
 - 261022 decided T328: T324 found counter cannot beat press through behaviour without breaking MATCH-23 (25–40% of through balls in behind pushed FW goals to 69–72%, goal-area shots to 10.6–13.9%) and pointed at counter's 4-4-2 role table → explore T328 measures role-table variants from PLAYER-5's roles on the candidate path and recommends a STAFF-22/MATCH-8 counter row, ratified afterwards through update-ssot; MATCH-29's counter row stays unless T328 shows no role table can meet it, which is then the owner's call (alt: relax MATCH-29's counter row now | change the counter row now without evidence)
@@ -197,7 +197,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 | todo |
-| T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | doing@261022.h3t6 |
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
 | T324 | Make counter breaks and press volume meet the tactic-pairing bands | MATCH STAFF ARCH | T321 | doing@261022.h3t6 |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
@@ -225,6 +224,7 @@
 - CI: 9e67be5 passed every job.
 
 ## log
+- 261022 T322 integrated (h3t6; one review round: through-ball attempts band from StatsBomb only, FBref TB counts completions): MATCH-30 bands for 13 counters with sources, one counting rule on both paths, scoring concentration ratified in the target
 - 261022 merged local main's UI work (T309–T314: compact overviews, office and academy art, linked club colours and random crest, table-first market) with h3t6's main; refresh T286 T307 T308 T327 bases only: WEB r107–r112 and KIT r3 change nothing they cite
 - 261022 T314 done: table-first market, on-demand filters/information/negotiations and stable-ID detail; 15 focused tests, static checks and build passed. Browser journeys updated for the ARCH-30 batch.
 - 261022 T313 done (u6v1): 18 era/academy-level scenes plus two coarser offices, all native 240×80; actual-completion selection and captions; 36 focused cases and task checks pass, 99 assets validated. Commit this task only; T314 remains separately owned; browser batch pending.
@@ -244,4 +244,3 @@
 - 261022 T321 integrated (h3t6; explore exit: press edge +0.71→+0.39 points, MATCH-29 8 inside / 8 outside / 9 insufficient, core MATCH-23 30–36/38 inside and 0 outside; forced pairings field squads built for the forced formation in both runners)
 - 261022 T284 integrated (h3t6; explore exit: aggregate core MATCH-23 31/32 measurable rows inside and 0 outside, curve 1.8점, 0 invariant failures in 260,000; parity and advanced-counter bands unresolved → MATCH r17, T322, T323; review named the forced-tactic out-of-position confound)
 - 261022 create-task MATCH r17: T322 (sourced advanced-counter bands, one counting rule) then explore T323 (calibrate both engines, parity at a resolving size) before T286; T285 runs beside T321 first
-- 261022 update-ssot MATCH r17: MATCH-23 trace-only rows bind the detailed engine only and season scoring concentration joins it; MATCH-30+ sourced advanced-counter bands (from T284's decision requests)
