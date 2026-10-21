@@ -4,7 +4,12 @@ import pixelData from '../../public/presentation/themes/pixel.json';
 import registryData from '../../public/presentation/themes/index.json';
 import { FACILITY_ERAS, validateThemePack } from './contracts';
 import { validateRegistry, resolvePackEntry } from './registry';
-import { createThemeResolver, THEME_FONT_ALIASES, validateThemeTypography } from './theme';
+import {
+  collectThemeImageResources,
+  createThemeResolver,
+  THEME_FONT_ALIASES,
+  validateThemeTypography,
+} from './theme';
 
 const pixel = validateThemePack(pixelData);
 const url = '/presentation/themes/pixel.json';
@@ -162,5 +167,24 @@ describe('theme resource resolution', () => {
     expect(() => validateThemeTypography(candidate)).toThrow('declared font family');
     candidate.tokens.typography.display = 'var(--score)';
     expect(() => validateThemeTypography(candidate)).toThrow('Cyclic typography aliases');
+  });
+
+  it('collects candidate image resources only for supplied mounted semantic needs', () => {
+    const candidate = structuredClone(pixel);
+    candidate.icons.home = { default: { type: 'image', resource: 'new-home.svg' } };
+    candidate.images.facility.pattern = 'new/{era}/{kind}-{stage}.webp';
+    const resolver = createThemeResolver(candidate, { url });
+    expect(
+      collectThemeImageResources(resolver, [
+        { type: 'icon', role: 'home' },
+        { type: 'icon', role: 'home' },
+        { type: 'icon', role: 'ball' },
+        { type: 'facility', era: 'heritage', kind: 'stadium', stage: 2 },
+      ]),
+    ).toEqual([
+      '/presentation/themes/new-home.svg',
+      '/presentation/themes/new/heritage/stadium-2.webp',
+    ]);
+    expect(collectThemeImageResources(resolver, [])).toEqual([]);
   });
 });

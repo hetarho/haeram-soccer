@@ -41,6 +41,7 @@ function memoryPorts() {
   const ports: ThemeInstallationPorts = {
     stageFont: async (font) => make(`font:${font.family}:${font.weight}`),
     stageStylesheet: async (url) => make(`css:${url}`),
+    stageImage: async (url) => make(`image:${url}`),
     installTokens(resolver) {
       const id = `tokens:${serial++}`;
       tokens.set(id, resolver.token('bg'));
@@ -199,6 +200,112 @@ describe('theme resource installation', () => {
     expect(memory.events.every((event) => !event.includes('/art/'))).toBe(true);
     installed!.dispose();
   });
+
+  it('retains the usable theme when a currently needed image icon or scene fails', async () => {
+    for (const missing of ['icon', 'scene']) {
+      const memory = memoryPorts();
+      const previous = await installThemeResources(theme(), { ports: memory.ports });
+      const originalActive = [...memory.active];
+      const candidateStart = memory.resources.length;
+      const pack = validateThemePack(structuredClone(pixelData));
+      pack.id = 'image-test';
+      pack.icons.home = { default: { type: 'image', resource: 'missing-nav.webp' } };
+      pack.images.facility.overrides = { 'heritage.stadium.0': 'missing-stadium.webp' };
+      const candidate = createThemeResolver(pack, { url: '/packs/image-test/theme.json' });
+      const icon = candidate.icon('home');
+      if (icon.type !== 'image') throw new Error('Expected an image icon');
+      const scene = candidate.facility({ era: 'heritage', kind: 'stadium', stage: 0 });
+      const failedUrl = missing === 'icon' ? icon.resource : scene.src;
+      const stageImage = vi.fn(async (url: string) => {
+        if (url === failedUrl) throw new Error('Missing required image');
+        return memory.ports.stageImage(url);
+      });
+      await expect(
+        installThemeResources(candidate, {
+          ports: { ...memory.ports, stageImage },
+          previous: previous!,
+          requiredImages: missing === 'scene' ? [scene.src, scene.src] : undefined,
+        }),
+      ).rejects.toBeInstanceOf(ThemeInstallationError);
+      expect(stageImage.mock.calls.map(([url]) => url)).toEqual(
+        missing === 'scene' ? [icon.resource, scene.src] : [icon.resource],
+      );
+      expect([...memory.active]).toEqual(originalActive);
+      expect([...memory.tokens.values()]).toEqual(['#111415']);
+      expect(memory.resources.slice(candidateStart).every((resource) => resource.disposed)).toBe(
+        true,
+      );
+      previous!.dispose();
+    }
+  });
+
+  it('derives every declared image icon and variant without a role or pack-ID list', async () => {
+    const memory = memoryPorts();
+    const pack = validateThemePack(structuredClone(pixelData));
+    pack.id = 'unseen-images';
+    pack.icons['extra.status'] = {
+      default: { type: 'image', resource: 'status.svg' },
+      variants: {
+        quiet: { type: 'image', resource: 'status-quiet.svg' },
+      },
+    };
+    pack.icons.home = { default: { type: 'image', resource: 'status.svg' } };
+    const candidate = createThemeResolver(pack, { url: '/packs/unseen/theme.json' });
+    const stageImage = vi.fn(memory.ports.stageImage);
+    const installed = await installThemeResources(candidate, {
+      ports: { ...memory.ports, stageImage },
+    });
+    expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
+      '/packs/unseen/status.svg',
+      '/packs/unseen/status-quiet.svg',
+    ]);
+    installed!.dispose();
+  });
+
+  it('disposes late image staging when the candidate becomes stale', async () => {
+    const memory = memoryPorts();
+    const gate = deferred();
+    let current = true;
+    const stageImage = vi.fn(async (url: string) => {
+      await gate.promise;
+      return memory.ports.stageImage(url);
+    });
+    const request = installThemeResources(theme(), {
+      ports: { ...memory.ports, stageImage },
+      isCurrent: () => current,
+      requiredImages: ['/art/scenes/heritage/stadium-0.webp'],
+    });
+    await Promise.resolve();
+    current = false;
+    gate.resolve();
+    expect(await request).toBeNull();
+    expect(memory.events.some((event) => event.startsWith('activate:'))).toBe(false);
+    expect(memory.resources.every((resource) => resource.disposed)).toBe(true);
+    expect([...memory.active]).toEqual(['unowned']);
+  });
+
+  it('preflights only supplied mounted images and releases them on replacement', async () => {
+    const memory = memoryPorts();
+    const stageImage = vi.fn(memory.ports.stageImage);
+    const ports = { ...memory.ports, stageImage };
+    const previous = await installThemeResources(theme(), {
+      ports,
+      requiredImages: ['/art/scenes/heritage/stadium-0.webp'],
+    });
+    const oldImages = memory.resources.filter((resource) => resource.id.startsWith('image:'));
+    const next = await installThemeResources(theme('next'), {
+      ports,
+      previous: previous!,
+      requiredImages: ['/art/scenes/terraces/training-2.webp'],
+    });
+    expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
+      '/art/scenes/heritage/stadium-0.webp',
+      '/art/scenes/terraces/training-2.webp',
+    ]);
+    expect(oldImages.every((resource) => resource.disposed)).toBe(true);
+    next!.dispose();
+    expect(memory.resources.every((resource) => resource.disposed)).toBe(true);
+  });
 });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -252,4 +359,43 @@ it('browser ports remove only the fonts and styles they own', async () => {
   style.dispose();
   expect([...fonts]).toEqual([foreignFont]);
   expect(nodes.size).toBe(0);
+});
+
+it('browser image staging decodes detached candidates and cleans up on failure or disposal', async () => {
+  let failDecode = false;
+  const images: {
+    src?: string;
+    decoding?: string;
+    decode: ReturnType<typeof vi.fn>;
+    removeAttribute: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+  }[] = [];
+  const document = {
+    createElement: (kind: string) => {
+      expect(kind).toBe('img');
+      const image = {
+        decode: vi.fn(async () => {
+          if (failDecode) throw new Error('Missing image');
+        }),
+        removeAttribute: vi.fn(),
+        remove: vi.fn(),
+      };
+      images.push(image);
+      return image;
+    },
+  } as unknown as Document;
+  const ports = createBrowserThemePorts(document);
+  const staged = await ports.stageImage('/images/current.webp');
+  expect(images[0].src).toBe('/images/current.webp');
+  expect(images[0].decoding).toBe('async');
+  expect(images[0].decode).toHaveBeenCalledOnce();
+  expect(images[0].removeAttribute).not.toHaveBeenCalled();
+  staged.activate();
+  staged.dispose();
+  expect(images[0].removeAttribute).toHaveBeenCalledWith('src');
+  expect(images[0].remove).toHaveBeenCalledOnce();
+  failDecode = true;
+  await expect(ports.stageImage('/images/broken.webp')).rejects.toThrow('Missing image');
+  expect(images[1].removeAttribute).toHaveBeenCalledWith('src');
+  expect(images[1].remove).toHaveBeenCalledOnce();
 });
