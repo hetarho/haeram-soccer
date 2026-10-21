@@ -90,7 +90,7 @@ export async function validatePresentation(
       throw new Error(`Theme pack ID differs from its registry entry: ${url}`);
     validateThemeTypography(pack, url);
     const theme = createThemeResolver(pack, { url });
-    // The browser's installer uses these same resolved font/CSS resources. Static ports check
+    // The browser's installer uses these same resolved font/CSS/icon resources. Static ports check
     // their files without starting a browser, installing fonts or changing global styles.
     const installed = await installThemeResources(theme, {
       ports: {
@@ -100,6 +100,10 @@ export async function validatePresentation(
         },
         async stageStylesheet(stylesheet) {
           await asset(stylesheet, `theme stylesheet ${entry.id}`);
+          return { activate() {}, dispose() {} };
+        },
+        async stageImage(image) {
+          await asset(image, `theme image ${entry.id}`);
           return { activate() {}, dispose() {} };
         },
         installTokens: () => ({ dispose() {} }),

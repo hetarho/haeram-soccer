@@ -105,12 +105,23 @@ images and icons are installed/resolved; optional-token fallback does not inheri
 theme's asset ownership or turn a missing required role into a valid pack.
 
 `createThemeResolver` and `validateThemeTypography` in `apps/web/src/presentation/theme.ts`
-own token/font/image/icon resolution. `installThemeResources` stages fonts and CSS, commits a
-usable current selection atomically, disposes prior resources after success and discards stale
-asynchronous work. The resource validator uses these same functions with filesystem ports to
+own token/font/image/icon resolution. Structural shape checks come from `validateThemePack`;
+the resolver and `validateThemeTypography` apply semantic requirements, including declared
+primary font faces. `installThemeResources` stages fonts, CSS, pack-declared image icons and
+currently needed facility images, commits a usable current selection atomically, disposes prior
+resources after success and discards stale asynchronous work. The resource validator uses these
+same functions with filesystem ports to
 check declared files, every required era/kind/stage image, fonts, stylesheets and image icons,
 including optional variants/overrides. It validates file presence and contracts; browsers still
 verify actual decoding, font loading, layout and resource installation.
+
+Browser adapters collect mounted semantic image needs and resolve them against the candidate
+theme with `collectThemeImageResources`. A font, stylesheet, pack-declared image icon or mounted
+scene failure discards the candidate, keeps the last usable theme and offers retry. This does
+not preload all era/stage scenes: only pack-declared image icons and current mounted scene needs
+are staged at runtime; unmounted facility scenes retain their normal lazy loading. The CLI
+independently checks coverage for every declared stage before deployment without downloading or
+decoding those images in a browser.
 
 The selected theme supplies image treatment and paths, while common game-year/completed-stage
 logic chooses the scene. Facility alt text combines the locale's era/description with the theme
