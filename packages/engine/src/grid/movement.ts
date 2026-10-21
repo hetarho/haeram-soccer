@@ -7,7 +7,7 @@
 import { clamp, PITCH } from './pitch';
 import type { Restart } from './restarts';
 import { speedOf, targetOf, type ShapeCache } from './shape';
-import { onPitch, type GridPlayer, type GridState } from './state';
+import { onPitch, skill, type GridPlayer, type GridState } from './state';
 
 /**
  * Player motion. Top speed is `speedOf` (pace and fatigue); these bound how it changes. Initial
@@ -25,6 +25,14 @@ export const GRID_MOVEMENT_CONFIG = {
   arrive: 0.05,
   /** Match seconds a reach estimate looks ahead before giving up. */
   horizon: 300,
+  /**
+   * Off the ball a player reacts to a kicked ball when it is kicked, not when the action starts
+   * (T324); a defender reads it earlier by this many times his 위치선정 share of its wind-up, from
+   * the start once that covers it (→MATCH-8/9: the defenders' positioning suppresses the chances a
+   * ball in behind creates). T324 measured 1, every defender reading late, against the MATCH-2
+   * curve: favourites won more (mean error 3.3 points against 2.8).
+   */
+  read: 3,
 } as const;
 
 /**
@@ -159,12 +167,17 @@ export function flightSeconds(
 
 /**
  * A player sent to `to`, or to his shape target when absent; `holdUntil` keeps him where he stands
- * for that many seconds first (the player on the ball until he plays it).
+ * for that many seconds first (the player on the ball until he plays it). `before` sends him on to
+ * the point he was heading for before the action until `readAt` seconds, when he reads the kick
+ * and turns to `to` (→MATCH-17: off the ball a player reacts to the ball once it is played, not to
+ * where it will land).
  */
 export interface Move {
   gp: GridPlayer;
   to?: readonly [number, number];
   holdUntil?: number;
+  before?: readonly [number, number];
+  readAt?: number;
 }
 
 /** A player a restart needs on a spot: its taker or one of its scene. */
@@ -190,18 +203,19 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     to: readonly [number, number];
     vmax: number;
     holdUntil: number;
-    hold: [number, number];
+    hold: readonly [number, number];
   }[] = [];
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       if (!onPitch(gp)) continue;
       const p = planned.get(gp);
+      const before = p?.before && (p.readAt ?? 0) > 0;
       movers.push({
         gp,
         to: inside(p?.to ?? targetOf(s, side, gp.idx, cache)),
         vmax: speedOf(s, gp),
-        holdUntil: p?.holdUntil ?? 0,
-        hold: [gp.pos[0], gp.pos[1]],
+        holdUntil: before ? p.readAt! : (p?.holdUntil ?? 0),
+        hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
       });
     }
   const whole = Math.floor(dt / C.step + 1e-9);
@@ -212,6 +226,30 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     const t = i * C.step;
     for (const m of movers) stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
   }
+}
+
+/**
+ * When an off-ball player turns from where he was heading to a ball kicked `kick` seconds into the
+ * action by `attacking`: a teammate at the kick, a defender up to `read` of the wind-up earlier by
+ * his 위치선정.
+ */
+export function readAt(s: GridState, gp: GridPlayer, attacking: 0 | 1, kick: number): number {
+  if (gp.side === attacking) return kick;
+  const positioning = clamp(skill(s, gp.side, gp.idx, 'positioning'), 1, 99) / 99;
+  return Math.max(0, kick * (1 - GRID_MOVEMENT_CONFIG.read * positioning));
+}
+
+/**
+ * Where every player on the pitch is heading now (engine frame): his intention's or his shape's
+ * target, read before an action changes the state so `before` can keep him on it until the kick.
+ */
+export function heading(s: GridState): Map<GridPlayer, [number, number]> {
+  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const out = new Map<GridPlayer, [number, number]>();
+  for (const side of [0, 1] as const)
+    for (const gp of s.players[side])
+      if (onPitch(gp)) out.set(gp, inside(targetOf(s, side, gp.idx, cache)));
+  return out;
 }
 
 /** Where a substitute waits to come on: the halfway line on his side's touchline. */

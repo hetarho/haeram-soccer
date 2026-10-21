@@ -264,10 +264,10 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-3` plays extra time (T321's tuning
-    // settled `candidate-et-0` in 90 minutes).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-3']) {
-      const extraTime = id === 'candidate-et-3';
+    // A knockout tie level after 90 minutes: `candidate-et-4` plays extra time (T321's tuning
+    // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-4']) {
+      const extraTime = id === 'candidate-et-4';
       const { result, frames } =
         id === 'candidate-1'
           ? watched

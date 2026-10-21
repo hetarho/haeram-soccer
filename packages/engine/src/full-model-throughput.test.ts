@@ -40,11 +40,12 @@ const facts = (w: World) => ({
  * whose MATCH-13 counting rules (cut-backs from MATCH-14's zone, through balls and line-breaking
  * passes where the players stand, restarts read in the pass zones) change recorded counters but no
  * outcome. A change that alters football outcomes refreshes them together with the calibration
- * evidence (T284's report), never alone.
+ * evidence (T284's report), never alone; T324's candidate behaviour and recalibration changed the
+ * candidate rounds again (aggregate records unchanged), re-recorded at its integration.
  */
 const BEFORE = {
   aggregateRecords: '20f18d306396498f',
-  candidateRounds: '9206b245f0162457',
+  candidateRounds: '0da975879e67eaaa',
 };
 
 describe('complete-result throughput (T285)', () => {

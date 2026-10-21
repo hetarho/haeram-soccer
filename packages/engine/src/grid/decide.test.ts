@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type PlayTrait } from '../../../contracts/src/player';
+import { actionWeight } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
 import {
@@ -14,10 +15,11 @@ import {
   passOptions,
   passProbabilities,
   temperature,
+  throughPoint,
   type Action,
 } from './decide';
 import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
-import { enterSlot } from './state';
+import { enterSlot, slotOf } from './state';
 import { computeTags, type Tags } from './tags';
 import { gridKit } from './testkit';
 import type { Tactic } from '../../../contracts/src/types';
@@ -247,10 +249,42 @@ describe('grid decisions', () => {
       return mix.shot / mix.pass;
     };
     const K = DECISION_CONFIG;
-    // In front of the box only the shot weight differs between the models: the AM's own weight and
-    // the candidate's volume scale against the midfield line's and the shared scale (T321).
+    // In front of the box only the shot weight differs between the models: the forwards' weight
+    // he takes and the candidate's volume scale against the midfield line's and the shared scale
+    // (T321, T324).
+    expect(K.candidate.shotPosition.AM).toBe('FW');
     expect(ratio(true) / ratio(false)).toBeCloseTo(
-      (K.candidate.shotPosition.AM! * K.candidate.shotScale) / (K.shotLine.MF * K.shotScale),
+      (K.candidate.shotLine.FW * K.candidate.shotScale) / (K.shotLine.MF * K.shotScale),
+      9,
+    );
+  });
+
+  it('uses its own long-shot fall-off and no regain bonus for press on the candidate model (T324)', () => {
+    const K = DECISION_CONFIG;
+    // A forward 33 m out in the central lane, then press's just after a regain.
+    const at: Point = [72, 34];
+    const ratio = (candidate: boolean, tactics?: [Tactic, Tactic], regain = false) => {
+      const sc = scene(ST, at, tactics);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      if (regain) sc.s.lastRegain = { side: 0, at: sc.s.elapsed - 1 };
+      const mix = actionMix(sc.s, 0, ST, sc.tags());
+      return mix.shot / mix.pass;
+    };
+    const beyond = 105 - at[0] - K.longShot.from;
+    expect(ratio(true) / ratio(false)).toBeCloseTo(
+      (K.candidate.shotLine.FW *
+        K.candidate.shotScale *
+        Math.exp(-beyond / K.candidate.longShotScale)) /
+        (K.shotLine.FW * K.shotScale * Math.exp(-beyond / K.longShot.scale)),
+      9,
+    );
+    const press: [Tactic, Tactic] = ['press', 'balanced'];
+    expect(ratio(false, press, true) / ratio(false, press)).toBeCloseTo(
+      K.tactic.press.shotAfterRegain,
+      9,
+    );
+    expect(ratio(true, press, true) / ratio(true, press)).toBeCloseTo(
+      K.candidate.shotAfterRegain,
       9,
     );
   });
@@ -276,6 +310,81 @@ describe('grid decisions', () => {
     expect(bend(6, true).shot).toBeCloseTo(K.inBehind.shot, 9);
     expect(bend(5, false).carry).toBeCloseTo(K.inBehind.carry, 9);
     expect(bend(5, false).shot).toBeCloseTo(K.inBehind.shot, 9);
+  });
+
+  it('scales take-ons and the pull of a run in behind on the candidate model only (T324)', () => {
+    const K = DECISION_CONFIG;
+    const at = centre(4, 2);
+    const ratio = (candidate: boolean) => {
+      const sc = scene(CM, at);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      const mix = actionMix(sc.s, 0, CM, sc.tags());
+      return mix.takeOn / mix.pass;
+    };
+    expect(ratio(true) / ratio(false)).toBeCloseTo(K.candidate.takeOnScale, 9);
+    // A teammate running in behind scores the candidate's through-ball pull instead of the shared one.
+    const score = (candidate: boolean) => {
+      const sc = scene(CM, at);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      place(sc.s, ST, [70, 34]);
+      sc.s.players[0][ST]!.run = { kind: 'behind', until: 610, target: [80, 34] };
+      const option = passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!;
+      expect(option.kind).toBe('through');
+      return option.score;
+    };
+    const s0 = scene(CM, at).s;
+    const runner = s0.players[0][ST]!;
+    const key = actionWeight(slotOf(s0, runner).role, runner.player.traits, 'key');
+    expect(score(true) - score(false)).toBeCloseTo(
+      (K.candidate.through.score - K.pass.through) * key,
+      9,
+    );
+  });
+
+  it('plays a through ball into the runner’s path when the line leaves space behind it (T324)', () => {
+    const T = DECISION_CONFIG.candidate.through;
+    const sc = scene(CM, [50, 34]);
+    const s = sc.s;
+    // The opponents' line stands at x = 60, leaving space up to `depth` behind it.
+    const line = (x: number) => s.players[1].forEach((gp) => (gp.pos = [x, 6 + 5 * gp.idx]));
+    line(60);
+    const st = s.players[0][ST]!;
+    place(s, ST, [70, 30]);
+    st.vel = [7, 0];
+    expect(throughPoint(s, 0, CM, ST)).toEqual([70 + T.lead, 30]);
+    // Along the way he runs; toward goal while he stands or turns.
+    st.vel = [5, 5];
+    const along = throughPoint(s, 0, CM, ST);
+    expect(along[0]).toBeCloseTo(70 + T.lead / Math.SQRT2, 9);
+    expect(along[1]).toBeCloseTo(30 + T.lead / Math.SQRT2, 9);
+    for (const vel of [
+      [0, 0],
+      [-7, 0],
+    ] as [number, number][]) {
+      st.vel = vel;
+      expect(throughPoint(s, 0, CM, ST)).toEqual([70 + T.lead, 30]);
+    }
+    // A deep line leaves no space behind it: to his feet.
+    line(T.depth - T.space + 1);
+    expect(throughPoint(s, 0, CM, ST)).toEqual([70, 30]);
+    line(60);
+    // Never deeper than `depth`, and to his feet once he is past it.
+    place(s, ST, [T.depth - 1, 30]);
+    expect(throughPoint(s, 0, CM, ST)).toEqual([T.depth, 30]);
+    place(s, ST, [T.depth + 2, 30]);
+    expect(throughPoint(s, 0, CM, ST)).toEqual([T.depth + 2, 30]);
+    // A lead that would not take the ball further from the passer goes to his feet.
+    place(s, CM, [T.depth + 6, 30]);
+    place(s, ST, [T.depth - 2, 30]);
+    expect(throughPoint(s, 0, CM, ST)).toEqual([T.depth - 2, 30]);
+    // The other side's frame is mirrored.
+    const away = scene(CM, [50, 34]).s;
+    away.players[0].forEach((gp) => (gp.pos = [45, 6 + 5 * gp.idx]));
+    const runner = away.players[1][ST]!;
+    runner.pos = [35, 38];
+    runner.vel = [-7, 0];
+    away.players[1][CM]!.pos = [55, 34];
+    expect(throughPoint(away, 1, CM, ST)).toEqual([35 - T.lead, 38]);
   });
 
   it('keeps a leading side safer late', () => {
