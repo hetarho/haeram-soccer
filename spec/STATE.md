@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T12:47Z | T281 |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T13:53Z | T283 |
 
 ## inbox
+- 261021 decided T283: T281 left the aggregate ledger with appearances only while own data splits starts and substitute appearances, and T283 must use the same appearance semantics → T283 adds a `starts` counter through the contract, strict schema and container-3 packing (not yet written in production, so no migration) (alt: show NPC appearances without the split and label it unavailable)
 - 261021 decided T281: T280's review left `playAggregate` throwing after 8 unreconciled re-draws, which would abort a season once fixtures dispatch there → T281 (which already touches aggregate/engine.ts) ends the retries with a deterministic, validated settlement and a forced-exhaustion test; T284 measures the retry bias (alt: T284 owns the fallback, leaving T281's dispatch able to throw until then)
 - 261021 decided T281 T283 T284 T285 T286 T306 T307 T308: h3t6 on the MacBook runs the remaining tasks standalone with session subagents (implementer and a separate reviewer per task, T283 beside explore T278) instead of a new work group, since only T281/T283 could join a group and they run in sequence (alt: new work group for T281 T283)
 - 261021 decided T278: T275's review found every period's last candidate action running up to 32 s past the period's final minute, undrawable under T273's 60 s minute, with no task owning it → T278 (which tunes the candidate engine's timing) ends the period's last action by the final minute, with a compact test, before T286 activation (alt: widen the frame contract's minute in T286, which changes the shared timestamp check)
@@ -184,9 +185,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
-| T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | doing@261021.h3t6 |
-| T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
+| T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | doing@261021.h3t6 |
+| T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | doing@261021.h3t6 |
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 | todo |
@@ -210,6 +210,7 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261021 T281 integrated (h3t6; implementer and separate reviewer subagents, approved with P3 notes routed to T283 T284 T285 T286)
 - 261021 T280 integrated (h3t6, from wip/full-model-T280)
 - 261021 f6n3 stopped at 21:00 KST as the owner asked: full-model integrated T273 T274 T275 T276 T277 T279 T282 T304 T305 into main; T280 approved, on wip/full-model-T280 awaiting its batch gate; report 261021-f6n3.
 - 261021 T277 integrated
@@ -229,4 +230,3 @@
 - 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
 - 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
 - 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
-- 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.

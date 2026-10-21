@@ -15,6 +15,8 @@ export * from './settings';
 export * from './world';
 export * from './season';
 export * from './match';
+export { simulateAggregate } from './aggregate/engine';
+export * from './npc-stats';
 export * from './primitives';
 export * from './calendar';
 export * from './scoring';

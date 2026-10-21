@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { PD, TD } from '../../../contracts/src/detail';
+import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../contracts/src/detail';
 import { createWorld } from '../index';
+import { MATERIAL_LAYOUT } from '../material';
+import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { CELL_BASELINES } from './baselines';
 import { cellOf, type Point } from './pitch';
@@ -292,5 +294,38 @@ describe('grid advanced counters', () => {
     expect(mean.crosses).toBeLessThan(30);
     expect(mean.entries).toBeGreaterThan(10);
     expect(mean.entries).toBeLessThan(60);
+  });
+});
+
+describe('candidate own match record (→MATCH-13, MATCH-25, MATCH-26)', () => {
+  it("names every participant of both sides while the material stays the own side's", () => {
+    const w = kit.w;
+    const f = w.fixtures.find((x) => x.home === w.playerClub || x.away === w.playerClub)!;
+    const setup = buildGridSetup(w, f, {
+      observe: false,
+      recordPlayers: true,
+      model: MATCH_MODEL_REVISION,
+    });
+    const { record } = playGrid(setup);
+    expect(validateFullMatchRecord(record)).toEqual([]);
+    for (const side of [0, 1] as const) {
+      const lines =
+        side === 0
+          ? record.players.slice(0, record.lineCounts![0])
+          : record.players.slice(record.lineCounts![0]);
+      const roster = new Set(setup.rosters[side].map((p) => p.id));
+      expect(lines.length).toBeGreaterThanOrEqual(11);
+      for (const line of lines) {
+        expect(roster.has(line.id)).toBe(true);
+        expect(line.detail).toHaveLength(PLAYER_DETAIL_SIZE);
+      }
+      // The opponent's passes are credited to his named players as the own side's are.
+      expect(lines.reduce((n, l) => n + l.metrics[M.passes]!, 0)).toBe(
+        record.metrics[side][M.passes],
+      );
+    }
+    // Post-match material covers the own lines only, as its lifetime has always assumed.
+    const cells = MATERIAL_LAYOUT.cells;
+    expect(record.material!.heat).toHaveLength((record.lineCounts![setup.own!] + 2) * cells);
   });
 });

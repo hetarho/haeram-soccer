@@ -3,7 +3,7 @@ import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contr
 import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
 import { FORMATIONS, lineOf } from '../player';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
-import { prepareMatch } from '../match';
+import { prepareMatch, type Prepared } from '../match';
 import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
 
@@ -100,6 +100,39 @@ export function benchFor(
   return bench;
 }
 
+/**
+ * Each side's matchday roster (→MATCH-19, MATCH-20, LEAGUE-15): the prepared XI in slot order, then
+ * the era's named substitutes, nobody injured or banned for this fixture among them. The XI already
+ * leaves out whoever it can; with `replace`, the one rule of both candidate paths, a starter it had
+ * to keep while unavailable is replaced by the best available substitute for his slot. The
+ * pre-feature grid keeps him (`replace` false), as its settled matches always have.
+ */
+export function fixtureRosters(
+  w: World,
+  f: Fixture,
+  prepared: Pick<Prepared, 'teams' | 'squads' | 'tactics'>,
+  era: EraRules,
+  replace = true,
+): [Player[], Player[]] {
+  return ([0, 1] as const).map((side) => {
+    const club = prepared.teams[side];
+    const out = (p: Player) => isUnavailable(w, p, club.id, f);
+    const xi = [...prepared.squads[side]];
+    const bench = benchFor(w, club, xi, era, out);
+    if (replace) {
+      const slots = FORMATIONS[prepared.tactics[side]].slots;
+      xi.forEach((p, slot) => {
+        if (!out(p) || bench.length === 0) return;
+        let best = 0;
+        for (let i = 1; i < bench.length; i++)
+          if (slotOvr(bench[i]!, slots[slot]!) > slotOvr(bench[best]!, slots[slot]!)) best = i;
+        xi[slot] = bench.splice(best, 1)[0]!;
+      });
+    }
+    return [...xi, ...bench];
+  }) as [Player[], Player[]];
+}
+
 /** Percentage-point style and synergy bends of a side's play (→STAFF-14); all zero for another club. */
 export interface StyleBend {
   pass: number;
@@ -194,13 +227,12 @@ export function buildGridSetup(
 ): GridSetup {
   const model = opts.model ?? activeMatchModel(w);
   const prepared = prepareMatch(w, f);
-  const { teams, squads, ownSide, style, synergy } = prepared;
+  const { ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);
   // Nobody injured or banned for this fixture sits on the bench (→MATCH-19, →LEAGUE-15).
-  const benches = teams.map((club, side) =>
-    benchFor(w, club, squads[side], era, (p) => isUnavailable(w, p, club.id, f)),
-  ) as [Player[], Player[]];
+  const rosters = fixtureRosters(w, f, prepared, era, model !== undefined);
+  const xi = [prepared.squads[0].length, prepared.squads[1].length] as const;
   const bends = [0, 1].map((side) =>
     side === ownSide
       ? {
@@ -218,12 +250,9 @@ export function buildGridSetup(
     f,
     r: prepared.r,
     tactics,
-    rosters: [
-      [...squads[0], ...benches[0]],
-      [...squads[1], ...benches[1]],
-    ],
-    bench: [benches[0].length, benches[1].length],
-    takers: [takersFor(squads[0]), takersFor(squads[1])],
+    rosters,
+    bench: [rosters[0].length - xi[0], rosters[1].length - xi[1]],
+    takers: [takersFor(rosters[0].slice(0, xi[0])), takersFor(rosters[1].slice(0, xi[1]))],
     shift: [prepared.shift[0]!, prepared.shift[1]!],
     multiplier: [prepared.multiplier[0]!, prepared.multiplier[1]!],
     drain: [prepared.drain[0]!, prepared.drain[1]!],

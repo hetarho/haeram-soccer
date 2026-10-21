@@ -15,7 +15,8 @@ import {
   DOMESTIC_CUP_ROUNDS,
   legsOf,
 } from './index';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
+import { npcCompetition } from './npc-stats';
 import { KIT_ROLES } from '../../contracts/src/identity';
 import { nextOwnFixture } from './calendar';
 import { identityOf } from './club-identity';
@@ -206,5 +207,36 @@ describe('historical evolution', () => {
     advanceEconomy(w, 1999);
     expect(w.cash).toBe(cash);
     expect(quote('FRA', 2000, 100)).not.toBe(quote('FRA', 1901, 100));
+  });
+});
+
+describe('continental play on the candidate model (→MATCH-6, MATCH-22)', () => {
+  it('settles every knockout on the aggregate path under its tie rules', () => {
+    const w = world();
+    w.year = 1990;
+    w.currency = currency('FRA', 1990).code;
+    prepareSeason(w);
+    withCandidateModel(w);
+    w.round = 46;
+    w.calendar = { day: 322 };
+    snapshotScorers(w);
+    advanceEurope(w);
+    finishEurope(w);
+    expect(w.europe.every((t) => !!t.winner)).toBe(true);
+    // Two-legged ties of 1990 still count away goals; level ones go to extra time and penalties.
+    const ties = w.europe.flatMap((t) => (t.rounds ?? []).flatMap((r) => r.ties));
+    expect(ties.some((t) => t.decided === 'away')).toBe(true);
+    expect(ties.some((t) => t.decided === 'pens')).toBe(true);
+    for (const f of w.europe.flatMap((t) => t.fixtures))
+      if (f.shootout) expect(f.shootout.home).not.toBe(f.shootout.away);
+    for (const t of w.europe) {
+      // Every fixture of the competition reached its aggregates once.
+      const c = npcCompetition(w.npcSeason, { kind: 'europe', groupKey: t.key })!;
+      for (const row of c.clubs)
+        expect(row.matches).toBe(
+          t.fixtures.filter((f) => f.home === row.club || f.away === row.club).length,
+        );
+      expect(c.clubs).toHaveLength(new Set(t.fixtures.flatMap((f) => [f.home, f.away])).size);
+    }
   });
 });

@@ -27,9 +27,12 @@ import { managerStyleEffects, type StyleEffects } from './styles';
 import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { injuryChance } from './careers';
+import { activeMatchModel } from '../../contracts/src/match-model';
+import { simulateAggregate } from './aggregate/engine';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
+import { assertFullMatchRecord } from './match-model';
 export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile } from './grid/playback';
 export const METRICS = [
   '득점',
@@ -493,6 +496,7 @@ export function setOwnLeagueEngine(engine: 'grid' | 'summary') {
  * `OWN_LEAGUE_ENGINE` is the grid; every other fixture takes the probabilistic path. A fixture
  * takes the same path observed or not (→MATCH-7, MATCH-22); observing only adds the frames.
  * `decide` is a knockout tie's rule, passed through to the grid engine (extra time →T222).
+ * A world on the recognized candidate model dispatches by `candidateMatch` instead.
  */
 export function simulateMatch(
   w: World,
@@ -502,6 +506,7 @@ export function simulateMatch(
   decide?: DecideRule,
 ): MatchPlayback {
   const own = f.home === w.playerClub || f.away === w.playerClub;
+  if (activeMatchModel(w) !== undefined) return candidateMatch(w, f, own, observe, decide);
   if (own || (keepPlayers && ownLeagueEngine === 'grid')) {
     // Lines are always kept here: recordMatch saves the own ones, the scorer table reads the rest.
     const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
@@ -516,23 +521,73 @@ export function simulateMatch(
 }
 
 /**
- * Effective skills per starting slot: pre-match fatigue, an unhappy player's penalty (→CLUB-27),
- * the day's shift and in-match drain. A short list repeats its last player so no slot indexes past
- * the end.
+ * The recognized candidate model's dispatch (→MATCH-22, MATCH-26, SAVE-23): every own-club fixture
+ * plays the detailed engine with all named lines, and every other one — its league, a cup, a
+ * playoff or Europe — the complete aggregate path with the competition's knockout `decide`.
+ * Observing adds the own match's frames only; `keepPlayers` and the measurement-only
+ * `setOwnLeagueEngine` never reach this choice. Both results pass the shared full record check
+ * before anything settles them (the aggregate record checks itself as it is built).
  */
-function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: MatchSetup) {
+function candidateMatch(
+  w: World,
+  f: Fixture,
+  own: boolean,
+  observe: boolean,
+  decide?: DecideRule,
+): MatchPlayback {
+  if (!own) return simulateAggregate(w, f, decide);
+  const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
+  const result = playGrid(setup);
+  assertFullMatchRecord(result.record);
+  return {
+    record: result.record,
+    frames: observe ? buildFrames(result, setup, w.seed) : [],
+    squads: setup.rosters,
+  };
+}
+
+/**
+ * A player's effective attribute at a slot before the day's shift and his minutes' drain
+ * (→MATCH-11): the attribute's `value` times `scale` (his level at the slot times his side's
+ * multiplier), less pre-match fatigue beyond fitness — a tenth of it on a keeper's reflexes and
+ * handling, an eighth on the rest — and an unhappy player's penalty (→CLUB-27). The one formula
+ * of the probabilistic chance model and the aggregate path's skill accessor.
+ */
+export function slotSkill(p: Player, value: number, scale: number, keeping = false) {
+  return value * scale - fatigueLoad(p.fatigue) / (keeping ? 10 : 8) - unhappyPenalty(p);
+}
+/** Skill points a player of this `stamina` loses per minute on the pitch for `side` (→MATCH-11). */
+export function drainPerMinute(
+  setup: Pick<MatchSetup, 'tactics' | 'drain'>,
+  side: Side,
+  stamina: number,
+) {
+  return (
+    ((100 - stamina) *
+      C.drainPerStamina *
+      (setup.tactics[side] === 'press' ? C.pressDrain : 1) *
+      setup.drain[side]!) /
+    90
+  );
+}
+
+/**
+ * Effective skills per starting slot: pre-match fatigue, an unhappy player's penalty (→CLUB-27),
+ * the day's shift and in-match drain (`slotSkill`, `drainPerMinute`). A short list repeats its
+ * last player so no slot indexes past the end.
+ */
+function matchSkills(setup: MatchSetup) {
+  const { squads, tactics, multiplier, shift } = setup;
   const base = squads.map((ps, side) => {
     const table = new Float64Array(11 * KEYS);
     const slots = FORMATIONS[tactics[side]].slots;
     for (let slot = 0; slot < 11; slot++) {
       const p = ps[Math.min(slot, ps.length - 1)];
-      const load = fatigueLoad(p.fatigue),
-        off = unhappyPenalty(p);
       // A player brings his level at the slot and his multiplier to every attribute (→MATCH-11).
       const scale = positionLevelFactor(p.positions, slots[slot]!.position) * multiplier[side](p);
       const a = p.attrs;
       const at = (key: number, value: number, keeper = false) =>
-        (table[slot * KEYS + key] = value * scale - load / (keeper ? 10 : 8) - off);
+        (table[slot * KEYS + key] = slotSkill(p, value, scale, keeper));
       at(FINISH, a.finishing);
       at(PASS, a.passing);
       at(VISION, a.vision);
@@ -593,12 +648,11 @@ function matchSkills({ squads, tactics, multiplier, drain: drains, shift }: Matc
   const drain = squads.map((ps, side) => {
     const rate = new Float64Array(11);
     for (let slot = 0; slot < 11; slot++)
-      rate[slot] =
-        ((100 - ps[Math.min(slot, ps.length - 1)].attrs.stamina) *
-          C.drainPerStamina *
-          (tactics[side] === 'press' ? C.pressDrain : 1) *
-          drains[side]) /
-        90;
+      rate[slot] = drainPerMinute(
+        setup,
+        side as Side,
+        ps[Math.min(slot, ps.length - 1)].attrs.stamina,
+      );
     return rate;
   });
   // Forwards take most shots, midfielders some, defenders the occasional set piece; roles and
