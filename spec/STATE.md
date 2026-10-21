@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 
 ## inbox
+- 261021 decided T273 T282: the owner asked for parallel autopilot on this host, whose clone does not hold the Mac's identity group state → a new group full-model here with T273, T274–T277 (grid continuity) beside T279–T282 (aggregate records) and T283, lane-less so the runner fans out after T273; explore tasks T278 T284 T285 and T286 follow in the main session (alt: resume the identity group, which exists only on the Mac | one lane per stream, which needs task edits and serialises T275 behind T277)
 - 261021 decided -: CI 39439433028's failing WebKit cup-history journey seeds its two archived seasons instead of sending identities only on change, because the identity view, host step and save costs measured unchanged and the journey checks archive views, not event stepping (alt: identity-on-change view publishing, which touches T244/T245 files with no measured gain)
 - 261021 decided T272: in the identity group the coordinator stays p7x5 (no transfer command; r3m9 continued p7x5) and T272 runs as the runner's lane-less unit once the planning merge put it in the group, instead of a main-session subagent (alt: a new coordinator tag, which the CLI refuses)
 - 261021 decided T253 T251: T253's observation spec recolours a paused match through T251's 구단 디자인 tab, which only the identity-founding lane adds → identity-founding integrates first and identity-match-kit re-merges it and confirms the case in the batch Chromium run; T251 joins T253's deps, contents unchanged (alt: hold the lane on a new dep without re-merging | move the case to T254 and drop that clause from T253 acceptance)
