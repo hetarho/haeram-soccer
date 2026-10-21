@@ -14,8 +14,6 @@ import type {
   MatchEvent,
   MatchPlayback,
   MatchFrame,
-  MatchMotionSample,
-  PlayerMotion,
   PlayerMotionState,
   World,
 } from '../../../../packages/contracts/src/types';
@@ -33,7 +31,15 @@ import { createKitPainter } from './kitPainting';
 import { markerRadius } from './KitPitchPreview';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
-import { paceStarts, presentationAt, presentationTime, WATCH_SPEEDS } from './presentationClock';
+import {
+  clockAt,
+  locate,
+  presentationAdvance,
+  presentationLength,
+  presentationSamples,
+  runningSeconds,
+  WATCH_SPEEDS,
+} from './presentationClock';
 import s from './App.module.css';
 import t from './Pitch.module.css';
 
@@ -68,17 +74,6 @@ const initialShape: { at: [number, number]; keeper?: true }[] = [
 const MARKER_OUTLINE = '#ffffffcc';
 /** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
 const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
-interface Sample {
-  frame: number;
-  ball: [number, number];
-  players?: [PlayerMotion[], PlayerMotion[]];
-  phase?: MatchMotionSample['phase'];
-  ownerId?: string;
-  /** Global ball-track step this sample was taken at, when the minute recorded a track. */
-  step?: number;
-  /** Sample position inside its minute, 0–1. */
-  within: number;
-}
 
 const phaseLabels = {
   possession: '볼 운반',
@@ -105,22 +100,6 @@ export function latestEvent(
     }
   }
   return undefined;
-}
-
-/**
- * The sample position of a minute position: each minute's samples share its time evenly, so the
- * clock spends the minute's pace on them (`firsts` holds each minute's first sample, then the
- * sample count).
- */
-function toSample(firsts: number[], position: number) {
-  const i = Math.min(Math.floor(position), firsts.length - 2);
-  return i < 0 ? 0 : firsts[i]! + (position - i) * (firsts[i + 1]! - firsts[i]!);
-}
-/** The minute position of a sample position: the inverse of `toSample`. */
-function fromSample(firsts: number[], samples: Sample[], index: number) {
-  const frame = samples[Math.floor(index)]?.frame ?? 0;
-  const count = (firsts[frame + 1] ?? 0) - (firsts[frame] ?? 0);
-  return count > 0 ? frame + (index - firsts[frame]!) / count : 0;
 }
 
 export interface PitchControls {
@@ -152,7 +131,7 @@ export function Pitch({
 }) {
   const detailsId = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
-  /** Presentation time in ms at 1x: a minute lasts 4000 ms × its pace (→WEB-32). */
+  /** Presentation time in ms at 1x: every match minute lasts 4000 ms (→WEB-32). */
   const clock = useRef(0);
   const last = useRef(0);
   const lastUi = useRef(0);
@@ -164,39 +143,10 @@ export function Pitch({
   const [details, setDetails] = useState(false);
   const [reviewedId, setReviewedId] = useState<string>();
   const [selection, setSelection] = useState('0:8');
-  const samples = useMemo<Sample[]>(() => {
-    // Each minute's track covers its samples evenly; its offset is the length of the tracks before.
-    let offset = 0;
-    return (
-      p?.frames.flatMap((frame, i) => {
-        const start = offset,
-          steps = frame.ballTrack?.length ?? 0;
-        offset += steps;
-        return frame.motion?.length
-          ? frame.motion.map((motion, j) => ({
-              frame: i,
-              ball: motion.ball,
-              players: motion.players,
-              phase: motion.phase,
-              ownerId: motion.ownerId,
-              step: steps ? start + ((j + 1) * steps) / frame.motion!.length : undefined,
-              within: (j + 1) / frame.motion!.length,
-            }))
-          : [{ frame: i, ball: frame.ball, players: frame.players, within: 1 }];
-      }) || []
-    );
-  }, [p]);
-  // Where each minute starts on the presentation clock, and each minute's first sample.
-  const starts = useMemo(() => paceStarts(p?.frames.map((frame) => frame.pace) ?? []), [p]);
-  const firsts = useMemo(() => {
-    const list: number[] = [];
-    samples.forEach((sample, i) => {
-      if (list.length <= sample.frame) list.push(i);
-    });
-    return [...list, samples.length];
-  }, [samples]);
-  // Every recorded ball position of the match, so a fast pass is drawn at its real speed.
-  const track = useMemo(() => p?.frames.flatMap((frame) => frame.ballTrack || []) || [], [p]);
+  // Every sample and recorded ball position at its match time, so a pass flies at its real speed.
+  const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
+  const { samples, track } = timed;
+  const length = presentationLength(p?.frames.length ?? 0);
   // Each player's place in his matchday roster (starters, then the bench) numbers his dot.
   const numbers = useMemo(
     () => new Map(p?.squads.flatMap((squad) => squad.map((player, i) => [player.id, i] as const))),
@@ -319,8 +269,9 @@ export function Pitch({
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
       const end = Math.max(0, samples.length - 1);
-      if (p && !paused) clock.current = Math.min(starts.at(-1)!, clock.current + elapsed * speed);
-      const position = Math.min(end, toSample(firsts, presentationAt(starts, clock.current)));
+      if (p && !paused) clock.current = presentationAdvance(clock.current, elapsed, speed, length);
+      const now = runningSeconds(clock.current);
+      const position = Math.min(end, locate(timed.times, now, timed.sampleBreak));
       const index = Math.min(end, Math.floor(position + 1e-6));
       const element = canvas.current;
       // Keep replay time, but leave hidden/inert views out of layout and painting work. The final
@@ -447,10 +398,10 @@ export function Pitch({
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
           let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
           let bh = 0;
-          if (current.step !== undefined && next.step !== undefined && track.length) {
-            const g = current.step + mix * (next.step - current.step) - 1;
-            const a = track[Math.max(0, Math.min(track.length - 1, Math.floor(g)))],
-              b = track[Math.max(0, Math.min(track.length - 1, Math.ceil(g)))],
+          if (track.length) {
+            const g = locate(timed.trackTimes, now, timed.trackBreak);
+            const a = track[Math.floor(g)]!,
+              b = track[Math.ceil(g)]!,
               f = g - Math.floor(g);
             bx = a[0] * (1 - f) + b[0] * f;
             by = a[1] * (1 - f) + b[1] * f;
@@ -486,8 +437,8 @@ export function Pitch({
   }, [
     p,
     samples,
-    starts,
-    firsts,
+    timed,
+    length,
     track,
     numbers,
     paused,
@@ -501,7 +452,7 @@ export function Pitch({
 
   const seek = (index: number) => {
     const target = Math.max(0, Math.min(samples.length - 1, index));
-    clock.current = presentationTime(starts, fromSample(firsts, samples, target));
+    clock.current = clockAt(samples[Math.floor(target)]?.time ?? 0);
     setSampleIndex(Math.floor(target));
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };

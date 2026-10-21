@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import {
+  frameTimeIssues,
+  MATCH_MODEL_REVISION,
+  NEUTRAL_FRAME_PACE,
+} from '../../../contracts/src/match-model';
 import { createWorld } from '../index';
+import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
 import { toUnits } from './pitch';
 import { ballPath, buildFrames } from './playback';
@@ -15,14 +21,19 @@ const w = createWorld({
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
-const setupFor = (id: string, observe = true) =>
+const setupFor = (id: string, observe = true, candidate = false) =>
   buildGridSetup(
     w,
     { ...w.fixtures[0]!, id, home: home!.id, away: away!.id },
-    { observe, recordPlayers: true, tactics: ['press', 'possession'] },
+    {
+      observe,
+      recordPlayers: true,
+      tactics: ['press', 'possession'],
+      ...(candidate ? { model: MATCH_MODEL_REVISION } : {}),
+    },
   );
-const watch = (id: string) => {
-  const setup = setupFor(id);
+const watch = (id: string, candidate = false) => {
+  const setup = setupFor(id, true, candidate);
   const result = playGrid(setup);
   return { setup, result, frames: buildFrames(result, setup, w.seed) };
 };
@@ -45,6 +56,9 @@ describe('grid playback', () => {
       expect(f.motion).toHaveLength(8);
       expect(f.ballTrack).toHaveLength(80);
       expect(f.motion!.at(-1)!.elapsedSeconds).toBe(f.elapsedSeconds);
+      // Pre-feature frames carry no explicit times; the clock decodes them at equal intervals.
+      expect(f.startSeconds).toBeUndefined();
+      expect(f.ballTimes).toBeUndefined();
     }
   });
 
@@ -180,5 +194,91 @@ describe('grid playback', () => {
     const again = buildFrames(result, setup, w.seed);
     expect(result.record).toEqual(record);
     expect(again).toEqual(frames);
+  });
+});
+
+describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
+  const watched = watch('candidate-1', true);
+  const trace = watched.result.trace!;
+  const knotted = trace.filter((e) => e.knots?.length);
+  const path = ballPath(watched.result, watched.setup, w.seed);
+  const close = (a: readonly number[], b: readonly number[], digits = 4) => {
+    expect(a[0]).toBeCloseTo(b[0]!, digits);
+    expect(a[1]).toBeCloseTo(b[1]!, digits);
+  };
+
+  it('keeps dead-ball and open-play multipliers equal', () => {
+    expect(knotted.length).toBeGreaterThan(500);
+    // Every minute is neutral, restarts and chances included: no situation weights.
+    expect(watched.frames.every((f) => f.pace === NEUTRAL_FRAME_PACE)).toBe(true);
+    expect(watched.frames.some((f) => f.events!.some((e) => e.restart))).toBe(true);
+    expect(frameTimeIssues(watched.frames)).toEqual([]);
+    expect(watched.result.record).toEqual(playGrid(setupFor('candidate-1', false, true)).record);
+  });
+
+  it('draws every flight from its kick to its arrival at the recorded times', () => {
+    let flights = 0;
+    for (const e of knotted) {
+      const knots = e.knots!;
+      knots.forEach((knot, i) => {
+        if (knot.kind !== 'kick') return;
+        const landing = knots[i + 1];
+        if (!landing || landing.at <= knot.at) return;
+        close(path(e.period, knot.at).at, toUnits(knot.ball, e.period));
+        close(path(e.period, landing.at).at, toUnits(landing.ball, e.period));
+        // Halfway through, the ball is still on its way: the flight is not shortened.
+        const mid = path(e.period, (knot.at + landing.at) / 2).at;
+        const to = toUnits(landing.ball, e.period);
+        if (Math.hypot(...toUnits(knot.ball, e.period).map((v, j) => v - to[j]!)) > 5)
+          expect(Math.hypot(mid[0] - to[0], mid[1] - to[1])).toBeGreaterThan(0.5);
+        flights++;
+      });
+    }
+    expect(flights).toBeGreaterThan(400);
+  });
+
+  it('renders arrival before the next kick', () => {
+    let pairs = 0;
+    for (let k = 1; k < knotted.length; k++) {
+      const before = knotted[k - 1]!.knots!.at(-1)!;
+      const kick = knotted[k]!.knots!.find((knot) => knot.kind === 'kick');
+      if (!kick || knotted[k]!.period !== knotted[k - 1]!.period) continue;
+      expect(before.at).toBeLessThanOrEqual(kick.at);
+      pairs++;
+    }
+    expect(pairs).toBeGreaterThan(400);
+    // The drawn track holds each arrival at its own time, inside the minute that shows it.
+    let drawn = 0;
+    for (const f of watched.frames)
+      f.ballTimes!.forEach((t, j) => {
+        const knot = knotted
+          .flatMap((e) => (e.period === f.period ? e.knots! : []))
+          .find((x) => x.at === t && (x.kind === 'receive' || x.kind === 'arrive'));
+        if (!knot) return;
+        close(f.ballTrack![j]!, toUnits(knot.ball, f.period), 0);
+        drawn++;
+      });
+    expect(drawn).toBeGreaterThan(300);
+  });
+
+  it('preserves minute-boundary continuity', () => {
+    const frames = watched.frames;
+    // Running speed bound in units per match second (the ball's maximum along the shorter axis).
+    const fastest = (GRID_BALL_CONFIG.max * 100) / 68;
+    for (let i = 1; i < frames.length; i++) {
+      const [a, b] = [frames[i - 1]!, frames[i]!];
+      expect(a.motion!.at(-1)!.elapsedSeconds).toBe(a.startSeconds! + 60);
+      if (a.period !== b.period) {
+        // A new period opens with its own drawn sample at its whistle.
+        expect(b.motion![0]!.elapsedSeconds).toBe(b.startSeconds);
+        continue;
+      }
+      expect(b.startSeconds).toBe(a.startSeconds! + 60);
+      const [t0, t1] = [a.ballTimes!.at(-1)!, b.ballTimes![0]!];
+      const [p0, p1] = [a.ballTrack!.at(-1)!, b.ballTrack![0]!];
+      expect(Math.hypot(p1[0] - p0[0], p1[1] - p0[1])).toBeLessThanOrEqual(
+        fastest * (t1 - t0) + 0.2,
+      );
+    }
   });
 });

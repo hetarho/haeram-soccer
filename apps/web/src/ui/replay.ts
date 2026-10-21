@@ -1,9 +1,11 @@
+import { NEUTRAL_FRAME_PACE } from '../../../../packages/contracts/src/match-model';
 import type {
   MatchRecord,
   MatchPlayback,
   MatchFrame,
 } from '../../../../packages/contracts/src/types';
 // Archive playback uses recorded goals only. Intermediate counters are not presented as minute data.
+// Its minutes carry no explicit times or motion: the clock spends 4 s on each (→WEB-32).
 export function archivePlayback(record: MatchRecord): MatchPlayback {
   const frames: MatchFrame[] = Array.from({ length: 90 }, (_, i) => {
     const minute = i + 1,
@@ -23,7 +25,7 @@ export function archivePlayback(record: MatchRecord): MatchPlayback {
       action: event?.action || '기록 요약',
       period: minute <= 45 ? 1 : 2,
       label: String(minute),
-      pace: 1,
+      pace: NEUTRAL_FRAME_PACE,
       onPitch: [[], []],
     };
   });

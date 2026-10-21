@@ -159,7 +159,19 @@ for (const viewport of [
       'xG',
       '슈팅',
     ]);
+    // Speed changes keep the presented minute, and 16x runs every minute, restarts included, in
+    // 250 ms (→WEB-32): a second covers several minutes without slowing at a dead ball.
+    const minuteNow = async () =>
+      Number(
+        (await page.getByTestId('match-latest-event').locator('span').innerText()).match(
+          /\d+/,
+        )?.[0] ?? 0,
+      );
+    const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
+    expect(await minuteNow()).toBeGreaterThanOrEqual(before);
+    await page.waitForTimeout(1000);
+    expect((await minuteNow()) - before).toBeGreaterThanOrEqual(2);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     // The scoreboard carries one red mark per player sent off; the event line its minute label.
