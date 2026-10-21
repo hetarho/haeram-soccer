@@ -15,6 +15,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight } from '../match';
 import { lineOf } from '../player';
 import { random } from '../primitives';
+import { CHANGES_CONFIG } from './changes';
 import { attackFrame, clamp, PITCH, toEngine } from './pitch';
 import {
   coverPoint,
@@ -23,6 +24,7 @@ import {
   runPlan,
   SHAPE_CONFIG,
   shapePlace,
+  tacticShape,
   type ShapeCache,
 } from './shape';
 import { minutesOn, onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
@@ -31,8 +33,11 @@ import type { Intention, IntentionKind, IntentionPriority, IntentionReason } fro
 
 /** Initial values for the candidate model; T278 calibrates them against the unchanged targets. */
 export const COORDINATION_CONFIG = {
-  /** How many players press the carrier, by the defending side's tactic (→MATCH-8). */
-  pressers: { possession: 1, press: 2, counter: 1, balanced: 1 } satisfies Record<Tactic, number>,
+  /**
+   * How many players press the carrier, by the defending side's tactic (→MATCH-8). T321: one for
+   * press too, which still regains the ball highest, since two pressers won it too easily.
+   */
+  pressers: { possession: 1, press: 1, counter: 1, balanced: 1 } satisfies Record<Tactic, number>,
   /** A second presser joins only from within this share of the press reach. */
   second: 0.6,
   /**
@@ -53,8 +58,8 @@ export const COORDINATION_CONFIG = {
   mark: { pick: 20, zone: 12, handover: 6 },
   /** After a loss, a player further than `distance` × (1 − `read` × 판단력) from his shape recovers to it within `window` s. */
   recover: { distance: 14, read: 0.4, window: 6 },
-  /** Run and press odds fall by up to this share as minutes and missing 체력 tire a player. */
-  tired: 0.5,
+  /** Run and press odds fall by up to this share as minutes and missing 체력 tire a player (T321: 0.5 before). */
+  tired: 1,
   /** 판단력 times a run: the run odds scale from `min` to `max` across the attribute. */
   timing: { min: 0.8, max: 1.2 },
   /**
@@ -103,9 +108,18 @@ const byId = (a: GridPlayer, b: GridPlayer) =>
 /** An attribute now (his slot, the day, his drain; →MATCH-11) as a 0–1 share, for odds. */
 const share = (s: GridState, gp: GridPlayer, a: Attribute) =>
   clamp(skill(s, gp.side, gp.idx, a), 1, 99) / 99;
-/** 1 for a fresh player, less as his minutes and missing 체력 tire him. */
+/**
+ * 1 for a fresh player, less as his minutes and missing 체력 tire him, faster on a pressing side
+ * by the in-match drain's press factor (→MATCH-9, T321).
+ */
 const fresh = (s: GridState, gp: GridPlayer) =>
-  1 - CC.tired * Math.min(1, minutesOn(s, gp) / 90) * ((100 - gp.player.attrs.stamina) / 100);
+  1 -
+  CC.tired *
+    Math.min(
+      1,
+      (minutesOn(s, gp) / 90) * (s.setup.pressing[gp.side] ? CHANGES_CONFIG.pressDrain : 1),
+    ) *
+    ((100 - gp.player.attrs.stamina) / 100);
 const weight = (s: GridState, gp: GridPlayer, action: 'run' | 'press' | 'key') =>
   actionWeight(slotOf(s, gp).role, gp.player.traits, action);
 
@@ -119,7 +133,7 @@ function stream(s: GridState, gp: GridPlayer, decision: string, moment: number) 
 
 /** How far a side's presser goes for the ball: its tactic's press, or counter-press just after a loss. */
 export function pressReach(s: GridState, side: 0 | 1): number {
-  const cfg = SHAPE_CONFIG.tactic[s.setup.tactics[side]];
+  const cfg = tacticShape(s, side);
   const lost =
     s.lastLoss !== undefined &&
     s.lastLoss.side === side &&

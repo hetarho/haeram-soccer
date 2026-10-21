@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type PlayTrait } from '../../../contracts/src/player';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
@@ -235,6 +236,46 @@ describe('grid decisions', () => {
     const counter = mixAt(CM, at, (t) => ({ ...t, phase: 'counter' }), ['counter', 'balanced']);
     const flat = mixAt(CM, at, (t) => ({ ...t, phase: 'counter' }), ['balanced', 'balanced']);
     expect(counter.shot).toBeGreaterThan(flat.shot);
+  });
+
+  it('weighs a shadow striker’s shots by his position on the candidate model only', () => {
+    const AM = 7;
+    const ratio = (candidate: boolean) => {
+      const sc = scene(AM, centre(5, 2), ['press', 'balanced']);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      const mix = actionMix(sc.s, 0, AM, sc.tags());
+      return mix.shot / mix.pass;
+    };
+    const K = DECISION_CONFIG;
+    // In front of the box only the shot weight differs between the models: the AM's own weight and
+    // the candidate's volume scale against the midfield line's and the shared scale (T321).
+    expect(ratio(true) / ratio(false)).toBeCloseTo(
+      (K.candidate.shotPosition.AM! * K.candidate.shotScale) / (K.shotLine.MF * K.shotScale),
+      9,
+    );
+  });
+
+  it('sends a runner through on goal on toward it on the candidate model', () => {
+    const K = DECISION_CONFIG;
+    const bend = (band: number, candidate: boolean) => {
+      const sc = scene(ST, centre(band, 2));
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      const mix = (inBehind: boolean) => actionMix(sc.s, 0, ST, { ...sc.tags(), inBehind });
+      const [on, off] = [mix(true), mix(false)];
+      return {
+        carry: on.carry / on.pass / (off.carry / off.pass),
+        shot: on.shot / on.pass / (off.shot / off.pass),
+      };
+    };
+    // In front of the box (band 5) he carries on rather than passes (T321, →MATCH-16).
+    const front = K.candidate.inBehind;
+    expect(bend(5, true).carry).toBeCloseTo(front.carry / front.pass, 9);
+    expect(bend(5, true).shot).toBeCloseTo(front.shot / front.pass, 9);
+    // In the box and on the pre-feature model the shared bend holds.
+    expect(bend(6, true).carry).toBeCloseTo(K.inBehind.carry, 9);
+    expect(bend(6, true).shot).toBeCloseTo(K.inBehind.shot, 9);
+    expect(bend(5, false).carry).toBeCloseTo(K.inBehind.carry, 9);
+    expect(bend(5, false).shot).toBeCloseTo(K.inBehind.shot, 9);
   });
 
   it('keeps a leading side safer late', () => {

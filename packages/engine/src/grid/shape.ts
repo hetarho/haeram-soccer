@@ -1,4 +1,5 @@
 /** Off the ball: formation shape by phase and tactic, role habit, pressing, marking, runs and movement (→MATCH-8, MATCH-17). */
+import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
 import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
 import { lineOf } from '../player';
@@ -21,6 +22,27 @@ export const SHAPE_CONFIG = {
     press: { advance: 6, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
     counter: { advance: 2, defend: -10, line: [18, 38], press: 8, counterPress: 0, compact: 0.3 },
     balanced: { advance: 4, defend: -4, line: [24, 45], press: 10, counterPress: 8, compact: 0.33 },
+  },
+  /**
+   * Candidate model only (→MATCH-8, T321): tactics whose shape replaces their `tactic` entry. Press
+   * steps up 4 m with the ball instead of 6, so its 4-2-3-1 does not crowd the box edge; counter's
+   * low-to-mid block engages around halfway (−5 and line 22–42 instead of −10 and 18–38, press 11
+   * instead of 8); balanced keeps its stability with a deeper, more compact mid block that
+   * counter-presses 12 m instead of 8.
+   */
+  candidate: {
+    tactic: {
+      press: { advance: 4, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
+      counter: { advance: 2, defend: -5, line: [22, 42], press: 11, counterPress: 0, compact: 0.3 },
+      balanced: {
+        advance: 4,
+        defend: -6,
+        line: [24, 45],
+        press: 10,
+        counterPress: 12,
+        compact: 0.38,
+      },
+    } as Partial<Record<Tactic, TacticShape>>,
   },
   lateral: 0.25,
   /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
@@ -67,6 +89,28 @@ export const SHAPE_CONFIG = {
   },
 } as const;
 
+/**
+ * A tactic's shape: metres its players step up with the ball (`advance`) and without it (`defend`),
+ * its back line's bounds, its press and counter-press reach and how far the block follows the ball.
+ */
+export interface TacticShape {
+  advance: number;
+  defend: number;
+  line: readonly [number, number];
+  press: number;
+  counterPress: number;
+  compact: number;
+}
+
+/** The shape `side`'s tactic plays on this fixture's model. */
+export function tacticShape(s: GridState, side: 0 | 1): TacticShape {
+  const tactic = s.setup.tactics[side];
+  return (
+    (s.setup.model !== undefined && SHAPE_CONFIG.candidate.tactic[tactic]) ||
+    SHAPE_CONFIG.tactic[tactic]
+  );
+}
+
 type Line = 'DF' | 'MF' | 'FW';
 const BEHIND_ROLES = ['attackingMidfielder', 'shadowStriker', 'trequartista'];
 const OVERLAP_ROLES = ['overlappingFullBack', 'attackingWingBack'];
@@ -105,7 +149,7 @@ const lostRecently = (s: GridState, side: 0 | 1, seconds: number) =>
 
 /** The pressers of a side while it defends, as roster indexes. */
 export function pressers(s: GridState, side: 0 | 1): number[] {
-  const cfg = SHAPE_CONFIG.tactic[s.setup.tactics[side]];
+  const cfg = tacticShape(s, side);
   const reach = lostRecently(s, side, SHAPE_CONFIG.counterPressSeconds)
     ? Math.max(cfg.press, cfg.counterPress)
     : cfg.press;
@@ -159,7 +203,7 @@ export function shapePlace(
 ): [number, number] {
   const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
-  const cfg = SHAPE_CONFIG.tactic[tactic];
+  const cfg = tacticShape(s, side);
   const b = attackFrame(side, s.ball);
   const own = lineOfSlot(s, gp);
   if (own === 'GK') {
@@ -220,7 +264,7 @@ const lineFloor = (ball: number, line: number) =>
  */
 function pressPoint(s: GridState, gp: GridPlayer, at: Point, urgent: boolean): [number, number] {
   const side = gp.side;
-  const cfg = SHAPE_CONFIG.tactic[s.setup.tactics[side]];
+  const cfg = tacticShape(s, side);
   const goalSide = at[0] - SHAPE_CONFIG.pressGoalSide;
   return toEngine(side, [
     lineOfSlot(s, gp) === 'DF' && !urgent

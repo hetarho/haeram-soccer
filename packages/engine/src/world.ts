@@ -591,10 +591,17 @@ export function refillPlace(
   return options[held(line) % options.length].position;
 }
 export const refillPosition = (w: World) => refillPlace(w.tactic, activePlayers(w));
-/** The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6). */
-export function npcSquad(seed: string, year: number, c: Club): Player[] {
+/**
+ * The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6); `style`
+ * builds them for another tactic's formation (measurement of forced tactics, T321).
+ */
+export function npcSquad(
+  seed: string,
+  year: number,
+  c: Club,
+  style: Tactic = clubStyle(c),
+): Player[] {
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
-  const style = clubStyle(c);
   const fatigue = style === 'press' ? PRESS_LOAD_FATIGUE : 0;
   return squadPlaces(style).map((place, i) => {
     const age = 18 + ((year + i) % 18),

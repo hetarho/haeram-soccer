@@ -351,16 +351,17 @@ describe('grid coordination', () => {
       return jobsOf(planCoordination(s, false), 'press').length;
     };
     const at = (d: number, lost: boolean) => TACTICS.map((t) => pressers(t, d, lost));
-    // Settled: press engages furthest and with two men, counter waits around halfway.
-    expect(at(7, false)).toEqual([1, 2, 1, 1]);
-    expect(at(9, false)).toEqual([1, 2, 0, 1]);
-    expect(at(11, false)).toEqual([1, 1, 0, 0]);
-    expect(at(14, false)).toEqual([0, 1, 0, 0]);
-    // Just after a loss possession and press counter-press, counter does not.
+    // Settled: press engages furthest, counter around halfway, balanced in the middle (T321: one
+    // presser each).
+    expect(at(7, false)).toEqual([1, 1, 1, 1]);
+    expect(at(11, false)).toEqual([1, 1, 1, 0]);
+    expect(at(12.5, false)).toEqual([0, 1, 0, 0]);
+    // Just after a loss possession and press counter-press furthest, counter does not.
     expect(at(17, true)).toEqual([1, 1, 0, 0]);
     for (const t of TACTICS) {
-      const cfg = SHAPE_CONFIG.tactic[t];
+      const cfg = SHAPE_CONFIG.candidate.tactic[t] ?? SHAPE_CONFIG.tactic[t];
       expect(pressers(t, 17, true)).toBe(Math.max(cfg.press, cfg.counterPress) >= 17 ? 1 : 0);
+      expect(pressers(t, 11.5, true)).toBe(Math.max(cfg.press, cfg.counterPress) >= 11.5 ? 1 : 0);
     }
   });
 

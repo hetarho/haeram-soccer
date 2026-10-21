@@ -37,23 +37,29 @@ import type {
   Fixture,
   Founding,
   MatchRecord,
+  Player,
   Tactic,
   World,
 } from '../packages/contracts/src/types';
 import {
-  clubStyle,
   createWorld,
-  fatigueLoad,
   integer,
-  PRESS_LOAD_FATIGUE,
+  isUnavailable,
+  npcSquad,
   random,
   rating,
 } from '../packages/engine/src/index';
+import { FORMATIONS } from '../packages/engine/src/player';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from '../packages/engine/src/grid/movement';
 import { M } from '../packages/engine/src/grid/record';
-import { buildGridSetup, type DecideRule } from '../packages/engine/src/grid/setup';
+import {
+  buildGridSetup,
+  takersFor,
+  type DecideRule,
+  type GridSetup,
+} from '../packages/engine/src/grid/setup';
 import {
   buildInvariantReport,
   buildOutcomeTargetReport,
@@ -442,12 +448,8 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       ...(c.family === 'tactics' ? { tactics: [params.home!, params.away!] } : {}),
       ...(params.decide ? { decide: params.decide } : {}),
     });
-    // A forced tactic carries its weekly press load (MATCH-2): a club nobody owns pays it in its
-    // squad's fatigue only for its own pressing style, so the load moves with the tactic played.
-    if (c.family === 'tactics')
-      [home, away].forEach((club, side) => {
-        setup.shift[side] += pressLoad(clubStyle(club)) - pressLoad(setup.tactics[side]!);
-      });
+    const fatigueApplied =
+      c.family === 'tactics' && forceTacticRosters(w, f, setup, [home, away], params.fatigue);
     const result = playGrid(setup);
     samples.push({
       record: result.record,
@@ -456,15 +458,71 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       condition: c.id,
       // Match strength of two clubs nobody owns: XI ratings and home ground (MATCH-2).
       gap: rating(w, home, f) + 3 - rating(w, away, f),
-      freshness: result.diagnostics.freshness,
+      // MATCH-29's freshness measures a tactic's in-match cost only from the declared fatigue.
+      ...(c.family !== 'tactics' || fatigueApplied
+        ? { freshness: result.diagnostics.freshness }
+        : {}),
     });
   }
   return { samples, ms: (performance.now() - started) / Math.max(1, job.count) };
 }
 
-/** Skill points a squad's weekly press load costs an outfielder (slotSkill: an eighth of the excess). */
-const pressLoad = (tactic: Tactic) =>
-  tactic === 'press' ? fatigueLoad(PRESS_LOAD_FATIGUE) / 8 : 0;
+/**
+ * A forced tactic pairing's matchday rosters (MATCH-29, T321), the one rule both engines' runners
+ * use: a forced tactic changes only in-match behaviour and its in-match cost. Each club's squad is
+ * built for the forced formation (`npcSquad` with the forced tactic's squad places, at the club's
+ * own strength, so the pair stays as equal as the core condition's): its XI is that squad's
+ * formation slots, its bench the next `bench[side]` available players, and every one of them
+ * starts from the condition's declared squad fatigue (`fatigue`; none declared keeps the
+ * generated value, which `forcedFatigueApplied` reports).
+ */
+export function forcedRosters(
+  w: World,
+  f: Fixture,
+  clubs: readonly [Club, Club],
+  tactics: readonly [Tactic, Tactic],
+  bench: readonly [number, number],
+  fatigue?: number,
+): [Player[], Player[]] {
+  return ([0, 1] as const).map((side) => {
+    const players = npcSquad(w.seed, w.year, clubs[side], tactics[side]).map((p) =>
+      fatigue === undefined ? p : { ...p, fatigue },
+    );
+    const xi = players.slice(0, FORMATIONS[tactics[side]].slots.length);
+    const named = players
+      .slice(xi.length)
+      .filter((p) => !isUnavailable(w, p, clubs[side].id, f))
+      .slice(0, bench[side]);
+    return [...xi, ...named];
+  }) as [Player[], Player[]];
+}
+
+/** Whether a forced pairing's rosters start from its declared squad fatigue; freshness is read only then. */
+export const forcedFatigueApplied = (
+  rosters: readonly (readonly Player[])[],
+  fatigue: number | undefined,
+) => fatigue !== undefined && rosters.every((side) => side.every((p) => p.fatigue === fatigue));
+
+/**
+ * The detailed engine's forced pairing (`forcedRosters` on the setup): rosters, bench sizes and
+ * set-piece takers follow the squads built for the forced formations. Returns whether the declared
+ * squad fatigue was applied.
+ */
+export function forceTacticRosters(
+  w: World,
+  f: Fixture,
+  setup: GridSetup,
+  clubs: [Club, Club],
+  fatigue: number | undefined,
+): boolean {
+  const xi = [0, 1].map((side) => FORMATIONS[setup.tactics[side as 0 | 1]].slots.length);
+  setup.rosters = forcedRosters(w, f, clubs, setup.tactics, setup.bench, fatigue);
+  ([0, 1] as const).forEach((side) => {
+    setup.bench[side] = setup.rosters[side].length - xi[side]!;
+    setup.takers[side] = takersFor(setup.rosters[side].slice(0, xi[side]));
+  });
+  return forcedFatigueApplied(setup.rosters, fatigue);
+}
 
 /**
  * What MATCH-29 reads of a match (tactics, results, team rows, xG and freshness), small enough to
@@ -757,7 +815,7 @@ async function runReport() {
       movement: GRID_MOVEMENT_CONFIG,
       ball: GRID_BALL_CONFIG,
       forcedTactics:
-        "tactic pairings force both tactics on the core pairs; the weekly press load (MATCH-2, fatigue 32: 1.5 skill points an outfielder) moves with the tactic played, while end-of-match freshness (MATCH-29) starts from each club's own squad fatigue",
+        "tactic pairings force both tactics on the core pairs; each club's squad is built for the forced formation (forcedRosters: npcSquad with the forced tactic's squad places at the club's strength; XI = its formation slots) and both sides start from the condition's declared squad fatigue (NEUTRAL_SQUAD_FATIGUE), so a forced tactic changes only in-match behaviour and its in-match cost; end-of-match freshness (MATCH-29) is read only when that fatigue was applied",
       knockouts:
         'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
     },

@@ -19,9 +19,11 @@
  *     [--out FILE]
  *   T320's reading: the core condition's pairs with each club on its own tactic (uneven venues).
  *
- * Conditioning (CORPUS_CONFIG): a tactics condition forces both tactics and starts both squads
- * from NEUTRAL_SQUAD_FATIGUE, a fatigue condition sets every matchday player's pre-match fatigue,
- * both through `conditionedMatch`, which redoes prepareMatch's arithmetic for the changed inputs.
+ * Conditioning (CORPUS_CONFIG): a tactics condition forces both tactics with each club's squad
+ * built for its forced formation (grid-bands `forcedRosters`, as the detailed runner) and starts
+ * both squads from NEUTRAL_SQUAD_FATIGUE, a fatigue condition sets every matchday player's
+ * pre-match fatigue, both through `conditionedMatch`, which redoes prepareMatch's arithmetic for
+ * the changed inputs.
  */
 import { execFileSync, fork } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -42,7 +44,6 @@ import type {
 import {
   advanceRound,
   clamp,
-  clubStyle,
   cohesionMultiplier,
   createWorld,
   effectiveGap,
@@ -79,6 +80,8 @@ import {
   conditionClubs,
   conditionFixture,
   coreFixturePairs,
+  forcedFatigueApplied,
+  forcedRosters,
   type ConditionParams,
 } from './grid-bands';
 import {
@@ -171,7 +174,7 @@ export function ledgerDiagnostics(match: AggregateMatch): LedgerDiagnostics {
 
 /** What a measurement changes about a fixture between clubs nobody owns. */
 export interface Conditioning {
-  /** Both tactics, instead of the clubs' own (the XI and bench stay the clubs'). */
+  /** Both tactics, instead of the clubs' own, each club's squad built for its forced formation (T321). */
   tactics?: readonly [Tactic, Tactic];
   /** Every matchday player's pre-match fatigue on both sides. */
   fatigue?: number;
@@ -181,13 +184,13 @@ export interface Conditioning {
  * A fixture between clubs nobody owns prepared under a measurement's conditions: prepareMatch and
  * the matchday rosters as the aggregate path reads them, then — when a tactic or a squad fatigue is
  * set — prepareMatch's own arithmetic for two clubs nobody owns again on the changed inputs: the XI
- * rated at its club's formation (as world.ts `rating`, and as the detailed engine's forced tactics
- * keep it), home ground 3 and the unmodelled manager's 4 on each side (MATCH-2), the gap's
- * diminishing returns, the day's form, then the profiles of the tactics played and the possession
- * chance. `gap` is the home-minus-away match strength before form for the outcome curve.
- * A forced tactic seats player i of the club's XI in the forced formation's slot i, so players can
- * stand out of position (T284 review: mean slot level 0.863 for balanced, 0.906–0.923 for the
- * others); forced conditions are to field squads built for the forced formation (T321, T323).
+ * rated at the formation it plays (as world.ts `rating` rates a club's own), home ground 3 and the
+ * unmodelled manager's 4 on each side (MATCH-2), the gap's diminishing returns, the day's form,
+ * then the profiles of the tactics played and the possession chance. `gap` is the home-minus-away
+ * match strength before form for the outcome curve. Forced tactics field the detailed runner's
+ * squads built for the forced formation (grid-bands `forcedRosters`, T321), so both engines measure
+ * MATCH-29 on the same players; the club's own XI seated slot by slot stood out of position (T284
+ * review: mean slot level 0.863 for balanced, 0.906–0.923 for the others).
  */
 export function conditionedMatch(w: World, f: Fixture, conditioning: Conditioning = {}) {
   const prepared = prepareMatch(w, f);
@@ -200,7 +203,16 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
       gap: rating(w, prepared.teams[0], f) + 3 - rating(w, prepared.teams[1], f),
     };
   if (prepared.ownSide !== undefined) throw new Error('conditioning is for clubs nobody owns');
-  if (fatigue !== undefined)
+  if (tactics !== undefined)
+    rosters = forcedRosters(
+      w,
+      f,
+      prepared.teams,
+      tactics,
+      [rosters[0].length - 11, rosters[1].length - 11],
+      fatigue,
+    );
+  else if (fatigue !== undefined)
     rosters = [
       rosters[0].map((p) => ({ ...p, fatigue })),
       rosters[1].map((p) => ({ ...p, fatigue })),
@@ -209,7 +221,7 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
   const played: [Tactic, Tactic] = tactics ? [tactics[0], tactics[1]] : prepared.tactics;
   const rated = ([0, 1] as const).map((side) => {
     const club = prepared.teams[side];
-    const slots = formationOf(clubStyle(club));
+    const slots = formationOf(played[side]);
     let ovr = 0,
       load = 0;
     squads[side].forEach((p, i) => {
@@ -266,7 +278,10 @@ export function aggregateRun(
       incidentsTracked: true,
       condition,
       gap,
-      freshness: aggregateFreshness(match),
+      // MATCH-29's freshness of a forced pairing only from its declared squad fatigue (T321).
+      ...(conditioning.tactics === undefined || forcedFatigueApplied(rosters, conditioning.fatigue)
+        ? { freshness: aggregateFreshness(match) }
+        : {}),
       ledger: ledgerDiagnostics(match),
     },
   };
@@ -1122,7 +1137,7 @@ async function runReport() {
       seasons: seasonCount,
       workers,
       forcedTactics:
-        'tactic pairings force both tactics on the core pairs (each club keeps its XI and bench) and start both squads from NEUTRAL_SQUAD_FATIGUE; the XI is rated at its club formation as the detailed runner keeps it, the profiles and possession chance follow the tactics played',
+        "tactic pairings force both tactics on the core pairs with each club's squad built for its forced formation (grid-bands forcedRosters, the detailed runner's rule) and start both squads from NEUTRAL_SQUAD_FATIGUE; the XI is rated at the formation it plays, the profiles and possession chance follow the tactics played",
       fatigue:
         'fatigue conditions set every matchday player of both sides to the pre-match fatigue',
       knockouts:

@@ -1,4 +1,5 @@
 /** What the player on the ball does and where he plays it: the real-data mix of his cell, bent by role, traits, tactic, tags, score and head (→MATCH-8, MATCH-16). */
+import type { Position } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match';
@@ -106,20 +107,39 @@ export const DECISION_CONFIG = {
   /**
    * Candidate model only (T278, →MATCH-23): the open-play cross scale, the box band's shot weight
    * and the lines' shot weights in place of `crossScale`, `shotBox` and `shotLine`, against too many
-   * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals.
+   * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals. T321
+   * gave the shadow striker his own weight, raised the midfield and defence lines' and lowered the
+   * forwards' so the lines' shares of goals hold, and raised the box band's (0.52) against shots
+   * from the goal area.
    */
   candidate: {
     crossScale: 6.3,
-    shotBox: 0.52,
-    shotLine: { GK: 0, DF: 1.2, MF: 3.8, FW: 0.76 },
+    shotBox: 0.56,
+    shotLine: { GK: 0, DF: 1.3, MF: 7.5, FW: 0.62 },
+    /**
+     * Positions whose shot weight replaces their line's (T321, →MATCH-16): a 4-2-3-1 shadow
+     * striker lives in the box like a forward, so the midfield line's weight made him take most
+     * of press's shots.
+     */
+    shotPosition: { AM: 1.5 } as Partial<Record<Position, number>>,
+    /**
+     * In behind the line in a central lane in front of the box (band 5), in place of `inBehind`
+     * (T321, →MATCH-16: in behind favours a shot): a runner through on goal carries on toward it
+     * instead of passing, so a through ball behind a high line becomes a chance. In the box the
+     * shared `inBehind` holds.
+     */
+    inBehind: { shot: 1.3, carry: 3, pass: 0.5 },
+    /** The global shot-volume scale, in place of `shotScale` (T321). */
+    shotScale: 0.215,
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
-   * scoring a forward pass `forward` more and a back pass `back` times as often.
+   * scoring a forward pass `forward` more and a back pass `back` times as often. T321 lengthened
+   * and strengthened counter's break (8 s and 1.5 before).
    */
   direct: {
-    seconds: 8,
-    forward: { counter: 1.5 } as Partial<Record<Tactic, number>>,
+    seconds: 12,
+    forward: { counter: 3 } as Partial<Record<Tactic, number>>,
     back: 0.5,
   },
 } as const;
@@ -174,8 +194,10 @@ export function actionMix(
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
   mix.shot *=
-    (candidate ? C.candidate.shotLine : C.shotLine)[line] *
-    C.shotScale *
+    (candidate
+      ? (C.candidate.shotPosition[slot.position] ?? C.candidate.shotLine[line])
+      : C.shotLine[line]) *
+    (candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
   // Role and traits.
@@ -214,8 +236,11 @@ export function actionMix(
     mix.shot *= C.backToGoal.shot;
   }
   if (tags.inBehind && tags.band >= 5 && tags.lane >= 1 && tags.lane <= 3) {
-    mix.shot *= C.inBehind.shot;
-    mix.carry *= C.inBehind.carry;
+    const through = candidate && tags.band === 5;
+    const behind = through ? C.candidate.inBehind : C.inBehind;
+    mix.shot *= behind.shot;
+    mix.carry *= behind.carry;
+    if (through) mix.pass *= C.candidate.inBehind.pass;
   }
   if (tags.pocket) {
     mix.takeOn *= C.pocket.takeOn;
