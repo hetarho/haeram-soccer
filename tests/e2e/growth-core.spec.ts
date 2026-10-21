@@ -8,10 +8,14 @@ import { chooseOption } from './select';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
-  // becomes 43.999984px. The native DOM rectangle preserves its actual CSS pixel dimensions.
+  // becomes 43.999984px. The native DOM rectangle preserves its actual CSS pixel dimensions, but
+  // while the advice still rises in, its translateY maps that rectangle through float32 math and
+  // Chromium reads 43.99994px near y=700. Layout itself works in 1/64px units, so snap to them:
+  // the float noise (under 0.008px) goes, while any real shortfall of a layout unit still fails.
   const size = await target.evaluate((element) => {
     const { width, height } = element.getBoundingClientRect();
-    return { width, height };
+    const snap = (value: number) => Math.round(value * 64) / 64;
+    return { width: snap(width), height: snap(height) };
   });
   const label = await target.innerText();
   expect(size.width, label).toBeGreaterThanOrEqual(44);

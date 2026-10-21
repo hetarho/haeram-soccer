@@ -55,7 +55,9 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
     .click();
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
-  await expect(marketRows(page)).toHaveCount(2);
+  // The applied scouting level redraws the candidate list, so its rows may change; the GK filter
+  // and both compared players, kept as their selection-time snapshots, stay (→WEB-43/77).
+  await expect(marketRows(page).first()).toBeVisible();
   for (const row of await marketRows(page).all())
     await expect(row).toHaveAttribute('data-line', 'GK');
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();

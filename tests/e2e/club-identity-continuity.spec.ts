@@ -77,6 +77,12 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 const PRESET = '프렌치 방패 · 왕관';
 /** An unapplied representative colour that no applied design uses. */
 const DRAFT_COLOUR = '#00A6A6';
+/**
+ * Base-colour pixels that prove the live pitch paints the worn shirt. At phone width each outfield
+ * marker is a 12px disc; an away or third shirt keeps its linked trim ring (→KIT-4/10), so the
+ * ring, pattern, outline and number leave about three exact base pixels per marker, ~30 in all.
+ */
+const WORN_PIXELS = 20;
 
 for (const viewport of PHONE_VIEWPORTS)
   test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
@@ -135,7 +141,7 @@ for (const viewport of PHONE_VIEWPORTS)
     expect(frozen).toEqual(appearanceForFixture(played, record));
     await expect
       .poll(() => canvasPixels(page.locator(PITCH_CANVAS).last(), worn.shirt.primary))
-      .toBeGreaterThan(40);
+      .toBeGreaterThan(WORN_PIXELS);
 
     // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
     const actions = [
@@ -183,7 +189,7 @@ for (const viewport of PHONE_VIEWPORTS)
       await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
       expect(canonical(await exportWorld(other))).toBe(canonical(exported));
       await expect(crestFill(hud(other), edited.crest.primary)).not.toHaveCount(0);
-      // Its replay shows the recorded one-colour crest and shirt, not today's design.
+      // Its replay shows the recorded crest and shirt, not today's design.
       const replay = await openRecordedMatch(other);
       await expect(replay.getByTestId('match-kit-unrecorded')).toHaveCount(0);
       const score = replay.getByTestId('match-score');
@@ -191,7 +197,9 @@ for (const viewport of PHONE_VIEWPORTS)
       for (const today of [edited.crest.primary, edited.crest.secondary!])
         await expect(crestFill(score, today)).toHaveCount(0);
       const canvas = replay.locator(PITCH_CANVAS);
-      await expect.poll(() => canvasPixels(canvas, worn.shirt.primary)).toBeGreaterThan(40);
+      await expect
+        .poll(() => canvasPixels(canvas, worn.shirt.primary))
+        .toBeGreaterThan(WORN_PIXELS);
       expect(await canvasPixels(canvas, EDITED_SHIRT_COLOUR)).toBe(0);
       await keepScreenshot(
         testInfo,
