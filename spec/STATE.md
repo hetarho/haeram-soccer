@@ -17,7 +17,6 @@
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 | p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:03Z | - |
-| mgha | hq-dev1-pve2-vm2 | pair | 2026-10-21T06:09Z | 2026-10-21T06:09Z | - |
 
 ## inbox
 - 261021 decided T275 T279 T281 T283 T284 T285 T286 T299 T300 T301 T302 T303: mgha's manager-history plan (HIST r17, SAVE r51, WEB r106) left these bases stale and the shared spec check refused every group's integration → bases raised with no content change: tenure attribution, its activation boundary (SAVE-24) and its own checkpoint container are T304–T306's, and WEB r106 adds only the manager-history view, which the locale/theme foundation does not touch (alt: wait for each owning session to refresh its own tasks, which keeps the full-model and presentation groups blocked meanwhile)
@@ -191,9 +190,11 @@
 | T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
 | T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
 | T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
-| T304 | Retain stable own-manager tenures and outcome attribution | HIST SAVE STAFF MATCH ARCH | - | todo |
-| T305 | Derive bounded manager accomplishment summaries on demand | HIST SAVE WEB ARCH | T304 | todo |
-| T306 | Show manager accomplishments with season links and continuity evidence | WEB HIST SAVE ARCH | T305 | todo |
+| T304 | Define isolated manager-history facts and accomplishment queries | HIST SAVE WEB MATCH ARCH | - | todo |
+| T305 | Prepare the manager-history view against explicit summary props | WEB HIST ARCH | T304 | todo |
+| T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
+| T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
+| T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -207,9 +208,11 @@
 ## next
 - implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
 - Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- implement-task T304 when manager-history implementation is requested, then T305 and T306; task preparation only this session. Separately migrate legacy FORMAT reference notation before adopting typed reference markers.
+- Manager-history preparation T304 then T305 can run alongside earlier tasks; T306 waits for T304 and T286, then T307/T308 connect and verify. Planning only this session; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
+- 261021 manager-history overlap audit passed: T304/T305 touch no file owned by any remaining task below T304; every T306-T308 overlap with T281/T283/T285/T286 is ordered by the T286 dependency chain. New manager tasks have no runtime assignment; no implementation started.
 - 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
 - 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
@@ -228,5 +231,3 @@
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
 - 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.
 - 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
-- 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
-- 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
