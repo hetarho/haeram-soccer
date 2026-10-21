@@ -6,12 +6,12 @@
  "productionActivation": "off: the runner requests the candidate through buildGridSetup({ model })",
  "releaseEvidence": false,
  "provenance": {
-  "date": "2026-10-21T15:24:46.824Z",
-  "gitHead": "eedfc4335279c6625eb1e7d0ad74fe099e612abc",
+  "date": "2026-10-21T15:58:02.402Z",
+  "gitHead": "dc97c469d1965944224f77e8efc3cd41c10fc235",
   "gitDirty": false,
   "fingerprint": {
    "algorithm": "sha256",
-   "sha256": "0fd50a21e271d7760937ff2be36181b3a145f44ec41d606b81276b5e2278e043",
+   "sha256": "c57685b1dbf0c65b578090f5e26ef0c7c2cc3c145e01900010fd25ed8d4df3b1",
    "files": 382,
    "scope": [
     "packages",
@@ -305,59 +305,59 @@
  ],
  "speed": {
   "note": "Wall time on a shared, loaded machine: context for T285, never a football or release claim.",
-  "elapsedSeconds": 1126.8,
+  "elapsedSeconds": 691.62,
   "msPerMatch": {
-   "core:equal-top-tier": 429.04,
-   "gap:-35": 433.19,
-   "gap:-30": 428.99,
-   "gap:-25": 431.33,
-   "gap:-20": 428.08,
-   "gap:-15": 448.73,
-   "gap:-10": 430.12,
-   "gap:-5": 432.61,
-   "gap:0": 410.03,
-   "gap:5": 412.94,
-   "gap:10": 423.85,
-   "gap:15": 150.09,
-   "gap:20": 417.81,
-   "gap:25": 145.79,
-   "gap:30": 420.41,
-   "gap:35": 423.3,
-   "gap:40": 154.81,
-   "tactics:possession-possession": 344.8,
-   "tactics:possession-press": 205.81,
-   "tactics:possession-counter": 185.98,
-   "tactics:possession-balanced": 238.04,
-   "tactics:press-possession": 177.26,
-   "tactics:press-press": 170.01,
-   "tactics:press-counter": 224.9,
-   "tactics:press-balanced": 233.07,
-   "tactics:counter-possession": 335.23,
-   "tactics:counter-press": 171.41,
-   "tactics:counter-counter": 177.69,
-   "tactics:counter-balanced": 168.48,
-   "tactics:balanced-possession": 177.25,
-   "tactics:balanced-press": 470.13,
-   "tactics:balanced-counter": 468.92,
-   "tactics:balanced-balanced": 481.15,
-   "tier:tier1": 179.69,
-   "tier:tier2": 181.89,
-   "tier:tier3": 191.64,
-   "tier:tier4": 175.58,
-   "tier:amateur": 468.13,
-   "era:1950": 164.79,
-   "era:1965": 161.14,
-   "era:1967": 163.14,
-   "era:1970": 176.89,
-   "era:1987": 164.35,
-   "era:1995": 158.87,
-   "era:1996": 165.75,
-   "era:2008": 322.67,
-   "era:2022": 320.79,
-   "era:2024": 183.89,
-   "knockout:single-match": 287.19,
-   "knockout:second-leg": 183.93,
-   "knockout:second-leg-away-goals": 166.99
+   "core:equal-top-tier": 263.9,
+   "gap:-35": 263.48,
+   "gap:-30": 266.23,
+   "gap:-25": 261.9,
+   "gap:-20": 261.51,
+   "gap:-15": 269.13,
+   "gap:-10": 264.58,
+   "gap:-5": 263.68,
+   "gap:0": 275.84,
+   "gap:5": 278.83,
+   "gap:10": 280.83,
+   "gap:15": 281.48,
+   "gap:20": 282.19,
+   "gap:25": 284.39,
+   "gap:30": 283.48,
+   "gap:35": 289.6,
+   "gap:40": 143.97,
+   "tactics:possession-possession": 147.42,
+   "tactics:possession-press": 141.44,
+   "tactics:possession-counter": 143.72,
+   "tactics:possession-balanced": 140.85,
+   "tactics:press-possession": 140.02,
+   "tactics:press-press": 134.95,
+   "tactics:press-counter": 129.94,
+   "tactics:press-balanced": 112.22,
+   "tactics:counter-possession": 116.54,
+   "tactics:counter-press": 110.66,
+   "tactics:counter-counter": 113.83,
+   "tactics:counter-balanced": 111.51,
+   "tactics:balanced-possession": 117.96,
+   "tactics:balanced-press": 112.4,
+   "tactics:balanced-counter": 113.08,
+   "tactics:balanced-balanced": 110.14,
+   "tier:tier1": 113.83,
+   "tier:tier2": 112.45,
+   "tier:tier3": 113.85,
+   "tier:tier4": 114.32,
+   "tier:amateur": 114.64,
+   "era:1950": 105.7,
+   "era:1965": 107.86,
+   "era:1967": 106.15,
+   "era:1970": 108.56,
+   "era:1987": 107.14,
+   "era:1995": 109.1,
+   "era:1996": 112.64,
+   "era:2008": 113.54,
+   "era:2022": 115.04,
+   "era:2024": 113.11,
+   "knockout:single-match": 131.85,
+   "knockout:second-leg": 134,
+   "knockout:second-leg-away-goals": 127.53
   }
  },
  "outcomeCurve": {
@@ -32950,85 +32950,85 @@
     }
    },
    "goals": {
-    "mean": 3.0233,
+    "mean": 3.0217,
     "ci": [
-     2.8881,
-     3.1586
+     2.8864,
+     3.157
     ]
    },
-   "yellowsPerMatch": 3.6683,
+   "yellowsPerMatch": 3.665,
    "redsPerMatch": 0.115,
    "extraTime": 0.19667,
-   "shootouts": 0.1,
+   "shootouts": 0.10167,
    "sides": [
     {
      "goals": 1.7683,
-     "shots": 13.363,
-     "xgPerShot": 0.12132,
-     "boxShotShare": 0.68209,
-     "boxEntries": 31.648,
-     "frontOfBoxEntries": 67.147,
+     "shots": 13.355,
+     "xgPerShot": 0.12139,
+     "boxShotShare": 0.68252,
+     "boxEntries": 31.647,
+     "frontOfBoxEntries": 67.125,
      "throughBalls": 47.192,
-     "throughBallsCompleted": 36.658,
+     "throughBallsCompleted": 36.667,
      "bigChances": 0.91667,
-     "passes": 504.81,
-     "completion": 0.79496,
-     "possession": 0.52065,
-     "pressActions": 8.255,
-     "highTurnovers": 7.0367,
-     "tacklesInterceptions": 24.48,
+     "passes": 504.73,
+     "completion": 0.79501,
+     "possession": 0.52059,
+     "pressActions": 8.2533,
+     "highTurnovers": 7.0333,
+     "tacklesInterceptions": 24.488,
      "shotsByLine": {
-      "FW": 7.835,
-      "MF": 4.31,
+      "FW": 7.825,
+      "MF": 4.3117,
       "DF": 1.2167,
       "GK": 0.0016667
      },
      "goalsByLine": {
       "FW": 1.0633,
-      "MF": 0.54833,
-      "DF": 0.15667,
+      "MF": 0.55,
+      "DF": 0.155,
       "GK": 0
      }
     },
     {
-     "goals": 1.255,
+     "goals": 1.2533,
      "shots": 11.405,
-     "xgPerShot": 0.11661,
-     "boxShotShare": 0.63247,
-     "boxEntries": 24.715,
-     "frontOfBoxEntries": 60.005,
-     "throughBalls": 39.355,
-     "throughBallsCompleted": 29.275,
-     "bigChances": 0.76167,
-     "passes": 467.1,
-     "completion": 0.76571,
-     "possession": 0.47935,
-     "pressActions": 7.42,
-     "highTurnovers": 5.95,
+     "xgPerShot": 0.11656,
+     "boxShotShare": 0.63291,
+     "boxEntries": 24.743,
+     "frontOfBoxEntries": 60.003,
+     "throughBalls": 39.368,
+     "throughBallsCompleted": 29.285,
+     "bigChances": 0.76,
+     "passes": 467.15,
+     "completion": 0.76569,
+     "possession": 0.47941,
+     "pressActions": 7.4183,
+     "highTurnovers": 5.9567,
      "tacklesInterceptions": 25.573,
      "shotsByLine": {
-      "FW": 6.6567,
-      "MF": 3.8467,
+      "FW": 6.655,
+      "MF": 3.8483,
       "DF": 0.90167,
       "GK": 0
      },
      "goalsByLine": {
       "FW": 0.74667,
-      "MF": 0.415,
+      "MF": 0.41333,
       "DF": 0.093333,
       "GK": 0
      }
     }
    ],
    "concentration": {
-    "bracesPerMatch": 0.40167,
+    "bracesPerMatch": 0.4,
     "hatTricksPerMatch": 0.071667,
     "clubsWith20Goals": 42,
     "topScorerShare": {
-     "mean": 0.38931,
+     "mean": 0.38967,
      "ci": [
-      0.36377,
-      0.41484
+      0.36397,
+      0.41536
      ]
     },
     "topScorerGoalsPer38": {
@@ -33047,10 +33047,10 @@
       520
      ],
      "status": "inside",
-     "value": 485.95,
+     "value": 485.94,
      "interval": [
-      480.37,
-      491.53
+      480.36,
+      491.51
      ],
      "error": 0
     },
@@ -33061,10 +33061,10 @@
       84
      ],
      "status": "inside",
-     "value": 78.09,
+     "value": 78.092,
      "interval": [
-      77.92,
-      78.26
+      77.922,
+      78.262
      ],
      "error": 0
     },
@@ -33075,10 +33075,10 @@
       40
      ],
      "status": "inside",
-     "value": 35.142,
+     "value": 35.136,
      "interval": [
-      34.938,
-      35.346
+      34.932,
+      35.34
      ],
      "error": 0
     },
@@ -33089,10 +33089,10 @@
       55
      ],
      "status": "inside",
-     "value": 49.608,
+     "value": 49.615,
      "interval": [
-      49.387,
-      49.829
+      49.394,
+      49.837
      ],
      "error": 0
     },
@@ -33103,10 +33103,10 @@
       18
      ],
      "status": "inside",
-     "value": 15.25,
+     "value": 15.249,
      "interval": [
-      15.101,
-      15.399
+      15.099,
+      15.398
      ],
      "error": 0
     },
@@ -33117,10 +33117,10 @@
       105
      ],
      "status": "inside",
-     "value": 95.6,
+     "value": 95.597,
      "interval": [
-      94.527,
-      96.673
+      94.526,
+      96.669
      ],
      "error": 0
     },
@@ -33145,10 +33145,10 @@
       15
      ],
      "status": "inside",
-     "value": 11.825,
+     "value": 11.821,
      "interval": [
-      11.555,
-      12.096
+      11.551,
+      12.092
      ],
      "error": 0
     },
@@ -33159,10 +33159,10 @@
       14
      ],
      "status": "inside",
-     "value": 12.384,
+     "value": 12.38,
      "interval": [
-      12.089,
-      12.679
+      12.085,
+      12.675
      ],
      "error": 0
     },
@@ -33173,9 +33173,9 @@
       37
      ],
      "status": "inside",
-     "value": 35.233,
+     "value": 35.232,
      "interval": [
-      34.412,
+      34.409,
       36.054
      ],
      "error": 0
@@ -33187,10 +33187,10 @@
       0.12
      ],
      "status": "unresolved",
-     "value": 0.11915,
+     "value": 0.11916,
      "interval": [
-      0.11682,
-      0.12148
+      0.11683,
+      0.1215
      ],
      "error": 0
     },
@@ -33201,12 +33201,12 @@
       9
      ],
      "status": "outside",
-     "value": 9.932,
+     "value": 9.9286,
      "interval": [
-      9.4439,
-      10.42
+      9.4405,
+      10.417
      ],
-     "error": 0.93204
+     "error": 0.92865
     },
     {
      "id": "shotsBox",
@@ -33215,10 +33215,10 @@
       58
      ],
      "status": "inside",
-     "value": 55.992,
+     "value": 56.038,
      "interval": [
-      55.116,
-      56.868
+      55.161,
+      56.915
      ],
      "error": 0
     },
@@ -33229,10 +33229,10 @@
       42
      ],
      "status": "inside",
-     "value": 34.076,
+     "value": 34.033,
      "interval": [
-      33.211,
-      34.941
+      33.166,
+      34.901
      ],
      "error": 0
     },
@@ -33243,10 +33243,10 @@
       18
      ],
      "status": "inside",
-     "value": 16.305,
+     "value": 16.299,
      "interval": [
-      16.15,
-      16.46
+      16.144,
+      16.454
      ],
      "error": 0
     },
@@ -33257,10 +33257,10 @@
       10
      ],
      "status": "inside",
-     "value": 7.5029,
+     "value": 7.4987,
      "interval": [
-      7.0244,
-      7.9813
+      7.0196,
+      7.9777
      ],
      "error": 0
     },
@@ -33285,12 +33285,12 @@
       20
      ],
      "status": "unresolved",
-     "value": 20.209,
+     "value": 20.201,
      "interval": [
-      19.791,
-      20.628
+      19.782,
+      20.619
      ],
-     "error": 0.20917
+     "error": 0.20083
     },
     {
      "id": "crossCompletion",
@@ -33299,10 +33299,10 @@
       30
      ],
      "status": "inside",
-     "value": 24.717,
+     "value": 24.727,
      "interval": [
-      24.045,
-      25.388
+      24.055,
+      25.398
      ],
      "error": 0
     },
@@ -33313,10 +33313,10 @@
       20
      ],
      "status": "inside",
-     "value": 15.555,
+     "value": 15.554,
      "interval": [
-      15.244,
-      15.866
+      15.243,
+      15.865
      ],
      "error": 0
     },
@@ -33327,10 +33327,10 @@
       60
      ],
      "status": "inside",
-     "value": 57.72,
+     "value": 57.712,
      "interval": [
-      56.966,
-      58.474
+      56.96,
+      58.465
      ],
      "error": 0
     },
@@ -33341,10 +33341,10 @@
       30
      ],
      "status": "inside",
-     "value": 25.027,
+     "value": 25.031,
      "interval": [
-      24.616,
-      25.437
+      24.62,
+      25.442
      ],
      "error": 0
     },
@@ -33355,10 +33355,10 @@
       23
      ],
      "status": "inside",
-     "value": 20.274,
+     "value": 20.27,
      "interval": [
-      19.97,
-      20.578
+      19.967,
+      20.573
      ],
      "error": 0
     },
@@ -33369,10 +33369,10 @@
       6
      ],
      "status": "inside",
-     "value": 4.7733,
+     "value": 4.7758,
      "interval": [
-      4.6248,
-      4.9219
+      4.6274,
+      4.9243
      ],
      "error": 0
     },
@@ -33383,12 +33383,12 @@
       9
      ],
      "status": "outside",
-     "value": 9.47,
+     "value": 9.4667,
      "interval": [
-      9.2608,
-      9.6792
+      9.257,
+      9.6763
      ],
-     "error": 0.47
+     "error": 0.46667
     },
     {
      "id": "fouls",
@@ -33397,10 +33397,10 @@
       13
      ],
      "status": "inside",
-     "value": 11.188,
+     "value": 11.192,
      "interval": [
-      10.981,
-      11.394
+      10.985,
+      11.399
      ],
      "error": 0
     },
@@ -33411,10 +33411,10 @@
       2.5
      ],
      "status": "inside",
-     "value": 2.105,
+     "value": 2.1033,
      "interval": [
-      1.9647,
-      2.2453
+      1.963,
+      2.2437
      ],
      "error": 0
     },
@@ -33425,10 +33425,10 @@
       4.3
      ],
      "status": "inside",
-     "value": 3.6683,
+     "value": 3.665,
      "interval": [
-      3.5242,
-      3.8124
+      3.5212,
+      3.8088
      ],
      "error": 0
     },
@@ -33453,12 +33453,12 @@
       2.9
      ],
      "status": "unresolved",
-     "value": 3.0233,
+     "value": 3.0217,
      "interval": [
-      2.8881,
-      3.1586
+      2.8864,
+      3.157
      ],
-     "error": 0.12333
+     "error": 0.12167
     },
     {
      "id": "setPieceGoals",
@@ -33467,12 +33467,12 @@
       28
      ],
      "status": "unresolved",
-     "value": 18.743,
+     "value": 18.643,
      "interval": [
-      16.927,
-      20.559
+      16.829,
+      20.457
      ],
-     "error": 1.2569
+     "error": 1.3569
     },
     {
      "id": "penaltyGoals",
@@ -33481,10 +33481,10 @@
       9
      ],
      "status": "unresolved",
-     "value": 6.3947,
+     "value": 6.3982,
      "interval": [
-      5.2756,
-      7.5138
+      5.2793,
+      7.5172
      ],
      "error": 0
     },
@@ -33495,10 +33495,10 @@
       20
      ],
      "status": "inside",
-     "value": 17.089,
+     "value": 17.154,
      "interval": [
-      15.343,
-      18.835
+      15.411,
+      18.897
      ],
      "error": 0
     },
@@ -33509,10 +33509,10 @@
       60
      ],
      "status": "unresolved",
-     "value": 59.868,
+     "value": 59.901,
      "interval": [
-      57.081,
-      62.655
+      57.104,
+      62.697
      ],
      "error": 0
     },
@@ -33523,10 +33523,10 @@
       37
      ],
      "status": "inside",
-     "value": 31.863,
+     "value": 31.881,
      "interval": [
-      29.302,
-      34.424
+      29.317,
+      34.445
      ],
      "error": 0
     },
@@ -33537,10 +33537,10 @@
       15
      ],
      "status": "unresolved",
-     "value": 8.269,
+     "value": 8.2184,
      "interval": [
-      6.8759,
-      9.6622
+      6.8254,
+      9.6115
      ],
      "error": 0
     },
@@ -33554,9 +33554,9 @@
      "value": 60.602,
      "interval": [
       59.914,
-      61.291
+      61.29
      ],
-     "error": 2.6025
+     "error": 2.6016
     },
     {
      "id": "addedTime",
@@ -33565,10 +33565,10 @@
       12
      ],
      "status": "inside",
-     "value": 11.583,
+     "value": 11.58,
      "interval": [
-      11.42,
-      11.746
+      11.417,
+      11.743
      ],
      "error": 0
     }
@@ -33618,70 +33618,70 @@
     }
    },
    "goals": {
-    "mean": 2.9967,
+    "mean": 3.0017,
     "ci": [
-     2.8633,
-     3.13
+     2.8682,
+     3.1351
     ]
    },
-   "yellowsPerMatch": 3.8317,
+   "yellowsPerMatch": 3.835,
    "redsPerMatch": 0.14167,
    "extraTime": 0.22333,
-   "shootouts": 0.11833,
+   "shootouts": 0.11667,
    "sides": [
     {
-     "goals": 1.7017,
-     "shots": 13.452,
-     "xgPerShot": 0.12069,
-     "boxShotShare": 0.68306,
-     "boxEntries": 32.702,
-     "frontOfBoxEntries": 67.773,
-     "throughBalls": 47.947,
-     "throughBallsCompleted": 37.523,
+     "goals": 1.705,
+     "shots": 13.458,
+     "xgPerShot": 0.12066,
+     "boxShotShare": 0.68297,
+     "boxEntries": 32.715,
+     "frontOfBoxEntries": 67.787,
+     "throughBalls": 47.965,
+     "throughBallsCompleted": 37.54,
      "bigChances": 0.90833,
-     "passes": 511.71,
-     "completion": 0.79643,
-     "possession": 0.52415,
-     "pressActions": 8.63,
-     "highTurnovers": 7.2167,
-     "tacklesInterceptions": 24.895,
+     "passes": 511.76,
+     "completion": 0.79636,
+     "possession": 0.52419,
+     "pressActions": 8.635,
+     "highTurnovers": 7.225,
+     "tacklesInterceptions": 24.887,
      "shotsByLine": {
-      "FW": 7.9283,
-      "MF": 4.2767,
+      "FW": 7.9317,
+      "MF": 4.28,
       "DF": 1.2467,
       "GK": 0
      },
      "goalsByLine": {
-      "FW": 1.01,
-      "MF": 0.53833,
+      "FW": 1.0117,
+      "MF": 0.54,
       "DF": 0.15333,
       "GK": 0
      }
     },
     {
-     "goals": 1.295,
-     "shots": 11.215,
-     "xgPerShot": 0.11457,
-     "boxShotShare": 0.64542,
-     "boxEntries": 24.787,
-     "frontOfBoxEntries": 59.908,
-     "throughBalls": 39.285,
-     "throughBallsCompleted": 29.16,
-     "bigChances": 0.67333,
-     "passes": 466.67,
-     "completion": 0.76304,
-     "possession": 0.47585,
-     "pressActions": 7.3067,
-     "highTurnovers": 5.6533,
-     "tacklesInterceptions": 25.72,
+     "goals": 1.2967,
+     "shots": 11.212,
+     "xgPerShot": 0.11454,
+     "boxShotShare": 0.64516,
+     "boxEntries": 24.788,
+     "frontOfBoxEntries": 59.902,
+     "throughBalls": 39.268,
+     "throughBallsCompleted": 29.142,
+     "bigChances": 0.675,
+     "passes": 466.65,
+     "completion": 0.76301,
+     "possession": 0.47581,
+     "pressActions": 7.3033,
+     "highTurnovers": 5.6567,
+     "tacklesInterceptions": 25.728,
      "shotsByLine": {
-      "FW": 6.5983,
-      "MF": 3.5917,
-      "DF": 1.025,
+      "FW": 6.595,
+      "MF": 3.59,
+      "DF": 1.0267,
       "GK": 0
      },
      "goalsByLine": {
-      "FW": 0.735,
+      "FW": 0.73667,
       "MF": 0.43,
       "DF": 0.13,
       "GK": 0
@@ -33693,10 +33693,10 @@
     "hatTricksPerMatch": 0.05,
     "clubsWith20Goals": 45,
     "topScorerShare": {
-     "mean": 0.3629,
+     "mean": 0.36246,
      "ci": [
-      0.33515,
-      0.39066
+      0.33463,
+      0.39029
      ]
     },
     "topScorerGoalsPer38": {
@@ -33715,10 +33715,10 @@
       520
      ],
      "status": "inside",
-     "value": 489.19,
+     "value": 489.21,
      "interval": [
-      483.39,
-      494.99
+      483.4,
+      495.01
      ],
      "error": 0
     },
@@ -33729,10 +33729,10 @@
       84
      ],
      "status": "inside",
-     "value": 78.05,
+     "value": 78.045,
      "interval": [
-      77.888,
-      78.212
+      77.884,
+      78.207
      ],
      "error": 0
     },
@@ -33743,10 +33743,10 @@
       40
      ],
      "status": "inside",
-     "value": 35.201,
+     "value": 35.202,
      "interval": [
-      35.007,
-      35.394
+      35.009,
+      35.396
      ],
      "error": 0
     },
@@ -33757,10 +33757,10 @@
       55
      ],
      "status": "inside",
-     "value": 49.629,
+     "value": 49.627,
      "interval": [
-      49.419,
-      49.838
+      49.418,
+      49.837
      ],
      "error": 0
     },
@@ -33771,10 +33771,10 @@
       18
      ],
      "status": "inside",
-     "value": 15.171,
+     "value": 15.17,
      "interval": [
-      15.031,
-      15.311
+      15.03,
+      15.31
      ],
      "error": 0
     },
@@ -33785,10 +33785,10 @@
       105
      ],
      "status": "inside",
-     "value": 96.389,
+     "value": 96.407,
      "interval": [
-      95.304,
-      97.475
+      95.319,
+      97.496
      ],
      "error": 0
     },
@@ -33813,10 +33813,10 @@
       15
      ],
      "status": "inside",
-     "value": 11.641,
+     "value": 11.642,
      "interval": [
-      11.386,
-      11.897
+      11.387,
+      11.898
      ],
      "error": 0
     },
@@ -33827,10 +33827,10 @@
       14
      ],
      "status": "inside",
-     "value": 12.333,
+     "value": 12.335,
      "interval": [
-      12.049,
-      12.617
+      12.051,
+      12.619
      ],
      "error": 0
     },
@@ -33841,10 +33841,10 @@
       37
      ],
      "status": "inside",
-     "value": 35.541,
+     "value": 35.563,
      "interval": [
-      34.73,
-      36.351
+      34.752,
+      36.374
      ],
      "error": 0
     },
@@ -33855,10 +33855,10 @@
       0.12
      ],
      "status": "unresolved",
-     "value": 0.1179,
+     "value": 0.11788,
      "interval": [
-      0.11558,
-      0.12023
+      0.11555,
+      0.12021
      ],
      "error": 0
     },
@@ -33869,12 +33869,12 @@
       9
      ],
      "status": "outside",
-     "value": 9.6757,
+     "value": 9.6609,
      "interval": [
-      9.1709,
-      10.18
+      9.1572,
+      10.164
      ],
-     "error": 0.67568
+     "error": 0.66086
     },
     {
      "id": "shotsBox",
@@ -33883,10 +33883,10 @@
       58
      ],
      "status": "inside",
-     "value": 56.919,
+     "value": 56.918,
      "interval": [
-      56.004,
-      57.834
+      56.003,
+      57.833
      ],
      "error": 0
     },
@@ -33897,10 +33897,10 @@
       42
      ],
      "status": "inside",
-     "value": 33.405,
+     "value": 33.421,
      "interval": [
-      32.543,
-      34.268
+      32.56,
+      34.283
      ],
      "error": 0
     },
@@ -33911,10 +33911,10 @@
       18
      ],
      "status": "inside",
-     "value": 16.229,
+     "value": 16.232,
      "interval": [
-      16.077,
-      16.381
+      16.081,
+      16.384
      ],
      "error": 0
     },
@@ -33925,10 +33925,10 @@
       10
      ],
      "status": "inside",
-     "value": 7.3581,
+     "value": 7.3639,
      "interval": [
-      6.8691,
-      7.8471
+      6.8742,
+      7.8535
      ],
      "error": 0
     },
@@ -33953,12 +33953,12 @@
       20
      ],
      "status": "unresolved",
-     "value": 20.383,
+     "value": 20.389,
      "interval": [
-      19.974,
-      20.791
+      19.98,
+      20.799
      ],
-     "error": 0.3825
+     "error": 0.38917
     },
     {
      "id": "crossCompletion",
@@ -33967,10 +33967,10 @@
       30
      ],
      "status": "inside",
-     "value": 24.842,
+     "value": 24.838,
      "interval": [
-      24.205,
-      25.478
+      24.202,
+      25.473
      ],
      "error": 0
     },
@@ -33981,10 +33981,10 @@
       20
      ],
      "status": "inside",
-     "value": 15.768,
+     "value": 15.767,
      "interval": [
-      15.445,
-      16.09
+      15.444,
+      16.089
      ],
      "error": 0
     },
@@ -33995,10 +33995,10 @@
       60
      ],
      "status": "inside",
-     "value": 57.603,
+     "value": 57.6,
      "interval": [
-      56.883,
-      58.323
+      56.881,
+      58.32
      ],
      "error": 0
     },
@@ -34023,10 +34023,10 @@
       23
      ],
      "status": "inside",
-     "value": 20.323,
+     "value": 20.324,
      "interval": [
-      20.001,
-      20.644
+      20.003,
+      20.645
      ],
      "error": 0
     },
@@ -34037,10 +34037,10 @@
       6
      ],
      "status": "inside",
-     "value": 4.8225,
+     "value": 4.8208,
      "interval": [
-      4.6728,
-      4.9722
+      4.6712,
+      4.9705
      ],
      "error": 0
     },
@@ -34051,12 +34051,12 @@
       9
      ],
      "status": "outside",
-     "value": 9.4758,
+     "value": 9.4733,
      "interval": [
-      9.2793,
-      9.6723
+      9.2771,
+      9.6695
      ],
-     "error": 0.47583
+     "error": 0.47333
     },
     {
      "id": "fouls",
@@ -34065,10 +34065,10 @@
       13
      ],
      "status": "inside",
-     "value": 11.493,
+     "value": 11.492,
      "interval": [
-      11.291,
-      11.695
+      11.29,
+      11.694
      ],
      "error": 0
     },
@@ -34079,10 +34079,10 @@
       2.5
      ],
      "status": "inside",
-     "value": 2.0342,
+     "value": 2.0333,
      "interval": [
-      1.8986,
-      2.1698
+      1.8978,
+      2.1689
      ],
      "error": 0
     },
@@ -34093,10 +34093,10 @@
       4.3
      ],
      "status": "inside",
-     "value": 3.8317,
+     "value": 3.835,
      "interval": [
-      3.6799,
-      3.9835
+      3.6828,
+      3.9872
      ],
      "error": 0
     },
@@ -34121,12 +34121,12 @@
       2.9
      ],
      "status": "unresolved",
-     "value": 2.9967,
+     "value": 3.0017,
      "interval": [
-      2.8633,
-      3.13
+      2.8682,
+      3.1351
      ],
-     "error": 0.096667
+     "error": 0.10167
     },
     {
      "id": "setPieceGoals",
@@ -34135,10 +34135,10 @@
       28
      ],
      "status": "unresolved",
-     "value": 20.356,
+     "value": 20.322,
      "interval": [
-      18.469,
-      22.242
+      18.436,
+      22.208
      ],
      "error": 0
     },
@@ -34149,10 +34149,10 @@
       9
      ],
      "status": "unresolved",
-     "value": 6.7297,
+     "value": 6.7185,
      "interval": [
-      5.6048,
-      7.8546
+      5.5949,
+      7.842
      ],
      "error": 0
     },
@@ -34163,10 +34163,10 @@
       20
      ],
      "status": "unresolved",
-     "value": 18.409,
+     "value": 18.379,
      "interval": [
-      16.561,
-      20.258
+      16.531,
+      20.226
      ],
      "error": 0
     },
@@ -34177,10 +34177,10 @@
       60
      ],
      "status": "unresolved",
-     "value": 58.231,
+     "value": 58.245,
      "interval": [
-      55.56,
-      60.903
+      55.579,
+      60.912
      ],
      "error": 0
     },
@@ -34191,10 +34191,10 @@
       37
      ],
      "status": "inside",
-     "value": 32.314,
+     "value": 32.315,
      "interval": [
-      29.955,
-      34.673
+      29.962,
+      34.669
      ],
      "error": 0
     },
@@ -34205,10 +34205,10 @@
       15
      ],
      "status": "inside",
-     "value": 9.4549,
+     "value": 9.4392,
      "interval": [
-      8.0287,
-      10.881
+      8.0145,
+      10.864
      ],
      "error": 0
     },
@@ -34219,12 +34219,12 @@
       58
      ],
      "status": "outside",
-     "value": 61.04,
+     "value": 61.045,
      "interval": [
-      60.319,
-      61.76
+      60.323,
+      61.766
      ],
-     "error": 3.0399
+     "error": 3.0447
     },
     {
      "id": "addedTime",
@@ -34233,10 +34233,10 @@
       12
      ],
      "status": "inside",
-     "value": 11.628,
+     "value": 11.638,
      "interval": [
-      11.464,
-      11.793
+      11.473,
+      11.804
      ],
      "error": 0
     }
