@@ -133,8 +133,11 @@ export const DECISION_CONFIG = {
      * T321). In the box the shared `inBehind` holds.
      */
     inBehind: { shot: 2, carry: 1.3, pass: 0.5 },
-    /** The global shot-volume scale, in place of `shotScale` (T321, T324). */
-    shotScale: 0.35,
+    /**
+     * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
+     * at 2.50 once defenders read the pass early).
+     */
+    shotScale: 0.42,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
