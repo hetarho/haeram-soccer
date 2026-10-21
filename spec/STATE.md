@@ -208,6 +208,7 @@
 - implement-task T304 when manager-history implementation is requested, then T305 and T306; task preparation only this session. Separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
@@ -227,4 +228,3 @@
 - 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
 - 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
 - 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
-- 261021 T273 integrated

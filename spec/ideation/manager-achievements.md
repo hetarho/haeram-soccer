@@ -14,7 +14,7 @@
 - [o] Show a compact summary beside each tenure, with contextual links to the club-season record and a return to the inspected manager/list position.
 - [o] Preserve known earlier dates and readable old events. New structured tracking starts at founding or supported writer activation; incomplete attribution is shown as incomplete, never as no achievements or invented zero totals.
 - [o] Keep repeat appointments and interim managers as distinct tenures. Renewals/tactic changes do not start another tenure.
-- [o] Planning default for mid-season changes: credit outcomes to the responsible tenure when the cup final, final league table or promotion outcome is actually settled. Label shared-season context; a later appointment never takes an earlier cup title.
+- [o] Confirmed mid-season attribution: credit outcomes to the responsible tenure when the cup final, final league table or promotion outcome is actually settled. Label shared-season context; a later appointment never takes an earlier cup title. Earlier managers retain their own attributed match results.
 - [o] Own-match W-D-L and runs use 90-minute results across official own competitions. Runs can cross seasons but stop at manager changes or unattributed matches; distinguish an ongoing run and partial tracking from complete tenure records.
 - [o] Keep the first version focused on our club. Other-club honours, deepest-cup-run rankings, combined reappointment rankings, generated praise and claims of sole causation are later work.
 
