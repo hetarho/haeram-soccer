@@ -210,14 +210,19 @@ describe('grid engine', () => {
       const { trace, elapsed, diagnostics, record } = candidate(`cand-clock-${i}`, true);
       // Every restart's preparation is its dead time, counted once beside the time in play.
       const dead = trace!.reduce((n, e) => n + (e.outcome !== 'incident' ? (e.dead ?? 0) : 0), 0);
-      expect(dead + diagnostics.ballInPlay).toBeCloseTo(elapsed, 6);
+      // After each whistle the rest of its final minute is the interval before the next period.
+      const whistles = trace!.filter((e) => e.action === 'whistle' && e.transition !== 'period');
+      const rest = whistles.reduce((n, e) => n + Math.ceil(e.elapsed / 60) * 60 - e.elapsed, 0);
+      expect(dead + diagnostics.ballInPlay + rest).toBeCloseTo(elapsed, 6);
       for (const e of trace!)
         if (e.knots?.[0]?.kind === 'retrieve')
           expect(e.dead).toBeGreaterThanOrEqual(
             Math.min(...Object.values(RESTART_CONFIG.dead)) - 1e-9,
           );
+      // Each period stops inside its last added minute, and its minutes fill the clock whole.
       const added = record.added!;
-      expect(elapsed).toBeGreaterThanOrEqual(5400 + (added[0]! + added[1]!) * 60);
+      expect(elapsed).toBeCloseTo(5400 + (added[0]! + added[1]!) * 60, 6);
+      for (const e of whistles) expect(e.elapsed % 60).toBeGreaterThan(0);
     }
   });
 

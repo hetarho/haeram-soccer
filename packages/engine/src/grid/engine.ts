@@ -776,11 +776,18 @@ export function playGrid(setup: GridSetup): GridResult {
       const hurt = drawInjury(s, dt, r);
       if (hurt) injure(hurt.side, hurt.idx);
       const [lo, hi] = ADDED_CONFIG.bounds[period - 1]!;
-      const extra = Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
+      const length = PERIOD_SECONDS[period - 1]!;
+      // The candidate referee adds the lost seconds themselves and stops after the action that
+      // reaches them; the added minutes recorded are those that action reached, so the period's
+      // last frame draws all of it (→MATCH-1/12). The pre-feature path plays whole announced minutes.
+      const lost = Math.min(hi * 60, Math.max(lo * 60, credits[period - 1]!));
+      const extra = candidate
+        ? Math.max(lo, Math.ceil((s.t - length) / 60))
+        : Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
       // Cards of a play take the minute it ends, as their trace entries follow it; subs keep the stoppage.
       for (const i of tally.incidents.slice(held))
         if (i.kind !== 'sub') Object.assign(i, stampAt(period, s.t, extra));
-      if (s.t >= PERIOD_SECONDS[period - 1]! + extra * 60) {
+      if (s.t >= length + (candidate ? lost : extra * 60)) {
         added.push(extra);
         // Dissent is drawn once per side at the end of each period.
         for (const side of [0, 1] as const) {
@@ -789,6 +796,9 @@ export function playGrid(setup: GridSetup): GridResult {
         }
         tracer.note(s, 0, -1, 'whistle');
         tally.spellTo(undefined);
+        // The rest of the final minute after the whistle is the interval between periods, so the
+        // next one starts on a minute boundary and every minute is drawn whole (→MATCH-12).
+        if (candidate) s.elapsed += length + extra * 60 - s.t;
         break;
       }
     }

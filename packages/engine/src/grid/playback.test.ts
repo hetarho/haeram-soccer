@@ -261,6 +261,33 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
     expect(drawn).toBeGreaterThan(300);
   });
 
+  it("ends each period's last action inside its final minute, so it is drawn", () => {
+    let periods = 0;
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3']) {
+      const { result, frames } = id === 'candidate-1' ? watched : watch(id, true);
+      for (const p of [1, 2] as const) {
+        const entries = result.trace!.filter((e) => e.period === p);
+        const last = frames.filter((f) => f.period === p).at(-1)!;
+        const end = last.startSeconds! + 60;
+        const whistle = entries.at(-1)!.elapsed;
+        const knots = entries.flatMap((e) => e.knots?.map((k) => k.at) ?? []);
+        // The whistle comes after the final minute starts and by its end, with every knot before it.
+        expect(whistle).toBeGreaterThan(last.startSeconds!);
+        expect(whistle).toBeLessThanOrEqual(end);
+        expect(Math.max(...knots)).toBeLessThanOrEqual(whistle);
+        // A minute of the period draws its last knot at its own time.
+        const final = Math.max(...knots);
+        expect(
+          frames.some((f) => f.period === p && f.ballTimes!.includes(final)),
+          `period ${p} knot at ${final}`,
+        ).toBe(true);
+        periods++;
+      }
+      expect(frameTimeIssues(frames)).toEqual([]);
+    }
+    expect(periods).toBe(6);
+  });
+
   it('preserves minute-boundary continuity', () => {
     const frames = watched.frames;
     // Running speed bound in units per match second (the ball's maximum along the shorter axis).
