@@ -152,6 +152,38 @@ describe('injected presentation resources', () => {
     );
   });
 
+  it.each([false, true])(
+    'keeps an older entry relative to its declaring registry after refresh (cached: %s)',
+    async (preloadOldPack) => {
+      let revision = 'v1';
+      const oldPackUrl = 'https://club.example/v1/locales/fr-CA.json';
+      const newPackUrl = 'https://club.example/v2/locales/new/fr-CA.json';
+      const fetch = vi.fn(async (url: string) => {
+        if (url.endsWith('/index.json')) {
+          const resource = revision === 'v1' ? 'fr-CA.json' : 'new/fr-CA.json';
+          return response(
+            { ...registry, entries: [{ ...registry.entries[0], resource }] },
+            `https://club.example/${revision}/locales/index.json`,
+          );
+        }
+        if (url === oldPackUrl || url === newPackUrl) return response(pack, url);
+        return { ...response(null, url), ok: false, status: 404 };
+      });
+      const resources = createPresentationResources({ fetch, baseUrl: 'https://club.example/' });
+      const first = await resources.loadRegistry('locale');
+      if (preloadOldPack)
+        expect((await resources.loadPack('locale', first.entries[0])).url).toBe(oldPackUrl);
+
+      revision = 'v2';
+      const second = await resources.loadRegistry('locale', { reload: true });
+      expect((await resources.loadPack('locale', second.entries[0])).url).toBe(newPackUrl);
+      expect((await resources.loadPack('locale', first.entries[0])).url).toBe(oldPackUrl);
+      expect(fetch.mock.calls.filter(([url]) => url === oldPackUrl)).toHaveLength(1);
+      expect(fetch.mock.calls.filter(([url]) => url === newPackUrl)).toHaveLength(1);
+      expect(fetch).toHaveBeenCalledTimes(4);
+    },
+  );
+
   it('does not confuse a registry URL with a pack cache entry', async () => {
     const { documents, resources } = fixtures();
     documents.set('/presentation/locales/index.json', {

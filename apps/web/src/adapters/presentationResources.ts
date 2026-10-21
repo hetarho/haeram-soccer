@@ -51,6 +51,7 @@ export function createPresentationResources(options: {
   const cache = new Map<string, unknown>();
   const pending = new Map<string, Promise<unknown>>();
   const registryUrls = new Map<PackKind, string>();
+  const entryRegistryUrls = new WeakMap<RegistryEntry, string>();
 
   async function load<T>(
     scope: 'registry' | 'pack',
@@ -107,6 +108,7 @@ export function createPresentationResources(options: {
       (value, declaringUrl) => {
         const registry = validateRegistry(value, kind);
         registryUrls.set(kind, declaringUrl);
+        for (const entry of registry.entries) entryRegistryUrls.set(entry, declaringUrl);
         return registry;
       },
       settings?.reload,
@@ -119,7 +121,7 @@ export function createPresentationResources(options: {
   ): Promise<LoadedPack<K>> {
     try {
       await loadRegistry(kind);
-      const url = resolvePackUrl(entry, registryUrls.get(kind)!);
+      const url = resolvePackUrl(entry, entryRegistryUrls.get(entry) ?? registryUrls.get(kind)!);
       const loaded = await load('pack', kind, url, (value, declaringUrl) => {
         const pack = kind === 'locale' ? validateLocalePack(value) : validateThemePack(value);
         if (pack.id !== entry.id)
