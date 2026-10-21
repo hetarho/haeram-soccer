@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-21T00:30:25.499Z",
+  "sourceCommit": "4c9d5c65452fda35efbdbc59ecdaf6792a07268d",
+  "group": {
+    "id": "full-model",
+    "branch": "work/full-model",
+    "status": "active",
+    "createdAt": "2026-10-21T00:30:11.420Z",
+    "limits": {
+      "workers": 3,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": "main",
+    "review": "risky",
+    "lastRun": {
+      "id": "a74865ee-36ac-4474-8c8d-a72d24e74a7a",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-21T00:30:24.238Z",
+      "stoppedAt": "2026-10-21T00:30:24.975Z",
+      "dispatched": 0,
+      "outcome": "needs-attention",
+      "failures": []
+    }
+  },
+  "summary": {
+    "total": 14,
+    "completed": 0,
+    "remaining": 14,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 14
+  },
+  "tasks": [
+    {
+      "id": "T273",
+      "title": "Define candidate match contracts and supported-career compatibility",
+      "dep": [
+        "T255",
+        "T272"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T274",
+      "title": "Make candidate actions and restart preparation physically continuous",
+      "dep": [
+        "T273"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T275",
+      "title": "Render continuous paths at the owner's uniformly selected speed",
+      "dep": [
+        "T274"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T276",
+      "title": "Retain and interrupt individual football intentions for explicit reasons",
+      "dep": [
+        "T274"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T277",
+      "title": "Connect player intentions through support, pressing and covering reactions",
+      "dep": [
+        "T276"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T278",
+      "title": "Measure and calibrate continuous football and coordinated tactics",
+      "dep": [
+        "T275",
+        "T277",
+        "T281",
+        "T272"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T279",
+      "title": "Generate coupled complete team facts without spatial or minute simulation",
+      "dep": [
+        "T273"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T280",
+      "title": "Couple full player records with legal participation and incidents",
+      "dep": [
+        "T279"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T281",
+      "title": "Dispatch candidate fixtures and settle complete world statistics once",
+      "dep": [
+        "T280",
+        "T282"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T282",
+      "title": "Preserve full aggregates and model coverage in bounded checkpoints",
+      "dep": [
+        "T273"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T283",
+      "title": "Show comparable full statistics with honest tracking coverage",
+      "dep": [
+        "T281"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T284",
+      "title": "Measure and tune complete aggregate records against football targets",
+      "dep": [
+        "T278",
+        "T281",
+        "T272"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T285",
+      "title": "Profile and optimize complete-result season progression",
+      "dep": [
+        "T284",
+        "T283"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T286",
+      "title": "Activate the complete model only with combined accuracy and continuity evidence",
+      "dep": [
+        "T275",
+        "T283",
+        "T284",
+        "T285"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [],
+  "history": [
+    {
+      "sequence": 252,
+      "at": "2026-10-21T00:30:11.431Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "full-model",
+        "branch": "work/full-model",
+        "status": "preparing",
+        "createdAt": "2026-10-21T00:30:11.420Z",
+        "limits": {
+          "workers": 3,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": "main",
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 253,
+      "at": "2026-10-21T00:30:11.703Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 254,
+      "at": "2026-10-21T00:30:24.248Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a74865ee-36ac-4474-8c8d-a72d24e74a7a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T00:30:24.238Z"
+        }
+      }
+    },
+    {
+      "sequence": 255,
+      "at": "2026-10-21T00:30:24.975Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a74865ee-36ac-4474-8c8d-a72d24e74a7a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T00:30:24.238Z",
+          "stoppedAt": "2026-10-21T00:30:24.975Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": []
+        }
+      }
+    }
+  ]
+}
