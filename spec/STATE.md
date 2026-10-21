@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:50Z | T299 T300 T301 T302 T303 |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:50Z | T299 |
 
 ## inbox
 - 261021 decided T299 T300 T301 T302 T303: the five isolated drafts now form one delivery and the standalone T299 browser gate timed out in existing journeys → release that attempt without done, then claim one presentation-foundation lane, compose the parallel commits and review/verify/push the complete foundation once; one live claim reserves the entire scope against the other global runner (alt: repeat full gates for unused intermediate modules). Local Chromium runs two workers with a 90-second default budget and one reported retry; explicit scenario budgets/assertions and CI remain unchanged.
