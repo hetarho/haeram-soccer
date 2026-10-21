@@ -63,7 +63,7 @@ export function ledgerIssues(ledger: AggregateLedger): string[] {
     const who = `side ${side}`;
     if (own.held.length !== ledger.periods.length || !own.held.every((s) => s >= 0))
       out.push(`${who} possession seconds ${own.held}`);
-    own.moves.forEach((m, i) => moveIssues(out, `${who} move ${i}`, m, ledger));
+    for (let i = 0; i < own.moves.length; i++) moveIssues(out, who, i, own.moves[i]!, ledger);
     const arrivals = own.moves.map(() => 0);
     let penalties = 0,
       directFreeKicks = 0;
@@ -131,42 +131,68 @@ export function ledgerIssues(ledger: AggregateLedger): string[] {
   return out;
 }
 
-function moveIssues(out: string[], at: string, m: AggregateMove, ledger: AggregateLedger) {
-  if (!(AGGREGATE_MOVE_KINDS as readonly string[]).includes(m.kind)) out.push(`${at} kind`);
-  if (!ledger.periods.includes(m.period)) out.push(`${at} in period ${m.period}`);
-  for (const cell of [m.from, m.to])
-    if (!(Number.isInteger(cell) && cell >= 0 && cell < CELLS)) out.push(`${at} cell ${cell}`);
-  const counts = [
-    m.attempts,
-    m.completed,
-    m.lineBreaking,
-    m.offside,
-    m.intercepted,
-    m.outTouch,
-    m.outByline,
-    m.cornersWon,
-  ];
-  if (!counts.every(count)) return void out.push(`${at} counts ${counts}`);
-  if (m.completed > m.attempts) out.push(`${at}: ${m.completed} completed of ${m.attempts}`);
+const issue = (out: string[], who: string, i: number, text: string) =>
+  out.push(`${who} move ${i}${text}`);
+/**
+ * A move group's issues, each labelled `<side> move <i>`. The label is built only for an issue:
+ * every group of every fixture passes through here (T285).
+ */
+function moveIssues(
+  out: string[],
+  who: string,
+  i: number,
+  m: AggregateMove,
+  ledger: AggregateLedger,
+) {
+  if (!(AGGREGATE_MOVE_KINDS as readonly string[]).includes(m.kind)) issue(out, who, i, ' kind');
+  if (!ledger.periods.includes(m.period)) issue(out, who, i, ` in period ${m.period}`);
+  if (!(Number.isInteger(m.from) && m.from >= 0 && m.from < CELLS))
+    issue(out, who, i, ` cell ${m.from}`);
+  if (!(Number.isInteger(m.to) && m.to >= 0 && m.to < CELLS)) issue(out, who, i, ` cell ${m.to}`);
+  if (!(
+    count(m.attempts) &&
+    count(m.completed) &&
+    count(m.lineBreaking) &&
+    count(m.offside) &&
+    count(m.intercepted) &&
+    count(m.outTouch) &&
+    count(m.outByline) &&
+    count(m.cornersWon)
+  )) {
+    const counts = [
+      m.attempts,
+      m.completed,
+      m.lineBreaking,
+      m.offside,
+      m.intercepted,
+      m.outTouch,
+      m.outByline,
+      m.cornersWon,
+    ];
+    return void issue(out, who, i, ` counts ${counts}`);
+  }
+  if (m.completed > m.attempts) issue(out, who, i, `: ${m.completed} completed of ${m.attempts}`);
   const failed = m.attempts - m.completed;
   const pass = isPassKind(m.kind);
   const fates = m.offside + m.intercepted + m.outTouch + m.outByline;
-  if (pass && fates > failed) out.push(`${at}: ${fates} failed outcomes of ${failed} failed`);
-  if (!pass && fates + m.lineBreaking + m.cornersWon > 0) out.push(`${at}: pass outcomes`);
-  if (m.cornersWon > m.outByline) out.push(`${at}: ${m.cornersWon} corners of ${m.outByline}`);
-  const [fromBand, toBand] = [cellBand(m.from), cellBand(m.to)];
+  if (pass && fates > failed) issue(out, who, i, `: ${fates} failed outcomes of ${failed} failed`);
+  if (!pass && fates + m.lineBreaking + m.cornersWon > 0) issue(out, who, i, ': pass outcomes');
+  if (m.cornersWon > m.outByline) issue(out, who, i, `: ${m.cornersWon} corners of ${m.outByline}`);
+  const fromBand = cellBand(m.from),
+    toBand = cellBand(m.to);
   // Only a pass played forward can break a line or be caught offside.
   const ahead = (forwardKinds.has(m.kind) || m.kind === 'short') && toBand > fromBand;
   if (m.lineBreaking > m.completed || (m.lineBreaking && !ahead))
-    out.push(`${at}: ${m.lineBreaking} line-breaking ${m.kind} of ${m.completed}`);
-  if (m.offside && !ahead) out.push(`${at}: offside ${m.kind} not played forward`);
-  if (forwardKinds.has(m.kind) && toBand <= fromBand) out.push(`${at}: ${m.kind} not forward`);
-  if (m.kind === 'cross' && !inBoxCell(m.to)) out.push(`${at}: cross outside the box`);
+    issue(out, who, i, `: ${m.lineBreaking} line-breaking ${m.kind} of ${m.completed}`);
+  if (m.offside && !ahead) issue(out, who, i, `: offside ${m.kind} not played forward`);
+  if (forwardKinds.has(m.kind) && toBand <= fromBand) issue(out, who, i, `: ${m.kind} not forward`);
+  if (m.kind === 'cross' && !inBoxCell(m.to)) issue(out, who, i, ': cross outside the box');
   if (m.kind === 'cutBack' && !(cutBackZone(m.from) && inBoxCell(m.to) && toBand <= fromBand))
-    out.push(`${at}: cut-back ${m.from}→${m.to}`);
-  if (m.setPiece && m.kind !== 'cross') out.push(`${at}: ${m.setPiece} delivered as ${m.kind}`);
+    issue(out, who, i, `: cut-back ${m.from}→${m.to}`);
+  if (m.setPiece && m.kind !== 'cross')
+    issue(out, who, i, `: ${m.setPiece} delivered as ${m.kind}`);
   if ((m.kind === 'carry' || m.kind === 'takeOn') && toBand < fromBand)
-    out.push(`${at}: ${m.kind} backwards`);
+    issue(out, who, i, `: ${m.kind} backwards`);
 }
 
 function sum<T>(items: readonly T[], value: (item: T) => number) {

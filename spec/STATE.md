@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T19:10Z | T324 |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T20:01Z | T322 |
 
 ## inbox
+- 261022 decided T286 ARCH-31: T285 measured every throughput gate failing by far (non-own fixture 11.59× the summary path against 0.5; candidate seasons ~3.1–4.1× the baseline against 0.8; own detailed matches alone fill the season budget) and recommended absolute budgets instead → ARCH-31 is kept: relaxing a release gate to pass is not an autopilot call, so activation stays off until it is met; T325 (detailed own-match speed) and T326 (aggregate cost against accuracy) measure how close it can get. OWNER: whether ARCH-31 should become absolute budgets (e.g. a season ≤ 15 s, a fixture ≤ 1 ms on a reference machine) is yours to decide with T325/T326's evidence (alt: restate as absolute budgets now | redesign the aggregate with recalibration first)
 - 261022 decided T324: T321 left MATCH-29 outside (press +0.39 points, press v counter win gap 0.415) and named two behaviour causes → one explore T324 combines counter breaks behind a high line (through balls into the runner's path, off-ball reactions to the ball in flight) with press attacking volume (shots per entry, the 4-2-3-1's spots), with goal-area recalibration, before T323 and T286; a band or formation change only on evidence via update-ssot (alt: two separate explores | revisit MATCH-29 now)
 - 261022 decided T321 T323: T284's review found forced-tactic conditions keep each club's XI in the forced formation's slots (mean slot level 0.86–0.92, forced goals 2.49 v 2.74, tactic points shifted up to ~0.15), which tuning would bake into real worlds → both clubs' squads are built for the forced formation at equal strength (T321 in grid-bands, shared by the aggregate runner); T284's aggregate tactic values stay provisional for T323 (alt: re-pick each club's XI for the forced formation from its own squad, keeping some misfit)
 - 261022 decided T322 T323: T284 found MATCH-13's advanced counters without intended levels (the detailed engine ~40 through balls a team, parity 44–54 of 108 metrics different) → MATCH-30: both engines hold sourced real-football bands kept in docs/MATCH-BASELINES.md, unsourced counters parity only; T322 registers bands and one counting rule, explore T323 calibrates both engines (alt: the detailed engine as reference | unify definitions only)
@@ -192,11 +193,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | doing@261022.h3t6 |
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 | todo |
-| T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 | todo |
+| T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | doing@261022.h3t6 |
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 | todo |
 | T324 | Make counter breaks and press volume meet the tactic-pairing bands | MATCH STAFF ARCH | T321 | doing@261022.h3t6 |
+| T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
+| T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -217,6 +219,8 @@
 - CI: 9e67be5 passed every job.
 
 ## log
+- 261022 create-task T325 T326 (explore): detailed own-match speed, bit-identical, and aggregate fixture cost with its accuracy trade-off, after T323 and before T286
+- 261022 T285 integrated (h3t6; explore exit: bit-identical optimisations, aggregate fixture ×0.53, candidate season ×0.69; every ARCH-31 throughput gate still fails; century checkpoint estimated 2.95–3.12 MiB)
 - 261022 create-task T324 (explore): counter breaks behind a high line and press attacking volume, T321's named follow-ups for MATCH-29, before T323 and T286
 - 261022 T321 integrated (h3t6; explore exit: press edge +0.71→+0.39 points, MATCH-29 8 inside / 8 outside / 9 insufficient, core MATCH-23 30–36/38 inside and 0 outside; forced pairings field squads built for the forced formation in both runners)
 - 261022 T284 integrated (h3t6; explore exit: aggregate core MATCH-23 31/32 measurable rows inside and 0 outside, curve 1.8점, 0 invariant failures in 260,000; parity and advanced-counter bands unresolved → MATCH r17, T322, T323; review named the forced-tactic out-of-position confound)
@@ -235,5 +239,3 @@
 - 261021 T277 integrated
 - 261021 T275 integrated
 - 261021 f6n3 stopped at the owner's request (moving to another machine): full-model integrated T273 T274 T276 T279 T282 T304 T305 into main; T280 (changes requested) and T277 (partial) pushed to wip/full-model-T280 and wip/full-model-T277; report 261021-f6n3.
-- 261021 T305 integrated
-- 261021 T276 integrated

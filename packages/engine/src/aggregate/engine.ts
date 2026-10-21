@@ -280,8 +280,9 @@ export interface AggregateMatch {
 /**
  * The input's accessor before any participation exists. It refers to match.ts lazily, since the
  * dispatch there imports this module and a module-level reference would read it uninitialised.
+ * Exported for scripts/match-model-baseline.ts, which times `playAggregate`'s stages one by one.
  */
-const UNPLANNED: AggregateSkillAccess = {
+export const UNPLANNED: AggregateSkillAccess = {
   skill: () => {
     throw new Error('집계 경기의 실효 능력은 출전 계획 뒤에 읽습니다');
   },

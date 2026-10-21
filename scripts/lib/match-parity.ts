@@ -1363,7 +1363,8 @@ export type PerformanceCategory =
  * components time whole processing including preparation; `preparation.*` times it alone.
  */
 export const PERFORMANCE_CONFIG = {
-  version: 1,
+  /** 2: the candidate aggregate stages, own candidate fixtures and candidate settlement (T285). */
+  version: 2,
   /** Fixtures without the own club: candidate median over the baseline summary median. */
   npcFixtureBudget: 0.5,
   /** Complete-season engine time over the baseline, for each century workload profile. */
@@ -1388,10 +1389,19 @@ export const PERFORMANCE_CONFIG = {
     'fixture.summary-lines': 'computation',
     'fixture.grid': 'computation',
     'fixture.candidate': 'computation',
+    /** The candidate aggregate fixture's stages, timed one by one on the same fixtures. */
+    'candidate.preparation': 'preparation',
+    'candidate.generation': 'computation',
+    'candidate.attribution': 'computation',
+    'candidate.record': 'computation',
+    /** Own fixtures through the candidate dispatch: the detailed engine and the full record check. */
+    'fixture.own-candidate': 'computation',
     'observation.grid': 'observation',
     'observation.frames': 'observation',
     'settlement.npc': 'settlement',
     'settlement.own': 'settlement',
+    /** Candidate records settled on a candidate world: every existing effect plus the ledger. */
+    'settlement.candidate': 'settlement',
     'season.baseline': 'season',
     'season.active-management': 'season',
     'codec.encode': 'codec',

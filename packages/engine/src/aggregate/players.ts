@@ -161,6 +161,7 @@ class SideLines {
   readonly rows: Row[];
   private readonly cache = new Map<string, Map<Role | TakerKey, Float64Array>>();
   private readonly expo = new Map<AggregatePeriod, AggregateExposure[]>();
+  private readonly terms = new Map<AggregatePeriod, Map<AggregateAttribute, Float64Array>>();
 
   constructor(
     readonly side: AggregateSide,
@@ -189,15 +190,41 @@ class SideLines {
     return this.input.sides[this.side].lines.findIndex((l) => l.id === id);
   }
 
-  /** A line's share of a role over one exposure of `minutes` around `mid`. */
-  private share(line: number, slot: number, minutes: number, mid: number, role: Role) {
+  /**
+   * A line's share of a role over one exposure of `minutes` around `mid`. `terms[at]`, when
+   * given, keeps the exposure's skill factor for the role's attribute: roles that read the same
+   * attribute over the same exposure reuse it instead of reading the skill again (T285).
+   */
+  private share(
+    line: number,
+    slot: number,
+    minutes: number,
+    mid: number,
+    role: Role,
+    terms?: Float64Array,
+    at = 0,
+  ) {
     const s = this.input.sides[this.side].slots[slot]!;
     let w = role.table[s.line] * minutes;
     if (!(w > 0)) return 0;
     if (role.wide && s.wide) w *= role.wide;
     if (role.action) w *= this.plan.sides[this.side].actionWeight(line, slot, role.action);
-    const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
-    return w * (value / AC.attributeScale) ** AC.attributePower;
+    let term = terms ? terms[at]! : NaN;
+    if (Number.isNaN(term)) {
+      const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
+      term = (value / AC.attributeScale) ** AC.attributePower;
+      if (terms) terms[at] = term;
+    }
+    return w * term;
+  }
+
+  /** Per period and attribute: each exposure's skill factor, filled as roles read it. */
+  private termsOf(period: AggregatePeriod, attribute: AggregateAttribute, size: number) {
+    let byAttribute = this.terms.get(period);
+    if (!byAttribute) this.terms.set(period, (byAttribute = new Map()));
+    let terms = byAttribute.get(attribute);
+    if (!terms) byAttribute.set(attribute, (terms = new Float64Array(size).fill(NaN)));
+    return terms;
   }
 
   private cacheOf(period: AggregatePeriod) {
@@ -213,7 +240,11 @@ class SideLines {
     if (!out) {
       out = new Float64Array(this.rows.length);
       const list = this.exposuresOf(period);
-      for (const e of list) out[e.line]! += this.share(e.line, e.slot, e.minutes, e.mid, role);
+      const terms = this.termsOf(period, role.attribute, list.length);
+      for (let at = 0; at < list.length; at++) {
+        const e = list[at]!;
+        out[e.line]! += this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
+      }
       // Nobody of the role's lines played: whoever was on the pitch, by his minutes.
       if (!out.some((w) => w > 0)) for (const e of list) out[e.line]! += e.minutes;
       cache.set(role, out);
@@ -292,8 +323,10 @@ class SideLines {
  * when there are few units, otherwise by clamped sequential binomials.
  */
 function within(r: Rng, k: number, counts: readonly number[]): number[] {
-  const out = counts.map(() => 0);
-  let total = counts.reduce((a, b) => a + b, 0);
+  // Built like multinomialDraw's result, so both arrays this splits share one element kind.
+  const out = Array<number>(counts.length).fill(0);
+  let total = 0;
+  for (let i = 0; i < counts.length; i++) total += counts[i]!;
   if (k <= 0) return out;
   if (k <= 4) {
     for (let unit = 0; unit < k; unit++) {
@@ -323,13 +356,35 @@ function within(r: Rng, k: number, counts: readonly number[]): number[] {
   return out;
 }
 
+/** A move group without pinned completions. */
+const NO_PINS: readonly number[] = [];
+
+/** What MATCH-13 reads of a move group's kind and cells, worked out once per group. */
+interface MoveTraits {
+  kind: AggregateMove['kind'];
+  pass: boolean;
+  fromBand: number;
+  toBand: number;
+  boxEntry: boolean;
+  xt: number;
+}
+function moveTraits(move: AggregateMove): MoveTraits {
+  return {
+    kind: move.kind,
+    pass: isPassKind(move.kind),
+    fromBand: cellBand(move.from),
+    toBand: cellBand(move.to),
+    boxEntry: inBoxCell(move.to) && !inBoxCell(move.from),
+    xt: xtGain(move.from, move.to),
+  };
+}
+
 /** Counters a line's attempts and completions of one move group earn (→MATCH-13). */
-function creditMove(row: Row, move: AggregateMove, attempts: number, done: number, broke: number) {
+function creditMove(row: Row, move: MoveTraits, attempts: number, done: number, broke: number) {
   const m = row.metrics,
     d = row.detail;
-  const fromBand = cellBand(move.from),
-    toBand = cellBand(move.to);
-  if (isPassKind(move.kind)) {
+  const { fromBand, toBand } = move;
+  if (move.pass) {
     m[M.passes]! += attempts;
     m[M.completed]! += done;
     if (fromBand >= FINAL_THIRD_BAND) {
@@ -354,9 +409,9 @@ function creditMove(row: Row, move: AggregateMove, attempts: number, done: numbe
       m[M.dribbles]! += done;
     }
   }
-  if (inBoxCell(move.to) && !inBoxCell(move.from)) d[PD.boxEntries]! += done;
+  if (move.boxEntry) d[PD.boxEntries]! += done;
   if (toBand === FINAL_THIRD_BAND && fromBand < FINAL_THIRD_BAND) d[PD.frontOfBoxEntries]! += done;
-  d[PD.xtAdded]! += done * xtGain(move.from, move.to);
+  d[PD.xtAdded]! += done * move.xt;
 }
 
 /**
@@ -460,9 +515,11 @@ function attributeSide(
   });
   // Every move group of the period: pinned completions, then the rest by weight.
   const n = own.rows.length;
-  ledger.moves.forEach((move, index) => {
-    if (move.period !== period) return;
-    const pins = pinned.get(index) ?? [];
+  // Plain loops and per-group constants (T285): the same draws in the same order as before.
+  for (let index = 0; index < ledger.moves.length; index++) {
+    const move = ledger.moves[index]!;
+    if (move.period !== period) continue;
+    const pins = pinned.get(index) ?? NO_PINS;
     const weights = move.setPiece
       ? own.takerWeights(period, move.setPiece === 'corner' ? 'corner' : 'freeKick')
       : own.weights(period, moveRole(move));
@@ -473,27 +530,31 @@ function attributeSide(
       completed[line]!++;
     }
     const broke = within(r, move.lineBreaking, completed);
+    const traits = moveTraits(move);
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
-        creditMove(own.rows[line]!, move, attempts[line]!, completed[line]!, broke[line]!);
-    if (move.offside > 0)
-      multinomialDraw(r, move.offside, own.weights(period, ROLES.offside)).forEach(
-        (k, line) => (own.rows[line]!.detail[PD.offsides]! += k),
-      );
+        creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
+    if (move.offside > 0) {
+      const offside = multinomialDraw(r, move.offside, own.weights(period, ROLES.offside));
+      for (let line = 0; line < offside.length; line++)
+        own.rows[line]!.detail[PD.offsides]! += offside[line]!;
+    }
     // The ball won from this group: interceptions where the pass was played to, tackles on a
     // failed carry or take-on where it started; in the loser's defensive third a high turnover.
-    const pass = isPassKind(move.kind);
+    const pass = traits.pass;
     const won = pass ? move.intercepted : move.attempts - move.completed;
     if (won > 0) {
-      const at = cellBand(pass ? move.to : move.from);
+      const at = pass ? traits.toBand : traits.fromBand;
       const role = ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling');
-      multinomialDraw(r, won, opp.weights(period, role)).forEach((k, line) => {
-        if (k === 0) return;
+      const split = multinomialDraw(r, won, opp.weights(period, role));
+      for (let line = 0; line < split.length; line++) {
+        const k = split[line]!;
+        if (k === 0) continue;
         opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
         if (at <= HIGH_TURNOVER_BAND) opp.rows[line]!.detail[PD.highTurnovers]! += k;
-      });
+      }
     }
-  });
+  }
   // Fouls the opponent committed on this side: a booked foul is his, then the rest by weight.
   const { from, to } = AGGREGATE_CONFIG.periods[period];
   const fouls = ledger.fouled.filter((f) => f.period === period);
