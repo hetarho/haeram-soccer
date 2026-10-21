@@ -102,7 +102,17 @@ export const DUEL_CONFIG = {
   holdUp: { base: 0.6, skill: 1 / 150, min: 0.3, max: 0.85 },
   aerial: { skill: 1 / 150, base: 0.5, min: 0.15, max: 0.85 },
   clearance: { out: 0.35, reach: [25, 45] },
+  /**
+   * Candidate model only (T278, →MATCH-23): its continuous play stopped too rarely, with fouls,
+   * throw-ins and penalty goals below their bands and the ball in play above. Challenges end in a
+   * foul `foul` times as often (within what a duel allows) and a defender in his own box keeps
+   * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
+   * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
+   */
+  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.79, clearanceOut: 0.45 },
 } as const;
+/** How much more often a challenge is a foul on this fixture's model. */
+const foulScale = (s: GridState) => (s.setup.model !== undefined ? DUEL_CONFIG.candidate.foul : 1);
 
 /** Initial values (design §7.4). */
 export const SHOT_CONFIG = {
@@ -125,6 +135,8 @@ export const SHOT_CONFIG = {
   blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
+  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
+  candidate: { header: 0.42 },
 } as const;
 
 const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
@@ -134,13 +146,19 @@ const slotPosition = (s: GridState, gp: GridPlayer) =>
 /** Chance quality of a shot from `p` (the shooter's attack frame): place, angle, kind and pressure. */
 export function chanceXg(
   p: Point,
-  opts: { header?: boolean; cutBack?: boolean; pressure?: number; freeKick?: boolean } = {},
+  opts: {
+    header?: boolean;
+    cutBack?: boolean;
+    pressure?: number;
+    freeKick?: boolean;
+    candidate?: boolean;
+  } = {},
 ): number {
   const C = SHOT_CONFIG;
   const z = C.a + C.b * goalDistance(p) + C.c * goalAngle(p);
   return (
     sigmoid(z) *
-    (opts.header ? C.header : 1) *
+    (opts.header ? (opts.candidate ? C.candidate.header : C.header) : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
     Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
@@ -251,7 +269,7 @@ export function looseBall(
 ): Outcome {
   const winner = looseWinner(s, at, r, receiver);
   const foe = other(winner[0]);
-  if (inBox(attackFrame(winner[0], at)) || r() >= DUEL_CONFIG.looseFoul)
+  if (inBox(attackFrame(winner[0], at)) || r() >= DUEL_CONFIG.looseFoul * foulScale(s))
     return { kind: 'loose', at, winner };
   let by: GridPlayer | undefined,
     d = Infinity;
@@ -329,8 +347,8 @@ export function resolvePass(
     ]);
     return { kind: 'intercepted', by: marker.gp.idx, at };
   }
-  if (u < P.lost.intercepted + P.lost.loose)
-    return looseBall(s, toEngine(side, to), r, [side, target]);
+  const loose = s.setup.model !== undefined ? DUEL_CONFIG.candidate.passLoose : P.lost.loose;
+  if (u < P.lost.intercepted + loose) return looseBall(s, toEngine(side, to), r, [side, target]);
   const exit = exitPoint(toEngine(side, from), toEngine(side, to));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
 }
@@ -365,7 +383,11 @@ export function resolveShot(
 ): ShotOutcome {
   const C = SHOT_CONFIG;
   const from = attackFrame(side, s.players[side][idx]!.pos);
-  const xg = chanceXg(from, { ...opts, pressure: tags.pressure });
+  const xg = chanceXg(from, {
+    ...opts,
+    pressure: tags.pressure,
+    candidate: s.setup.model !== undefined,
+  });
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
   const shooting =
@@ -560,8 +582,14 @@ export function resolveCutBack(
 }
 
 /** The share of his fouls a defender keeps where the carrier stands (attack frame): in his box, his third, elsewhere. */
-const care = (c: Point) =>
-  inBox(c) ? DUEL_CONFIG.boxFoul : c[0] >= BAND_EDGES[5] ? DUEL_CONFIG.thirdFoul : 1;
+const care = (s: GridState, c: Point) =>
+  inBox(c)
+    ? s.setup.model !== undefined
+      ? DUEL_CONFIG.candidate.boxFoul
+      : DUEL_CONFIG.boxFoul
+    : c[0] >= BAND_EDGES[5]
+      ? DUEL_CONFIG.thirdFoul
+      : 1;
 
 /** The nearest opponent ahead of the carrier within the pressure radius. */
 export function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | undefined {
@@ -606,7 +634,10 @@ export function resolveTakeOn(
   if (r() < p) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const u = r();
   // A booked defender, or one in his own box, is more careful: part of his foul share becomes a clean tackle.
-  const foulShare = T.fail.foul * (foe.yellow ? 0.6 : 1) * care(c);
+  const foulShare = Math.min(
+    T.fail.tackle + T.fail.foul,
+    T.fail.foul * (foe.yellow ? 0.6 : 1) * care(s, c) * foulScale(s),
+  );
   if (u < T.fail.tackle + (T.fail.foul - foulShare)) return { kind: 'tackled', by: foe.idx };
   if (u < T.fail.tackle + T.fail.foul)
     return { kind: 'foul', by: foe.idx, at: [me.pos[0], me.pos[1]] };
@@ -633,9 +664,12 @@ export function resolveCarry(
     if (r() < p) {
       // A booked defender, or one near his own goal, is careful: the challenge he holds back is no tackle either.
       const v = r();
-      if (v < K.foul * (foe.gp.yellow ? 0.6 : 1) * care(attackFrame(side, me.pos)))
-        return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
-      if (v >= K.foul) return { kind: 'tackled', by: foe.gp.idx };
+      const foul = Math.min(
+        1,
+        K.foul * (foe.gp.yellow ? 0.6 : 1) * care(s, attackFrame(side, me.pos)) * foulScale(s),
+      );
+      if (v < foul) return { kind: 'foul', by: foe.gp.idx, at: [me.pos[0], me.pos[1]] };
+      if (v >= Math.max(K.foul, foul)) return { kind: 'tackled', by: foe.gp.idx };
     }
   }
   return { kind: 'complete', to: [to[0], to[1]], receiver: idx };
@@ -657,7 +691,7 @@ export function resolveClearance(s: GridState, side: 0 | 1, idx: number, r: () =
   const K = DUEL_CONFIG.clearance;
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
-  const out = r() < K.out;
+  const out = r() < (s.setup.model !== undefined ? DUEL_CONFIG.candidate.clearanceOut : K.out);
   const reach = K.reach[0] + (K.reach[1] - K.reach[0]) * r();
   const x = clamp(c[0] + reach, 0, PITCH.length);
   if (out) {

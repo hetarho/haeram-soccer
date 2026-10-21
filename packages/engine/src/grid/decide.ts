@@ -103,6 +103,12 @@ export const DECISION_CONFIG = {
    * as often while it arrives.
    */
   combination: { show: 0.6, release: 0.9, wait: 1.5 },
+  /**
+   * Candidate model only (T278, →MATCH-23): the open-play cross and shot scales in place of
+   * `crossScale` and `shotScale`, against too many crosses and headed goals and, once headers count
+   * less, too few goals.
+   */
+  candidate: { crossScale: 6.3, shotScale: 0.195 },
 } as const;
 
 const DEG = Math.PI / 180;
@@ -149,12 +155,13 @@ export function actionMix(
   const profile = POSITION_PROFILES[profileKey(slot.position)];
   mix.takeOn *= clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]);
   const crossFactor =
-    clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) * C.crossScale;
+    clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) *
+    (s.setup.model !== undefined ? C.candidate.crossScale : C.crossScale);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
   mix.shot *=
     C.shotLine[line] *
-    C.shotScale *
+    (s.setup.model !== undefined ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? C.shotBox : 1) *
     Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
   // Role and traits.

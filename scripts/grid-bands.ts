@@ -15,7 +15,8 @@
  * shared target, outcome-curve and invariant reports, written with its source fingerprint.
  *
  *   pnpm exec tsx scripts/grid-bands.ts --report [--partition calibration|validation] [--round N]
- *     [--scale S] [--only core,tactics,gap,tier,era,knockout] [--jobs N] [--out FILE]
+ *     [--scale S] [--only core,tactics,gap,tier,era,knockout | --conditions id,…] [--jobs N]
+ *     [--out FILE]
  *   default: calibration partition, round 0, scale 1 (CORPUS_CONFIG.calibrationPerCondition each),
  *   output docs/benchmarks/detailed-model-calibration.json
  */
@@ -26,7 +27,10 @@ import { arch, cpus, platform } from 'node:os';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TD } from '../packages/contracts/src/detail';
-import { MATCH_MODEL_REVISION, type MatchModelRevision } from '../packages/contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  type MatchModelRevision,
+} from '../packages/contracts/src/match-model';
 import type {
   Club,
   Fixture,
@@ -263,7 +267,6 @@ export function measure(
   ];
 }
 
-
 // ---- Candidate calibration report (T278) ---------------------------------------------------------
 
 /** Families the report plays; fatigue, rare and season conditions are listed as not measured. */
@@ -383,8 +386,7 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
         a = poolClub(as, r());
       w = h.w;
       home = h.club;
-      away =
-        a.club === h.club ? pools.get(a.club.strength)!.find((x) => x !== h.club)! : a.club;
+      away = a.club === h.club ? pools.get(a.club.strength)!.find((x) => x !== h.club)! : a.club;
     } else {
       const pairs = coreFixturePairs();
       ({ w, home, away } = pairs[i % pairs.length]!);
@@ -594,8 +596,10 @@ function reportJobs(): Job[] {
   for (const family of only)
     if (!(REPORT_FAMILIES as readonly string[]).includes(family))
       throw new Error(`unknown family ${family}`);
+  const named = text('conditions', '').split(',').filter(Boolean);
+  for (const id of named) conditionOf(id);
   return CORPUS_CONFIG.conditions
-    .filter((c) => only.includes(c.family))
+    .filter((c) => (named.length ? named.includes(c.id) : only.includes(c.family)))
     .map((c) => ({
       condition: c.id,
       count: Math.max(30, Math.round(calibrationSize(c) * option('scale', 1))),
@@ -621,7 +625,9 @@ async function runReport() {
         const next = job;
         const result = await new Promise<Summary>((resolve, reject) => {
           child.once('message', (m) => resolve(m as Summary));
-          child.once('exit', (code) => reject(new Error(`worker exited ${code} on ${next.condition}`)));
+          child.once('exit', (code) =>
+            reject(new Error(`worker exited ${code} on ${next.condition}`)),
+          );
           child.send(next);
         });
         child.removeAllListeners('exit');
@@ -653,7 +659,8 @@ async function runReport() {
     version: MATCH_PARITY_VERSION,
     task: 'T278',
     model: MATCH_MODEL_REVISION,
-    productionActivation: 'off: the runner requests the candidate through buildGridSetup({ model })',
+    productionActivation:
+      'off: the runner requests the candidate through buildGridSetup({ model })',
     releaseEvidence: false,
     provenance: {
       date: new Date().toISOString(),
@@ -690,7 +697,7 @@ async function runReport() {
       msPerMatch: Object.fromEntries(done.map((d) => [d.condition, d.msPerMatch])),
     },
     outcomeCurve: curve,
-    conditions: done.map(({ gapScores: _g, msPerMatch: _m, ...rest }) => rest),
+    conditions: done.map((d) => ({ ...d, gapScores: undefined, msPerMatch: undefined })),
   };
   mkdirSync(dirname(out), { recursive: true });
   // Five significant digits keep the artifact readable without changing any reading it records.
