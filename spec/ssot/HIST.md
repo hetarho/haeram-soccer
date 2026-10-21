@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r16 | Define the browser-demo rules for durable metrics and history.
+> r17 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -55,11 +55,24 @@
   - NPC per-frame/per-action traces and full individual match archives remain excluded (→HIST-2). Current-season aggregates replace transient full match records after settlement; older NPC retention remains →HIST-3/13/14, and own-match material and career retention remain →HIST-1/16.
   - reductions and compact encoding must preserve exact supported facts within the existing century budgets (→SAVE-13). Failure to fit is an unresolved gate, not permission to prune records or silently omit a metric.
 
+- HIST-18 [o] Own-club managers have stable, individually distinguishable tenures and structured attribution for recorded results.
+  - retain the manager identity/name, linked person when known, interim status, actual appointment/departure boundaries and departure reason when recorded. Renewals and tactic changes continue a tenure; reappointments create a new one, including multiple changes on one in-game day.
+  - freeze the responsible tenure on each newly settled own match and on the source of a newly finalised league finish, cup title or promotion. Preserve settlement order and unique source references so retries, reloads, season rollover and later appointments cannot duplicate or reassign facts.
+  - tracking starts at founding or the supported-career activation boundary (→SAVE-24). Preserve a known earlier service year without presenting activation as the appointment date. Older unstructured events and names remain readable; an ambiguous name/date or missing attribution is never sufficient to invent a historical tenure link.
+  - summaries are pure reads of retained facts; they add no random draws, match effects, cash, rewards or separate manager-quality rating (→HIST-7).
+- HIST-19 [o] Own-manager accomplishment summaries describe results recorded during each tenure (→HIST-18).
+  - show league titles with the actual country/division/group, retained domestic and continental cup titles, promotions with the actual division move, and best final league rank separately within each country/division/group. Include the season and competition; a lower-division first place is not a top-flight title, and a grouping change alone is not promotion.
+  - credit a cup title to the tenure responsible when its final is decided, a league title/final rank when the final league table is settled, and a promotion when the actual promotion outcome is settled. This uses settlement, not an earlier mathematical clinch. A later change of manager never transfers an accomplishment; a shared season is identified as such rather than crediting its final outcome to every manager.
+  - show recorded matches managed, W-D-L, win rate with its match denominator, and longest winning/unbeaten runs. These use the 90-minute result across all official own competitions, with the scope labelled. Runs may cross seasons within the same tenure but never cross a manager change or an unattributed match; a current uninterrupted run is marked ongoing.
+  - distinguish a fully tracked tenure with no accomplishment from incomplete/unavailable historical attribution. Counts and maxima from a partially tracked tenure are explicitly limited to its recorded period, never presented as complete career totals. Current season rank/promotion-zone membership is provisional, not a completed accomplishment.
+  - v1 covers our club's tenures and factual results. Other-club honours, deepest-cup-run rankings, generated praise and claims of sole managerial causation are outside this summary.
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## chg
+- r17 261021 HIST-18/19+ stable own-manager tenures, settlement-time accomplishment attribution, factual summaries and explicit tracking coverage
 - r16 261020 HIST-3✎ unspecified NPC current statistics→complete settled team/player aggregates; HIST-17+ shared accumulation, identity/transfer conservation, tracking boundaries and bounded NPC retention
 - r15 261019 HIST-13✎ appearances as minutes / 90 with no substitutions→one per recorded match with minutes > 0, starters and substitutes alike; per-90 rates remain separate
 - r14 261019 HIST-8✎ no expiry/pruning→of retained facts, per-match maps follow their lifetime; HIST-16+ spatial counter and discipline totals, current-season maps reduced to season heat maps, NPC discipline current-season only
