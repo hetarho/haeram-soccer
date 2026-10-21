@@ -165,8 +165,11 @@ export const AGGREGATE_CONFIG = {
   /**
    * How each preset plays the ball beyond its profile points (→MATCH-8): `shot` scales its own
    * open-play shots per completed arrival (possession: fewer direct shots), `guard` the opponent's
-   * chance rate against it (balanced: defensive stability). T284 calibrates them on MATCH-29's
-   * pairing bands.
+   * chance rate against it (balanced: defensive stability). PROVISIONAL: T284 calibrated `shot`
+   * and `guard` on MATCH-29's bands with forced pairings that seat each club's XI in the forced
+   * formation's slots, so out-of-position players (levelFactor down to 0.6) weaken some tactics
+   * and these values may compensate that artefact; T323 re-measures and re-tunes them once forced
+   * pairings field squads built for the forced formation at equal strength.
    */
   tactics: {
     balanced: {

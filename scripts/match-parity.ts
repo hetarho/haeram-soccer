@@ -185,6 +185,9 @@ export interface Conditioning {
  * keep it), home ground 3 and the unmodelled manager's 4 on each side (MATCH-2), the gap's
  * diminishing returns, the day's form, then the profiles of the tactics played and the possession
  * chance. `gap` is the home-minus-away match strength before form for the outcome curve.
+ * A forced tactic seats player i of the club's XI in the forced formation's slot i, so players can
+ * stand out of position (T284 review: mean slot level 0.863 for balanced, 0.906–0.923 for the
+ * others); forced conditions are to field squads built for the forced formation (T321, T323).
  */
 export function conditionedMatch(w: World, f: Fixture, conditioning: Conditioning = {}) {
   const prepared = prepareMatch(w, f);
@@ -840,8 +843,10 @@ interface SeasonJob {
 type SeasonSummary = ReturnType<typeof seasonSample>;
 
 /**
- * The season measures over every sampled 20-club top division (a season is the cluster), with the
- * proposed scoring-concentration target beside them as context, never a verdict.
+ * The season measures over every sampled 20-club top division, with the proposed
+ * scoring-concentration target beside them as context, never a verdict. The intervals treat each
+ * division as one observation (a world's divisions in one season are not clustered by world);
+ * bans and injuries are per season of a whole world.
  */
 export function seasonsReport(samples: readonly SeasonSummary[]) {
   const divisions = samples.flatMap((s) => s.divisions);
@@ -850,7 +855,8 @@ export function seasonsReport(samples: readonly SeasonSummary[]) {
   return {
     seasons: samples.length,
     divisions: divisions.length,
-    seeds: samples.map((s) => s.seed),
+    // Sorted: workers finish seasons in any order.
+    seeds: samples.map((s) => s.seed).sort(),
     championPpg: read((d) => d.championPpg),
     bottomPpg: read((d) => d.bottomPpg),
     goalsPerMatch: read((d) => d.goalsPerMatch),
@@ -884,6 +890,8 @@ const SOURCE_SCOPE = [
   'pnpm-lock.yaml',
   'pnpm-workspace.yaml',
   'tsconfig.json',
+  // The season runner's `withCandidateModel`.
+  'tests/fixtures/worlds.ts',
 ];
 function sourceFingerprint() {
   const files = execFileSync(
