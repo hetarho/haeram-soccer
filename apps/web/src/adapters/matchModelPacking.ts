@@ -9,7 +9,7 @@ import {
 } from '../../../../packages/contracts/src/match-model';
 import type { Fixture, Position, World } from '../../../../packages/contracts/src/types';
 import { SaveCompatibilityError } from '../../../../packages/contracts/src/versions';
-import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
+import { packBitColumns, rangeBits, readBitColumns, type BitColumns } from './bitpacking';
 
 /**
  * Container-3 match-model streams (→SAVE-23, HIST-17; docs/SAVE-FORMAT.md): the world's model
@@ -72,7 +72,7 @@ const isObject = (value: unknown): value is Record<string, unknown> =>
 const isCount = (value: unknown, max: number): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0 && (value as number) <= max;
 
-/** Bits of `max - min`, as `packBitColumns` stores a column. */
+/** Bits per row `packBitColumns` stores for a column of these values. */
 function bitsOf(values: readonly number[]) {
   if (!values.length) return 0;
   let min = values[0],
@@ -81,9 +81,7 @@ function bitsOf(values: readonly number[]) {
     if (value < min) min = value;
     if (value > max) max = value;
   }
-  let bits = 0;
-  for (let range = max - min; range > 0; range = Math.floor(range / 2)) bits++;
-  return bits;
+  return rangeBits(max - min);
 }
 /**
  * Rows of `width` non-negative safe integers, column by column: a mostly-zero column stores a
@@ -370,10 +368,30 @@ function unpackSeason(
     !header.every((n) => isCount(n, Number.MAX_SAFE_INTEGER))
   )
     throw corrupt('시즌 집계 머리');
+  // Each table is bounded by the rows the one before it declares, so a crafted count is refused
+  // before its rows are allocated.
   const competitionRows = readSparseTable(season.competitions, COMPETITION_WIDTH, MAX_COMPETITIONS);
-  const clubRows = readSparseTable(season.clubs, CLUB_WIDTH);
-  const playerRows = readSparseTable(season.players, PLAYER_WIDTH);
-  const contributionRows = readSparseTable(season.contributions, CONTRIBUTION_WIDTH);
+  let clubTotal = 0,
+    playerTotal = 0,
+    contributionTotal = 0;
+  for (let at = 0; at < competitionRows.length; at += COMPETITION_WIDTH) {
+    const [, , clubCount, playerCount] = competitionRows.slice(at, at + COMPETITION_WIDTH);
+    if (clubCount > MAX_CLUBS || playerCount > MAX_PLAYERS) throw corrupt('대회 차원');
+    clubTotal += clubCount;
+    playerTotal += playerCount;
+  }
+  const clubRows = readSparseTable(season.clubs, CLUB_WIDTH, Math.min(clubTotal, MAX_ROWS));
+  const playerRows = readSparseTable(season.players, PLAYER_WIDTH, Math.min(playerTotal, MAX_ROWS));
+  // A player row ends with the number of clubs he played for.
+  for (let at = PLAYER_WIDTH - 1; at < playerRows.length; at += PLAYER_WIDTH) {
+    if (playerRows[at] < 1 || playerRows[at] > MAX_CONTRIBUTIONS) throw corrupt('소속 기여 차원');
+    contributionTotal += playerRows[at];
+  }
+  const contributionRows = readSparseTable(
+    season.contributions,
+    CONTRIBUTION_WIDTH,
+    Math.min(contributionTotal, MAX_ROWS),
+  );
   let club = 0,
     player = 0,
     contribution = 0;
@@ -390,7 +408,7 @@ function unpackSeason(
       '대회',
     );
     const kind = KINDS[kindIndex];
-    if (!kind || clubCount > MAX_CLUBS || playerCount > MAX_PLAYERS) throw corrupt('대회 차원');
+    if (!kind) throw corrupt('대회 종류');
     competitions.push({
       kind,
       groupKey: str(groupKey),
@@ -407,7 +425,6 @@ function unpackSeason(
       }),
       players: Array.from({ length: playerCount }, () => {
         const [id, name, position, shares] = row(playerRows, PLAYER_WIDTH, player++, '선수');
-        if (shares < 1 || shares > MAX_CONTRIBUTIONS) throw corrupt('소속 기여 차원');
         return {
           id: str(id),
           name: str(name),

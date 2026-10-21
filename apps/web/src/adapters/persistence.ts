@@ -139,7 +139,7 @@ async function readCheckpoint(
   // as incompatible rather than recovered over (→SAVE-11).
   if (carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
     throw new SaveCompatibilityError(
-      '저장 컨테이너와 경기 모델 데이터가 맞지 않습니다. 원본 파일을 보관하세요.',
+      '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.',
     );
   return { value, envelope };
 }

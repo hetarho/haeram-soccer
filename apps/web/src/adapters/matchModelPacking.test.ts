@@ -24,6 +24,7 @@ import {
   unpackMatchModel,
   type PackedMatchModel,
   type SparseColumn,
+  type SparseTable,
 } from './matchModelPacking';
 
 const FOUNDING: Founding = {
@@ -401,6 +402,18 @@ describe('container-3 match-model streams (→SAVE-23, HIST-17)', () => {
     fails((p) => season(p).clubs.columns.pop());
     fails((p) => (season(p).competitions.columns[0] = [] as unknown as SparseColumn));
     fails((p) => (season(p).players = packSparseTable([0, 0, 0, 0], 4)));
+    // A tiny crafted table of a million empty rows is refused before its rows are allocated.
+    const empty = (width: number, rows: number) => ({
+      rows,
+      columns: Array.from({ length: width }, () => [{ count: rows, headers: [[0, 0]], data: '' }]),
+    });
+    const crafted = sectionOf(w);
+    crafted.season!.clubs = empty(4 + 12 + TEAM_DETAIL_SIZE, 1_000_000) as SparseTable;
+    expect(() => unpackMatchModel(crafted, str, count)).toThrow('표 차원');
+    fails(
+      (p) =>
+        (p.season!.contributions = empty(2 + 12 + PLAYER_DETAIL_SIZE, 1_000_000) as SparseTable),
+    );
     const competitions = (p: PackedMatchModel) =>
       readSparseTable(season(p).competitions, 4) as number[];
     const replace = (
