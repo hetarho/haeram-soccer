@@ -20,11 +20,14 @@ export const TD = {
   progressivePasses: 6,
   /** Attempted take-ons (successful ones are the dribble counter). */
   takeOns: 7,
-  /** Ball won while the opponent had it in its defensive third. */
+  /** Sequences started by a ball won in open play near the opponent's goal (MATCH-13). */
   highTurnovers: 8,
-  /** Own pass attempts in the defensive and middle thirds: the opponent's PPDA numerator. */
+  /** Own pass attempts in the own part of the pitch PPDA reads: the opponent's PPDA numerator. */
   buildUpPasses: 9,
-  /** Tackles and interceptions while the opponent had the ball in those two thirds. */
+  /**
+   * Defensive actions in the opponent's part of the pitch PPDA reads: tackles and interceptions,
+   * and on the candidate model also challenges lost and fouls (MATCH-13).
+   */
   pressActions: 10,
   /** Completed passes or carries ending in the box from outside it. */
   boxEntries: 11,

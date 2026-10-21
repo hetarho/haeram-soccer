@@ -14,7 +14,7 @@ import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
-import { inBoxCell, isPassKind, xtGain } from './ledger';
+import { inBoxCell, isPassKind, looseBalls, xtGain } from './ledger';
 import {
   binomialDraw,
   exposures,
@@ -517,6 +517,8 @@ function attributeSide(
   });
   // Every move group of the period: pinned completions, then the rest by weight.
   const n = own.rows.length;
+  /** Loose balls the opponent recovered in its high-turnover zone: band played to, count. */
+  const loose: number[] = [];
   // Plain loops and per-group constants (T285): the same draws in the same order as before.
   for (let index = 0; index < ledger.moves.length; index++) {
     const move = ledger.moves[index]!;
@@ -542,8 +544,13 @@ function attributeSide(
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
     }
     // The ball won from this group: interceptions where the pass was played to, tackles on a
-    // failed carry or take-on where it started; in the loser's defensive third a high turnover.
+    // failed carry or take-on where it started; in the winner's high-turnover zone (MATCH-13) each
+    // starts a high turnover, as does a loose ball recovered there (ledger.ts `looseBalls`).
     const pass = traits.pass;
+    if (pass && mirrorBand(traits.toBand) >= COUNTER_ZONES.highTurnover) {
+      const k = looseBalls(move);
+      if (k > 0) loose.push(traits.toBand, k);
+    }
     const won = pass ? move.intercepted : move.attempts - move.completed;
     if (won > 0) {
       const at = pass ? traits.toBand : traits.fromBand;
@@ -592,4 +599,11 @@ function attributeSide(
       (x, line) => (opp.rows[line]!.detail[PD.fouls]! += x),
     );
   });
+  // Who recovered the loose balls, drawn last so every split above keeps its draws (T327).
+  for (let i = 0; i < loose.length; i += 2) {
+    const role = ROLES.defend(LAST_BAND - loose[i]!, 'positioning');
+    multinomialDraw(r, loose[i + 1]!, opp.weights(period, role)).forEach(
+      (x, line) => (opp.rows[line]!.detail[PD.highTurnovers]! += x),
+    );
+  }
 }

@@ -698,7 +698,7 @@ describe('MATCH-29 tactic pairings', () => {
   const TACTICS = TACTIC_PAIRING_TARGET.tactics;
   const z = normalQuantile(0.975);
   interface Readings {
-    /** Minutes in possession, home then away. */
+    /** Possession as a part of 90 (MATCH-3's pass share), home then away. */
     possession?: [number, number];
     freshness?: [number, number];
   }
@@ -1231,6 +1231,10 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       expect(by.get(id)!.reason).toBeDefined();
       expect(by.get(id)!.band).toBeUndefined();
     }
+    // T327 counts both under MATCH-13 r18's published conventions; their bands wait for
+    // published league-season figures, never the engines' output.
+    for (const id of ['ppda', 'highTurnovers'])
+      expect(by.get(id)!.reason).toMatch(/^published figure not in the repo/);
     expect(by.get('lineBreakingPasses')!.value).toBe(0);
     // Too few matches are underpowered; a record without detail rows is missing.
     expect(advancedCounterVerdicts(matches(10, { keyPasses: 9 }))[0]!.status).toBe('underpowered');

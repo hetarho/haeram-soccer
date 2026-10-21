@@ -27,11 +27,21 @@ import type { Tags } from './tags';
 /**
  * MATCH-13's zones on MATCH-14's bands, in the acting side's attack frame, read alike by the grid's
  * tally (points) and the aggregate ledger (cells): a pass that starts from band `finalThird` on is
- * a final-third pass, and below it a build-up pass (PPDA's numerator: the passer's own two thirds);
- * a ball won from band `press` on is won in the opponent's own two thirds (PPDA's denominator), and
- * from band `highTurnover` on in its defensive third (a high turnover).
+ * a final-third pass, and below it a build-up pass (PPDA's numerator: the passer's own 60%); a
+ * tackle, interception, challenge or foul from band `press` on is a defensive action in the
+ * opponent's own 60% (PPDA's denominator); an open-play ball won from band `highTurnover` on
+ * starts a high turnover (within 40 m of the opponent's goal). MATCH-14 has no edge at 40 m from
+ * goal (65 m) or at 60% (42 m and 63 m), so both paths read the nearest band edge: 70 m (35 m from
+ * goal) and 35 m (the two-thirds edge, mirrored at 70 m for the passer).
  */
 export const COUNTER_ZONES = { finalThird: 5, press: 3, highTurnover: 5 } as const;
+/**
+ * MATCH-3: a side's possession is its share of both sides' attempted passes, kept as the home
+ * side's part of `whole` (90 on a record) and half each when nobody passed. The pre-feature model
+ * reads seconds on the ball through the same share.
+ */
+export const possessionShare = (home: number, away: number, whole = 90) =>
+  home + away > 0 ? Math.round((whole * home) / (home + away)) : Math.round(whole / 2);
 /** The band of the same strip in the other side's attack frame (the bands mirror at halfway). */
 export const mirrorBand = (band: number) => 7 - band;
 /** The box: the inner three lanes of the box and goal-area bands (`inBox` on cells, →MATCH-14). */
@@ -74,7 +84,10 @@ export const M = {
   possession: 11,
 } as const;
 
-/** Values per side in `Tally.running()`: the counts before `M.minutes`, possession seconds and xG. */
+/**
+ * Values per side in `Tally.running()`: the counts before `M.minutes`, what possession is shared
+ * by (attempted passes on the candidate model, seconds on the ball before it) and xG.
+ */
 export const RUNNING = M.minutes + 2;
 
 /** x (attack frame) where MATCH-13's zones start (`COUNTER_ZONES`): the final third, press, high turnover. */
@@ -575,7 +588,11 @@ export class Tally {
     this.material?.takeOn(side);
   }
 
-  /** The ball won by `(side, idx)` at `at` (his attack frame): a high turnover from x ≥ 70. */
+  /**
+   * The ball won by `(side, idx)` in open play at `at` (his attack frame) — a tackle, an
+   * interception, a loose ball or a keeper's claim; restarts never come here. It starts his side's
+   * sequence, a high turnover from band `COUNTER_ZONES.highTurnover` on (→MATCH-13).
+   */
   regain(side: 0 | 1, idx: number, at: Point): void {
     if (at[0] >= HIGH_FROM) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
     this.material?.regain(side, at);
@@ -622,9 +639,14 @@ export class Tally {
     if (kind !== 'yellow') this.count(side, idx, TD.redCards, PD.redCards);
   }
 
-  foul(foulerSide: 0 | 1, fouler: number, fouled: number): void {
+  /**
+   * A foul by `(foulerSide, fouler)` on `fouled`; at `at` (the fouler's attack frame) the candidate
+   * model reads it as a defensive action of PPDA (→MATCH-13).
+   */
+  foul(foulerSide: 0 | 1, fouler: number, fouled: number, at?: Point): void {
     this.count(foulerSide, fouler, TD.fouls, PD.fouls);
     this.count((1 - foulerSide) as 0 | 1, fouled, undefined, PD.foulsWon);
+    if (at && this.setup.model !== undefined) this.pressed(foulerSide, at);
   }
 
   offside(side: 0 | 1, target: number): void {
@@ -656,21 +678,33 @@ export class Tally {
     this.xg[side] += recordedXg;
   }
 
-  /** A tackle or interception at `at` (the winner's attack frame); from x ≥ 35 it is a press action (PPDA). */
+  /** A defensive action of `side` at `at` (its attack frame): PPDA's denominator in the press zone. */
+  private pressed(side: 0 | 1, at: Point): void {
+    if (at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
+  }
+
+  /** A tackle won at `at` (the winner's attack frame), a defensive action of PPDA. */
   tackle(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.tackles);
     this.material?.tackle(side);
-    if (at && at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
+    if (at) this.pressed(side, at);
   }
 
+  /** An interception at `at` (the winner's attack frame), a defensive action of PPDA. */
   interception(side: 0 | 1, idx: number, at?: Point): void {
     this.add(side, idx, M.interceptions);
-    if (at && at[0] >= PRESS_FROM) this.count(side, undefined, TD.pressActions, undefined);
+    if (at) this.pressed(side, at);
   }
 
-  dribble(side: 0 | 1, idx: number): void {
+  /**
+   * A take-on won by `(side, idx)` from `from` (his attack frame); on the candidate model the side
+   * he beat lost a challenge there, a defensive action of PPDA (→MATCH-13).
+   */
+  dribble(side: 0 | 1, idx: number, from?: Point): void {
     this.add(side, idx, M.dribbles);
     this.material?.dribble(side);
+    if (from && this.setup.model !== undefined)
+      this.pressed((1 - side) as 0 | 1, [PITCH.length - from[0], PITCH.width - from[1]]);
   }
 
   save(side: 0 | 1, idx: number): void {
@@ -703,14 +737,18 @@ export class Tally {
     return this.lines[side].reduce((sum, line) => sum + line[M.goals]!, 0);
   }
 
-  /** Running team counts for playback (design §10.2): per side `M.goals`…`M.saves`, seconds in possession and xG. */
+  /**
+   * Running team counts for playback (design §10.2): per side `M.goals`…`M.saves`, what possession
+   * is shared by (MATCH-3: attempted passes on the candidate model, seconds on the ball before it)
+   * and xG.
+   */
   running(): Float64Array {
     const out = new Float64Array(2 * RUNNING);
     for (const side of [0, 1] as const) {
       const at = side * RUNNING;
       for (const line of this.lines[side])
         for (let i = 0; i < M.minutes; i++) out[at + i]! += line[i]!;
-      out[at + M.minutes] = this.held[side];
+      out[at + M.minutes] = this.setup.model === undefined ? this.held[side] : out[at + M.passes]!;
       out[at + M.minutes + 1] = this.xg[side];
     }
     return out;
@@ -746,8 +784,12 @@ export class Tally {
       total[M.minutes] = end;
       return total;
     }) as [number[], number[]];
-    const seconds = this.held[0] + this.held[1];
-    const home = seconds > 0 ? Math.round((90 * this.held[0]) / seconds) : 45;
+    // MATCH-3: the share of attempted passes on the candidate model; the pre-feature model keeps
+    // its seconds on the ball (its golden facts).
+    const home =
+      setup.model === undefined
+        ? possessionShare(this.held[0], this.held[1])
+        : possessionShare(metrics[0]![M.passes]!, metrics[1]![M.passes]!);
     metrics[0]![M.possession] = home;
     metrics[1]![M.possession] = 90 - home;
     const players: MatchRecord['players'] = [];

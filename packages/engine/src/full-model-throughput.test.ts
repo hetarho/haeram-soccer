@@ -41,11 +41,15 @@ const facts = (w: World) => ({
  * passes where the players stand, restarts read in the pass zones) change recorded counters but no
  * outcome. A change that alters football outcomes refreshes them together with the calibration
  * evidence (T284's report), never alone; T324's candidate behaviour and recalibration changed the
- * candidate rounds again (aggregate records unchanged), re-recorded at its integration.
+ * candidate rounds again (aggregate records unchanged), re-recorded at its integration. T327's
+ * counting rules (MATCH-3 r19 possession as the share of attempted passes; MATCH-13 r18 high
+ * turnovers from every open-play ball won and PPDA over tackles, interceptions, challenges and
+ * fouls) changed both digests' counters, not their outcomes: scores, xG, incidents, passes, shots
+ * and discipline gave the same digests before and after it.
  */
 const BEFORE = {
-  aggregateRecords: '20f18d306396498f',
-  candidateRounds: '0da975879e67eaaa',
+  aggregateRecords: 'a3c1c7230ca5bc28',
+  candidateRounds: '2955d6675157a6aa',
 };
 
 describe('complete-result throughput (T285)', () => {

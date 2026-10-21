@@ -3,7 +3,7 @@ import { PD, TD } from '../../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Fixture, MatchRecord, World } from '../../../contracts/src/types';
 import { BAND_EDGES, LANE_EDGES, type Point } from '../grid/pitch';
-import { M, Tally } from '../grid/record';
+import { M, RUNNING, Tally } from '../grid/record';
 import { createState, type GridState } from '../grid/state';
 import { gridKit } from '../grid/testkit';
 import { createWorld, ownLeagueClubs } from '../index';
@@ -651,5 +651,96 @@ describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
       expect(grid[k]).toBe(agg[k]);
     expect([agg[TD.buildUpPasses], agg[TD.finalThirdPasses]]).toEqual([3, 2]);
     expect([agg[TD.pressActions], agg[TD.highTurnovers]]).toEqual([3, 1]);
+  });
+
+  it('counts high turnovers and PPDA by the published conventions on both paths', () => {
+    // The opponent's actions in its own frame; ours are read mirrored (our band = 7 − its band).
+    const opp: Partial<AggregateMove>[] = [
+      // A carry tackled in its band 2 (our 5) and a pass intercepted in its band 1 (our 6).
+      { from: cell(2, 2), to: cell(2, 2), kind: 'carry', completed: 0 },
+      { from: cell(1, 2), to: cell(1, 1), completed: 0, intercepted: 1 },
+      // Of two passes into its band 2 one is lost loose (we recover it), and one goes out.
+      { from: cell(2, 2), to: cell(2, 1), attempts: 2, completed: 1 },
+      { from: cell(2, 1), to: cell(2, 0), completed: 0, outTouch: 1 },
+      // A take-on beats us in its band 4 (our 3); one is tackled in its band 5 (our 2).
+      { from: cell(4, 2), to: cell(4, 2), kind: 'takeOn' },
+      { from: cell(5, 2), to: cell(5, 2), kind: 'takeOn', completed: 0 },
+    ];
+    const l = ledger([], opp);
+    // Our fouls on its actions in its band 3 (our 4) and band 5 (our 2).
+    l.sides[1].fouled = [
+      { period: 'regulation', cell: cell(3, 2), n: 2, penalties: 0 },
+      { period: 'regulation', cell: cell(5, 2), n: 1, penalties: 0 },
+    ];
+    expect(ledgerIssues(l)).toEqual([]);
+    const facts = deriveTeamFacts(l).sides;
+    // The detailed engine plays the same: wins reach `regain`, the out of play does not.
+    const { t, s } = tally();
+    const ours = (c: number) => mirror(centre(c));
+    const theirs = (from: number, to: number, ok: boolean) =>
+      t.passEvent(1, 7, { from: centre(from), to: centre(to), ok, kind: 'short' });
+    t.tackle(0, 6, ours(cell(2, 2)));
+    t.regain(0, 6, ours(cell(2, 2)));
+    theirs(cell(1, 2), cell(1, 1), false);
+    t.interception(0, 5, ours(cell(1, 1)));
+    t.regain(0, 5, ours(cell(1, 1)));
+    theirs(cell(2, 2), cell(2, 1), true);
+    theirs(cell(2, 2), cell(2, 1), false);
+    t.regain(0, 9, ours(cell(2, 1)));
+    theirs(cell(2, 1), cell(2, 0), false);
+    t.takeOnAttempt(1, 9);
+    t.dribble(1, 9, centre(cell(4, 2)));
+    t.takeOnAttempt(1, 9);
+    t.tackle(0, 6, ours(cell(5, 2)));
+    t.regain(0, 6, ours(cell(5, 2)));
+    for (const c of [cell(3, 2), cell(3, 2), cell(5, 2)]) t.foul(0, 4, 9, ours(c));
+    const record = t.finish(s);
+    for (const side of [0, 1] as const) {
+      for (const k of [TD.highTurnovers, TD.pressActions, TD.buildUpPasses, TD.fouls])
+        expect(record.detail![side]![k], `side ${side} TD ${k}`).toBe(facts[side].detail[k]);
+      for (const k of [M.tackles, M.interceptions, M.passes, M.dribbles])
+        expect(record.metrics[side]![k], `side ${side} M ${k}`).toBe(facts[side].metrics[k]);
+    }
+    const [own, other] = facts;
+    // Tackle, interception and loose ball in our high zone; not the tackle deeper or the out.
+    expect(own.detail[TD.highTurnovers]).toBe(3);
+    // Tackle, interception, the challenge lost and two fouls from our band 3 on.
+    expect(own.detail[TD.pressActions]).toBe(5);
+    expect(other.detail[TD.buildUpPasses]).toBe(4);
+  });
+
+  it('reads possession as the share of attempted passes', () => {
+    // Thirty of our pass attempts to their twenty, whatever the seconds on the ball or carries.
+    const own: Partial<AggregateMove>[] = [
+      { from: cell(3, 2), to: cell(3, 1), attempts: 24, completed: 22 },
+      { from: cell(5, 2), to: cell(5, 3), attempts: 6, completed: 3 },
+      { from: cell(4, 2), to: cell(4, 2), kind: 'carry', attempts: 15, completed: 15 },
+    ];
+    const opp: Partial<AggregateMove>[] = [
+      { from: cell(2, 2), to: cell(2, 1), attempts: 20, completed: 15 },
+    ];
+    const l = ledger(own, opp);
+    l.sides[0].held = [600];
+    l.sides[1].held = [3000];
+    expect(ledgerIssues(l)).toEqual([]);
+    const facts = deriveTeamFacts(l).sides;
+    const { t, s } = tally();
+    replay(t, own.slice(0, 2));
+    for (let i = 0; i < 20; i++)
+      t.passEvent(1, 7, {
+        from: centre(cell(2, 2)),
+        to: centre(cell(2, 1)),
+        ok: i < 15,
+        kind: 'short',
+      });
+    t.possession(0, 600);
+    t.possession(1, 3000);
+    const record = t.finish(s);
+    // 30 / (30 + 20) of 90.
+    expect([facts[0].metrics[M.possession], facts[1].metrics[M.possession]]).toEqual([54, 36]);
+    expect(record.metrics.map((m) => m[M.possession])).toEqual([54, 36]);
+    // Playback shares running possession by the same passes (grid/playback.ts reads this slot).
+    const running = t.running();
+    expect([running[M.minutes], running[RUNNING + M.minutes]]).toEqual([30, 20]);
   });
 });

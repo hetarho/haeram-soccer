@@ -7,7 +7,14 @@
 import { TD, TEAM_DETAIL_SIZE } from '../../../contracts/src/detail';
 import { CELL_BASELINES } from '../grid/baselines';
 import { cellBand, cellLane } from '../grid/pitch';
-import { COUNTER_ZONES, inBoxCell, isCutBack, M, mirrorBand } from '../grid/record';
+import {
+  COUNTER_ZONES,
+  inBoxCell,
+  isCutBack,
+  M,
+  mirrorBand,
+  possessionShare,
+} from '../grid/record';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_CONFIG } from './config';
 import {
@@ -33,6 +40,15 @@ export const xtGain = (from: number, to: number) =>
   Math.round(Math.max(0, CELL_BASELINES[to]!.xT - CELL_BASELINES[from]!.xT) * 1000);
 /** Where the kernel's pull-back flow (the `cutBack` kind) starts: the byline areas off centre. */
 const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !== 2;
+/**
+ * Of a pass group's failed attempts, the loose balls its opponent recovers in open play: neither
+ * offside, intercepted nor out of play (MATCH-13 high turnovers; credited to no tackle or
+ * interception). A carry or take-on is never loose: its failures are tackles.
+ */
+export const looseBalls = (m: AggregateMove) =>
+  isPassKind(m.kind)
+    ? m.attempts - m.completed - m.offside - m.intercepted - m.outTouch - m.outByline
+    : 0;
 /** Kinds that always go forward; a short pass may go any way. */
 const forwardKinds: ReadonlySet<AggregateMoveKind> = new Set(['long', 'through']);
 
@@ -213,7 +229,7 @@ function freeKicksOf(ledger: AggregateLedger, side: AggregateSide) {
 
 /**
  * One side's team rows read off the ledger under MATCH-13's definitions; the minutes slot holds
- * the match length and possession the side's share of 90, as on the grid.
+ * the match length. Possession needs both sides' passes (`deriveTeamFacts`).
  */
 function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSideFacts {
   const own = ledger.sides[side],
@@ -256,17 +272,22 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
       t[TD.frontOfBoxEntries] += done;
     t[TD.xtAdded] += done * xtGain(move.from, move.to);
   }
-  // The ball this side won from the opponent: tackles on its carries and take-ons, interceptions
-  // of its passes where they were played to, read in this side's frame (MATCH-13's zones).
+  // What this side did against the opponent's moves, read in this side's frame (MATCH-13's
+  // zones): tackles on its carries and take-ons and challenges lost to its won take-ons where they
+  // started; interceptions of its passes and the loose balls this side recovered where they were
+  // played to. Every ball won in open play starts a sequence (high turnovers); tackles,
+  // interceptions and challenges are defensive actions of PPDA, as are fouls (below).
   for (const move of opp.moves) {
-    const tackled = isPassKind(move.kind) ? 0 : move.attempts - move.completed;
-    const at = mirrorBand(cellBand(isPassKind(move.kind) ? move.to : move.from));
-    const won = tackled + move.intercepted;
+    const pass = isPassKind(move.kind);
+    const tackled = pass ? 0 : move.attempts - move.completed;
+    const challenged = move.kind === 'takeOn' ? move.completed : 0;
+    const at = mirrorBand(cellBand(pass ? move.to : move.from));
     m[M.tackles] += tackled;
     m[M.interceptions] += move.intercepted;
-    if (at >= COUNTER_ZONES.highTurnover) t[TD.highTurnovers] += won;
-    if (at >= COUNTER_ZONES.press) t[TD.pressActions] += won;
-    if (isPassKind(move.kind)) {
+    if (at >= COUNTER_ZONES.highTurnover)
+      t[TD.highTurnovers] += tackled + move.intercepted + looseBalls(move);
+    if (at >= COUNTER_ZONES.press) t[TD.pressActions] += tackled + move.intercepted + challenged;
+    if (pass) {
       t[TD.throwIns] += move.outTouch;
       t[TD.goalKicks] += move.outByline - move.cornersWon;
     }
@@ -292,16 +313,17 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
     if (shot.outcome === 'save') m[M.saves]++;
     if (shot.outcome === 'miss') t[TD.goalKicks]++;
   }
-  t[TD.fouls] = sum(opp.fouled, (f) => f.n);
+  // Fouls this side committed, placed where the opponent was fouled (its frame).
+  for (const f of opp.fouled) {
+    t[TD.fouls] += f.n;
+    if (mirrorBand(cellBand(f.cell)) >= COUNTER_ZONES.press) t[TD.pressActions] += f.n;
+  }
   t[TD.yellowCards] = own.cards.yellow;
   t[TD.redCards] = own.cards.red;
   t[TD.corners] = cornersOf(ledger, side);
   t[TD.freeKicks] = freeKicksOf(ledger, side);
   t[TD.penalties] = sum(own.fouled, (f) => f.penalties);
   m[M.minutes] = ledger.length;
-  const held = [sum(ledger.sides[0].held, (s) => s), sum(ledger.sides[1].held, (s) => s)];
-  const home = held[0]! + held[1]! > 0 ? Math.round((90 * held[0]!) / (held[0]! + held[1]!)) : 45;
-  m[M.possession] = side === 0 ? home : 90 - home;
   return { metrics: m, detail: t, xg };
 }
 
@@ -318,13 +340,19 @@ export function deriveTeamFacts(ledger: AggregateLedger): AggregateTeamFacts {
     ledger.sides[side].shots.filter(
       (s) => s.outcome === 'goal' && (period === undefined || s.period === period),
     ).length;
+  const sides: AggregateTeamFacts['sides'] = [sideCounters(ledger, 0), sideCounters(ledger, 1)];
+  // MATCH-3: possession is each side's share of both sides' attempted passes, out of 90 as on the
+  // grid.
+  const home = possessionShare(sides[0].metrics[M.passes]!, sides[1].metrics[M.passes]!);
+  sides[0].metrics[M.possession] = home;
+  sides[1].metrics[M.possession] = 90 - home;
   return {
     length: ledger.length,
     score: [goals(0), goals(1)],
     ...(ledger.length === 120 && {
       regulation: [goals(0, 'regulation'), goals(1, 'regulation')] as [number, number],
     }),
-    sides: [sideCounters(ledger, 0), sideCounters(ledger, 1)],
+    sides,
     ledger,
   };
 }

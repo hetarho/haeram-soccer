@@ -411,6 +411,57 @@ describe('candidate counting rules (→MATCH-13, MATCH-14, MATCH-30)', () => {
     const before = detail(old).td;
     expect([before[TD.buildUpPasses], before[TD.finalThirdPasses]]).toEqual([0, 0]);
   });
+
+  it('counts a high turnover from an open-play win within 40 m', () => {
+    // Every ball won in open play reaches the tally through `regain` — a tackle, an interception,
+    // a loose ball or a claim; a restart hands the ball over without it — and starts the winner's
+    // sequence. MATCH-14 has no edge 40 m from goal (65 m), so both paths start the zone at the
+    // nearest one, 35 m out (→MATCH-13 r18, COUNTER_ZONES).
+    expect(BAND_EDGES[COUNTER_ZONES.highTurnover]).toBe(70);
+    const { t, s } = placed({ GK: 104, DF: 85, MF: 60, FW: 40 });
+    t.tackle(0, 6, [70, 30]);
+    t.regain(0, 6, [70, 30]); // a tackle at the zone's edge
+    t.regain(0, 9, [96, 34]); // a loose ball won in the box
+    t.regain(0, 6, [69.9, 30]); // in the band below: 35.1 m out
+    t.regain(0, 3, [20, 34]); // in the own third
+    t.regain(1, 9, [80, 34]); // the other side's, in its own frame
+    const record = t.finish(s);
+    const [own, other] = record.detail!;
+    expect(own![TD.highTurnovers]).toBe(2);
+    expect(other![TD.highTurnovers]).toBe(1);
+    const pd = (idx: number) => record.players[idx]!.detail![PD.highTurnovers];
+    expect([pd(6), pd(9), pd(3)]).toEqual([1, 1, 0]);
+  });
+
+  it("divides PPDA by every defensive action in the opponent's 60%", () => {
+    // The zone sits on MATCH-14's two-thirds edge for 60%: the presser's 35 m, the passer's 70 m.
+    const { t, s } = placed({ GK: 104, DF: 85, MF: 60, FW: 40 });
+    const theirs = (from: Point, to: Point, ok = true) =>
+      t.passEvent(1, 7, { from, to, ok, kind: 'short' });
+    theirs([30, 34], [40, 34]);
+    theirs([60, 34], [66, 34], false);
+    theirs([75, 34], [80, 34]); // in its final third: outside the numerator
+    // Our tackle, interception, challenge lost to a take-on and foul from 35 m in our frame.
+    t.tackle(0, 6, [40, 30]);
+    t.interception(0, 5, [36, 30]);
+    t.dribble(1, 9, [60, 34]); // he beat us 60 m up in his frame, 45 m up in ours
+    t.foul(0, 4, 9, [50, 30]);
+    // The same actions deeper in our half are not pressing.
+    t.tackle(0, 6, [34.9, 30]);
+    t.dribble(1, 9, [75, 34]);
+    t.foul(0, 4, 9, [20, 30]);
+    const record = t.finish(s);
+    const [own, other] = record.detail!;
+    expect(own![TD.pressActions]).toBe(4);
+    expect(other![TD.buildUpPasses]).toBe(2);
+    expect(own![TD.fouls]).toBe(2);
+    // The pre-feature tally keeps tackles and interceptions only (its golden facts).
+    const old = fresh();
+    old.tackle(0, 6, [40, 30]);
+    old.dribble(1, 9, [60, 34]);
+    old.foul(0, 4, 9, [50, 30]);
+    expect(detail(old).td[TD.pressActions]).toBe(1);
+  });
 });
 
 describe('candidate own match record (→MATCH-13, MATCH-25, MATCH-26)', () => {

@@ -102,7 +102,8 @@ const TEAM_METRIC_META: Record<keyof typeof M, CounterMeta> = {
   dribbles: { label: 'successful take-ons', source: 'MATCH-3' },
   saves: { label: 'saves', source: 'MATCH-3' },
   minutes: { label: 'match length', stored: 'minutes', source: 'MATCH-3' },
-  possession: { label: 'minutes in possession', stored: 'minutes', source: 'MATCH-3' },
+  // MATCH-3 r19: the share of both sides' attempted passes, recorded as a part of 90.
+  possession: { label: 'possession (pass share of 90)', stored: 'minutes', source: 'MATCH-3' },
 };
 
 const TEAM_DETAIL_META: Record<keyof typeof TD, CounterMeta> = {
@@ -116,7 +117,10 @@ const TEAM_DETAIL_META: Record<keyof typeof TD, CounterMeta> = {
   takeOns: { label: 'take-ons attempted', source: 'MATCH-13' },
   highTurnovers: { label: 'high turnovers', source: 'MATCH-13' },
   buildUpPasses: { label: 'build-up pass attempts (opponent PPDA numerator)', source: 'MATCH-13' },
-  pressActions: { label: 'press tackles and interceptions (PPDA denominator)', source: 'MATCH-13' },
+  pressActions: {
+    label: 'press tackles, interceptions, challenges and fouls (PPDA denominator)',
+    source: 'MATCH-13',
+  },
   boxEntries: { label: 'box entries', source: 'MATCH-13' },
   frontOfBoxEntries: { label: 'front-of-box entries', source: 'MATCH-13' },
   lineBreakingPasses: { label: 'line-breaking passes', source: 'MATCH-13' },
@@ -2138,10 +2142,11 @@ const OPTA = 'FBref (Opta) squad tables 2017/18–2023/24, five leagues';
  * sources, league-seasons and mapping): a band is the span of the cited league-season means
  * rounded outward, never an engine's output. Counters MATCH-23 already bands point at that row;
  * a counter without a comparable public source is listed as unbanded with its reason and held to
- * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's.
+ * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's. v2 (T327): high
+ * turnovers and PPDA count under MATCH-13 r18's published conventions.
  */
 export const ADVANCED_COUNTER_TARGET = {
-  version: 1,
+  version: 2,
   source: 'MATCH-30',
   counters: [
     {
@@ -2239,7 +2244,7 @@ export const ADVANCED_COUNTER_TARGET = {
       reads: 'td.highTurnovers',
       unit: 'count',
       unbanded:
-        "sources disagree under MATCH-13's zone: StatsBomb 2015/16 open-play possessions won in the final third 1.0–1.2 a team against its ball-winning events there 12–13, and Opta publishes sequences from 40 m or less (about 7.5 a team); decision requested",
+        "published figure not in the repo; fetch in a supervised session. Counted as MATCH-13 r18's Opta convention (a sequence from an open-play ball won within 40 m of the opponent's goal, read from MATCH-14's nearest edge, 35 m); the repo holds only Opta's about 15 a match for both sides (about 7.5 a team) without league or season",
     },
     {
       id: 'ppda',
@@ -2248,7 +2253,7 @@ export const ADVANCED_COUNTER_TARGET = {
       reads: 'ratio.ppda',
       unit: 'ratio',
       unbanded:
-        "published PPDA (Opta, StatsBomb, Understat) divides by defensive actions with fouls and challenges, not MATCH-13's tackles + interceptions; computed from StatsBomb 2015/16 under MATCH-13 it is 33–44, but StatsBomb's tackles run about a quarter below FBref's, which MATCH-23's tackle band reads; decision requested",
+        "published figure not in the repo; fetch in a supervised session. Counted as MATCH-13 r18's published convention (the opponent's passes in its own 60% ÷ tackles, interceptions, challenges and fouls there, read on MATCH-14's two-thirds edge); the repo holds only press-style ranges (high 7–10, mid 11–14, low 15–20, ends estimated; StatsBomb, Hudl), no league-season means",
     },
     {
       id: 'fieldTilt',
