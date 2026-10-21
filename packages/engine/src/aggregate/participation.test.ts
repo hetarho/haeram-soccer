@@ -12,6 +12,7 @@ import {
   planParticipation,
   rebalanceIssues,
   scoreBefore,
+  sideDraw,
 } from './participation';
 import { settleParticipation } from './engine';
 import { aggregateStreams, generateTeamFacts } from './team';
@@ -385,6 +386,18 @@ describe('aggregate participation plan (→MATCH-19, MATCH-20, MATCH-21, MATCH-2
     expect(participationTimelineIssues(early.input, p, early.plan.era).join()).toMatch(
       /without an injury/,
     );
+  });
+
+  it('gives each side its own named stream', () => {
+    const streams = aggregateStreams('synthetic', 'sides');
+    const take = (side: AggregateSide, n: number) => {
+      const r = sideDraw(streams, 'discipline', side, 'regulation');
+      return Array.from({ length: n }, () => r());
+    };
+    expect(take(0, 4)).not.toEqual(take(1, 4));
+    // Restarted by name: a side's sequence does not depend on what the other drew.
+    take(1, 50);
+    expect(take(0, 4)).toEqual(take(0, 4));
   });
 
   it('splits counts exactly over positive weights', () => {

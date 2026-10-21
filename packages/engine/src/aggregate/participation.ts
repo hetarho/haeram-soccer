@@ -10,6 +10,7 @@ import type { Line } from '../../../contracts/src/player';
 import { CHANGES_CONFIG } from '../grid/changes';
 import { INTERVAL_STAMPS } from '../match-model';
 import type { EraRules } from '../grid/setup';
+import { random } from '../primitives';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { participationIssues } from './input';
 import type {
@@ -23,11 +24,25 @@ import type {
   AggregateSide,
   AggregateSidePlan,
   AggregateStint,
+  AggregateStreamFamily,
   AggregateStreams,
   AggregateTeamFacts,
 } from './types';
 
 type Rng = () => number;
+
+/**
+ * One side's own sequence of a stream family (`<stream name>:side<n>`), so the two sides never
+ * copy each other's draws and neither moves when the other draws more (→ARCH-5).
+ */
+export function sideDraw(
+  streams: AggregateStreams,
+  family: AggregateStreamFamily,
+  side: AggregateSide,
+  period?: AggregatePeriod,
+): Rng {
+  return random(`${streams.names(family, period)}:side${side}`);
+}
 
 // Grouped draws, as the kernel draws them: each costs about its result.
 export function normalDraw(r: Rng) {
@@ -426,9 +441,9 @@ class SidePlanner {
     const { from, to } = AGGREGATE_CONFIG.periods[period];
     this.period = { from, to };
     const span = to - from;
-    const cards = streams.draw('discipline', period),
-      hurts = streams.draw('injuries', period),
-      changes = streams.draw('changes', period);
+    const cards = sideDraw(streams, 'discipline', this.side, period),
+      hurts = sideDraw(streams, 'injuries', this.side, period),
+      changes = sideDraw(streams, 'changes', this.side, period);
     const n = this.input.sides[this.side].lines.length;
     this.hurtDraws = Array.from({ length: n }, () => hurts());
     this.hurtAt.clear();
@@ -721,8 +736,9 @@ class SidePlanner {
  * The match's participation timeline before its team facts (→MATCH-20/21/27): each side's XI in
  * its slots, injuries at CLUB-23's chance in proportion to minutes, cards at the configured rates
  * to players present at the moment, dismissals and unreplaced injuries leaving a side short, and
- * the manager's changes under the era's limits. Each period draws on streams of its own, so
- * planning 120 minutes keeps the first 90 exactly as planned for 90. `decisions` says which red
+ * the manager's changes under the era's limits. Each side and period draws on streams of its own
+ * (`sideDraw`), so the sides never mirror each other and planning 120 minutes keeps the first 90
+ * exactly as planned for 90. `decisions` says which red
  * cards (`side:reds`) the side answers with its rebalance; unlisted ones are answered.
  */
 export function planParticipation(

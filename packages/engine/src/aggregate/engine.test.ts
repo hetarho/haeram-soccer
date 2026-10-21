@@ -173,6 +173,28 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     expect(withheld).toBeGreaterThan(0);
   });
 
+  it("draws each side's cards, injuries and stoppages on its own streams", () => {
+    // A shared stream made both sides booked, hurt and changed in the same minutes.
+    const { w, fixtures } = others(200, 2024);
+    let compared = 0,
+      same = 0;
+    for (const f of fixtures) {
+      const incidents = simulateAggregate(w, f).record.incidents ?? [];
+      for (const kinds of [['yellow', 'secondYellow', 'red'], ['injury'], ['sub']]) {
+        const at = (side: 0 | 1) =>
+          incidents
+            .filter((x) => x.side === side && kinds.includes(x.kind))
+            .map((x) => x.minute)
+            .join(',');
+        if (at(0) === '' || at(1) === '') continue;
+        compared++;
+        if (at(0) === at(1)) same++;
+      }
+    }
+    expect(compared).toBeGreaterThan(200);
+    expect(same / compared).toBeLessThan(0.05);
+  });
+
   it('produces valid man-short records in eras without substitutes', () => {
     for (const year of [1950, 1966, 1990, 2024]) {
       const { w, fixtures } = others(40, year);

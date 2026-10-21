@@ -21,6 +21,7 @@ import {
   multinomialDraw,
   playedMinutes,
   recordLines,
+  sideDraw,
   weightedIndex,
   type AggregateExposure,
 } from './participation';
@@ -376,11 +377,17 @@ export function attributePlayerFacts(
     new SideLines(1, input, plan, participation),
   ] as const;
   const credits: AggregateShotCredit[] = [];
-  for (const period of facts.ledger.periods) {
-    const r = streams.draw('attribution', period);
+  for (const period of facts.ledger.periods)
     for (const side of [0, 1] as const)
-      attributeSide(r, period, side, sides, facts, participation, credits);
-  }
+      attributeSide(
+        sideDraw(streams, 'attribution', side, period),
+        period,
+        side,
+        sides,
+        facts,
+        participation,
+        credits,
+      );
   for (const x of participation.incidents) {
     const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
     if (x.kind === 'yellow' || x.kind === 'secondYellow') d[PD.yellowCards]!++;
