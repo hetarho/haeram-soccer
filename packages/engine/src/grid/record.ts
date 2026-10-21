@@ -67,6 +67,8 @@ export interface GridDiagnostics {
   directions: [number[], number[]];
   /** Each possession's pass attempts and whether it ended in a shot. */
   possessions: { side: 0 | 1; passes: number; shot: boolean }[];
+  /** Each side's freshness at the final whistle (changes.ts `sideFreshness`, →MATCH-29). */
+  freshness: [number, number];
 }
 
 /** The schema's caps on a match's material rows: shots and network pairs. */
@@ -302,7 +304,8 @@ export class Tally {
   readonly material?: MaterialTally;
   readonly highlights: MatchRecord['highlights'] = [];
   readonly incidents: Incident[] = [];
-  readonly diagnostics: GridDiagnostics = {
+  /** Counted through the match; `freshness` is read once at the final whistle. */
+  readonly diagnostics: Omit<GridDiagnostics, 'freshness'> = {
     ballInPlay: 0,
     shots: [],
     directions: [

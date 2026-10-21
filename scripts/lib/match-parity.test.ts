@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
-import type { MatchRecord } from '../../packages/contracts/src/types';
+import type { MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import { M } from '../../packages/engine/src/grid/record';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
 import {
@@ -20,8 +20,10 @@ import {
   CORPUS_CONFIG,
   corpusFixtureIds,
   COUNTER_INDEXES,
+  describeTacticPairings,
   equivalencePower,
   INCIDENT_KINDS,
+  MATCH_PARITY_VERSION,
   METRIC_BY_ID,
   METRIC_REGISTRY,
   normalCdf,
@@ -33,11 +35,14 @@ import {
   requiredRareEvents,
   ruleExclusions,
   seedOverlap,
+  TACTIC_PAIRING_TARGET,
+  tacticPairingVerdicts,
   validateCorpusConfig,
   validateRegistry,
   validationSize,
   type MatchSample,
   type Observations,
+  type PairingEstimate,
   type PerformanceComponent,
   type Provenance,
 } from './match-parity';
@@ -661,5 +666,197 @@ describe('match parity registry', () => {
     expect(status(inverted, 'attempts')).toBe('fail');
     expect(status(record(), 'detail-attempts')).toBe('unsupported');
     expect(status(record(), 'reconcile')).toBe('unsupported');
+  });
+});
+
+describe('MATCH-29 tactic pairings', () => {
+  const TACTICS = TACTIC_PAIRING_TARGET.tactics;
+  const z = normalQuantile(0.975);
+  interface Readings {
+    /** Minutes in possession, home then away. */
+    possession?: [number, number];
+    freshness?: [number, number];
+  }
+  /** A synthetic match of `home` at home to `away` with this 90-minute score. */
+  function tactical(home: Tactic, away: Tactic, score: [number, number], o: Readings = {}) {
+    const metrics = [team(score[0]), team(score[1])] as MatchRecord['metrics'];
+    if (o.possession) [metrics[0][M.possession], metrics[1][M.possession]] = o.possession;
+    return {
+      ...sample(
+        record({
+          tactics: [home, away],
+          score: { home: score[0], away: score[1] },
+          metrics,
+          xg: [1.2, 1.1],
+          detail: [emptyTeamDetail(), emptyTeamDetail()],
+        }),
+      ),
+      condition: `tactics:${home}-${away}`,
+      ...(o.freshness && { freshness: o.freshness }),
+    } as MatchSample;
+  }
+  /** `n` matches at one venue: `wins` home wins and `draws` draws, the rest away wins. */
+  const venue = (home: Tactic, away: Tactic, n: number, wins: number, draws: number) =>
+    Array.from({ length: n }, (_, i) =>
+      tactical(home, away, i < wins ? [1, 0] : i < wins + draws ? [0, 0] : [0, 1], {
+        freshness: [80, 80],
+      }),
+    );
+  const row = (samples: MatchSample[], id: string) =>
+    tacticPairingVerdicts(samples).rows.find((r) => r.id === id)!;
+  /** Variance of a venue mean of a 0/1 reading times `weight`, from the sample spread. */
+  const venueVariance = (p: number, n: number, weight: number) =>
+    (weight * weight * p * (1 - p) * n) / (n - 1) / n;
+
+  it('pools both venues of a pairing', () => {
+    // Venue shares weigh equally whatever their sizes: draws 0.25 and 0.5 pool to 0.375, not 50/120.
+    const samples = [
+      ...venue('counter', 'press', 40, 20, 10),
+      ...venue('press', 'counter', 80, 20, 40),
+      ...venue('press', 'press', 40, 15, 10),
+    ];
+    const report = tacticPairingVerdicts(samples);
+    expect(report.version).toBe(MATCH_PARITY_VERSION);
+    expect(report.target).toBe(TACTIC_PAIRING_TARGET.version);
+    expect(report.venues).toEqual({ 'counter-press': 40, 'press-counter': 80, 'press-press': 40 });
+    const draws = report.rows.find((r) => r.id === 'draws:press-counter')!;
+    expect(draws.matches).toBe(120);
+    expect(draws.value).toBeCloseTo(0.375, 12);
+    const half = z * Math.sqrt(venueVariance(0.25, 40, 0.5) + venueVariance(0.5, 80, 0.5));
+    expect(draws.interval![0]).toBeCloseTo(0.375 - half, 12);
+    expect(draws.interval![1]).toBeCloseTo(0.375 + half, 12);
+    // Press wins 20/80 at home and 10/40 away; counter 20/40 at home and 20/80 away.
+    const gap = report.rows.find((r) => r.id === 'winShareGap:press-counter')!;
+    expect(gap.value).toBeCloseTo((20 / 80 + 10 / 40) / 2 - (20 / 40 + 20 / 80) / 2, 12);
+    // A mirror pairing has one venue: both sides' readings come from it.
+    expect(report.rows.find((r) => r.id === 'draws:press-press')!.value).toBeCloseTo(0.25, 12);
+    expect(describeTacticPairings(report)[0]).toContain(
+      `target v${TACTIC_PAIRING_TARGET.version}, ${MATCH_PARITY_VERSION}`,
+    );
+  });
+
+  it('flags a pairing outside the draw band', () => {
+    const decided = [
+      ...venue('possession', 'balanced', 40, 40, 0),
+      ...venue('balanced', 'possession', 40, 40, 0),
+    ];
+    expect(row(decided, 'draws:possession-balanced')).toMatchObject({
+      status: 'outside',
+      value: 0,
+      band: TACTIC_PAIRING_TARGET.draws,
+    });
+    const level = [
+      ...venue('possession', 'counter', 40, 10, 20),
+      ...venue('counter', 'possession', 40, 10, 20),
+    ];
+    expect(row(level, 'draws:possession-counter').status).toBe('outside');
+    const usual = [
+      ...venue('possession', 'counter', 400, 150, 100),
+      ...venue('counter', 'possession', 400, 150, 100),
+    ];
+    expect(row(usual, 'draws:possession-counter')).toMatchObject({ status: 'inside', value: 0.25 });
+    // The same share on a tenth of the matches cannot resolve the band.
+    const few = [
+      ...venue('possession', 'counter', 40, 15, 10),
+      ...venue('counter', 'possession', 40, 15, 10),
+    ];
+    expect(row(few, 'draws:possession-counter').status).toBe('insufficient');
+  });
+
+  it('requires counter at least press head to head', () => {
+    const headToHead = (counterWins: number, pressWins: number) => [
+      ...venue('counter', 'press', 40, counterWins, 40 - counterWins - pressWins),
+      ...venue('press', 'counter', 40, pressWins, 40 - counterWins - pressWins),
+    ];
+    const beaten = row(headToHead(5, 25), 'atLeast:counter-press');
+    expect(beaten.status).toBe('outside');
+    expect(beaten.differences).toMatchObject([
+      { higher: 'counter', lower: 'press', strict: false, status: 'fails' },
+    ]);
+    expect(beaten.differences![0]!.value).toBeCloseTo(5 / 40 - 25 / 40, 12);
+    expect(row(headToHead(25, 5), 'atLeast:counter-press').status).toBe('inside');
+    // Level on the evidence is unresolved, not a pass.
+    expect(row(headToHead(15, 15), 'atLeast:counter-press')).toMatchObject({
+      status: 'insufficient',
+      differences: [{ status: 'unresolved', value: 0 }],
+    });
+  });
+
+  it('holds an ordering only beyond its interval', () => {
+    /**
+     * Every venue of two different tactics with 40 matches; the home side holds the ball
+     * 50 + strength(home) − strength(away) per cent of the time, give or take `noise`.
+     */
+    const possession = (strength: Record<Tactic, number>, noise: number) =>
+      TACTICS.flatMap((home) =>
+        TACTICS.filter((away) => away !== home).flatMap((away) =>
+          Array.from({ length: 40 }, (_, i) => {
+            const share = 50 + strength[home] - strength[away] + (i % 2 ? noise : -noise);
+            return tactical(home, away, [0, 0], { possession: [share, 100 - share] });
+          }),
+        ),
+      );
+    const order = (samples: MatchSample[]) => row(samples, 'ordering:possession');
+    const clear = order(possession({ possession: 6, press: 0, balanced: 0, counter: -6 }, 0));
+    expect(clear.status).toBe('inside');
+    // possession over the other three and the other two over counter, each pair once.
+    expect(clear.differences!.map((d) => `${d.higher}>${d.lower}`)).toEqual([
+      'possession>press',
+      'possession>counter',
+      'possession>balanced',
+      'press>counter',
+      'balanced>counter',
+    ]);
+    expect(clear.differences!.every((d) => d.strict && d.status === 'holds')).toBe(true);
+    // The same order within the noise: every difference above zero, none beyond its interval.
+    const noisy = order(possession({ possession: 2, press: 0, balanced: 0, counter: -2 }, 30));
+    expect(noisy.status).toBe('insufficient');
+    expect(noisy.differences!.every((d) => d.value! > 0 && d.status === 'unresolved')).toBe(true);
+    const reversed = order(possession({ possession: -6, press: 0, balanced: 0, counter: 6 }, 0));
+    expect(reversed.status).toBe('outside');
+    // Each tactic's share against the other three: 50 + its strength − their mean strength.
+    const report = tacticPairingVerdicts(
+      possession({ possession: 6, press: 0, balanced: 0, counter: -6 }, 0),
+    );
+    expect((report.tactics.possession!.possession as PairingEstimate).value).toBeCloseTo(58, 10);
+    expect((report.tactics.counter!.possession as PairingEstimate).value).toBeCloseTo(42, 10);
+  });
+
+  it('reports insufficient samples rather than a pass', () => {
+    // Every venue at the band's centre on too few matches: nothing passes, nothing fails.
+    const thin = TACTICS.flatMap((home) => TACTICS.flatMap((away) => venue(home, away, 20, 8, 5)));
+    const report = tacticPairingVerdicts(thin);
+    expect(report.rows.length).toBe(25);
+    expect(report.summary).toEqual({ inside: 0, outside: 0, insufficient: 25 });
+    expect(report.rows.every((r) => /fewer than 30/.test(r.reason!))).toBe(true);
+    // A missing venue and a measure no sample carries are insufficient too.
+    expect(row(venue('press', 'balanced', 40, 10, 10), 'draws:press-balanced').reason).toBe(
+      '0 matches with balanced at home to press, fewer than 30',
+    );
+    const unfresh = TACTICS.flatMap((home) =>
+      TACTICS.flatMap((away) => Array.from({ length: 30 }, () => tactical(home, away, [1, 1]))),
+    );
+    expect(row(unfresh, 'ordering:freshness')).toMatchObject({
+      status: 'insufficient',
+      reason: '30 matches with possession at home to press lack a reading',
+    });
+  });
+
+  it('reads knockout counts per 90 minutes', () => {
+    const kicks = (extraTime: boolean) => {
+      const r = record({ detail: [emptyTeamDetail(), emptyTeamDetail()] });
+      r.detail![0]![TD.goalKicks] = 10;
+      r.detail![1]![TD.goalKicks] = 10;
+      if (extraTime) r.regulation = { home: 0, away: 0 };
+      return sample(r);
+    };
+    const read = (samples: MatchSample[], id: string) =>
+      buildTargetReport(samples).find((t) => t.id === id)!;
+    const cup = Array.from({ length: 40 }, () => kicks(true));
+    expect(read(cup, 'goalKicks').status).toBe('inside');
+    expect(read(cup, 'goalKicks').value).toBeCloseTo(7.5, 12);
+    expect(read(cup, 'passCompletion').value).toBe(80);
+    const league = Array.from({ length: 40 }, () => kicks(false));
+    expect(read(league, 'goalKicks')).toMatchObject({ value: 10, status: 'outside' });
   });
 });

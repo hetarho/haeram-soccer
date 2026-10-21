@@ -12,7 +12,8 @@
  *
  * Calibration report: the candidate model (requested explicitly; the release switch stays off)
  * across CORPUS_CONFIG's core, tactic-pairing, gap, tier, era and knockout conditions, through the
- * shared target, outcome-curve and invariant reports, written with its source fingerprint.
+ * shared target, outcome-curve and invariant reports and MATCH-29's tactic-pairing verdicts over
+ * the tactics family, written with its source fingerprint.
  *
  *   pnpm exec tsx scripts/grid-bands.ts --report [--partition calibration|validation] [--round N]
  *     [--scale S] [--only core,tactics,gap,tier,era,knockout | --conditions id,…] [--jobs N]
@@ -61,7 +62,9 @@ import {
   conditionOf,
   CORPUS_CONFIG,
   corpusFixtureId,
+  describeTacticPairings,
   MATCH_PARITY_VERSION,
+  tacticPairingVerdicts,
   type MatchSample,
   type Partition,
 } from './lib/match-parity';
@@ -334,7 +337,7 @@ function poolClub(strength: number, u: number): { w: World; club: Club } {
 
 let corePairs: { w: World; home: Club; away: Club }[] | undefined;
 /** The core condition's world-country-roster pairs, each club on its own tactic. */
-function coreFixturePairs() {
+export function coreFixturePairs() {
   if (corePairs) return corePairs;
   const p = CORPUS_CONFIG.conditions[0]!.params as {
     worldSeeds: string[];
@@ -428,6 +431,7 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       condition: c.id,
       // Match strength of two clubs nobody owns: XI ratings and home ground (MATCH-2).
       gap: rating(w, home, f) + 3 - rating(w, away, f),
+      freshness: result.diagnostics.freshness,
     });
   }
   return { samples, ms: (performance.now() - started) / Math.max(1, job.count) };
@@ -436,6 +440,23 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
 /** Skill points a squad's weekly press load costs an outfielder (slotSkill: an eighth of the excess). */
 const pressLoad = (tactic: Tactic) =>
   tactic === 'press' ? fatigueLoad(PRESS_LOAD_FATIGUE) / 8 : 0;
+
+/**
+ * What MATCH-29 reads of a match (tactics, results, team rows, xG and freshness), small enough to
+ * cross the worker channel: player lines, highlights and incidents stay behind.
+ */
+const pairingSample = (s: MatchSample): MatchSample => ({
+  record: {
+    ...s.record,
+    players: [],
+    highlights: [],
+    lineCounts: undefined,
+    incidents: undefined,
+  },
+  incidentsTracked: false,
+  condition: s.condition,
+  freshness: s.freshness,
+});
 
 const LINES = ['FW', 'MF', 'DF', 'GK'];
 /** One side's per-match means: the press diagnosis reads where its shots come from and who takes them. */
@@ -581,6 +602,7 @@ function summarise(job: Job) {
       c.family === 'gap'
         ? samples.map((s, i) => [s.gap!, ninety[i]!.home, ninety[i]!.away] as const)
         : undefined,
+    pairingSamples: c.family === 'tactics' ? samples.map(pairingSample) : undefined,
   };
 }
 type Summary = ReturnType<typeof summarise>;
@@ -673,6 +695,9 @@ async function runReport() {
     })),
   );
   const curve = gapSamples.length ? buildOutcomeTargetReport(gapSamples) : null;
+  // MATCH-29 pools each pairing's two venues, which are two tactics-family conditions.
+  const pairingSamples = done.flatMap((d) => d.pairingSamples ?? []);
+  const tacticPairings = pairingSamples.length ? tacticPairingVerdicts(pairingSamples) : null;
   const measured = new Set(done.map((d) => d.condition));
   const report = {
     kind: 'detailed-model-calibration',
@@ -707,7 +732,9 @@ async function runReport() {
       movement: GRID_MOVEMENT_CONFIG,
       ball: GRID_BALL_CONFIG,
       forcedTactics:
-        'tactic pairings force both tactics on the core pairs; the weekly press load (MATCH-2, fatigue 32: 1.5 skill points an outfielder) moves with the tactic played',
+        "tactic pairings force both tactics on the core pairs; the weekly press load (MATCH-2, fatigue 32: 1.5 skill points an outfielder) moves with the tactic played, while end-of-match freshness (MATCH-29) starts from each club's own squad fatigue",
+      knockouts:
+        'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
     },
     coverage: CORPUS_CONFIG.conditions.map((c) => ({
       condition: c.id,
@@ -719,7 +746,13 @@ async function runReport() {
       msPerMatch: Object.fromEntries(done.map((d) => [d.condition, d.msPerMatch])),
     },
     outcomeCurve: curve,
-    conditions: done.map((d) => ({ ...d, gapScores: undefined, msPerMatch: undefined })),
+    tacticPairings,
+    conditions: done.map((d) => ({
+      ...d,
+      gapScores: undefined,
+      pairingSamples: undefined,
+      msPerMatch: undefined,
+    })),
   };
   mkdirSync(dirname(out), { recursive: true });
   // Five significant digits keep the artifact readable without changing any reading it records.
@@ -738,6 +771,7 @@ async function runReport() {
         .join(' ')}`,
     );
   if (curve) console.log(`outcome curve mean absolute error (−10…+40): ${curve.meanAbsoluteError}`);
+  if (tacticPairings) for (const line of describeTacticPairings(tacticPairings)) console.log(line);
 }
 
 if (args.includes('--worker')) {

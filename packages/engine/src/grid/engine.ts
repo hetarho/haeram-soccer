@@ -51,7 +51,7 @@ import {
   type GridState,
 } from './state';
 import { lineOf } from '../player';
-import { applyChanges, coverGoal, drawInjury, leave, planChanges } from './changes';
+import { applyChanges, coverGoal, drawInjury, leave, planChanges, sideFreshness } from './changes';
 import { shotEnd, Tracer, type TraceEntry } from './trace';
 import { stampAt } from './playback';
 import {
@@ -839,6 +839,6 @@ export function playGrid(setup: GridSetup): GridResult {
     record,
     ...(setup.observe ? { trace: tracer.entries } : {}),
     elapsed: s.elapsed,
-    diagnostics: tally.diagnostics,
+    diagnostics: { ...tally.diagnostics, freshness: [sideFreshness(s, 0), sideFreshness(s, 1)] },
   };
 }
