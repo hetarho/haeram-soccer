@@ -182,7 +182,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
 | T277 | Connect player intentions through support, pressing and covering reactions | MATCH PLAYER STAFF ARCH | T276 | todo |
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
@@ -202,17 +201,14 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 19 | 7 | 12 | 1 | 0 | 1 | 2026-10-21T09:26:33.791Z | [history](work/full-model.json) |
+| full-model | 3 | 19 | 8 | 11 | 0 | 2 | 0 | 2026-10-21T11:02:04.666Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- T280 (submitted; review asked for one fix): continue from branch wip/full-model-T280 (a2c9e75 implementation + f7709b3 partial correction). P2: the red-card rebalance substitution may happen only when level or ahead (MATCH-20, STAFF-45; grid/changes.ts checks score >= 0) — add a trailing ten-man test. P3s: corrupted-record fixtures for the new validator checks; first-minute in-play subs using no window (note for T286); an unavailable starter plays with an empty bench (→T281). Then task checks, batch gate, merge to main.
-- T277 (coordination): partial, unverified work on branch wip/full-model-T277 (from 679cd2c); finish it, or restart from main if it reads poorly.
-- T275 is runnable now (T274 done); it shares docs/MATCH-ENGINE-DESIGN.md with T277, so run them one after the other. T281 follows T280, T283 follows T281; explore T278, T284, T285 then T286; T306 waits for T304 and T286.
-- the full-model work group's runtime state lives only in this host's clone (hq-dev1); on another machine run the remaining tasks standalone or start a new group. The released pre-split T304 attempt is kept on local branch task/full-model/T304-36f498aa (not needed: the new T304 is done).
-- CI: e1896bc (T273+T274) passed every job; the later code pushes (T279, and T276/T304/T305 with this session's close) have not been checked by this session.
+- inspect work board for remaining tasks
 
 ## log
+- 261021 T275 integrated
 - 261021 f6n3 stopped at the owner's request (moving to another machine): full-model integrated T273 T274 T276 T279 T282 T304 T305 into main; T280 (changes requested) and T277 (partial) pushed to wip/full-model-T280 and wip/full-model-T277; report 261021-f6n3.
 - 261021 T305 integrated
 - 261021 T276 integrated
@@ -232,4 +228,3 @@
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
-- 261021 T282 integrated

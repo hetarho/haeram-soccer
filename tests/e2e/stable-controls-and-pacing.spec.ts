@@ -84,16 +84,32 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   );
   await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  // A minute takes 4 s × its pace (mean 1, about 0.6–1.6): the first lasts well past 1.7 s and
-  // ends within 4 × 1.6 s plus slack.
-  await page.waitForTimeout(1700);
+  // Every minute takes exactly 4 s at 1x, whatever happens in it (→WEB-32): the first is still on
+  // after 2.5 s and over by 4 s plus slack.
+  await page.waitForTimeout(2500);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 8000 });
+  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 4000 });
+  const minuteNow = async () =>
+    Number(
+      (await page.getByTestId('match-latest-event').locator('span').innerText()).match(/\d+/)![0],
+    );
   for (const value of ['2×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
+    // A speed change keeps the presented minute: it never jumps back to kick-off or ahead.
+    const before = await minuteNow();
     await speed.click();
     await expect(speed).toHaveAttribute('aria-checked', 'true');
+    const after = await minuteNow();
+    expect(after).toBeGreaterThanOrEqual(before);
+    expect(after).toBeLessThanOrEqual(before + 2);
   }
+  // At 16x every minute lasts 250 ms, restarts and chances alike: 2 s cover about 8 minutes,
+  // never a slowed set piece nor a skipped spell.
+  const from = await minuteNow();
+  await page.waitForTimeout(2000);
+  const covered = (await minuteNow()) - from;
+  expect(covered).toBeGreaterThanOrEqual(5);
+  expect(covered).toBeLessThanOrEqual(10);
   await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });

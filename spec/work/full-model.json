@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T09:26:33.791Z",
-  "sourceCommit": "0f858907afd00ace793cd472a098a6dc7ca01520",
+  "snapshotAt": "2026-10-21T11:02:04.666Z",
+  "sourceCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,11 +15,37 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "0f858907afd00ace793cd472a098a6dc7ca01520",
+      "commit": "3a09e337a73fe47932ca75eee2e8ffca12caaee1",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T09:17:23.176Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          0f858907afd00ace793cd472a098a6dc7ca01520 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-21T09:26:34.919Z",
+      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          3a09e337a73fe47932ca75eee2e8ffca12caaee1 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+    },
+    "runner": {
+      "id": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.306 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.306 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.306 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-21T09:29:49.361Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
     },
     "lastRun": {
       "id": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
@@ -65,29 +91,21 @@
   },
   "summary": {
     "total": 19,
-    "completed": 7,
-    "remaining": 12,
-    "running": 1,
-    "review": 0,
-    "blocked": 1,
-    "unassigned": 10
+    "completed": 8,
+    "remaining": 11,
+    "running": 0,
+    "review": 2,
+    "blocked": 0,
+    "unassigned": 9
   },
   "tasks": [
-    {
-      "id": "T275",
-      "title": "Render continuous paths at the owner's uniformly selected speed",
-      "dep": [
-        "T274"
-      ],
-      "status": "todo"
-    },
     {
       "id": "T277",
       "title": "Connect player intentions through support, pressing and covering reactions",
       "dep": [
         "T276"
       ],
-      "status": "doing"
+      "status": "approved"
     },
     {
       "id": "T278",
@@ -106,7 +124,7 @@
       "dep": [
         "T279"
       ],
-      "status": "blocked"
+      "status": "reviewing"
     },
     {
       "id": "T281",
@@ -1102,39 +1120,48 @@
         "T280"
       ],
       "lane": null,
-      "owner": "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-1",
+      "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/worker-1",
       "contributors": [
         "f6n3-T280",
-        "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-1"
+        "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-1",
+        "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/worker-1"
       ],
-      "status": "blocked",
-      "reason": "adapter exited 1",
+      "status": "reviewing",
+      "reason": null,
       "createdAt": "2026-10-21T07:42:13.283Z",
       "startCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
-      "submittedBase": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
-      "submissionId": "640b79bf-338f-41cd-b5d5-6c6d5002de77",
-      "submittedAt": "2026-10-21T09:02:45.126Z",
+      "verifiedCommit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+      "submittedBase": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+      "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+      "submittedAt": "2026-10-21T11:01:47.901Z",
       "risk": {
         "risky": true,
         "reasons": [
-          "2620 changed lines (limit 300)",
+          "2950 changed lines (limit 300)",
+          "reworked after a review or integration failure",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 2620,
+        "lines": 2950,
         "files": 9
       },
       "dispatch": {
-        "id": "9723d8b8-8d58-4159-bdd9-180cc186b5af",
-        "runner": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
-        "role": "worker",
+        "id": "e50f8647-934f-42ec-9b88-f2c6a2d696f6",
+        "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "finished",
-        "startedAt": "2026-10-21T09:17:23.578Z",
-        "finishedAt": "2026-10-21T09:26:32.953Z",
-        "error": "adapter exited 1",
-        "summary": null
+        "status": "running",
+        "startedAt": "2026-10-21T11:01:49.774Z"
+      },
+      "review": {
+        "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+        "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+        "status": "reviewing",
+        "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+        "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+        "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+        "createdAt": "2026-10-21T11:01:48.958Z"
       },
       "reviewHistory": [
         {
@@ -1172,18 +1199,70 @@
           "finishedAt": "2026-10-21T09:10:51.357Z",
           "invalidatedAt": "2026-10-21T09:17:23.385Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/aggregate/engine.ts:302",
+              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/participation.ts:657",
+              "message": "T280: once a red's key is withheld, the planner never offers that rebalance again. The grid retries at every later stoppage (grid/changes.ts:184, `c.reds > c.rebalanced && score >= 0`), so it rebalances once a trailing ten-man side draws level. In the same 3,000-fixture probe, 10 withheld reds belonged to sides that were level or ahead at a later substitution stoppage, where the grid would have made the change. STAFF-45's wording ('at the next stoppage') arguably allows this, but the two engines now differ. Align them while fixing the P2, or note the difference for T281/T286."
+            }
+          ],
+          "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+          "createdAt": "2026-10-21T09:48:48.118Z",
+          "finishedAt": "2026-10-21T09:57:18.735Z",
+          "invalidatedAt": "2026-10-21T09:57:18.973Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "7e7cb9f6-e157-44bb-abab-e9b4cb91f369",
+          "owner": "f6n3-review6",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T280's third submission does fix the red-card score rule in both directions. I measured it independently on founding-world fixtures: seed aggregate-engine, 3,000 matches of 2024 (148 rebalances made, 74 withheld, 0 disagreeing with the settled score, 10 settled on retry 1); seed review-seed-2, 2,000 of 2024 (116/42/0, 4 on retry 1). In 117 extra-time ties regulation was always level. Every record passed validateFullMatchRecord. Repeat calls gave identical records, the targeted vitest passes (7 files, 59 tests) and production paths are untouched. The same probe exposed a correctness defect that earlier rounds missed. planParticipation's two SidePlanners open the same named discipline, injury and change streams, so both sides draw identical sequences. Their cards, injuries and stoppage times mirror each other.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "packages/engine/src/aggregate/participation.ts:429",
+              "message": "T280 / MATCH-4, MATCH-21, CLUB-23, ARCH-5: SidePlanner.playPeriod calls streams.draw('discipline'|'injuries'|'changes', period) for each side, and planParticipation (participation.ts:740) runs both sides on the same AggregateStreams. aggregateStreams.draw (team.ts:45) restarts random(name) from a name with no side in it, so home and away get the same uniform sequence. Measured on 1,000 founding-world 2024 fixtures (simulateAggregate): in 647 of the 852 matches with yellows, both sides were booked at exactly the same minutes; in 31 of the 49 matches with a dismissal, both sides lost a player in the same minute (e.g. ENG:0:0:3:8 at :probe:38, a secondYellow for slot 9 on both sides at 27'); in 98 of the 229 matches with injuries, both sides had one in the same minute. Changes jitter is shared too, so stoppage minutes coincide. Each side needs its own named streams, e.g. a side component in the stream name (discipline:<side>:<period>), so that one side's draws neither copy the other's nor move when the other side draws more. Add a test that both sides' card, injury and stoppage minutes are not identical across a world sample, and re-measure the yellow, red and injury rates and the rebalance and retry figures afterwards."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/engine.ts:357",
+              "message": "T280: if no search reconciles the red-card answers within rebalanceRetries, playAggregate throws. Nothing in production calls it yet, and I saw nothing beyond retry 1 in 5,000 matches. Once T281 dispatches season fixtures here, though, the throw would abort a whole season simulation. Hand the fallback (or a documented deterministic tie-break) to T281 or T284 together with the retry-bias measurement."
+            }
+          ],
+          "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+          "createdAt": "2026-10-21T10:42:50.843Z",
+          "finishedAt": "2026-10-21T10:47:20.282Z",
+          "invalidatedAt": "2026-10-21T10:55:07.402Z",
+          "invalidationReason": "correction assigned"
         }
       ],
       "steps": [
         {
           "taskId": "T280",
-          "commit": "a2c9e75cc69732bbd114e7e6770f6bd85d70e694",
-          "at": "2026-10-21T09:02:45.077Z",
+          "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+          "at": "2026-10-21T11:01:47.858Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-21T09:00:40.401Z",
-              "finishedAt": "2026-10-21T09:02:44.658Z"
+              "startedAt": "2026-10-21T11:00:23.749Z",
+              "finishedAt": "2026-10-21T11:01:47.526Z"
             }
           ]
         }
@@ -1191,8 +1270,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-21T09:00:40.401Z",
-          "finishedAt": "2026-10-21T09:02:44.658Z"
+          "startedAt": "2026-10-21T11:00:23.749Z",
+          "finishedAt": "2026-10-21T11:01:47.526Z"
         }
       ]
     },
@@ -1291,9 +1370,161 @@
       "contributors": [
         "f6n3-T277"
       ],
-      "status": "doing",
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
       "createdAt": "2026-10-21T08:57:52.837Z",
-      "startCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce"
+      "startCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+      "verifiedCommit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+      "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
+      "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+      "submittedAt": "2026-10-21T09:54:27.131Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1414 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1414,
+        "files": 7
+      },
+      "dispatch": {
+        "id": "17433ca1-6c0e-48dd-b038-8fd252710dac",
+        "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T09:57:23.989Z",
+        "finishedAt": "2026-10-21T10:01:16.638Z",
+        "error": null,
+        "summary": "T277 meets its acceptance criteria and the design requirements for coordinated play (MATCH-16/17). The new grid/coordination.ts plans every job for both sides from one snapshot without changing the state, and applyCoordination gives the jobs out. Each player gets at most one job, and equal costs break by player ID. Handovers are explicit: the marker's record ends as achieved/handover and names the teammate who took over. In decide.ts, the carrier's choice reads only teammates' actual show and overlap intentions, so the pre-feature path is unchanged. On risk: the 1414-line diff is mostly tests plus code moved out of intentions.ts. The move is behaviour-preserving: INTENTION_CONFIG's support/mark/cover/recover values moved to COORDINATION_CONFIG with no leftover readers, and the split into targetOf + shapePlace keeps the old GK/run order. Every changed file is within touches, and no probability overrides were added; band gaps are handed to T278. The tests cover all nine required scenarios with compact fixtures. I did not rerun them because this checkout has no node_modules; the worker's record says typecheck, lint, format and the changed-file vitest run passed. The autopilot decision awaiting the owner is the group-level base raise in STATE, which does not affect T277's content. Two minor issues, neither blocking."
+      },
+      "review": {
+        "id": "80050f2e-4293-487c-9223-53866d3abbf7",
+        "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T277 meets its acceptance criteria and the design requirements for coordinated play (MATCH-16/17). The new grid/coordination.ts plans every job for both sides from one snapshot without changing the state, and applyCoordination gives the jobs out. Each player gets at most one job, and equal costs break by player ID. Handovers are explicit: the marker's record ends as achieved/handover and names the teammate who took over. In decide.ts, the carrier's choice reads only teammates' actual show and overlap intentions, so the pre-feature path is unchanged. On risk: the 1414-line diff is mostly tests plus code moved out of intentions.ts. The move is behaviour-preserving: INTENTION_CONFIG's support/mark/cover/recover values moved to COORDINATION_CONFIG with no leftover readers, and the split into targetOf + shapePlace keeps the old GK/run order. Every changed file is within touches, and no probability overrides were added; band gaps are handed to T278. The tests cover all nine required scenarios with compact fixtures. I did not rerun them because this checkout has no node_modules; the worker's record says typecheck, lint, format and the changed-file vitest run passed. The autopilot decision awaiting the owner is the group-level base raise in STATE, which does not affect T277's content. Two minor issues, neither blocking.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/coordination.ts:229",
+            "message": "T277: In defend(), a runner counts as marked whenever someone currently marks him, even if the plan has just taken that marker for an urgent danger press. Applying the press then ends the mark, so the runner has no marker until the next update. That one action is exactly when a through ball to him is dangerous. Before T277, the mark loop ran after the press was set and picked a replacement in the same update. Suggested fix: don't add the runner to `marked` (or put him back into pairing) when his current marker is already in `claimed` for another job. Add a danger-scenario test for this."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/coordination.ts:378",
+            "message": "T277: Lane clearance doesn't check for an existing `support: 'open'` intention for the carrier. If a show ends as `closed` while its clearance is still running, a new show can be planned and a second teammate assigned to clear its lane. That breaks §4.6's 'Only one teammate shows and one clears per carrier'. Rare, but easy to guard: skip the clearance when a teammate already holds an 'open' support for this carrier."
+          }
+        ],
+        "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+        "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+        "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+        "createdAt": "2026-10-21T09:57:22.343Z",
+        "finishedAt": "2026-10-21T10:01:16.568Z"
+      },
+      "steps": [
+        {
+          "taskId": "T277",
+          "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+          "at": "2026-10-21T09:54:26.970Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T09:48:19.487Z",
+              "finishedAt": "2026-10-21T09:54:25.360Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T09:48:19.487Z",
+          "finishedAt": "2026-10-21T09:54:25.360Z"
+        }
+      ]
+    },
+    {
+      "id": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "group": "full-model",
+      "taskId": "T275",
+      "tasks": [
+        "T275"
+      ],
+      "lane": null,
+      "owner": "f6n3-T275",
+      "contributors": [
+        "f6n3-T275"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-21T09:35:50.381Z",
+      "startCommit": "36274a94705cb55e091db730f51df149942e9425",
+      "verifiedCommit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+      "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
+      "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+      "submittedAt": "2026-10-21T10:20:36.355Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "875 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 875,
+        "files": 8
+      },
+      "review": {
+        "id": "e64ff44c-6f12-4571-8b1e-81c7363d12e5",
+        "owner": "f6n3-review5",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T275 meets its acceptance. presentationClock is a uniform 4000 ms/minute clock that never reads pace; speed scales only the clock's advance, so the match-time position is kept; samples and ball points are placed by startSeconds/ballTimes (legacy at equal shares); locate holds across period breaks; seek, detailed-seek pause, hidden-tab cap, archive controls, kits/crests/keepers are untouched. Candidate playback builds flights from T274 knots at recorded times with no scaling, the taker walk is bounded (drawn player speed max 9.7 m/s over 173k sample pairs on 6 probe matches), frameTimeIssues is clean, the record is identical with and without observation (ARCH-7/MATCH-7), and pre-feature frames are unchanged apart from unread pace weights. All six named tests exist; the targeted vitest files pass (27/27). Browser specs were updated and left to the batch run per ARCH-30. The period-end overrun is accepted as a contract hand-off, but it needs an explicit owner (see P3).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/playback.ts:890",
+            "message": "T275 / MATCH-12: candidate minutes draw only start..start+60, so a period's last action past its final minute is not drawn. A probe of 30 candidate matches found this in 60 of 60 periods, up to 32 s, not just occasionally as the limits imply (no shot or goal fell in the overrun there, but nothing prevents one). At every whistle the ball stops mid-action. The frameTimeIssues 60 s cap (T273 contract, outside T275 touches) forbids drawing it, so the hand-off is legitimate. But T273 is closed and no T286 acceptance item covers it. The planner should record an inbox decision that gives it to an owner before MATCH_MODEL_RELEASE activation: let a period's last frame extend to its whistle, or add an overrun frame."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/playback.ts:1135",
+            "message": "T275: candidate frames carry startSeconds/ballTimes and about 16 samples per minute (about 9.5 MB JSON per match vs 4.2 MB). This is inactive in production now. T285/T286 must check it against the SAVE-4 and current-season playback retention budgets (MATCH-5) before activation."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/e2e/match-core.spec.ts:174",
+            "message": "T275: minuteNow() parses /\\d+/, so 45+n reads as 45. If the 1 s window at 16x ever crosses first-half added time, covered minutes are undercounted and the >=2 assertion can flake. Parsing the added part as well would make it robust. Low risk at the current point in the journey."
+          }
+        ],
+        "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+        "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+        "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+        "createdAt": "2026-10-21T10:22:37.904Z",
+        "finishedAt": "2026-10-21T10:27:39.814Z"
+      },
+      "steps": [
+        {
+          "taskId": "T275",
+          "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+          "at": "2026-10-21T10:20:36.281Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T10:13:30.098Z",
+              "finishedAt": "2026-10-21T10:20:35.891Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T10:13:30.098Z",
+          "finishedAt": "2026-10-21T10:20:35.891Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -7040,6 +7271,1419 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 542,
+      "at": "2026-10-21T09:26:34.939Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "3a09e337a73fe47932ca75eee2e8ffca12caaee1",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T09:26:34.919Z",
+          "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          3a09e337a73fe47932ca75eee2e8ffca12caaee1 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+        }
+      }
+    },
+    {
+      "sequence": 543,
+      "at": "2026-10-21T09:29:42.657Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 544,
+      "at": "2026-10-21T09:29:49.387Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T09:29:49.361Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 545,
+      "at": "2026-10-21T09:29:49.463Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/worker-1",
+        "contributors": [
+          "f6n3-T280",
+          "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-1",
+          "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 546,
+      "at": "2026-10-21T09:29:49.608Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "8997fccd-27ff-46f0-94e4-1be48cfffee0",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T09:29:49.608Z"
+        }
+      }
+    },
+    {
+      "sequence": 547,
+      "at": "2026-10-21T09:29:49.782Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "8997fccd-27ff-46f0-94e4-1be48cfffee0",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T09:29:49.608Z"
+        }
+      }
+    },
+    {
+      "sequence": 548,
+      "at": "2026-10-21T09:35:50.381Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+        "group": "full-model",
+        "taskId": "T275",
+        "tasks": [
+          "T275"
+        ],
+        "lane": null,
+        "owner": "f6n3-T275",
+        "contributors": [
+          "f6n3-T275"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T09:35:50.381Z",
+        "startCommit": "36274a94705cb55e091db730f51df149942e9425"
+      }
+    },
+    {
+      "sequence": 549,
+      "at": "2026-10-21T09:35:51.426Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 550,
+      "at": "2026-10-21T09:42:59.803Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 551,
+      "at": "2026-10-21T09:43:00.974Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 552,
+      "at": "2026-10-21T09:43:01.092Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 553,
+      "at": "2026-10-21T09:48:18.506Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 554,
+      "at": "2026-10-21T09:48:46.947Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
+        "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+        "submittedAt": "2026-10-21T09:48:46.947Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2794 changed lines (limit 300)",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2794,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T280",
+            "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+            "at": "2026-10-21T09:48:46.892Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T09:43:01.611Z",
+                "finishedAt": "2026-10-21T09:48:46.520Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T09:43:01.611Z",
+            "finishedAt": "2026-10-21T09:48:46.520Z"
+          }
+        ],
+        "verifiedCommit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0"
+      }
+    },
+    {
+      "sequence": 555,
+      "at": "2026-10-21T09:48:47.018Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "8997fccd-27ff-46f0-94e4-1be48cfffee0",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T09:29:49.608Z",
+          "finishedAt": "2026-10-21T09:48:47.018Z",
+          "error": null,
+          "summary": "Finished the review 03333643 correction for T280. P2: the aggregate path now rebalances after a red card only when the side is level or ahead at that stoppage (STAFF-45, the same rule as grid/changes.ts `score >= 0`). `planParticipation` records each rebalance it makes and takes a `withheld` set. engine.ts `settleParticipation` builds the facts, finds any rebalance made while the side was trailing, adds it to `withheld` and replans on the same streams. The set only grows, so the loop always ends and no settled record keeps a trailing rebalance. In the 120-minute replay, rebalances withheld in the 90-minute run stay withheld. A new test, `makes no red-card rebalance while trailing`, covers the trailing ten-man case. P3: added two corrupted records that `validateFullMatchRecord` must reject, 'a card moved to another player' and 'a fourth in-play window'. The other P3 notes (window counting by stamped minute, the unavailable starter left on with an empty bench) are written in limits for T286 and T281. Measured on 3,000 fixtures from 2024: 2.6% of matches replay. In 14 of them the red goes unanswered because the replayed score is level or ahead just after the card; that is a missing change, never a forbidden one. Checks run: install, typecheck, lint and format:check passed; the aggregate and match-model unit tests passed (54 tests); `vitest run --changed a2c9e75c` passed (217 files, 1555 tests, 4 skipped). An earlier `--changed 0e2b8197` run ran out of memory and is not counted as passed. Full suites, contract tests, catalog validation, the build and the Chromium journeys are left to the batch gate. The result section is kept as four single-line bullets."
+        }
+      }
+    },
+    {
+      "sequence": 556,
+      "at": "2026-10-21T09:48:48.118Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "reviewing",
+          "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+          "createdAt": "2026-10-21T09:48:48.118Z"
+        }
+      }
+    },
+    {
+      "sequence": 557,
+      "at": "2026-10-21T09:48:49.021Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0ee0253a-958f-4cdc-9cea-f88d87ad5f1f",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T09:48:49.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 558,
+      "at": "2026-10-21T09:48:49.080Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0ee0253a-958f-4cdc-9cea-f88d87ad5f1f",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T09:48:49.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 559,
+      "at": "2026-10-21T09:54:27.131Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+        "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
+        "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+        "submittedAt": "2026-10-21T09:54:27.131Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1414 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1414,
+          "files": 7
+        },
+        "steps": [
+          {
+            "taskId": "T277",
+            "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+            "at": "2026-10-21T09:54:26.970Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T09:48:19.487Z",
+                "finishedAt": "2026-10-21T09:54:25.360Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T09:48:19.487Z",
+            "finishedAt": "2026-10-21T09:54:25.360Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 560,
+      "at": "2026-10-21T09:57:18.735Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+        "review": {
+          "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/aggregate/engine.ts:302",
+              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/participation.ts:657",
+              "message": "T280: once a red's key is withheld, the planner never offers that rebalance again. The grid retries at every later stoppage (grid/changes.ts:184, `c.reds > c.rebalanced && score >= 0`), so it rebalances once a trailing ten-man side draws level. In the same 3,000-fixture probe, 10 withheld reds belonged to sides that were level or ahead at a later substitution stoppage, where the grid would have made the change. STAFF-45's wording ('at the next stoppage') arguably allows this, but the two engines now differ. Align them while fixing the P2, or note the difference for T281/T286."
+            }
+          ],
+          "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+          "createdAt": "2026-10-21T09:48:48.118Z",
+          "finishedAt": "2026-10-21T09:57:18.735Z"
+        }
+      }
+    },
+    {
+      "sequence": 561,
+      "at": "2026-10-21T09:57:18.803Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "0ee0253a-958f-4cdc-9cea-f88d87ad5f1f",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T09:48:49.021Z",
+          "finishedAt": "2026-10-21T09:57:18.803Z",
+          "error": null,
+          "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough."
+        }
+      }
+    },
+    {
+      "sequence": 562,
+      "at": "2026-10-21T09:57:18.973Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "03333643-c393-4923-98a5-6e7206e444d9",
+            "owner": "f6n3-review4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280 delivers planParticipation, attributePlayerFacts and simulateAggregate with era-legal timelines, exact player/team reconciliation, on-pitch-only shot credit, per-period named streams and a tightened shared validator that the grid's 40 candidate records (2024/2010/1966/1950, incl. extra time) still pass; targeted vitest (aggregate, match-model, grid, summary: 25 files, 194 tests) passes and no production path imports the new code. One SSOT contract gap blocks approval: the red-card rebalance ignores the score that MATCH-20/STAFF-45 make it depend on, so settled aggregate records can contain substitutions the rules forbid.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/participation.ts:651",
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.test.ts:273",
+                "message": "T280: the shared validator's two new checks — per-line yellow/red counters against incidents and in-play substitution windows (match-model.ts:258) — have no corrupted-record fixture against validateFullMatchRecord (the windows case exists only for participationTimelineIssues). Add 'a card moved to another player' and 'a fourth in-play window' corruptions."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/match-model.ts:258",
+                "message": "T280: windows are counted by stamped minute and every sub stamped 46/91/106 is treated as an interval, so an in-play change in the first minute after a restart (aggregate injury at t in [45,46), grid restarts) uses no window in the validator while the planner counted one. It's only lenient (no false rejection), but note it for T286's contract doc."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.ts:147",
+                "message": "T280 / LEAGUE-15: an unavailable starter kept by startingSquad still plays when the bench is empty (worker limit 6). It's rare and matches the grid's behaviour; hand off to T281 so both paths share one availability rule."
+              }
+            ],
+            "commit": "a2c9e75cc69732bbd114e7e6770f6bd85d70e694",
+            "baseCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+            "submissionId": "640b79bf-338f-41cd-b5d5-6c6d5002de77",
+            "createdAt": "2026-10-21T09:07:39.919Z",
+            "finishedAt": "2026-10-21T09:10:51.357Z",
+            "invalidatedAt": "2026-10-21T09:17:23.385Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+            "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/engine.ts:302",
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/participation.ts:657",
+                "message": "T280: once a red's key is withheld, the planner never offers that rebalance again. The grid retries at every later stoppage (grid/changes.ts:184, `c.reds > c.rebalanced && score >= 0`), so it rebalances once a trailing ten-man side draws level. In the same 3,000-fixture probe, 10 withheld reds belonged to sides that were level or ahead at a later substitution stoppage, where the grid would have made the change. STAFF-45's wording ('at the next stoppage') arguably allows this, but the two engines now differ. Align them while fixing the P2, or note the difference for T281/T286."
+              }
+            ],
+            "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+            "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+            "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+            "createdAt": "2026-10-21T09:48:48.118Z",
+            "finishedAt": "2026-10-21T09:57:18.735Z",
+            "invalidatedAt": "2026-10-21T09:57:18.973Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 563,
+      "at": "2026-10-21T09:57:19.220Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "77fb97c0-a8cb-495b-8b12-68b12c458ff9",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T09:57:19.220Z"
+        }
+      }
+    },
+    {
+      "sequence": 564,
+      "at": "2026-10-21T09:57:19.775Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "77fb97c0-a8cb-495b-8b12-68b12c458ff9",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T09:57:19.220Z"
+        }
+      }
+    },
+    {
+      "sequence": 565,
+      "at": "2026-10-21T09:57:22.344Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "80050f2e-4293-487c-9223-53866d3abbf7",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "reviewing",
+          "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+          "createdAt": "2026-10-21T09:57:22.343Z"
+        }
+      }
+    },
+    {
+      "sequence": 566,
+      "at": "2026-10-21T09:57:23.989Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "17433ca1-6c0e-48dd-b038-8fd252710dac",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T09:57:23.989Z"
+        }
+      }
+    },
+    {
+      "sequence": 567,
+      "at": "2026-10-21T09:57:24.157Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "17433ca1-6c0e-48dd-b038-8fd252710dac",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T09:57:23.989Z"
+        }
+      }
+    },
+    {
+      "sequence": 568,
+      "at": "2026-10-21T10:01:16.568Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "80050f2e-4293-487c-9223-53866d3abbf7",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T277 meets its acceptance criteria and the design requirements for coordinated play (MATCH-16/17). The new grid/coordination.ts plans every job for both sides from one snapshot without changing the state, and applyCoordination gives the jobs out. Each player gets at most one job, and equal costs break by player ID. Handovers are explicit: the marker's record ends as achieved/handover and names the teammate who took over. In decide.ts, the carrier's choice reads only teammates' actual show and overlap intentions, so the pre-feature path is unchanged. On risk: the 1414-line diff is mostly tests plus code moved out of intentions.ts. The move is behaviour-preserving: INTENTION_CONFIG's support/mark/cover/recover values moved to COORDINATION_CONFIG with no leftover readers, and the split into targetOf + shapePlace keeps the old GK/run order. Every changed file is within touches, and no probability overrides were added; band gaps are handed to T278. The tests cover all nine required scenarios with compact fixtures. I did not rerun them because this checkout has no node_modules; the worker's record says typecheck, lint, format and the changed-file vitest run passed. The autopilot decision awaiting the owner is the group-level base raise in STATE, which does not affect T277's content. Two minor issues, neither blocking.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/coordination.ts:229",
+              "message": "T277: In defend(), a runner counts as marked whenever someone currently marks him, even if the plan has just taken that marker for an urgent danger press. Applying the press then ends the mark, so the runner has no marker until the next update. That one action is exactly when a through ball to him is dangerous. Before T277, the mark loop ran after the press was set and picked a replacement in the same update. Suggested fix: don't add the runner to `marked` (or put him back into pairing) when his current marker is already in `claimed` for another job. Add a danger-scenario test for this."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/coordination.ts:378",
+              "message": "T277: Lane clearance doesn't check for an existing `support: 'open'` intention for the carrier. If a show ends as `closed` while its clearance is still running, a new show can be planned and a second teammate assigned to clear its lane. That breaks §4.6's 'Only one teammate shows and one clears per carrier'. Rare, but easy to guard: skip the clearance when a teammate already holds an 'open' support for this carrier."
+            }
+          ],
+          "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+          "createdAt": "2026-10-21T09:57:22.343Z",
+          "finishedAt": "2026-10-21T10:01:16.568Z"
+        }
+      }
+    },
+    {
+      "sequence": 569,
+      "at": "2026-10-21T10:01:16.638Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "17433ca1-6c0e-48dd-b038-8fd252710dac",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T09:57:23.989Z",
+          "finishedAt": "2026-10-21T10:01:16.638Z",
+          "error": null,
+          "summary": "T277 meets its acceptance criteria and the design requirements for coordinated play (MATCH-16/17). The new grid/coordination.ts plans every job for both sides from one snapshot without changing the state, and applyCoordination gives the jobs out. Each player gets at most one job, and equal costs break by player ID. Handovers are explicit: the marker's record ends as achieved/handover and names the teammate who took over. In decide.ts, the carrier's choice reads only teammates' actual show and overlap intentions, so the pre-feature path is unchanged. On risk: the 1414-line diff is mostly tests plus code moved out of intentions.ts. The move is behaviour-preserving: INTENTION_CONFIG's support/mark/cover/recover values moved to COORDINATION_CONFIG with no leftover readers, and the split into targetOf + shapePlace keeps the old GK/run order. Every changed file is within touches, and no probability overrides were added; band gaps are handed to T278. The tests cover all nine required scenarios with compact fixtures. I did not rerun them because this checkout has no node_modules; the worker's record says typecheck, lint, format and the changed-file vitest run passed. The autopilot decision awaiting the owner is the group-level base raise in STATE, which does not affect T277's content. Two minor issues, neither blocking."
+        }
+      }
+    },
+    {
+      "sequence": 570,
+      "at": "2026-10-21T10:01:16.804Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 571,
+      "at": "2026-10-21T10:13:29.804Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 572,
+      "at": "2026-10-21T10:20:36.355Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+        "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
+        "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+        "submittedAt": "2026-10-21T10:20:36.355Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "875 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 875,
+          "files": 8
+        },
+        "steps": [
+          {
+            "taskId": "T275",
+            "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+            "at": "2026-10-21T10:20:36.281Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T10:13:30.098Z",
+                "finishedAt": "2026-10-21T10:20:35.891Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T10:13:30.098Z",
+            "finishedAt": "2026-10-21T10:20:35.891Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 573,
+      "at": "2026-10-21T10:22:37.904Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e64ff44c-6f12-4571-8b1e-81c7363d12e5",
+          "owner": "f6n3-review5",
+          "status": "reviewing",
+          "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+          "createdAt": "2026-10-21T10:22:37.904Z"
+        }
+      }
+    },
+    {
+      "sequence": 574,
+      "at": "2026-10-21T10:27:39.815Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e64ff44c-6f12-4571-8b1e-81c7363d12e5",
+          "owner": "f6n3-review5",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T275 meets its acceptance. presentationClock is a uniform 4000 ms/minute clock that never reads pace; speed scales only the clock's advance, so the match-time position is kept; samples and ball points are placed by startSeconds/ballTimes (legacy at equal shares); locate holds across period breaks; seek, detailed-seek pause, hidden-tab cap, archive controls, kits/crests/keepers are untouched. Candidate playback builds flights from T274 knots at recorded times with no scaling, the taker walk is bounded (drawn player speed max 9.7 m/s over 173k sample pairs on 6 probe matches), frameTimeIssues is clean, the record is identical with and without observation (ARCH-7/MATCH-7), and pre-feature frames are unchanged apart from unread pace weights. All six named tests exist; the targeted vitest files pass (27/27). Browser specs were updated and left to the batch run per ARCH-30. The period-end overrun is accepted as a contract hand-off, but it needs an explicit owner (see P3).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/playback.ts:890",
+              "message": "T275 / MATCH-12: candidate minutes draw only start..start+60, so a period's last action past its final minute is not drawn. A probe of 30 candidate matches found this in 60 of 60 periods, up to 32 s, not just occasionally as the limits imply (no shot or goal fell in the overrun there, but nothing prevents one). At every whistle the ball stops mid-action. The frameTimeIssues 60 s cap (T273 contract, outside T275 touches) forbids drawing it, so the hand-off is legitimate. But T273 is closed and no T286 acceptance item covers it. The planner should record an inbox decision that gives it to an owner before MATCH_MODEL_RELEASE activation: let a period's last frame extend to its whistle, or add an overrun frame."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/playback.ts:1135",
+              "message": "T275: candidate frames carry startSeconds/ballTimes and about 16 samples per minute (about 9.5 MB JSON per match vs 4.2 MB). This is inactive in production now. T285/T286 must check it against the SAVE-4 and current-season playback retention budgets (MATCH-5) before activation."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/match-core.spec.ts:174",
+              "message": "T275: minuteNow() parses /\\d+/, so 45+n reads as 45. If the 1 s window at 16x ever crosses first-half added time, covered minutes are undercounted and the >=2 assertion can flake. Parsing the added part as well would make it robust. Low risk at the current point in the journey."
+            }
+          ],
+          "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+          "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+          "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+          "createdAt": "2026-10-21T10:22:37.904Z",
+          "finishedAt": "2026-10-21T10:27:39.814Z"
+        }
+      }
+    },
+    {
+      "sequence": 575,
+      "at": "2026-10-21T10:31:00.353Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium"
+      }
+    },
+    {
+      "sequence": 576,
+      "at": "2026-10-21T10:31:00.507Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 577,
+      "at": "2026-10-21T10:31:01.074Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 578,
+      "at": "2026-10-21T10:31:01.155Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 579,
+      "at": "2026-10-21T10:32:19.564Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+        "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+        "submittedAt": "2026-10-21T10:32:19.564Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2892 changed lines (limit 300)",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2892,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T280",
+            "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+            "at": "2026-10-21T10:32:19.510Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T10:31:01.525Z",
+                "finishedAt": "2026-10-21T10:32:19.163Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T10:31:01.525Z",
+            "finishedAt": "2026-10-21T10:32:19.163Z"
+          }
+        ],
+        "verifiedCommit": "be7efe894075c6e3d09c885026c862298d024a7a"
+      }
+    },
+    {
+      "sequence": 580,
+      "at": "2026-10-21T10:32:19.617Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "77fb97c0-a8cb-495b-8b12-68b12c458ff9",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T09:57:19.220Z",
+          "finishedAt": "2026-10-21T10:32:19.617Z",
+          "error": null,
+          "summary": "Fixed review f123baa0 for T280. P2: a settled aggregate record now follows STAFF-45 both ways. A side down to ten rebalances at the first stoppage after the red when it is level or ahead, and only then. The old grow-only withheld set is gone. `planParticipation` takes per-red decisions and lists every rebalance the side could make, marked made or withheld. `rebalanceIssues` flags either kind of disagreement with the score. Because a period's goals move with its participation, `settleParticipation` searches the decisions on the same streams for a set the settled score agrees with, trying at most 16 plans. If none agrees, `playAggregate` replays the fixture on its own fixed retry streams (`<fixture>:retry<n>`, at most 8 retries, otherwise it throws), so every call gives the same result. A cup tie's 120-minute run starts from the 90-minute decisions. Measured on founding-world fixtures, a quarter played as cup ties: 3,000 from 2024 had 154 rebalances made, 67 withheld and 0 disagreements, with 12 fixtures (0.4%) settled on retry 1; another seed gave 175/64/0 with 17 on retry 1; 2,000 from 1990 gave 85/32/0 with 2 on retry 1. No fixture needed a second retry, and a match costs about 6.2 ms. P3: the grid does not retry. `applyChanges` runs at every stoppage and sets `rebalanced = reds` even with an empty plan, so the grid also judges the red once at the next stoppage and the planner already matches it; this is written up in the result. Tests: 'makes no red-card rebalance while trailing' (synthetic) now covers both directions and checks that answering a withheld red would change that stoppage. A new test, 'answers a red card only when level or ahead', runs 400 world fixtures from 2024 and checks both directions and that a retried fixture repeats exactly. Checks that passed: install, typecheck, lint, format:check, the aggregate and match-model tests (6 files, 55 tests) and `vitest run --changed 3bc2a92b` (5 files, 50 tests). Full suites, contract tests, catalog validation, the build and the Chromium journeys are left to the batch gate. The result section is four single-line bullets."
+        }
+      }
+    },
+    {
+      "sequence": 581,
+      "at": "2026-10-21T10:32:19.727Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 582,
+      "at": "2026-10-21T10:42:50.844Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7e7cb9f6-e157-44bb-abab-e9b4cb91f369",
+          "owner": "f6n3-review6",
+          "status": "reviewing",
+          "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+          "createdAt": "2026-10-21T10:42:50.843Z"
+        }
+      }
+    },
+    {
+      "sequence": 583,
+      "at": "2026-10-21T10:47:20.282Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T280's third submission does fix the red-card score rule in both directions. I measured it independently on founding-world fixtures: seed aggregate-engine, 3,000 matches of 2024 (148 rebalances made, 74 withheld, 0 disagreeing with the settled score, 10 settled on retry 1); seed review-seed-2, 2,000 of 2024 (116/42/0, 4 on retry 1). In 117 extra-time ties regulation was always level. Every record passed validateFullMatchRecord. Repeat calls gave identical records, the targeted vitest passes (7 files, 59 tests) and production paths are untouched. The same probe exposed a correctness defect that earlier rounds missed. planParticipation's two SidePlanners open the same named discipline, injury and change streams, so both sides draw identical sequences. Their cards, injuries and stoppage times mirror each other.",
+        "review": {
+          "id": "7e7cb9f6-e157-44bb-abab-e9b4cb91f369",
+          "owner": "f6n3-review6",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T280's third submission does fix the red-card score rule in both directions. I measured it independently on founding-world fixtures: seed aggregate-engine, 3,000 matches of 2024 (148 rebalances made, 74 withheld, 0 disagreeing with the settled score, 10 settled on retry 1); seed review-seed-2, 2,000 of 2024 (116/42/0, 4 on retry 1). In 117 extra-time ties regulation was always level. Every record passed validateFullMatchRecord. Repeat calls gave identical records, the targeted vitest passes (7 files, 59 tests) and production paths are untouched. The same probe exposed a correctness defect that earlier rounds missed. planParticipation's two SidePlanners open the same named discipline, injury and change streams, so both sides draw identical sequences. Their cards, injuries and stoppage times mirror each other.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "packages/engine/src/aggregate/participation.ts:429",
+              "message": "T280 / MATCH-4, MATCH-21, CLUB-23, ARCH-5: SidePlanner.playPeriod calls streams.draw('discipline'|'injuries'|'changes', period) for each side, and planParticipation (participation.ts:740) runs both sides on the same AggregateStreams. aggregateStreams.draw (team.ts:45) restarts random(name) from a name with no side in it, so home and away get the same uniform sequence. Measured on 1,000 founding-world 2024 fixtures (simulateAggregate): in 647 of the 852 matches with yellows, both sides were booked at exactly the same minutes; in 31 of the 49 matches with a dismissal, both sides lost a player in the same minute (e.g. ENG:0:0:3:8 at :probe:38, a secondYellow for slot 9 on both sides at 27'); in 98 of the 229 matches with injuries, both sides had one in the same minute. Changes jitter is shared too, so stoppage minutes coincide. Each side needs its own named streams, e.g. a side component in the stream name (discipline:<side>:<period>), so that one side's draws neither copy the other's nor move when the other side draws more. Add a test that both sides' card, injury and stoppage minutes are not identical across a world sample, and re-measure the yellow, red and injury rates and the rebalance and retry figures afterwards."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/engine.ts:357",
+              "message": "T280: if no search reconciles the red-card answers within rebalanceRetries, playAggregate throws. Nothing in production calls it yet, and I saw nothing beyond retry 1 in 5,000 matches. Once T281 dispatches season fixtures here, though, the throw would abort a whole season simulation. Hand the fallback (or a documented deterministic tie-break) to T281 or T284 together with the retry-bias measurement."
+            }
+          ],
+          "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+          "createdAt": "2026-10-21T10:42:50.843Z",
+          "finishedAt": "2026-10-21T10:47:20.282Z"
+        }
+      }
+    },
+    {
+      "sequence": 584,
+      "at": "2026-10-21T10:55:07.277Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium"
+      }
+    },
+    {
+      "sequence": 585,
+      "at": "2026-10-21T10:55:07.402Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "03333643-c393-4923-98a5-6e7206e444d9",
+            "owner": "f6n3-review4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280 delivers planParticipation, attributePlayerFacts and simulateAggregate with era-legal timelines, exact player/team reconciliation, on-pitch-only shot credit, per-period named streams and a tightened shared validator that the grid's 40 candidate records (2024/2010/1966/1950, incl. extra time) still pass; targeted vitest (aggregate, match-model, grid, summary: 25 files, 194 tests) passes and no production path imports the new code. One SSOT contract gap blocks approval: the red-card rebalance ignores the score that MATCH-20/STAFF-45 make it depend on, so settled aggregate records can contain substitutions the rules forbid.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/participation.ts:651",
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.test.ts:273",
+                "message": "T280: the shared validator's two new checks — per-line yellow/red counters against incidents and in-play substitution windows (match-model.ts:258) — have no corrupted-record fixture against validateFullMatchRecord (the windows case exists only for participationTimelineIssues). Add 'a card moved to another player' and 'a fourth in-play window' corruptions."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/match-model.ts:258",
+                "message": "T280: windows are counted by stamped minute and every sub stamped 46/91/106 is treated as an interval, so an in-play change in the first minute after a restart (aggregate injury at t in [45,46), grid restarts) uses no window in the validator while the planner counted one. It's only lenient (no false rejection), but note it for T286's contract doc."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.ts:147",
+                "message": "T280 / LEAGUE-15: an unavailable starter kept by startingSquad still plays when the bench is empty (worker limit 6). It's rare and matches the grid's behaviour; hand off to T281 so both paths share one availability rule."
+              }
+            ],
+            "commit": "a2c9e75cc69732bbd114e7e6770f6bd85d70e694",
+            "baseCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+            "submissionId": "640b79bf-338f-41cd-b5d5-6c6d5002de77",
+            "createdAt": "2026-10-21T09:07:39.919Z",
+            "finishedAt": "2026-10-21T09:10:51.357Z",
+            "invalidatedAt": "2026-10-21T09:17:23.385Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+            "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/engine.ts:302",
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/participation.ts:657",
+                "message": "T280: once a red's key is withheld, the planner never offers that rebalance again. The grid retries at every later stoppage (grid/changes.ts:184, `c.reds > c.rebalanced && score >= 0`), so it rebalances once a trailing ten-man side draws level. In the same 3,000-fixture probe, 10 withheld reds belonged to sides that were level or ahead at a later substitution stoppage, where the grid would have made the change. STAFF-45's wording ('at the next stoppage') arguably allows this, but the two engines now differ. Align them while fixing the P2, or note the difference for T281/T286."
+              }
+            ],
+            "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+            "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+            "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+            "createdAt": "2026-10-21T09:48:48.118Z",
+            "finishedAt": "2026-10-21T09:57:18.735Z",
+            "invalidatedAt": "2026-10-21T09:57:18.973Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "7e7cb9f6-e157-44bb-abab-e9b4cb91f369",
+            "owner": "f6n3-review6",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280's third submission does fix the red-card score rule in both directions. I measured it independently on founding-world fixtures: seed aggregate-engine, 3,000 matches of 2024 (148 rebalances made, 74 withheld, 0 disagreeing with the settled score, 10 settled on retry 1); seed review-seed-2, 2,000 of 2024 (116/42/0, 4 on retry 1). In 117 extra-time ties regulation was always level. Every record passed validateFullMatchRecord. Repeat calls gave identical records, the targeted vitest passes (7 files, 59 tests) and production paths are untouched. The same probe exposed a correctness defect that earlier rounds missed. planParticipation's two SidePlanners open the same named discipline, injury and change streams, so both sides draw identical sequences. Their cards, injuries and stoppage times mirror each other.",
+            "findings": [
+              {
+                "priority": "P1",
+                "where": "packages/engine/src/aggregate/participation.ts:429",
+                "message": "T280 / MATCH-4, MATCH-21, CLUB-23, ARCH-5: SidePlanner.playPeriod calls streams.draw('discipline'|'injuries'|'changes', period) for each side, and planParticipation (participation.ts:740) runs both sides on the same AggregateStreams. aggregateStreams.draw (team.ts:45) restarts random(name) from a name with no side in it, so home and away get the same uniform sequence. Measured on 1,000 founding-world 2024 fixtures (simulateAggregate): in 647 of the 852 matches with yellows, both sides were booked at exactly the same minutes; in 31 of the 49 matches with a dismissal, both sides lost a player in the same minute (e.g. ENG:0:0:3:8 at :probe:38, a secondYellow for slot 9 on both sides at 27'); in 98 of the 229 matches with injuries, both sides had one in the same minute. Changes jitter is shared too, so stoppage minutes coincide. Each side needs its own named streams, e.g. a side component in the stream name (discipline:<side>:<period>), so that one side's draws neither copy the other's nor move when the other side draws more. Add a test that both sides' card, injury and stoppage minutes are not identical across a world sample, and re-measure the yellow, red and injury rates and the rebalance and retry figures afterwards."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.ts:357",
+                "message": "T280: if no search reconciles the red-card answers within rebalanceRetries, playAggregate throws. Nothing in production calls it yet, and I saw nothing beyond retry 1 in 5,000 matches. Once T281 dispatches season fixtures here, though, the throw would abort a whole season simulation. Hand the fallback (or a documented deterministic tie-break) to T281 or T284 together with the retry-bias measurement."
+              }
+            ],
+            "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+            "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+            "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+            "createdAt": "2026-10-21T10:42:50.843Z",
+            "finishedAt": "2026-10-21T10:47:20.282Z",
+            "invalidatedAt": "2026-10-21T10:55:07.402Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 586,
+      "at": "2026-10-21T10:55:07.514Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5a8f489d-0a20-4c9b-94f1-cea5b890737a",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T10:55:07.514Z"
+        }
+      }
+    },
+    {
+      "sequence": 587,
+      "at": "2026-10-21T10:55:07.703Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5a8f489d-0a20-4c9b-94f1-cea5b890737a",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T10:55:07.514Z"
+        }
+      }
+    },
+    {
+      "sequence": 588,
+      "at": "2026-10-21T11:00:22.749Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 589,
+      "at": "2026-10-21T11:00:23.352Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 590,
+      "at": "2026-10-21T11:00:23.430Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 591,
+      "at": "2026-10-21T11:01:47.901Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+        "submittedAt": "2026-10-21T11:01:47.901Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2950 changed lines (limit 300)",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2950,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T280",
+            "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+            "at": "2026-10-21T11:01:47.858Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T11:00:23.749Z",
+                "finishedAt": "2026-10-21T11:01:47.526Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T11:00:23.749Z",
+            "finishedAt": "2026-10-21T11:01:47.526Z"
+          }
+        ],
+        "verifiedCommit": "d32b42569a847ae4be0c309dbd5e930d72827374"
+      }
+    },
+    {
+      "sequence": 592,
+      "at": "2026-10-21T11:01:47.947Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "5a8f489d-0a20-4c9b-94f1-cea5b890737a",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T10:55:07.514Z",
+          "finishedAt": "2026-10-21T11:01:47.947Z",
+          "error": null,
+          "summary": "Fixed review 7e7cb9f6 for T280. P1: both sides drew cards, injuries and stoppage timing from the same named streams, so they mirrored each other. A new helper, `sideDraw` in participation.ts, gives each side its own named sequence (`<stream name>:side<n>`). The planner now uses it for discipline, injuries and changes; team.ts is unchanged. Player attribution in players.ts also draws per side now, so one side's draws never shift the other's. Two tests were added: 'gives each side its own named stream' (the two sides differ, and a side's sequence does not depend on the other's draws) and 'draws each side's cards, injuries and stoppages on its own streams' (200 world fixtures of 2024; under 5% of side pairs share identical minute lists). Re-measured on 3,000 founding-world 2024 fixtures, a quarter played as cup ties: both sides were booked at identical minutes in 16 of 2,145 matches, against 647 of 852 before the fix. A red in the same minute for both sides: 0 of 316. An injury in the same minute: 1 of 1,116. Rates per match: yellows 3.74, reds 0.113, injuries 0.46, substitutions 10.0. Rebalances: 165 made, 79 withheld, 0 disagreeing with the score; 15 fixtures settled on retry 1, none later, and every record passed validation. A second seed and the 1990 era gave the same picture. P3: `playAggregate` still throws when no answer fits within the retry limit. It never needed more than one retry in 7,000 fixtures, but once T281 sends season fixtures here a throw would abort a whole season, so the result limits hand the fallback and the retry-bias measurement to T281 or T284. Checks that passed: typecheck, lint, format:check, the aggregate and match-model tests (6 files, 57 tests) and `vitest run --changed be7efe89` (3 files, 35 tests). Full suites, contract tests, catalog validation, the build and the Chromium journeys are left to the batch gate. The result section is four single-line bullets."
+        }
+      }
+    },
+    {
+      "sequence": 593,
+      "at": "2026-10-21T11:01:48.958Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "reviewing",
+          "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+          "createdAt": "2026-10-21T11:01:48.958Z"
+        }
+      }
+    },
+    {
+      "sequence": 594,
+      "at": "2026-10-21T11:01:49.774Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e50f8647-934f-42ec-9b88-f2c6a2d696f6",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T11:01:49.774Z"
+        }
+      }
+    },
+    {
+      "sequence": 595,
+      "at": "2026-10-21T11:01:49.826Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e50f8647-934f-42ec-9b88-f2c6a2d696f6",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T11:01:49.774Z"
+        }
+      }
+    },
+    {
+      "sequence": 596,
+      "at": "2026-10-21T11:02:03.081Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

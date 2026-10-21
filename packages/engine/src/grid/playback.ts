@@ -4,7 +4,7 @@
  * Korean commentary, the minute's label and pace. Presentation only: it reads a played result and
  * draws from its own stream, never the match's.
  */
-import type { IntentionObservation } from '../../../contracts/src/match-model';
+import { NEUTRAL_FRAME_PACE, type IntentionObservation } from '../../../contracts/src/match-model';
 import type {
   Manager,
   MatchEvent,
@@ -22,6 +22,7 @@ import { describe } from './commentary';
 import type { GridResult } from './engine';
 import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, bandOf, PITCH } from './pitch';
+import { GRID_BALL_CONFIG } from './movement';
 import { M, RUNNING } from './record';
 import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
@@ -88,8 +89,18 @@ export const PLAYBACK_CONFIG = {
   },
   /** A curve whose apex comes within this many units of a touchline bends the other way. */
   curlInside: 3,
-  /** Motion seconds a restart's taker takes at most to walk to the ball. */
+  /** Motion seconds a restart's taker takes at most to walk to the ball (pre-feature traces). */
   takerWalk: 0.9,
+  /**
+   * Candidate traces (→MATCH-12): metres per match second at which a restart's taker is drawn
+   * walking to the spot. He arrives no earlier than the ball is set down and no later than his kick.
+   */
+  takerSpeed: 6,
+  /**
+   * Candidate traces: match seconds at least between drawn player samples. Players move straight
+   * between snapshots and waypoints; breakpoints closer than this share a sample.
+   */
+  sampleSpacing: 2,
   /** Metres: farther from his target a player recovers, nearer the ball an attacker supports, nearer an opponent a defender marks. */
   states: { recover: 15, support: 20, mark: 5 },
   /** Minute weights (design §10.4): build-up in the own half, ordinary, chances and set pieces. */
@@ -137,6 +148,11 @@ interface Path {
   at: Units;
   arrive: number;
   kick: number;
+  /**
+   * Candidate traces: the actor's timed waypoints from the earlier snapshot (match seconds, units);
+   * after the last he heads for his place in the later one. Replaces `at`/`arrive`/`kick`.
+   */
+  route?: [number, Units][];
 }
 
 interface Period {
@@ -400,6 +416,15 @@ function positionAt(P: Period, side: 0 | 1, idx: number, time: number): Units | 
   if (!b) return here;
   const there = placeIn(b, side, idx) ?? here;
   const path = P.paths[j + 1];
+  if (path?.route && path.side === side && path.idx === idx) {
+    let t0 = a.elapsed,
+      p0 = here;
+    for (const [t1, p1] of path.route) {
+      if (time <= t1) return t1 > t0 ? lerp(p0, p1, (time - t0) / (t1 - t0)) : p1;
+      [t0, p0] = [t1, p1];
+    }
+    return b.elapsed > t0 ? lerp(p0, there, (time - t0) / (b.elapsed - t0)) : there;
+  }
   if (path && path.side === side && path.idx === idx) {
     if (time <= path.kick) {
       const walk = path.arrive - a.elapsed;
@@ -540,6 +565,118 @@ function flights(legs: Leg[], from: Units, start: number, end: number, r: () => 
   return { out, kick };
 }
 
+/**
+ * A candidate entry's ball and actor (→MATCH-12) from the engine's own knots at their recorded
+ * times: the dead ball is carried back and set down, rests on its spot while the taker walks there,
+ * and every flight lasts exactly from its kick to its touch, reception or arrival — never shortened
+ * to fit. Returns where the ball is when the entry ends.
+ */
+function knotted(
+  P: Period,
+  k: number,
+  start: number,
+  ball: Units,
+  add: (g: Segment) => void,
+  r: () => number,
+): Units {
+  const e = P.entries[k]!;
+  const end = e.elapsed;
+  const knots = [...e.knots!].sort((a, b) => a.at - b.at);
+  const legs = legsOf(e);
+  const spot = e.spot ? units(e.spot) : undefined;
+  const here =
+    (k ? placeIn(P.entries[k - 1]!, e.side, e.idx) : undefined) ?? spot ?? units(e.from ?? e.ball);
+  const hold = (from: number, to: number, at: Units): Hold => ({
+    kind: 'hold',
+    start: from,
+    end: to,
+    side: e.side,
+    idx: e.idx,
+    at,
+  });
+  const rest = (from: number, to: number, at: Units): Rest => ({
+    kind: 'rest',
+    start: from,
+    end: to,
+    at,
+  });
+  const route: [number, Units][] = [];
+  const carrying = knots.some((knot) => knot.kind === 'carry');
+  let cursor = start,
+    at = ball,
+    leg = 0,
+    placed: number | undefined;
+  for (const knot of knots) {
+    const t = clamp(knot.at, cursor, Math.max(cursor, end));
+    const to = units(knot.ball);
+    switch (knot.kind) {
+      case 'retrieve':
+        add(rest(cursor, t, at));
+        break;
+      case 'place': {
+        // Carried back from where it went dead, then set down on the spot.
+        const set = Math.max(cursor, t - GRID_BALL_CONFIG.placement);
+        if (gap(at, to) > 0.05) {
+          const sh = shape(at, to, 'reset', PLAYBACK_CONFIG.speeds.restart, r);
+          add({ kind: 'flight', start: cursor, end: set, phase: 'restart', from: at, to, ...sh });
+        }
+        add(rest(set, t, to));
+        placed = t;
+        break;
+      }
+      case 'kick':
+        if (spot) {
+          // The taker walks to the spot at a bounded pace, after the ball is set down, before his kick.
+          const metres = Math.hypot(
+            ((spot[0] - here[0]) * PITCH.length) / 100,
+            ((spot[1] - here[1]) * PITCH.width) / 100,
+          );
+          const arrive = clamp(
+            start + metres / PLAYBACK_CONFIG.takerSpeed,
+            Math.min(placed ?? start, t),
+            t,
+          );
+          route.push([arrive, spot], [t, spot]);
+          add(rest(cursor, t, spot));
+        } else {
+          route.push([t, here]);
+          add(hold(cursor, t, here));
+        }
+        break;
+      case 'carry':
+        route.push([t, to]);
+        break;
+      case 'tackle':
+        add(hold(cursor, t, at));
+        break;
+      default:
+        // A touch, reception or arrival: the end of a flight, or of a carry with the ball at his feet.
+        if (carrying) {
+          route.push([t, to]);
+          add(hold(cursor, t, at));
+        } else {
+          const l = legs[Math.min(leg++, legs.length - 1)];
+          const sh = shape(at, to, l?.style ?? 'pass', l?.speed ?? PLAYBACK_CONFIG.speeds.pass, r);
+          add({
+            kind: 'flight',
+            start: cursor,
+            end: t,
+            phase: l?.phase ?? 'pass',
+            from: at,
+            to,
+            ...sh,
+          });
+        }
+    }
+    at = to;
+    cursor = t;
+  }
+  if (route.length)
+    P.paths[k] = { side: e.side, idx: e.idx, at: here, arrive: start, kick: start, route };
+  if (cursor < end) add(carrying ? hold(cursor, end, at) : rest(cursor, end, at));
+  return at;
+}
+
 /** A period's timeline: the ball's segments and the actors' paths between snapshots. */
 function timeline(p: 1 | 2 | 3 | 4, entries: TraceEntry[], r: () => number): Period {
   const first = entries[0]!;
@@ -562,6 +699,10 @@ function timeline(p: 1 | 2 | 3 | 4, entries: TraceEntry[], r: () => number): Per
   entries.forEach((e, k) => {
     if (e.outcome === 'incident') return;
     const start = k ? entries[k - 1]!.elapsed : P.start;
+    if (e.knots?.length) {
+      ball = knotted(P, k, start, ball, add, r);
+      return;
+    }
     const end = e.elapsed;
     const legs = legsOf(e);
     const hold = (from: number, to: number, at: Units): Hold => ({
@@ -669,8 +810,30 @@ export function stampAt(
 }
 
 /**
+ * Sorted match seconds in (`from`, `to`], plus `from` itself when `open`, at least `spacing` apart
+ * (`to` always kept, replacing a time too close before it): a candidate minute's sample or
+ * ball-knot times.
+ */
+function instants(times: number[], from: number, to: number, open: boolean, spacing = 0) {
+  const out: number[] = [];
+  for (const t of [...times, to].sort((a, b) => a - b)) {
+    if (!(t > from || (open && t === from)) || t > to) continue;
+    const last = out.at(-1);
+    if (last === undefined || t - last > spacing) out.push(t);
+    else if (t === to && last !== to) out[out.length - 1] = to;
+  }
+  return out;
+}
+
+/**
  * One frame per match minute of each period, added minutes included (design §10.2). `seed` is the
  * world seed; the flights' bend and loft come from `${seed}:${fixture}:ball-decisions`.
+ *
+ * Candidate traces (`setup.model`, →MATCH-12, WEB-32) carry explicit times instead of a pace: each
+ * minute starts 60 s after the one before (`startSeconds`), players are sampled at their snapshots
+ * and waypoints (at least `sampleSpacing` apart) and at the minute's end, the ball track adds each
+ * knot at its own time (`ballTimes`), and `pace` is neutral. A period's last action running past its final minute is counted in that minute but not
+ * drawn, since a minute spans 60 s (`frameTimeIssues`).
  */
 export function buildFrames(result: GridResult, setup: GridSetup, seed: string): MatchFrame[] {
   const trace = result.trace;
@@ -686,11 +849,18 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     list.push(e);
     byPeriod.set(e.period, list);
   }
+  const candidate = setup.model !== undefined;
   const frames: MatchFrame[] = [];
   const weights: number[] = [];
   let lead = { action: '패스', player: 0 };
   for (const [p, entries] of [...byPeriod].sort((a, b) => a[0] - b[0])) {
     const P = timeline(p, entries, r);
+    // Candidate breakpoints: player snapshots and waypoints, and the ball's knots.
+    const moves = candidate
+      ? [...P.times, ...P.paths.flatMap((path) => path?.route?.map(([t]) => t) ?? [])]
+      : [];
+    const knots = candidate ? entries.flatMap((e) => e.knots?.map((knot) => knot.at) ?? []) : [];
+    let minuteStart = P.start;
     const mirror = (u: Units): Units => (p % 2 === 0 ? [100 - u[0], 100 - u[1]] : u);
     const length = LENGTH[p - 1]!;
     const minutes =
@@ -712,20 +882,52 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     const minuteOf = (e: TraceEntry) => Math.min(minutes - 1, Math.floor(e.t / 60));
     let k = 0;
     for (let m = 0; m < minutes; m++) {
-      const start = P.start + 60 * m;
+      const start = candidate ? minuteStart : P.start + 60 * m;
+      if (candidate) minuteStart += 60;
       const end = m === minutes - 1 ? Math.max(P.end, start + 60) : start + 60;
       const span = end - start;
+      // Candidate minutes draw exactly their 60 s; pre-feature ones spread their samples over the span.
+      const drawn = candidate ? start + 60 : end;
+      const sampleTimes = candidate
+        ? instants(moves, start, drawn, m === 0, PLAYBACK_CONFIG.sampleSpacing)
+        : Array.from(
+            { length: PLAYBACK_CONFIG.samplesPerMinute + 1 },
+            (_, j) => start + (span * j) / PLAYBACK_CONFIG.samplesPerMinute,
+          );
+      const trackTimes = candidate
+        ? instants(
+            [
+              ...knots,
+              ...Array.from(
+                { length: PLAYBACK_CONFIG.trackPerMinute },
+                (_, i) => start + (60 * (i + 1)) / PLAYBACK_CONFIG.trackPerMinute,
+              ),
+            ],
+            start,
+            drawn,
+            m === 0,
+          )
+        : Array.from(
+            { length: PLAYBACK_CONFIG.trackPerMinute },
+            (_, i) => start + (span * (i + 1)) / PLAYBACK_CONFIG.trackPerMinute,
+          );
       const mine: number[] = [];
       for (; k < entries.length && minuteOf(entries[k]!) <= m; k++)
         if (!(entries[k]!.action === 'whistle' && entries[k]!.t === 0)) mine.push(k);
 
       // Players and the ball through the minute.
-      const steps = PLAYBACK_CONFIG.samplesPerMinute;
-      const motionStep = span / steps / SECONDS_PER_MOTION;
       let before = new Map<number, Units>();
+      let previous = start;
       const samples: MatchMotionSample[] = [];
-      for (let j = 0; j <= steps; j++) {
-        const time = start + (span * j) / steps;
+      // A pre-feature minute's first time only seeds velocities; a candidate period's opening is drawn.
+      if (candidate && sampleTimes[0] !== start) sampleTimes.unshift(start);
+      const drawFirst = candidate && m === 0;
+      for (let j = 0; j < sampleTimes.length; j++) {
+        const time = sampleTimes[j]!;
+        const motionStep = candidate
+          ? Math.max(1e-9, time - previous) / SECONDS_PER_MOTION
+          : span / PLAYBACK_CONFIG.samplesPerMinute / SECONDS_PER_MOTION;
+        previous = time;
         const ball = ballAt(P, time);
         const snap = P.entries[Math.max(0, lastAt(P.times, time))]!;
         const now = new Map<number, Units>();
@@ -758,7 +960,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
           return list;
         }) as [PlayerMotion[], PlayerMotion[]];
         before = now;
-        if (j === 0) continue;
+        if (j === 0 && !drawFirst) continue;
         samples.push({
           elapsedSeconds: time,
           ball: mirror(ball.at),
@@ -768,8 +970,8 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         });
       }
       const ballTrack: [number, number, number][] = [];
-      for (let i = 1; i <= PLAYBACK_CONFIG.trackPerMinute; i++) {
-        const b = ballAt(P, start + (span * i) / PLAYBACK_CONFIG.trackPerMinute);
+      for (const time of trackTimes) {
+        const b = ballAt(P, time);
         const g = mirror(b.at);
         ballTrack.push([tenth(g[0]), tenth(g[1]), tenth(b.h)]);
       }
@@ -847,7 +1049,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
               : 'right'
             : undefined;
         const ev: MatchEvent = {
-          t: tenth(clamp(((e.elapsed - start) / span) * 60, 0, 60)),
+          t: tenth(clamp(candidate ? e.elapsed - start : ((e.elapsed - start) / span) * 60, 0, 60)),
           kind,
           side,
           actor,
@@ -921,7 +1123,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         side: share[1]! > share[0]! ? 1 : share[0]! > share[1]! ? 0 : last.side,
         player: lead.player,
         action: lead.action,
-        elapsedSeconds: end,
+        elapsedSeconds: drawn,
         players: final.players,
         motion: samples,
         events,
@@ -930,15 +1132,19 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
           hundredth(totals[RUNNING + M.minutes + 1] ?? 0),
         ],
         ballTrack,
+        ...(candidate ? { startSeconds: start, ballTimes: trackTimes } : {}),
         period: p,
         label: at.added ? `${at.minute}+${at.added}` : String(at.minute),
-        pace: 0,
+        pace: candidate ? NEUTRAL_FRAME_PACE : 0,
         onPitch,
       });
     }
   }
-  const mean = weights.reduce((sum, w) => sum + w, 0) / weights.length;
-  frames.forEach((f, i) => (f.pace = weights[i]! / mean));
+  // Pre-feature frames keep their weights; the presentation clock no longer reads them (→WEB-32).
+  if (!candidate) {
+    const mean = weights.reduce((sum, w) => sum + w, 0) / weights.length;
+    frames.forEach((f, i) => (f.pace = weights[i]! / mean));
+  }
   return frames;
 }
 
