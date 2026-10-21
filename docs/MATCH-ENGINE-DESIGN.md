@@ -40,6 +40,7 @@ Reference data:
 | `state.ts` | `GridState`, `GridPlayer`, state creation, skill lookup | T205 |
 | `shape.ts` | tactic shapes, off-ball targets, movement, runs | T206 |
 | `movement.ts` | candidate model: bounded player motion, ball speeds, action timing, restart preparation | T274 |
+| `intentions.ts` | candidate model: individual intentions, their lifecycle, priorities and reasons | T276 |
 | `tags.ts` | per-touch tags | T207 |
 | `decide.ts` | action mix, target choice | T208 |
 | `resolve.ts` | duels and the xG model | T209 |
@@ -303,6 +304,44 @@ export const SHAPE_CONFIG = {
 The carrier moves only through his own action (§6.1). Positions are clamped to the pitch.
 
 On the candidate match model (`GridSetup.model` set) `movement.ts` replaces this step: players accelerate, brake and turn within `GRID_MOVEMENT_CONFIG` up to the same top speed, every action and restart lasts until its route is done and nobody is placed outside a period's start (docs/MATCH-MODEL-CONTRACT.md, "Detailed movement").
+
+### 4.5 Intentions (candidate model, T276)
+
+On the candidate model `intentions.ts` gives each player an individual intention (MATCH-17) in place of §4.3's per-update pressers and run draws; the pre-feature path is unchanged. `GridPlayer.intention` holds `kind` (`INTENTION_KINDS`), `priority`, `target` (engine frame), an optional `teammate`/`opponent` roster index, a run's kind, `since` and `until`. `GridPlayer.ended` keeps the last one that ended, with its ending (`INTENTION_ENDS`) and reason. A run is an intention whose `GridPlayer.run` view `decide.ts` still reads.
+
+- **One lifecycle.** An intention keeps its target and references through ordinary updates while it is feasible. A tracked target follows its reference: a press goes goal-side of the carrier, a mark goal-side of the runner, a cover `coverDepth` (8) m behind the presser toward goal. Everything else holds the target it was given.
+  - It ends **achieved** on arrival (within 1 m) or when what it answered is over (`cleared`), **expired** at `until`, or **infeasible** when the target cannot be reached by `until` + 1 s, its carrier no longer has the ball (`moved`), the pass or ball went elsewhere (`lost`), or a reference left (`departed`).
+  - It is **displaced** only by a higher priority (`replaced`, `danger`) or a reasoned event: a turnover, a restart, a substitution, an injury or a sending-off. `INTENTION_REASONS` maps every reason to its ending.
+- **Priority**, highest first (`INTENTION_PRIORITIES`):
+  - `exit`: leaving the pitch.
+  - `restart`: the taker and the restart's scene walking to their places.
+  - `danger`: an urgent defensive job.
+  - `committed`: receiving or carrying the ball, or holding a box spot for the second ball after a delivery.
+  - `tactical`: support, run, press, mark, cover, recover.
+  - A new intention never displaces a higher one, and tactical choices go only to free players, so one tactical job never replaces another at an ordinary update.
+- **Events** (`engine.ts`):
+  - Every new owner commits to the ball (`receive`, with the passer as `teammate`); a carrier commits to his carry's end.
+  - A pass, cut-back or offside that does not reach its receiver cancels his receiving opportunity as `lost`.
+  - A change of side interrupts every intention below `restart` on both sides (`turnover`).
+  - A dead ball interrupts every intention below `exit` (`restart`). Its taker and scene then take `restart` intentions, achieved as the kick is taken, and the players who went up hold their box spots for `setPiece.stay` (8) s as committed box runs.
+  - A player who leaves ends his intention with his reason (`substitution`, `injury`, `dismissal`). Every intention that names him as teammate or opponent ends as `departed`, so a roster index never outlives a change.
+- **Update.** `updateIntentions` runs once per action, after the action has been applied and before anyone moves, so everyone reacts to the pass, carry or turnover as it happens. It first reviews every intention, then lets free players choose:
+  - **Danger.** The defending side is in danger when the carrier is within `danger` (30) m of its goal, or a runner is already beyond its second-last player. In danger the first presser and the markers of runners take `danger` priority and displace tactical jobs. An urgent presser leaves his line's bounds. A danger intention ends `cleared` once the danger passes.
+  - **Press.** The carrier is pressed by the man with the lowest distance ÷ (press weight × freshness) within the tactic's press reach (counter-press reach just after a loss). Under press a second presser comes within 0.6 × reach. A tactical press ends when the carrier is 1.6 × reach away.
+  - **Cover.** One defender or DM steps behind the first presser. Only a man whose shape place is within `coverNear` (10) m of the cover point is eligible. A covering role (cover defender, anchor ×1.5; ball-winner, defensive full-back ×1.2) is chosen first.
+  - **Mark.** The nearest free man within 20 m picks up each runner and gives him up past 28 m.
+  - **Recover.** For 6 s after a loss, a free player further than 14 × (1 − 0.4 × 판단력) m from his shape target goes back to it.
+  - **Support.** A carrier with an opponent within 4.6 m gets one teammate to show. The teammate is the nearest within 22 m, by distance ÷ his `key` weight. He shows with odds 0.45 + 0.45 × 침착성, 9 m from the carrier. With odds 판단력 he shows on the side away from the presser, otherwise on his own line. The draw is named by the carrier and the spell of possession, so it does not reroll at every touch.
+  - **Runs.** §4.3's run kinds and targets (`runPlan`, shared with `startRuns`). The chance is scaled by 판단력 timing (0.8–1.2) × freshness. Freshness is 1 − 0.5 × min(1, minutes/90) × (100 − 체력)/100.
+- Attribute odds read `skill` (slot, day and in-match drain) as a 0–1 share. Draws come from `${seed}:${fixture}:intention:${decision}:${side}:${player}:${moment}`, never from the match stream, an update order or an observer. Ties break by roster index.
+- Measured on grid-bands' 600 equal-strength 2024 fixtures (all 16 tactic pairings), compared with T274's recorded candidate values on the same population (not a paired rerun):
+  - Ball in play 58.5 → 59.5 min, goals 2.94 → 2.70.
+  - Tackles + interceptions 27.6 → 25.5, throw-ins 17.0 → 16.1, possessions 95.2 → 95.4.
+  - Forward passes 33.7 → 35.4%, added time 10.6 → 10.2 min.
+  - Passes 469.8 → 472.5, completion 76.4 → 77.2%, shots 11.6 → 11.9.
+  - Outside their MATCH-23 bands: goal-area shots 11.0%, crosses 21.5, throw-ins 16.1, goal kicks 9.3, fouls 9.5, yellow cards 3.1, set-piece goals 19.2%, penalty goals 4.9%, FW goals 62%, ball in play 59.5 min.
+  - Press still beats every other tactic (press v counter: home wins 76%).
+  - T278 calibrates `INTENTION_CONFIG` and the tactic balance; the bands stay.
 
 ---
 
@@ -754,8 +793,11 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restar
   positions: Float32Array /* 22×2 engine-frame metres by slot, NaN when empty */, slots: Int8Array /* roster index per slot */,
   targets: Float32Array, states: Uint8Array /* MOTION_STATES index */, totals: Float64Array /* Tally.running() */,
   knots?: { kind, at /* elapsed s */, ball }[] /* candidate model: retrieve, place, kick, touch, receive, arrive, carry, tackle */,
-  transition?: 'period' | 'entry' | 'exit' /* candidate model: start whistle, substitution (entry point in `to`), injury or sending-off */ }
+  transition?: 'period' | 'entry' | 'exit' /* candidate model: start whistle, substitution (entry point in `to`), injury or sending-off */,
+  intentions?: (Intention | EndedIntention | null)[] /* candidate model, by slot like `slots`: the intention held (its target is the slot's `targets`), else one that ended since the last entry (§4.5) */ }
 ```
+
+On the candidate model a slot's `targets` is its intention's target, the one its movement used, and its `states` come from the intention's kind: support and receive show as `support`, cover as `mark`, restart as `shape`, exit as `recover`; the others keep their own name. Only press intentions press there.
 
 ### 10.2 Frames
 
@@ -773,6 +815,7 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restar
 - `players`: `PlayerMotion` for the players on the pitch.
   - `state`: `carry` for the owner, `press` for pressers, `run` for runners, `mark` for markers, `keeper` for the GK, `recover` for players more than 15 m behind their target, `support` for attackers within 20 m of the ball, else `shape`.
   - `intent` is the target in units.
+  - `intention` (candidate model): the traced intention as `IntentionObservation`. Its target is in units, `teammate`/`opponent` are player IDs, `since`/`until` are elapsed seconds, and `ended` is set once it has ended.
 - `period`, `label`, `pace` and `onPitch` (§2.4).
 
 ### 10.3 Commentary (`commentary.ts`, MATCH-24)
