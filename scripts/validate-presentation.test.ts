@@ -210,7 +210,9 @@ describe('static presentation resource validation', () => {
     const resolver = tree.themeAssets(tree.theme, tree.themeUrl);
     const sources = getFontSources(resolver.fonts[0]);
     const inventory = await validatePresentation(tree.root);
-    expect(inventory.assets).toEqual(expect.arrayContaining(sources.map(({ resource }) => resource)));
+    expect(inventory.assets).toEqual(
+      expect.arrayContaining(sources.map(({ resource }) => resource)),
+    );
 
     const missing = sources[2].resource;
     rmSync(tree.file(missing));
