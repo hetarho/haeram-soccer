@@ -17,8 +17,10 @@
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 | p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:03Z | - |
+| mgha | hq-dev1-pve2-vm2 | pair | 2026-10-21T06:09Z | 2026-10-21T06:09Z | - |
 
 ## inbox
+- 261021 decided T275 T279 T281 T283 T284 T285 T286 T299 T300 T301 T302 T303: mgha's manager-history plan (HIST r17, SAVE r51, WEB r106) left these bases stale and the shared spec check refused every group's integration → bases raised with no content change: tenure attribution, its activation boundary (SAVE-24) and its own checkpoint container are T304–T306's, and WEB r106 adds only the manager-history view, which the locale/theme foundation does not touch (alt: wait for each owning session to refresh its own tasks, which keeps the full-model and presentation groups blocked meanwhile)
 - 261021 decided T275 T276 T277 T278 T280 T281 T283 T284 T285 T286: p8l3's WEB r105 / ARCH r17 (registry-driven locale and theme packs, ARCH-32) left these bases stale and the integration spec check refused both groups' candidates → bases raised with no content change: themes leave the live pitch, trajectories and clock mapping intact (T275), full feature-copy extraction is later work so T283's views keep Korean text, and engine/protocol code imports no pack registry (alt: re-plan the presentation-facing tasks onto message packs now, which WEB r105 defers)
 - 261021 decided T279 T280 T282: after T273 only T274 ran because T274, T279, T280 and T282 all listed docs/MATCH-MODEL-CONTRACT.md while none of their acceptance edits it → the aggregate tasks drop it from touches and leave contract-document gaps in their limits for T286's documentation pass, so T274, T279 and T282 run side by side (alt: keep them serial behind T274, which runs the whole group one task at a time)
 - 261021 decided T273 T274 T285 T286: T273's load-path refusal of future model metadata needs schema.ts, persistence.ts and host.ts, which no full-model task listed → T273's touches take them with their tests and it wires validateWorld/readCheckpoint/host metadata now; T274 owns the 991 > 990 side-minutes rounding T273 found; T285/T286 re-run the 9f69553 baseline with --seasons 100 on the same machine and T285 fixes the stale provisionalReason (alt: move the wiring to T282/T286 and drop T273 acceptance 3 and 6 | leave loads unwired until activation, leaving SAVE-23 unmet for hand-made container-2 files)
@@ -146,12 +148,13 @@
 | match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | converted@261019 |
 | match-continuity-and-performance | converted@261021 |
+| manager-achievements | converted@261021 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 105 | 105 | - | 0 |
+| WEB | 106 | 106 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -160,8 +163,8 @@
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 16 | 16 | - | 0 |
-| SAVE | 50 | 50 | - | 0 |
+| HIST | 17 | 17 | - | 0 |
+| SAVE | 51 | 51 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## review
@@ -188,6 +191,9 @@
 | T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
 | T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
 | T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
+| T304 | Retain stable own-manager tenures and outcome attribution | HIST SAVE STAFF MATCH ARCH | - | todo |
+| T305 | Derive bounded manager accomplishment summaries on demand | HIST SAVE WEB ARCH | T304 | todo |
+| T306 | Show manager accomplishments with season links and continuity evidence | WEB HIST SAVE ARCH | T305 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -196,14 +202,22 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 3 | 11 | 0 | 1 | 1 | 2026-10-21T05:25:18.052Z | [history](work/full-model.json) |
+| full-model | 3 | 19 | 3 | 16 | 0 | 2 | 0 | 2026-10-21T06:05:34.408Z | [history](work/full-model.json) |
 
 ## next
 - implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
 - Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- Migrate legacy FORMAT reference notation separately before adopting typed reference markers.
+- implement-task T304 when manager-history implementation is requested, then T305 and T306; task preparation only this session. Separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
+- 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
+- 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
+- 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
+- 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
+- 261021 update-ssot HIST SAVE WEB and create-task start: reserve T304-T306 for own-club manager achievements; planning only, no implementation or active-task contract changes.
+- 261021 ideation manager-achievements recorded: accomplishments alongside own-club manager tenures adopted; titles, promotions, best finishes, presentation and mid-season attribution remain open.
+- 261021 ideation manager-achievements start: capture the owner's request to show what each manager achieved during his own-club tenure.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
 - 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
@@ -216,11 +230,3 @@
 - 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
 - 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
 - 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
-- 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
-- 261021 T273 integrated
-- 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
-- 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
-- 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
-- 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
-- 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
-- 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.

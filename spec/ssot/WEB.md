@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r105 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r106 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -425,6 +425,13 @@
   - Theme changes leave the engine-driven live pitch, match trajectories, clock mapping, club colours, recorded shirts/crests and game data intact. They do not replace the playback renderer or introduce theme-dependent football rules.
   - Preserve semantic status meanings, readable data, accessible HTML labels, keyboard/touch behavior, reduced-motion support and the supported layout bounds in every theme (→WEB-10/17/38/46/73). Missing resources and loading failures follow the shared pack policy (→ARCH-32).
 
+- WEB-92 [o] The records room's 감독 이력 shows what each manager achieved at our club alongside his service period (→HIST-18/19), retaining the appointment/departure story and current manager from →WEB-54.
+  - show a compact summary per tenure: name, service period, current/interim status, honours/promotions, best final league finishes, recorded match record and longest winning/unbeaten runs. Reappointments remain separate; a trophyless fully tracked tenure still has its actual results or an explicit no-accomplishment state.
+  - season/competition/division labels make each accomplishment understandable. A mid-season appointment's final table is labelled as a season result finalised during that tenure, not his personal full-season W-D-L. Current season standings remain explicitly provisional.
+  - mark partially tracked periods and unavailable old attribution; show neither synthetic zeros nor an assertion of no achievements where history is missing. Preserve older readable tenure events and distinguish loading, retryable error and genuinely empty records.
+  - each completed accomplishment opens its corresponding club-season record; returning restores the manager-history tab, inspected tenure and list position (→WEB-74). Keep the selected game/world boundary and the existing season-to-league return path.
+  - obtain the bounded summary on demand from the engine worker. Browsing or expanding a tenure never loads the whole career's match archives into regular UI updates, changes game facts or advances the clock. Preserve lazy records loading and the supported keyboard/touch/mobile layout (→ARCH-28, →WEB-17/38/73).
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -433,6 +440,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r106 261021 WEB-92+ per-tenure manager accomplishments, honest incomplete-history states and contextual season-record navigation
 - r105 261021 WEB-1✎ Korean-only delivery→one default Korean locale behind an extensible registry; WEB-10✎ fixed charcoal/no presentation settings→theme surfaces and shared preferences; WEB-38/72/73✎ universal pixel styling→default pixel pack with shared theme semantics; WEB-90/91+ single-locale/single-theme foundation, resource-only extension and stored-text preservation
 - r104 261021 WEB-44✎ urgent advice below team-state tiles→floating home alert with unchanged remedies, behind higher-priority runtime/critical alerts
 - r103 261021 WEB-57✎ inline runtime-error/critical bands→persistent floating alerts outside page flow with existing recovery and acknowledgement actions
