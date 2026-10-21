@@ -257,7 +257,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await hireFirefighter(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
-  const fastest = progress.getByRole('button', { name: '0.1초에 하루 속도 선택', exact: true });
+  const pace = progress.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
   const card = page.getByTestId('event-card').first();
@@ -265,7 +265,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
-  await fastest.click();
+  await chooseOption(pace, 'x10');
   await play.click();
   for (let stops = 0; ; stops++) {
     expect(stops).toBeLessThan(80);
@@ -277,7 +277,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     if (await through.count()) await through.click();
     else await acknowledgeEvents(page);
     await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
-    // A chip only sets the pace (→WEB-18): play starts the clock again when it rests. Play
+    // Pace selection only sets the pace (→WEB-18): play starts the clock again when it rests. Play
     // ignores a tap in the first half second after the clock stops itself, so retry until it runs.
     await expect(async () => {
       if (await cardText()) return;

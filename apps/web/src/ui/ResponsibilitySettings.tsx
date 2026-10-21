@@ -142,7 +142,7 @@ export function ResponsibilitySettings({
             : '다음 이벤트를 눌러 진행해요. 업무 위임과 중지 조건은 아래에서 바꿀 수 있어요.'}
         </p>
         <div className={s.observations}>
-          <label className={s.check}>
+          <label className={s.observationToggle}>
             <input
               type="checkbox"
               aria-label="경기 전날 이벤트"
@@ -150,9 +150,10 @@ export function ResponsibilitySettings({
               disabled={acting || state.readonly}
               onChange={(event) => changeObservation('matchEve', event.target.checked)}
             />
-            경기 전날 멈추기
+            <span>경기 전날 멈추기</span>
+            <span className={s.switchIndicator} aria-hidden="true" />
           </label>
-          <label className={s.check}>
+          <label className={s.observationToggle}>
             <input
               type="checkbox"
               aria-label="이적시장 개장 이벤트"
@@ -160,7 +161,8 @@ export function ResponsibilitySettings({
               disabled={acting || state.readonly}
               onChange={(event) => changeObservation('windowOpen', event.target.checked)}
             />
-            이적시장 개장에 멈추기
+            <span>이적시장 개장에 멈추기</span>
+            <span className={s.switchIndicator} aria-hidden="true" />
           </label>
           <p>
             수동 모드에는 경기 이벤트가 반드시 필요해요. 다른 일을 모두 맡겨도 다음 경기 전날에

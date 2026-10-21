@@ -79,89 +79,168 @@ export function MediationReview({
     <Money value={value} code={w.clubs.find((c) => c.id === w.playerClub)!.country} year={w.year} />
   );
   return (
-    <Dialog label="영입 중재 검토" onClose={onClose}>
-      <div className={s.review}>
-        <h2>단장·감독 영입 중재</h2>
-        <h3>{record.manager.name} 감독의 요청</h3>
-        <p>{record.managerReason}</p>
-        <h3>{record.director.name} 단장의 재정 판단</h3>
-        <p>{record.directorReason}</p>
-        <p>
-          보강 대상 {requestLabel(record.target)} · 지명 후보 {record.candidate.name}
-        </p>
-        <p>평소 지원 방침: {directionOption(w, 'recruitmentSupport').name}</p>
-        <button onClick={() => openDirection('scouting')}>영입 지원 방침 편집</button>
-        <fieldset disabled={disabled}>
-          <legend>이번 중재에만 적용할 선택</legend>
-          {(Object.keys(labels) as MediationSupport[]).map((value) => (
-            <label key={value}>
-              <input
-                type="radio"
-                name="mediation-support"
-                checked={support === value}
-                onChange={() => setSupport(value)}
-              />
-              {labels[value]}
-            </label>
-          ))}
-        </fieldset>
-        <p>이번 선택은 평소 지원 방침을 바꾸지 않아요. 실제 영입과 보강 약속은 별개의 결과예요.</p>
-        <div ref={previewElement} aria-label="이번 중재 결과 미리보기" aria-busy={!ready && !error}>
-          {preview && (
-            <>
-              <p>{preview.result}</p>
-              {preview.offer && (
-                <p>
-                  영입 제안금 {cash(preview.offer.fee)} · 선수 연봉 {cash(preview.offer.wage)} ·{' '}
-                  {preview.offer.kind === 'bid' ? '협상 응답 대기' : '자유계약 영입'}
-                </p>
-              )}
-              <p>즉시 지출 {cash(preview.immediateSpend)}</p>
-              {preview.promise && (
-                <p>
-                  보강 약속: {requestLabel(preview.promise.target)} · 마감{' '}
-                  {date(preview.promise.deadline)}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-        <p
-          role={error ? 'alert' : 'status'}
-          className={preview && !error ? s.previewStatus : undefined}
-          style={{ visibility: ready && !error ? 'hidden' : undefined }}
-        >
-          {error
-            ? `조건을 확인할 수 없어요. ${error} 다시 열어 최신 조건을 확인해 주세요.`
-            : '선택한 조건을 확인하는 중이에요.'}
-        </p>
-        {disabled && (
-          <p>{readonly ? '읽기 전용 기록이에요.' : '다른 처리를 마친 뒤 결정할 수 있어요.'}</p>
-        )}
-        <button
-          disabled={disabled || !ready || !!error || record.status !== 'pending'}
-          onClick={async () => {
-            if (!ready || disabled || error || record.status !== 'pending') return;
-            try {
-              const reply = await client.command({
-                type: 'resolve-mediation',
-                id: record.id,
-                support,
-              });
-              if (reply?.ok) onClose();
-              else setError(reply?.error ?? '조건이 바뀌었어요.');
-            } catch (reason) {
-              setError(String(reason));
+    <Dialog
+      label="영입 중재 검토"
+      onClose={onClose}
+      wide
+      actions={
+        <div className={s.actions}>
+          <button onClick={onClose}>닫기</button>
+          <button
+            disabled={disabled || !ready || !!error || record.status !== 'pending'}
+            data-preview-pending={
+              (!!preview && !ready && !error && !disabled && record.status === 'pending') ||
+              undefined
             }
-          }}
-        >
-          이번 중재 결정 확정
-        </button>
-        <button onClick={onClose}>닫기</button>
+            onClick={async () => {
+              if (!ready || disabled || error || record.status !== 'pending') return;
+              try {
+                const reply = await client.command({
+                  type: 'resolve-mediation',
+                  id: record.id,
+                  support,
+                });
+                if (reply?.ok) onClose();
+                else setError(reply?.error ?? '조건이 바뀌었어요.');
+              } catch (reason) {
+                setError(String(reason));
+              }
+            }}
+          >
+            이번 중재 결정 확정
+          </button>
+        </div>
+      }
+    >
+      <div className={s.mediation}>
+        <dl className={s.summary} aria-label="중재 대상">
+          <div>
+            <dt>보강 대상</dt>
+            <dd>{requestLabel(record.target)}</dd>
+          </div>
+          <div>
+            <dt>지명 후보</dt>
+            <dd>{record.candidate.name}</dd>
+          </div>
+        </dl>
+        <div className={s.layout}>
+          <section className={s.positions} aria-label="감독과 단장 의견">
+            <h3>요청과 재정 판단</h3>
+            <article className={s.position}>
+              <h4>
+                <span>감독 요청</span>
+                <b>{record.manager.name}</b>
+              </h4>
+              <p>{record.managerReason}</p>
+            </article>
+            <article className={s.position}>
+              <h4>
+                <span>단장 판단</span>
+                <b>{record.director.name}</b>
+              </h4>
+              <p>{record.directorReason}</p>
+            </article>
+          </section>
+          <section className={s.decision} aria-label="이번 중재 결정">
+            <div className={s.policy}>
+              <span>
+                <small>평소 지원 방침</small>
+                <b>{directionOption(w, 'recruitmentSupport').name}</b>
+              </span>
+              <button aria-label="영입 지원 방침 편집" onClick={() => openDirection('scouting')}>
+                방침 편집
+              </button>
+            </div>
+            <fieldset className={s.supportChoices} disabled={disabled}>
+              <legend>이번 중재 선택</legend>
+              <div className={s.options}>
+                {(Object.keys(labels) as MediationSupport[]).map((value) => (
+                  <label key={value}>
+                    <input
+                      type="radio"
+                      name="mediation-support"
+                      checked={support === value}
+                      onChange={() => setSupport(value)}
+                    />
+                    {labels[value]}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <p className={s.hint}>이번 건에만 적용되며 평소 지원 방침은 바뀌지 않아요.</p>
+            <div
+              className={s.preview}
+              ref={previewElement}
+              aria-label="이번 중재 결과 미리보기"
+              aria-busy={!ready && !error}
+            >
+              <h3>결정 후 예상 결과</h3>
+              {preview && (
+                <>
+                  <p className={s.result}>{preview.result}</p>
+                  <dl className={s.facts}>
+                    <div>
+                      <dt>즉시 지출</dt>
+                      <dd>{cash(preview.immediateSpend)}</dd>
+                    </div>
+                    {preview.offer && (
+                      <>
+                        <div>
+                          <dt>영입 진행</dt>
+                          <dd>
+                            {preview.offer.kind === 'bid' ? '협상 응답 대기' : '자유계약 영입'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>영입 제안금</dt>
+                          <dd>{cash(preview.offer.fee)}</dd>
+                        </div>
+                        <div>
+                          <dt>선수 연봉</dt>
+                          <dd>{cash(preview.offer.wage)}</dd>
+                        </div>
+                      </>
+                    )}
+                    {preview.promise && (
+                      <>
+                        <div>
+                          <dt>보강 약속</dt>
+                          <dd>{requestLabel(preview.promise.target)}</dd>
+                        </div>
+                        <div>
+                          <dt>약속 마감</dt>
+                          <dd>{date(preview.promise.deadline)}</dd>
+                        </div>
+                      </>
+                    )}
+                  </dl>
+                  {preview.promise && (
+                    <p className={s.hint}>보강 약속은 실제 영입과 별개의 결과예요.</p>
+                  )}
+                </>
+              )}
+            </div>
+            <p
+              role={error ? 'alert' : 'status'}
+              className={preview && !error ? s.previewStatus : s.hint}
+              style={{ visibility: ready && !error ? 'hidden' : undefined }}
+            >
+              {error
+                ? `조건을 확인할 수 없어요. ${error} 다시 열어 최신 조건을 확인해 주세요.`
+                : '선택한 조건을 확인하는 중이에요.'}
+            </p>
+            {disabled && (
+              <p className={s.hint}>
+                {readonly ? '읽기 전용 기록이에요.' : '다른 처리를 마친 뒤 결정할 수 있어요.'}
+              </p>
+            )}
+          </section>
+        </div>
       </div>
     </Dialog>
   );
 }
+
 export function MediationButton({
   record,
   w,

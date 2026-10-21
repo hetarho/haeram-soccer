@@ -149,7 +149,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 16 | 16 | - | 2 |
-| WEB | 99 | 99 | - | 0 |
+| WEB | 104 | 104 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -197,23 +197,23 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
+- 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
+- 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.
+- 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
+- 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
+- 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
+- 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
 - 261021 T273 integrated
-- 261021 r3m9 stopped: identity group integrated T240–T254 and T272 with CI green on every push; T255 done (benchmarks and CI 39517672764 on a3c9881); MATCH r15; report 261021-r3m9.
-- 261021 T255 done: final identity source passes the century storage benchmark with 101 design edits and a pending kit choice (worst checkpoint 2,406,812 B) and the browser benchmark with pattern rendering (entry 245,985 B gzip, load 4.4 s, p95 47 ms, 60 FPS).
-- 261020 T254 integrated
-- 261020 T252 T253 integrated
-- 261020 T250 T251 integrated
-- 261020 T272 integrated
-- 261021 r3m9 T253 dep + T251 (ordering for its observation spec), contents unchanged; identity-match-kit resumes after identity-founding integrates.
-- 261021 T292 correction batch on 300016c: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; catalog validation, build, fast checks and spec lint pass. The affected Firefox/Chromium phone journeys also pass (4 tests). Only test geometry changed; production styles and the 44px requirement remain unchanged.
-- 261021 update-ssot MATCH r15: MATCH-28✎ equal constants and rule-impossible metrics; T272 absorbs it; open MATCH tasks to MATCH@15 with contents unchanged.
-- 261021 update-ssot MATCH start (T272 decision request)
-- 261021 r3m9 T250–T255, T275, T283, T286 bases to WEB@99 after the owner's 73b0e42 (contents unchanged; their WEB-50 cites the match view, not the moved watch entry).
-- 261021 T287–T291 push gate on 0084882, rebased onto 19907a6: 1,399 unit tests (4 existing skips), 37 contract tests and all 188 Chromium journeys pass; typecheck, lint, format, catalog validation, build and spec lint pass. Browser checks confirm full-width compact NEXT MATCH above progress, inline notifications and discard-on-dismiss settings. Frozen install refreshed the stale local Brotli patch; source changes were unnecessary.
-- 261021 r3m9 identity bases to WEB@94 SAVE@50 ARCH@16 (contents unchanged); T244 task verify passes in its worktree (typecheck, lint, format, build, vitest since the lane base 186 files); both attempts resumed.
-- 261021 fix e2e: the cup-history journey seeds two node-simulated seasons instead of about 200 next-event clicks; CI 39439433028 WebKit stalled it in all three attempts, and the identity view, host step and save costs measured unchanged (view clone 9.4 vs 9.8 ms, 96 steps 12.9 vs 13.0 s).
-- 261021 planning checks: spec lint passes (34 existing-task base freshness warnings, no new-task warning); all 270 previous task files unchanged; T272–T286 graph acyclic and STATE deps aligned; document diff whitespace clean.
-- 261021 create-task T272–T286: full-match follow-ups for MATCH r14 WEB r94 HIST r16 SAVE r50 ARCH r16; baseline independently, shared changes after T255; all previous task files unchanged.
-- 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
-- 261021 T291 done: notifications beside settings without floating reserve, full-width NEXT MATCH above progress, WEB r99; 13 affected tests/typecheck/lint/format/build pass, browser layout checks updated for batch.
-- 261021 create-task WEB r99 → T291; T291 start at 4af396f, inline clock notifications and home order.
+- 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
+- 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
+- 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
+- 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
+- 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
+- 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.
+- 261021 update-ssot WEB r104 start: the owner's 선수 19명 message is TeamState advice, separate from runtime warnings; float that exact source too.
+- 261021 T296 done: runtime warnings/errors float outside page flow; typecheck, affected units, targeted lint/format, build and spec lint pass; mobile/recovery browser coverage updated for the batch gate.
+- 261021 WEB r103 freshness: T275 T283 T286 bases to WEB@103; their cited match/record decisions are unchanged by runtime-alert placement.
+- 261021 create-task T296 and implement-task start on 6d31c81: portal runtime alerts above the page, preserving their actions and ordinary dialog layering.
+- 261021 update-ssot WEB r103 start: floating runtime warnings and errors; prior controller/settings/mediation work committed as 6d31c81.
+- 261021 T295 done: compact structured mediation review and stable confirm styling during pending previews; fast checks/build and a focused owner-requested Chromium appearance/blocking check pass.

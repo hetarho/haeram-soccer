@@ -10,7 +10,6 @@ import {
   seasonLength,
 } from '../../../../packages/engine/src/calendar';
 import { memo, useEffect, useRef } from 'react';
-import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
@@ -25,13 +24,11 @@ const PACES: [Pace, string, string][] = [
   ['x10', 'x10', '0.1초에 하루'],
 ];
 
-/** Game-speed controls: play starts the shared clock; a speed chip only sets its pace (→WEB-18). */
+/** Game-speed controls: play starts the shared clock; the dropdown only sets its pace (→WEB-18). */
 export const ProgressControls = memo(function ProgressControls({
-  client,
   controller,
   compact = false,
 }: {
-  client: GameClient;
   controller: ProgressionController;
   /** Away from home the same one-row clock keeps running, labelled as a whole for the region. */
   compact?: boolean;
@@ -66,33 +63,8 @@ export const ProgressControls = memo(function ProgressControls({
       (next
         ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
         : '시즌 정산을 기다려요');
-  const modeControl = (
-    <label className={p.mode}>
-      <span className={s.srOnly}>진행 모드</span>
-      <Select
-        aria-label="진행 모드"
-        value={mode}
-        disabled={blocked || !!state.pendingActions || state.busy}
-        onValueChange={(value) => {
-          const settings = settingsOf(w);
-          const progression = value as 'automatic' | 'manual';
-          if (progression === 'manual' && !settings.observations.matchEve) {
-            useInterventionDialog.getState().show();
-            return;
-          }
-          void client.command({ type: 'settings', settings: { ...settings, mode: progression } });
-        }}
-      >
-        <option value="automatic">자동</option>
-        <option value="manual" disabled={!settingsOf(w).observations.matchEve}>
-          수동
-        </option>
-      </Select>
-    </label>
-  );
   const buttons = manual ? (
     <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="수동 진행">
-      {modeControl}
       <button
         disabled={blocked || state.processing || pending}
         onClick={() => void controller.nextEvent()}
@@ -102,7 +74,6 @@ export const ProgressControls = memo(function ProgressControls({
     </div>
   ) : (
     <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="자동 진행 속도">
-      {modeControl}
       <button
         className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
@@ -117,22 +88,19 @@ export const ProgressControls = memo(function ProgressControls({
         <span aria-hidden="true" />
       </button>
       {!watching && (
-        // Paces sit in one recessed track beside the play toggle: secondary, but each still
-        // takes the track's full height as its touch area.
-        <span className={p.paces} data-running={running || undefined}>
+        <Select
+          className={p.pace}
+          aria-label="자동 진행 배속"
+          value={pace}
+          disabled={blocked || (!running && state.processing)}
+          onValueChange={(value) => controller.setPace(value as Pace)}
+        >
           {PACES.map(([value, label, description]) => (
-            <button
-              key={value}
-              aria-label={`${description} 속도 선택`}
-              aria-pressed={pace === value}
-              className={p.pace}
-              disabled={blocked || (!running && state.processing)}
-              onClick={() => controller.setPace(value)}
-            >
+            <option key={value} value={value} data-hint={description}>
               {label}
-            </button>
+            </option>
           ))}
-        </span>
+        </Select>
       )}
     </div>
   );
@@ -144,7 +112,7 @@ export const ProgressControls = memo(function ProgressControls({
       aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
       data-testid={compact ? 'mini-clock' : undefined}
     >
-      <div className={`${s.calendarSummary} ${p.calendar}`}>
+      <div className={s.calendarSummary}>
         <strong data-testid="game-date">{seasonDate(w)}</strong>
         <small className={s.autoStatus} aria-live="polite" aria-atomic="true">
           {status}

@@ -6,6 +6,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities } from './events';
 import { continueSlot } from './slots';
+import { chooseOption } from './select';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -52,9 +53,9 @@ test('keeps league views and nodes across silent progression from home and updat
   const mini = page.getByTestId('mini-clock');
   await expect(mini.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
-  const double = page.getByRole('button', { name: '0.5초에 하루 속도 선택', exact: true });
-  await double.click();
-  await expect(double).toHaveAttribute('aria-pressed', 'true');
+  const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+  await chooseOption(pace, 'x2');
+  await expect(pace).toHaveAttribute('data-value', 'x2');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   // The run has left the founding day. A step that ran late carries the days it owes, so no one
   // day before the match eve is sure to be on screen.

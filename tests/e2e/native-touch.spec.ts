@@ -74,11 +74,8 @@ for (const viewport of [
     // the preparation controls this test measures, so offers go to the staff (level 4).
     await chooseLevel(page, 4);
     const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const paces = ['1초에 하루', '0.5초에 하루', '0.2초에 하루', '0.1초에 하루'].map((pace) =>
-      progress.getByRole('button', { name: `${pace} 속도 선택`, exact: true }),
-    );
-    // The pace chips are secondary to play and the intervention level, but still tappable.
-    for (const pace of paces) await expectTouchControl(pace, viewport, 32);
+    const pace = progress.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+    await expectTouchControl(pace, viewport);
     await expectTouchControl(
       progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
       viewport,
@@ -87,13 +84,12 @@ for (const viewport of [
       progress.getByRole('button', { name: '위임·진행 설정', exact: true }),
       viewport,
     );
-    await paces[1].click();
-    await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
-    await expect(paces[0]).toHaveAttribute('aria-pressed', 'false');
-    // A chip only sets the pace (→WEB-18): play starts the run, which stops straight away.
+    await chooseOption(pace, 'x2');
+    await expect(pace).toHaveAttribute('data-value', 'x2');
+    // Pace selection only sets the pace (→WEB-18): play starts the run, which stops straight away.
     await progress.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await progress.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
-    await expect(paces[1]).toHaveAttribute('aria-pressed', 'true');
+    await expect(pace).toHaveAttribute('data-value', 'x2');
     await expect(
       progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     ).toBeVisible();
