@@ -9,6 +9,7 @@ export interface StagedThemeResource {
 export interface ThemeInstallationPorts {
   stageFont(font: FontResource): Promise<StagedThemeResource>;
   stageStylesheet(url: string): Promise<StagedThemeResource>;
+  stageImage(url: string): Promise<StagedThemeResource>;
   installTokens(theme: ThemeResolver): { dispose(): void };
 }
 export interface InstalledTheme {
@@ -65,6 +66,23 @@ export function createBrowserThemePorts(document: Document): ThemeInstallationPo
         document.head.append(link);
       });
     },
+    async stageImage(url) {
+      const image = document.createElement('img');
+      image.decoding = 'async';
+      const dispose = () => {
+        image.removeAttribute('src');
+        image.remove();
+      };
+      try {
+        image.src = url;
+        await image.decode();
+        // Keep the decoded image owned until replacement; consumers use the same browser cache.
+        return { activate() {}, dispose };
+      } catch (error) {
+        dispose();
+        throw error;
+      }
+    },
     installTokens(theme) {
       const style = document.createElement('style');
       style.dataset.presentationTokens = '';
@@ -85,7 +103,8 @@ export function createBrowserThemePorts(document: Document): ThemeInstallationPo
 }
 
 /**
- * Stage the selected fonts/CSS only. A stale request returns null without activation.
+ * Stage selected fonts/CSS/image icons and the caller's current scene needs, never all scene slots.
+ * A stale request returns null without activation.
  * A failure leaves previous resources owned and usable; successful replacement releases them.
  */
 export async function installThemeResources(
@@ -94,6 +113,8 @@ export async function installThemeResources(
     ports?: ThemeInstallationPorts;
     previous?: InstalledTheme;
     isCurrent?: () => boolean;
+    /** Candidate-resolved URLs for mounted semantic icons/scenes, deduplicated before I/O. */
+    requiredImages?: readonly string[];
   } = {},
 ): Promise<InstalledTheme | null> {
   const ports = options.ports ?? createBrowserThemePorts(document);
@@ -108,6 +129,8 @@ export async function installThemeResources(
     const requests = theme.fonts.map((font) => Promise.resolve().then(() => ports.stageFont(font)));
     if (theme.stylesheet)
       requests.push(Promise.resolve().then(() => ports.stageStylesheet(theme.stylesheet!)));
+    for (const url of new Set([...theme.iconImages, ...(options.requiredImages ?? [])]))
+      requests.push(Promise.resolve().then(() => ports.stageImage(url)));
     const results = await Promise.allSettled(requests);
     for (const result of results) if (result.status === 'fulfilled') staged.push(result.value);
     const failed = results.find((result) => result.status === 'rejected');
