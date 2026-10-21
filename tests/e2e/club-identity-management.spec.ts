@@ -98,7 +98,7 @@ async function openSlots(page: Page) {
 /** The design view, once its lazily loaded editor is there. */
 async function designView(page: Page) {
   const view = page.getByRole('region', { name: '구단 디자인', exact: true });
-  await expect(view.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await expect(view.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   return view;
 }
 /** 구단 운영 › 구단 디자인 from the tab bar (→WEB-39). */
@@ -113,7 +113,7 @@ const applyButton = (view: Locator) => bar(view).getByRole('button', { name: '�
 const colourCode = (view: Locator, label: string) => view.getByLabel(label, { exact: true });
 const crestFill = (scope: Locator, fill: string) => scope.locator(`rect[fill="${fill}"]`);
 
-test('palette edits keep every shirt, reuse changes one shirt, and each apply reaches every crest', async ({
+test('three named colours link shirts and crest, and each apply reaches every crest', async ({
   page,
 }) => {
   test.slow();
@@ -123,9 +123,8 @@ test('palette edits keep every shirt, reuse changes one shirt, and each apply re
   const view = await openDesign(page);
   await expect(bar(view).getByRole('status')).toHaveText('적용된 디자인');
   await expect(applyButton(view)).toBeDisabled();
-  await colourCode(view, '대표 주색 색 코드').fill('#E0218A');
-  await colourCode(view, '대표 보조색 색 코드').fill('#F2F2F2');
-  await colourCode(view, '바탕색 색 코드').fill('#E0218A');
+  await colourCode(view, '홈 색 코드').fill('#E0218A');
+  await colourCode(view, '어웨이 색 코드').fill('#F2F2F2');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
   // Editing and previewing commit nothing (KIT-9).
   expect(await ownIdentity(page)).toEqual(before);
@@ -134,32 +133,28 @@ test('palette edits keep every shirt, reuse changes one shirt, and each apply re
   await expect(bar(view).getByRole('status')).toHaveText('적용된 디자인');
   expect(await commands(page)).toBe(1);
   const palette = apply(before, [
-    { type: 'colour', index: 0, colour: '#E0218A' },
-    { type: 'colour', index: 1, colour: '#F2F2F2' },
-    { type: 'crest-colour', region: 'primary', colour: '#E0218A' },
+    { type: 'kit-colour', role: 'home', colour: '#E0218A' },
+    { type: 'kit-colour', role: 'away', colour: '#F2F2F2' },
   ]);
   const afterPalette = ownClub(await exportWorld(page));
   expect(afterPalette.identity).toEqual(palette);
-  // KIT-10: the representative colours change; every saved shirt stays as designed.
-  expect(afterPalette.identity!.kits).toEqual(before.kits);
+  // KIT-10: colour choices repaint the linked regions immediately.
+  expect(afterPalette.identity!.kits.home.primary).toBe('#E0218A');
+  expect(afterPalette.identity!.kits.home.secondary).toBe('#F2F2F2');
+  expect(afterPalette.identity!.crest.secondary).toBe('#F2F2F2');
   expect(afterPalette.color).toBe('#E0218A');
 
-  // 대표색 적용 copies the representative colours into the selected shirt only.
-  await view
-    .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '원정 유니폼', exact: true })
-    .click();
-  await view.getByRole('button', { name: '대표색 적용', exact: true }).click();
+  // A third colour changes the third base while keeping the home/away crest palette.
+  await colourCode(view, '세컨 색 코드').fill('#123456');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
   await applyButton(view).click();
   await expect(bar(view).getByRole('status')).toHaveText('적용된 디자인');
   expect(await commands(page)).toBe(2);
-  const reused = apply(palette, [{ type: 'shirt-reuse', role: 'away' }]);
-  const afterReuse = await ownIdentity(page);
-  expect(afterReuse).toEqual(reused);
-  expect(afterReuse.kits.away).not.toEqual(before.kits.away);
-  expect(afterReuse.kits.home).toEqual(before.kits.home);
-  expect(afterReuse.kits.third).toEqual(before.kits.third);
+  const reused = apply(palette, [{ type: 'kit-colour', role: 'third', colour: '#123456' }]);
+  expect(await ownIdentity(page)).toEqual(reused);
+  expect(reused.crest).toEqual(palette.crest);
+  expect(reused.kits.home).toEqual(palette.kits.home);
+  expect(reused.kits.away).toEqual(palette.kits.away);
 
   // KIT-12/WEB-49: the current crest follows at once wherever the club is named.
   const hud = page.locator('header').filter({ has: page.getByTestId('calendar') });
@@ -196,7 +191,7 @@ test('되돌리기 restores the entry design and a failed apply keeps the draft 
   await found(page, 'identity-management-cancel');
   const before = await ownIdentity(page);
   const view = await openDesign(page);
-  const main = colourCode(view, '대표 주색 색 코드');
+  const main = colourCode(view, '홈 색 코드');
   await expect(main).toHaveValue(FIRST_COLOUR);
   await main.fill('#123456');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
@@ -225,7 +220,7 @@ test('되돌리기 restores the entry design and a failed apply keeps the draft 
   await expect(view.getByRole('alert')).toHaveCount(0);
   expect(await commands(page)).toBe(2);
   expect(await ownIdentity(page)).toEqual(
-    apply(before, [{ type: 'colour', index: 0, colour: '#E0218A' }]),
+    apply(before, [{ type: 'kit-colour', role: 'home', colour: '#E0218A' }]),
   );
 });
 
@@ -237,21 +232,21 @@ test('navigation detours and passing days keep the draft beside the policy draft
   await found(page, 'identity-management-detours');
   const before = await ownIdentity(page);
   let view = await openDesign(page);
-  await colourCode(view, '대표 주색 색 코드').fill('#E0218A');
+  await colourCode(view, '홈 색 코드').fill('#E0218A');
   await view
     .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '서드 유니폼', exact: true })
+    .getByRole('button', { name: '세컨 유니폼', exact: true })
     .click();
   await view
-    .getByRole('group', { name: '서드 유니폼 무늬', exact: true })
+    .getByRole('group', { name: '세컨 유니폼 무늬', exact: true })
     .getByRole('button', { name: '체크', exact: true })
     .click();
   const drafted = apply(before, [
-    { type: 'colour', index: 0, colour: '#E0218A' },
+    { type: 'kit-colour', role: 'home', colour: '#E0218A' },
     { type: 'shirt-pattern', role: 'third', pattern: 'checks' },
   ]);
   const expectDraft = async (current: Locator) => {
-    await expect(colourCode(current, '대표 주색 색 코드')).toHaveValue('#E0218A');
+    await expect(colourCode(current, '홈 색 코드')).toHaveValue('#E0218A');
     await expect(bar(current).getByRole('status')).toHaveText('적용 전 초안');
     await expect(current.getByRole('alert')).toHaveCount(0);
     await expect(applyButton(current)).toBeEnabled();
@@ -303,7 +298,7 @@ test('another game never receives the draft', async ({ page }) => {
   test.slow();
   await found(page, 'identity-management-slot-one');
   const view = await openDesign(page);
-  await colourCode(view, '대표 주색 색 코드').fill('#E0218A');
+  await colourCode(view, '홈 색 코드').fill('#E0218A');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
   await openSlots(page);
   await page
@@ -313,7 +308,7 @@ test('another game never receives the draft', async ({ page }) => {
     .click();
   await foundHere(page, 'identity-management-slot-two', 'Second Design Club');
   const second = await openDesign(page);
-  await expect(colourCode(second, '대표 주색 색 코드')).toHaveValue(FIRST_COLOUR);
+  await expect(colourCode(second, '홈 색 코드')).toHaveValue(FIRST_COLOUR);
   await expect(bar(second).getByRole('status')).toHaveText('적용된 디자인');
   await expect(bar(second).getByRole('button', { name: '되돌리기', exact: true })).toBeDisabled();
   // Back in the first game the draft is gone too: it lived only while that game was in play.
@@ -321,7 +316,7 @@ test('another game never receives the draft', async ({ page }) => {
   await continueSlot(page, 1);
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   const first = await openDesign(page);
-  await expect(colourCode(first, '대표 주색 색 코드')).toHaveValue(FIRST_COLOUR);
+  await expect(colourCode(first, '홈 색 코드')).toHaveValue(FIRST_COLOUR);
   await expect(bar(first).getByRole('status')).toHaveText('적용된 디자인');
 });
 
@@ -336,13 +331,13 @@ test('a read-only tab inspects the design but cannot apply it', async ({ page, c
     await expect(view).toContainText('읽기 전용 상태에서는 구단 디자인을 적용할 수 없어요.');
     await expect(bar(view).getByRole('status')).toHaveText('읽기 전용');
     await expect(applyButton(view)).toBeDisabled();
-    const main = colourCode(view, '대표 주색 색 코드');
+    const main = colourCode(view, '홈 색 코드');
     await expect(main).toHaveValue(applied.colours[0]);
     await expect(main).toBeDisabled();
     // Inspection stays open: every shirt can still be looked at.
     const away = view
       .getByRole('group', { name: '편집할 유니폼', exact: true })
-      .getByRole('button', { name: '원정 유니폼', exact: true });
+      .getByRole('button', { name: '어웨이 유니폼', exact: true });
     await away.click();
     await expect(away).toHaveAttribute('aria-pressed', 'true');
   } finally {
@@ -357,14 +352,15 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
   await found(page, 'identity-management-stale');
   const raw = await exportRaw(page);
   const view = await openDesign(page);
-  await colourCode(view, '대표 주색 색 코드').fill('#E0218A');
+  await colourCode(view, '홈 색 코드').fill('#E0218A');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
   // The same game comes back from a file whose applied crest has changed since the draft began.
   const { world } = await decode(raw);
   const newer = apply(ownClub(world).identity!, [
-    { type: 'crest-colour', region: 'primary', colour: '#123456' },
+    { type: 'kit-colour', role: 'home', colour: '#123456' },
   ]);
   ownClub(world).identity = newer;
+  ownClub(world).color = newer.colours[0];
   await page
     .locator('input[type=file]')
     .last()
@@ -382,7 +378,7 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
   await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
   const stale = await designView(page);
   await expect(stale.getByRole('alert')).toContainText('적용된 구단 디자인이 바뀌었어요');
-  await expect(colourCode(stale, '대표 주색 색 코드')).toHaveValue('#E0218A');
+  await expect(colourCode(stale, '홈 색 코드')).toHaveValue('#E0218A');
   await expect(applyButton(stale)).toBeDisabled();
   expect(await ownIdentity(page)).toEqual(newer);
   await stale
@@ -391,7 +387,7 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
     .click();
   await expect(bar(stale).getByRole('status')).toHaveText('적용된 디자인');
   await expect(stale.getByRole('alert')).toHaveCount(0);
-  await expect(colourCode(stale, '바탕색 색 코드')).toHaveValue('#123456');
+  await expect(colourCode(stale, '홈 색 코드')).toHaveValue('#123456');
   expect(await commands(page)).toBe(0);
   expect(await ownIdentity(page)).toEqual(newer);
 });

@@ -133,9 +133,9 @@ describe('editor pitch preview pairing (→KIT-6/7/8, WEB-87)', () => {
     const { appearance, labels } = editorPreviewAppearance(OWN, 'away', 'light');
     const lines = previewLines(appearance, labels);
     expect(lines[0]).toBe('미리보기 · 실제 경기가 아닌 예시 배치예요.');
-    expect(lines[1]).toMatch(/^홈 밝은 상대 예시: (홈|원정|서드) 유니폼 \(/);
+    expect(lines[1]).toMatch(/^홈 밝은 상대 예시: (홈|어웨이|세컨) 유니폼 \(/);
     expect(lines[2]).toBe(
-      '원정 우리 팀: 원정 유니폼 (대각선 띠, 주색 #1F4FD1, 보조색 #ffffff, 테두리 #FCBF49)',
+      '원정 우리 팀: 어웨이 유니폼 (대각선 띠, 주색 #1F4FD1, 보조색 #ffffff, 테두리 #FCBF49)',
     );
     expect(lines[3]).toBe(
       `골키퍼는 자동으로 골라요: 밝은 상대 예시 ${appearance.sides[0].goalkeeper}, 우리 팀 ${appearance.sides[1].goalkeeper}.`,

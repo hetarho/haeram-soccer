@@ -1,3 +1,4 @@
+import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
@@ -24,13 +25,15 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await found(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
-  const desk = page.getByRole('region', { name: '선수 영입 데스크' });
-  const roles = desk.getByRole('group', { name: '영입 포지션 선택' });
+  const filter = await marketFilters(page);
+  const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
   await roles.getByRole('button', { name: 'GK', exact: true }).click();
-  for (const card of await desk.getByRole('article').all())
-    await card.getByRole('button', { name: '비교', exact: true }).click();
-  await expect(desk.getByRole('button', { name: '선택한 2명 비교' })).toBeEnabled();
-  const trigger = desk.getByRole('button', { name: /^영입 기조/ });
+  await closeMarketPanel(page, '영입 필터');
+  for (const row of await marketRows(page).all())
+    await row.getByRole('button', { name: / 비교$/ }).click();
+  await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
+  await marketInfo(page);
+  const trigger = page.getByRole('button', { name: /^영입 기조/ });
   const url = page.url();
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
@@ -41,11 +44,10 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
-  await expect(roles.getByRole('button', { name: 'GK', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  await expect(desk.getByRole('button', { name: '선택한 2명 비교' })).toBeEnabled();
+  await expect(marketRows(page)).toHaveCount(2);
+  for (const row of await marketRows(page).all())
+    await expect(row).toHaveAttribute('data-line', 'GK');
+  await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   await trigger.click();
   await dialog
     .getByTestId('strategy-draft')
@@ -53,11 +55,10 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
     .click();
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
-  await expect(roles.getByRole('button', { name: 'GK', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  await expect(desk.getByRole('button', { name: '선택한 2명 비교' })).toBeEnabled();
+  await expect(marketRows(page)).toHaveCount(2);
+  for (const row of await marketRows(page).all())
+    await expect(row).toHaveAttribute('data-line', 'GK');
+  await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   expect(page.url()).toBe(url);
   await trigger.click();
   await expect(
@@ -74,6 +75,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
   const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
   await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
@@ -82,6 +84,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
     .getByRole('button', { name: '적용', exact: true })
     .click();
   await expect(sheet).toHaveCount(0);
+  await closeMarketPanel(page, '영입 정보');
   await openOperations(page);
   const draft = page.getByTestId('strategy-draft');
   await expect(draft).toBeVisible();
@@ -200,19 +203,18 @@ test('a player profile leads to that player training and keeps the squad search'
   await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);
 });
 
-test('recruitment needs precede the candidate catalogue and academy operations open their exact work', async ({
+test('recruitment needs open on demand and academy operations open their exact work', async ({
   page,
 }) => {
   await found(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await expect(marketRows(page).first()).toBeVisible();
   const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
-  const candidate = page
-    .getByRole('region', { name: '선수 영입 데스크' })
-    .getByRole('article')
-    .first();
-  await settle(page);
-  expect((await needs.boundingBox())!.y).toBeLessThan((await candidate.boundingBox())!.y);
+  await expect(needs).toHaveCount(0);
+  await marketInfo(page);
+  await expect(needs).toBeVisible();
+  await closeMarketPanel(page, '영입 정보');
   await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
@@ -400,6 +402,7 @@ test('department sheet is readonly in a second tab and restores its task', async
     await viewer.setViewportSize({ width: 390, height: 844 });
     await viewer.goto('/people?view=market');
     await expect(viewer.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
+    await marketInfo(viewer);
     const trigger = viewer.getByRole('button', { name: /^영입 기조/ });
     await trigger.click();
     const sheet = viewer.getByRole('dialog', { name: '영입 운영 방침', exact: true });
@@ -423,6 +426,7 @@ test('recruitment support round-trips between department sheet and full board', 
   await found(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await marketInfo(page);
   const trigger = page.getByRole('button', { name: /^영입 기조/ });
   const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
   await trigger.click();
@@ -440,6 +444,7 @@ test('recruitment support round-trips between department sheet and full board', 
     sheet.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }),
   ).toHaveAttribute('aria-checked', 'true');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await closeMarketPanel(page, '영입 정보');
   await openOperations(page);
   const board = page.getByTestId('view-scroller').getByTestId('strategy-board');
   await expect(

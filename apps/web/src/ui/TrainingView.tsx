@@ -1,6 +1,6 @@
 import { useTaskState } from './taskMemory';
 import { useEffect, useState } from 'react';
-import { FacilityArt } from './FacilityArt';
+import { FacilityOverview } from './FacilityOverview';
 import type {
   TrainingCoach,
   TrainingFocus,
@@ -50,7 +50,6 @@ import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderShe
 import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
-import a from './App.module.css';
 import s from './TrainingView.module.css';
 
 type Props = { state: ClientState; client: GameClient };
@@ -114,16 +113,6 @@ export function TrainingView({ state, client }: Props) {
   const outlook = developmentOutlook(w);
   return (
     <>
-      <div className={a.pageHead}>
-        <div>
-          <div className={a.eyebrow}>TRAINING</div>
-          <h2>훈련·육성</h2>
-          <p>
-            코치가 정한 훈련과 선수의 성장 상태를 확인해요. 이 화면에서 팀이나 선수의 훈련 변경을
-            제안할 수 있어요.
-          </p>
-        </div>
-      </div>
       <PageTabs
         tabs={TRAINING_TABS}
         value={tab}
@@ -133,23 +122,29 @@ export function TrainingView({ state, client }: Props) {
       />
       <TabPanel idPrefix="training" value={tab}>
         {tab === 'training' ? (
-          <div className={s.stack}>
-            <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
-            <figure className={`${s.trainingScene} ${s.wide}`}>
-              <FacilityArt kind="training" world={w} className={s.trainingArt} />
-              <figcaption>
-                <span>TRAINING GROUND</span>
-                <strong>
-                  {w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
-                </strong>
-                <small>지금 {focusName(outlook.focus.focus)}</small>
-              </figcaption>
-            </figure>
-            <PlayerTraining w={w} onSheet={setSheet} />
-            <DevelopmentDrivers outlook={outlook} />
-          </div>
+          <>
+            <FacilityOverview
+              w={w}
+              kind="training"
+              title={w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
+            >
+              {focusName(outlook.focus.focus)} · 수석코치{' '}
+              {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
+            </FacilityOverview>
+            <div className={`${s.stack} ${s.pair}`}>
+              <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
+              <DevelopmentDrivers outlook={outlook} />
+              <PlayerTraining w={w} onSheet={setSheet} />
+            </div>
+          </>
         ) : (
-          <AcademyPanel w={w} client={client} />
+          <>
+            <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
+              {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} ·{' '}
+              유소년 총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
+            </FacilityOverview>
+            <AcademyPanel w={w} client={client} />
+          </>
         )}
       </TabPanel>
       {sheet && (!sheet.player || sheetPlayer) && (
@@ -210,15 +205,12 @@ function TrainingFocusPanel({
       >
         <span>
           <b>수석코치에게 훈련 제안·강행</b>
-          <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
+          <small>다음 라운드부터 4라운드 · 강행 시 사임 위험</small>
         </span>
         <span className={s.chevron} aria-hidden="true">
           ›
         </span>
       </button>
-      <p className={s.timing}>
-        변경을 받아들이면 다음 라운드 정산부터 반영해요. 지금 능력이나 피로가 즉시 바뀌지는 않아요.
-      </p>
       <details className={s.reference}>
         <summary>훈련 효과·자동 판단 기준</summary>
         <ul className={s.focuses} aria-label="훈련 방향별 효과">
@@ -319,9 +311,6 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
           </button>
         ))}
       </div>
-      <p className={s.timing}>
-        한 선수의 훈련·피로·적응·성장을 함께 봐요. 개별 훈련은 팀과 다른 강도로 훈련하는 선택이에요.
-      </p>
       <ul className={s.players} data-testid="adaptation-list">
         {squad.map((player) => {
           const call = playerCallLine(w, player, squadFocus),

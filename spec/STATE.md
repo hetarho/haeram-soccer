@@ -175,9 +175,9 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 106 | 106 | - | 0 |
+| WEB | 112 | 112 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 2 | 2 | - | 0 |
+| KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
 | MATCH | 19 | 19 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
@@ -219,11 +219,19 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
+- FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - h3t6 (autopilot, MacBook) runs the rest standalone with session subagents (implementer plus separate reviewer each; gates on a clean detached worktree because other sessions edit the main checkout): explore T321 (detailed tactic pairings, MATCH-29) and explore T284 (aggregate calibration) run side by side, then T285, T286, T306–T308.
 - known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (43.9999 px < 44 px); Firefox CI — staff.spec.ts:80 and :247 failing at the mediation dialog's 단장 우선 radio `.check()` in `tests/e2e/events.ts` (604590a, 34ebd1b; 48/48 locally); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner (87 s normally).
 - CI: 9e67be5 passed every job.
 
 ## log
+- 261022 merged local main's UI work (T309–T314: compact overviews, office and academy art, linked club colours and random crest, table-first market) with h3t6's main; refresh T286 T307 T308 T327 bases only: WEB r107–r112 and KIT r3 change nothing they cite
+- 261022 T314 done: table-first market, on-demand filters/information/negotiations and stable-ID detail; 15 focused tests, static checks and build passed. Browser journeys updated for the ARCH-30 batch.
+- 261022 T313 done (u6v1): 18 era/academy-level scenes plus two coarser offices, all native 240×80; actual-completion selection and captions; 36 focused cases and task checks pass, 99 assets validated. Commit this task only; T314 remains separately owned; browser batch pending.
+- 261022 T314 start (m7k2): update-ssot WEB r112 and create-task for the requested table-first market; preserve existing T313 artwork edits and other active work. WEB-43 is not cited by another active task.
+- 261022 T313 start (u6v1): WEB r111 gives academy actual completed-level/era artwork and matches all new art to the existing 240×80 grid; owner requested completion and a main commit.
+- 261022 T312 done (u6v1): original academy artwork applied above the youth tab; 35 focused cases, typecheck/lint/format/build and 82-asset validation pass. Browser journey updated for batch; local main commit, no push.
+- 261022 T312 start (u6v1): WEB r110 adds an original youth academy image and theme role above academy operations; existing identities and engine task owners are preserved.
 - 261022 create-task T328 (explore): counter role-table variants against press under MATCH-29, evidence for a STAFF-22/MATCH-8 update; T327 also counts possession by pass share; T323 and T286 wait for T328
 - 261022 update-ssot MATCH r19: MATCH-3 possession is the share of attempted passes (from T324's decision request)
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r19, which T327 implements first
@@ -237,10 +245,3 @@
 - 261022 T284 integrated (h3t6; explore exit: aggregate core MATCH-23 31/32 measurable rows inside and 0 outside, curve 1.8점, 0 invariant failures in 260,000; parity and advanced-counter bands unresolved → MATCH r17, T322, T323; review named the forced-tactic out-of-position confound)
 - 261022 create-task MATCH r17: T322 (sourced advanced-counter bands, one counting rule) then explore T323 (calibrate both engines, parity at a resolving size) before T286; T285 runs beside T321 first
 - 261022 update-ssot MATCH r17: MATCH-23 trace-only rows bind the detailed engine only and season scoring concentration joins it; MATCH-30+ sourced advanced-counter bands (from T284's decision requests)
-- 261022 refresh T285 T306 bases only: MATCH r17 changes nothing they cite
-- 261022 T320 integrated (h3t6): MATCH-29 bands and one evaluator for both engines; tactic measurements start from equal pre-match fatigue (T321, T284)
-- 261022 T278 integrated (h3t6; explore exit: period-end fixed, 30/38 core MATCH-23 rows inside and 0 outside, draws, curve and MATCH-8 tactics unresolved → MATCH-29, T320, T321; one review round fixed the extra-time clock)
-- 261022 refresh T285 T306 bases only: MATCH r16 adds MATCH-29, which neither cites
-- 261022 create-task MATCH r16: T320 (MATCH-29 bands and shared evaluator) then explore T321 (detailed tactic pairings) beside T284; T284 and T286 gain MATCH-29 and the new deps
-- 261022 update-ssot MATCH r16: MATCH-29+ tactic-pairing bands at equal strength (from T278's unresolved press dominance)
-- 261021 T283 integrated (h3t6; one review round fixed the phone sample and the other-league notice)

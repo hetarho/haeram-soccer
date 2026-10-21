@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   CREST_PRESETS,
+  CREST_SHAPES,
+  CREST_PATTERNS,
+  CREST_EMBLEMS,
   KIT_ROLES,
   type ClubIdentity,
 } from '../../../../packages/contracts/src/identity';
@@ -8,6 +11,8 @@ import { clubIdentitySchema } from '../../../../packages/contracts/src/identityS
 import {
   cloneIdentity,
   colourInput,
+  linkedIdentityColours,
+  randomCrestAction,
   reduceIdentityDraft,
   type IdentityDraftAction,
 } from './clubIdentityDraft';
@@ -113,7 +118,7 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
     });
   });
 
-  it('selects a ready-made crest in the crest’s colours, keeping colours and shirts', () => {
+  it('selects a ready-made crest in home/away colours, keeping the palette and shirts', () => {
     const own = apply(
       ENTRY,
       { type: 'crest-colour', region: 'secondary', colour: null },
@@ -121,7 +126,7 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
     );
     CREST_PRESETS.forEach((preset, index) => {
       const next = reduceIdentityDraft(own, { type: 'crest-preset', index });
-      expect(next.crest).toEqual({ ...preset, primary: '#d62828', accent: '#fcbf49' });
+      expect(next.crest).toEqual({ ...preset, primary: '#d62828', secondary: '#ffffff' });
       expect(next.colours).toBe(ENTRY.colours);
       expect(next.kits).toBe(ENTRY.kits);
       valid(next);
@@ -143,7 +148,7 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
       pattern: 'checks',
       emblem: 'bolt',
       primary: '#6A0DAD',
-      secondary: '#FFFFFF',
+      secondary: '#ffffff',
       accent: '#f5e663',
     });
     const oneColour = apply(
@@ -189,7 +194,7 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
     expect(checks.kits.away).toEqual({
       pattern: 'checks',
       primary: '#ffffff',
-      secondary: '#FFFFFF',
+      secondary: '#d62828',
       trim: '#d62828',
     });
     const one = apply(ENTRY, { type: 'remove-colour', index: 1 });
@@ -312,5 +317,75 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
       { type: 'crest-part', part: 'emblem', value: 'sponsor' as never },
     ];
     for (const action of invalid) expect(reduceIdentityDraft(ENTRY, action)).toBe(ENTRY);
+  });
+});
+
+describe('three linked editor colours and random crests (→KIT-1/2/4/10/13)', () => {
+  it('links each named colour without changing components or shirt patterns', () => {
+    for (const role of KIT_ROLES) {
+      const next = reduceIdentityDraft(ENTRY, { type: 'kit-colour', role, colour: '#123AbC' });
+      const { home, away, third } = next.kits;
+      expect(next.colours).toEqual([home.primary, away.primary, third.primary]);
+      expect(next.kits[role].primary).toBe('#123AbC');
+      for (const other of others(role))
+        expect(next.kits[other].primary).toBe(ENTRY.kits[other].primary);
+      expect(next.crest).toEqual({
+        shape: ENTRY.crest.shape,
+        pattern: ENTRY.crest.pattern,
+        emblem: ENTRY.crest.emblem,
+        primary: home.primary,
+        secondary: away.primary,
+      });
+      expect(home.secondary).toBe(away.primary);
+      expect(away).not.toHaveProperty('secondary');
+      expect(third.secondary).toBe(home.primary);
+      expect(home).not.toHaveProperty('trim');
+      expect(away.trim).toBe(home.primary);
+      expect(third.trim).toBe(home.primary);
+      for (const kit of KIT_ROLES) expect(next.kits[kit].pattern).toBe(ENTRY.kits[kit].pattern);
+      expect(ENTRY).toEqual(SNAPSHOT);
+      valid(next);
+    }
+    expect(reduceIdentityDraft(ENTRY, { type: 'kit-colour', role: 'home', colour: 'red' })).toBe(
+      ENTRY,
+    );
+  });
+
+  it('prepares linked founding defaults without mutating or migrating a saved identity', () => {
+    const next = linkedIdentityColours(ENTRY);
+    expect(next.colours).toEqual(['#d62828', '#ffffff', '#0b1f44']);
+    expect(next.crest.secondary).toBe(next.kits.away.primary);
+    expect(linkedIdentityColours(next)).toEqual(next);
+    expect(ENTRY).toEqual(SNAPSHOT);
+    expect(reduceIdentityDraft(next, { type: 'reset', entry: ENTRY })).toEqual(SNAPSHOT);
+    valid(next);
+  });
+
+  it('draws every other composition exactly once without changing colours or shirts', () => {
+    const entry = linkedIdentityColours(ENTRY);
+    const total = CREST_SHAPES.length * CREST_PATTERNS.length * CREST_EMBLEMS.length;
+    const seen = new Set<string>();
+    for (let index = 0; index < total - 1; index++) {
+      const action = randomCrestAction(entry.crest, () => (index + 0.5) / (total - 1));
+      const next = reduceIdentityDraft(entry, action);
+      expect([next.crest.shape, next.crest.pattern, next.crest.emblem]).not.toEqual([
+        entry.crest.shape,
+        entry.crest.pattern,
+        entry.crest.emblem,
+      ]);
+      seen.add(`${next.crest.shape}:${next.crest.pattern}:${next.crest.emblem}`);
+      expect(next.kits).toBe(entry.kits);
+      expect(next.colours).toBe(entry.colours);
+      expect(next.crest.primary).toBe(entry.crest.primary);
+      expect(next.crest.secondary).toBe(entry.crest.secondary);
+      expect(next.crest).not.toHaveProperty('accent');
+      valid(next);
+    }
+    expect(seen.size).toBe(total - 1);
+    for (const random of [0, 1 - Number.EPSILON]) {
+      const first = randomCrestAction(entry.crest, () => random);
+      valid(reduceIdentityDraft(entry, first));
+    }
+    expect(ENTRY).toEqual(SNAPSHOT);
   });
 });

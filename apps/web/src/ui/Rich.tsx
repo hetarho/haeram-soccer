@@ -3,7 +3,7 @@ import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
-import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type {
   ContractTalk,
   ContractTerm,
@@ -88,6 +88,8 @@ import {
 } from './ClubStaff';
 import { PageTabs, TabPanel } from './PageTabs';
 import { TrainingView } from './TrainingView';
+import { FacilityOverview } from './FacilityOverview';
+import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
 import { bansOf, banText } from './discipline';
 import { yellowWarning } from '../../../../packages/engine/src/discipline';
@@ -124,28 +126,6 @@ const toneLabel = {
   support: '지원을 약속하며',
   demand: '강하게 요구',
 };
-function Header({
-  eyebrow,
-  title,
-  description,
-  children,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  children?: ReactNode;
-}) {
-  return (
-    <div className={s.pageHead}>
-      <div>
-        <div className={s.eyebrow}>{eyebrow}</div>
-        <h2>{title}</h2>
-        <p>{description}</p>
-      </div>
-      {children}
-    </div>
-  );
-}
 /** The manager's youth attribute speeds every young player's growth; the academy is separate. */
 const YOUTH_HINT = '27세 미만 선수 성장';
 /** "38세", or nothing for someone from an older save without an age. */
@@ -200,11 +180,6 @@ function People({ state, client }: Props) {
   }, [request]);
   return (
     <>
-      <Header
-        eyebrow="PEOPLE"
-        title="선수단·스태프"
-        description="누가 뛰고, 누가 오고, 누가 남을지 정해요. 선수 명단과 영입, 감독과 스태프의 선임·계약을 다뤄요. 젊은 감독과 코치는 잠재력까지 성장해요."
-      />
       <PageTabs
         tabs={PEOPLE_TABS}
         value={tab}
@@ -213,6 +188,17 @@ function People({ state, client }: Props) {
         idPrefix="people"
       />
       <TabPanel idPrefix="people" value={tab}>
+        {tab !== 'market' && (
+          <FacilityOverview
+            w={w}
+            kind={tab === 'coaches' ? 'staff' : tab === 'manager' ? 'manager' : 'locker'}
+            title={tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '감독실' : '스태프 사무실'}
+          >
+            {tab === 'coaches'
+              ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`
+              : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
+          </FacilityOverview>
+        )}
         {tab === 'players' ? (
           <Roster state={state} client={client} />
         ) : tab === 'market' ? (
@@ -224,8 +210,8 @@ function People({ state, client }: Props) {
           </>
         ) : (
           <>
-            <CoachingPlan w={w} />
             <CoachingStaff w={w} client={client} />
+            <CoachingPlan w={w} />
           </>
         )}
       </TabPanel>
@@ -279,24 +265,27 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
               <button onClick={() => setRequests('morale')}>선수단 분위기 요청</button>
             </div>
-            <Attributes
-              rows={[
-                ['철학', tacticLabel[m.philosophy]],
-                ['육성', m.youth, YOUTH_HINT],
-                ['유연성', m.flexibility],
-                ['자존심', m.pride],
-                ['신뢰', m.trust],
-                ['불만 누적', m.conflicts],
-                ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
-              ]}
-            />
-            <p className={s.muted}>
-              {m.pride >= 75
-                ? '자존심이 강한 감독입니다. 신뢰가 낮아진 상태에서 간섭을 계속하면 떠날 수 있습니다.'
-                : m.flexibility >= 65
-                  ? '변화를 비교적 열린 마음으로 받아들이는 감독입니다.'
-                  : '자신의 철학을 지키려는 성향입니다. 납득할 근거와 지원을 준비하세요.'}
-            </p>
+            <details className={management.reference}>
+              <summary>감독 능력·성향</summary>
+              <Attributes
+                rows={[
+                  ['철학', tacticLabel[m.philosophy]],
+                  ['육성', m.youth, YOUTH_HINT],
+                  ['유연성', m.flexibility],
+                  ['자존심', m.pride],
+                  ['신뢰', m.trust],
+                  ['불만 누적', m.conflicts],
+                  ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
+                ]}
+              />
+              <p className={s.muted}>
+                {m.pride >= 75
+                  ? '자존심이 강한 감독입니다. 신뢰가 낮아진 상태에서 간섭을 계속하면 떠날 수 있습니다.'
+                  : m.flexibility >= 65
+                    ? '변화를 비교적 열린 마음으로 받아들이는 감독입니다.'
+                    : '자신의 철학을 지키려는 성향입니다. 납득할 근거와 지원을 준비하세요.'}
+              </p>
+            </details>
           </div>
         </Panel>
         <Panel title="감독실에서의 대화" note="YOUR REQUEST">
@@ -362,10 +351,13 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
                 <p>{response.detail}</p>
               </blockquote>
             )}
-          </div>
-          <div className={s.panelFoot}>
-            요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
-            않습니다.
+            <details className={management.reference}>
+              <summary>대화 판단 기준</summary>
+              <p className={s.muted}>
+                요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
+                않습니다.
+              </p>
+            </details>
           </div>
         </Panel>
       </div>
@@ -1136,11 +1128,6 @@ function Business({ state, client }: Props) {
   }, [request]);
   return (
     <>
-      <Header
-        eyebrow="CLUB DIRECTION"
-        title="구단 운영"
-        description="운영 방침에서 부서별 기준과 투자를 정하고, 시설에서 증축을, 재정에서 장부와 전망을, 후원에서 계약을 다뤄요."
-      />
       <OperationsView
         key={opened}
         state={state}

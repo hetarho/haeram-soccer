@@ -8,7 +8,7 @@ import { acknowledgeEvents } from './events';
 import { expectHomeBounds } from './layout';
 
 /** Synthetic presentation fixture, not a claim to have simulated the intervening seasons. */
-function artWorld(year: number, stadium = 0, trainingGround = 0) {
+function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility = 0) {
   const w = createWorld({
     country: 'ENG',
     name: 'Art Fixture',
@@ -34,6 +34,7 @@ function artWorld(year: number, stadium = 0, trainingGround = 0) {
   }
   w.stadium = stadium;
   w.trainingGround = trainingGround;
+  w.academyFacility = academyFacility;
   w.cash = '999999999999';
   prepareSeason(w);
   return w;
@@ -62,10 +63,14 @@ async function load(page: Page, world: World) {
 
 async function expectArt(page: Page, kind: string, era: string, stage: number) {
   const img = page.locator(`[data-facility-art="${kind}"] img`);
+  const office = kind === 'manager' || kind === 'staff';
+  const source = office
+    ? `/art/scenes/${kind}-office-v2.webp`
+    : `/art/scenes/${era}/${kind}-${stage}.webp`;
   await expect(img).toBeVisible();
-  await expect(img).toHaveAttribute('src', `/art/scenes/${era}/${kind}-${stage}.webp`);
+  await expect(img).toHaveAttribute('src', source);
   await expect(img).toHaveAttribute('alt', /픽셀아트$/);
-  // Training actions lead on phones; its lazy illustration loads when the owner reveals it.
+  // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
@@ -77,9 +82,17 @@ async function expectArt(page: Page, kind: string, era: string, stage: number) {
 }
 
 for (const scenario of [
-  { year: 1950, era: 'heritage', stadium: 0, training: 0, width: 360, height: 740 },
-  { year: 1980, era: 'terraces', stadium: 4, training: 3, width: 390, height: 844 },
-  { year: 2020, era: 'contemporary', stadium: 8, training: 5, width: 1440, height: 960 },
+  { year: 1950, era: 'heritage', stadium: 0, training: 0, academy: 0, width: 360, height: 740 },
+  { year: 1980, era: 'terraces', stadium: 4, training: 3, academy: 2, width: 390, height: 844 },
+  {
+    year: 2020,
+    era: 'contemporary',
+    stadium: 8,
+    training: 5,
+    academy: 5,
+    width: 1440,
+    height: 960,
+  },
 ]) {
   test(`loads only current ${scenario.era} facility scenes at ${scenario.width}px`, async ({
     page,
@@ -89,7 +102,10 @@ for (const scenario of [
       if (request.url().includes('/art/scenes/')) requested.add(new URL(request.url()).pathname);
     });
     await page.setViewportSize({ width: scenario.width, height: scenario.height });
-    await load(page, artWorld(scenario.year, scenario.stadium, scenario.training));
+    await load(
+      page,
+      artWorld(scenario.year, scenario.stadium, scenario.training, scenario.academy),
+    );
     await expectArt(page, 'stadium', scenario.era, scenario.stadium);
     await expectHomeBounds(page);
     await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
@@ -97,19 +113,70 @@ for (const scenario of [
     await expect(dialog).toBeVisible();
     await expectArt(page, 'locker', scenario.era, scenario.stadium);
     await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    const people = page.getByRole('tabpanel');
+    const overview = page.getByTestId('facility-overview');
+    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
+    for (const [tab, kind, stage] of [
+      ['선수', 'locker', scenario.stadium],
+      ['감독', 'manager', 0],
+      ['스태프', 'staff', 0],
+    ] as const) {
+      await tabs.getByRole('tab', { name: tab, exact: true }).click();
+      await expectArt(page, kind, scenario.era, stage);
+      await expect(people.locator(':scope > :first-child')).toHaveAttribute(
+        'data-testid',
+        'facility-overview',
+      );
+      const art = overview.locator('[data-facility-art]');
+      const bounds = (await art.boundingBox())!;
+      expect(bounds.height).toBeGreaterThanOrEqual(144);
+      expect(bounds.height).toBeLessThanOrEqual(240);
+      await expectHomeBounds(page);
+    }
+    await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
+    await expect(overview).toHaveCount(0);
     await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
+    await expectArt(page, 'training', scenario.era, scenario.training);
+    await expect(page.getByRole('tabpanel').locator(':scope > :first-child')).toHaveAttribute(
+      'data-testid',
+      'facility-overview',
+    );
+    const scene = (await overview.boundingBox())!;
+    const focus = (await page
+      .getByRole('region', { name: '훈련 방향', exact: true })
+      .boundingBox())!;
+    expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
+    const trainingTabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
+    await trainingTabs.getByRole('tab', { name: '유소년', exact: true }).click();
+    await expectArt(page, 'academy', scenario.era, scenario.academy);
+    await expect(overview).toHaveAccessibleName('유소년 아카데미');
+    await expect(overview).toContainText(
+      scenario.academy ? `${scenario.academy}단계 유소년 시설` : '기본 유소년 시설',
+    );
+    const academyScene = (await overview.boundingBox())!;
+    const prospects = (await page
+      .getByRole('region', { name: '유소년 아카데미', exact: true })
+      .boundingBox())!;
+    expect(academyScene.y + academyScene.height).toBeLessThanOrEqual(prospects.y);
+    await expectHomeBounds(page);
+    await trainingTabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
     await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
       [
         `/art/scenes/${scenario.era}/locker-${scenario.stadium}.webp`,
         `/art/scenes/${scenario.era}/stadium-${scenario.stadium}.webp`,
         `/art/scenes/${scenario.era}/training-${scenario.training}.webp`,
+        '/art/scenes/manager-office-v2.webp',
+        '/art/scenes/staff-office-v2.webp',
+        `/art/scenes/${scenario.era}/academy-${scenario.academy}.webp`,
       ].sort(),
     );
   });
 }
 
-test('updates the era on 1 January and the training scene on actual completion, retaining both after reload', async ({
+test('updates era, training and academy scenes only on actual completion, retaining them after reload', async ({
   page,
 }) => {
   test.slow();
@@ -133,21 +200,32 @@ test('updates the era on 1 January and the training scene on actual completion, 
   });
   advanceDays(w, 63, undefined, false);
   operate(w, { type: 'facility', part: 'training' });
+  operate(w, { type: 'facility', part: 'academy' });
   advanceDays(w, 89, undefined, false);
   expect(w.calendar?.day).toBe(152);
   expect(w.trainingGround).toBe(0);
   expect(w.facilityWorks?.training?.to).toBe(1);
+  expect(w.academyFacility).toBe(0);
+  expect(w.facilityWorks?.academy?.to).toBe(1);
   for (const item of w.inbox || []) item.read = true;
   await load(page, w);
   await expectArt(page, 'stadium', 'heritage', 0);
   await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expectArt(page, 'training', 'heritage', 0);
+  const tabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
+  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await expectArt(page, 'academy', 'heritage', 0);
+  await expect(page.getByTestId('facility-overview')).toContainText('기본 유소년 시설');
+  await tabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expectArt(page, 'training', 'terraces', 1);
   await acknowledgeEvents(page);
   const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   if (await stop.isVisible()) await stop.click();
   await expect(page.getByTestId('game-date')).toContainText('1970년 1월');
+  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await expectArt(page, 'academy', 'terraces', 1);
+  await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expectArt(page, 'stadium', 'terraces', 0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -155,4 +233,6 @@ test('updates the era on 1 January and the training scene on actual completion, 
   await expectArt(page, 'stadium', 'terraces', 0);
   await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expectArt(page, 'training', 'terraces', 1);
+  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await expectArt(page, 'academy', 'terraces', 1);
 });

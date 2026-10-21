@@ -8,6 +8,7 @@ import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import type { ClientState, GameClient } from '../runtime/client';
 import { CrestMark } from './ClubCrest';
+import { linkedIdentityColours } from './clubIdentityDraft';
 import { Dialog } from './Dialog';
 import s from './ClubFounding.module.css';
 import { useLocale } from '../presentation/react';
@@ -47,7 +48,7 @@ export function ClubFounding({
     // KIT-14: the club design is drafted once per founding session. Later seed or country changes
     // never reroll it; it lives until this session (this slot's founding) is left.
     [design, setDesign] = useState(() =>
-      createIdentityDraft({ country: code, seed, color: FIRST_COLOUR }),
+      linkedIdentityColours(createIdentityDraft({ country: code, seed, color: FIRST_COLOUR })),
     ),
     // The editor's working copy while 꾸미기 is open. The session design stays its entry: 사용
     // takes the copy, 취소 or closing the editor drops it (WEB-86).

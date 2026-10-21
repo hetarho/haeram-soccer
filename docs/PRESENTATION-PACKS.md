@@ -92,9 +92,13 @@ a second schema into tooling. A theme contains:
   arbitrary; do not add a family-name switch. Stable installed aliases keep cached Canvas text
   stacks usable across concept changes. Cyclic aliases and undeclared primary faces fail validation.
 - `images.facility`: a local `pattern` containing `{era}`, `{kind}`, `{stage}`, plus optional
-  `overrides` keyed as `era.kind.stage`. Current roles are stadium, locker and training, across
-  heritage, terraces and contemporary eras. Coverage follows completed facility stages from the
-  engine's owning `partTop` helper. Pending construction targets never select artwork.
+  `overrides` keyed as `era.kind.stage`. Current roles are stadium, locker, training, manager,
+  staff and academy, across heritage, terraces and contemporary eras.
+  `facilityStageTop` and `facilityStage` share one semantic-to-engine part map. Stadium/locker,
+  training and academy use the owning `partTop`/`partLevel` rules, including completed academy
+  levels 0–5; pending construction never selects its target image. Manager/staff offices use
+  stage 0 and explicit shared-era overrides. All pixel-pack environments use native 240×80
+  artwork so the existing pixelated treatment keeps a consistent coarse logical grid.
 - `icons`: semantic roles from `THEME_ICON_ROLES`. Each has a `default` and optional named
   `variants`. Resources are SVG paths (`viewBox`, `layers`, optional `shapeRendering`) or local
   images (`resource`, optional dimensions). A missing variant uses that same role's default.

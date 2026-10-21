@@ -1,3 +1,4 @@
+import { marketRows, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
@@ -13,7 +14,9 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
+  await expect(
+    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
+  ).toBeVisible();
   // 사람 opens on 선수; the market, the manager's office and the coaches are tabs beside it.
   const peopleTab = (name: string) =>
     page
@@ -49,10 +52,15 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await peopleTab('이적시장').click();
   await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/people\?view=market$/);
+  await marketRows(page)
+    .filter({ hasText: '자유계약' })
+    .first()
+    .getByRole('button', { name: / 상세 보기$/ })
+    .click();
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
-  await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toContainText(
-    '선수단 정원 21/40',
-  );
+  await closeMarketPanel(page, '영입 후보 상세');
+  await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
+  await closeMarketPanel(page, '영입 정보');
   await peopleTab('선수').click();
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();

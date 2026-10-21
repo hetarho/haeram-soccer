@@ -1,7 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { reduceIdentityDraft } from '../../apps/web/src/ui/clubIdentityDraft';
+import {
+  linkedIdentityColours,
+  reduceIdentityDraft,
+} from '../../apps/web/src/ui/clubIdentityDraft';
 import { canonical } from '../../packages/contracts/src/index';
 import { KIT_ROLES } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
@@ -13,7 +16,6 @@ import {
   containerOneCheckpoint,
   delegatedCareer,
   EDITED_SHIRT_COLOUR,
-  editedDesign,
   FIRST_COLOUR,
   FOUNDED_DESIGN,
   FUTURE_CHECKPOINTS,
@@ -33,7 +35,6 @@ import {
   crestFill,
   designInEditor,
   designStatus,
-  editShirt,
   exportRaw,
   exportWorld,
   failableWrites,
@@ -86,20 +87,26 @@ for (const viewport of PHONE_VIEWPORTS)
     const size = `${viewport.width}x${viewport.height}`;
     await page.setViewportSize(viewport);
     await page.goto('/');
-    // A one-colour crest and three patterned shirts, chosen in the founding editor (→KIT-2/4/5).
+    const design = linkedIdentityColours({
+      ...FOUNDED_DESIGN,
+      kits: {
+        ...FOUNDED_DESIGN.kits,
+        away: { ...FOUNDED_DESIGN.kits.away, trim: FOUNDED_DESIGN.kits.home.primary },
+        third: { ...FOUNDED_DESIGN.kits.third, trim: FOUNDED_DESIGN.kits.home.primary },
+      },
+    });
+    // A home/away crest and three patterned shirts, chosen in the editor (→KIT-2/4/5).
     await foundHere(
       page,
       'Continuity Kit FC',
       `identity-continuity-${viewport.width}`,
       async (editor) => {
         const pitch = editor.getByRole('img', { name: '경기장 유니폼 미리보기' });
-        await designInEditor(editor, FOUNDED_DESIGN, PRESET);
-        // The previews follow the draft before 사용 (→WEB-87): the crest has no secondary field and
+        await designInEditor(editor, design, PRESET);
+        // The previews follow the draft before 사용 (→WEB-87): colours are linked and
         // the pitch preview paints the shirt being edited, the third, chosen last.
         await expect(colourCode(editor, '무늬색 색 코드')).toHaveCount(0);
-        await expect
-          .poll(() => canvasPixels(pitch, FOUNDED_DESIGN.kits.third.primary))
-          .toBeGreaterThan(20);
+        await expect.poll(() => canvasPixels(pitch, design.kits.third.primary)).toBeGreaterThan(20);
         await keepScreenshot(
           testInfo,
           `founding crest preview ${size}`,
@@ -109,8 +116,8 @@ for (const viewport of PHONE_VIEWPORTS)
       },
     );
     const founded = ownClub(await exportWorld(page));
-    expect(founded.identity).toEqual(FOUNDED_DESIGN);
-    expect(founded.color).toBe(FOUNDED_DESIGN.colours[0]);
+    expect(founded.identity).toEqual(design);
+    expect(founded.color).toBe(design.colours[0]);
 
     // One match settled in that design; nothing owner-held stops the days before it.
     await configureResponsibilities(page, { responsibilities: ALL_DELEGATED });
@@ -123,29 +130,32 @@ for (const viewport of PHONE_VIEWPORTS)
     const frozen = record.appearance!;
     const worn = frozen.sides[side];
     expect(worn.club).toBe(played.playerClub);
-    expect(worn.crest).toEqual(FOUNDED_DESIGN.crest);
-    expect(worn.shirt).toEqual(FOUNDED_DESIGN.kits[worn.role]);
+    expect(worn.crest).toEqual(design.crest);
+    expect(worn.shirt).toEqual(design.kits[worn.role]);
     expect(frozen).toEqual(appearanceForFixture(played, record));
     await expect
       .poll(() => canvasPixels(page.locator(PITCH_CANVAS).last(), worn.shirt.primary))
       .toBeGreaterThan(40);
 
-    // Edit the current design: a three-colour crest and a new colour on the shirt worn (→KIT-9).
-    const edited = editedDesign(worn.role);
+    // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
+    const actions = [
+      { type: 'kit-colour', role: 'home', colour: EDITED_SHIRT_COLOUR },
+      { type: 'kit-colour', role: 'away', colour: '#1B2A49' },
+      ...(worn.role === 'third'
+        ? [{ type: 'kit-colour', role: 'third', colour: EDITED_SHIRT_COLOUR } as const]
+        : []),
+    ] as const;
+    const edited = actions.reduce(reduceIdentityDraft, design);
     const view = await openDesign(page);
-    await view.getByRole('button', { name: '무늬색 추가', exact: true }).click();
-    await colourCode(view, '무늬색 색 코드').fill(edited.crest.secondary!);
-    await view.getByRole('button', { name: '엠블럼색 따로 정하기', exact: true }).click();
-    await colourCode(view, '엠블럼색 색 코드').fill(edited.crest.accent!);
-    const shirt = await editShirt(view, worn.role);
-    await colourCode(shirt, '보조색 색 코드').fill(EDITED_SHIRT_COLOUR);
+    for (const action of actions)
+      await colourCode(view, `${KIT_LABEL[action.role]} 색 코드`).fill(action.colour);
     await keepScreenshot(
       testInfo,
       `edited crest preview ${size}`,
       view.getByRole('img', { name: /^엠블럼 미리보기/ }),
     );
     await applyDesign(page, view);
-    await expect(crestFill(hud(page), edited.crest.accent!)).not.toHaveCount(0);
+    await expect(crestFill(hud(page), edited.crest.primary)).not.toHaveCount(0);
 
     const raw = await exportRaw(page);
     const exported = (await decode(raw)).world;
@@ -172,13 +182,13 @@ for (const viewport of PHONE_VIEWPORTS)
         });
       await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
       expect(canonical(await exportWorld(other))).toBe(canonical(exported));
-      await expect(crestFill(hud(other), edited.crest.accent!)).not.toHaveCount(0);
+      await expect(crestFill(hud(other), edited.crest.primary)).not.toHaveCount(0);
       // Its replay shows the recorded one-colour crest and shirt, not today's design.
       const replay = await openRecordedMatch(other);
       await expect(replay.getByTestId('match-kit-unrecorded')).toHaveCount(0);
       const score = replay.getByTestId('match-score');
-      await expect(crestFill(score, FOUNDED_DESIGN.crest.primary)).not.toHaveCount(0);
-      for (const today of [edited.crest.secondary!, edited.crest.accent!])
+      await expect(crestFill(score, design.crest.primary)).not.toHaveCount(0);
+      for (const today of [edited.crest.primary, edited.crest.secondary!])
         await expect(crestFill(score, today)).toHaveCount(0);
       const canvas = replay.locator(PITCH_CANVAS);
       await expect.poll(() => canvasPixels(canvas, worn.shirt.primary)).toBeGreaterThan(40);
@@ -230,7 +240,7 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   await expectChoice();
   // An unapplied draft is session work of this game only (→WEB-74/86).
   const draft = await openDesign(page);
-  await colourCode(draft, '대표 주색 색 코드').fill(DRAFT_COLOUR);
+  await colourCode(draft, '홈 색 코드').fill(DRAFT_COLOUR);
   await expect(designStatus(draft)).toHaveText('적용 전 초안');
 
   // A new game in slot 2 parks this one first (→SAVE-14).
@@ -254,7 +264,7 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   await expect(other.kit.getByRole('radio', { checked: true })).toHaveCount(0);
   await closePreparation(page, other.dialog, false);
   const otherDesign = await openDesign(page);
-  await expect(colourCode(otherDesign, '대표 주색 색 코드')).toHaveValue(FIRST_COLOUR);
+  await expect(colourCode(otherDesign, '홈 색 코드')).toHaveValue(FIRST_COLOUR);
   await expect(designStatus(otherDesign)).toHaveText('적용된 디자인');
 
   // Restored, the first game still has its choice and its applied design.
@@ -263,7 +273,7 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   expect((await savedWorld(page)).kitChoice).toEqual(choice);
   await expectChoice();
   const restored = await openDesign(page);
-  await expect(colourCode(restored, '대표 주색 색 코드')).toHaveValue(applied.colours[0]);
+  await expect(colourCode(restored, '홈 색 코드')).toHaveValue(applied.colours[0]);
   await expect(designStatus(restored)).toHaveText('적용된 디자인');
 });
 
@@ -340,10 +350,10 @@ test('a read-only tab installs nothing; taking ownership adopts the designs once
   const view = await openDesign(page);
   await expect(designStatus(view)).toHaveText('읽기 전용');
   await expect(applyButton(view)).toBeDisabled();
-  const main = colourCode(view, '대표 주색 색 코드');
+  const main = colourCode(view, '홈 색 코드');
   await expect(main).toHaveValue(ownClub(legacy).color);
   await expect(main).toBeDisabled();
-  await expect(colourCode(view, '바탕색 색 코드')).toHaveValue(crest.primary);
+  await expect(crestFill(view, crest.primary)).not.toHaveCount(0);
   // Nothing was installed in memory or written: the export is the stored checkpoint itself.
   expect(await exportRaw(page)).toBe(raw);
   expect(await checkpointStorage(page)).toEqual({ active: raw, manifest, previous: null });
@@ -369,13 +379,13 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   const w = delegatedCareer('identity-continuity-failures', 'Failsafe Kits');
   await importResponsibilityCareer(page, w);
   const view = await openDesign(page);
-  const field = colourCode(view, '바탕색 색 코드');
+  const field = colourCode(view, '홈 색 코드');
   // A first apply commits, so the committed checkpoint has a verified previous copy (→SAVE-3).
   await field.fill('#2A9D8F');
   await applyDesign(page, view);
   const committed = reduceIdentityDraft(identityOf(w, w.playerClub), {
-    type: 'crest-colour',
-    region: 'primary',
+    type: 'kit-colour',
+    role: 'home',
     colour: '#2A9D8F',
   });
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(committed);
@@ -403,8 +413,8 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await outcome.getByRole('button', { name: '확인', exact: true }).click();
   await expect(page.getByRole('alert').filter({ hasText: '저장 실패' })).toBeVisible();
   const retried = reduceIdentityDraft(committed, {
-    type: 'crest-colour',
-    region: 'primary',
+    type: 'kit-colour',
+    role: 'home',
     colour: '#E76F51',
   });
   const failed = await checkpointStorage(page);

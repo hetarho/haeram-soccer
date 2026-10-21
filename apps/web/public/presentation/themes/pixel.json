@@ -122,7 +122,15 @@
   ],
   "images": {
     "facility": {
-      "pattern": "/art/scenes/{era}/{kind}-{stage}.webp"
+      "pattern": "/art/scenes/{era}/{kind}-{stage}.webp",
+      "overrides": {
+        "heritage.manager.0": "/art/scenes/manager-office-v2.webp",
+        "heritage.staff.0": "/art/scenes/staff-office-v2.webp",
+        "terraces.manager.0": "/art/scenes/manager-office-v2.webp",
+        "terraces.staff.0": "/art/scenes/staff-office-v2.webp",
+        "contemporary.manager.0": "/art/scenes/manager-office-v2.webp",
+        "contemporary.staff.0": "/art/scenes/staff-office-v2.webp"
+      }
     }
   },
   "icons": {

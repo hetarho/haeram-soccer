@@ -1,3 +1,4 @@
+import { marketInfo } from './market';
 import {
   createWorld,
   managerOffers,
@@ -139,6 +140,8 @@ test.describe('사람 at 360x740', () => {
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
       '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
+    await expect(post.getByTestId('manager-pick')).toBeHidden();
+    await post.getByText('감독 선임 기준·추천 후보', { exact: true }).click();
     await expect(post.getByRole('button', { name: /^선호 학파 · 상관없음/ })).toBeVisible();
     const pick = post.getByTestId('manager-pick');
     await expect(pick).toContainText('지금 방향이면');
@@ -203,7 +206,9 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
+  await expect(
+    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
+  ).toBeVisible();
   await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/people\?view=manager$/);
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).
@@ -297,7 +302,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await expect(page.getByTestId('manager-renewal')).toHaveCount(0);
 });
 
-test('스태프 leads with the 단장 and 이적시장 ends with the scout shortlist at 360x740', async ({
+test('스태프 leads with the 단장 and 이적시장 discloses the scout shortlist at 360x740', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 360, height: 740 });
@@ -312,8 +317,9 @@ test('스태프 leads with the 단장 and 이적시장 ends with the scout short
     '재계약 협상 직접 · 감독 선임 직접 · 선수 영입 직접 · 선수 매각 직접',
   );
   expect(await horizontalOverflow(page)).toBe(0);
-  // 이적시장 ends with the chief scout's shortlist and the manager's requests (→CLUB-33).
+  // 이적시장 discloses the chief scout's shortlist and the manager's requests (→CLUB-33).
   await tab(page, '이적시장').click();
+  await marketInfo(page);
   const shortlist = page.getByRole('region', { name: '스카우트 명단', exact: true });
   await shortlist.scrollIntoViewIfNeeded();
   await expect(shortlist).toContainText('수석 스카우트');
@@ -326,7 +332,7 @@ test('스태프 leads with the 단장 and 이적시장 ends with the scout short
   expect(await horizontalOverflow(page)).toBe(0);
   // A listed player opens as the market list would: the bid sheet or his card.
   await entries.first().click();
-  const sheet = page.getByRole('dialog', { name: /^(이적 제안|스카우트 명단 후보)$/ });
+  const sheet = page.getByRole('dialog', { name: '영입 후보 상세', exact: true });
   await expect(sheet).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(sheet).toHaveCount(0);

@@ -18,7 +18,7 @@ export const PHONE_VIEWPORTS = [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ] as const;
-export const KIT_LABEL: Record<KitRole, string> = { home: '홈', away: '원정', third: '서드' };
+export const KIT_LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 /** `SAVE_DATA_UPDATED` of runtime/client.ts, the writer's notice after an adoption is committed. */
 export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
 const ACTIVE = 'haeram-soccor:slot:a';
@@ -235,7 +235,7 @@ export async function foundHere(
   if (design) {
     await founding.getByRole('button', { name: '구단 디자인 꾸미기', exact: true }).click();
     const editor = page.getByRole('dialog', { name: '구단 디자인' });
-    await expect(editor.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+    await expect(editor.getByRole('group', { name: '색상', exact: true })).toBeVisible();
     await design(editor);
     await editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
     await expect(editor).toHaveCount(0);
@@ -271,39 +271,25 @@ const roleButton = (editor: Locator, role: KitRole) =>
   editor
     .getByRole('group', { name: '편집할 유니폼', exact: true })
     .getByRole('button', { name: `${KIT_LABEL[role]} 유니폼`, exact: true });
-/** Selects `role` in the editor and returns its colour fields. */
+/** Selects the shirt whose pattern is being edited. */
 export async function editShirt(editor: Locator, role: KitRole) {
   await roleButton(editor, role).click();
-  return editor.getByRole('group', { name: `${KIT_LABEL[role]} 유니폼 색`, exact: true });
+  return editor.getByRole('group', { name: '색상', exact: true });
 }
-/**
- * Every field of `design` through the editor's real controls: representative colours, a
- * ready-made crest recoloured with its optional colours removed, and each shirt's pattern and
- * colours with no trim. `design.crest` must be a one-colour crest with ready-made parts.
- */
+/** Set the three named colours, ready-made crest and shirt patterns through real controls. */
 export async function designInEditor(editor: Locator, design: ClubIdentity, preset: string) {
-  for (const [index, colour] of design.colours.entries())
-    await colourCode(editor, `대표 ${['주색', '보조색', '강조색'][index]} 색 코드`).fill(colour);
+  for (const role of KIT_ROLES)
+    await colourCode(editor, `${KIT_LABEL[role]} 색 코드`).fill(design.kits[role].primary);
   await editor
     .getByRole('group', { name: '기본 엠블럼', exact: true })
     .getByRole('button', { name: preset, exact: true })
     .click();
-  await colourCode(editor, '바탕색 색 코드').fill(design.crest.primary);
-  for (const optional of ['무늬색', '엠블럼색']) {
-    const remove = editor.getByRole('button', { name: `${optional} 빼기`, exact: true });
-    if (await remove.count()) await remove.click();
-  }
   for (const role of KIT_ROLES) {
-    const shirt = design.kits[role];
-    const colours = await editShirt(editor, role);
+    await editShirt(editor, role);
     await editor
       .getByRole('group', { name: `${KIT_LABEL[role]} 유니폼 무늬`, exact: true })
-      .getByRole('button', { name: SHIRT_PATTERN_LABELS[shirt.pattern], exact: true })
+      .getByRole('button', { name: SHIRT_PATTERN_LABELS[design.kits[role].pattern], exact: true })
       .click();
-    await colourCode(colours, '주색 색 코드').fill(shirt.primary);
-    if (shirt.secondary) await colourCode(colours, '보조색 색 코드').fill(shirt.secondary);
-    const trim = colours.getByRole('button', { name: '테두리 빼기', exact: true });
-    if (await trim.count()) await trim.click();
   }
 }
 
@@ -313,7 +299,7 @@ export async function openDesign(page: Page) {
   await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
   await expect(page).toHaveURL(/\/direction\?view=identity$/);
   const view = page.getByRole('region', { name: '구단 디자인', exact: true });
-  await expect(view.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await expect(view.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   return view;
 }
 export const designBar = (view: Locator) =>

@@ -1,10 +1,10 @@
 /* 훈련·육성 (→WEB-70): the focus, what drives growth, who is growing, and the academy. */
 .stack {
   display: grid;
-  gap: 20px;
+  gap: 14px;
   min-width: 0;
 }
-/* Wide screens set the focus beside what drives growth, the growing players below both. */
+/* Group the current focus and growth summary above the player list when space permits. */
 @media (min-width: 1100px) {
   .pair {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -16,7 +16,7 @@
 }
 .card {
   min-width: 0;
-  padding: 18px;
+  padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--surface-2);
@@ -433,7 +433,7 @@
 /* 개별 훈련 and 적응: one row per first-team player. */
 .players {
   display: grid;
-  gap: 10px;
+  gap: 6px;
   margin: 16px 0 0;
   padding: 0;
   list-style: none;
@@ -444,7 +444,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px;
+  padding: 10px;
   border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--surface-deep);
@@ -495,63 +495,6 @@
   font-family: var(--display);
 }
 
-.trainingScene {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-.trainingArt {
-  display: block;
-  width: 100%;
-  height: 144px;
-}
-.trainingScene figcaption {
-  display: grid;
-  align-content: center;
-  gap: 8px;
-  min-width: 0;
-  padding: 12px 18px;
-}
-.trainingScene span {
-  color: var(--text-faint);
-  font-size: 12px;
-  letter-spacing: 1px;
-  font-family: var(--display);
-}
-.trainingScene strong {
-  font-size: 18px;
-  line-height: 1.5;
-}
-.trainingScene small {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--display);
-}
-@media (max-width: 760px) {
-  .trainingScene {
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-  }
-  .trainingArt {
-    height: 104px;
-  }
-  .trainingScene figcaption {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .trainingScene span {
-    font-size: 12px;
-    letter-spacing: 0;
-    font-family: var(--display);
-  }
-  .trainingScene strong {
-    font-size: 18px;
-    line-height: 1.5;
-  }
-}
-
 .reference {
   margin-top: 14px;
   border-top: 1px solid var(--line);
@@ -575,15 +518,9 @@
   color: var(--text-muted);
 }
 .actor button {
-  min-height: 36px;
+  min-height: 44px;
   color: var(--accent-text);
   font-size: 12px;
-}
-.timing {
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.7;
-  margin: 10px 0 0;
 }
 .filters {
   display: flex;
@@ -592,7 +529,7 @@
   margin-top: 12px;
 }
 .filters button {
-  min-height: 40px;
+  min-height: 44px;
   font-size: 12px;
 }
 .filters button[aria-pressed='true'] {
@@ -607,4 +544,10 @@
 }
 .homeLine.primary small {
   color: var(--on-accent);
+}
+
+@media (min-width: 1100px) {
+  .players {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

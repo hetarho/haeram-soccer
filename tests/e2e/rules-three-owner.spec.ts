@@ -1,3 +1,4 @@
+import { marketInfo, closeMarketPanel } from './market';
 import { chooseOption } from './select';
 import { test, expect, type Page } from '@playwright/test';
 import { combinedCareerFixture, exportedCareer } from './career-fixtures';
@@ -35,6 +36,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
   const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
   await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
@@ -43,6 +45,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
     .getByRole('button', { name: '적용', exact: true })
     .click();
   await expect(sheet).toHaveCount(0);
+  await closeMarketPanel(page, '영입 정보');
   await page.getByTestId('intervention-trigger').click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
   await chooseOption(
@@ -113,10 +116,12 @@ test('the market discloses combined departure compensation before its approval',
   await importResponsibilityCareer(page, w);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
   const negotiation = page.getByRole('region', { name: '진행 중인 협상' });
   await expect(negotiation).toContainText('선수·코치 계약 함께 종료');
   await expect(negotiation).toContainText('코치 계약 종료 보상');
   await negotiation.getByRole('button', { name: '매각', exact: true }).click();
+  await closeMarketPanel(page, '이적 협상');
   const saved = await exportedCareer(page);
   expect(saved.staff!.some((s) => s.person === player.id)).toBe(false);
   expect(saved.people![player.id].club).toBe(bid.club);

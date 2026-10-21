@@ -1,3 +1,4 @@
+import { marketRows, closeMarketPanel } from './market';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { horizontalOverflow } from './layout';
 
@@ -81,8 +82,11 @@ for (const viewport of [
       .getByRole('tablist', { name: '선수단·스태프 보기' })
       .getByRole('tab', { name: '이적시장', exact: true })
       .click();
-    const desk = page.getByRole('region', { name: '선수 영입 데스크' });
-    const card = desk.getByRole('article').first();
+    await marketRows(page)
+      .first()
+      .getByRole('button', { name: / 상세 보기$/ })
+      .click();
+    const card = page.getByRole('dialog', { name: '영입 후보 상세' }).getByRole('article');
     await expect(card.getByTestId('candidate-positions')).toHaveText(/[A-Z]+ 최상/);
     await expect(card.getByTestId('candidate-personality')).toContainText('~');
     await expect(card.getByTestId('candidate-slot')).toHaveText(/합류 \d+ → 적응 후 \d+/);
@@ -92,6 +96,7 @@ for (const viewport of [
     );
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
+    await closeMarketPanel(page, '영입 후보 상세');
     // The lineup tab draws the formation: each slot its position, role, player and 실효 OVR.
     await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
     await page
