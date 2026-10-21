@@ -26,6 +26,13 @@ export interface PresentationControllerOptions {
   applyLocale?: (locale: LoadedLocale) => void;
 }
 
+/** T299 has checked the origin; retain deployment-root asset references in HTML. */
+function themeResourceBase(url: string): string {
+  if (url.startsWith('/')) return url;
+  const declaring = new URL(url);
+  return `${declaring.pathname}${declaring.search}`;
+}
+
 /** Only presentation ports enter this controller: it cannot send game or save commands. */
 export function createPresentationController(options: PresentationControllerOptions) {
   let snapshot: PresentationSnapshot = Object.freeze({ pending: true, sessionOnly: false });
@@ -51,17 +58,31 @@ export function createPresentationController(options: PresentationControllerOpti
     const themeEntry = resolvePackEntry(themeRegistry, requested.themeId);
     requested = { localeId: localeEntry.id, themeId: themeEntry.id };
     try {
-      const [selected, baseline, themePack] = await Promise.all([
+      const [selected, baseline, themePack, themeBaseline] = await Promise.all([
         options.resources.loadPack('locale', localeEntry),
         options.resources.loadPack('locale', defaultEntry),
         options.resources.loadPack('theme', themeEntry),
+        options.resources.loadPack('theme', resolvePackEntry(themeRegistry)),
       ]);
       if (!current()) return;
       const locale = createLoadedLocale(localeRegistry, selected.pack, baseline.pack);
-      const theme =
-        snapshot.theme?.id === themeEntry.id
-          ? snapshot.theme
-          : createThemeResolver(themePack.pack, { url: themePack.url });
+      let theme = snapshot.theme?.id === themeEntry.id ? snapshot.theme : undefined;
+      if (!theme) {
+        const selectedTheme = createThemeResolver(themePack.pack, {
+          url: themeResourceBase(themePack.url),
+        });
+        const defaultTheme = createThemeResolver(themeBaseline.pack, {
+          url: themeResourceBase(themeBaseline.url),
+        });
+        theme = {
+          ...selectedTheme,
+          tokens: Object.freeze({ ...defaultTheme.tokens, ...selectedTheme.tokens }),
+          token: (key: string) =>
+            Object.hasOwn(selectedTheme.tokens, key)
+              ? selectedTheme.token(key)
+              : defaultTheme.token(key),
+        };
+      }
       if (theme !== snapshot.theme) {
         const next = await options.installTheme(theme, { previous: installed, isCurrent: current });
         if (!next) return;
@@ -102,8 +123,12 @@ export function createPresentationController(options: PresentationControllerOpti
     }
   }
 
-  const select = (selection: PresentationPreferences) => {
-    requested = { ...requested, ...selection };
+  const request = (selection: PresentationPreferences, retry = false) => {
+    const base =
+      !snapshot.pending && !retry && snapshot.locale && snapshot.theme
+        ? { localeId: snapshot.locale.id, themeId: snapshot.theme.id }
+        : requested;
+    requested = { ...base, ...selection };
     const token = ++generation;
     publish({ pending: true, error: undefined });
     return registries ? apply(token) : initialize();
@@ -117,8 +142,8 @@ export function createPresentationController(options: PresentationControllerOpti
       };
     },
     initialize,
-    select,
-    retry: () => (registries ? select({}) : initialize()),
+    select: (selection: PresentationPreferences) => request(selection),
+    retry: () => (registries ? request({}, true) : initialize()),
     dispose() {
       disposed = true;
       generation++;

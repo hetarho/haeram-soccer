@@ -56,7 +56,7 @@ export const number = (n: number) => localeFormatters?.number(n) ?? Math.round(n
 /** A difference with its sign: "+3", "−1.5", "0". */
 export const signed = (value: number, digits = 0) => {
   const text = digits
-    ? (localeFormatters?.decimal(Math.abs(value), {
+    ? (localeFormatters?.decimal(Number(Math.abs(value).toFixed(digits)), {
         useGrouping: false,
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,

@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { compactMoney, contractLine, money } from './format';
+import { afterEach, describe, expect, it } from 'vitest';
+import { compactMoney, contractLine, money, number, setLocaleFormatters, signed } from './format';
+import { createLocaleFormatters } from '../presentation/locale';
+
+afterEach(() => setLocaleFormatters());
 
 /** The euro period: 100 minor units, so an amount is written in euros and cents. */
 const eur = (euros: number, cents = 0) =>
@@ -12,6 +15,19 @@ const lsd = (pounds: number) => compactMoney(String(BigInt(pounds) * 240n), 'ENG
  * way, so both sides of the app write an amount identically without importing each other.
  */
 describe('the money notation', () => {
+  it('consumes the shared locale without changing exact arithmetic or truncation', () => {
+    setLocaleFormatters(createLocaleFormatters('ko-KR'));
+    expect(number(1234.5)).toBe('1,235');
+    expect(number(-1.5)).toBe('-1');
+    expect(eur(1_234_567)).toBe('€1.23M');
+    expect(signed(1.005, 2)).toBe('+1.00');
+    setLocaleFormatters(createLocaleFormatters('de'));
+    expect(number(1234.5)).toBe('1.235');
+    expect(eur(1_234_567)).toBe('€1,23M');
+    expect(money('123456', 'ESP', 2000)).toBe('€1.234,56');
+    expect(money('360000', 'ENG', 1901)).toBe('£1.500 0s 0d');
+    expect(eur(-1_500_000)).toBe('−€1,50M');
+  });
   it('keeps whole units below 100,000 and drops shillings, pence and cents', () => {
     // 9,999,999 minor units: a cent short of €100,000.
     expect(eur(99_999, 99)).toBe('€99,999');

@@ -63,12 +63,19 @@ export function PresentationBoundary({ children }: { children: ReactNode }) {
   if (snapshot.locale && snapshot.theme) return children;
   return (
     <main aria-busy={snapshot.pending} style={{ padding: 24, fontFamily: 'sans-serif' }}>
-      <p role={snapshot.error ? 'alert' : 'status'}>
+      <p
+        role={snapshot.error ? 'alert' : 'status'}
+        data-testid={snapshot.error ? 'presentation-initial-error' : 'presentation-pending'}
+      >
         {snapshot.error
           ? '화면 설정을 불러오지 못했어요. 다시 시도해 주세요.'
           : '화면 설정을 불러오는 중…'}
       </p>
-      {snapshot.error && <button onClick={() => void controller.retry()}>다시 시도</button>}
+      {!!snapshot.error && (
+        <button data-testid="presentation-retry" onClick={() => void controller.retry()}>
+          다시 시도
+        </button>
+      )}
     </main>
   );
 }
