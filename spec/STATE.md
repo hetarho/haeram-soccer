@@ -179,7 +179,6 @@
 | T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
 | T277 | Connect player intentions through support, pressing and covering reactions | MATCH PLAYER STAFF ARCH | T276 | todo |
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
-| T279 | Generate coupled complete team facts without spatial or minute simulation | MATCH PLAYER STAFF ARCH | T273 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
 | T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
 | T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
@@ -204,14 +203,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 19 | 3 | 16 | 0 | 2 | 0 | 2026-10-21T06:05:34.408Z | [history](work/full-model.json) |
+| full-model | 3 | 24 | 4 | 20 | 0 | 2 | 0 | 2026-10-21T07:10:37.227Z | [history](work/full-model.json) |
 
 ## next
-- implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
-- Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- Manager-history preparation T304 then T305 can run alongside earlier tasks; T306 waits for T304 and T286, then T307/T308 connect and verify. Planning only this session; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
+- inspect work board for remaining tasks
 
 ## log
+- 261021 T279 integrated
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
 - 261021 manager-history overlap audit passed: T304/T305 touch no file owned by any remaining task below T304; every T306-T308 overlap with T281/T283/T285/T286 is ordered by the T286 dependency chain. New manager tasks have no runtime assignment; no implementation started.
 - 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
@@ -231,4 +229,3 @@
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
 - 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.
-- 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
