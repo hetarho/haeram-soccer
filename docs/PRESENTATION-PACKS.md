@@ -86,7 +86,9 @@ a second schema into tooling. A theme contains:
   can support shared styles. Typography aliases such as `var(--display)` are resolved centrally.
 - `tokens.imageTreatment`: `objectFit`, `objectPosition`, `imageRendering`, `filter` and `overlay`.
 - `fonts`: local URL faces with `family`, `resource`, `weight` and optional `format`, `style`,
-  `display`. Each body/display/score primary family must match a declared face. Family names are
+  `display` and ordered `fallbacks`. Each fallback has `resource` and optional `format`, referring
+  to another format of the same face, with the same glyphs, metrics, style and weight. Each
+  body/display/score primary family must match a declared face. Family names are
   arbitrary; do not add a family-name switch. Stable installed aliases keep cached Canvas text
   stacks usable across concept changes. Cyclic aliases and undeclared primary faces fail validation.
 - `images.facility`: a local `pattern` containing `{era}`, `{kind}`, `{stage}`, plus optional
@@ -108,6 +110,13 @@ theme's asset ownership or turn a missing required role into a valid pack.
 own token/font/image/icon resolution. Structural shape checks come from `validateThemePack`;
 the resolver and `validateThemeTypography` apply semantic requirements, including declared
 primary font faces.
+
+`getFontSources`, `resolveFontResource` and `fontSourceCss` in
+`apps/web/src/presentation/fonts.ts` share the primary-then-fallback order, relative URL resolution
+and source encoding. The browser tries each source with a separate detached `FontFace`, stopping
+at the first successful load. It does not select formats by browser or font family. Separate
+sequential attempts avoid WebKit stalling on a native combined source list after a failed WOFF2
+decode. A face is required: if every source fails, preparation fails and preserves the prior theme.
 
 `prepareThemeResources(theme, { ports?, requiredImages? })` asynchronously stages fonts, CSS,
 pack-declared image icons and currently needed facility images without activating the candidate.
@@ -136,6 +145,8 @@ for standalone callers such as the Node validator. The validator reuses these fu
 filesystem ports to check declared files, every required era/kind/stage image, fonts, stylesheets
 and image icons, including optional variants/overrides. It validates file presence and contracts;
 browsers still verify actual decoding, font loading, layout and resource installation.
+Every declared primary and fallback font file must exist, even when a browser can load an earlier
+source. A missing fallback therefore fails `pnpm run validate:presentation` before deployment.
 
 Browser adapters collect mounted semantic image needs and resolve them against the candidate
 theme with `collectThemeImageResources`. A font, stylesheet, pack-declared image icon or mounted
@@ -164,6 +175,15 @@ Themes do not replace live-pitch trajectories, playback timing, recorded shirts/
    Task work leaves browser-spec execution to the pre-push batch and CI under ARCH-30.
 4. Deploy the registry, JSON and referenced assets together with the unchanged application build.
    No per-pack TSX component, supported-ID union, switch, provider or feature import list is added.
+
+To add a font format alternative, keep the preferred `resource` and `format`, then append
+`{ "resource": "./fonts/equivalent.woff", "format": "woff" }` to that face's `fallbacks` in order
+of preference. Deploy the licensed equivalent-face file and update its provenance/license notice.
+Check that conversion preserves glyph order, character mapping, metrics and outlines; a fallback
+is another encoding of the same font rather than a substitute typeface. The current pixel pack
+prefers its original WOFF2 files and supplies WOFF alternatives. Run the validator with every
+declared source present and verify supported browsers; no loader or application code changes are
+needed when another pack uses the same contract.
 
 The existing static Netlify deployment and cache rules remain in force. Registries and pack JSON
 are requested with `cache: "no-cache"`; successful loads are cached within the current resource

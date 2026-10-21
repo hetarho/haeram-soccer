@@ -107,11 +107,15 @@ export const FACILITY_KINDS = ['stadium', 'locker', 'training'] as const;
 export type FacilityEra = (typeof FACILITY_ERAS)[number];
 export type FacilityKind = (typeof FACILITY_KINDS)[number];
 
-export interface FontResource {
-  family: string;
+export interface FontSource {
   resource: string;
-  weight: string;
   format?: 'woff2' | 'woff' | 'opentype' | 'truetype';
+}
+export interface FontResource extends FontSource {
+  family: string;
+  weight: string;
+  /** Ordered representations of the same face, attempted only after earlier sources fail. */
+  fallbacks?: FontSource[];
   style?: 'normal' | 'italic' | 'oblique';
   display?: 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
 }
@@ -312,9 +316,14 @@ function tokensSchema(required: readonly string[]) {
         ctx.addIssue({ code: 'custom', path: [key], message: 'Missing required semantic token' });
   });
 }
-const fontSchema = z.strictObject({
-  family: nonempty,
+const fontSourceSchema = z.strictObject({
   resource: resourceReferenceSchema,
+  format: z.enum(['woff2', 'woff', 'opentype', 'truetype']).optional(),
+});
+const fontSchema = z.strictObject({
+  ...fontSourceSchema.shape,
+  family: nonempty,
+  fallbacks: z.array(fontSourceSchema).optional(),
   weight: z.string().refine((value) => {
     const weights = value.split(' ').map(Number);
     return (
@@ -323,7 +332,6 @@ const fontSchema = z.strictObject({
       (weights.length === 1 || weights[0] <= weights[1])
     );
   }, 'Invalid font weight or range'),
-  format: z.enum(['woff2', 'woff', 'opentype', 'truetype']).optional(),
   style: z.enum(['normal', 'italic', 'oblique']).optional(),
   display: z.enum(['auto', 'block', 'swap', 'fallback', 'optional']).optional(),
 });

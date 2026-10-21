@@ -9,6 +9,7 @@ import {
   type IconResource,
   type ThemePack,
 } from './contracts';
+import { resolveFontResource } from './fonts';
 import { resolveResourceUrl } from './registry';
 
 /** These names remain valid in text renderers that cache a computed font stack. */
@@ -54,10 +55,7 @@ export function validateThemeTypography(pack: ThemePack, url = '/') {
     return result;
   }
 
-  const sourceFonts = pack.fonts.map((font) => ({
-    ...font,
-    resource: resolveResourceUrl(font.resource, url),
-  }));
+  const sourceFonts = pack.fonts.map((font) => resolveFontResource(font, url));
   const primary = Object.fromEntries(
     Object.keys(THEME_FONT_ALIASES).map((role) => [role, fontFamilies(valueFor(role))[0]]),
   );

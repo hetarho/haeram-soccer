@@ -7,6 +7,7 @@ import {
   validateLocalePack,
   validateThemePack,
 } from '../apps/web/src/presentation/contracts';
+import { getFontSources } from '../apps/web/src/presentation/fonts';
 import {
   resolvePackUrl,
   resolveRegistryUrl,
@@ -95,7 +96,8 @@ export async function validatePresentation(
     const installed = await installThemeResources(theme, {
       ports: {
         async stageFont(font) {
-          await asset(font.resource, `theme font ${entry.id}/${font.family}`);
+          for (const source of getFontSources(font))
+            await asset(source.resource, `theme font ${entry.id}/${font.family}`);
           return { activate() {}, dispose() {} };
         },
         async stageStylesheet(stylesheet) {
