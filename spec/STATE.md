@@ -221,7 +221,6 @@
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
-- 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
 - 261021 update-ssot WEB and create-architecture ARCH start: one Korean locale and one current pixel theme, resource-only extension; create-task reserves T299-T303 in main without changing active full-model contracts.
 - 261021 T282 integrated
