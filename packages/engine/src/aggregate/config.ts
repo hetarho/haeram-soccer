@@ -28,7 +28,7 @@ export const AGGREGATE_CONFIG = {
     sideSd: 0.05,
   },
   /** How far a side that has more of the ball plays up the pitch, from its share above a half. */
-  territory: { dominance: 1.1 },
+  territory: { dominance: 0.6 },
   completion: {
     min: 0.3,
     max: 0.97,
@@ -111,7 +111,13 @@ export const AGGREGATE_CONFIG = {
      */
     place: { outside: 1.7, box: 1, goalArea: 0.4 },
     /** Effective-skill points (attack against defence) per e-fold of shot rate. */
-    skillScale: 220,
+    skillScale: 190,
+    /**
+     * Points at which the attack-against-defence margin saturates (MATCH-11's 30 × tanh(margin /
+     * 30)), so a far stronger side's chances do not grow without limit (T284: with the lower
+     * `territory.dominance` gaps of 35–40 went from 4.4 to about 4.0 goals; detailed 3.6–3.8).
+     */
+    saturation: 30,
     /** The summary path's base chance rate the profiles' points are relative to. */
     profileBase: 18,
     /** Shots a defender blocks before they reach goal; blocks and saves going out for a corner. */

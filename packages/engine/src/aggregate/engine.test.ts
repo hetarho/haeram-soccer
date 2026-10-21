@@ -223,10 +223,12 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
 
   it('settles an exhausted cup tie at 120 minutes on the earliest of tied plans', () => {
     // A cup tie level after 90 minutes whose 120-minute stretch has two searched plans that each
-    // leave one red-card answer against the score (found by search on this world, T284). With two
-    // searches and no retry the fallback settles the earlier of the tied plans.
-    const { w, fixtures } = others(536, 2024);
-    const f: Fixture = { ...fixtures[535]!, kind: 'cup' };
+    // leave one red-card answer against the score. With two searches and no retry the fallback
+    // settles the earlier of the tied plans. The fixture was found by searching 3,000 replays of
+    // this world under the kernel's T284 settings (1 in about 3,000); retuning AGGREGATE_CONFIG moves
+    // the draws, and the tie check below then fails until a tied fixture is found again.
+    const { w, fixtures } = others(1210, 2024);
+    const f: Fixture = { ...fixtures[1209]!, kind: 'cup' };
     const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
     const prepared = prepareMatch(w, f);
     const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));

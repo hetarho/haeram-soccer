@@ -438,7 +438,9 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
   const o = other(side),
     own = m.input.sides[side],
     opp = m.input.sides[o];
-  const margin = p.units[side].attack - p.units[o].defence;
+  // The margin flattens past about 15 points as key duels and finishing do (MATCH-11).
+  const s = C.shots.saturation;
+  const margin = s * Math.tanh((p.units[side].attack - p.units[o].defence) / s);
   const manShort =
     Math.max(0, 1 - C.manShort.attack * p.units[side].missing) *
     (1 + C.manShort.defence * p.units[o].missing);

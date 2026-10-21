@@ -6,11 +6,13 @@
  *
  *   pnpm exec tsx scripts/match-parity.ts --report [--partition calibration|validation]
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
- *     [--conditions id,…] [--reference id,…] [--reference-scale S] [--jobs N] [--out FILE]
+ *     [--conditions id,…] [--reference id,…] [--reference-scale S] [--rare-scale S]
+ *     [--seasons N] [--jobs N] [--out FILE]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   docs/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
- *   report, kept apart from the intended-target errors
+ *   report, kept apart from the intended-target errors; `--seasons N` also plays N founded worlds
+ *   one season each through ordinary settlement (season:league-20; `--only season` plays only them)
  *
  *   pnpm exec tsx scripts/match-parity.ts --tactics [--partition …] [--round N] [--matches N]
  *     [--out FILE]
@@ -852,7 +854,8 @@ function reportJobs(): Job[] {
       named.length ? named.includes(c.id) : only.includes(c.family) && c.family !== 'season',
     )
     .map((c) => {
-      const count = Math.max(30, Math.round(calibrationSize(c) * option('scale', 1)));
+      const scale = c.rare ? option('rare-scale', option('scale', 1)) : option('scale', 1);
+      const count = Math.max(30, Math.round(calibrationSize(c) * scale));
       return {
         condition: c.id,
         count,
@@ -1016,9 +1019,11 @@ async function runReport() {
       scoringConcentration: SCORING_CONCENTRATION_TARGET,
     },
     settings: {
-      partition: jobs[0]?.partition,
-      round: jobs[0]?.round,
+      partition: text('partition', 'calibration'),
+      round: option('round', 0),
       scale: option('scale', 1),
+      rareScale: option('rare-scale', option('scale', 1)),
+      seasons: seasonCount,
       workers,
       forcedTactics:
         'tactic pairings force both tactics on the core pairs (each club keeps its XI and bench) and start both squads from NEUTRAL_SQUAD_FATIGUE; the XI is rated at its club formation as the detailed runner keeps it, the profiles and possession chance follow the tactics played',
