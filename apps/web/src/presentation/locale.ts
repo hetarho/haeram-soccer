@@ -44,7 +44,9 @@ function translatorFor(
         message: `Missing parameter "${parameter}" for message "${messageId}" (${pack.id}).`,
       });
     let message = Object.hasOwn(pack.messages, messageId) ? pack.messages[messageId] : undefined;
+    let messageLocale = pack.id;
     if (message === undefined) {
+      messageLocale = defaultPack.id;
       message = Object.hasOwn(defaultPack.messages, messageId)
         ? defaultPack.messages[messageId]
         : undefined;
@@ -78,7 +80,7 @@ function translatorFor(
         });
       template =
         typeof count === 'number' && Number.isFinite(count)
-          ? selectPluralTemplate(message, pack.id, count)
+          ? selectPluralTemplate(message, messageLocale, count)
           : message.forms.other;
     }
     // A callback replaces once: braces, "$&" and markup inside values stay ordinary text.
