@@ -44,7 +44,7 @@ import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
 import { buildAggregateInput } from './input';
-import { onPitchAt, planParticipation, slotAt } from './participation';
+import { onPitchAt, planParticipation, slotAt, withheldRebalances } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
@@ -294,9 +294,33 @@ const UNPLANNED: AggregateSkillAccess = {
 };
 
 /**
+ * A planned and produced stretch of the match whose red-card rebalances agree with its score
+ * (→STAFF-45): a rebalance the facts show was made while the side trailed joins `withheld`, and
+ * the match is planned and produced again on the same streams. `withheld` only grows and every
+ * replay adds a red card to it, so the replays end; a rebalance is never left trailing.
+ */
+export function settleParticipation(
+  base: AggregateInput,
+  plan: AggregatePlan,
+  streams: AggregateStreams,
+  length: AggregateLength,
+  withheld: Set<string>,
+  accessFor: (participation: AggregateParticipation) => AggregateSkillAccess,
+): { input: AggregateInput; participation: AggregateParticipation; facts: AggregateTeamFacts } {
+  for (;;) {
+    const participation = planParticipation(base, plan, streams, length, withheld);
+    const input = { ...base, access: accessFor(participation) };
+    const facts = generateTeamFacts(input, streams, participation);
+    const trailing = withheldRebalances(participation, facts);
+    if (trailing.length === 0) return { input, participation, facts };
+    for (const key of trailing) withheld.add(key);
+  }
+}
+
+/**
  * Plans, plays and attributes one fixture: 90 minutes, then — when `decide` says the tie is still
  * level — the same match extended to 120 with its regulation facts unchanged, and a shoot-out if
- * it is level after extra time.
+ * it is level after extra time. Rebalances withheld in the 90 stay withheld in the 120.
  */
 export function playAggregate(
   w: World,
@@ -309,11 +333,11 @@ export function playAggregate(
   const streams = aggregateStreams(w.seed, f.id);
   const base = buildAggregateInput(prepared, UNPLANNED, rosters);
   const plan = aggregatePlan(w, prepared, rosters, era);
-  const play = (length: AggregateLength) => {
-    const participation = planParticipation(base, plan, streams, length);
-    const input = { ...base, access: aggregateSkillAccess(prepared, rosters, participation) };
-    return { input, participation, facts: generateTeamFacts(input, streams, participation) };
-  };
+  const withheld = new Set<string>();
+  const play = (length: AggregateLength) =>
+    settleParticipation(base, plan, streams, length, withheld, (participation) =>
+      aggregateSkillAccess(prepared, rosters, participation),
+    );
   let match = play(90);
   const level = (facts: AggregateTeamFacts) =>
     !!decide && isLevel(decide, facts.score[0], facts.score[1]);

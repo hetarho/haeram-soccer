@@ -4,7 +4,7 @@ import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Fixture, MatchRecord, World } from '../../../contracts/src/types';
 import { M } from '../grid/record';
 import { createWorld, ownLeagueClubs } from '../index';
-import { validateFullMatchRecord } from '../match-model';
+import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
 import { simulateAggregate } from './engine';
 
 /**
@@ -275,6 +275,69 @@ describe('the shared validator against corrupted aggregate records (→MATCH-27)
         const r = clone(records[2]!);
         r.detail![1][TD.redCards]! += 1;
         return r;
+      },
+    ],
+    [
+      'a card moved to another player',
+      () => {
+        // The side's total still adds up; only the booked line no longer matches the incidents.
+        const r = find(has('yellow'));
+        const x = r.incidents!.find((y) => y.kind === 'yellow')!;
+        const lines = linesOf(r, x.side);
+        const booked = lines.find((l) => l.id === x.player)!;
+        const other = lines.find((l) => l.detail![PD.yellowCards] === 0)!;
+        booked.detail![PD.yellowCards]!--;
+        other.detail![PD.yellowCards]!++;
+        return r;
+      },
+    ],
+    [
+      'a fourth in-play window',
+      () => {
+        // A change that shared a stoppage (or the interval) moves one minute on into a fourth one.
+        const windows = (r: MatchRecord, side: 0 | 1) =>
+          new Set(
+            (r.incidents ?? [])
+              .filter((x) => x.side === side && x.kind === 'sub' && !INTERVAL_STAMPS.has(x.minute))
+              .map((x) => x.minute),
+          );
+        for (const record of records)
+          for (const side of [0, 1] as const) {
+            const used = windows(record, side);
+            if (used.size !== 3) continue;
+            const r = clone(record);
+            const incidents = r.incidents!;
+            const shift = incidents.find(
+              (x) =>
+                x.side === side &&
+                x.kind === 'sub' &&
+                x.minute < 90 &&
+                !used.has(x.minute + 1) &&
+                (INTERVAL_STAMPS.has(x.minute) ||
+                  incidents.some(
+                    (y) => y !== x && y.kind === 'sub' && y.side === side && y.minute === x.minute,
+                  )) &&
+                !incidents.some(
+                  (y) =>
+                    y !== x &&
+                    y.side === side &&
+                    (y.minute === x.minute || y.minute === x.minute + 1) &&
+                    [y.player, y.other].some((id) => id === x.player || id === x.other),
+                ),
+            );
+            const incoming = r.players.find((p) => p.id === shift?.other);
+            if (!shift || !incoming || incoming.metrics[M.minutes]! < 2) continue;
+            shift.minute++;
+            r.players.find((p) => p.id === shift.player)!.metrics[M.minutes]!++;
+            incoming.metrics[M.minutes]!--;
+            r.incidents = incidents
+              .map((x, order) => ({ x, order }))
+              .sort((a, b) => a.x.minute - b.x.minute || a.order - b.order)
+              .map(({ x }) => x);
+            expect(validateFullMatchRecord(r).join('; ')).toMatch(/windows/);
+            return r;
+          }
+        throw new Error('no side with three in-play windows and a shared change in the sample');
       },
     ],
   ];

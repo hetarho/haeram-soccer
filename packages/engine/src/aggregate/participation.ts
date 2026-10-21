@@ -18,10 +18,12 @@ import type {
   AggregateParticipation,
   AggregatePeriod,
   AggregatePlan,
+  AggregateRebalance,
   AggregateSide,
   AggregateSidePlan,
   AggregateStint,
   AggregateStreams,
+  AggregateTeamFacts,
 } from './types';
 
 type Rng = () => number;
@@ -332,6 +334,7 @@ type Reason = NonNullable<Incident['reason']>;
 class SidePlanner {
   readonly stints: AggregateStint[] = [];
   readonly incidents: Incident[] = [];
+  readonly rebalances: AggregateRebalance[] = [];
   private readonly slotOf: (number | undefined)[];
   private readonly holder: (number | undefined)[];
   private readonly start: number[];
@@ -355,6 +358,7 @@ class SidePlanner {
     private readonly plan: AggregateSidePlan,
     private readonly era: EraRules,
     private readonly year: number,
+    private readonly withheld: ReadonlySet<string>,
   ) {
     const n = input.sides[side].lines.length;
     const slots = input.sides[side].slots.length;
@@ -570,7 +574,8 @@ class SidePlanner {
    * The manager's changes at a stoppage, in the detailed engine's order (grid/changes.ts
    * `planChanges`): injured players replaced, a red card answered, then his policy, within the
    * era's substitutes and windows. The aggregate plan comes before the score exists, so the
-   * score-led changes (protecting a lead, chasing a deficit) are not made.
+   * score-led changes (protecting a lead, chasing a deficit) are not made, and a rebalance the
+   * finished match shows was made while trailing is withheld on a replay (`withheldRebalances`).
    */
   private decide(t: number, interval: boolean) {
     const C = CHANGES_CONFIG,
@@ -648,7 +653,8 @@ class SidePlanner {
     for (const x of [...this.injured]) sub(x.line, x.slot);
     if (era.injuryOnly) return apply();
     const timeAt = (threshold: number) => t >= threshold + policy.delay;
-    if (this.reds > this.rebalanced) {
+    const red = `${this.side}:${this.reds}`;
+    if (this.reds > this.rebalanced && !this.withheld.has(red)) {
       const filled = new Set(this.onPitch().map((line) => this.slotOf[line]!));
       for (const ch of plan) filled.add(ch.slot);
       const vacant = slots.findIndex((s, slot) => slot > 0 && !filled.has(slot) && s.line !== 'FW');
@@ -657,7 +663,8 @@ class SidePlanner {
       );
       const men = this.onPitch().length + plan.length;
       // The forward's slot empties; the newcomer takes the vacant one.
-      if (men < 11 && vacant >= 0 && forward !== undefined) sub(forward, vacant, ['DF', 'MF']);
+      if (men < 11 && vacant >= 0 && forward !== undefined && sub(forward, vacant, ['DF', 'MF']))
+        this.rebalances.push({ side: this.side, minute, key: red });
     }
     if (left <= 0) return apply();
     let cap = era.windows === undefined ? 1 : Math.ceil(left / Math.max(1, windowsLeft));
@@ -702,16 +709,18 @@ class SidePlanner {
  * its slots, injuries at CLUB-23's chance in proportion to minutes, cards at the configured rates
  * to players present at the moment, dismissals and unreplaced injuries leaving a side short, and
  * the manager's changes under the era's limits. Each period draws on streams of its own, so
- * planning 120 minutes keeps the first 90 exactly as planned for 90.
+ * planning 120 minutes keeps the first 90 exactly as planned for 90. `withheld` names the red
+ * cards (`side:reds`) whose rebalance a replay leaves out.
  */
 export function planParticipation(
   input: AggregateInput,
   plan: AggregatePlan,
   streams: AggregateStreams,
   length: AggregateLength = 90,
+  withheld: ReadonlySet<string> = new Set(),
 ): AggregateParticipation {
   const sides = ([0, 1] as const).map(
-    (side) => new SidePlanner(side, input, plan.sides[side], plan.era, input.year),
+    (side) => new SidePlanner(side, input, plan.sides[side], plan.era, input.year, withheld),
   );
   for (const { period, intervals } of PERIODS) {
     if (AGGREGATE_CONFIG.periods[period].from >= length) break;
@@ -726,9 +735,31 @@ export function planParticipation(
     length,
     stints: [sides[0]!.stints, sides[1]!.stints],
     incidents,
+    rebalances: [...sides[0]!.rebalances, ...sides[1]!.rebalances],
   };
   assertParticipation(input, participation, plan.era);
   return participation;
+}
+
+/** A side's goals minus its opponent's in the minutes before `minute` (a stoppage's stamp). */
+export function scoreBefore(facts: AggregateTeamFacts, side: AggregateSide, minute: number) {
+  const goals = (s: AggregateSide) =>
+    facts.ledger.sides[s].shots.filter((x) => x.outcome === 'goal' && x.minute < minute).length;
+  return goals(side) - goals(side === 0 ? 1 : 0);
+}
+
+/**
+ * The red cards whose rebalance the facts show was made while the side trailed (→STAFF-45: a
+ * side down to ten rebalances only when level or ahead); empty when the plan holds. A goal
+ * stamped in the stoppage's own minute counts as after it.
+ */
+export function withheldRebalances(
+  participation: AggregateParticipation,
+  facts: AggregateTeamFacts,
+): string[] {
+  return (participation.rebalances ?? [])
+    .filter((x) => scoreBefore(facts, x.side, x.minute) < 0)
+    .map((x) => x.key);
 }
 
 /** Lines of a side in record order: the XI, then substitutes in the order they came on. */

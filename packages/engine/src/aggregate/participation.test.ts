@@ -10,7 +10,10 @@ import {
   onPitchAt,
   participationTimelineIssues,
   planParticipation,
+  scoreBefore,
+  withheldRebalances,
 } from './participation';
+import { settleParticipation } from './engine';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
   AggregateInput,
@@ -161,6 +164,46 @@ describe('aggregate participation plan (→MATCH-19, MATCH-20, MATCH-21, MATCH-2
       }
     }
     expect(rebalanced).toBeGreaterThan(0);
+  });
+
+  it('makes no red-card rebalance while trailing', () => {
+    let withheldMatches = 0,
+      kept = 0;
+    for (const fixture of fixtures(400, 'trailing')) {
+      const { input, plan } = syntheticMatch(2008, 0);
+      const withheld = new Set<string>();
+      const { participation, facts } = settleParticipation(
+        input,
+        plan,
+        aggregateStreams('synthetic', fixture),
+        90,
+        withheld,
+        () => input.access,
+      );
+      expect(participationTimelineIssues(input, participation, plan.era)).toEqual([]);
+      // Every rebalance left in the settled match was made level or ahead (→STAFF-45).
+      for (const x of participation.rebalances ?? []) {
+        expect(scoreBefore(facts, x.side, x.minute)).toBeGreaterThanOrEqual(0);
+        kept++;
+      }
+      expect(withheldRebalances(participation, facts)).toEqual([]);
+      if (withheld.size === 0) continue;
+      withheldMatches++;
+      // The first plan rebalanced a trailing ten-man side (a replay can turn up another); the
+      // settled one does not, and the red card still leaves the side a man short.
+      const first = planParticipation(input, plan, aggregateStreams('synthetic', fixture), 90);
+      expect(first.rebalances!.some((x) => withheld.has(x.key))).toBe(true);
+      for (const key of withheld) {
+        expect(participation.rebalances!.some((x) => x.key === key)).toBe(false);
+        const side = Number(key.split(':')[0]) as AggregateSide;
+        const reds = participation.incidents.filter(
+          (x) => x.side === side && (x.kind === 'red' || x.kind === 'secondYellow'),
+        );
+        expect(onPitch(participation, side, 90)).toBe(11 - reds.length);
+      }
+    }
+    expect(withheldMatches).toBeGreaterThan(0);
+    expect(kept).toBeGreaterThan(0);
   });
 
   it('records an injury and replacement once', () => {
