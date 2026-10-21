@@ -826,7 +826,6 @@
     },
     "gatesAgainstBaseline100": {
       "baseline": {
-        "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/3185be81-6fa0-4fea-9af4-4eb0a3b1b61c/scratchpad/t285/baseline-9f69553-s100.json",
         "gitHead": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
         "fingerprint": "64c076338c8a1b1e36ecd1d4b47972d90f8b5f971e5fe7e007e1aaf83f6f8565",
         "settings": {
@@ -838,6 +837,10 @@
           "pilot": 600
         }
       },
+      "settingsMatch": false,
+      "settingsDiffer": [
+        "seasons 100 v 20"
+      ],
       "paired": true,
       "reasons": [],
       "gates": [
@@ -867,10 +870,24 @@
         }
       ],
       "releaseEvidence": false,
-      "note": "context: the 100-season baseline ran first under load 15-30 (see baseline100Load)"
+      "note": "context only, not like for like: the 100-season baseline (9f69553, scripts/match-model-baseline.ts --seasons 100) ran first under load (baseline100Load: 1-minute load median 11.6, max 35.2, processes matching grid-bands, match-parity, playwright or vitest in 79 of 98 samples, mostly other sessions and some of T285’s own vitest runs) and over 100 seasons against the candidate's 20 (settingsDiffer)"
     },
     "gatesAgainstBaseline20": {
       "note": "paired runner result over the same 20 seasons. The baseline side ran entirely quiet (load 2.3-3.9); the candidate fixture phase (04:06-04:11 KST) was quiet, but its season phase ran after another session started a 14-process test run at 04:11 (load up to 24.6), so the season ratios overstate the candidate. The interleaved quiet probes (interleaved.ratios) are the primary season evidence; every gate fails by a wide margin either way.",
+      "baseline": {
+        "gitHead": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+        "fingerprint": "64c076338c8a1b1e36ecd1d4b47972d90f8b5f971e5fe7e007e1aaf83f6f8565",
+        "settings": {
+          "mode": "full",
+          "fixtures": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "seasons": 20,
+          "pilot": 600
+        }
+      },
+      "settingsMatch": true,
+      "settingsDiffer": [],
       "baselineSeasons": 20,
       "candidateSeasons": 20,
       "paired": true,
@@ -903,9 +920,12 @@
       ],
       "releaseEvidence": false
     },
-    "baseline100QuietRerun": "started 04:10 KST and stopped at 04:33: load returned at 04:11, so it was neither quiet nor finishable inside the timebox"
+    "baseline100QuietRerun": "started 04:10 KST and stopped at 04:33: load returned at 04:11, so it was neither quiet nor finishable inside the timebox",
+    "loadNote": "baseline100Load, baseline20Load and candidateLoad: 1-minute load average every 30 s over each run; competingProcessSamples counts samples with processes matching grid-bands, match-parity, playwright or vitest (other sessions, plus T285’s own vitest runs between 03:28 and 03:42 KST inside the 100-season baseline window)"
   },
   "interleaved": {
+    "provenance": "Produced by T285's scratch probes before they were consolidated into scripts/season-throughput.ts (same worlds, owner actions, rotated tree order, stage replay and medians; the consolidated stage probe counts eraRules in 'prepare' rather than 'plan+input'). The committed harness was smoke-checked on HEAD and on 9f69553, not re-run for these numbers.",
+    "repeat": "Copy scripts/season-throughput.ts into checkouts of 9f69553 and 3679af8 (pnpm install in each), then: pnpm exec tsx scripts/season-throughput.ts --ab base=<9f69553 checkout> before=<3679af8 checkout>:candidate after=.:candidate --reps 3 --seasons 3",
     "stages": {
       "before": {
         "prepare": 0.025,
@@ -1060,10 +1080,27 @@
         "afterOverBefore": 0.695
       }
     },
-    "loads": {}
+    "loads": {
+      "window": {
+        "from": "2026-10-21T18:54:39.000Z",
+        "to": "2026-10-21T19:06:18.132Z",
+        "load1Median": 4.62,
+        "load1Min": 2.01,
+        "load1Max": 8.75,
+        "competingProcessSamples": 7,
+        "samples": 24
+      },
+      "probeStart": {
+        "runs": 24,
+        "load1Median": 5.58,
+        "load1Min": 1.92,
+        "load1Max": 9.09
+      },
+      "note": "load1 is the 1-minute load average; probeStart samples it as each probe started, window every 30 s over the whole A/B run; competingProcessSamples counts samples with processes matching grid-bands, match-parity, playwright or vitest (other sessions only in this window)"
+    }
   },
   "checkpoint": {
-    "root": "agent-a31d2556d687bff74",
+    "tree": "T285 changes (saved facts identical to 3679af8)",
     "round7": {
       "chars": 256412,
       "encodeMs": 429,
@@ -1079,7 +1116,33 @@
       "participantRows": 19773
     },
     "t281Round46Chars": 481269,
-    "t281Round7Chars": 255919
+    "t281Round7Chars": 255919,
+    "centuryCandidateEstimate": {
+      "measured": false,
+      "basis": "Estimated, not measured. offset20 = candidate checkpoint at the final round of season 20 minus 9f69553's after the close of season 20 (the same two points as the century target: candidate at its final round, baseline after its close); it holds the candidate's current-season ledger and records plus any history gap. low = 9f69553's 100-season checkpoint + offset20 (the candidate's history grows like the summary path's after season 20); high adds 80 seasons of the offset's growth over the first 20 seasons (offset1 from the 1-season smoke runs at HEAD, production and candidate, so the two ends come from different trees). Bytes are 2 per character, against SAVE-4's 3 MiB checkpoint limit.",
+      "baseline": {
+        "offset20": 342669,
+        "offset1": 321519,
+        "offsetGrowthPerSeason": 1113,
+        "lowChars": 1546055,
+        "highChars": 1635108,
+        "lowMiB": 2.95,
+        "highMiB": 3.12,
+        "limitMiB": 3,
+        "limitChars": 1572864
+      },
+      "active-management": {
+        "offset20": 339731,
+        "offset1": 321721,
+        "offsetGrowthPerSeason": 948,
+        "lowChars": 1333198,
+        "highChars": 1409030,
+        "lowMiB": 2.54,
+        "highMiB": 2.69,
+        "limitMiB": 3,
+        "limitChars": 1572864
+      }
+    }
   },
   "fullStatsRead": {
     "world": "founded 2024 ENG season-archive, candidate model, round 46",
@@ -1097,15 +1160,13 @@
     "quiet": true,
     "waitedMinutes": 8.6,
     "load1": 5.06,
-    "seen": [
-      "/bin/zsh -c source",
-      "CLAUDE_PLUGIN_DATA='/Users/ihaelam/.claude/plugins/data/codex-openai-codex'",
-      "&& setopt NO_EXTENDED_GLOB",
-      "node /opt/homebrew/bin/pnpm exec",
-      "node /Users/ihaelam/Library/pnpm/.tools/pnpm/10.34.6/bin/pnpm exec",
-      "node ./node_modules/.bin/../tsx/dist/cli.mjs scripts/grid-bands.ts",
-      "/Users/ihaelam/.hermes/node/bin/node --require /Users/ihaelam/project/haeram-soccer/.claude/worktree"
-    ],
-    "at": "2026-10-21T18:45:18.559Z"
+    "at": "2026-10-21T18:45:18.559Z",
+    "seenByKind": {
+      "shell wrapper": 3,
+      "pnpm exec": 2,
+      "grid-bands run": 1,
+      "node worker": 1
+    },
+    "seenNote": "distinct command prefixes that matched another session's grid-bands, match-parity or playwright processes while waiting, counted by kind"
   }
 }

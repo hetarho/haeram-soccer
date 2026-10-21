@@ -588,15 +588,23 @@ const pairedComparison = pairedWith
       const baseline = JSON.parse(readFileSync(pairedWith, 'utf8')) as {
         provenance: Provenance;
         performance: Parameters<typeof comparePerformance>[0]['report'];
-        settings: unknown;
+        settings: Partial<typeof settings>;
       };
+      // `paired` covers machine, toolchain and worlds; the workloads are compared here, so a
+      // baseline of other seasons, fixtures or repetitions is marked as not like for like (the
+      // pilot sizes the accuracy sample, not the timings).
+      const settingsDiffer = (['mode', 'fixtures', 'warmup', 'repetitions', 'seasons'] as const)
+        .filter((key) => baseline.settings[key] !== settings[key])
+        .map((key) => `${key} ${baseline.settings[key]} v ${settings[key]}`);
+      // The baseline is named by its source and settings, never by a local file path.
       return {
         baseline: {
-          file: pairedWith,
           gitHead: baseline.provenance.source.gitHead,
           fingerprint: baseline.provenance.source.fingerprint.sha256,
           settings: baseline.settings,
         },
+        settingsMatch: settingsDiffer.length === 0,
+        settingsDiffer,
         ...comparePerformance(
           { provenance: baseline.provenance, report: baseline.performance },
           { provenance, report: performanceReport },
@@ -616,7 +624,7 @@ const report = {
   releaseEvidence: false,
   pairedComparison,
   pairedNote: pairedWith
-    ? 'Gates pair this run with the named baseline report only when machine, toolchain and worlds match; timings from a shared machine are context for T286, never release evidence.'
+    ? 'Gates pair this run with the named baseline report only when machine, toolchain and worlds match, and settingsMatch says whether both ran the same seasons, fixtures, warm-up and repetitions; timings from a shared machine are context for T286, never release evidence.'
     : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
