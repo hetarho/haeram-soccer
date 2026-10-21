@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T07:32Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T07:43Z | - |
 
 ## inbox
 - 261021 decided T301 T303: clean WebKit rejects the current WOFF2 representation while identical-glyph WOFF loads; native multi-source CSS also stalls there → implement data-declared ordered per-source FontFace attempts, preserving preferred WOFF2 for capable engines and a licensed WOFF compatibility representation. Extend explicit asset/preview touches; no other active attempt owns these paths, no browser-ID branches, and total font failure still retains the previous theme (alt: send the measured 74%-larger WOFF representation to every browser).
