@@ -17,7 +17,6 @@
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 | p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:03Z | - |
-| mgha | hq-dev1-pve2-vm2 | pair | 2026-10-21T05:56Z | 2026-10-21T05:56Z | - |
 
 ## inbox
 - 261021 decided T275 T276 T277 T278 T280 T281 T283 T284 T285 T286: p8l3's WEB r105 / ARCH r17 (registry-driven locale and theme packs, ARCH-32) left these bases stale and the integration spec check refused both groups' candidates → bases raised with no content change: themes leave the live pitch, trajectories and clock mapping intact (T275), full feature-copy extraction is later work so T283's views keep Korean text, and engine/protocol code imports no pack registry (alt: re-plan the presentation-facing tasks onto message packs now, which WEB r105 defers)
@@ -147,13 +146,13 @@
 | match-engine-rebuild | converted@261019 |
 | club-identity-and-kits | converted@261019 |
 | match-continuity-and-performance | converted@261021 |
-| manager-achievements | open@261021 |
+| manager-achievements | converted@261021 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 105 | 105 | - | 0 |
+| WEB | 106 | 106 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -162,8 +161,8 @@
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 16 | 16 | - | 0 |
-| SAVE | 50 | 50 | - | 0 |
+| HIST | 17 | 17 | - | 0 |
+| SAVE | 51 | 51 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## review
@@ -190,6 +189,9 @@
 | T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
 | T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
 | T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
+| T304 | Retain stable own-manager tenures and outcome attribution | HIST SAVE STAFF MATCH ARCH | - | todo |
+| T305 | Derive bounded manager accomplishment summaries on demand | HIST SAVE WEB ARCH | T304 | todo |
+| T306 | Show manager accomplishments with season links and continuity evidence | WEB HIST SAVE ARCH | T305 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -203,9 +205,12 @@
 ## next
 - implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
 - Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- Continue ideation manager-achievements to choose accomplishment categories and tenure attribution; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
+- implement-task T304 when manager-history implementation is requested, then T305 and T306; task preparation only this session. Separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
+- 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
+- 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
 - 261021 update-ssot HIST SAVE WEB and create-task start: reserve T304-T306 for own-club manager achievements; planning only, no implementation or active-task contract changes.
 - 261021 ideation manager-achievements recorded: accomplishments alongside own-club manager tenures adopted; titles, promotions, best finishes, presentation and mid-season attribution remain open.
 - 261021 ideation manager-achievements start: capture the owner's request to show what each manager achieved during his own-club tenure.
@@ -223,6 +228,3 @@
 - 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
 - 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
 - 261021 T273 integrated
-- 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
-- 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
-- 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.

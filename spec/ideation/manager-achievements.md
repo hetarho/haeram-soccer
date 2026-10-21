@@ -1,5 +1,5 @@
 # IDEATION manager-achievements
-> st:open@261021 | Show what each manager achieved for our club alongside his tenure.
+> st:converted@261021 | Show what each manager achieved for our club alongside his tenure.
 
 ## vision
 - Problem: manager history tells the owner when managers served, but does not make their achievements visible.
@@ -9,25 +9,24 @@
 
 ## explored
 - [o] Enrich own-club manager history with accomplishments alongside service dates.
-- [?] Prioritise league titles, cup wins and promotions, naming the season and competition or division.
-- [?] Include best league finish or deepest cup run so a tenure without a trophy can still have a meaningful summary. Keep the division and competition visible when comparing results.
-- [?] Supplement honours with notable recorded runs or club records achieved during that tenure; distinguish observed team results from claims that the manager alone caused them.
-- [?] Show a concise accomplishment summary beside each tenure and let the owner open the relevant season record for context.
-- [?] Use recorded facts for historical and current managers; distinguish an unavailable old record from a tracked tenure with no qualifying accomplishment.
-- [?] Treat separate appointments of the same person as separate tenures, with an optional combined view only if the owner wants one.
+- [o] Planning scope: prepare implementation tasks only. Use league/cup titles, promotions, best league finishes, own-match results and longest winning/unbeaten runs as the factual first version.
+- [o] Label the season, competition and division/group. Compare best final league ranks within the same country/division/group; a lower-division title keeps its actual scope.
+- [o] Show a compact summary beside each tenure, with contextual links to the club-season record and a return to the inspected manager/list position.
+- [o] Preserve known earlier dates and readable old events. New structured tracking starts at founding or supported writer activation; incomplete attribution is shown as incomplete, never as no achievements or invented zero totals.
+- [o] Keep repeat appointments and interim managers as distinct tenures. Renewals/tactic changes do not start another tenure.
+- [o] Planning default for mid-season changes: credit outcomes to the responsible tenure when the cup final, final league table or promotion outcome is actually settled. Label shared-season context; a later appointment never takes an earlier cup title.
+- [o] Own-match W-D-L and runs use 90-minute results across official own competitions. Runs can cross seasons but stop at manager changes or unattributed matches; distinguish an ongoing run and partial tracking from complete tenure records.
+- [o] Keep the first version focused on our club. Other-club honours, deepest-cup-run rankings, combined reappointment rankings, generated praise and claims of sole causation are later work.
 
 ## shape
-- Proposed flow: records → manager history → tenure and accomplishments → relevant club-season record.
-- Proposed v1: own-club managers, service dates and a small factual accomplishment summary. The accomplishment categories and presentation remain open.
-- Scope still to decide: statistical detail, narrative descriptions and achievements at other clubs.
+- flow: records → manager history → tenure and factual accomplishments → relevant club-season record → preserved manager/list context.
+- v1: current/former/interim own-club tenures, dated honours/promotions, best league finishes, recorded match totals/runs and honest coverage states. Structured attribution survives save/export/import and the summary loads on demand.
+- Scope excludes broader other-club careers, subjective manager ratings, a deepest-cup-run ranking and new gameplay/reward mechanics.
 
 ## domains
-- WEB: candidate extension to the manager-history view (WEB-54), accomplishment summaries and season-record navigation.
-- HIST: candidate rules for linking recorded honours/results to manager tenures and explaining unavailable older history (HIST-1/7/13/14).
-- STAFF: candidate tenure boundaries for mid-season changes and repeat appointments, if existing appointment facts need clarification.
+- WEB: per-tenure accomplishment summaries, coverage states and contextual club-season navigation (WEB-92). →WEB
+- HIST: stable own-manager tenures, settlement-time attribution and factual summary/coverage rules (HIST-18/19). →HIST
+- SAVE: prospective activation and lossless retention of structured attribution within existing budgets (SAVE-24). →SAVE
 
 ## open
-- Which accomplishments belong in the first version: titles/promotions only, or best finishes and notable runs too?
-- Should the summary remain visible in the history list, or open in a manager detail view?
-- How should a mid-season handover credit a season-long title or promotion, and should this differ from a cup won on a specific date?
-- How should older careers with incomplete attribution and current managers with unfinished seasons appear?
+- No blocking questions for the scoped first-version tasks. Broader manager-career comparisons and deepest-cup-run rankings require separate planning.
