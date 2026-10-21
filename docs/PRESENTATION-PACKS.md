@@ -107,13 +107,35 @@ theme's asset ownership or turn a missing required role into a valid pack.
 `createThemeResolver` and `validateThemeTypography` in `apps/web/src/presentation/theme.ts`
 own token/font/image/icon resolution. Structural shape checks come from `validateThemePack`;
 the resolver and `validateThemeTypography` apply semantic requirements, including declared
-primary font faces. `installThemeResources` stages fonts, CSS, pack-declared image icons and
-currently needed facility images, commits a usable current selection atomically, disposes prior
-resources after success and discards stale asynchronous work. The resource validator uses these
-same functions with filesystem ports to
-check declared files, every required era/kind/stage image, fonts, stylesheets and image icons,
-including optional variants/overrides. It validates file presence and contracts; browsers still
-verify actual decoding, font loading, layout and resource installation.
+primary font faces.
+
+`prepareThemeResources(theme, { ports?, requiredImages? })` asynchronously stages fonts, CSS,
+pack-declared image icons and currently needed facility images without activating the candidate.
+It returns a prepared handle with `theme`, synchronous `commit({ previous?, isCurrent? })` and
+`dispose()`. Preparation failure cleans up successfully staged candidate resources and rejects.
+
+The browser controller awaits preparation, then checks the latest request and current semantic
+image needs. It disposes a stale candidate. A current request calls `commit` synchronously and
+confirms locale/document metadata, preference IDs, installed ownership and the published snapshot
+in the same uninterrupted call stack. There must be no `await` between the final freshness check,
+commit and publication, and no post-commit stale return that leaves an activated theme outside
+the controller's published state. Awaiting an already installed theme and then separately
+checking or publishing controller state is not a valid selection transaction.
+
+The prepared handle owns the inactive candidate resources until commit or disposal. A successful
+commit transfers ownership to `InstalledTheme` and releases the previous installed resources.
+`prepared.dispose()` then becomes a no-op; the active installed handle owns cleanup until a
+later successful replacement or controller disposal. A stale commit returns `null`, disposes its
+staging and preserves the previous theme. Commit activation failure also cleans the candidate
+while preserving the previous theme. Disposal is idempotent. Commit is single-use: committing
+an already committed, disposed or stale handle throws `ThemeInstallationError` without releasing
+an already active installed handle.
+
+`installThemeResources` remains a convenience wrapper around preparation and synchronous commit
+for standalone callers such as the Node validator. The validator reuses these functions with
+filesystem ports to check declared files, every required era/kind/stage image, fonts, stylesheets
+and image icons, including optional variants/overrides. It validates file presence and contracts;
+browsers still verify actual decoding, font loading, layout and resource installation.
 
 Browser adapters collect mounted semantic image needs and resolve them against the candidate
 theme with `collectThemeImageResources`. A font, stylesheet, pack-declared image icon or mounted
