@@ -54,7 +54,9 @@ Message IDs describe meaning rather than a particular language. Templates contai
 `{parameter}` placeholders and return plain text; React performs text escaping. Parameters are
 strings or numbers. Substitution runs once, so inserted braces, markup and replacement tokens
 remain literal data. Plural messages require `other`; optional forms are `zero`, `one`, `two`,
-`few` and `many`, selected with the active locale's `Intl.PluralRules`. The plural selector must
+`few` and `many`, selected with the message pack's `Intl.PluralRules`. A missing translation uses
+the default pack's grammar; messages present in the selected pack use that pack's locale.
+The plural selector must
 be a finite numeric parameter, even when its selected form does not print it. Other named
 parameters must agree between forms.
 
