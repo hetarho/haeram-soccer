@@ -11,6 +11,7 @@ import type { GameClient } from '../runtime/client';
 import { Dialog } from './Dialog';
 import { positionsLabel } from './FormationPitch';
 import {
+  FULL_STATS_FAILED,
   fullStatsAdvanced,
   fullStatsAppearances,
   fullStatsCoverage,
@@ -67,7 +68,7 @@ export function PlayerComparison({
     statsB = right && performanceRows(right[ownScope]);
   return (
     <Dialog
-      label="우리 선수 비교"
+      label={scope === 'league' ? '리그 선수 비교' : '우리 선수 비교'}
       onClose={onClose}
       wide
       actions={<button onClick={onClose}>비교 마치기</button>}
@@ -123,7 +124,14 @@ export function PlayerComparison({
         )}
       </div>
       {scope === 'league' ? (
-        full.status !== 'ready' ? (
+        full.status === 'failed' ? (
+          <p className={s.note} role="status">
+            {FULL_STATS_FAILED}{' '}
+            <button type="button" onClick={full.retry}>
+              다시 불러오기
+            </button>
+          </p>
+        ) : full.status !== 'ready' ? (
           <p className={s.note} role="status">
             리그 세부 기록을 불러오는 중…
           </p>

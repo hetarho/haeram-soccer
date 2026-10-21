@@ -2,15 +2,15 @@ import { useMemo, useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { share } from './advanced';
+import { hundredths, share } from './advanced';
 import { ClubLink } from './ClubLink';
 import {
   CLUB_ORDERS,
+  FULL_STATS_FAILED,
   fullStatsAppearances,
   fullStatsClubs,
   fullStatsCoverage,
   fullStatsPlayers,
-  hundredths,
   LEADERS,
   leaders,
   leagueStatsScope,
@@ -70,9 +70,16 @@ export function LeagueFullStats({
           <span data-testid="full-stats-coverage">
             {full.status === 'loading'
               ? '세부 기록을 불러오는 중…'
-              : fullStatsCoverage(read, w.year).text}
+              : full.status === 'failed'
+                ? FULL_STATS_FAILED
+                : fullStatsCoverage(read, w.year).text}
           </span>
         </div>
+        {full.status === 'failed' && (
+          <button type="button" onClick={full.retry}>
+            다시 불러오기
+          </button>
+        )}
       </div>
       {!read ? null : lens === 'teams' ? (
         <FullClubTable
@@ -147,7 +154,12 @@ function FullClubTable({
                 <td className={s.optional}>
                   {row.shots} ({row.onTarget})
                 </td>
-                <td className={s.optional}>{share(row.completed, row.passes)}</td>
+                <td className={s.optional}>
+                  {share(row.completed, row.passes)}{' '}
+                  <small>
+                    {row.completed}/{row.passes}
+                  </small>
+                </td>
                 <td className={s.optional}>{row.bigChances}</td>
               </tr>
             ))}
@@ -160,7 +172,11 @@ function FullClubTable({
     </>
   );
 }
-function FullLeaders({
+/**
+ * The leaders of one counter. Every row keeps its sample on every width: the 90분당 cell carries
+ * the minutes it divides, while the appearances column folds away on phones (→HIST-6).
+ */
+export function FullLeaders({
   w,
   rows,
   order,
@@ -201,7 +217,7 @@ function FullLeaders({
               </tr>
             </thead>
             <tbody>
-              {ranked.map(({ player, total, rate }, i) => (
+              {ranked.map(({ player, total, rate, sample }, i) => (
                 <tr key={player.id} className={player.clubs.at(-1) === w.playerClub ? s.own : ''}>
                   <td>{i + 1}</td>
                   <th scope="row" className={s.club}>
@@ -221,11 +237,12 @@ function FullLeaders({
                       </span>
                     ))}
                   </th>
-                  <td className={s.optional}>
-                    {fullStatsAppearances(player)} · {player.minutes}분
-                  </td>
+                  <td className={s.optional}>{fullStatsAppearances(player)}</td>
                   <td className={s.points}>{total}</td>
-                  <td>{rate}</td>
+                  <td>
+                    {rate}
+                    <small> · {sample}</small>
+                  </td>
                 </tr>
               ))}
             </tbody>

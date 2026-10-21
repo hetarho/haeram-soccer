@@ -232,4 +232,17 @@ export function per90(value: number, minutes: number, digits = 2) {
   return minutes > 0 ? ((value * 90) / minutes).toFixed(digits) : '—';
 }
 
+/** Hundredths as a two-decimal figure, as match reports print xG. */
+export const hundredths = (value: number) => (value / 100).toFixed(2);
+
+/**
+ * Which counters a recorded match carries (→MATCH-13, MATCH-26): a full-model result carries all of
+ * them on either engine, as a grid result does; older rules lack the spatial ones or every
+ * advanced counter. A note follows only from the rules a match was played under.
+ */
+export function recordCounters(record: MatchRecord): 'all' | 'advanced' | 'basic' {
+  if (record.model !== undefined || record.lineCounts) return 'all';
+  return record.detail ? 'advanced' : 'basic';
+}
+
 export { PD, TD };

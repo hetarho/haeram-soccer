@@ -68,19 +68,41 @@ for (const viewport of VIEWPORTS)
       .getByRole('button', { name: 'xG', exact: true })
       .click();
     const leaders = players.getByRole('table', { name: 'xG 순위표' });
-    await expect(leaders.locator('tbody tr').first()).toBeVisible();
+    const top = leaders.locator('tbody tr').first();
+    await expect(top).toBeVisible();
+    // Every per-90 rate shows the minutes it divides, phones included (→HIST-6).
+    await expect(top.locator('td').last()).toContainText(/\d+\.\d{2} · \d+분/);
+    await expect(top.locator('td').last()).toBeVisible();
     await expect(players).not.toContainText('추정');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+    // Another league's leaders come from the lens; only the round-by-round race is ours alone.
+    const country = page.getByRole('combobox', { name: '국가', exact: true });
+    await chooseOption(country, 'FRA');
+    await expect(players.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
+    await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toHaveCount(0);
+    await page
+      .getByRole('group', { name: '선수 기록 보기' })
+      .getByRole('button', { name: '득점왕 추이', exact: true })
+      .click();
+    await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toContainText(
+      '라운드별 득점왕 기록',
+    );
+    await page.getByRole('button', { name: '우리 리그 기록 보기', exact: true }).click();
+    await expect(country).toHaveAttribute('data-value', 'ENG');
 
     // Our player against another club's, from the same statistics.
     await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
     const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
     await opener.click();
-    const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
     await chooseOption(
-      sheet.getByRole('combobox', { name: '비교 지표 범위', exact: true }),
+      page
+        .getByRole('dialog', { name: '우리 선수 비교', exact: true })
+        .getByRole('combobox', { name: '비교 지표 범위', exact: true }),
       'league',
     );
+    // The dialog names the scope it compares.
+    const sheet = page.getByRole('dialog', { name: '리그 선수 비교', exact: true });
     await expect(sheet.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
     const b = sheet.getByRole('combobox', { name: '비교 선수 B', exact: true });
     const options = await selectOptions(b);

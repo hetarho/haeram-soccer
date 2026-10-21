@@ -1,3 +1,5 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD } from '../../../../packages/contracts/src/detail';
 import {
@@ -7,10 +9,10 @@ import {
 } from '../../../../packages/contracts/src/match-model';
 import type { MatchRecord, Metrics, World } from '../../../../packages/contracts/src/types';
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
-import { createWorld } from '../../../../packages/engine/src/index';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
-import { cachedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, simulatedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
+import { hundredths, recordCounters } from './advanced';
 import {
   fullStatsAdvanced,
   fullStatsAppearances,
@@ -18,13 +20,13 @@ import {
   fullStatsCoverage,
   fullStatsPlayers,
   fullStatsRates,
-  hundredths,
   leaders,
   leagueStatsScope,
   orderClubs,
   perMatch,
-  recordCounters,
 } from './fullStatsView';
+import { FullLeaders } from './LeagueFullStats';
+import s from './LeagueInsights.module.css';
 import { appearanceText, performanceRows } from './playerAnalysis';
 
 /** Synthetic, marked rows: values chosen to read easily, not settled football. */
@@ -43,8 +45,9 @@ const part = (
   metrics: m,
   detail: d,
 });
+/** A founded world, built once and shared (→ARCH-21); each call is a fresh copy. */
 const fresh = () =>
-  createWorld({
+  simulatedWorld({
     country: 'ENG',
     name: 'Synthetic Full Stats',
     color: '#335544',
@@ -196,10 +199,40 @@ describe('complete statistics in existing views (→WEB-89, HIST-6, HIST-17)', (
     expect(fullStatsCoverage(syntheticRead(w), w.year).text).toContain(
       '시즌 전체 기록 · 리그 3경기',
     );
-    // Leaders keep their samples: appearances and minutes beside the total and the rate.
-    const [first] = leaders(fullStatsPlayers(partial, w), 'goals');
-    expect(first).toMatchObject({ total: '2', rate: ((2 * 90) / 200).toFixed(2) });
-    expect(first!.player.minutes).toBe(200);
+    // Leaders keep their samples: every rate travels with the minutes it divides.
+    const rows = fullStatsPlayers(partial, w);
+    const [first] = leaders(rows, 'goals');
+    expect(first).toMatchObject({ total: '2', rate: ((2 * 90) / 200).toFixed(2), sample: '200분' });
+    // A substitute's goal in 30 minutes: on a phone the appearances column folds away, while the
+    // rate cell, which stays, still names the 30 minutes behind "3.00".
+    const sub = {
+      ...rows[1]!,
+      id: 'npc:synthetic:sub',
+      name: 'Synthetic Substitute',
+      appearances: 1,
+      starts: 0,
+      minutes: 30,
+    };
+    sub.metrics = metrics({ 0: 1, 10: 30 });
+    const html = renderToStaticMarkup(
+      createElement(FullLeaders, {
+        w,
+        rows: [sub, ...rows],
+        order: 'goals',
+        onOrder: () => {},
+      }),
+    );
+    // `optional` is the class LeagueInsights.module.css hides at 760 px and below.
+    expect(s.optional).toBeTruthy();
+    const cells = (row: string) =>
+      [...row.matchAll(/<td( class="([^"]*)")?>(.*?)<\/td>/g)].map((m) => ({
+        folds: !!m[2] && m[2].split(' ').includes(s.optional!),
+        text: m[3]!.replace(/<[^>]+>/g, ''),
+      }));
+    const subRow = html.split('<tr').find((row) => row.includes(sub.name))!;
+    const kept = cells(subRow).filter((cell) => !cell.folds);
+    expect(kept.map((cell) => cell.text)).toContain('3.00 · 30분');
+    expect(cells(subRow).find((cell) => cell.folds)!.text).toBe('1경기 · 교체 1');
   });
 
   it('preserves a transferred contributor', () => {

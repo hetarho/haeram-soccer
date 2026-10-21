@@ -2,8 +2,7 @@ import { lazy, Suspense, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { kindLabel, seasonName } from './format';
-import { matchComparison, PD, share, sideLines } from './advanced';
-import { hundredths, recordCounters } from './fullStatsView';
+import { hundredths, matchComparison, PD, recordCounters, share, sideLines } from './advanced';
 import { Term } from './Term';
 import s from './Analysis.module.css';
 

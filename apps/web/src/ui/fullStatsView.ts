@@ -5,12 +5,7 @@ import {
   type FullStatsRead,
   type FullStatsScope,
 } from '../../../../packages/contracts/src/match-model';
-import type {
-  MatchRecord,
-  Metrics,
-  Position,
-  World,
-} from '../../../../packages/contracts/src/types';
+import type { Metrics, Position, World } from '../../../../packages/contracts/src/types';
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
 import { playerTotals } from '../../../../packages/engine/src/npc-stats';
 import type { GameClient } from '../runtime/client';
@@ -199,8 +194,6 @@ export function fullStatsClubs(read: FullStatsRead, ids: readonly string[]): Ful
     };
   });
 }
-/** Hundredths as a two-decimal figure, as match reports print xG. */
-export const hundredths = (value: number) => (value / 100).toFixed(2);
 /** A per-match figure with its match denominator respected; no match means no figure. */
 export const perMatch = (value: number, matches: number, digits = 2) =>
   matches > 0 ? (value / matches).toFixed(digits) : '—';
@@ -247,10 +240,13 @@ export interface LeaderRow {
   player: FullStatsPlayer;
   total: string;
   rate: string;
+  /** The minutes the rate divides, shown beside it on every width (→HIST-6). */
+  sample: string;
 }
 /**
  * The leaders of one counter: recorded totals above zero, most first; equal totals go to fewer
- * minutes, then the ID. A rate is per 90 actual minutes, as own players' rates are.
+ * minutes, then the ID. A rate is per 90 actual minutes, as own players' rates are, and travels
+ * with its sample.
  */
 export function leaders(rows: readonly FullStatsPlayer[], key: LeaderKey, limit = 10): LeaderRow[] {
   const leader = LEADERS.find((entry) => entry.key === key)!;
@@ -267,22 +263,21 @@ export function leaders(rows: readonly FullStatsPlayer[], key: LeaderKey, limit 
       player,
       total: (leader.value(player) / scale).toFixed(digits),
       rate: per90Text(leader.value(player) / scale, player.minutes),
+      sample: `${player.minutes}분`,
     }));
 }
 
 /**
- * Which counters a recorded match carries (→MATCH-13, MATCH-26): a full-model result carries all of
- * them on either engine, as a grid result does; older rules lack the spatial ones or every
- * advanced counter. A note follows only from the rules a match was played under.
+ * Where a lens stands with its read: off for the pre-feature model, which tracks nothing new;
+ * failed when the worker could not answer, which is no statement about tracking and can be retried.
  */
-export function recordCounters(record: MatchRecord): 'all' | 'advanced' | 'basic' {
-  if (record.model !== undefined || record.lineCounts) return 'all';
-  return record.detail ? 'advanced' : 'basic';
-}
-
-/** Where a lens stands with its read: off for the pre-feature model, which tracks nothing new. */
 export type FullStatsState =
-  { status: 'off' } | { status: 'loading' } | { status: 'ready'; read: FullStatsRead | undefined };
+  | { status: 'off' }
+  | { status: 'loading' }
+  | { status: 'failed'; retry: () => void }
+  | { status: 'ready'; read: FullStatsRead | undefined };
+/** What a lens says when the read itself failed, beside its retry button. */
+export const FULL_STATS_FAILED = '세부 기록을 불러오지 못했어요.';
 /**
  * One competition's complete statistics, requested when a lens opens and again after the world
  * changes (→WEB-89): the daily view never carries them. A world without a match model asks for
@@ -294,15 +289,18 @@ export function useFullStats(
   scope: FullStatsScope | undefined,
 ): FullStatsState {
   const on = activeMatchModel(w) !== undefined && scope !== undefined;
+  const [attempt, setAttempt] = useState(0);
   const name = on ? `${w.id}:${w.year}:${scope.kind}:${scope.groupKey}` : undefined,
-    key = name && `${name}:${w.revision}`;
-  const [held, setHeld] = useState<{ name: string; read: FullStatsRead | undefined }>();
+    key = name && `${name}:${w.revision}:${attempt}`;
+  const [held, setHeld] = useState<
+    { name: string; read: FullStatsRead | undefined } | { name: string; failed: string }
+  >();
   useEffect(() => {
     if (!on || !scope || !name || !key) return;
     let valid = true;
     client.fullStats(scope).then(
       (read) => valid && setHeld({ name, read }),
-      () => valid && setHeld({ name, read: undefined }),
+      () => valid && setHeld({ name, failed: key }),
     );
     return () => {
       valid = false;
@@ -310,5 +308,10 @@ export function useFullStats(
     // The name and key spell out the scope, so they are all the effect needs to follow.
   }, [client, name, key]);
   if (!on) return { status: 'off' };
-  return held && held.name === name ? { status: 'ready', read: held.read } : { status: 'loading' };
+  if (!held || held.name !== name) return { status: 'loading' };
+  if (!('failed' in held)) return { status: 'ready', read: held.read };
+  // A retry or a later world asks again; until it answers the lens is loading, not failed.
+  return held.failed === key
+    ? { status: 'failed', retry: () => setAttempt((n) => n + 1) }
+    : { status: 'loading' };
 }

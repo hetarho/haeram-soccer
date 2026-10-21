@@ -14,6 +14,7 @@ import {
   type KeyboardEvent,
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
+import { activeMatchModel } from '../../../../packages/contracts/src/match-model';
 import {
   daysUntilNextMatch,
   nextOwnFixture,
@@ -372,7 +373,10 @@ const PlayerPane = memo(function PlayerPane({
   onPart: (value: 'scorers' | 'trend') => void;
 }) {
   const w = useGameState(selectScorerWorld)!,
-    other = league && !sameLeague(league, ownLeague(w));
+    other = league && !sameLeague(league, ownLeague(w)),
+    // With complete statistics another league's leaders come from the lens below (→WEB-89); only
+    // the round-by-round race stays our league's alone (→WEB-65).
+    full = activeMatchModel(w) !== undefined;
   return (
     <>
       <Segments
@@ -387,11 +391,13 @@ const PlayerPane = memo(function PlayerPane({
         onChange={onPart}
       />
       {other ? (
-        <UnavailableLeagueRecord
-          league={league!}
-          label="선수별 득점 기록"
-          onOwn={() => onLeague(undefined)}
-        />
+        full && part === 'scorers' ? null : (
+          <UnavailableLeagueRecord
+            league={league!}
+            label={full ? '라운드별 득점왕 기록' : '선수별 득점 기록'}
+            onOwn={() => onLeague(undefined)}
+          />
+        )
       ) : part === 'trend' ? (
         <ScorerHistory w={w} />
       ) : (
