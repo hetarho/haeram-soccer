@@ -33,6 +33,8 @@ const MAX_SHOT_XG = 80;
  * after the fact and added time reads as the period's last minute (grid/changes.test.ts).
  */
 const MINUTE_ROUNDING = 2;
+/** Stamped minutes of half-time and the extra-time intervals, where a change uses no window. */
+export const INTERVAL_STAMPS: ReadonlySet<number> = new Set([46, 91, 106]);
 /** Player counters named like a team counter add up to it exactly (→MATCH-27). */
 const SHARED_DETAIL = (Object.keys(PD) as (keyof typeof PD)[]).filter(
   (key): key is keyof typeof PD & keyof typeof TD => key in TD,
@@ -50,8 +52,8 @@ function rowIssues(out: string[], what: string, row: Metrics | undefined, width:
  * Every way a result fails the full model's contract, empty when it holds: all full-model fields
  * and counters present at their widths, then the exact invariants — score and goals, successes
  * within attempts, shot classes within shots, player lines reconciling with their side, minutes
- * within the match, incidents naming participants under the era's substitution rules and agreeing
- * with the card counters, lines and minutes following the substitution and dismissal timeline, and
+ * within the match, assists within each line's key passes, incidents naming participants under
+ * the era's substitution and window rules and agreeing with the team and line card counters, lines and minutes following the substitution and dismissal timeline, and
  * the period/shoot-out shape. It checks and never repairs a record.
  */
 export function validateFullMatchRecord(r: MatchRecord): string[] {
@@ -162,6 +164,8 @@ function participationIssues(r: FullMatchRecord) {
       atMost(out, `${p.id} completed passes`, m[M.completed]!, m[M.passes]!);
       atMost(out, `${p.id} goals`, m[M.goals]!, m[M.onTarget]!);
       atMost(out, `${p.id} shots on target`, m[M.onTarget]!, m[M.shots]!);
+      // An assist is the key pass of a goal (→MATCH-11): nobody assists more than he set up.
+      atMost(out, `${p.id} assists`, m[M.assists]!, d[PD.keyPasses]!);
       atMost(out, `${p.id} dribbles`, m[M.dribbles]!, d[PD.takeOns]!);
       atMost(
         out,
@@ -225,6 +229,9 @@ function incidentIssues(r: FullMatchRecord) {
   const subs = [0, 0],
     yellows = [0, 0],
     reds = [0, 0];
+  const cards = new Map<string, [number, number]>();
+  /** Stamped minutes of in-play substitutions per side; the intervals use no window (→MATCH-20). */
+  const windows = [new Set<number>(), new Set<number>()];
   let last = 0;
   for (const x of r.incidents) {
     if (x.minute < 1 || x.minute > length) out.push(`${x.kind} at minute ${x.minute}`);
@@ -232,20 +239,36 @@ function incidentIssues(r: FullMatchRecord) {
     last = x.minute;
     for (const id of x.kind === 'sub' ? [x.player, x.other] : [x.player])
       if (!id || !roster[x.side]!.has(id)) out.push(`${x.kind} names ${id} outside side ${x.side}`);
-    if (x.kind === 'yellow' || x.kind === 'secondYellow') yellows[x.side]!++;
-    if (x.kind === 'red' || x.kind === 'secondYellow') reds[x.side]!++;
+    const own = cards.get(x.player) ?? [0, 0];
+    if (x.kind === 'yellow' || x.kind === 'secondYellow') {
+      yellows[x.side]!++;
+      own[0]++;
+    }
+    if (x.kind === 'red' || x.kind === 'secondYellow') {
+      reds[x.side]!++;
+      own[1]++;
+    }
+    cards.set(x.player, own);
     if (x.kind === 'yellow') booked.add(x.player);
     if (x.kind === 'secondYellow' && !booked.has(x.player))
       out.push(`${x.player} second yellow without a first`);
     if (x.kind === 'injury') hurt.add(x.player);
     if (x.kind === 'sub') {
       subs[x.side]!++;
+      if (!INTERVAL_STAMPS.has(x.minute)) windows[x.side]!.add(x.minute);
       if (era.injuryOnly && !hurt.has(x.player)) out.push(`${x.player} replaced without an injury`);
     }
+  }
+  for (const p of r.players) {
+    const [yellow, red] = cards.get(p.id) ?? [0, 0];
+    if (p.detail[PD.yellowCards] !== yellow || p.detail[PD.redCards] !== red)
+      out.push(`${p.id} cards ${p.detail[PD.yellowCards]}/${p.detail[PD.redCards]} ≠ incidents`);
   }
   for (const side of sides) {
     if (subs[side]! > era.maxSubs)
       out.push(`side ${side} made ${subs[side]} substitutions > ${era.maxSubs}`);
+    if (era.windows !== undefined && windows[side]!.size > era.windows)
+      out.push(`side ${side} substituted in ${windows[side]!.size} windows > ${era.windows}`);
     if (r.detail[side][TD.yellowCards] !== yellows[side])
       out.push(`side ${side} yellow cards disagree with incidents`);
     if (r.detail[side][TD.redCards] !== reds[side])

@@ -5,7 +5,9 @@
  * derived from. Types only; the kernel is `team.ts`, the ledger's checks and derivations `ledger.ts`.
  */
 import type { Incident, Metrics, Tactic } from '../../../contracts/src/types';
-import type { Line } from '../../../contracts/src/player';
+import type { Line, PlayTrait } from '../../../contracts/src/player';
+import type { EraRules, SubPolicy } from '../grid/setup';
+import type { MatchAction } from '../match';
 
 export type AggregateSide = 0 | 1;
 /** Regulation is minutes 0–90; extra time (→MATCH-6) extends the same match by 90–120. */
@@ -25,6 +27,7 @@ export const AGGREGATE_ATTRIBUTES = [
   'crossing',
   'heading',
   'handling',
+  'composure',
 ] as const;
 export type AggregateAttribute = (typeof AGGREGATE_ATTRIBUTES)[number];
 
@@ -109,7 +112,18 @@ export interface AggregateParticipation {
 }
 
 /** The decision families a fixture's kernel draws from, each on a stream of its own. */
-export const AGGREGATE_STREAM_FAMILIES = ['latent', 'flow', 'fouls', 'shots', 'setPieces'] as const;
+export const AGGREGATE_STREAM_FAMILIES = [
+  'latent',
+  'flow',
+  'fouls',
+  'shots',
+  'setPieces',
+  'discipline',
+  'injuries',
+  'changes',
+  'attribution',
+  'shootout',
+] as const;
 export type AggregateStreamFamily = (typeof AGGREGATE_STREAM_FAMILIES)[number];
 /**
  * Named seeded streams of the candidate model for one fixture (→ARCH-5): a stream is named by its
@@ -217,4 +231,65 @@ export interface AggregateTeamFacts {
   regulation?: [number, number];
   sides: [AggregateSideFacts, AggregateSideFacts];
   ledger: AggregateLedger;
+}
+
+/**
+ * One matchday candidate as the participation plan reads him (→MATCH-19/20/21, CLUB-23): his own
+ * values before kick-off, aligned with the side's `lines`. The plan needs no Player object.
+ */
+export interface AggregateCandidate {
+  id: string;
+  /** His main position's line: bench choices and card weights read it. */
+  line: Line;
+  born: number;
+  /** Pre-match fatigue and 체력, which drain him through the match. */
+  fatigue: number;
+  stamina: number;
+  /** His chance of an injury over a full match on the pitch (careers.ts `injuryChance`). */
+  injury: number;
+  /** 선방, for an outfielder who has to go in goal. */
+  reflexes: number;
+  /** A substitute's effective OVR at each slot of the side's formation (world.ts `slotOvr`). */
+  slotLevel: readonly number[];
+  traits: readonly PlayTrait[];
+}
+export interface AggregateSidePlan {
+  /** Aligned with `AggregateSideInput.lines`: the XI in slot order, then the named bench. */
+  candidates: readonly AggregateCandidate[];
+  policy: SubPolicy;
+  pressing: boolean;
+  /** How fast the side tires: its manager style's drain. */
+  drain: number;
+  /**
+   * How much more often a line attempts an action in a slot: the slot's role times his play
+   * traits (match.ts `actionWeight`, →MATCH-11), 1 for neither.
+   */
+  actionWeight(line: number, slot: number, action: MatchAction): number;
+}
+/** What the participation plan is conditioned on beyond the kernel input. */
+export interface AggregatePlan {
+  era: EraRules;
+  sides: readonly [AggregateSidePlan, AggregateSidePlan];
+}
+
+/** One named line of a side in record order: the starters, then substitutes as they came on. */
+export interface AggregateLine {
+  /** Index into the side's `lines`. */
+  line: number;
+  metrics: Metrics;
+  detail: Metrics;
+}
+/** Who one shot of the ledger is credited to: shooter and, for a pass, the key passer. */
+export interface AggregateShotCredit {
+  side: AggregateSide;
+  /** Index into the side's ledger shots. */
+  shot: number;
+  minute: number;
+  shooter: number;
+  passer?: number;
+}
+/** The player lines allocated from one match's team facts (→MATCH-26/27). */
+export interface AggregatePlayerFacts {
+  sides: [AggregateLine[], AggregateLine[]];
+  shots: AggregateShotCredit[];
 }
