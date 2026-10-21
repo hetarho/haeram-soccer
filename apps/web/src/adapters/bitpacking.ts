@@ -29,6 +29,13 @@ function unbase64(encoded: string) {
   return Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
 }
 
+/** Bits a column stores per row for the range `max - min` of its values. */
+export function rangeBits(range: number) {
+  let bits = 0;
+  for (; range > 0; range = Math.floor(range / 2)) bits++;
+  return bits;
+}
+
 /** Store each column using its exact minimum and the bits needed for its remaining range. */
 export function packBitColumns(values: number[], width: number, layout?: 'planes'): BitColumns {
   validateWidth(width);
@@ -50,8 +57,7 @@ export function packBitColumns(values: number[], width: number, layout?: 'planes
       max = Math.max(max, value);
     }
     if (!count) min = 0;
-    let bits = 0;
-    for (let range = max - min; range > 0; range = Math.floor(range / 2)) bits++;
+    const bits = rangeBits(max - min);
     headers.push([min, bits]);
     totalBits += count * bits;
   }

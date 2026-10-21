@@ -68,28 +68,30 @@ describe('match-model metadata (→SAVE-23)', () => {
     rejects({ ownMatches: [oldRecord, { ...oldRecord, model: future }] });
     expect(matchModelStateSchema.safeParse({ ...state, revision: future }).success).toBe(false);
     expect(matchModelStateSchema.safeParse({ ...state, extra: 1 }).success).toBe(false);
-    // The full-model container follows the identity container; until its codec exists this version
-    // refuses it like any other future container, and its header is no evidence of earlier rules.
+    // The full-model container follows the identity container and is read beside the older ones;
+    // the next container is a future one, whose header is no evidence of earlier rules.
     expect(FULL_MODEL_CHECKPOINT_SCHEMA).toBe(CURRENT_CHECKPOINT_SCHEMA + 1);
     expect(isCheckpointSchema(CURRENT_CHECKPOINT_SCHEMA)).toBe(true);
     expect(isCheckpointSchema(1)).toBe(true);
-    expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA)).toBe(false);
-    expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"3.0.0"}`)).toBe(
+    expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA)).toBe(true);
+    expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA + 1)).toBe(false);
+    expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"4.0.0"}`)).toBe(
+      '4.0.0',
+    );
+    expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`)).toBe(
       undefined,
     );
   });
 
-  it('keeps the current container for unactivated worlds and never writes model data in it', () => {
+  it('keeps the current container for unactivated worlds and writes model data only in its own', () => {
     const plain = { ownMatches: [oldRecord] } as unknown as World;
     expect(checkpointSchemaFor(plain)).toBe(CURRENT_CHECKPOINT_SCHEMA);
     for (const activated of [
       { ...plain, matchModel: state },
       { ...plain, npcSeason: { model: MATCH_MODEL_REVISION } },
-      { ownMatches: [{ ...oldRecord, model: MATCH_MODEL_REVISION }] },
+      { ownMatches: [oldRecord, { ...oldRecord, model: MATCH_MODEL_REVISION }] },
     ])
-      expect(() => checkpointSchemaFor(activated as unknown as World)).toThrow(
-        `컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}`,
-      );
+      expect(checkpointSchemaFor(activated as unknown as World)).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
   });
 });
 

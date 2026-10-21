@@ -15,6 +15,7 @@ import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contr
 import type { Founding, World } from '../../../../packages/contracts/src/types';
 import { packBitColumns } from './bitpacking';
 import { packCareerRows } from './careerPacking';
+import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 
 const COMPACT: Founding = {
   country: 'ENG',
@@ -484,5 +485,38 @@ describe('identity data through pack (→SAVE-20, SAVE-22)', () => {
     for (const m of bare.ownMatches) delete m.appearance;
     expect('appearances' in pack(bare)).toBe(false);
     expect(canonical(unpack(JSON.parse(JSON.stringify(pack(bare)))))).toBe(canonical(bare));
+  });
+});
+
+describe('full records through pack (→SAVE-22, SAVE-23)', () => {
+  it('keeps the model, advanced values, material and appearance of every own full record', () => {
+    const w = identityCareer();
+    w.ownMatches.forEach((m, i) => {
+      expect(m.detail).toBeDefined();
+      expect(m.appearance).toBeDefined();
+      m.model = MATCH_MODEL_REVISION;
+      m.xg ??= [1.23, 0.4];
+      m.incidents ??= [];
+      m.lineCounts ??= m.home === w.playerClub ? [m.players.length, 0] : [0, m.players.length];
+      m.added ??= [1, 3 + i];
+      m.material ??= {
+        shots: [0, 1, 410, 220, 9, 1, 0],
+        heat: Array.from({ length: 40 }, (_, cell) => (cell * (i + 3)) % 7),
+        network: [300, 120, 4],
+        report: Array<number>(60).fill(i),
+      };
+    });
+    const packed = JSON.parse(JSON.stringify(pack(w)));
+    expect(packed.model.records).toEqual([1, w.ownMatches.length]);
+    const restored = validateWorld(unpack(packed));
+    expect(canonical(restored)).toBe(canonical(w));
+    restored.ownMatches.forEach((m, i) => {
+      const original = w.ownMatches[i];
+      expect(m.model).toBe(MATCH_MODEL_REVISION);
+      expect(m.appearance).toEqual(original.appearance);
+      expect(m.material).toEqual(original.material);
+      expect(m.detail).toEqual(original.detail);
+      expect(m.players.map((p) => p.detail)).toEqual(original.players.map((p) => p.detail));
+    });
   });
 });

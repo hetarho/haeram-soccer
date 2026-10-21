@@ -16,8 +16,10 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:03Z | - |
 
 ## inbox
+- 261021 decided T275 T276 T277 T278 T280 T281 T283 T284 T285 T286: p8l3's WEB r105 / ARCH r17 (registry-driven locale and theme packs, ARCH-32) left these bases stale and the integration spec check refused both groups' candidates → bases raised with no content change: themes leave the live pitch, trajectories and clock mapping intact (T275), full feature-copy extraction is later work so T283's views keep Korean text, and engine/protocol code imports no pack registry (alt: re-plan the presentation-facing tasks onto message packs now, which WEB r105 defers)
 - 261021 decided T279 T280 T282: after T273 only T274 ran because T274, T279, T280 and T282 all listed docs/MATCH-MODEL-CONTRACT.md while none of their acceptance edits it → the aggregate tasks drop it from touches and leave contract-document gaps in their limits for T286's documentation pass, so T274, T279 and T282 run side by side (alt: keep them serial behind T274, which runs the whole group one task at a time)
 - 261021 decided T273 T274 T285 T286: T273's load-path refusal of future model metadata needs schema.ts, persistence.ts and host.ts, which no full-model task listed → T273's touches take them with their tests and it wires validateWorld/readCheckpoint/host metadata now; T274 owns the 991 > 990 side-minutes rounding T273 found; T285/T286 re-run the 9f69553 baseline with --seasons 100 on the same machine and T285 fixes the stale provisionalReason (alt: move the wiring to T282/T286 and drop T273 acceptance 3 and 6 | leave loads unwired until activation, leaving SAVE-23 unmet for hand-made container-2 files)
 - 261021 decided T273 T282: the owner asked for parallel autopilot on this host, whose clone does not hold the Mac's identity group state → a new group full-model here with T273, T274–T277 (grid continuity) beside T279–T282 (aggregate records) and T283, lane-less so the runner fans out after T273; explore tasks T278 T284 T285 and T286 follow in the main session (alt: resume the identity group, which exists only on the Mac | one lane per stream, which needs task edits and serialises T275 behind T277)
@@ -148,8 +150,8 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 16 | 16 | - | 2 |
-| WEB | 104 | 104 | - | 0 |
+| ARCH | 17 | 17 | - | 2 |
+| WEB | 105 | 105 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -177,11 +179,15 @@
 | T279 | Generate coupled complete team facts without spatial or minute simulation | MATCH PLAYER STAFF ARCH | T273 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
 | T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
-| T282 | Preserve full aggregates and model coverage in bounded checkpoints | MATCH HIST SAVE KIT ARCH | T273 | todo |
 | T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 | todo |
+| T299 | Define presentation pack contracts and load registry resources | ARCH WEB | - | todo |
+| T300 | Structure the current Korean locale behind shared message services | ARCH WEB | T299 | todo |
+| T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
+| T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
+| T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -190,12 +196,19 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 2 | 12 | 1 | 1 | 0 | 2026-10-21T03:51:39.198Z | [history](work/full-model.json) |
+| full-model | 3 | 14 | 3 | 11 | 0 | 1 | 1 | 2026-10-21T05:25:18.052Z | [history](work/full-model.json) |
 
 ## next
-- inspect work board for remaining tasks
+- implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
+- Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
+- Migrate legacy FORMAT reference notation separately before adopting typed reference markers.
 
 ## log
+- 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
+- 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
+- 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
+- 261021 update-ssot WEB and create-architecture ARCH start: one Korean locale and one current pixel theme, resource-only extension; create-task reserves T299-T303 in main without changing active full-model contracts.
+- 261021 T282 integrated
 - 261021 T274 integrated
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
@@ -211,8 +224,3 @@
 - 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
 - 261021 WEB r104 freshness: T275 T283 T286 bases to WEB@104; their cited match/record decisions are unchanged by the home-advice portal.
 - 261021 create-task T297 and implement-task start on 6d31c81 working tree: share the alert portal and move the exact squad-shortage advice outside the home layout.
-- 261021 update-ssot WEB r104 start: the owner's 선수 19명 message is TeamState advice, separate from runtime warnings; float that exact source too.
-- 261021 T296 done: runtime warnings/errors float outside page flow; typecheck, affected units, targeted lint/format, build and spec lint pass; mobile/recovery browser coverage updated for the batch gate.
-- 261021 WEB r103 freshness: T275 T283 T286 bases to WEB@103; their cited match/record decisions are unchanged by runtime-alert placement.
-- 261021 create-task T296 and implement-task start on 6d31c81: portal runtime alerts above the page, preserving their actions and ordinary dialog layering.
-- 261021 update-ssot WEB r103 start: floating runtime warnings and errors; prior controller/settings/mediation work committed as 6d31c81.
