@@ -10,7 +10,6 @@ import type { Line } from '../../../contracts/src/player';
 import { CHANGES_CONFIG } from '../grid/changes';
 import { INTERVAL_STAMPS } from '../match-model';
 import type { EraRules } from '../grid/setup';
-import { random } from '../primitives';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { participationIssues } from './input';
 import type {
@@ -32,8 +31,10 @@ import type {
 type Rng = () => number;
 
 /**
- * One side's own sequence of a stream family (`<stream name>:side<n>`), so the two sides never
- * copy each other's draws and neither moves when the other draws more (→ARCH-5).
+ * One side's own sequence of a stream family, so the two sides never copy each other's draws and
+ * neither moves when the other draws more (→ARCH-5). The side sits right after the family
+ * (`…:aggregate:<family>:side<n>[:<period>]:<fixture>`): the seed hash leaves names that differ
+ * only in their last characters correlated, so the period and fixture still follow it.
  */
 export function sideDraw(
   streams: AggregateStreams,
@@ -41,7 +42,8 @@ export function sideDraw(
   side: AggregateSide,
   period?: AggregatePeriod,
 ): Rng {
-  return random(`${streams.names(family, period)}:side${side}`);
+  // `names` only interpolates the family, so the side rides on it into the middle of the name.
+  return streams.draw(`${family}:side${side}` as AggregateStreamFamily, period);
 }
 
 // Grouped draws, as the kernel draws them: each costs about its result.

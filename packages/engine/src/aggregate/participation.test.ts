@@ -10,6 +10,7 @@ import {
   onPitchAt,
   participationTimelineIssues,
   planParticipation,
+  poissonDraw,
   rebalanceIssues,
   scoreBefore,
   sideDraw,
@@ -398,6 +399,41 @@ describe('aggregate participation plan (→MATCH-19, MATCH-20, MATCH-21, MATCH-2
     // Restarted by name: a side's sequence does not depend on what the other drew.
     take(1, 50);
     expect(take(0, 4)).toEqual(take(0, 4));
+  });
+
+  it("keeps the two sides' streams uncorrelated", () => {
+    // A side marker at the end of the name left the first draws correlated at about 0.32.
+    const pearson = (a: number[], b: number[]) => {
+      const mean = (x: number[]) => x.reduce((s, v) => s + v, 0) / x.length;
+      const ma = mean(a),
+        mb = mean(b);
+      let ab = 0,
+        aa = 0,
+        bb = 0;
+      for (let i = 0; i < a.length; i++) {
+        ab += (a[i]! - ma) * (b[i]! - mb);
+        aa += (a[i]! - ma) ** 2;
+        bb += (b[i]! - mb) ** 2;
+      }
+      return ab / Math.sqrt(aa * bb);
+    };
+    const n = 10_000;
+    for (const family of ['discipline', 'injuries', 'changes', 'attribution'] as const) {
+      const first: [number[], number[]] = [[], []],
+        second: [number[], number[]] = [[], []],
+        cards: [number[], number[]] = [[], []];
+      for (let i = 0; i < n; i++) {
+        const streams = aggregateStreams('synthetic', `ENG:0:${i}:3:${i % 10}`);
+        for (const side of [0, 1] as const) {
+          const r = sideDraw(streams, family, side, 'regulation');
+          first[side].push(r());
+          second[side].push(r());
+          cards[side].push(poissonDraw(sideDraw(streams, family, side, 'regulation'), 1.9));
+        }
+      }
+      for (const [a, b] of [first, second, cards])
+        expect(Math.abs(pearson(a, b)), family).toBeLessThan(0.05);
+    }
   });
 
   it('splits counts exactly over positive weights', () => {
