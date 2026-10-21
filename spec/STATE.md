@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:02Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:34Z | - |
 | mgha | hq-dev1-pve2-vm2 | pair | 2026-10-21T06:09Z | 2026-10-21T06:09Z | - |
 
 ## inbox
@@ -213,6 +213,7 @@
 - implement-task T304 when manager-history implementation is requested, then T305 and T306; task preparation only this session. Separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
 - 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
