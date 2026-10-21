@@ -2,6 +2,9 @@ import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 import { openClubSeason } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
+import { useLocale } from '../presentation/react';
+import type { Translator } from '../presentation/locale';
+import { PresentationSettingsTrigger } from './PresentationSettings';
 import {
   lazy,
   memo,
@@ -355,13 +358,13 @@ function ClubJournal({
 }
 /** The match view has no menu entry: it opens only from a watch action (→WEB-40). */
 const NAV: [Page, string][] = [
-  ['dashboard', '클럽 홈'],
-  ['league', '리그'],
-  ['europe', '컵 대회'],
-  ['history', '클럽 기록실'],
-  ['people', '선수단·스태프'],
-  ['training', '훈련·육성'],
-  ['business', '구단 운영'],
+  ['dashboard', 'navigation.dashboard'],
+  ['league', 'navigation.league'],
+  ['europe', 'navigation.europe'],
+  ['history', 'navigation.history'],
+  ['people', 'navigation.people'],
+  ['training', 'navigation.training'],
+  ['business', 'navigation.business'],
 ];
 /**
  * Home sits in the raised centre; competition destinations fan out to the left and the owner's
@@ -369,13 +372,13 @@ const NAV: [Page, string][] = [
  * the club is going and how it earns and spends, →WEB-10). The transfer market and the staff are tabs of 사람.
  */
 const TABS: [Page, string, string, Page[]][] = [
-  ['league', '리그', '리그', ['league']],
-  ['europe', '컵', '컵 대회', ['europe']],
-  ['history', '기록', '클럽 기록실', ['history']],
-  ['dashboard', '홈', '클럽 홈', ['dashboard']],
-  ['people', '선수단', '선수단·스태프', ['people']],
-  ['training', '훈련', '훈련·육성', ['training']],
-  ['business', '구단', '구단 운영', ['business']],
+  ['league', 'navigation.short.league', 'navigation.league', ['league']],
+  ['europe', 'navigation.short.europe', 'navigation.europe', ['europe']],
+  ['history', 'navigation.short.history', 'navigation.history', ['history']],
+  ['dashboard', 'navigation.short.dashboard', 'navigation.dashboard', ['dashboard']],
+  ['people', 'navigation.short.people', 'navigation.people', ['people']],
+  ['training', 'navigation.short.training', 'navigation.training', ['training']],
+  ['business', 'navigation.short.business', 'navigation.business', ['business']],
 ];
 /** The HUD menu lists only destinations the tab bar does not already show. */
 const MENU_PAGES = NAV.filter(([id]) => !TABS.some(([tab]) => tab === id));
@@ -430,6 +433,7 @@ const selectContentWorld = worldSelector([
   'managerMarket',
 ]);
 function useContentState(): ClientState {
+  useLocale(); // Locale changes refresh memoized view boundaries without resetting them.
   const world = useGameState(selectContentWorld);
   const busy = useGameState((state) => state.busy);
   const readonly = useGameState((state) => state.readonly);
@@ -526,12 +530,13 @@ const ConnectedRich = memo(function ConnectedRich({
   client: GameClient;
   page: Page;
 }) {
+  const { t } = useLocale();
   const state = useContentState();
   return (
     <Suspense
       fallback={
         <div className={s.loading} role="status">
-          화면을 여는 중…
+          {t('shell.loadingView')}
         </div>
       }
     >
@@ -540,15 +545,17 @@ const ConnectedRich = memo(function ConnectedRich({
   );
 });
 function CalendarText() {
+  const { t } = useLocale();
   const year = useGameState((state) => state.view?.world.year)!;
   const round = useGameState((state) => state.view?.world.round);
-  return <>{`${seasonName(year)} · 라운드 ${round}`}</>;
+  return <>{t('shell.calendar', { season: seasonName(year), round: round ?? 0 })}</>;
 }
 /**
  * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
  * shows how long it lasts and the ways to raise or save money (→WEB-44).
  */
 function HudCash({ client }: { client?: GameClient }) {
+  const { t } = useLocale();
   const w = useGameState((state) => state.view?.world);
   const [open, setOpen] = useState(false);
   if (!w) return null;
@@ -561,7 +568,7 @@ function HudCash({ client }: { client?: GameClient }) {
         className={`${s.hudCash} ${BigInt(w.cash) < 0n ? s.hudCashNegative : state.tone === 'warn' || state.tone === 'bad' ? s.hudCashWarn : ''}`}
         data-testid="hud-cash"
         title={exact}
-        aria-label={`운영 자금 ${exact} · ${state.status} · 자금 상황 보기`}
+        aria-label={t('shell.cashDetails', { amount: exact, status: state.status })}
         disabled={!client}
         onClick={(event) => {
           event.currentTarget.focus();
@@ -569,7 +576,7 @@ function HudCash({ client }: { client?: GameClient }) {
         }}
       >
         <span>
-          <small>운영 자금</small>
+          <small>{t('shell.cash')}</small>
           {/* The money notation on every viewport (→WEB-67); the exact amount is the title. */}
           <AnimatedMoney
             value={w.cash}
@@ -595,6 +602,7 @@ const GameHud = memo(function GameHud({
   playing: boolean;
   client?: GameClient;
 }) {
+  const { t } = useLocale();
   const own = useGameState((state) =>
     playing
       ? state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub)
@@ -607,7 +615,7 @@ const GameHud = memo(function GameHud({
       {playing && (
         <button
           className={s.hudMenu}
-          aria-label="전체 메뉴"
+          aria-label={t('shell.menu')}
           onClick={(event) => {
             event.currentTarget.focus();
             onMenu();
@@ -627,7 +635,7 @@ const GameHud = memo(function GameHud({
           <small data-testid="calendar">
             {own ? (
               <>
-                {`${lower ? '아마추어 리그' : `${own.tier + 1}부`} · `}
+                {`${lower ? t('shell.amateurLeague') : t('shell.division', { division: own.tier + 1 })} · `}
                 <CalendarText />
               </>
             ) : (
@@ -637,22 +645,24 @@ const GameHud = memo(function GameHud({
         </div>
       </div>
       <ReadonlyBadge />
+      {!playing && <PresentationSettingsTrigger />}
       {playing && <HudCash client={client} />}
     </header>
   );
 });
 /** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
 function ReadonlyBadge() {
+  const { t } = useLocale();
   const readonly = useGameState((state) => state.readonly && !!state.view);
   const notice = useGameState((state) => state.notice);
   const [open, setOpen] = useState(false);
   if (!readonly) return null;
-  const text = notice || '다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.';
+  const text = notice || t('shell.readonlyNotice');
   return (
     <span className={s.readonlyBadge} role="status">
       <button aria-expanded={open} title={text} onClick={() => setOpen(!open)}>
         <PixelIcon name="eye" size={14} />
-        읽기 전용
+        {t('shell.readonly')}
       </button>
       <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
     </span>
@@ -684,6 +694,7 @@ function GameOver({
   onNew: () => void;
   onSlots: () => void;
 }) {
+  const { t } = useLocale();
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const best = w.history.reduce<(typeof w.history)[number] | undefined>(
     (top, season) =>
@@ -733,7 +744,7 @@ function GameOver({
       </ul>
       <div className={s.gameOverActions}>
         <button onClick={onExport}>기록 내보내기</button>
-        <button onClick={onSlots}>게임 슬롯</button>
+        <button onClick={onSlots}>{t('slots.title')}</button>
         <button className={s.primary} onClick={onNew}>
           이 슬롯에서 새 게임
         </button>
@@ -751,6 +762,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   /** The club's bands belong to the game in play, never to founding beside a parked one. */
   playing: boolean;
 }) {
+  const { t } = useLocale();
   const state = useGameState((state) => state);
   const home = useNavigation((state) => state.page === 'dashboard');
   const critical = playing ? state.view?.world.critical : undefined;
@@ -763,7 +775,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
           {error && (
             <div className={s.error} role="alert">
               {error}
-              <button onClick={() => location.reload()}>저장 다시 불러오기</button>
+              <button onClick={() => location.reload()}>{t('save.reload')}</button>
             </div>
           )}
           {critical === MANAGER_GONE ? (
@@ -804,25 +816,29 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
           <div
             className={s.progress}
             role="progressbar"
-            aria-label="세계 처리 진행"
+            aria-label={t('shell.progress')}
             aria-valuenow={Math.round(state.progress * 100)}
             aria-valuemin={0}
             aria-valuemax={100}
           >
             <i style={{ width: `${Math.max(5, state.progress * 100)}%` }} />
           </div>
-          {state.view && <button onClick={() => client.cancel()}>진행 중단</button>}
+          {state.view && (
+            <button onClick={() => client.cancel()}>{t('shell.cancelProgress')}</button>
+          )}
         </div>
       )}
     </>
   );
 });
-function savedAgo(savedAt: number, now: number) {
+function savedAgo(savedAt: number, now: number, t: Translator) {
   const seconds = Math.max(0, Math.floor((now - savedAt) / 1000));
-  if (seconds < 5) return '방금 저장';
-  if (seconds < 60) return `${seconds}초 전 저장`;
+  if (seconds < 5) return t('save.justNow');
+  if (seconds < 60) return t('save.secondsAgo', { count: seconds });
   const minutes = Math.floor(seconds / 60);
-  return minutes < 60 ? `${minutes}분 전 저장` : `${Math.floor(minutes / 60)}시간 전 저장`;
+  return minutes < 60
+    ? t('save.minutesAgo', { count: minutes })
+    : t('save.hoursAgo', { count: Math.floor(minutes / 60) });
 }
 /**
  * 저장 완료 while every revision is on disk; otherwise when this tab last saved, so a running clock
@@ -830,6 +846,7 @@ function savedAgo(savedAt: number, now: number) {
  * screens say nothing of a game kept beside them.
  */
 function useSaveText(playing = true) {
+  const { t } = useLocale();
   const w = useGameState((state) => (playing ? state.view?.world : undefined));
   const savedRevision = useGameState((state) => state.savedRevision);
   const savedAt = useGameState((state) => state.savedAt);
@@ -840,28 +857,30 @@ function useSaveText(playing = true) {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [waiting]);
-  if (!w) return '로그인 없이 시작하세요';
+  if (!w) return t('save.start');
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const status = priceIndex(own.country, w.year).status;
   const saved =
     savedRevision === w.revision
-      ? '저장 완료'
+      ? t('save.complete')
       : savedAt !== undefined
-        ? savedAgo(savedAt, now)
-        : '저장 대기';
-  return `${saved} · r${w.revision} · 물가 ${status === 'observed' ? '관측' : status === 'estimated' ? '추정' : '전망'}`;
+        ? savedAgo(savedAt, now, t)
+        : t('save.waiting');
+  return t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
 }
 const LiveFooter = memo(function LiveFooter({ playing }: { playing: boolean }) {
+  const { t } = useLocale();
   const text = useSaveText(playing);
   return (
     <footer className={s.footer}>
-      <span>HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.</span>
+      <span>{t('shell.footer')}</span>
       <span data-testid="save-status">{text}</span>
     </footer>
   );
 });
 function SaveStatus() {
-  return <p className={s.menuSave}>기록 · {useSaveText()}</p>;
+  const { t } = useLocale();
+  return <p className={s.menuSave}>{t('save.menuStatus', { status: useSaveText() })}</p>;
 }
 function SaveActions({
   client,
@@ -876,28 +895,29 @@ function SaveActions({
   onImport: (file?: File) => Promise<void>;
   onSlots?: () => void;
 }) {
+  const { t } = useLocale();
   const state = useGameState((state) => state);
   const w = state.view?.world;
   return (
     <div className={compact ? s.sideFoot : s.actions}>
       {compact && (
         <>
-          기록은 이 브라우저에 저장됩니다.
+          {t('save.localNotice')}
           <br />
-          파일로 당신의 역사를 보관하세요.
+          {t('save.fileNotice')}
         </>
       )}
       <button disabled={(!w && !state.error) || state.busy} onClick={() => void onDownload()}>
-        {compact ? '기록 내보내기 ↓' : '기록 내보내기'}
+        {t(compact ? 'save.exportCompact' : 'save.export')}
       </button>
-      {!compact && w && onSlots && <button onClick={onSlots}>게임 슬롯</button>}
+      {!compact && w && onSlots && <button onClick={onSlots}>{t('slots.title')}</button>}
       {!compact && w && state.saveFailed && state.savedRevision !== w.revision && (
         <button disabled={state.busy || state.readonly} onClick={() => void client.retrySave()}>
-          저장 재시도
+          {t('save.retry')}
         </button>
       )}
       <label className={s.fileButton}>
-        기록 가져오기
+        {t('save.import')}
         <input
           className={s.fileInput}
           type="file"
@@ -919,11 +939,12 @@ function StartTools({
   onDownload: () => Promise<void>;
   onImport: (file?: File) => Promise<void>;
 }) {
+  const { t } = useLocale();
   const state = useGameState((state) => state);
   return (
     <div className={s.startTools}>
       <label className={s.fileButton}>
-        기록 파일 가져오기
+        {t('save.importFile')}
         <input
           className={s.fileInput}
           type="file"
@@ -937,13 +958,14 @@ function StartTools({
       </label>
       {state.error && (
         <button disabled={state.busy} onClick={() => void onDownload()}>
-          복구 기록 내보내기
+          {t('save.exportRecovery')}
         </button>
       )}
     </div>
   );
 }
 export function App() {
+  const { t } = useLocale();
   const worldId = useGameState((state) => state.view?.world.id);
   const state = gameStore.getSnapshot();
   const [client, setClient] = useState<GameClient>(),
@@ -1127,7 +1149,7 @@ export function App() {
   const importFile = async (file?: File) => {
     if (!file) return;
     if (file.size > 8 * 1024 * 1024) {
-      setLocalError('파일 크기는 8 MiB 이하이어야 합니다.');
+      setLocalError(t('save.fileTooLarge'));
       return;
     }
     setLocalError('');
@@ -1159,7 +1181,7 @@ export function App() {
           <span>FOOTBALL MANAGER</span>
           <small>A CLUB. A CENTURY.</small>
         </div>
-        <nav className={s.nav} aria-label="게임 메뉴">
+        <nav className={s.nav} aria-label={t('shell.navigation')}>
           {NAV.map(([id, label]) => (
             <button
               key={id}
@@ -1169,7 +1191,7 @@ export function App() {
               onClick={() => setPage(id)}
             >
               <NavIcon page={id} />
-              {label}
+              {t(label)}
             </button>
           ))}
         </nav>
@@ -1199,7 +1221,7 @@ export function App() {
               <Suspense
                 fallback={
                   <div className={s.loading} role="status">
-                    게임 슬롯을 여는 중…
+                    {t('shell.loadingSlots')}
                   </div>
                 }
               >
@@ -1238,7 +1260,7 @@ export function App() {
               <>
                 {changingView && (
                   <div className={s.viewPending} role="status">
-                    화면을 여는 중…
+                    {t('shell.loadingView')}
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
@@ -1262,7 +1284,7 @@ export function App() {
               </>
             )
           ) : (
-            <div className={s.loading}>클럽 사무실을 여는 중…</div>
+            <div className={s.loading}>{t('shell.loadingOffice')}</div>
           )}
           {client && screen === 'game' && (!w || replacing) && (
             <StartTools onDownload={download} onImport={importFile} />
@@ -1279,18 +1301,18 @@ export function App() {
           )}
         </div>
       </main>
-      <nav className={s.mobileNav} aria-label="모바일 게임 메뉴">
+      <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
         {TABS.map(([id, label, full, owns]) => (
           <button
             key={id}
-            aria-label={full}
+            aria-label={t(full)}
             aria-current={owns.includes(page) ? 'page' : undefined}
             className={id === 'dashboard' ? s.homeTab : undefined}
             disabled={menuDisabled}
             onClick={() => setPage(id)}
           >
             <NavIcon page={id} />
-            <span>{label}</span>
+            <span>{t(label)}</span>
           </button>
         ))}
       </nav>
@@ -1301,7 +1323,7 @@ export function App() {
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
-        <Dialog label="전체 메뉴" onClose={() => setMoreOpen(false)}>
+        <Dialog label={t('shell.menu')} onClose={() => setMoreOpen(false)}>
           {client && controller && playing && (
             <MatchAction
               critical={!!w.critical}
@@ -1323,7 +1345,7 @@ export function App() {
               setGuideOpen(true);
             }}
           >
-            클럽 키우기 가이드
+            {t('shell.guide')}
           </button>
           <button
             className={s.guideOpen}
@@ -1332,7 +1354,7 @@ export function App() {
               useInterventionDialog.getState().show();
             }}
           >
-            위임·진행 설정
+            {t('shell.responsibilities')}
           </button>
           <button
             className={s.guideOpen}
@@ -1341,7 +1363,7 @@ export function App() {
               showNews('notifications');
             }}
           >
-            알림·뉴스
+            {t('shell.news')}
           </button>
           <button
             className={s.guideOpen}
@@ -1350,7 +1372,7 @@ export function App() {
               showGlossary();
             }}
           >
-            지표 사전
+            {t('shell.glossary')}
           </button>
           <div className={s.moreMenu}>
             {MENU_PAGES.map(([id, label]) => (
@@ -1363,10 +1385,11 @@ export function App() {
                 }}
               >
                 <NavIcon page={id} />
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
+          <PresentationSettingsTrigger className={s.guideOpen} onOpen={() => setMoreOpen(false)} />
           <SaveStatus />
           {client && (
             <SaveActions
@@ -1400,12 +1423,12 @@ export function App() {
       {playing && <CelebrationHost />}
       {playing && controller && <AwayHost controller={controller} />}
       {pendingImport && (
-        <Dialog label="기록 가져오기 확인" onClose={() => setPendingImport(undefined)}>
-          <h2>기록을 가져올까요?</h2>
-          <p>현재 기록을 먼저 내보낼 수 있습니다. 검증된 파일만 활성 기록으로 교체합니다.</p>
+        <Dialog label={t('save.confirmImport')} onClose={() => setPendingImport(undefined)}>
+          <h2>{t('save.importQuestion')}</h2>
+          <p>{t('save.importNotice')}</p>
           <div className={s.actions}>
-            <button onClick={() => void download()}>현재 기록 내보내기</button>
-            <button onClick={() => setPendingImport(undefined)}>취소</button>
+            <button onClick={() => void download()}>{t('save.exportCurrent')}</button>
+            <button onClick={() => setPendingImport(undefined)}>{t('common.cancel')}</button>
             <button
               className={s.primary}
               onClick={() => {
@@ -1414,7 +1437,7 @@ export function App() {
                 void client?.importFile(raw);
               }}
             >
-              기록 교체하고 가져오기
+              {t('save.replaceAndImport')}
             </button>
           </div>
         </Dialog>

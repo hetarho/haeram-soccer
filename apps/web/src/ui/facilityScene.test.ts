@@ -2,11 +2,51 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { createWorld, operate, progressFacilityWorks } from '../../../../packages/engine/src/index';
-import { facilityScene, type FacilityScene } from './facilityScene';
+import { facilityScene as resolveFacilityScene, type FacilityScene } from './facilityScene';
+import { createLoadedLocale } from '../presentation/locale';
+import { createThemeResolver } from '../presentation/theme';
+import { validateRegistry } from '../presentation/registry';
+
+const json = (path: string) => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+const localeRegistry = validateRegistry(
+  json('../../public/presentation/locales/index.json'),
+  'locale',
+);
+const localePack = json('../../public/presentation/locales/ko-KR.json');
+const themePack = json('../../public/presentation/themes/pixel.json');
+const presentation = {
+  locale: createLoadedLocale(localeRegistry, localePack),
+  theme: createThemeResolver(themePack, { url: '/presentation/themes/pixel.json' }),
+  themeLabel: '픽셀아트',
+};
+const facilityScene = (kind: FacilityScene, world: Parameters<typeof resolveFacilityScene>[1]) =>
+  resolveFacilityScene(kind, world, presentation);
 
 const base = { year: 1950, round: 0, stadium: 0, trainingGround: 0 };
 
 describe('facility artwork follows the current club', () => {
+  it('keeps the current Korean descriptions and resolves synthetic resources through the same service', () => {
+    expect(facilityScene('stadium', base).alt).toBe('1950–60년대 구장 1단계 픽셀아트');
+    expect(facilityScene('locker', base).alt).toBe('1950–60년대 구장 1단계 라커룸 픽셀아트');
+    expect(facilityScene('training', base).alt).toBe('1950–60년대 기본 훈련장 픽셀아트');
+    const theme = createThemeResolver(
+      {
+        ...themePack,
+        id: 'unseen-theme',
+        images: {
+          facility: { pattern: './unseen/{kind}/{era}/{stage}.webp' },
+        },
+      },
+      { url: '/presentation/themes/unseen.json' },
+    );
+    const scene = resolveFacilityScene('stadium', base, {
+      ...presentation,
+      theme,
+      themeLabel: 'Synthetic art',
+    });
+    expect(scene.src).toBe('/presentation/themes/unseen/stadium/heritage/0.webp');
+    expect(scene.alt).toBe('1950–60년대 구장 1단계 Synthetic art');
+  });
   it.each([
     [1969, 152, 'heritage'],
     [1969, 153, 'terraces'],

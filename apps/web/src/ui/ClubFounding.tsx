@@ -10,6 +10,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { CrestMark } from './ClubCrest';
 import { Dialog } from './Dialog';
 import s from './ClubFounding.module.css';
+import { useLocale } from '../presentation/react';
+import presentationStyle from './PresentationSettings.module.css';
 
 /** The editor and its pitch preview load only when 꾸미기 opens them (WEB-86/87). */
 const ClubIdentityEditor = lazy(() =>
@@ -35,6 +37,7 @@ export function ClubFounding({
   onBack?: () => void;
   onDone?: () => void;
 }) {
+  const { t } = useLocale();
   const [code, setCode] = useState<CountryCode>('ENG'),
     [name, setName] = useState('Haeram Athletic'),
     [level, setLevel] = useState<DifficultyLevel>('easy'),
@@ -74,11 +77,11 @@ export function ClubFounding({
   return (
     <section className={s.start} data-testid="club-founding" aria-label="새 게임">
       <header>
-        <div className={s.slotBar}>
-          <span>HAERAM · 슬롯 {slot + 1} · 새 게임</span>
+        <div className={`${s.slotBar} ${presentationStyle.startBar}`}>
+          <span>{t('founding.slot', { slot: slot + 1 })}</span>
           {onBack && (
             <button type="button" onClick={onBack}>
-              ← 게임 슬롯
+              {t('founding.backToSlots')}
             </button>
           )}
         </div>

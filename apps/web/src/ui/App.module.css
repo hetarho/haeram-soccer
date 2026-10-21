@@ -1,60 +1,4 @@
-/* Night broadcast: flat charcoal surfaces, paper-white type and natural football-grass green. */
-@font-face {
-  font-family: 'Galmuri14';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/galmuri14.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Galmuri11';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/galmuri11.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Galmuri11';
-  font-style: normal;
-  font-weight: 600 900;
-  font-display: swap;
-  src: url('/fonts/galmuri11-bold.woff2') format('woff2');
-}
-:global(:root) {
-  color-scheme: dark;
-  --bg: #111415;
-  --surface-deep: #0c0f10;
-  --surface: #191d1e;
-  --surface-2: #202627;
-  --surface-3: #2a3233;
-  --line: #333b3c;
-  --line-strong: #4b5556;
-  --text: #f3f2e8;
-  --text-muted: #c3ccc5;
-  --text-faint: #adb9b0;
-  --accent: #4b9656;
-  --accent-fill: #2e713d;
-  --accent-edge: #62a66c;
-  --accent-text: #a1cf9b;
-  --on-accent: #f6fff1;
-  --positive: #a6c2ad;
-  --gold: #cbb98c;
-  --gold-fill: var(--accent-fill);
-  --gold-edge: var(--accent-edge);
-  --warm: #d5b281;
-  --warm-soft: #332c23;
-  --cool: #a0bbc9;
-  --cool-soft: #253038;
-  --danger: #f09687;
-  --focus: #f1f0e8;
-  --paper: var(--surface);
-  --hud: #111415;
-  --radius: 3px;
-  --shadow: 0 12px 32px #0006;
-  --body: 'Galmuri14', 'Galmuri11', sans-serif;
-  --display: 'Galmuri11', sans-serif;
-  --score: var(--display);
-}
+/* Semantic theme resources are installed before the application mounts. */
 :global(*) {
   box-sizing: border-box;
 }
@@ -62,13 +6,11 @@
   margin: 0;
   min-height: 100vh;
   background: var(--bg);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
   color: var(--text);
   font-family: var(--body);
-  font-size: 15px;
-  line-height: 1.7;
-  font-synthesis: none;
-  -webkit-font-smoothing: antialiased;
+  font-size: var(--body-size);
+  line-height: var(--body-line-height);
 }
 :global(button),
 :global(input),
@@ -91,18 +33,18 @@
 :global(h2),
 :global(h3),
 :global(h4) {
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
 }
 :global(button) {
   cursor: pointer;
   border: 1px solid var(--line-strong);
   background: var(--surface-2);
   color: var(--text);
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   min-height: 44px;
   padding: 8px 14px;
   font-weight: 700;
-  box-shadow: none;
+  box-shadow: var(--control-shadow);
   transition:
     transform 0.08s,
     filter 0.15s,
@@ -125,14 +67,14 @@
 :global(input:focus-visible),
 :global([data-select-trigger]:focus-visible),
 :global(a:focus-visible) {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
 }
 :global(input),
 :global([data-select-trigger]) {
   padding: 10px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   max-width: 100%;
   background: var(--surface-deep);
   color: var(--text);
@@ -147,12 +89,12 @@
   margin: 0;
 }
 :global(h2) {
-  font-size: 23px;
+  font-size: var(--heading-size);
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
 }
 :global(h3) {
-  font-size: 16px;
+  font-size: var(--subheading-size);
   font-weight: 700;
 }
 :global(a) {
@@ -162,10 +104,10 @@
   width: 100%;
   border-collapse: collapse;
   white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
 }
 :global(th) {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -190,7 +132,7 @@
 }
 :global(small) {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--label-size);
   line-height: 1.6;
 }
 :global(progress) {
@@ -206,10 +148,10 @@
   z-index: 25;
   padding: 8px 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface);
   color: var(--text);
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .layout {
@@ -231,17 +173,17 @@
   overflow-y: auto;
 }
 .brand {
-  border-bottom: 1px solid #ffffff25;
+  border-bottom: 1px solid var(--brand-line);
   padding-bottom: 24px;
 }
 .brand h1 {
   font-size: 25px;
   font-weight: 700;
   line-height: 1.1;
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
 }
 .brand span {
-  font-size: 12px;
+  font-size: var(--label-size);
   display: block;
   letter-spacing: 2px;
   margin-top: 12px;
@@ -275,10 +217,10 @@
   background: var(--accent-fill);
 }
 .nav .active {
-  background: #e4e9d515;
+  background: var(--nav-active);
   color: var(--on-accent);
   border-left: 3px solid var(--warm);
-  border-radius: 3px;
+  border-radius: var(--radius);
 }
 .navIcon {
   font-size: 18px;
@@ -287,7 +229,7 @@
 }
 .sideFoot {
   margin-top: auto;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   font-family: var(--display);
 }
@@ -311,7 +253,7 @@
   margin-bottom: 28px;
 }
 .eyebrow {
-  font-size: 12px;
+  font-size: var(--label-size);
   letter-spacing: 2px;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -322,12 +264,12 @@
   font-size: 24px;
   line-height: 1.5;
   font-weight: 500;
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
 }
 .hero p {
   margin-top: 12px;
   color: var(--text-muted);
-  font-size: 15px;
+  font-size: var(--body-size);
   font-family: var(--body);
   line-height: 1.8;
 }
@@ -357,12 +299,12 @@
 .stat {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   padding: 20px;
   min-width: 0;
 }
 .stat .label {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   margin-bottom: 10px;
   font-family: var(--display);
@@ -375,7 +317,7 @@
   overflow-wrap: anywhere;
 }
 .stat small {
-  font-size: 12px;
+  font-size: var(--label-size);
   display: block;
   margin-top: 10px;
   font-family: var(--display);
@@ -389,7 +331,7 @@
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   overflow: hidden;
   min-width: 0;
 }
@@ -402,7 +344,7 @@
   border-bottom: 1px solid var(--line);
 }
 .panelHead span {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   font-family: var(--display);
   line-height: 1.6;
@@ -412,7 +354,7 @@
 }
 .panelFoot {
   padding: 14px 22px;
-  font-size: 12px;
+  font-size: var(--label-size);
   background: var(--surface-2);
   border-top: 1px solid var(--line);
   color: var(--text-muted);
@@ -447,7 +389,7 @@
   color: var(--text-faint);
 }
 .fixture small {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .fixture > button {
@@ -478,13 +420,13 @@
   padding-bottom: 0;
 }
 .timeline p {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   margin-top: 4px;
   font-family: var(--display);
 }
 .timeline small {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .tableWrap {
@@ -507,7 +449,7 @@
   padding: 35px 20px;
   text-align: center;
   color: var(--text-faint);
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .chart {
@@ -519,14 +461,14 @@
   max-height: 200px;
 }
 .chart text {
-  font-size: 12px;
+  font-size: var(--label-size);
   fill: var(--text-faint);
   font-family: var(--display);
 }
 .notice {
   padding: 7px 12px !important;
   margin-bottom: 8px !important;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .notice,
@@ -534,7 +476,7 @@
 .critical {
   padding: 12px 18px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
   margin-bottom: 18px;
   color: var(--text);
@@ -623,7 +565,7 @@
 
 .footer {
   margin-top: 30px;
-  font-size: 12px;
+  font-size: var(--label-size);
   display: flex;
   justify-content: space-between;
   color: var(--text-faint);
@@ -645,7 +587,7 @@
 }
 .scoreboard span {
   width: 38%;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .scoreboard strong {
@@ -658,7 +600,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px 20px;
-  font-size: 12px;
+  font-size: var(--label-size);
   background: var(--surface-deep);
   color: var(--text-muted);
   font-family: var(--display);
@@ -680,11 +622,11 @@
   flex-wrap: wrap;
 }
 .playControls button {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .playControls label {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .playControls :global([data-select-trigger]) {
@@ -698,7 +640,7 @@
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   padding: 10px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .matchStats span {
@@ -708,7 +650,7 @@
   margin: 0;
   padding: 0 25px 20px;
   list-style: none;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -740,7 +682,7 @@
 }
 .competition p {
   color: var(--text-faint);
-  font-size: 12px;
+  font-size: var(--label-size);
   margin-top: 10px;
   font-family: var(--display);
 }
@@ -762,7 +704,7 @@
 .fileButton {
   cursor: pointer;
   display: inline-block;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   text-decoration: underline;
   margin-top: 8px;
@@ -779,15 +721,15 @@
 }
 .muted {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .pill {
   display: inline-block;
   padding: 3px 8px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: var(--card-radius);
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -804,7 +746,7 @@
 }
 .card {
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   padding: 20px;
   background: var(--surface);
 }
@@ -812,7 +754,7 @@
   margin-bottom: 8px;
 }
 .card p {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   margin-top: 8px;
   font-family: var(--display);
@@ -821,7 +763,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--label-size);
   margin: 18px 0;
   font-family: var(--display);
 }
@@ -836,7 +778,7 @@
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: #080b0de0;
+  background: var(--overlay);
   z-index: 10;
   display: flex;
   align-items: center;
@@ -850,7 +792,7 @@
   overflow: auto;
   background: var(--surface);
   padding: 28px;
-  border-radius: 2px;
+  border-radius: var(--dialog-radius);
 }
 .modal h2 {
   margin-bottom: 14px;
@@ -929,7 +871,7 @@
   }
   .brand span {
     margin: 0;
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 
@@ -942,7 +884,7 @@
     min-width: max-content;
     min-height: 42px;
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: var(--label-size);
     gap: 6px;
     font-family: var(--display);
   }
@@ -970,7 +912,7 @@
     grid-template-columns: 1fr 1fr;
   }
   .stat strong {
-    font-size: 23px;
+    font-size: var(--heading-size);
   }
   .grid,
   .twoCols {
@@ -991,7 +933,7 @@
     margin-bottom: 0;
   }
   .footer {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
   .scoreboard {
@@ -1001,7 +943,7 @@
     font-size: 26px;
   }
   .pitchMeta {
-    font-size: 12px;
+    font-size: var(--label-size);
     padding: 9px 12px;
     font-family: var(--display);
   }
@@ -1015,7 +957,7 @@
     flex: 1;
   }
   .fileButton {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 }
@@ -1039,7 +981,7 @@
   padding: 12px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   box-shadow: none;
 }
 .foregroundProgress .progress {
@@ -1073,11 +1015,11 @@
   margin: 0 18px 18px;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface);
 }
 .playerInspector label {
-  font-size: 12px;
+  font-size: var(--label-size);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1086,7 +1028,7 @@
 }
 .playerInspector p {
   margin-top: 10px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .playerTraits {
@@ -1094,7 +1036,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-top: 12px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .playerTraits > span {
@@ -1114,7 +1056,7 @@
   align-items: center;
   gap: 12px;
   padding: 0 18px 16px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .replayScrubber input {
@@ -1129,7 +1071,7 @@
   }
   .pitchMeta {
     flex-wrap: wrap;
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 }
@@ -1139,8 +1081,8 @@
   padding: 8px 0;
 }
 .fileButton:focus-within {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
 }
 @media (max-width: 760px) {
   button,
@@ -1208,7 +1150,7 @@
   right: 8px;
   bottom: 0;
   height: 3px;
-  border-radius: 3px 3px 0 0;
+  border-radius: var(--section-radius);
   background: transparent;
   transition: background 0.15s;
 }
@@ -1244,7 +1186,7 @@
   overflow: hidden;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   box-shadow: none;
 }
 .modalHead {
@@ -1260,7 +1202,7 @@
 .modalHead h2 {
   margin: 0;
   font-size: 17px;
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
 }
 .modalClose {
   flex: 0 0 44px;
@@ -1269,7 +1211,7 @@
   padding: 0;
   display: grid;
   place-items: center;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
   font-size: 27px;
   line-height: 1;
@@ -1292,7 +1234,7 @@
 
 @media (max-width: 760px) {
   :global(body) {
-    font-size: 15px;
+    font-size: var(--body-size);
   }
   .layout .main :global(button),
   .modal :global(button),
@@ -1303,14 +1245,14 @@
   .layout .main :global(input:not([type='file'])),
   .modal :global(input:not([type='file'])) {
     min-height: 48px;
-    font-size: 16px;
+    font-size: var(--subheading-size);
   }
   .layout .main :global([data-select-trigger]),
   .modal :global([data-select-trigger]) {
     appearance: none;
     height: 48px;
     min-width: 44px;
-    font-size: 16px;
+    font-size: var(--subheading-size);
     padding: 10px 12px;
   }
   .layout .main :global(input[type='range']),
@@ -1320,7 +1262,7 @@
   }
   .layout .main :global(small),
   .modal :global(small) {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
   .sidebar {
@@ -1428,7 +1370,7 @@
   .footer {
     display: grid;
     gap: 8px;
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
   .loading {
@@ -1446,7 +1388,7 @@
   .modal {
     max-width: none !important;
     max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
-    border-radius: 3px 3px 0 0;
+    border-radius: var(--section-radius);
   }
   .modalHead {
     padding: 14px 16px;
@@ -1512,7 +1454,7 @@
   position: static;
   justify-self: start;
   max-width: 100%;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   font-family: var(--display);
 }
@@ -1538,20 +1480,20 @@
 /* Active roster view choices, under the search while the settings are closed. */
 .rosterViewSummary {
   margin: -4px 16px 4px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   color: var(--gold);
   font-family: var(--display);
 }
 .rosterCards b {
-  font-size: 12px;
+  font-size: var(--label-size);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--display);
 }
 .rosterCards small {
-  font-size: 12px;
+  font-size: var(--label-size);
   display: block;
   color: var(--text-muted);
   white-space: normal;
@@ -1563,13 +1505,13 @@
 }
 .rosterCards article > button:last-child:not(:first-child) {
   padding: 5px 8px;
-  font-size: 12px;
+  font-size: var(--label-size);
   min-height: 44px;
   font-family: var(--display);
 }
 .rosterDetails {
   padding: 12px 16px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-family: var(--display);
 }
 .rosterDetails summary {
@@ -1588,7 +1530,7 @@
     font-size: 13px;
   }
   .rosterCards small {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 }
@@ -1597,7 +1539,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--label-size);
   padding: 10px 16px;
   font-family: var(--display);
 }
@@ -1610,7 +1552,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--label-size);
   padding: 10px;
   font-family: var(--display);
 }
@@ -1642,7 +1584,7 @@
   }
 
   .startLayout .footer {
-    font-size: 12px;
+    font-size: var(--label-size);
     margin: 0;
     margin-top: auto;
     padding: 8px 0;
@@ -1655,7 +1597,7 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  font-size: 12px;
+  font-size: var(--label-size);
   margin-top: 6px;
   font-family: var(--display);
 }
@@ -1706,7 +1648,7 @@
   color: var(--text-muted);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   box-shadow: none;
 }
 .nav button:hover:not(:disabled) {
@@ -1731,7 +1673,7 @@
 .hero h2 {
   font-size: 24px;
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: var(--heading-tracking);
   line-height: 1.5;
 }
 .stat strong {
@@ -1780,7 +1722,7 @@
   width: 30px;
   height: 30px;
   margin: 0;
-  border: 2px solid rgba(255, 255, 255, 0.55);
+  border: 2px solid var(--field-line);
   box-shadow: none;
 }
 .hudClub > div {
@@ -1802,12 +1744,12 @@
   gap: 4px;
   min-height: 32px;
   padding: 2px 9px;
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: var(--card-radius);
+  font-size: var(--label-size);
   font-weight: 700;
   color: var(--gold);
   border-color: var(--gold-edge);
-  background: rgba(196, 175, 125, 0.08);
+  background: var(--warm-tint);
   box-shadow: none;
   white-space: nowrap;
   font-family: var(--display);
@@ -1819,17 +1761,17 @@
   z-index: 40;
   width: min(260px, 80vw);
   padding: 9px 11px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--gold-edge);
   background: var(--surface-2);
   box-shadow: none;
-  font-size: 12px;
+  font-size: var(--label-size);
   line-height: 1.45;
   color: var(--text);
   font-family: var(--display);
 }
 .hudClub b {
-  font-size: 15px;
+  font-size: var(--body-size);
   font-weight: 700;
   line-height: 1.25;
   overflow: hidden;
@@ -1837,7 +1779,7 @@
   white-space: nowrap;
 }
 .hudClub small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1851,7 +1793,7 @@
   align-items: center;
   gap: 7px;
   padding: 4px 12px 4px 5px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: transparent;
   border: 1px solid transparent;
   box-shadow: none;
@@ -1864,7 +1806,7 @@
   line-height: 1.15;
 }
 .hudCash small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   letter-spacing: 0.4px;
   font-family: var(--display);
@@ -1873,7 +1815,7 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--text);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
   white-space: nowrap;
 }
 .hudCash {
@@ -1893,7 +1835,7 @@
   border-color: var(--warm);
 }
 .hudCashNegative {
-  border-color: #7a2a22;
+  border-color: var(--danger-edge);
 }
 .hudCashNegative b {
   color: var(--danger);
@@ -1905,7 +1847,7 @@
   gap: 12px;
   margin-bottom: 14px;
   padding: 8px 8px 8px 14px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
   background: var(--surface-2);
   box-shadow: none;
@@ -1921,14 +1863,14 @@
   gap: 1px;
 }
 .calendarSummary strong {
-  font-size: 16px;
+  font-size: var(--subheading-size);
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
   white-space: nowrap;
 }
 .autoStatus {
   display: block;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1954,8 +1896,8 @@
   min-width: 44px;
   min-height: 44px;
   padding: 4px 8px;
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: var(--card-radius);
+  font-size: var(--label-size);
   font-weight: 700;
   font-family: var(--display);
 }
@@ -2001,7 +1943,7 @@
 }
 .pageHead p {
   margin-top: 4px;
-  font-size: 15px;
+  font-size: var(--body-size);
   line-height: 1.8;
   color: var(--text-muted);
 }
@@ -2011,7 +1953,7 @@
   grid-auto-columns: 1fr;
   gap: 4px;
   padding: 4px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-deep);
   border: 1px solid var(--line);
 }
@@ -2072,7 +2014,7 @@
   align-items: center;
   gap: 8px;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   color: var(--text-muted);
   font-family: var(--display);
@@ -2082,7 +2024,7 @@
 }
 .menuSave {
   margin: 14px 0 6px;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   font-family: var(--display);
 }
@@ -2104,6 +2046,11 @@
     margin-bottom: 10px;
     padding-top: calc(6px + env(safe-area-inset-top));
     padding-bottom: 6px;
+  }
+  /* The start HUD shares its existing row with settings, keeping the full founding form in view. */
+  .startLayout .hud {
+    padding-top: calc(3px + env(safe-area-inset-top));
+    padding-bottom: 3px;
   }
   .playLayout .sidebar {
     display: none;
@@ -2153,11 +2100,11 @@
     min-height: 52px;
     padding: 4px 0;
     border: 0;
-    border-radius: 2px;
+    border-radius: var(--card-radius);
     background: transparent;
     box-shadow: none;
     color: var(--text-faint);
-    font-size: 12px;
+    font-size: var(--label-size);
     font-weight: 700;
     line-height: 1.2;
     font-family: var(--display);
@@ -2178,7 +2125,7 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
-    font-size: 12px;
+    font-size: var(--label-size);
   }
   .mobileNav .homeTab[aria-current='page'] {
     color: var(--text);
@@ -2202,7 +2149,7 @@
 }
 .consequences li {
   padding: 8px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
   font-size: 13px;
 }
@@ -2325,7 +2272,7 @@
 .filters > label {
   display: grid;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   color: var(--text-muted);
   font-family: var(--display);
@@ -2352,7 +2299,7 @@
   gap: 10px;
   min-height: 48px;
   padding: 0 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
   background: var(--surface-2);
   font-weight: 700;
@@ -2426,7 +2373,7 @@
   left: 0;
   bottom: 0;
   height: 3px;
-  border-radius: 0 3px 3px 0;
+  border-radius: var(--tab-radius);
   background: var(--surface-2);
   opacity: 0.85;
   transition: width 600ms var(--ease, ease);
@@ -2446,7 +2393,7 @@
     text-wrap: balance;
   }
   .calendarSummary .autoStatus {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
   .clockButtons {
@@ -2470,8 +2417,8 @@
     padding-left: 8px;
   }
   .seasonControls .calendarSummary strong {
-    font-size: 12px;
-    letter-spacing: 0;
+    font-size: var(--label-size);
+    letter-spacing: var(--heading-tracking);
     font-family: var(--display);
   }
 }
@@ -2489,13 +2436,13 @@
     padding-right: max(4px, env(safe-area-inset-right));
   }
   .mobileNav button {
-    font-size: 12px;
-    letter-spacing: 0;
+    font-size: var(--label-size);
+    letter-spacing: var(--heading-tracking);
     font-family: var(--display);
   }
   .mobileNav .homeTab {
     margin: 0 2px;
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 }
@@ -2658,7 +2605,7 @@
   font-size: 14px;
 }
 .levels small {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 500;
   line-height: 1.4;
   font-family: var(--display);
@@ -2677,7 +2624,7 @@
 .levelMeter i {
   width: 18px;
   height: 5px;
-  border-radius: 3px;
+  border-radius: var(--radius);
   background: var(--line);
 }
 .levelMeter .dotOn {
@@ -2693,10 +2640,10 @@
 }
 .playerFlags i {
   font-style: normal;
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   padding: 1px 6px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   color: var(--warm);
   background: var(--warm-soft);
   font-family: var(--display);
@@ -2711,11 +2658,11 @@
   min-height: 44px;
   padding: 0 8px 0 9px;
   border: 1px solid color-mix(in srgb, var(--tone, var(--accent-text)) 45%, transparent);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--tone-soft, var(--surface-2));
   box-shadow: none;
   color: var(--tone, var(--accent-text));
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   white-space: nowrap;
   font-family: var(--display);
@@ -2770,7 +2717,7 @@
   font-size: 13px;
 }
 .stanceChoices small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -2781,7 +2728,7 @@
   margin-bottom: 14px;
   padding: 12px 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
 }
 /* He leaves at the close unless renewed. */
@@ -2794,7 +2741,7 @@
   font-size: 12.5px;
 }
 .renewal small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -2821,7 +2768,7 @@
   min-width: 0;
 }
 .personHead small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -2842,7 +2789,7 @@
 .cashAlarm {
   margin-bottom: 12px;
   padding: 9px 14px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--danger);
   background: color-mix(in srgb, var(--danger) 16%, var(--surface-deep));
   color: var(--text);
@@ -2892,11 +2839,11 @@
   display: grid;
   gap: 2px;
   padding: 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-deep);
 }
 .gameOver li span {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
   font-family: var(--display);
 }
@@ -2930,14 +2877,14 @@
 .chartScrub {
   position: absolute;
   inset: 0;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   cursor: crosshair;
   /* Vertical swipes still scroll the page; a sideways drag moves through the seasons. */
   touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
 }
 .chartScrub:focus-visible {
-  outline: 3px solid var(--focus);
+  outline: var(--focus-width) solid var(--focus);
   outline-offset: 2px;
 }
 .chartBand {
@@ -2967,11 +2914,11 @@
   max-width: 100%;
   padding: 7px 10px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-3);
   box-shadow: none;
   color: var(--text);
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   line-height: 1.45;
   word-break: keep-all;
@@ -3003,7 +2950,7 @@
   flex-wrap: wrap;
   gap: 4px 14px;
   margin-top: 6px;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -3016,7 +2963,7 @@
   display: inline-block;
   width: 14px;
   height: 8px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
 }
 .chartLegend .legendLine {
   height: 2px;
@@ -3049,11 +2996,11 @@
   gap: 2px;
   min-width: 0;
   padding: 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
 }
 .eloFigures small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -3091,9 +3038,9 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-faint);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
   font-family: var(--display);
 }
 .eloClubs {
@@ -3108,7 +3055,7 @@
   border-bottom: 1px solid var(--line);
 }
 .eloClubs dt {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -3123,7 +3070,7 @@
 }
 .eloClubs dd b {
   flex: none;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-variant);
 }
 @media (max-width: 480px) {
   .eloClubs {
@@ -3150,7 +3097,7 @@
   padding: 16px 10px 14px;
   text-align: center;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: var(--surface-2);
   box-shadow: none;
 }
@@ -3167,11 +3114,11 @@
 .trophies li[data-tone='gold'] svg,
 .trophies li[data-tone='best'] svg {
   color: var(--gold);
-  filter: drop-shadow(0 4px 10px rgba(196, 175, 125, 0.35));
+  filter: var(--trophy-gold-shadow);
 }
 .trophies li[data-tone='silver'] svg {
-  color: #cfd8dc;
-  filter: drop-shadow(0 4px 10px rgba(207, 216, 220, 0.25));
+  color: var(--trophy-silver);
+  filter: var(--trophy-silver-shadow);
 }
 .trophies li[data-tone='up'] svg {
   color: var(--accent);
@@ -3183,7 +3130,7 @@
   opacity: 0.6;
 }
 .trophies li > span {
-  font-size: 12px;
+  font-size: var(--label-size);
   font-weight: 700;
   color: var(--text-muted);
   font-family: var(--display);
@@ -3197,7 +3144,7 @@
   line-height: 1.2;
 }
 .trophies small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
   overflow-wrap: anywhere;
   font-family: var(--display);
@@ -3219,7 +3166,7 @@
     font-size: 18px;
   }
   .trophies li > span {
-    font-size: 12px;
+    font-size: var(--label-size);
     word-break: keep-all;
     font-family: var(--display);
   }
@@ -3243,15 +3190,15 @@
     font-size: 13px;
   }
   .leaderTable th {
-    font-size: 12px;
+    font-size: var(--label-size);
     font-family: var(--display);
   }
 }
 .statusChip {
   padding: 1px 7px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: var(--card-radius);
+  font-size: var(--label-size);
   font-style: normal;
   font-weight: 700;
   color: var(--text-muted);
@@ -3273,7 +3220,7 @@
   cursor: pointer;
 }
 .seasonRow:hover > td {
-  background: rgb(255 255 255 / 0.04);
+  background: var(--subtle-fill);
 }
 .seasonRowLink.seasonRowLink.seasonRowLink {
   position: relative;
@@ -3314,14 +3261,14 @@
 }
 .brand > span {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: var(--label-size);
   letter-spacing: 1.4px;
   font-family: var(--display);
 }
 .brand > small {
   display: block;
   margin-top: 7px;
-  font-size: 12px;
+  font-size: var(--label-size);
   letter-spacing: 1.2px;
   color: var(--text-faint);
   font-family: var(--display);
@@ -3343,14 +3290,14 @@
   color: var(--accent-text);
 }
 .taskReturn small {
-  font-size: 12px;
+  font-size: var(--label-size);
   color: var(--text-muted);
 }
 
 .responsibilities {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--label-size);
   margin-bottom: 16px;
 }
 .responsibilities th,
@@ -3380,7 +3327,7 @@
   min-height: 44px;
   cursor: pointer;
   font-family: var(--display);
-  font-size: 15px;
+  font-size: var(--body-size);
 }
 .scroller:has(.taskReturn) {
   --task-offset: 66px;
@@ -3398,11 +3345,11 @@
   display: grid;
   gap: 10px;
   margin: 12px 0;
-  font-size: 12px;
+  font-size: var(--label-size);
 }
 .competitionScope > b {
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: var(--body-line-height);
 }
 
 /* The mounted policy draft owns the bottom edge. */
