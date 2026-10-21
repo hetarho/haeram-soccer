@@ -196,6 +196,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
+- 261021 fix progression test sampling: require at least three real calendar days instead of catching the transient 4 August label; keep the unchanged preparation-button mutation and running-clock assertions.
 - 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
 - 261021 T273 integrated
 - 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
@@ -214,5 +216,3 @@
 - 261021 create-task T295 and implement-task start on 9f69553: compact mediation presentation while preserving preview freshness, decisions and retained history.
 - 261021 update-ssot WEB r102 start: compact structured mediation review with persistent footer actions.
 - 261021 T294 done: horizontal observation toggles; settings units, typecheck, targeted lint/format, build and spec lint pass; browser geometry remains at the batch gate.
-- 261021 WEB r101 freshness: T275 T283 T286 bases to WEB@101; their cited match and record decisions are unchanged by central observation-toggle styling.
-- 261021 create-task T294 and implement-task start on 9f69553: preserve native checkbox semantics and existing stop/draft rules while presenting horizontal toggles.
