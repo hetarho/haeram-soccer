@@ -23,6 +23,7 @@ import {
   buildEquivalenceReport,
   buildInvariantReport,
   buildOutcomeTargetReport,
+  buildParityReport,
   buildPerformanceReport,
   buildTargetReport,
   calibrationSize,
@@ -38,6 +39,8 @@ import {
   describeAdvancedCounters,
   describeTacticPairings,
   equivalencePower,
+  HAT_TRICK_CONTEXT,
+  hatTrickReading,
   INCIDENT_KINDS,
   MATCH_PARITY_VERSION,
   METRIC_BY_ID,
@@ -1260,6 +1263,29 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     // Every other row reads the same on both paths.
     for (const t of aggregate.filter((x) => !traceOnly.includes(x.id)))
       expect(t).toEqual(detailed.find((x) => x.id === t.id));
+    // The parity report names each side's engine and reads its targets the same way.
+    const provenance: Provenance = {
+      date: '2026-10-22T00:00:00.000Z',
+      source: {
+        gitHead: 'synthetic',
+        gitDirty: false,
+        fingerprint: { algorithm: 'sha256', sha256: '0'.repeat(64), files: 1, scope: ['scripts'] },
+      },
+      toolchain: { node: 'v24.12.0' },
+      machine: { platform: 'test', arch: 'x', cpu: 'synthetic', logicalCpus: 1, memoryBytes: 1 },
+      seeds: {},
+      conditions: [],
+      partitions: {},
+    };
+    const parity = buildParityReport({
+      provenance,
+      partition: 'calibration',
+      condition: 'core:equal-top-tier',
+      reference: { path: 'synthetic grid', engine: 'detailed', samples: set },
+      candidate: { path: 'synthetic aggregate', engine: 'aggregate', samples: set },
+    });
+    expect(parity.targets.reference).toEqual(detailed);
+    expect(parity.targets.candidate).toEqual(aggregate);
   });
 
   it("holds scoring concentration to MATCH-23's ratified rows", () => {
@@ -1281,5 +1307,11 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     expect(thin.map((v) => v.status)).toEqual(['unresolved', 'underpowered', 'missing']);
     // No hat-trick seen: the rule of three bounds the rate.
     expect(poissonReading(0, 600).interval).toEqual([0, 3 / 600]);
+    // MATCH-23 states the hat-trick rate for a top-tier league season: a verdict on the core
+    // condition only, context on every other condition.
+    expect(hatTrickReading(300, 10000, conditionOf('core:equal-top-tier')).status).toBe('inside');
+    const gap = hatTrickReading(300, 10000, conditionOf('gap:20'));
+    expect(gap).toMatchObject({ status: 'context', note: HAT_TRICK_CONTEXT });
+    expect(gap.value).toBeCloseTo(0.03, 9);
   });
 });

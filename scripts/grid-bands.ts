@@ -76,9 +76,8 @@ import {
   corpusFixtureId,
   describeAdvancedCounters,
   describeTacticPairings,
+  hatTrickReading,
   MATCH_PARITY_VERSION,
-  poissonReading,
-  scoringConcentrationVerdicts,
   tacticPairingVerdicts,
   type MatchSample,
   type ParityCondition,
@@ -633,11 +632,11 @@ function meanCi(xs: readonly number[]): { mean: number; ci: [number, number] } {
 }
 
 /**
- * Player scoring concentration: braces and hat-tricks per match (MATCH-23's hat-trick row gets its
- * verdict), and per club with 20+ goals in the sample its top scorer's share of the club's goals
+ * Player scoring concentration: braces and hat-tricks per match (MATCH-23's hat-trick row: a
+ * verdict on the core condition, context elsewhere, `hatTrickReading`), and per club with 20+ goals in the sample its top scorer's share of the club's goals
  * and his goals per 38 club matches — context only, since MATCH-23 reads those over whole seasons.
  */
-function concentration(samples: readonly MatchSample[]) {
+function concentration(samples: readonly MatchSample[], condition: ParityCondition) {
   let braces = 0,
     hatTricks = 0;
   const clubs = new Map<string, { matches: number; goals: number; players: Map<string, number> }>();
@@ -666,9 +665,7 @@ function concentration(samples: readonly MatchSample[]) {
   return {
     bracesPerMatch: braces / samples.length,
     hatTricksPerMatch: hatTricks / samples.length,
-    hatTricks: scoringConcentrationVerdicts({
-      hatTricksPerMatch: poissonReading(hatTricks, samples.length),
-    }).find((v) => v.id === 'hatTricksPerMatch'),
+    hatTricks: hatTrickReading(hatTricks, samples.length, condition),
     clubsWith20Goals: scored.length,
     topScorerShare: meanCi(scored.map((c) => top(c) / c.goals)),
     topScorerGoalsPer38: meanCi(scored.map((c) => (38 * top(c)) / c.matches)),
@@ -709,7 +706,7 @@ function summarise(job: Job) {
     extraTime: samples.filter((s) => s.record.regulation).length / n,
     shootouts: samples.filter((s) => s.record.shootout).length / n,
     sides: [sideSummary(samples, 0), sideSummary(samples, 1)],
-    concentration: concentration(samples),
+    concentration: concentration(samples, c),
     targets: buildTargetReport(samples).map((t) => ({
       id: t.id,
       band: t.band,

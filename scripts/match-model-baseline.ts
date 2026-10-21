@@ -562,16 +562,20 @@ const parity = buildParityReport({
   provenance,
   partition: 'calibration',
   condition: core.id,
-  reference: { path: 'grid (buildGridSetup + playGrid)', samples: reference },
-  candidate: { path: legacyPath, samples: legacy },
+  reference: { path: 'grid (buildGridSetup + playGrid)', engine: 'detailed', samples: reference },
+  candidate: { path: legacyPath, engine: 'aggregate', samples: legacy },
 });
 const candidateParity = candidateFn
   ? buildParityReport({
       provenance,
       partition: 'calibration',
       condition: core.id,
-      reference: { path: 'grid (buildGridSetup + playGrid)', samples: reference },
-      candidate: { path: 'simulateAggregate', samples: candidate },
+      reference: {
+        path: 'grid (buildGridSetup + playGrid)',
+        engine: 'detailed',
+        samples: reference,
+      },
+      candidate: { path: 'simulateAggregate', engine: 'aggregate', samples: candidate },
     })
   : null;
 // The validation size the reference pilot implies for every metric this condition judges.

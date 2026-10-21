@@ -903,10 +903,32 @@ export interface ScoringVerdict {
   id: ScoringRow;
   label: string;
   band: readonly [number, number];
-  status: 'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing';
+  status: 'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing' | 'context';
   value?: number;
   interval?: readonly [number, number];
   n: number;
+  /** Why a reading is context rather than a verdict. */
+  note?: string;
+}
+/** Why a hat-trick rate outside the core condition is no verdict. */
+export const HAT_TRICK_CONTEXT =
+  "context: MATCH-23 states the hat-trick rate for a top-tier league season, which only the core condition's equal top-tier sides sample";
+/**
+ * MATCH-23's hat-trick row read from one condition's matches: a verdict on the core condition (the
+ * row's own setting, equal top-tier sides in league fixtures), context on any other condition
+ * (another gap, tier, era, tactic, fatigue or knockout rule).
+ */
+export function hatTrickReading(
+  hatTricks: number,
+  matches: number,
+  condition: Pick<ParityCondition, 'family'>,
+): ScoringVerdict {
+  const verdict = scoringConcentrationVerdicts({
+    hatTricksPerMatch: poissonReading(hatTricks, matches),
+  }).find((v) => v.id === 'hatTricksPerMatch')!;
+  return condition.family === 'core'
+    ? verdict
+    : { ...verdict, status: 'context', note: HAT_TRICK_CONTEXT };
 }
 /**
  * MATCH-23's verdicts on scoring concentration, like any band: inside only when the 95% interval
@@ -2304,8 +2326,8 @@ export const ADVANCED_COUNTER_TARGET = {
       label: 'through balls (team)',
       reads: 'td.throughBalls',
       unit: 'count',
-      band: [0.45, 2.2],
-      source: `${SB}; ${OPTA} (through balls)`,
+      band: [2, 2.2],
+      source: SB,
     },
     {
       id: 'throughBallsCompleted',
@@ -3302,13 +3324,20 @@ export interface Provenance {
   partitions: Readonly<Record<string, string>>;
 }
 
+interface ParitySide {
+  path: string;
+  engine: ReportPath;
+  samples: readonly MatchSample[];
+  seasons?: readonly SeasonSample[];
+}
 /** The comparison sections kept apart: target errors, path equivalence and exact invariants. */
 export function buildParityReport(input: {
   provenance: Provenance;
   partition: Partition;
   condition: string;
-  reference: { path: string; samples: readonly MatchSample[]; seasons?: readonly SeasonSample[] };
-  candidate: { path: string; samples: readonly MatchSample[]; seasons?: readonly SeasonSample[] };
+  /** `engine`: which engine played the samples (MATCH-23's trace-only rows bind the detailed one). */
+  reference: ParitySide;
+  candidate: ParitySide;
 }) {
   const errors = validateCorpusConfig(CORPUS_CONFIG);
   if (errors.length) throw new Error(errors.join('; '));
@@ -3335,8 +3364,8 @@ export function buildParityReport(input: {
       candidate: buildCoverageReport(input.candidate.samples, input.candidate.seasons),
     },
     targets: {
-      reference: buildTargetReport(input.reference.samples),
-      candidate: buildTargetReport(input.candidate.samples),
+      reference: buildTargetReport(input.reference.samples, input.reference.engine),
+      candidate: buildTargetReport(input.candidate.samples, input.candidate.engine),
     },
     outcomeCurve: {
       reference: buildOutcomeTargetReport(input.reference.samples),

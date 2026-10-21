@@ -98,8 +98,8 @@ import {
   DETAILED_ONLY_REASON,
   MATCH_PARITY_VERSION,
   PARITY_CONFIG,
+  hatTrickReading,
   pilotNeeds,
-  poissonReading,
   rareComparisonPower,
   requiredRareEvents,
   SCORING_CONCENTRATION_TARGET,
@@ -108,6 +108,7 @@ import {
   TARGET_BANDS,
   type LedgerDiagnostics,
   type MatchSample,
+  type ParityCondition,
   type Partition,
 } from './lib/match-parity';
 
@@ -449,11 +450,14 @@ export function rareEvents(samples: readonly MatchSample[]) {
 
 /**
  * Player scoring concentration of a sample set: braces and hat-tricks a match (MATCH-23's hat-trick
- * row gets its verdict), and for each club with 20+ goals in the sample its top scorer's share of
+ * row: a verdict on the core condition, context elsewhere, `hatTrickReading`), and for each club with 20+ goals in the sample its top scorer's share of
  * the club's goals and his goals per 38 club matches — context only, since MATCH-23 reads those
  * over whole seasons (`seasonsReport`).
  */
-export function concentration(samples: readonly MatchSample[]) {
+export function concentration(
+  samples: readonly MatchSample[],
+  condition: Pick<ParityCondition, 'family'>,
+) {
   let braces = 0,
     hatTricks = 0;
   const clubs = new Map<string, { matches: number; goals: number; players: Map<string, number> }>();
@@ -483,9 +487,7 @@ export function concentration(samples: readonly MatchSample[]) {
   return {
     bracesPerMatch: braces / n,
     hatTricksPerMatch: rateCi(hatTricks, samples.length),
-    hatTricks: scoringConcentrationVerdicts({
-      hatTricksPerMatch: poissonReading(hatTricks, samples.length),
-    }).find((v) => v.id === 'hatTricksPerMatch'),
+    hatTricks: hatTrickReading(hatTricks, samples.length, condition),
     clubsWith20Goals: scored.length,
     topScorerShare: meanCi(scored.map((c) => top(c) / c.goals)),
     topScorerGoalsPer38: meanCi(scored.map((c) => (38 * top(c)) / c.matches)),
@@ -649,7 +651,7 @@ function summarise(job: Job) {
     shootouts: samples.filter((s) => s.record.shootout).length / n,
     goalsByLine,
     rare: rareEvents(samples),
-    concentration: concentration(samples),
+    concentration: concentration(samples, c),
     settlement: settlementReport(samples, settlement),
     targets: buildTargetReport(samples, 'aggregate').map((t) => ({
       id: t.id,
