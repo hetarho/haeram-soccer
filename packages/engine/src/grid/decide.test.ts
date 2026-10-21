@@ -289,4 +289,65 @@ describe('grid decisions', () => {
     }
     expect(forward).toBeGreaterThan(250);
   });
+
+  it("consumes teammates' showing and overlap intentions", () => {
+    const RWB = 5;
+    const sc = scene(CM, [60, 40]);
+    const { s } = sc;
+    place(s, 8, [66, 36]);
+    place(s, RWB, [52, 60]);
+    const scoreOf = (target: number) =>
+      passOptions(s, 0, CM, sc.tags()).find((o) => o.target === target)!.score;
+    const before = { mix: actionMix(s, 0, CM, sc.tags()), show: scoreOf(8), wide: scoreOf(RWB) };
+    const K = DECISION_CONFIG.combination;
+    // A teammate showing for him scores more as a receiver; a clearance does not.
+    s.players[0][8]!.intention = {
+      kind: 'support',
+      support: 'show',
+      priority: 'tactical',
+      target: [66, 36],
+      teammate: CM,
+      since: 600,
+      until: 605,
+    };
+    expect(scoreOf(8)).toBeCloseTo(before.show + K.show, 9);
+    s.players[0][8]!.intention!.support = 'open';
+    expect(scoreOf(8)).toBeCloseTo(before.show, 9);
+    // An overlap still arriving behind him: he carries more often while it comes, unpressured.
+    s.players[0][RWB]!.intention = {
+      kind: 'run',
+      run: 'overlap',
+      priority: 'tactical',
+      target: [72, 62],
+      teammate: CM,
+      since: 600,
+      until: 605,
+    };
+    const waiting = actionMix(s, 0, CM, sc.tags());
+    expect(sc.tags().pressure).toBe(0);
+    expect(waiting.carry).toBeGreaterThan(before.mix.carry);
+    expect(waiting.carry / waiting.pass).toBeCloseTo(
+      (K.wait * before.mix.carry) / before.mix.pass,
+      9,
+    );
+    expect(scoreOf(RWB)).toBeCloseTo(before.wide, 9);
+    // Level with him or ahead, the overlap is released: the pass to it scores more, the wait is over.
+    place(s, RWB, [64, 60]);
+    const level = scoreOf(RWB);
+    s.players[0][RWB]!.intention = undefined;
+    const plainLevel = scoreOf(RWB);
+    expect(level).toBeCloseTo(plainLevel + K.release, 9);
+    expect(actionMix(s, 0, CM, sc.tags())).toEqual(before.mix);
+    // A combination with another carrier bends nothing for this one.
+    s.players[0][RWB]!.intention = {
+      kind: 'run',
+      run: 'overlap',
+      priority: 'tactical',
+      target: [72, 62],
+      teammate: 6,
+      since: 600,
+      until: 605,
+    };
+    expect(scoreOf(RWB)).toBeCloseTo(plainLevel, 9);
+  });
 });

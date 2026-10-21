@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T11:02:04.666Z",
-  "sourceCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+  "snapshotAt": "2026-10-21T11:25:40.420Z",
+  "sourceCommit": "604590a83100103e8f0d331f9638e1ca595c3e10",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,13 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "3a09e337a73fe47932ca75eee2e8ffca12caaee1",
+      "commit": "604590a83100103e8f0d331f9638e1ca595c3e10",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T09:26:34.919Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]          3a09e337a73fe47932ca75eee2e8ffca12caaee1 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-21T11:25:37.108Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
       "adapter": "builtin",
       "providers": {
@@ -44,45 +43,23 @@
         }
       ],
       "startedAt": "2026-10-21T09:29:49.361Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.306 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.306 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.306 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-21T06:13:10.657Z",
-      "stoppedAt": "2026-10-21T09:26:33.156Z",
-      "dispatched": 5,
-      "outcome": "interrupted",
+      "stoppedAt": "2026-10-21T11:14:13.238Z",
+      "dispatched": 8,
+      "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "36f498aa-dd52-4cc4-889c-82b2e4c54752",
-          "role": "worker",
-          "error": "adapter exited 1"
+          "attempt": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+          "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+          "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         },
         {
-          "attempt": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
-          "role": "worker",
-          "error": "adapter exited 1"
+          "attempt": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+          "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+          "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         }
       ],
       "autopilot": true,
@@ -91,22 +68,14 @@
   },
   "summary": {
     "total": 19,
-    "completed": 8,
-    "remaining": 11,
+    "completed": 9,
+    "remaining": 10,
     "running": 0,
-    "review": 2,
+    "review": 1,
     "blocked": 0,
     "unassigned": 9
   },
   "tasks": [
-    {
-      "id": "T277",
-      "title": "Connect player intentions through support, pressing and covering reactions",
-      "dep": [
-        "T276"
-      ],
-      "status": "approved"
-    },
     {
       "id": "T278",
       "title": "Measure and calibrate continuous football and coordinated tactics",
@@ -124,7 +93,7 @@
       "dep": [
         "T279"
       ],
-      "status": "reviewing"
+      "status": "approved"
     },
     {
       "id": "T281",
@@ -1126,42 +1095,60 @@
         "5ca6081a-1afc-4dcd-a676-18cc8374b893/worker-1",
         "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/worker-1"
       ],
-      "status": "reviewing",
+      "status": "approved",
       "reason": null,
       "createdAt": "2026-10-21T07:42:13.283Z",
       "startCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
-      "verifiedCommit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+      "verifiedCommit": "25bae723b8665170413d446e034a89b608b958a4",
       "submittedBase": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
-      "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
-      "submittedAt": "2026-10-21T11:01:47.901Z",
+      "submissionId": "92e48cca-1c04-4522-8ffe-6c51accd00b9",
+      "submittedAt": "2026-10-21T11:12:47.835Z",
       "risk": {
         "risky": true,
         "reasons": [
-          "2950 changed lines (limit 300)",
+          "2988 changed lines (limit 300)",
           "reworked after a review or integration failure",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 2950,
+        "lines": 2988,
         "files": 9
       },
       "dispatch": {
-        "id": "e50f8647-934f-42ec-9b88-f2c6a2d696f6",
+        "id": "ff2835f5-14b6-4d88-a179-64bda40917dd",
         "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-21T11:01:49.774Z"
+        "status": "finished",
+        "startedAt": "2026-10-21T11:12:50.045Z",
+        "finishedAt": "2026-10-21T11:14:11.788Z",
+        "error": null,
+        "summary": "I approve T280 correction e77389d7 (25bae723 on d32b4256, base 17418943). The previous review's P2 is fixed: the side marker no longer comes last in the stream name. `sideDraw` now passes `<family>:side<n>` through `streams.draw`, so the name reads `…:aggregate:<family>:side<n>[:<period>]:<fixture>`. The period and fixture characters follow the side marker, so the two sides' seeds no longer differ only at the end. I re-ran the repo's FNV-1a → xorshift32 PRNG in plain node, since the review checkout has no node_modules. Setup: seeds synthetic, probe-r4 and a; families discipline, injuries, changes and attribution; periods regulation, extra and none; 20,000 fixtures each. The home/away correlation of the first six uniforms stays within ±0.02, against a standard error of about 0.007. On the new test's exact names (10,000 `ENG:0:i:3:i%10`), the first uniform correlates at 0.007–0.024, the second at ≤0.016 and a Poisson count at ≤0.011. The old suffix naming gives 0.325–0.340 on the same names. The new test `keeps the two sides' streams uncorrelated` uses fixed seeds, so it is deterministic, and it is strong enough to fail the old naming. `gives each side its own named stream` still checks that a side's sequence restarts by name and does not depend on the other side's draws. Both callers of `sideDraw` pick up the new naming: participation.ts:446-448 and players.ts:383. team.ts streams are untouched. The result text is updated with the new figures and correctly marks the earlier rounds' runs as not re-claimed. The general PRNG-seeding weakness stays handed off to the planner/T284 in the task's limits. The delta to the previously reviewed 2,988-line submission is 46 lines in 3 files and opens no new risk. The other risk reasons (rework, autopilot decisions) were covered by earlier rounds and are recorded in the task's limits."
       },
       "review": {
-        "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+        "id": "8c5efcd9-9154-4ac9-866b-f52e3ad43cd7",
         "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
-        "status": "reviewing",
-        "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I approve T280 correction e77389d7 (25bae723 on d32b4256, base 17418943). The previous review's P2 is fixed: the side marker no longer comes last in the stream name. `sideDraw` now passes `<family>:side<n>` through `streams.draw`, so the name reads `…:aggregate:<family>:side<n>[:<period>]:<fixture>`. The period and fixture characters follow the side marker, so the two sides' seeds no longer differ only at the end. I re-ran the repo's FNV-1a → xorshift32 PRNG in plain node, since the review checkout has no node_modules. Setup: seeds synthetic, probe-r4 and a; families discipline, injuries, changes and attribution; periods regulation, extra and none; 20,000 fixtures each. The home/away correlation of the first six uniforms stays within ±0.02, against a standard error of about 0.007. On the new test's exact names (10,000 `ENG:0:i:3:i%10`), the first uniform correlates at 0.007–0.024, the second at ≤0.016 and a Poisson count at ≤0.011. The old suffix naming gives 0.325–0.340 on the same names. The new test `keeps the two sides' streams uncorrelated` uses fixed seeds, so it is deterministic, and it is strong enough to fail the old naming. `gives each side its own named stream` still checks that a side's sequence restarts by name and does not depend on the other side's draws. Both callers of `sideDraw` pick up the new naming: participation.ts:446-448 and players.ts:383. team.ts streams are untouched. The result text is updated with the new figures and correctly marks the earlier rounds' runs as not re-claimed. The general PRNG-seeding weakness stays handed off to the planner/T284 in the task's limits. The delta to the previously reviewed 2,988-line submission is 46 lines in 3 files and opens no new risk. The other risk reasons (rework, autopilot decisions) were covered by earlier rounds and are recorded in the task's limits.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/participation.ts:46",
+            "message": "T280: `${family}:side${side}` is cast `as AggregateStreamFamily` to get the side into the middle of the name. Behaviour is correct, but the type now claims a value that is not in AGGREGATE_STREAM_FAMILIES, and nothing guards the name layout `sideDraw` relies on if team.ts `names` is ever changed to validate or map families. Optional cleanup: widen `AggregateStreams.names`/`draw` to take an optional stream suffix, or add a typed side-aware name builder in team.ts, so no cast is needed. This is not blocking."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/aggregate/engine.ts:369",
+            "message": "T280 (handoff, same root cause as the e77389d7 P3 already recorded in limits): `<fixture>:retry<n>` places the retry index last, so retry streams n and n+1 differ only in their final character and start correlated, at about 0.32 on the first draw under the current `random` seeding. In practice no fixture has gone past retry 1, so this is not blocking. The planned seed-mixing task (ARCH-5) should cover the retry names too, and T284's retry-bias measurement should take this into account."
+          }
+        ],
+        "commit": "25bae723b8665170413d446e034a89b608b958a4",
         "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
-        "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
-        "createdAt": "2026-10-21T11:01:48.958Z"
+        "submissionId": "92e48cca-1c04-4522-8ffe-6c51accd00b9",
+        "createdAt": "2026-10-21T11:12:49.112Z",
+        "finishedAt": "2026-10-21T11:14:11.732Z"
       },
       "reviewHistory": [
         {
@@ -1251,18 +1238,44 @@
           "finishedAt": "2026-10-21T10:47:20.282Z",
           "invalidatedAt": "2026-10-21T10:55:07.402Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T280 correction 7e7cb9f6 (d32b4256 on be7efe89): the per-side streams do stop the mirroring. I checked independently on new founding worlds. Seed probe-r3a, 2,000 matches of 2024: the two sides had identical yellow minutes in 6 of 1,474 matches where both were booked, a red in the same minute in 0 of 5, and an injury in the same minute in 1 of 88. Rates were 3.85 yellows, 0.113 reds, 0.47 injuries and 10.00 substitutions a match. Rebalances: 106 made, 50 withheld, 0 disagreeing with the settled score, 10 settled on retry 1, every record valid. Seed probe-r3b, 1,000 matches of 1990, gave similar results. The targeted vitest also passes (6 files, 57 tests). The fix still leaves the two sides' streams correlated, though. `sideDraw` adds `:side<n>` as the last characters of the stream name. With the repo's FNV-1a → xorshift32 PRNG, two seeds that differ only in their last character produce strongly correlated draws. The first uniform each side draws correlates at 0.32, the Poisson card counts at 0.23, and home and away yellow counts across world matches at 0.27. The new test checks only for identical minute lists, so it cannot see this. The earlier rounds' P3 (the throw once rebalanceRetries runs out) is now handed to T281/T284 in the task's limits, which is acceptable.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/aggregate/participation.ts:44",
+              "message": "T280 / ARCH-5, MATCH-21, CLUB-23: sideDraw builds `${streams.names(family, period)}:side${side}`, so the two sides' seeds differ only in their final character ('0' vs '1'). primitives.ts `random` seeds xorshift32 straight from FNV-1a with no warm-up. A last-character difference therefore leaves the two states a fixed multiple of the FNV prime apart, and their outputs are correlated. Measured on 20,000 fixtures (aggregateStreams + sideDraw, 'discipline', regulation): the correlation of side 0's and side 1's first uniform is 0.325, 0.093 at the second draw and 0.078 at the sixth; for poissonDraw(r, 1.9), the first draw of the card count, it is 0.226. Two unrelated names give 0.001. In the world (seed probe-r3a, 2,000 of 2024 via playAggregate/aggregateRecord) the correlation of home and away yellow counts is 0.272, and 0.266 in 1990. The same coupling hits each line's first injury uniform (hurtDraws), the changes jitter and the per-side attribution streams in players.ts:383. So the sides are no longer copies, but their cards, injuries and stoppages still move together, which will distort T284's distributions. Fix: put the side component ahead of the remaining name characters, e.g. `<seed>:<rev>:aggregate:<family>:side<n>[:<period>]:<fixture>`. Measured with the same probe, that gives a correlation of 0.000 on the first draw and 0.011 on the second. Alternatively, mix the seed so that suffixes decorrelate. Add a regression test on the correlation of home/away first draws or card counts over a large sample (e.g. |r| < 0.05), not just on identical minute lists, then re-measure the card, injury, rebalance and retry figures in the result."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/primitives.ts:6",
+              "message": "T280 (handoff, outside touches): the same weakness exists before this commit for any two stream names that differ only at the end, including fixture IDs that differ in their last character. For example `...:regulation:ENG:0:<i>:3:0` vs `...:3:1` correlate at 0.323 on the first draw. This is a PRNG-seeding concern for ARCH-5 across every system that puts the fixture or entity ID last. It belongs to a separate task (e.g. a seed mixing step with portable test vectors) and should not be fixed inside T280. Record it for the planner or T284."
+            }
+          ],
+          "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+          "createdAt": "2026-10-21T11:01:48.958Z",
+          "finishedAt": "2026-10-21T11:05:43.996Z",
+          "invalidatedAt": "2026-10-21T11:05:44.250Z",
+          "invalidationReason": "correction assigned"
         }
       ],
       "steps": [
         {
           "taskId": "T280",
-          "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
-          "at": "2026-10-21T11:01:47.858Z",
+          "commit": "25bae723b8665170413d446e034a89b608b958a4",
+          "at": "2026-10-21T11:12:47.785Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-21T11:00:23.749Z",
-              "finishedAt": "2026-10-21T11:01:47.526Z"
+              "startedAt": "2026-10-21T11:11:16.955Z",
+              "finishedAt": "2026-10-21T11:12:47.405Z"
             }
           ]
         }
@@ -1270,8 +1283,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-21T11:00:23.749Z",
-          "finishedAt": "2026-10-21T11:01:47.526Z"
+          "startedAt": "2026-10-21T11:11:16.955Z",
+          "finishedAt": "2026-10-21T11:12:47.405Z"
         }
       ]
     },
@@ -1370,8 +1383,8 @@
       "contributors": [
         "f6n3-T277"
       ],
-      "status": "approved",
-      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-21T08:57:52.837Z",
       "startCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
       "verifiedCommit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
@@ -1466,6 +1479,8 @@
       "submittedBase": "36274a94705cb55e091db730f51df149942e9425",
       "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
       "submittedAt": "2026-10-21T10:20:36.355Z",
+      "integratedCommit": "604590a83100103e8f0d331f9638e1ca595c3e10",
+      "integratedAt": "2026-10-21T11:25:35.161Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1523,6 +1538,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T10:13:30.098Z",
           "finishedAt": "2026-10-21T10:20:35.891Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T11:02:05.176Z",
+          "finishedAt": "2026-10-21T11:25:34.923Z"
         }
       ]
     }
@@ -8680,6 +8702,604 @@
       "group": "full-model",
       "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
       "taskId": "T275",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 597,
+      "at": "2026-10-21T11:05:43.996Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T280 correction 7e7cb9f6 (d32b4256 on be7efe89): the per-side streams do stop the mirroring. I checked independently on new founding worlds. Seed probe-r3a, 2,000 matches of 2024: the two sides had identical yellow minutes in 6 of 1,474 matches where both were booked, a red in the same minute in 0 of 5, and an injury in the same minute in 1 of 88. Rates were 3.85 yellows, 0.113 reds, 0.47 injuries and 10.00 substitutions a match. Rebalances: 106 made, 50 withheld, 0 disagreeing with the settled score, 10 settled on retry 1, every record valid. Seed probe-r3b, 1,000 matches of 1990, gave similar results. The targeted vitest also passes (6 files, 57 tests). The fix still leaves the two sides' streams correlated, though. `sideDraw` adds `:side<n>` as the last characters of the stream name. With the repo's FNV-1a → xorshift32 PRNG, two seeds that differ only in their last character produce strongly correlated draws. The first uniform each side draws correlates at 0.32, the Poisson card counts at 0.23, and home and away yellow counts across world matches at 0.27. The new test checks only for identical minute lists, so it cannot see this. The earlier rounds' P3 (the throw once rebalanceRetries runs out) is now handed to T281/T284 in the task's limits, which is acceptable.",
+        "review": {
+          "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T280 correction 7e7cb9f6 (d32b4256 on be7efe89): the per-side streams do stop the mirroring. I checked independently on new founding worlds. Seed probe-r3a, 2,000 matches of 2024: the two sides had identical yellow minutes in 6 of 1,474 matches where both were booked, a red in the same minute in 0 of 5, and an injury in the same minute in 1 of 88. Rates were 3.85 yellows, 0.113 reds, 0.47 injuries and 10.00 substitutions a match. Rebalances: 106 made, 50 withheld, 0 disagreeing with the settled score, 10 settled on retry 1, every record valid. Seed probe-r3b, 1,000 matches of 1990, gave similar results. The targeted vitest also passes (6 files, 57 tests). The fix still leaves the two sides' streams correlated, though. `sideDraw` adds `:side<n>` as the last characters of the stream name. With the repo's FNV-1a → xorshift32 PRNG, two seeds that differ only in their last character produce strongly correlated draws. The first uniform each side draws correlates at 0.32, the Poisson card counts at 0.23, and home and away yellow counts across world matches at 0.27. The new test checks only for identical minute lists, so it cannot see this. The earlier rounds' P3 (the throw once rebalanceRetries runs out) is now handed to T281/T284 in the task's limits, which is acceptable.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/aggregate/participation.ts:44",
+              "message": "T280 / ARCH-5, MATCH-21, CLUB-23: sideDraw builds `${streams.names(family, period)}:side${side}`, so the two sides' seeds differ only in their final character ('0' vs '1'). primitives.ts `random` seeds xorshift32 straight from FNV-1a with no warm-up. A last-character difference therefore leaves the two states a fixed multiple of the FNV prime apart, and their outputs are correlated. Measured on 20,000 fixtures (aggregateStreams + sideDraw, 'discipline', regulation): the correlation of side 0's and side 1's first uniform is 0.325, 0.093 at the second draw and 0.078 at the sixth; for poissonDraw(r, 1.9), the first draw of the card count, it is 0.226. Two unrelated names give 0.001. In the world (seed probe-r3a, 2,000 of 2024 via playAggregate/aggregateRecord) the correlation of home and away yellow counts is 0.272, and 0.266 in 1990. The same coupling hits each line's first injury uniform (hurtDraws), the changes jitter and the per-side attribution streams in players.ts:383. So the sides are no longer copies, but their cards, injuries and stoppages still move together, which will distort T284's distributions. Fix: put the side component ahead of the remaining name characters, e.g. `<seed>:<rev>:aggregate:<family>:side<n>[:<period>]:<fixture>`. Measured with the same probe, that gives a correlation of 0.000 on the first draw and 0.011 on the second. Alternatively, mix the seed so that suffixes decorrelate. Add a regression test on the correlation of home/away first draws or card counts over a large sample (e.g. |r| < 0.05), not just on identical minute lists, then re-measure the card, injury, rebalance and retry figures in the result."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/primitives.ts:6",
+              "message": "T280 (handoff, outside touches): the same weakness exists before this commit for any two stream names that differ only at the end, including fixture IDs that differ in their last character. For example `...:regulation:ENG:0:<i>:3:0` vs `...:3:1` correlate at 0.323 on the first draw. This is a PRNG-seeding concern for ARCH-5 across every system that puts the fixture or entity ID last. It belongs to a separate task (e.g. a seed mixing step with portable test vectors) and should not be fixed inside T280. Record it for the planner or T284."
+            }
+          ],
+          "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+          "createdAt": "2026-10-21T11:01:48.958Z",
+          "finishedAt": "2026-10-21T11:05:43.996Z"
+        }
+      }
+    },
+    {
+      "sequence": 598,
+      "at": "2026-10-21T11:05:44.084Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "e50f8647-934f-42ec-9b88-f2c6a2d696f6",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T11:01:49.774Z",
+          "finishedAt": "2026-10-21T11:05:44.084Z",
+          "error": null,
+          "summary": "T280 correction 7e7cb9f6 (d32b4256 on be7efe89): the per-side streams do stop the mirroring. I checked independently on new founding worlds. Seed probe-r3a, 2,000 matches of 2024: the two sides had identical yellow minutes in 6 of 1,474 matches where both were booked, a red in the same minute in 0 of 5, and an injury in the same minute in 1 of 88. Rates were 3.85 yellows, 0.113 reds, 0.47 injuries and 10.00 substitutions a match. Rebalances: 106 made, 50 withheld, 0 disagreeing with the settled score, 10 settled on retry 1, every record valid. Seed probe-r3b, 1,000 matches of 1990, gave similar results. The targeted vitest also passes (6 files, 57 tests). The fix still leaves the two sides' streams correlated, though. `sideDraw` adds `:side<n>` as the last characters of the stream name. With the repo's FNV-1a → xorshift32 PRNG, two seeds that differ only in their last character produce strongly correlated draws. The first uniform each side draws correlates at 0.32, the Poisson card counts at 0.23, and home and away yellow counts across world matches at 0.27. The new test checks only for identical minute lists, so it cannot see this. The earlier rounds' P3 (the throw once rebalanceRetries runs out) is now handed to T281/T284 in the task's limits, which is acceptable."
+        }
+      }
+    },
+    {
+      "sequence": 599,
+      "at": "2026-10-21T11:05:44.250Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "03333643-c393-4923-98a5-6e7206e444d9",
+            "owner": "f6n3-review4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280 delivers planParticipation, attributePlayerFacts and simulateAggregate with era-legal timelines, exact player/team reconciliation, on-pitch-only shot credit, per-period named streams and a tightened shared validator that the grid's 40 candidate records (2024/2010/1966/1950, incl. extra time) still pass; targeted vitest (aggregate, match-model, grid, summary: 25 files, 194 tests) passes and no production path imports the new code. One SSOT contract gap blocks approval: the red-card rebalance ignores the score that MATCH-20/STAFF-45 make it depend on, so settled aggregate records can contain substitutions the rules forbid.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/participation.ts:651",
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.test.ts:273",
+                "message": "T280: the shared validator's two new checks — per-line yellow/red counters against incidents and in-play substitution windows (match-model.ts:258) — have no corrupted-record fixture against validateFullMatchRecord (the windows case exists only for participationTimelineIssues). Add 'a card moved to another player' and 'a fourth in-play window' corruptions."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/match-model.ts:258",
+                "message": "T280: windows are counted by stamped minute and every sub stamped 46/91/106 is treated as an interval, so an in-play change in the first minute after a restart (aggregate injury at t in [45,46), grid restarts) uses no window in the validator while the planner counted one. It's only lenient (no false rejection), but note it for T286's contract doc."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.ts:147",
+                "message": "T280 / LEAGUE-15: an unavailable starter kept by startingSquad still plays when the bench is empty (worker limit 6). It's rare and matches the grid's behaviour; hand off to T281 so both paths share one availability rule."
+              }
+            ],
+            "commit": "a2c9e75cc69732bbd114e7e6770f6bd85d70e694",
+            "baseCommit": "679cd2cb104b93cfbf0acc73be79eb433aa869ce",
+            "submissionId": "640b79bf-338f-41cd-b5d5-6c6d5002de77",
+            "createdAt": "2026-10-21T09:07:39.919Z",
+            "finishedAt": "2026-10-21T09:10:51.357Z",
+            "invalidatedAt": "2026-10-21T09:17:23.385Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "f123baa0-880b-4f1a-8814-6e864df1ee8c",
+            "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The T280 rework addresses the previous P2 in one direction only. planParticipation now records each red-card rebalance and accepts a `withheld` set. settleParticipation re-plans on the same streams until no kept rebalance trails, and the tests for a moved card and a fourth window were added. The 2024 aggregate tests pass in an isolated copy. On synthetic fixtures every withheld rebalance was trailing (0 wrong out of 540). On founding-world 2024 fixtures it breaks the other way. Team facts are generated per period, so withholding a change at minute m also changes the goals before m. About 20 of 3,000 matches end up with a ten-man side that is level or ahead at the stoppage but still has its rebalance withheld, because the withheld set only grows. STAFF-45 requires that change. The worker's own limits note reports 14 such cases but treats them as acceptable. That needs a fix or a planning decision; a result-file limit is not enough.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/engine.ts:302",
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/participation.ts:657",
+                "message": "T280: once a red's key is withheld, the planner never offers that rebalance again. The grid retries at every later stoppage (grid/changes.ts:184, `c.reds > c.rebalanced && score >= 0`), so it rebalances once a trailing ten-man side draws level. In the same 3,000-fixture probe, 10 withheld reds belonged to sides that were level or ahead at a later substitution stoppage, where the grid would have made the change. STAFF-45's wording ('at the next stoppage') arguably allows this, but the two engines now differ. Align them while fixing the P2, or note the difference for T281/T286."
+              }
+            ],
+            "commit": "3bc2a92b966f42af0cb3613ee682ba8779625bf0",
+            "baseCommit": "36274a94705cb55e091db730f51df149942e9425",
+            "submissionId": "8061a24b-eb43-49b8-b939-1a51d3a08627",
+            "createdAt": "2026-10-21T09:48:48.118Z",
+            "finishedAt": "2026-10-21T09:57:18.735Z",
+            "invalidatedAt": "2026-10-21T09:57:18.973Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "7e7cb9f6-e157-44bb-abab-e9b4cb91f369",
+            "owner": "f6n3-review6",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280's third submission does fix the red-card score rule in both directions. I measured it independently on founding-world fixtures: seed aggregate-engine, 3,000 matches of 2024 (148 rebalances made, 74 withheld, 0 disagreeing with the settled score, 10 settled on retry 1); seed review-seed-2, 2,000 of 2024 (116/42/0, 4 on retry 1). In 117 extra-time ties regulation was always level. Every record passed validateFullMatchRecord. Repeat calls gave identical records, the targeted vitest passes (7 files, 59 tests) and production paths are untouched. The same probe exposed a correctness defect that earlier rounds missed. planParticipation's two SidePlanners open the same named discipline, injury and change streams, so both sides draw identical sequences. Their cards, injuries and stoppage times mirror each other.",
+            "findings": [
+              {
+                "priority": "P1",
+                "where": "packages/engine/src/aggregate/participation.ts:429",
+                "message": "T280 / MATCH-4, MATCH-21, CLUB-23, ARCH-5: SidePlanner.playPeriod calls streams.draw('discipline'|'injuries'|'changes', period) for each side, and planParticipation (participation.ts:740) runs both sides on the same AggregateStreams. aggregateStreams.draw (team.ts:45) restarts random(name) from a name with no side in it, so home and away get the same uniform sequence. Measured on 1,000 founding-world 2024 fixtures (simulateAggregate): in 647 of the 852 matches with yellows, both sides were booked at exactly the same minutes; in 31 of the 49 matches with a dismissal, both sides lost a player in the same minute (e.g. ENG:0:0:3:8 at :probe:38, a secondYellow for slot 9 on both sides at 27'); in 98 of the 229 matches with injuries, both sides had one in the same minute. Changes jitter is shared too, so stoppage minutes coincide. Each side needs its own named streams, e.g. a side component in the stream name (discipline:<side>:<period>), so that one side's draws neither copy the other's nor move when the other side draws more. Add a test that both sides' card, injury and stoppage minutes are not identical across a world sample, and re-measure the yellow, red and injury rates and the rebalance and retry figures afterwards."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/aggregate/engine.ts:357",
+                "message": "T280: if no search reconciles the red-card answers within rebalanceRetries, playAggregate throws. Nothing in production calls it yet, and I saw nothing beyond retry 1 in 5,000 matches. Once T281 dispatches season fixtures here, though, the throw would abort a whole season simulation. Hand the fallback (or a documented deterministic tie-break) to T281 or T284 together with the retry-bias measurement."
+              }
+            ],
+            "commit": "be7efe894075c6e3d09c885026c862298d024a7a",
+            "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+            "submissionId": "840a8c63-4ddc-4622-8f49-d5fc1e337564",
+            "createdAt": "2026-10-21T10:42:50.843Z",
+            "finishedAt": "2026-10-21T10:47:20.282Z",
+            "invalidatedAt": "2026-10-21T10:55:07.402Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "e77389d7-8895-4ed3-8a80-84a62819aa70",
+            "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T280 correction 7e7cb9f6 (d32b4256 on be7efe89): the per-side streams do stop the mirroring. I checked independently on new founding worlds. Seed probe-r3a, 2,000 matches of 2024: the two sides had identical yellow minutes in 6 of 1,474 matches where both were booked, a red in the same minute in 0 of 5, and an injury in the same minute in 1 of 88. Rates were 3.85 yellows, 0.113 reds, 0.47 injuries and 10.00 substitutions a match. Rebalances: 106 made, 50 withheld, 0 disagreeing with the settled score, 10 settled on retry 1, every record valid. Seed probe-r3b, 1,000 matches of 1990, gave similar results. The targeted vitest also passes (6 files, 57 tests). The fix still leaves the two sides' streams correlated, though. `sideDraw` adds `:side<n>` as the last characters of the stream name. With the repo's FNV-1a → xorshift32 PRNG, two seeds that differ only in their last character produce strongly correlated draws. The first uniform each side draws correlates at 0.32, the Poisson card counts at 0.23, and home and away yellow counts across world matches at 0.27. The new test checks only for identical minute lists, so it cannot see this. The earlier rounds' P3 (the throw once rebalanceRetries runs out) is now handed to T281/T284 in the task's limits, which is acceptable.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/aggregate/participation.ts:44",
+                "message": "T280 / ARCH-5, MATCH-21, CLUB-23: sideDraw builds `${streams.names(family, period)}:side${side}`, so the two sides' seeds differ only in their final character ('0' vs '1'). primitives.ts `random` seeds xorshift32 straight from FNV-1a with no warm-up. A last-character difference therefore leaves the two states a fixed multiple of the FNV prime apart, and their outputs are correlated. Measured on 20,000 fixtures (aggregateStreams + sideDraw, 'discipline', regulation): the correlation of side 0's and side 1's first uniform is 0.325, 0.093 at the second draw and 0.078 at the sixth; for poissonDraw(r, 1.9), the first draw of the card count, it is 0.226. Two unrelated names give 0.001. In the world (seed probe-r3a, 2,000 of 2024 via playAggregate/aggregateRecord) the correlation of home and away yellow counts is 0.272, and 0.266 in 1990. The same coupling hits each line's first injury uniform (hurtDraws), the changes jitter and the per-side attribution streams in players.ts:383. So the sides are no longer copies, but their cards, injuries and stoppages still move together, which will distort T284's distributions. Fix: put the side component ahead of the remaining name characters, e.g. `<seed>:<rev>:aggregate:<family>:side<n>[:<period>]:<fixture>`. Measured with the same probe, that gives a correlation of 0.000 on the first draw and 0.011 on the second. Alternatively, mix the seed so that suffixes decorrelate. Add a regression test on the correlation of home/away first draws or card counts over a large sample (e.g. |r| < 0.05), not just on identical minute lists, then re-measure the card, injury, rebalance and retry figures in the result."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/primitives.ts:6",
+                "message": "T280 (handoff, outside touches): the same weakness exists before this commit for any two stream names that differ only at the end, including fixture IDs that differ in their last character. For example `...:regulation:ENG:0:<i>:3:0` vs `...:3:1` correlate at 0.323 on the first draw. This is a PRNG-seeding concern for ARCH-5 across every system that puts the fixture or entity ID last. It belongs to a separate task (e.g. a seed mixing step with portable test vectors) and should not be fixed inside T280. Record it for the planner or T284."
+              }
+            ],
+            "commit": "d32b42569a847ae4be0c309dbd5e930d72827374",
+            "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+            "submissionId": "3ff53cbb-e952-4268-b0f9-1a3557ebbb0a",
+            "createdAt": "2026-10-21T11:01:48.958Z",
+            "finishedAt": "2026-10-21T11:05:43.996Z",
+            "invalidatedAt": "2026-10-21T11:05:44.250Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 600,
+      "at": "2026-10-21T11:05:44.658Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e0574808-4b5c-42e6-a274-0221e4ef48a2",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T11:05:44.658Z"
+        }
+      }
+    },
+    {
+      "sequence": 601,
+      "at": "2026-10-21T11:05:45.047Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e0574808-4b5c-42e6-a274-0221e4ef48a2",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T11:05:44.658Z"
+        }
+      }
+    },
+    {
+      "sequence": 602,
+      "at": "2026-10-21T11:11:15.949Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 603,
+      "at": "2026-10-21T11:11:16.544Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 604,
+      "at": "2026-10-21T11:11:16.621Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 605,
+      "at": "2026-10-21T11:12:47.835Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "92e48cca-1c04-4522-8ffe-6c51accd00b9",
+        "submittedAt": "2026-10-21T11:12:47.835Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "2988 changed lines (limit 300)",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 2988,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T280",
+            "commit": "25bae723b8665170413d446e034a89b608b958a4",
+            "at": "2026-10-21T11:12:47.785Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T11:11:16.955Z",
+                "finishedAt": "2026-10-21T11:12:47.405Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T11:11:16.955Z",
+            "finishedAt": "2026-10-21T11:12:47.405Z"
+          }
+        ],
+        "verifiedCommit": "25bae723b8665170413d446e034a89b608b958a4"
+      }
+    },
+    {
+      "sequence": 606,
+      "at": "2026-10-21T11:12:47.895Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "e0574808-4b5c-42e6-a274-0221e4ef48a2",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T11:05:44.658Z",
+          "finishedAt": "2026-10-21T11:12:47.895Z",
+          "error": null,
+          "summary": "Fixed review e77389d7 for T280. P2: the side marker sat at the end of each stream name, and the seed hash leaves names that differ only in their last characters correlated: the two sides' first draws correlated at 0.33. `sideDraw` now builds `…:aggregate:<family>:side<n>[:<period>]:<fixture>` through `streams.draw`, so the period and fixture still follow the side; team.ts is untouched. On 20,000 fixtures the first-draw correlation dropped to 0.011. A new test, 'keeps the two sides' streams uncorrelated', draws 10,000 names for each of the four side streams (discipline, injuries, changes, attribution) and requires |r| < 0.05 for the first and second draws and a Poisson card count; the old naming fails it at 0.33. Re-measured on founding-world fixtures (a quarter as cup ties): home/away yellow-count correlation 0.013 (3,000 of 2024), 0.016 (2,000 of 2024, seed probe-r3a) and 0.050 (2,000 of 1990, seed probe-r3b, about 2 standard errors), against the reviewer's 0.272 and 0.266. Injury-count correlations were between −0.007 and 0.037. Yellows per match 3.73–3.84, reds 0.086–0.116, injuries 0.48–0.51. Rebalances: 155/70, 86/44 and 86/40 made/withheld, 0 disagreeing with the score in any sample; 0.3–0.5% of fixtures needed one retry, none needed two, and every record was valid. P3 is outside this task's files and is written into the result limits for the planner or T284: the PRNG seeding (FNV-1a straight into xorshift32) correlates any two stream names that differ only in their last characters, so it needs a seed-mixing step with portable test vectors. Checks that passed: typecheck, lint, format:check, the aggregate and match-model tests (6 files, 58 tests) and `vitest run --changed d32b4256` (3 files, 36 tests). Full suites, contract tests, catalog validation, the build and the Chromium journeys are left to the batch gate. The result section is four single-line bullets."
+        }
+      }
+    },
+    {
+      "sequence": 607,
+      "at": "2026-10-21T11:12:49.112Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "8c5efcd9-9154-4ac9-866b-f52e3ad43cd7",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "reviewing",
+          "commit": "25bae723b8665170413d446e034a89b608b958a4",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "92e48cca-1c04-4522-8ffe-6c51accd00b9",
+          "createdAt": "2026-10-21T11:12:49.112Z"
+        }
+      }
+    },
+    {
+      "sequence": 608,
+      "at": "2026-10-21T11:12:50.045Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ff2835f5-14b6-4d88-a179-64bda40917dd",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T11:12:50.045Z"
+        }
+      }
+    },
+    {
+      "sequence": 609,
+      "at": "2026-10-21T11:12:50.131Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ff2835f5-14b6-4d88-a179-64bda40917dd",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T11:12:50.045Z"
+        }
+      }
+    },
+    {
+      "sequence": 610,
+      "at": "2026-10-21T11:14:11.732Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "8c5efcd9-9154-4ac9-866b-f52e3ad43cd7",
+          "owner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I approve T280 correction e77389d7 (25bae723 on d32b4256, base 17418943). The previous review's P2 is fixed: the side marker no longer comes last in the stream name. `sideDraw` now passes `<family>:side<n>` through `streams.draw`, so the name reads `…:aggregate:<family>:side<n>[:<period>]:<fixture>`. The period and fixture characters follow the side marker, so the two sides' seeds no longer differ only at the end. I re-ran the repo's FNV-1a → xorshift32 PRNG in plain node, since the review checkout has no node_modules. Setup: seeds synthetic, probe-r4 and a; families discipline, injuries, changes and attribution; periods regulation, extra and none; 20,000 fixtures each. The home/away correlation of the first six uniforms stays within ±0.02, against a standard error of about 0.007. On the new test's exact names (10,000 `ENG:0:i:3:i%10`), the first uniform correlates at 0.007–0.024, the second at ≤0.016 and a Poisson count at ≤0.011. The old suffix naming gives 0.325–0.340 on the same names. The new test `keeps the two sides' streams uncorrelated` uses fixed seeds, so it is deterministic, and it is strong enough to fail the old naming. `gives each side its own named stream` still checks that a side's sequence restarts by name and does not depend on the other side's draws. Both callers of `sideDraw` pick up the new naming: participation.ts:446-448 and players.ts:383. team.ts streams are untouched. The result text is updated with the new figures and correctly marks the earlier rounds' runs as not re-claimed. The general PRNG-seeding weakness stays handed off to the planner/T284 in the task's limits. The delta to the previously reviewed 2,988-line submission is 46 lines in 3 files and opens no new risk. The other risk reasons (rework, autopilot decisions) were covered by earlier rounds and are recorded in the task's limits.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/participation.ts:46",
+              "message": "T280: `${family}:side${side}` is cast `as AggregateStreamFamily` to get the side into the middle of the name. Behaviour is correct, but the type now claims a value that is not in AGGREGATE_STREAM_FAMILIES, and nothing guards the name layout `sideDraw` relies on if team.ts `names` is ever changed to validate or map families. Optional cleanup: widen `AggregateStreams.names`/`draw` to take an optional stream suffix, or add a typed side-aware name builder in team.ts, so no cast is needed. This is not blocking."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/aggregate/engine.ts:369",
+              "message": "T280 (handoff, same root cause as the e77389d7 P3 already recorded in limits): `<fixture>:retry<n>` places the retry index last, so retry streams n and n+1 differ only in their final character and start correlated, at about 0.32 on the first draw under the current `random` seeding. In practice no fixture has gone past retry 1, so this is not blocking. The planned seed-mixing task (ARCH-5) should cover the retry names too, and T284's retry-bias measurement should take this into account."
+            }
+          ],
+          "commit": "25bae723b8665170413d446e034a89b608b958a4",
+          "baseCommit": "17418943d06f12ed9bd2aaec4954b6d10ea227b9",
+          "submissionId": "92e48cca-1c04-4522-8ffe-6c51accd00b9",
+          "createdAt": "2026-10-21T11:12:49.112Z",
+          "finishedAt": "2026-10-21T11:14:11.732Z"
+        }
+      }
+    },
+    {
+      "sequence": 611,
+      "at": "2026-10-21T11:14:11.788Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "72b7a9f4-c02c-48f5-be61-e1778b6ce597",
+      "taskId": "T280",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "ff2835f5-14b6-4d88-a179-64bda40917dd",
+          "runner": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T11:12:50.045Z",
+          "finishedAt": "2026-10-21T11:14:11.788Z",
+          "error": null,
+          "summary": "I approve T280 correction e77389d7 (25bae723 on d32b4256, base 17418943). The previous review's P2 is fixed: the side marker no longer comes last in the stream name. `sideDraw` now passes `<family>:side<n>` through `streams.draw`, so the name reads `…:aggregate:<family>:side<n>[:<period>]:<fixture>`. The period and fixture characters follow the side marker, so the two sides' seeds no longer differ only at the end. I re-ran the repo's FNV-1a → xorshift32 PRNG in plain node, since the review checkout has no node_modules. Setup: seeds synthetic, probe-r4 and a; families discipline, injuries, changes and attribution; periods regulation, extra and none; 20,000 fixtures each. The home/away correlation of the first six uniforms stays within ±0.02, against a standard error of about 0.007. On the new test's exact names (10,000 `ENG:0:i:3:i%10`), the first uniform correlates at 0.007–0.024, the second at ≤0.016 and a Poisson count at ≤0.011. The old suffix naming gives 0.325–0.340 on the same names. The new test `keeps the two sides' streams uncorrelated` uses fixed seeds, so it is deterministic, and it is strong enough to fail the old naming. `gives each side its own named stream` still checks that a side's sequence restarts by name and does not depend on the other side's draws. Both callers of `sideDraw` pick up the new naming: participation.ts:446-448 and players.ts:383. team.ts streams are untouched. The result text is updated with the new figures and correctly marks the earlier rounds' runs as not re-claimed. The general PRNG-seeding weakness stays handed off to the planner/T284 in the task's limits. The delta to the previously reviewed 2,988-line submission is 46 lines in 3 files and opens no new risk. The other risk reasons (rework, autopilot decisions) were covered by earlier rounds and are recorded in the task's limits."
+        }
+      }
+    },
+    {
+      "sequence": 612,
+      "at": "2026-10-21T11:14:13.238Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a410a3a6-2bf3-43fe-8c15-96eeafc34c0b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.306 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T09:29:49.361Z",
+          "stoppedAt": "2026-10-21T11:14:13.238Z",
+          "dispatched": 8,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+              "submissionId": "3067b9b4-fa01-4e2f-b8bb-c44520d6c910",
+              "commit": "f92cdfaed1908dc9bbae8cf2b1fd721212cd904a",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+              "submissionId": "c3c0732d-ecf6-461c-8d99-698299907f8f",
+              "commit": "f682e2e4c453f6a84395d7e8fe59fc8c82b191c9",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 613,
+      "at": "2026-10-21T11:25:35.064Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T11:02:05.176Z",
+            "finishedAt": "2026-10-21T11:25:34.923Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 614,
+      "at": "2026-10-21T11:25:35.161Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "9dfac0d2-2323-4b8c-bf2b-e3c74b6a3a7f",
+      "taskId": "T275",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "604590a83100103e8f0d331f9638e1ca595c3e10",
+        "integratedAt": "2026-10-21T11:25:35.161Z"
+      }
+    },
+    {
+      "sequence": 615,
+      "at": "2026-10-21T11:25:37.137Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "604590a83100103e8f0d331f9638e1ca595c3e10",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T11:25:37.108Z"
+        }
+      }
+    },
+    {
+      "sequence": 616,
+      "at": "2026-10-21T11:25:38.916Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "b0c38dde-3c35-4057-be0f-353e80e1dec3",
+      "taskId": "T277",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
