@@ -1,7 +1,7 @@
 import s from './FacilityArt.module.css';
 import { facilityScene, type FacilityScene } from './facilityScene';
 import type { World } from '../../../../packages/contracts/src/types';
-import { useLocale, usePresentation, useTheme } from '../presentation/react';
+import { useLocale, usePresentation, useTheme, useThemeNeed } from '../presentation/react';
 import type { CSSProperties } from 'react';
 
 /** Keep atmospheric art below the contrast of the surrounding game information. */
@@ -18,6 +18,7 @@ export function FacilityArt({
   const theme = useTheme();
   const themeLabel = usePresentation().themeEntry!.label;
   const scene = facilityScene(kind, world, { locale, theme, themeLabel });
+  useThemeNeed({ type: 'facility', era: scene.era, kind, stage: scene.stage });
   return (
     <span
       className={`${s.art} ${className || ''}`}

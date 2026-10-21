@@ -1,5 +1,5 @@
 import type { IconResource, THEME_ICON_ROLES } from '../presentation/contracts';
-import { useOptionalTheme } from '../presentation/react';
+import { useOptionalTheme, useThemeNeed } from '../presentation/react';
 
 export type PixelIconName = Exclude<(typeof THEME_ICON_ROLES)[number], `trophy.${string}`>;
 
@@ -9,12 +9,17 @@ export function SemanticIcon({
   size,
   className,
   name,
+  semanticRole,
+  variant,
 }: {
   resource?: IconResource;
   size: number;
   className?: string;
   name?: string;
+  semanticRole: string;
+  variant?: string;
 }) {
+  useThemeNeed({ type: 'icon', role: semanticRole, variant });
   if (resource?.type === 'image')
     return (
       <img
@@ -57,6 +62,12 @@ export function PixelIcon({
 }) {
   const theme = useOptionalTheme();
   return (
-    <SemanticIcon resource={theme?.icon(name)} size={size} className={className} name={name} />
+    <SemanticIcon
+      resource={theme?.icon(name)}
+      size={size}
+      className={className}
+      name={name}
+      semanticRole={name}
+    />
   );
 }

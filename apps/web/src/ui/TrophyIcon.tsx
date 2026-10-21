@@ -8,6 +8,9 @@ export function TrophyIcon({ kind, earned = true }: { kind: TrophyKind; earned?:
   return (
     <SemanticIcon
       size={56}
+      name={kind === 'best' ? 'star' : undefined}
+      semanticRole={`trophy.${kind}`}
+      variant={earned ? undefined : 'unearned'}
       resource={theme?.icon(`trophy.${kind}`, earned ? undefined : 'unearned')}
     />
   );

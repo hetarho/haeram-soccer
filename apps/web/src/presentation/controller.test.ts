@@ -14,6 +14,7 @@ const themeRegistry = json('../../public/presentation/themes/index.json');
 const syntheticTheme = (id: string): ThemePack => ({
   ...structuredClone(baselineTheme),
   id,
+  images: { facility: { pattern: `./${id}/{era}/{kind}-{stage}.webp` } },
   fonts: baselineTheme.fonts.map((font) => ({ ...font, resource: `${font.resource}?theme=${id}` })),
 });
 const deferred = <T>() => {
@@ -78,6 +79,14 @@ function setup(saved = {}, portsOverride?: Partial<ThemeInstallationPorts>, base
   const activations: string[] = [];
   const releases: string[] = [];
   const ports: ThemeInstallationPorts = {
+    stageImage: async (url) => ({
+      activate: () => {
+        activations.push(url);
+      },
+      dispose: () => {
+        releases.push(url);
+      },
+    }),
     stageFont: async (font) => ({
       activate: () => {
         activations.push(font.resource);
@@ -238,6 +247,83 @@ describe('one presentation controller', () => {
     expect(controller.getSnapshot().theme?.id).toBe('synthetic-one');
     expect(controller.getSnapshot().error).toBeUndefined();
   });
+
+  it('retains the usable pack when a currently mounted facility image fails', async () => {
+    const { controller, releases } = setup(
+      {},
+      {
+        stageImage: async (url) => {
+          if (url.includes('/synthetic-one/')) throw new Error('image unavailable');
+          return { activate() {}, dispose() {} };
+        },
+      },
+    );
+    await controller.initialize();
+    const active = controller.getSnapshot();
+    const release = controller.registerNeed({
+      type: 'facility',
+      era: 'heritage',
+      kind: 'stadium',
+      stage: 0,
+    });
+    await controller.select({ themeId: 'synthetic-one' });
+    expect(controller.getSnapshot().theme).toBe(active.theme);
+    expect(controller.getSnapshot().error).toBeDefined();
+    expect(releases).not.toContain(`tokens:${themeRegistry.defaultId}`);
+    release();
+  });
+
+  it('retries the latest selection when mounted needs change during image staging', async () => {
+    const waiting = deferred<void>();
+    const staged: string[] = [];
+    const activated: string[] = [];
+    const { controller } = setup(
+      {},
+      {
+        stageImage: async (url) => {
+          staged.push(url);
+          if (url.endsWith('stadium-0.webp')) await waiting.promise;
+          return {
+            activate: () => {
+              activated.push(url);
+            },
+            dispose() {},
+          };
+        },
+      },
+    );
+    await controller.initialize();
+    const release = controller.registerNeed({
+      type: 'facility',
+      era: 'heritage',
+      kind: 'stadium',
+      stage: 0,
+    });
+    const first = controller.select({ themeId: 'synthetic-one' });
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    const changed = new Promise<void>((resolve) => {
+      const stop = controller.subscribe(() => {
+        if (
+          !controller.getSnapshot().pending &&
+          controller.getSnapshot().theme?.id === 'synthetic-one'
+        ) {
+          stop();
+          resolve();
+        }
+      });
+    });
+    release();
+    controller.registerNeed({ type: 'facility', era: 'heritage', kind: 'stadium', stage: 1 });
+    await changed;
+    waiting.resolve();
+    await first;
+    expect(staged).toEqual([
+      '/presentation/themes/synthetic-one/heritage/stadium-0.webp',
+      '/presentation/themes/synthetic-one/heritage/stadium-1.webp',
+    ]);
+    expect(activated).toEqual(['/presentation/themes/synthetic-one/heritage/stadium-1.webp']);
+    expect(controller.getSnapshot().theme?.id).toBe('synthetic-one');
+  }, 10000);
 
   it('offers retry after an initial registry load fails', async () => {
     const { controller, documents } = setup();

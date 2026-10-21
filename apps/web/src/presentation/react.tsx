@@ -1,5 +1,13 @@
-import { createContext, useContext, useState, useSyncExternalStore, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 import type { PresentationController } from './controller';
+import type { ThemeImageNeed } from './theme';
 
 const PresentationContext = createContext<PresentationController | null>(null);
 const SettingsContext = createContext<{ open: boolean; show(): void; close(): void } | null>(null);
@@ -49,6 +57,12 @@ export function useOptionalTheme() {
     () => controller?.getSnapshot().theme,
   );
   return theme;
+}
+/** Register semantic needs so a new pack resolves only the facility scenes currently mounted. */
+export function useThemeNeed(need: ThemeImageNeed) {
+  const controller = useContext(PresentationContext);
+  const identity = JSON.stringify(need);
+  useLayoutEffect(() => controller?.registerNeed(need), [controller, identity]);
 }
 export function usePresentationSettings() {
   const settings = useContext(SettingsContext);

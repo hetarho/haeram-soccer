@@ -7,7 +7,12 @@ import type { InstalledTheme, installThemeResources } from '../adapters/themeRes
 import type { PackRegistry, ThemeRegistryEntry } from './contracts';
 import { createLoadedLocale, type LoadedLocale } from './locale';
 import { resolvePackEntry } from './registry';
-import { createThemeResolver, type ThemeResolver } from './theme';
+import {
+  collectThemeImageResources,
+  createThemeResolver,
+  type ThemeImageNeed,
+  type ThemeResolver,
+} from './theme';
 
 export interface PresentationSnapshot {
   readonly locale?: LoadedLocale;
@@ -41,6 +46,9 @@ export function createPresentationController(options: PresentationControllerOpti
   let disposed = false;
   let installed: InstalledTheme | undefined;
   let registries: { locale: PackRegistry<'locale'>; theme: PackRegistry<'theme'> } | undefined;
+  const needs = new Map<symbol, ThemeImageNeed>();
+  let needsRevision = 0;
+  let needsRefreshQueued = false;
   const listeners = new Set<() => void>();
   const publish = (change: Partial<PresentationSnapshot>) => {
     snapshot = Object.freeze({ ...snapshot, ...change });
@@ -49,7 +57,8 @@ export function createPresentationController(options: PresentationControllerOpti
 
   async function apply(token: number): Promise<void> {
     if (!registries || disposed) return;
-    const current = () => !disposed && token === generation;
+    const revision = needsRevision;
+    const current = () => !disposed && token === generation && revision === needsRevision;
     const localeRegistry = registries.locale;
     const themeRegistry = registries.theme;
     // Retain the entries returned by T299: each carries its declaring registry provenance.
@@ -84,7 +93,11 @@ export function createPresentationController(options: PresentationControllerOpti
         };
       }
       if (theme !== snapshot.theme) {
-        const next = await options.installTheme(theme, { previous: installed, isCurrent: current });
+        const next = await options.installTheme(theme, {
+          previous: installed,
+          isCurrent: current,
+          requiredImages: collectThemeImageResources(theme, [...needs.values()]),
+        });
         if (!next) return;
         installed = next;
       }
@@ -133,6 +146,18 @@ export function createPresentationController(options: PresentationControllerOpti
     publish({ pending: true, error: undefined });
     return registries ? apply(token) : initialize();
   };
+
+  function refreshNeeds() {
+    needsRevision++;
+    if (disposed || !snapshot.pending || !registries || !snapshot.locale || needsRefreshQueued)
+      return;
+    needsRefreshQueued = true;
+    queueMicrotask(() => {
+      needsRefreshQueued = false;
+      if (!disposed && snapshot.pending && snapshot.locale) void request({}, true);
+    });
+  }
+
   return {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
@@ -144,10 +169,20 @@ export function createPresentationController(options: PresentationControllerOpti
     initialize,
     select: (selection: PresentationPreferences) => request(selection),
     retry: () => (registries ? request({}, true) : initialize()),
+    registerNeed(need: ThemeImageNeed) {
+      if (disposed) return () => {};
+      const key = Symbol();
+      needs.set(key, Object.freeze({ ...need }));
+      refreshNeeds();
+      return () => {
+        if (needs.delete(key)) refreshNeeds();
+      };
+    },
     dispose() {
       disposed = true;
       generation++;
       installed?.dispose();
+      needs.clear();
       listeners.clear();
     },
   };
