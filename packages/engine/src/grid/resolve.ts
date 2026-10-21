@@ -109,7 +109,7 @@ export const DUEL_CONFIG = {
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
    */
-  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.79, clearanceOut: 0.45 },
+  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5 },
 } as const;
 /** How much more often a challenge is a foul on this fixture's model. */
 const foulScale = (s: GridState) => (s.setup.model !== undefined ? DUEL_CONFIG.candidate.foul : 1);

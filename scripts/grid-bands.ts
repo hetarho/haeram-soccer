@@ -39,7 +39,15 @@ import type {
   Tactic,
   World,
 } from '../packages/contracts/src/types';
-import { createWorld, integer, random, rating } from '../packages/engine/src/index';
+import {
+  clubStyle,
+  createWorld,
+  fatigueLoad,
+  integer,
+  PRESS_LOAD_FATIGUE,
+  random,
+  rating,
+} from '../packages/engine/src/index';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from '../packages/engine/src/grid/movement';
@@ -399,15 +407,20 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       home: home.id,
       away: away.id,
     };
-    const result = playGrid(
-      buildGridSetup(w, f, {
-        observe: false,
-        recordPlayers: true,
-        model: MATCH_MODEL_REVISION,
-        ...(c.family === 'tactics' ? { tactics: [params.home!, params.away!] } : {}),
-        ...(params.decide ? { decide: params.decide } : {}),
-      }),
-    );
+    const setup = buildGridSetup(w, f, {
+      observe: false,
+      recordPlayers: true,
+      model: MATCH_MODEL_REVISION,
+      ...(c.family === 'tactics' ? { tactics: [params.home!, params.away!] } : {}),
+      ...(params.decide ? { decide: params.decide } : {}),
+    });
+    // A forced tactic carries its weekly press load (MATCH-2): a club nobody owns pays it in its
+    // squad's fatigue only for its own pressing style, so the load moves with the tactic played.
+    if (c.family === 'tactics')
+      [home, away].forEach((club, side) => {
+        setup.shift[side] += pressLoad(clubStyle(club)) - pressLoad(setup.tactics[side]!);
+      });
+    const result = playGrid(setup);
     samples.push({
       record: result.record,
       diagnostics: result.diagnostics,
@@ -419,6 +432,10 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
   }
   return { samples, ms: (performance.now() - started) / Math.max(1, job.count) };
 }
+
+/** Skill points a squad's weekly press load costs an outfielder (slotSkill: an eighth of the excess). */
+const pressLoad = (tactic: Tactic) =>
+  tactic === 'press' ? fatigueLoad(PRESS_LOAD_FATIGUE) / 8 : 0;
 
 const LINES = ['FW', 'MF', 'DF', 'GK'];
 /** One side's per-match means: the press diagnosis reads where its shots come from and who takes them. */
@@ -440,6 +457,9 @@ function sideSummary(samples: readonly MatchSample[], side: 0 | 1) {
     boxShotShare: shots.filter(inBox).length / Math.max(1, shots.length),
     boxEntries: d(TD.boxEntries) / n,
     frontOfBoxEntries: d(TD.frontOfBoxEntries) / n,
+    throughBalls: d(TD.throughBalls) / n,
+    throughBallsCompleted: d(TD.throughBallsCompleted) / n,
+    bigChances: d(TD.bigChances) / n,
     passes: m(M.passes) / n,
     completion: m(M.completed) / Math.max(1, m(M.passes)),
     possession: held / Math.max(1, held + against),
@@ -686,6 +706,8 @@ async function runReport() {
       workers,
       movement: GRID_MOVEMENT_CONFIG,
       ball: GRID_BALL_CONFIG,
+      forcedTactics:
+        'tactic pairings force both tactics on the core pairs; the weekly press load (MATCH-2, fatigue 32: 1.5 skill points an outfielder) moves with the tactic played',
     },
     coverage: CORPUS_CONFIG.conditions.map((c) => ({
       condition: c.id,

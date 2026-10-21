@@ -64,6 +64,11 @@ export const COORDINATION_CONFIG = {
   combination: { closed: 2.5, retry: 3 },
   /** Positions that hold the rest defence while the ball is in the opponent's half: no show, no run. */
   rest: ['CB', 'DM'] as readonly Position[],
+  /**
+   * Straight after a regain (→MATCH-8): for `seconds` a side whose tactic is listed starts its runs
+   * `odds` times as often and from any band, so a counter side's runners go in behind at once.
+   */
+  transition: { seconds: 8, odds: { counter: 2.5 } as Partial<Record<Tactic, number>> },
 } as const;
 
 /** Roles that cover a pressing teammate first: their distance counts divided by this. */
@@ -425,13 +430,25 @@ function attack(
       }
     }
   }
-  // Runs: his role's run, more often for a better reader of the moment and fresher legs.
+  // Runs: his role's run, more often for a better reader of the moment and fresher legs, and at
+  // once after a regain for a side that breaks (→MATCH-8).
+  const T = CC.transition;
+  const breaking =
+    s.lastRegain?.side === side && s.elapsed - s.lastRegain.at <= T.seconds
+      ? (T.odds[s.setup.tactics[side]] ?? 1)
+      : 1;
   const ctx = runContext(s, side);
-  if (ctx.band < 3) return;
+  if (ctx.band < 3 && breaking === 1) return;
   const plans = mates.flatMap((gp) => {
     if (!available(gp) || retrying(s, gp, 'run')) return [];
     const timing = CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions');
-    const p = runPlan(s, gp, ctx, stream(s, gp, 'run', s.elapsed), timing * fresh(s, gp));
+    const p = runPlan(
+      s,
+      gp,
+      ctx,
+      stream(s, gp, 'run', s.elapsed),
+      timing * fresh(s, gp) * breaking,
+    );
     return p ? [{ gp, p }] : [];
   });
   // One overlap per flank: one under way keeps it, else the overlapper nearest his space takes it.
