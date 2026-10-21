@@ -104,6 +104,31 @@ describe('theme resource resolution', () => {
     expect(() => theme.facility({ era: 'heritage', kind: 'stadium', stage: -1 })).toThrow();
   });
 
+  it('resolves office roles through the selected theme, including shared era overrides', () => {
+    const theme = createThemeResolver(pixel, { url });
+    for (const era of FACILITY_ERAS) {
+      expect(theme.facility({ era, kind: 'manager', stage: 0 }).src).toBe(
+        '/art/scenes/manager-office-v1.webp',
+      );
+      expect(theme.facility({ era, kind: 'staff', stage: 0 }).src).toBe(
+        '/art/scenes/staff-office-v1.webp',
+      );
+    }
+    const candidate = structuredClone(pixel);
+    candidate.id = 'office-theme';
+    candidate.images.facility = {
+      pattern: './rooms/{era}/{kind}-{stage}.webp',
+      overrides: { 'heritage.manager.0': './private-office.webp' },
+    };
+    const other = createThemeResolver(candidate, { url });
+    expect(other.facility({ era: 'heritage', kind: 'manager', stage: 0 }).src).toBe(
+      '/presentation/themes/private-office.webp',
+    );
+    expect(other.facility({ era: 'heritage', kind: 'staff', stage: 0 }).src).toBe(
+      '/presentation/themes/rooms/heritage/staff-0.webp',
+    );
+  });
+
   it('resolves an unseen theme from data', () => {
     const candidate = structuredClone(pixel);
     candidate.id = 'unseen-test';

@@ -103,7 +103,7 @@ export const THEME_ICON_ROLES = [
   'trophy.best',
 ] as const;
 export const FACILITY_ERAS = ['heritage', 'terraces', 'contemporary'] as const;
-export const FACILITY_KINDS = ['stadium', 'locker', 'training'] as const;
+export const FACILITY_KINDS = ['stadium', 'locker', 'training', 'manager', 'staff'] as const;
 export type FacilityEra = (typeof FACILITY_ERAS)[number];
 export type FacilityKind = (typeof FACILITY_KINDS)[number];
 

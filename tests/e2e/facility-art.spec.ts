@@ -62,15 +62,20 @@ async function load(page: Page, world: World) {
 
 async function expectArt(page: Page, kind: string, era: string, stage: number) {
   const img = page.locator(`[data-facility-art="${kind}"] img`);
+  const office = kind === 'manager' || kind === 'staff';
   await expect(img).toBeVisible();
-  await expect(img).toHaveAttribute('src', `/art/scenes/${era}/${kind}-${stage}.webp`);
+  await expect(img).toHaveAttribute(
+    'src',
+    office ? `/art/scenes/${kind}-office-v1.webp` : `/art/scenes/${era}/${kind}-${stage}.webp`,
+  );
   await expect(img).toHaveAttribute('alt', /픽셀아트$/);
   // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
       img.evaluate(
-        (el: HTMLImageElement) => el.complete && el.naturalWidth === 240 && el.naturalHeight === 80,
+        (el: HTMLImageElement) =>
+          el.complete && el.naturalWidth > 0 && el.naturalWidth === el.naturalHeight * 3,
       ),
     )
     .toBe(true);
@@ -104,8 +109,8 @@ for (const scenario of [
     const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
     for (const [tab, kind, stage] of [
       ['선수', 'locker', scenario.stadium],
-      ['감독', 'locker', scenario.stadium],
-      ['스태프', 'training', scenario.training],
+      ['감독', 'manager', 0],
+      ['스태프', 'staff', 0],
     ] as const) {
       await tabs.getByRole('tab', { name: tab, exact: true }).click();
       await expectArt(page, kind, scenario.era, stage);
@@ -137,6 +142,8 @@ for (const scenario of [
         `/art/scenes/${scenario.era}/locker-${scenario.stadium}.webp`,
         `/art/scenes/${scenario.era}/stadium-${scenario.stadium}.webp`,
         `/art/scenes/${scenario.era}/training-${scenario.training}.webp`,
+        '/art/scenes/manager-office-v1.webp',
+        '/art/scenes/staff-office-v1.webp',
       ].sort(),
     );
   });

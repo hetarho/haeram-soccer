@@ -95,6 +95,29 @@ describe('facility artwork follows the current club', () => {
     expect(facilityScene('training', { ...base, trainingGround: 99 }).stage).toBe(5);
   });
 
+  it.each(['manager', 'staff'] as const)(
+    'keeps the %s room independent of era and facility upgrades',
+    (kind) => {
+      const expected = `/art/scenes/${kind}-office-v1.webp`;
+      for (const year of [1950, 1980, 2020]) {
+        for (const level of [0, 3, 8, 99]) {
+          const scene = facilityScene(kind, {
+            ...base,
+            year,
+            stadium: level,
+            trainingGround: level,
+          });
+          expect(scene.stage).toBe(0);
+          expect(scene.src).toBe(expected);
+          expect(scene.alt).toContain(kind === 'manager' ? '감독실' : '스태프 사무실');
+        }
+      }
+      const body = readFileSync(new URL(`../../public${expected}`, import.meta.url));
+      expect(body.toString('ascii', 0, 4)).toBe('RIFF');
+      expect(body.toString('ascii', 8, 12)).toBe('WEBP');
+    },
+  );
+
   it('ships distinct local WebP drawings for every valid era and facility stage', () => {
     const manifest = JSON.parse(
       readFileSync(new URL('../../public/art/manifest.json', import.meta.url), 'utf8'),

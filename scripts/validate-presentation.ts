@@ -16,7 +16,7 @@ import {
 } from '../apps/web/src/presentation/registry';
 import { createThemeResolver, validateThemeTypography } from '../apps/web/src/presentation/theme';
 import { installThemeResources } from '../apps/web/src/adapters/themeResources';
-import { partTop } from '../packages/engine/src/facilities';
+import { facilityStageTop } from '../apps/web/src/presentation/facilityImages';
 
 export interface PresentationInventory {
   locales: { id: string; label: string; url: string }[];
@@ -114,7 +114,7 @@ export async function validatePresentation(
     installed?.dispose();
     for (const era of FACILITY_ERAS)
       for (const kind of FACILITY_KINDS)
-        for (let stage = 0; stage <= partTop(kind === 'locker' ? 'stadium' : kind); stage++)
+        for (let stage = 0; stage <= facilityStageTop(kind); stage++)
           await asset(
             theme.facility({ era, kind, stage }).src,
             `era stage asset ${entry.id}/${era}.${kind}.${stage}`,

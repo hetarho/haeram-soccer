@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r107 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r108 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -329,9 +329,10 @@
 - WEB-72 [o] The default pixel theme supplies cohesive, lived-in pixel-art football backgrounds for the home stadium scene, match-preparation locker room and training-ground overview; other themes supply the same semantic image slots (→WEB-91).
   - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Preserve believable perspective, material wear and period equipment.
   - Backgrounds stay subordinate to the interface; the default theme uses a light charcoal dim and reduced saturation. Apply image treatments only to the image, preserving the clarity of HTML text and controls.
-  - Select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era. An era changes on 1 January even within a season.
+  - Stadium, locker-room and training-ground scenes select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era. An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
-  - The squad and manager overview reuse the current locker-room artwork; the staff overview reuses the training ground. These are views of existing facilities, with no additional upgrade or baked-in club facts. Overview illustrations have a bounded responsive height, preserve the scene composition and use accessible HTML captions.
+  - The squad overview uses the current locker room. Manager and staff tabs have distinct original interior illustrations: a private manager office and a shared coaching workroom, viewed from the visiting owner's entrance. These room images use period-neutral paper/chalk/wood equipment, with no named people, branding, embedded facts or independent upgrade stat; each has one semantic stage (0), shared across calendar eras.
+  - Overview illustrations have a bounded responsive height, preserve the scene composition and use accessible HTML captions. Each room is a separate theme image role (→WEB-91).
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
   - Atmospheric artwork conveys the facility's relative scale and quality; authoritative stadium-stage labels, capacity, club identity, fixture and training figures come from the current world rather than baked-in numbers.
   - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
@@ -442,6 +443,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r108 261021 WEB-72✎ manager locker-room/staff training reuse→original private-office/shared-workroom images, separate semantic roles with a single period-neutral stage
 - r107 261021 WEB-10✎ management intros/stacked rules→compact action-first views; WEB-43✎ text-led people tabs→facility overviews; WEB-70✎ mid-page art→training-ground first; WEB-72✎ preparation locker art only→squad/manager reuse and staff training view
 - r106 261021 WEB-92+ per-tenure manager accomplishments, honest incomplete-history states and contextual season-record navigation
 - r105 261021 WEB-1✎ Korean-only delivery→one default Korean locale behind an extensible registry; WEB-10✎ fixed charcoal/no presentation settings→theme surfaces and shared preferences; WEB-38/72/73✎ universal pixel styling→default pixel pack with shared theme semantics; WEB-90/91+ single-locale/single-theme foundation, resource-only extension and stored-text preservation

@@ -124,6 +124,8 @@
     "facility.locker": "구장 {stage}단계 라커룸",
     "facility.training.base": "기본 훈련장",
     "facility.training.stage": "{stage}단계 훈련장",
-    "facility.alt": "{era} {label} {theme}"
+    "facility.alt": "{era} {label} {theme}",
+    "facility.manager": "감독실",
+    "facility.staff": "스태프 사무실"
   }
 }

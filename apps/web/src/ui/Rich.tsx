@@ -191,8 +191,8 @@ function People({ state, client }: Props) {
         {tab !== 'market' && (
           <FacilityOverview
             w={w}
-            kind={tab === 'coaches' ? 'training' : 'locker'}
-            title={tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '팀 미팅' : '코칭 스태프'}
+            kind={tab === 'coaches' ? 'staff' : tab === 'manager' ? 'manager' : 'locker'}
+            title={tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '감독실' : '스태프 사무실'}
           >
             {tab === 'coaches'
               ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`

@@ -12,6 +12,7 @@ import { getFontSources } from '../apps/web/src/presentation/fonts';
 import { resolvePackUrl, resolveRegistryUrl } from '../apps/web/src/presentation/registry';
 import { createThemeResolver } from '../apps/web/src/presentation/theme';
 import { partTop } from '../packages/engine/src/facilities';
+import { facilityStageTop } from '../apps/web/src/presentation/facilityImages';
 import {
   createSyntheticPresentation,
   readPresentationBaselines,
@@ -55,7 +56,7 @@ function deployment() {
     if (resolver.stylesheet) write(resolver.stylesheet, ':root {}');
     for (const era of FACILITY_ERAS)
       for (const kind of FACILITY_KINDS)
-        for (let stage = 0; stage <= partTop(kind === 'locker' ? 'stadium' : kind); stage++)
+        for (let stage = 0; stage <= facilityStageTop(kind); stage++)
           write(resolver.facility({ era, kind, stage }).src, 'synthetic image file');
     for (const [role, icon] of Object.entries(pack.icons))
       for (const variant of [undefined, ...Object.keys(icon.variants ?? {})]) {
@@ -142,6 +143,15 @@ describe('static presentation resource validation', () => {
     tree.json(tree.added.localeUrl, tree.added.locale);
     await expect(validatePresentation(tree.root)).rejects.toThrow(
       'Message parameters differ from the default: shell.cashDetails',
+    );
+  });
+
+  it.each(['manager', 'staff'] as const)('reports a missing %s room image', async (kind) => {
+    const tree = deployment();
+    const missing = tree.resolver.facility({ era: 'heritage', kind, stage: 0 }).src;
+    rmSync(tree.file(missing));
+    await expect(validatePresentation(tree.root)).rejects.toThrow(
+      `Missing era stage asset ${tree.theme.id}/heritage.${kind}.0: ${missing}`,
     );
   });
 

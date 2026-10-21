@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "tool": "built-in image_gen",
+  "generatedAt": "2026-10-21",
+  "assets": [
+    {
+      "kind": "manager",
+      "file": "/art/scenes/manager-office-v1.webp",
+      "width": 1086,
+      "height": 362,
+      "semanticStage": 0,
+      "eras": ["heritage", "terraces", "contemporary"],
+      "prompt": "Use case: stylized-concept. Asset type: final bitmap environment illustration for a Korean football club management game's management-tab header. Create ONE original scene, not a UI mockup. Very wide horizontal panorama, aspect ratio 3:1, intended canvas 1536 by 512 pixels. The image must fill the whole canvas.\nStyle: carefully composed 16-bit football environmental pixel art, clearly visible square pixels and stepped edges, modest detail, dithered material shadows, no smooth painted gradients, no blur, no photorealism, no vector outlines. Palette: natural dark grass green, charcoal, warm ivory, aged brown wood and muted brick. Match a cohesive series of quiet evening football-club scenes: believable perspective, lived-in equipment and material wear, warm practical lamps with cool dusk through a window. Restrained lighting readable behind a dark game UI, but the image itself contains NO UI.\nViewpoint: eye level from the visiting club owner's entrance, welcoming, intimate, grounded in an ordinary local football club. Timeless period-neutral objects that can fit the mid twentieth century through the present: paper, chalk, timber, leather, simple metal furniture; no computer, no phone, no screen or futuristic architecture. No identifiable person, no portraits, no club crest, no real brand, no letters, numbers, labels, embedded captions, watermark or decorative border. No players or people. Leave a clear visual focus across the middle horizontal band so the scene remains readable in a shallow mobile banner.\nPrimary request: a football manager's private office, genuinely distinct from a locker room or outdoor training pitch. From the doorway, see a worn wooden manager's desk, two visitor chairs in front, a leather manager's chair behind, a small brass desk lamp casting warm light, a closed notebook and a few neatly stacked paper folders. A small framed tactics chalkboard with an unlabeled abstract pitch and plain chalk marks stands behind the desk. Bookshelves, a coat hook with a dark green training jacket and a window looking onto a little green football pitch at dusk add football context. Cozy dark wood and muted brick walls. Keep the entire desk, both visitor chairs, rear chalkboard and pitch window visible in the wide composition. The manager is away: the owner has just stepped in for a conversation.",
+      "source": "exec-7e3173e8-9503-407a-a866-059d42e7ee8e.png",
+      "sourceWidth": 2172,
+      "sourceHeight": 724,
+      "bytes": 473104,
+      "sha256": "e5f4e4c5679d1d67d7c6a8316504c60a238b464535cd7250bf17d1c42eefcee9",
+      "preparation": "Whole-scene 2:1 nearest-neighbour downscale, lossless WebP; no crop or semantic edits."
+    },
+    {
+      "kind": "staff",
+      "file": "/art/scenes/staff-office-v1.webp",
+      "width": 1086,
+      "height": 362,
+      "semanticStage": 0,
+      "eras": ["heritage", "terraces", "contemporary"],
+      "prompt": "Use case: stylized-concept. Asset type: final bitmap environment illustration for a Korean football club management game's management-tab header. Create ONE original scene, not a UI mockup. Very wide horizontal panorama, aspect ratio 3:1, intended canvas 1536 by 512 pixels. The image must fill the whole canvas.\nStyle: carefully composed 16-bit football environmental pixel art, clearly visible square pixels and stepped edges, modest detail, dithered material shadows, no smooth painted gradients, no blur, no photorealism, no vector outlines. Palette: natural dark grass green, charcoal, warm ivory, aged brown wood and muted brick. Match a cohesive series of quiet evening football-club scenes: believable perspective, lived-in equipment and material wear, warm practical lamps with cool dusk through a window. Restrained lighting readable behind a dark game UI, but the image itself contains NO UI.\nViewpoint: eye level from the visiting club owner's entrance, welcoming, intimate, grounded in an ordinary local football club. Timeless period-neutral objects that can fit the mid twentieth century through the present: paper, chalk, timber, leather, simple metal furniture; no computer, no phone, no screen or futuristic architecture. No identifiable person, no portraits, no club crest, no real brand, no letters, numbers, labels, embedded captions, watermark or decorative border. No players or people. Leave a clear visual focus across the middle horizontal band so the scene remains readable in a shallow mobile banner.\nPrimary request: the coaching staff's shared workroom, genuinely distinct from the manager's private office and from an outdoor training pitch. From the doorway, see a long shared wooden planning table with four mismatched simple chairs, open but unlettered notebooks, clipboards, rolled blank field plans, a few cups and a small tea tray. Along the back wall, one large green tactics chalkboard shows only an abstract unlabelled pitch and simple magnets. Low shelves hold training cones, folded bibs, boots and a worn football; a modest window overlooks the club training ground at dusk. A hanging practical lamp warms the centre of the table. Lived-in cooperative workplace, plain and believable for coaches of a modest club. Keep the table, chalkboard, equipment shelf and window visible in the wide panorama. No prominent private desk, no executive leather chair, no locker-room benches.",
+      "source": "exec-bc6c99da-009a-4f09-b8f3-c690692b176e.png",
+      "sourceWidth": 2172,
+      "sourceHeight": 724,
+      "bytes": 538366,
+      "sha256": "27cb909aaa4f150632bfe3c8164149625d2cdb00b5a1caedc2e9479c407f2e81",
+      "preparation": "Whole-scene 2:1 nearest-neighbour downscale, lossless WebP; no crop or semantic edits."
+    }
+  ]
+}

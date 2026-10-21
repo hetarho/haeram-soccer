@@ -164,7 +164,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 107 | 107 | - | 0 |
+| WEB | 108 | 108 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -210,6 +210,8 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261021 T311 committed on main (u6v1): original manager/staff office artwork and separate theme roles; 33 focused cases and task checks pass; browser batch pending.
+- 261021 T311 start (u6v1): WEB r108 replaces reused manager/staff scenes with original generated rooms.
 - 261021 T310 committed on main (u6v1): compact management overviews; task checks and responsive journey changes retained for the next browser batch.
 - 261021 T310 start (u6v1): WEB r107 records compact management overviews; implementation scopes remain independent of the engine and history tasks.
 - 261021 T281 integrated (h3t6; implementer and separate reviewer subagents, approved with P3 notes routed to T283 T284 T285 T286)
@@ -228,5 +230,3 @@
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
 - 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.
-- 261021 T299 T300 T301 T302 T303 integrated
-- 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
