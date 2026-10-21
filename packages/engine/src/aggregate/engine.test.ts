@@ -7,8 +7,19 @@ import { createWorld, ownLeagueClubs } from '../index';
 import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
 import { eraRules } from '../grid/setup';
 import { prepareMatch } from '../match';
-import { aggregateRecord, matchdayRosters, playAggregate, simulateAggregate } from './engine';
+import {
+  aggregatePlan,
+  aggregateRecord,
+  aggregateSkillAccess,
+  matchdayRosters,
+  playAggregate,
+  settleParticipation,
+  simulateAggregate,
+} from './engine';
+import { buildAggregateInput } from './input';
 import { rebalanceIssues, scoreBefore } from './participation';
+import { aggregateStreams } from './team';
+import type { AggregateParticipation, AggregateSkillAccess } from './types';
 
 /**
  * Fixtures between clubs nobody owns in a freshly founded world (→ARCH-21: a founding, no
@@ -33,6 +44,14 @@ function others(n: number, year?: number) {
   return { w, fixtures };
 }
 const CUP = { awayGoals: false } as const;
+/** The input's accessor before a plan exists: the planner reads no skill. */
+const UNREAD: AggregateSkillAccess = {
+  skill: () => {
+    throw new Error('no skill before the plan');
+  },
+  finishing: () => 0,
+  targetChance: () => 0,
+};
 const linesOf = (r: MatchRecord, side: 0 | 1) =>
   side === 0 ? r.players.slice(0, r.lineCounts![0]) : r.players.slice(r.lineCounts![0]);
 
@@ -198,6 +217,48 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     expect(again.players).toEqual(match.players);
     // The configured search reconciles the same fixture.
     const settled = play(f).match;
+    expect(settled.unreconciled).toBeUndefined();
+    expect(rebalanceIssues(settled.participation, settled.facts)).toEqual([]);
+  });
+
+  it('settles an exhausted cup tie at 120 minutes on the earliest of tied plans', () => {
+    // A cup tie level after 90 minutes whose 120-minute stretch has two searched plans that each
+    // leave one red-card answer against the score (found by search on this world, T284). With two
+    // searches and no retry the fallback settles the earlier of the tied plans.
+    const { w, fixtures } = others(536, 2024);
+    const f: Fixture = { ...fixtures[535]!, kind: 'cup' };
+    const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
+    const prepared = prepareMatch(w, f);
+    const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+    const match = playAggregate(w, f, prepared, rosters, CUP, tight);
+    expect(match.facts.length).toBe(120);
+    expect(match.retry).toBe(0);
+    expect(match.unreconciled).toHaveLength(1);
+    expect(match.unreconciled).toEqual(rebalanceIssues(match.participation, match.facts));
+    // The two plans the search reached: the 90's answers, then the earliest reached answer flipped.
+    const base = buildAggregateInput(prepared, UNREAD, rosters);
+    const plan = aggregatePlan(w, prepared, rosters, eraRules(f.year));
+    const access = (p: AggregateParticipation) => aggregateSkillAccess(prepared, rosters, p);
+    const streams = aggregateStreams(w.seed, f.id);
+    const last = { searches: tight.rebalanceSearches, settle: true };
+    const ninety = settleParticipation(base, plan, streams, 90, access, undefined, last)!;
+    const one = { searches: 1, settle: true };
+    const first = settleParticipation(base, plan, streams, 120, access, ninety.decisions, one)!;
+    const [earliest] = [...first.participation.rebalances!].sort((a, b) => a.minute - b.minute);
+    const flipped = new Map(first.decisions).set(earliest!.key, !earliest!.made);
+    const second = settleParticipation(base, plan, streams, 120, access, flipped, one)!;
+    expect(second.unreconciled).toHaveLength(first.unreconciled!.length);
+    expect(second.decisions).not.toEqual(first.decisions);
+    expect(match.decisions).toEqual(first.decisions);
+    expect(match.facts).toEqual(first.facts);
+    // A valid record with its regulation score, settled the same on every call.
+    const record = aggregateRecord(f, rosters, match);
+    expect(record.regulation).toBeDefined();
+    expect(record.regulation!.home).toBe(record.regulation!.away);
+    expect(validateFullMatchRecord(record)).toEqual([]);
+    expect(playAggregate(w, f, prepared, rosters, CUP, tight).facts).toEqual(match.facts);
+    // The configured search reconciles the same tie.
+    const settled = playAggregate(w, f, prepared, rosters, CUP);
     expect(settled.unreconciled).toBeUndefined();
     expect(rebalanceIssues(settled.participation, settled.facts)).toEqual([]);
   });

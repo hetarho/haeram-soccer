@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
-import type { MatchRecord, Tactic } from '../../packages/contracts/src/types';
+import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/types';
+import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
 import { M } from '../../packages/engine/src/grid/record';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
+import { aggregateRun, conditionedMatch } from '../match-parity';
 import {
   buildCoverageReport,
   buildEquivalenceReport,
@@ -26,6 +28,7 @@ import {
   MATCH_PARITY_VERSION,
   METRIC_BY_ID,
   METRIC_REGISTRY,
+  NEUTRAL_SQUAD_FATIGUE,
   normalCdf,
   normalQuantile,
   observe,
@@ -34,12 +37,15 @@ import {
   rareComparisonPower,
   requiredRareEvents,
   ruleExclusions,
+  SCORING_CONCENTRATION_TARGET,
   seedOverlap,
   TACTIC_PAIRING_TARGET,
+  TARGET_BANDS,
   tacticPairingVerdicts,
   validateCorpusConfig,
   validateRegistry,
   validationSize,
+  type LedgerShot,
   type MatchSample,
   type Observations,
   type PairingEstimate,
@@ -858,5 +864,161 @@ describe('MATCH-29 tactic pairings', () => {
     expect(read(cup, 'passCompletion').value).toBe(80);
     const league = Array.from({ length: 40 }, () => kicks(false));
     expect(read(league, 'goalKicks')).toMatchObject({ value: 10, status: 'outside' });
+  });
+});
+
+describe('aggregate measurement (T284)', () => {
+  const shot = (cell: number, goal: boolean, line = 'FW', setPiece = false): LedgerShot => ({
+    side: 0,
+    cell,
+    header: false,
+    setPiece,
+    penalty: false,
+    goal,
+    line,
+  });
+  /** A ledger-read match: shots at these cells, passes 30/50/20 forward/lateral/back. */
+  const ledgerSample = (shots: LedgerShot[]): MatchSample => ({
+    ...sample(record()),
+    ledger: {
+      ballInPlay: 56 * 60,
+      directions: [
+        [30, 50, 20],
+        [30, 50, 20],
+      ],
+      shots,
+    },
+  });
+  const read = (samples: MatchSample[], id: string) =>
+    buildTargetReport(samples).find((t) => t.id === id)!;
+
+  it('reads cell-resolved rows from the aggregate ledger', () => {
+    // Cells follow the markings (MATCH-14): band 7 lane 2 is the goal area, bands 6–7 lanes 1–3
+    // the rest of the box, everything else outside it.
+    const goalArea = 7 * 5 + 2,
+      box = 6 * 5 + 1,
+      outside = 5 * 5 + 2,
+      wide = 6 * 5 + 0;
+    const samples = Array.from({ length: 40 }, () =>
+      ledgerSample([
+        shot(goalArea, true, 'FW', true),
+        shot(box, true, 'MF'),
+        shot(box, false),
+        shot(outside, false),
+        shot(wide, false),
+      ]),
+    );
+    expect(read(samples, 'shotsGoalArea')).toMatchObject({ value: 20, status: 'outside' });
+    expect(read(samples, 'shotsBox').value).toBeCloseTo(40, 10);
+    expect(read(samples, 'shotsOutside').value).toBeCloseTo(40, 10);
+    expect(read(samples, 'passForward')).toMatchObject({ value: 30, status: 'inside' });
+    expect(read(samples, 'setPieceGoals').value).toBe(50);
+    expect(read(samples, 'goalsMF').value).toBe(50);
+    expect(read(samples, 'ballInPlay')).toMatchObject({ value: 56, status: 'inside' });
+    // A point or a possession sequence the ledger does not hold is missing, never a reading.
+    for (const id of ['shotDistance', 'shotsFar', 'possessions', 'possessionShots'])
+      expect(read(samples, id).status).toBe('missing');
+    expect(
+      TARGET_BANDS.filter((t) => t.reads === 'diagnostics')
+        .map((t) => t.id)
+        .sort(),
+    ).toEqual(
+      [
+        'passesPerPossession',
+        'possessionShots',
+        'possessions',
+        'shotDistance',
+        'shotsFar',
+        'shotsOwnHalf',
+      ].sort(),
+    );
+    // Too few matches stay underpowered whatever the reading.
+    expect(read(samples.slice(0, 10), 'shotsGoalArea').status).toBe('underpowered');
+  });
+
+  it('never mixes own-tactic and forced samples in MATCH-29', () => {
+    const forced = (home: Tactic, away: Tactic): MatchSample => ({
+      ...sample(record({ tactics: [home, away] })),
+      condition: `tactics:${home}-${away}`,
+      freshness: [80, 70],
+    });
+    const own: MatchSample = {
+      ...sample(record({ tactics: ['press', 'balanced'] })),
+      freshness: [60, 90],
+    };
+    expect(() => tacticPairingVerdicts([forced('press', 'balanced'), own])).toThrow(
+      /one tactic assignment at a time: 1 forced and 1 own-tactic/,
+    );
+    // A forced sample must have played its condition's tactics.
+    const misplayed = { ...forced('press', 'balanced'), condition: 'tactics:counter-balanced' };
+    expect(() => tacticPairingVerdicts([misplayed])).toThrow(/under tactics:counter-balanced/);
+    // On own tactics the freshness ordering reads the squads' weekly load: never a pass.
+    const report = tacticPairingVerdicts(Array.from({ length: 40 }, () => own));
+    expect(report.assignment).toBe('club');
+    expect(report.rows.find((r) => r.id === 'ordering:freshness')).toMatchObject({
+      status: 'insufficient',
+      reason: expect.stringMatching(/forced pairings only/),
+    });
+    expect(tacticPairingVerdicts([forced('press', 'balanced')]).assignment).toBe('forced');
+  });
+
+  it("conditions a fixture with prepareMatch's own arithmetic", () => {
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Parity Pilot',
+      color: '#2a5d8f',
+      seed: 'grid-bands-1',
+      level: 'normal',
+    });
+    const clubs = w.clubs.filter((c) => c.tier === 0 && c.id !== w.playerClub);
+    const press = clubs.find((c) => clubStyle(c) === 'press')!;
+    const other = clubs.find((c) => clubStyle(c) === 'balanced')!;
+    const f: Fixture = {
+      ...w.fixtures[0]!,
+      id: 'conditioning:1',
+      year: 2024,
+      round: 1,
+      kind: 'league',
+      home: press.id,
+      away: other.id,
+    };
+    const plain = conditionedMatch(w, f);
+    // The clubs' own tactics through the conditioning arithmetic reproduce prepareMatch exactly.
+    const own = conditionedMatch(w, f, { tactics: plain.prepared.tactics });
+    for (const key of ['tactics', 'strength', 'shift', 'profiles', 'possessionChance'] as const)
+      expect(own.prepared[key]).toEqual(plain.prepared[key]);
+    expect(own.gap).toBe(plain.gap);
+    // Forced tactics from the neutral squad fatigue: the press side sheds its weekly load (MATCH-2,
+    // fatigue 32 costs 2 rating points), the world's players keep theirs.
+    const forced = conditionedMatch(w, f, {
+      tactics: ['counter', 'press'],
+      fatigue: NEUTRAL_SQUAD_FATIGUE,
+    });
+    expect(forced.prepared.tactics).toEqual(['counter', 'press']);
+    expect(forced.rosters.flat().every((p) => p.fatigue === NEUTRAL_SQUAD_FATIGUE)).toBe(true);
+    expect(plain.rosters[0].every((p) => p.fatigue === PRESS_LOAD_FATIGUE)).toBe(true);
+    expect(forced.gap).toBe(plain.gap + 2);
+    expect(forced.prepared.profiles[1]!.pressure).toBeGreaterThan(0);
+    // The aggregate adapter's ledger readings agree with the record they come with.
+    const { sample: s } = aggregateRun(w, f, 'tactics:counter-press', undefined, {
+      tactics: ['counter', 'press'],
+      fatigue: NEUTRAL_SQUAD_FATIGUE,
+    });
+    expect(s.record.tactics).toEqual(['counter', 'press']);
+    expect(s.ledger!.shots.length).toBe(
+      s.record.metrics[0]![M.shots]! + s.record.metrics[1]![M.shots]!,
+    );
+    expect(s.ledger!.shots.filter((x) => x.goal).length).toBe(
+      s.record.score.home + s.record.score.away,
+    );
+    expect(s.ledger!.shots.every((x) => ['GK', 'DF', 'MF', 'FW'].includes(x.line))).toBe(true);
+    expect(s.freshness![0]).toBeGreaterThan(s.freshness![1]!);
+  });
+
+  it('declares the forced pairings neutral squad fatigue', () => {
+    for (const c of CORPUS_CONFIG.conditions.filter((x) => x.family === 'tactics'))
+      expect((c.params as { fatigue: number }).fatigue).toBe(NEUTRAL_SQUAD_FATIGUE);
+    expect(CORPUS_CONFIG.version).toBe(2);
+    expect(SCORING_CONCENTRATION_TARGET.status).toBe('proposed');
   });
 });

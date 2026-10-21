@@ -243,7 +243,8 @@ describe('aggregate team facts', () => {
       play(context({ profiles: [{ ...neutral, pass: 6, shot: 4 }, neutral] }), id),
     );
     expect(side0(sharp, (s) => s.metrics[M.completed]! / s.metrics[M.passes]!)).toBeGreaterThan(
-      side0(even, (s) => s.metrics[M.completed]! / s.metrics[M.passes]!) + 0.03,
+      side0(even, (s) => s.metrics[M.completed]! / s.metrics[M.passes]!) +
+        0.05 * AGGREGATE_CONFIG.completion.profile,
     );
     expect(side0(sharp, (s) => s.metrics[M.shots]!)).toBeGreaterThan(
       side0(even, (s) => s.metrics[M.shots]!),

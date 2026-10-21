@@ -9,6 +9,7 @@
  */
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../packages/contracts/src/detail';
 import type { Incident, MatchRecord, Tactic } from '../../packages/contracts/src/types';
+import { inBoxCell, inGoalAreaCell } from '../../packages/engine/src/aggregate/ledger';
 import { BAND_EDGES, goalDistance, inBox, inGoalArea } from '../../packages/engine/src/grid/pitch';
 import {
   M,
@@ -20,7 +21,7 @@ import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-2';
+export const MATCH_PARITY_VERSION = 'match-parity-3';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
@@ -486,6 +487,31 @@ export interface MatchSample {
    * reads it from the path's own result; absent when the path does not expose it.
    */
   freshness?: readonly [number, number];
+  /**
+   * The aggregate path's ledger readings for the rows its cells resolve (T284): open-play pass
+   * directions by band, each shot's cell, kind and shooter's line, and ball in play. Rows that need
+   * a point or a possession sequence (shot distance, possessions) have no ledger reading.
+   */
+  ledger?: LedgerDiagnostics;
+}
+/** One aggregate shot as the target bands read it: its cell (the shooting side's attack frame). */
+export interface LedgerShot {
+  side: Side;
+  cell: number;
+  header: boolean;
+  /** A corner or a free kick, delivered or shot directly (penalties apart). */
+  setPiece: boolean;
+  penalty: boolean;
+  goal: boolean;
+  /** The shooter's line at his slot then. */
+  line: string;
+}
+export interface LedgerDiagnostics {
+  /** Seconds the ball was in play. */
+  ballInPlay: number;
+  /** Open-play pass attempts per side into a higher band, the same band and a lower band. */
+  directions: [number[], number[]];
+  shots: LedgerShot[];
 }
 /** Season-level values keyed by `season`-family metric id. */
 export type SeasonSample = Readonly<Record<string, number>>;
@@ -497,8 +523,11 @@ export interface TargetBand {
   band: readonly [number, number];
   unit: Unit;
   source: string;
-  /** Read from the record alone, or from the grid's diagnostics. */
-  reads: 'record' | 'diagnostics';
+  /**
+   * Read from the record alone, from the grid's diagnostics or the aggregate ledger's cells
+   * (`cells`), or from the grid's diagnostics only (a point or a possession sequence).
+   */
+  reads: 'record' | 'cells' | 'diagnostics';
   /** A ratio of sums over matches, or the median of pooled values. */
   estimator: 'ratio' | 'median';
   /** Per match: numerator and denominator (ratio) or the values (median); undefined when absent. */
@@ -535,12 +564,26 @@ const shotShare = (s: MatchSample, keep: (x: ShotDiagnostic) => boolean) => {
   const shots = shotsOf(s);
   return shots && share(shots.filter(keep).length, shots.length);
 };
-const goalShare = (s: MatchSample, keep: (g: ShotDiagnostic) => boolean) => {
-  const goals = shotsOf(s)?.filter((g) => g.goal);
+type ShotPlace = 'goalArea' | 'box' | 'outside';
+/** Each shot's place: the grid's point, or the aggregate cell (cells follow the markings, MATCH-14). */
+const placesOf = (s: MatchSample): ShotPlace[] | undefined =>
+  s.diagnostics
+    ? s.diagnostics.shots.map((x) =>
+        inGoalArea(point(x)) ? 'goalArea' : inBox(point(x)) ? 'box' : 'outside',
+      )
+    : s.ledger?.shots.map((x) =>
+        inGoalAreaCell(x.cell) ? 'goalArea' : inBoxCell(x.cell) ? 'box' : 'outside',
+      );
+const placeShare = (s: MatchSample, place: ShotPlace) => {
+  const places = placesOf(s);
+  return places && share(places.filter((p) => p === place).length, places.length);
+};
+const goalShare = (s: MatchSample, keep: (g: ShotDiagnostic | LedgerShot) => boolean) => {
+  const goals = (shotsOf(s) ?? s.ledger?.shots)?.filter((g) => g.goal);
   return goals && share(goals.filter(keep).length, goals.length);
 };
 const direction = (s: MatchSample, d: number) => {
-  const dirs = s.diagnostics?.directions;
+  const dirs = s.diagnostics?.directions ?? s.ledger?.directions;
   return (
     dirs &&
     share(
@@ -583,9 +626,9 @@ export const TARGET_BANDS: readonly TargetBand[] = [
   band('passCompletion', 'pass completion', [76, 84], 'percent', 'record', (s) =>
     share(metric(s, M.completed), metric(s, M.passes)),
   ),
-  band('passForward', 'passes forward', [30, 40], 'percent', 'diagnostics', (s) => direction(s, 0)),
-  band('passLateral', 'passes lateral', [45, 55], 'percent', 'diagnostics', (s) => direction(s, 1)),
-  band('passBack', 'passes back', [12, 18], 'percent', 'diagnostics', (s) => direction(s, 2)),
+  band('passForward', 'passes forward', [30, 40], 'percent', 'cells', (s) => direction(s, 0)),
+  band('passLateral', 'passes lateral', [45, 55], 'percent', 'cells', (s) => direction(s, 1)),
+  band('passBack', 'passes back', [12, 18], 'percent', 'cells', (s) => direction(s, 2)),
   band('possessions', 'possessions (team)', [85, 105], 'count', 'diagnostics', (s) =>
     perTeam(s.diagnostics?.possessions.length),
   ),
@@ -619,14 +662,14 @@ export const TARGET_BANDS: readonly TargetBand[] = [
       metric(s, M.shots),
     ),
   ),
-  band('shotsGoalArea', 'shots from the goal area', [6, 9], 'percent', 'diagnostics', (s) =>
-    shotShare(s, (x) => inGoalArea(point(x))),
+  band('shotsGoalArea', 'shots from the goal area', [6, 9], 'percent', 'cells', (s) =>
+    placeShare(s, 'goalArea'),
   ),
-  band('shotsBox', 'shots from the rest of the box', [48, 58], 'percent', 'diagnostics', (s) =>
-    shotShare(s, (x) => inBox(point(x)) && !inGoalArea(point(x))),
+  band('shotsBox', 'shots from the rest of the box', [48, 58], 'percent', 'cells', (s) =>
+    placeShare(s, 'box'),
   ),
-  band('shotsOutside', 'shots from outside the box', [32, 42], 'percent', 'diagnostics', (s) =>
-    shotShare(s, (x) => !inBox(point(x))),
+  band('shotsOutside', 'shots from outside the box', [32, 42], 'percent', 'cells', (s) =>
+    placeShare(s, 'outside'),
   ),
   band('shotDistance', 'mean shot distance', [15, 18], 'metres', 'diagnostics', (s) => {
     const shots = shotsOf(s);
@@ -700,27 +743,28 @@ export const TARGET_BANDS: readonly TargetBand[] = [
     'goals from set pieces without penalties',
     [20, 28],
     'percent',
-    'diagnostics',
+    'cells',
     (s) => goalShare(s, (g) => g.setPiece),
   ),
   band('penaltyGoals', 'goals from penalties', [6, 9], 'percent', 'record', (s) =>
     share(detail(s, TD.penaltiesScored), s.record.score.home + s.record.score.away),
   ),
-  band('headedGoals', 'headed goals', [14, 20], 'percent', 'diagnostics', (s) =>
+  band('headedGoals', 'headed goals', [14, 20], 'percent', 'cells', (s) =>
     goalShare(s, (g) => g.header),
   ),
-  band('goalsFW', 'goals by forwards', [50, 60], 'percent', 'diagnostics', (s) =>
+  band('goalsFW', 'goals by forwards', [50, 60], 'percent', 'cells', (s) =>
     goalShare(s, (g) => g.line === 'FW'),
   ),
-  band('goalsMF', 'goals by midfielders', [27, 37], 'percent', 'diagnostics', (s) =>
+  band('goalsMF', 'goals by midfielders', [27, 37], 'percent', 'cells', (s) =>
     goalShare(s, (g) => g.line === 'MF'),
   ),
-  band('goalsDF', 'goals by defenders', [8, 15], 'percent', 'diagnostics', (s) =>
+  band('goalsDF', 'goals by defenders', [8, 15], 'percent', 'cells', (s) =>
     goalShare(s, (g) => g.line === 'DF'),
   ),
-  band('ballInPlay', 'ball in play (match)', [54, 58], 'minutes', 'diagnostics', (s) =>
-    s.diagnostics ? [s.diagnostics.ballInPlay / 60, 1] : undefined,
-  ),
+  band('ballInPlay', 'ball in play (match)', [54, 58], 'minutes', 'cells', (s) => {
+    const seconds = s.diagnostics?.ballInPlay ?? s.ledger?.ballInPlay;
+    return seconds === undefined ? undefined : [seconds / 60, 1];
+  }),
   band(
     'addedTime',
     'added time (match)',
@@ -811,6 +855,24 @@ export const TACTIC_PAIRING_TARGET = {
     { measure: 'freshness', lowest: 'press' },
   ] as readonly PairingOrdering[],
 };
+
+/**
+ * Player scoring concentration beside the season scorer measurement (T278 limit 3): PROPOSED by
+ * T284, not a MATCH decision yet, so a reading against it is context and never a verdict. Basis:
+ * Premier League seasons 2013-14 … 2023-24 as published (league tables and golden boots): a club's
+ * leading league scorer has on average about a quarter of its goals (club spread about 14–43%), the
+ * league's top scorer 22–36 goals in 38 rounds, and about 10–15 hat-tricks in 380 matches.
+ */
+export const SCORING_CONCENTRATION_TARGET = {
+  version: 1,
+  status: 'proposed',
+  source: 'T284 proposal; ratification belongs to update-ssot (MATCH-23/28)',
+  /** Mean over clubs of the leading scorer's share of the club's goals. */
+  clubTopScorerShare: [0.2, 0.3],
+  /** The league's leading scorer's goals in a 38-round season. */
+  leagueTopScorerGoals: [22, 32],
+  hatTricksPerMatch: [0.02, 0.05],
+} as const;
 
 // ---- Comparison, corpus and performance settings -----------------------------------------------
 
@@ -920,11 +982,19 @@ const condition = (
 };
 
 /**
+ * The pre-match squad fatigue both sides of a forced tactic pairing start from: what a club nobody
+ * owns carries when it does not press (world.ts `npcSquad`), and within ordinary match fitness
+ * (FRESH_FATIGUE), so neither side pays a weekly press load for a tactic it is only made to play.
+ */
+export const NEUTRAL_SQUAD_FATIGUE = 0;
+
+/**
  * Corpus sizes, the condition matrix and the seed partitions. Families vary one factor around the
  * core condition; no unmeasured combination of families is claimed.
  */
 export const CORPUS_CONFIG = {
-  version: 1,
+  /** 2: tactic pairings declare their neutral squad fatigue (T284). */
+  version: 2,
   /** Fixture ids carry the partition, so every named match stream of a fixture differs by partition. */
   partitions: {
     calibration: { prefix: 'parity-calibration' },
@@ -963,9 +1033,15 @@ export const CORPUS_CONFIG = {
         width: 5,
       }),
     ),
+    // Both sides of a forced pairing start from the same pre-match squad fatigue (T320's decision),
+    // so a tactic changes only in-match behaviour and its in-match cost.
     ...TACTICS.flatMap((home) =>
       TACTICS.map((away) =>
-        condition('tactics', `${home}-${away}`, `${home} at home to ${away}`, { home, away }),
+        condition('tactics', `${home}-${away}`, `${home} at home to ${away}`, {
+          home,
+          away,
+          fatigue: NEUTRAL_SQUAD_FATIGUE,
+        }),
       ),
     ),
     ...TIER_BANDS.map(([key, low, high]) =>
@@ -2100,6 +2176,8 @@ export interface TacticPairingReport {
   version: string;
   target: number;
   source: string;
+  /** Forced pairings (the tactics family) or each club on its own tactic (any other condition). */
+  assignment: 'forced' | 'club';
   matches: number;
   /** Matches per venue, `home-away`. */
   venues: Record<string, number>;
@@ -2160,6 +2238,25 @@ function orderingRow(id: string, label: string, list: PairingDifference[]): Tact
 }
 
 /**
+ * How a sample set's tactics were assigned: every sample from the tactics family (forced, and each
+ * playing its condition's two tactics) or none of them (each club on its own tactic). One call
+ * never mixes the two: own tactics come with each club's own squad fatigue (T320 review).
+ */
+export function pairingAssignment(samples: readonly MatchSample[]): 'forced' | 'club' {
+  const forced = samples.filter((s) => conditionOf(s.condition).family === 'tactics');
+  if (forced.length && forced.length !== samples.length)
+    throw new Error(
+      `MATCH-29 reads one tactic assignment at a time: ${forced.length} forced and ${samples.length - forced.length} own-tactic samples`,
+    );
+  for (const s of forced) {
+    const { home, away } = conditionOf(s.condition).params as { home: Tactic; away: Tactic };
+    if (s.record.tactics[0] !== home || s.record.tactics[1] !== away)
+      throw new Error(`${s.record.id} played ${s.record.tactics.join('-')} under ${s.condition}`);
+  }
+  return forced.length ? 'forced' : 'club';
+}
+
+/**
  * MATCH-29's verdicts over samples of equal top-tier sides. Samples are grouped by their sides'
  * tactics (`record.tactics`, home first) into venues, and each pairing pools its two venues. Every
  * row is inside, outside or insufficient: a band by its 95% interval, an ordering by each of its
@@ -2167,6 +2264,7 @@ function orderingRow(id: string, label: string, list: PairingDifference[]): Tact
  * pass. Draws and wins are 90-minute results; per-match counts are per 90 minutes played.
  */
 export function tacticPairingVerdicts(samples: readonly MatchSample[]): TacticPairingReport {
+  const assignment = pairingAssignment(samples);
   const venues = new Map<string, MatchSample[]>();
   for (const s of samples) {
     const key = venueOf(s.record.tactics[0], s.record.tactics[1]);
@@ -2235,12 +2333,22 @@ export function tacticPairingVerdicts(samples: readonly MatchSample[]): TacticPa
         ),
       );
     }
+    const row = orderingRow(
+      `ordering:${o.measure}`,
+      `${PT.measures[o.measure].label}: ${parts.join(', ')}`,
+      list,
+    );
+    // Own tactics carry the weekly press load into the match (MATCH-2), so freshness there reads
+    // the squads' pre-match fatigue, not the tactic's in-match cost: never a pass (T320 review).
     rows.push(
-      orderingRow(
-        `ordering:${o.measure}`,
-        `${PT.measures[o.measure].label}: ${parts.join(', ')}`,
-        list,
-      ),
+      o.measure === 'freshness' && assignment === 'club'
+        ? {
+            ...row,
+            status: 'insufficient',
+            reason:
+              "own-tactic samples start from each club's own squad fatigue; freshness reads forced pairings only",
+          }
+        : row,
     );
   }
   const measures = Object.keys(PT.measures) as PairingMeasure[];
@@ -2258,6 +2366,7 @@ export function tacticPairingVerdicts(samples: readonly MatchSample[]): TacticPa
     version: MATCH_PARITY_VERSION,
     target: PT.version,
     source: PT.source,
+    assignment,
     matches: samples.length,
     venues: Object.fromEntries([...venues].map(([k, v]) => [k, v.length])),
     tactics,
