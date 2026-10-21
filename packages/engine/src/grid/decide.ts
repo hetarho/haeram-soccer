@@ -134,7 +134,7 @@ export const DECISION_CONFIG = {
      */
     inBehind: { shot: 2, carry: 1.3, pass: 0.5 },
     /** The global shot-volume scale, in place of `shotScale` (T321, T324). */
-    shotScale: 0.32,
+    shotScale: 0.35,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.

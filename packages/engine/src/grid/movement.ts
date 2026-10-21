@@ -27,10 +27,12 @@ export const GRID_MOVEMENT_CONFIG = {
   horizon: 300,
   /**
    * Off the ball a player reacts to a kicked ball when it is kicked, not when the action starts
-   * (T324); a defender reads it up to this share of its wind-up early by his 위치선정 (→MATCH-8/9:
-   * the defenders' positioning suppresses the chances a ball in behind creates).
+   * (T324); a defender reads it earlier by this many times his 위치선정 share of its wind-up, from
+   * the start once that covers it (→MATCH-8/9: the defenders' positioning suppresses the chances a
+   * ball in behind creates). T324 measured 1, every defender reading late, against the MATCH-2
+   * curve: favourites won more (mean error 3.3 points against 2.8).
    */
-  read: 1,
+  read: 3,
 } as const;
 
 /**
