@@ -201,7 +201,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 19 | 7 | 12 | 1 | 0 | 0 | 2026-10-21T08:53:13.072Z | [history](work/full-model.json) |
+| full-model | 3 | 19 | 7 | 12 | 1 | 0 | 1 | 2026-10-21T09:26:33.791Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:36:12.259Z | [history](work/presentation-261021.json) |
 
 ## next
