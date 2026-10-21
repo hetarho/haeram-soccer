@@ -72,14 +72,17 @@ function expectCompleteFoundingFits(
   }
 }
 
-/** Picks the club colour in the real design editor: its representative main colour (→KIT-4). */
+/**
+ * Picks the club colour in the real design editor: the 홈 colour, which leads the stored
+ * representative palette (→KIT-1/4, WEB-86).
+ */
 async function chooseClubColour(page: Page, colour: string) {
   await page
     .getByTestId('club-founding')
     .getByRole('button', { name: '구단 디자인 꾸미기', exact: true })
     .click();
   const editor = page.getByRole('dialog', { name: '구단 디자인' });
-  await editor.getByLabel('대표 주색 색 코드', { exact: true }).fill(colour);
+  await editor.getByLabel('홈 색 코드', { exact: true }).fill(colour);
   await editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
   await expect(editor).toHaveCount(0);
 }

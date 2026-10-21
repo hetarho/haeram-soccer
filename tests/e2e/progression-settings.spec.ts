@@ -9,6 +9,7 @@ import {
 import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel, configureResponsibilities } from './events';
 import { horizontalOverflow, settle } from './layout';
+import { closeMarketPanel, marketInfo } from './market';
 
 /**
  * Founds a club whose first offers arrive only after its second match eve, so a new club's level 2
@@ -378,6 +379,8 @@ for (const viewport of [
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
     await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+    // Who decides recruitment and sales sits in the market's information panel (→WEB-43/45).
+    await marketInfo(page);
     const recruitment = page.getByTestId('decision-owner-recruitment'),
       sale = page.getByTestId('decision-owner-sales');
     await expect(recruitment).not.toHaveAttribute('data-auto', 'true');
@@ -404,7 +407,10 @@ for (const viewport of [
     expect(bounds.right).toBeLessThanOrEqual(viewport.width);
     await dialog.getByRole('button', { name: '적용', exact: true }).click();
     await expect(dialog).toHaveCount(0);
+    // The outcome card waits until every sheet has closed, the information panel included.
+    await closeMarketPanel(page, '영입 정보');
     await closeSettingsOutcome(page);
+    await marketInfo(page);
     await expect(recruitment).toHaveAttribute('data-auto', 'true');
     await expect(sale).not.toHaveAttribute('data-auto', 'true');
     await recruitment.getByRole('button', { name: /위임·진행 설정 열기/ }).click();
@@ -416,6 +422,7 @@ for (const viewport of [
       'delegated',
     );
     await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+    await closeMarketPanel(page, '영입 정보');
     await expect(page.getByTestId('game-date')).toHaveText(date!);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   });

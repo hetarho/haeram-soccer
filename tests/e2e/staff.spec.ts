@@ -99,8 +99,12 @@ test.describe('사람 at 360x740', () => {
       expect(box).toBeGreaterThanOrEqual(44);
     await tab(page, '감독').click();
     await expect(page).toHaveURL(/\/people\?view=manager$/);
-    // The manager's office shows what 육성 means; the coaches wait in their tab.
-    await expect(page.getByText('27세 미만 선수 성장').first()).toBeVisible();
+    // The manager's office keeps what 육성 means one labelled disclosure away (→WEB-10/43); the
+    // coaches wait in their tab.
+    const youth = page.getByText('27세 미만 선수 성장').first();
+    await expect(youth).toBeHidden();
+    await page.getByText('감독 능력·성향', { exact: true }).click();
+    await expect(youth).toBeVisible();
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBe(0);
     // Arrow keys move along the tab bar like the operations tabs.

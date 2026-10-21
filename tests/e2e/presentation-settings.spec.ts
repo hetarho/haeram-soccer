@@ -249,7 +249,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
     .click();
   await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
   const design = page.getByRole('region', { name: '구단 디자인', exact: true });
-  const colour = design.getByLabel('대표 주색 색 코드', { exact: true });
+  const colour = design.getByLabel('홈 색 코드', { exact: true });
   await colour.fill('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
   const address = page.url();
