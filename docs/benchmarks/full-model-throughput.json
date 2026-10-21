@@ -1,0 +1,1111 @@
+{
+  "kind": "full-model-throughput",
+  "task": "T285",
+  "note": "Exploration evidence on a shared machine: paired ratios guide T286 and are never release evidence (→ARCH-31). Correctness is separate: optimised records and ledgers are identical to 3679af8 (digests in packages/engine/src/full-model-throughput.test.ts and the 60-round whole-world probe).",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "logicalCpus": 10,
+    "memoryBytes": 34359738368
+  },
+  "toolchain": {
+    "node": "v26.8.1",
+    "pnpm": "pnpm@10.34.6",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15"
+  },
+  "sources": {
+    "baseline": {
+      "commit": "9f69553",
+      "role": "T273's release-baseline source (production summary path)"
+    },
+    "before": {
+      "commit": "3679af8",
+      "role": "candidate model before T285"
+    },
+    "after": {
+      "commit": "7640c0d4fd2a4da0b9cf739908bbaf5cee257ae5",
+      "role": "candidate model with T285 optimisations"
+    }
+  },
+  "evidence": {
+    "accuracy": "unchanged: the optimisations reproduce every record, ledger and world fact of 3679af8 bit for bit, so T284 calibration evidence stays current",
+    "capacity": "checkpoint re-measured at round 46 (T283 starts column); century candidate checkpoint at the last measured season below"
+  },
+  "pairedRunner": {
+    "candidate": {
+      "gitHead": "7640c0d4fd2a4da0b9cf739908bbaf5cee257ae5",
+      "fingerprint": "97228f2924ba252df48e5ab1568e325c4090424ad45d8112be14824631b5e727",
+      "files": 385,
+      "settings": {
+        "mode": "full",
+        "fixtures": 200,
+        "warmup": 10,
+        "repetitions": 3,
+        "seasons": 20,
+        "pilot": 600
+      },
+      "model": "candidate",
+      "components": [
+        {
+          "id": "preparation.summary",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0095205,
+          "meanMs": 0.00989814,
+          "p90Ms": 0.011208,
+          "minMs": 0.008583,
+          "maxMs": 0.016584,
+          "totalMs": 1.97963
+        },
+        {
+          "id": "preparation.grid",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.012459,
+          "meanMs": 0.0828398,
+          "p90Ms": 0.479292,
+          "minMs": 0.010833,
+          "maxMs": 0.5225,
+          "totalMs": 16.568
+        },
+        {
+          "id": "fixture.summary",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0768955,
+          "meanMs": 0.0807104,
+          "p90Ms": 0.096,
+          "minMs": 0.059709,
+          "maxMs": 0.188083,
+          "totalMs": 16.1421
+        },
+        {
+          "id": "fixture.summary-lines",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.065979,
+          "meanMs": 0.0668099,
+          "p90Ms": 0.074708,
+          "minMs": 0.054833,
+          "maxMs": 0.097583,
+          "totalMs": 13.362
+        },
+        {
+          "id": "fixture.grid",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 37.9574,
+          "meanMs": 37.8755,
+          "p90Ms": 41.3303,
+          "minMs": 32.0313,
+          "maxMs": 46.3325,
+          "totalMs": 7575.1
+        },
+        {
+          "id": "observation.grid",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 67.3992,
+          "meanMs": 68.2303,
+          "p90Ms": 79.8198,
+          "minMs": 56.6527,
+          "maxMs": 89.842,
+          "totalMs": 2046.91
+        },
+        {
+          "id": "observation.frames",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 14.788,
+          "meanMs": 15.6699,
+          "p90Ms": 20.8197,
+          "minMs": 13.4627,
+          "maxMs": 26.7489,
+          "totalMs": 470.098
+        },
+        {
+          "id": "settlement.npc",
+          "category": "settlement",
+          "samples": 400,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.0101045,
+          "meanMs": 0.0164805,
+          "p90Ms": 0.015375,
+          "minMs": 0.001875,
+          "maxMs": 1.67079,
+          "totalMs": 6.59221
+        },
+        {
+          "id": "settlement.own",
+          "category": "settlement",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.987375,
+          "meanMs": 1.16599,
+          "p90Ms": 1.71304,
+          "minMs": 0.705708,
+          "maxMs": 4.0215,
+          "totalMs": 34.9796
+        },
+        {
+          "id": "fixture.candidate",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.875895,
+          "meanMs": 0.902377,
+          "p90Ms": 1.07842,
+          "minMs": 0.712292,
+          "maxMs": 1.45558,
+          "totalMs": 180.475
+        },
+        {
+          "id": "candidate.preparation",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.014708,
+          "meanMs": 0.0154027,
+          "p90Ms": 0.018,
+          "minMs": 0.012791,
+          "maxMs": 0.023083,
+          "totalMs": 3.08053
+        },
+        {
+          "id": "candidate.generation",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.321375,
+          "meanMs": 0.322298,
+          "p90Ms": 0.345084,
+          "minMs": 0.2845,
+          "maxMs": 0.379833,
+          "totalMs": 64.4595
+        },
+        {
+          "id": "candidate.attribution",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.433708,
+          "meanMs": 0.436937,
+          "p90Ms": 0.484375,
+          "minMs": 0.363208,
+          "maxMs": 0.563084,
+          "totalMs": 87.3875
+        },
+        {
+          "id": "candidate.record",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0238545,
+          "meanMs": 0.024218,
+          "p90Ms": 0.026458,
+          "minMs": 0.02075,
+          "maxMs": 0.043375,
+          "totalMs": 4.84359
+        },
+        {
+          "id": "fixture.own-candidate",
+          "category": "computation",
+          "samples": 30,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 99.8381,
+          "meanMs": 99.3779,
+          "p90Ms": 106.141,
+          "minMs": 91.5219,
+          "maxMs": 107.786,
+          "totalMs": 2981.34
+        },
+        {
+          "id": "settlement.candidate",
+          "category": "settlement",
+          "samples": 200,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.040354,
+          "meanMs": 0.0469664,
+          "p90Ms": 0.050459,
+          "minMs": 0.029291,
+          "maxMs": 0.78575,
+          "totalMs": 9.39329
+        },
+        {
+          "id": "season.baseline",
+          "category": "season",
+          "samples": 20,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 14357.1,
+          "meanMs": 15310.7,
+          "p90Ms": 23080.5,
+          "minMs": 12668.6,
+          "maxMs": 24474.3,
+          "totalMs": 306214
+        },
+        {
+          "id": "codec.encode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 881.89,
+          "meanMs": 881.89,
+          "p90Ms": 1122.75,
+          "minMs": 641.025,
+          "maxMs": 1122.75,
+          "totalMs": 1763.78
+        },
+        {
+          "id": "codec.decode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 1338.65,
+          "meanMs": 1338.65,
+          "p90Ms": 1642.85,
+          "minMs": 1034.44,
+          "maxMs": 1642.85,
+          "totalMs": 2677.29
+        },
+        {
+          "id": "season.active-management",
+          "category": "season",
+          "samples": 20,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 18262.6,
+          "meanMs": 20083.7,
+          "p90Ms": 26205.7,
+          "minMs": 16441.7,
+          "maxMs": 28255.3,
+          "totalMs": 401674
+        }
+      ],
+      "checks": {
+        "repeatsIdentical": true,
+        "observedMatchesUnobserved": true,
+        "candidateStagesMatchWhole": true
+      },
+      "fixtureSets": {
+        "world": "release-century-baseline",
+        "grid": 200,
+        "ownInGrid": 30,
+        "summary": 200,
+        "summaryLines": 200,
+        "observed": 30,
+        "seasonFixtures": 8742,
+        "candidateStageRetries": 0
+      },
+      "seasons": [
+        {
+          "profile": "baseline",
+          "seed": "release-century-baseline",
+          "model": "candidate",
+          "seasons": 20,
+          "year": 1970,
+          "checkpointAt": "final round of the last season, before its close",
+          "checkpointChars": 680453,
+          "checkpointBytes": 1360946,
+          "withinCheckpointLimit": true
+        },
+        {
+          "profile": "active-management",
+          "seed": "release-century-active-management",
+          "model": "candidate",
+          "seasons": 20,
+          "year": 1970,
+          "checkpointAt": "final round of the last season, before its close",
+          "checkpointChars": 664567,
+          "checkpointBytes": 1329174,
+          "withinCheckpointLimit": true
+        }
+      ],
+      "memory": {
+        "peakHeapBytes": 695731672,
+        "peakRssBytes": 943587328
+      },
+      "elapsedMs": 788716
+    },
+    "candidateLoad": {
+      "from": "2026-10-21T19:06:27.854Z",
+      "to": "2026-10-21T19:19:36.570Z",
+      "load1Median": 9.43,
+      "load1Max": 24.56,
+      "competingProcessSamples": 19,
+      "samples": 26
+    },
+    "baseline100": {
+      "gitHead": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+      "fingerprint": "64c076338c8a1b1e36ecd1d4b47972d90f8b5f971e5fe7e007e1aaf83f6f8565",
+      "files": 340,
+      "settings": {
+        "mode": "full",
+        "fixtures": 200,
+        "warmup": 10,
+        "repetitions": 3,
+        "seasons": 100,
+        "pilot": 600
+      },
+      "model": "production",
+      "components": [
+        {
+          "id": "preparation.summary",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.009917,
+          "meanMs": 0.0101284,
+          "p90Ms": 0.010583,
+          "minMs": 0.009041,
+          "maxMs": 0.030167,
+          "totalMs": 2.02568
+        },
+        {
+          "id": "preparation.grid",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0145,
+          "meanMs": 0.140063,
+          "p90Ms": 0.49,
+          "minMs": 0.010834,
+          "maxMs": 2.26442,
+          "totalMs": 28.0126
+        },
+        {
+          "id": "fixture.summary",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0797085,
+          "meanMs": 0.109538,
+          "p90Ms": 0.215708,
+          "minMs": 0.060083,
+          "maxMs": 0.68925,
+          "totalMs": 21.9075
+        },
+        {
+          "id": "fixture.summary-lines",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0725,
+          "meanMs": 0.102257,
+          "p90Ms": 0.192209,
+          "minMs": 0.057166,
+          "maxMs": 2.22563,
+          "totalMs": 20.4515
+        },
+        {
+          "id": "fixture.grid",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 80.6647,
+          "meanMs": 84.0861,
+          "p90Ms": 115.426,
+          "minMs": 38.9564,
+          "maxMs": 227.874,
+          "totalMs": 16817.2
+        },
+        {
+          "id": "observation.grid",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 167.68,
+          "meanMs": 171.049,
+          "p90Ms": 235.358,
+          "minMs": 114.681,
+          "maxMs": 248.393,
+          "totalMs": 5131.47
+        },
+        {
+          "id": "observation.frames",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 34.223,
+          "meanMs": 38.4496,
+          "p90Ms": 64.9713,
+          "minMs": 16.0772,
+          "maxMs": 81.2225,
+          "totalMs": 1153.49
+        },
+        {
+          "id": "settlement.npc",
+          "category": "settlement",
+          "samples": 400,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.014333,
+          "meanMs": 0.133151,
+          "p90Ms": 0.037709,
+          "minMs": 0.003542,
+          "maxMs": 17.9292,
+          "totalMs": 53.2605
+        },
+        {
+          "id": "settlement.own",
+          "category": "settlement",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 1.3145,
+          "meanMs": 2.05839,
+          "p90Ms": 4.01046,
+          "minMs": 0.7475,
+          "maxMs": 10.9823,
+          "totalMs": 61.7518
+        },
+        {
+          "id": "season.baseline",
+          "category": "season",
+          "samples": 100,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 13347.2,
+          "meanMs": 14205.7,
+          "p90Ms": 18544.2,
+          "minMs": 8256.66,
+          "maxMs": 43762.9,
+          "totalMs": 1420570
+        },
+        {
+          "id": "codec.encode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 258502,
+          "meanMs": 258502,
+          "p90Ms": 324195,
+          "minMs": 192808,
+          "maxMs": 324195,
+          "totalMs": 517003
+        },
+        {
+          "id": "codec.decode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 4776.43,
+          "meanMs": 4776.43,
+          "p90Ms": 5045.88,
+          "minMs": 4506.97,
+          "maxMs": 5045.88,
+          "totalMs": 9552.85
+        },
+        {
+          "id": "season.active-management",
+          "category": "season",
+          "samples": 100,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 7668.05,
+          "meanMs": 9127.66,
+          "p90Ms": 15403.7,
+          "minMs": 3501.22,
+          "maxMs": 18048.3,
+          "totalMs": 912766
+        }
+      ],
+      "checks": {
+        "repeatsIdentical": true,
+        "observedMatchesUnobserved": true
+      },
+      "fixtureSets": {
+        "world": "release-century-baseline",
+        "grid": 200,
+        "ownInGrid": 30,
+        "summary": 200,
+        "summaryLines": 200,
+        "observed": 30,
+        "seasonFixtures": 8742
+      },
+      "seasons": [
+        {
+          "profile": "baseline",
+          "seed": "release-century-baseline",
+          "seasons": 100,
+          "year": 2050,
+          "checkpointChars": 1203386,
+          "checkpointBytes": 2406812,
+          "withinCheckpointLimit": true
+        },
+        {
+          "profile": "active-management",
+          "seed": "release-century-active-management",
+          "seasons": 100,
+          "year": 2050,
+          "checkpointChars": 993467,
+          "checkpointBytes": 1986974,
+          "withinCheckpointLimit": true
+        }
+      ],
+      "memory": {
+        "peakHeapBytes": 1832566576,
+        "peakRssBytes": 2581397504
+      },
+      "elapsedMs": 2947001
+    },
+    "baseline100Load": {
+      "from": "2026-10-21T18:13:16.662Z",
+      "to": "2026-10-21T19:02:23.663Z",
+      "load1Median": 11.6,
+      "load1Max": 35.2,
+      "competingProcessSamples": 79,
+      "samples": 98
+    },
+    "baseline20": {
+      "gitHead": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+      "fingerprint": "64c076338c8a1b1e36ecd1d4b47972d90f8b5f971e5fe7e007e1aaf83f6f8565",
+      "files": 340,
+      "settings": {
+        "mode": "full",
+        "fixtures": 200,
+        "warmup": 10,
+        "repetitions": 3,
+        "seasons": 20,
+        "pilot": 600
+      },
+      "model": "production",
+      "components": [
+        {
+          "id": "preparation.summary",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.009333,
+          "meanMs": 0.00968105,
+          "p90Ms": 0.010167,
+          "minMs": 0.008792,
+          "maxMs": 0.019667,
+          "totalMs": 1.93621
+        },
+        {
+          "id": "preparation.grid",
+          "category": "preparation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0118955,
+          "meanMs": 0.0813825,
+          "p90Ms": 0.466083,
+          "minMs": 0.01025,
+          "maxMs": 0.505125,
+          "totalMs": 16.2765
+        },
+        {
+          "id": "fixture.summary",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0756045,
+          "meanMs": 0.0793091,
+          "p90Ms": 0.095292,
+          "minMs": 0.059583,
+          "maxMs": 0.173041,
+          "totalMs": 15.8618
+        },
+        {
+          "id": "fixture.summary-lines",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 0.0669585,
+          "meanMs": 0.0699442,
+          "p90Ms": 0.080875,
+          "minMs": 0.054292,
+          "maxMs": 0.121333,
+          "totalMs": 13.9888
+        },
+        {
+          "id": "fixture.grid",
+          "category": "computation",
+          "samples": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "medianMs": 35.8719,
+          "meanMs": 35.8964,
+          "p90Ms": 38.9905,
+          "minMs": 29.7768,
+          "maxMs": 42.9232,
+          "totalMs": 7179.28
+        },
+        {
+          "id": "observation.grid",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 63.8177,
+          "meanMs": 63.4553,
+          "p90Ms": 69.1663,
+          "minMs": 53.0114,
+          "maxMs": 81.7385,
+          "totalMs": 1903.66
+        },
+        {
+          "id": "observation.frames",
+          "category": "observation",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 13.6627,
+          "meanMs": 14.7092,
+          "p90Ms": 17.174,
+          "minMs": 12.342,
+          "maxMs": 22.5924,
+          "totalMs": 441.275
+        },
+        {
+          "id": "settlement.npc",
+          "category": "settlement",
+          "samples": 400,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.0103955,
+          "meanMs": 0.0159163,
+          "p90Ms": 0.016417,
+          "minMs": 0.00175,
+          "maxMs": 1.64592,
+          "totalMs": 6.3665
+        },
+        {
+          "id": "settlement.own",
+          "category": "settlement",
+          "samples": 30,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 0.947688,
+          "meanMs": 1.15871,
+          "p90Ms": 1.52188,
+          "minMs": 0.720208,
+          "maxMs": 4.14325,
+          "totalMs": 34.7613
+        },
+        {
+          "id": "season.baseline",
+          "category": "season",
+          "samples": 20,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 4587.72,
+          "meanMs": 4525.77,
+          "p90Ms": 5490.44,
+          "minMs": 3154.89,
+          "maxMs": 5782.68,
+          "totalMs": 90515.5
+        },
+        {
+          "id": "codec.encode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 373.704,
+          "meanMs": 373.704,
+          "p90Ms": 382.482,
+          "minMs": 364.926,
+          "maxMs": 382.482,
+          "totalMs": 747.409
+        },
+        {
+          "id": "codec.decode",
+          "category": "codec",
+          "samples": 2,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 553.66,
+          "meanMs": 553.66,
+          "p90Ms": 571.157,
+          "minMs": 536.163,
+          "maxMs": 571.157,
+          "totalMs": 1107.32
+        },
+        {
+          "id": "season.active-management",
+          "category": "season",
+          "samples": 20,
+          "warmup": 0,
+          "repetitions": 1,
+          "medianMs": 4430.71,
+          "meanMs": 4482.91,
+          "p90Ms": 5260.36,
+          "minMs": 3157.73,
+          "maxMs": 5380.25,
+          "totalMs": 89658.2
+        }
+      ],
+      "checks": {
+        "repeatsIdentical": true,
+        "observedMatchesUnobserved": true
+      },
+      "fixtureSets": {
+        "world": "release-century-baseline",
+        "grid": 200,
+        "ownInGrid": 30,
+        "summary": 200,
+        "summaryLines": 200,
+        "observed": 30,
+        "seasonFixtures": 8742
+      },
+      "seasons": [
+        {
+          "profile": "baseline",
+          "seed": "release-century-baseline",
+          "seasons": 20,
+          "year": 1970,
+          "checkpointChars": 337784,
+          "checkpointBytes": 675608,
+          "withinCheckpointLimit": true
+        },
+        {
+          "profile": "active-management",
+          "seed": "release-century-active-management",
+          "seasons": 20,
+          "year": 1970,
+          "checkpointChars": 324836,
+          "checkpointBytes": 649712,
+          "withinCheckpointLimit": true
+        }
+      ],
+      "memory": {
+        "peakHeapBytes": 591764904,
+        "peakRssBytes": 929841152
+      },
+      "elapsedMs": 231856
+    },
+    "baseline20Load": {
+      "from": "2026-10-21T19:06:27.811Z",
+      "to": "2026-10-21T19:10:19.667Z",
+      "load1Median": 3.06,
+      "load1Max": 3.88,
+      "competingProcessSamples": 2,
+      "samples": 8
+    },
+    "gatesAgainstBaseline100": {
+      "baseline": {
+        "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/3185be81-6fa0-4fea-9af4-4eb0a3b1b61c/scratchpad/t285/baseline-9f69553-s100.json",
+        "gitHead": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+        "fingerprint": "64c076338c8a1b1e36ecd1d4b47972d90f8b5f971e5fe7e007e1aaf83f6f8565",
+        "settings": {
+          "mode": "full",
+          "fixtures": 200,
+          "warmup": 10,
+          "repetitions": 3,
+          "seasons": 100,
+          "pilot": 600
+        }
+      },
+      "paired": true,
+      "reasons": [],
+      "gates": [
+        {
+          "id": "npc-fixture",
+          "budget": 0.5,
+          "status": "fail",
+          "ratio": 10.9887,
+          "baselineMs": 0.0797085,
+          "candidateMs": 0.875895
+        },
+        {
+          "id": "season.baseline",
+          "budget": 0.8,
+          "status": "fail",
+          "ratio": 1.07566,
+          "baselineMs": 13347.2,
+          "candidateMs": 14357.1
+        },
+        {
+          "id": "season.active-management",
+          "budget": 0.8,
+          "status": "fail",
+          "ratio": 2.38165,
+          "baselineMs": 7668.05,
+          "candidateMs": 18262.6
+        }
+      ],
+      "releaseEvidence": false,
+      "note": "context: the 100-season baseline ran first under load 15-30 (see baseline100Load)"
+    },
+    "gatesAgainstBaseline20": {
+      "note": "paired runner result over the same 20 seasons. The baseline side ran entirely quiet (load 2.3-3.9); the candidate fixture phase (04:06-04:11 KST) was quiet, but its season phase ran after another session started a 14-process test run at 04:11 (load up to 24.6), so the season ratios overstate the candidate. The interleaved quiet probes (interleaved.ratios) are the primary season evidence; every gate fails by a wide margin either way.",
+      "baselineSeasons": 20,
+      "candidateSeasons": 20,
+      "paired": true,
+      "reasons": [],
+      "gates": [
+        {
+          "id": "npc-fixture",
+          "budget": 0.5,
+          "status": "fail",
+          "ratio": 11.585223101799494,
+          "baselineMs": 0.0756045,
+          "candidateMs": 0.875895
+        },
+        {
+          "id": "season.baseline",
+          "budget": 0.8,
+          "status": "fail",
+          "ratio": 3.129463001229369,
+          "baselineMs": 4587.72,
+          "candidateMs": 14357.1
+        },
+        {
+          "id": "season.active-management",
+          "budget": 0.8,
+          "status": "fail",
+          "ratio": 4.121822461862771,
+          "baselineMs": 4430.71,
+          "candidateMs": 18262.6
+        }
+      ],
+      "releaseEvidence": false
+    },
+    "baseline100QuietRerun": "started 04:10 KST and stopped at 04:33: load returned at 04:11, so it was neither quiet nor finishable inside the timebox"
+  },
+  "interleaved": {
+    "stages": {
+      "before": {
+        "prepare": 0.025,
+        "plan+input": 0.006,
+        "participation": 0.055,
+        "access": 0.004,
+        "teamFacts": 0.478,
+        "attribution": 0.973,
+        "record+validate": 0.031,
+        "simulateAggregate": 1.546,
+        "runs": 3
+      },
+      "after": {
+        "prepare": 0.021,
+        "plan+input": 0.005,
+        "participation": 0.049,
+        "access": 0.003,
+        "teamFacts": 0.289,
+        "attribution": 0.454,
+        "record+validate": 0.026,
+        "simulateAggregate": 0.82,
+        "runs": 3
+      }
+    },
+    "seasons": {
+      "baseline": {
+        "base": {
+          "runs": 3,
+          "medianSeason": 3.837,
+          "perSeasonMedian": [
+            3.318,
+            3.936,
+            4.043
+          ],
+          "totalOfMedians": 11.297,
+          "rssMB": 302,
+          "heapMB": 148,
+          "load1": [
+            6.07177734375,
+            4.298828125,
+            3.03515625
+          ]
+        },
+        "before": {
+          "runs": 3,
+          "medianSeason": 19.874,
+          "perSeasonMedian": [
+            19.55,
+            20.591,
+            20.578
+          ],
+          "totalOfMedians": 60.719,
+          "rssMB": 485,
+          "heapMB": 278,
+          "load1": [
+            6.30078125,
+            4.091796875,
+            5.8271484375
+          ]
+        },
+        "after": {
+          "runs": 3,
+          "medianSeason": 14.233,
+          "perSeasonMedian": [
+            13.216,
+            14.363,
+            14.283
+          ],
+          "totalOfMedians": 41.862,
+          "rssMB": 500,
+          "heapMB": 206,
+          "load1": [
+            6.4501953125,
+            4.22021484375,
+            4.1083984375
+          ]
+        }
+      },
+      "active-management": {
+        "base": {
+          "runs": 3,
+          "medianSeason": 3.958,
+          "perSeasonMedian": [
+            3.488,
+            4.145,
+            4.058
+          ],
+          "totalOfMedians": 11.691,
+          "rssMB": 309,
+          "heapMB": 159,
+          "load1": [
+            8.3671875,
+            5.32568359375,
+            1.91796875
+          ]
+        },
+        "before": {
+          "runs": 3,
+          "medianSeason": 19.384,
+          "perSeasonMedian": [
+            19.384,
+            20.631,
+            19.191
+          ],
+          "totalOfMedians": 59.206,
+          "rssMB": 355,
+          "heapMB": 152,
+          "load1": [
+            9.0859375,
+            4.81396484375,
+            3.85888671875
+          ]
+        },
+        "after": {
+          "runs": 3,
+          "medianSeason": 13.52,
+          "perSeasonMedian": [
+            13.52,
+            14.866,
+            12.734
+          ],
+          "totalOfMedians": 41.12,
+          "rssMB": 327,
+          "heapMB": 136,
+          "load1": [
+            6.14404296875,
+            6.02978515625,
+            2.330078125
+          ]
+        }
+      }
+    },
+    "ratios": {
+      "stages": {
+        "prepare": 0.84,
+        "plan+input": 0.833,
+        "participation": 0.891,
+        "access": 0.75,
+        "teamFacts": 0.605,
+        "attribution": 0.467,
+        "record+validate": 0.839,
+        "simulateAggregate": 0.53
+      },
+      "baseline": {
+        "afterOverBase": 3.706,
+        "beforeOverBase": 5.375,
+        "afterOverBefore": 0.689
+      },
+      "active-management": {
+        "afterOverBase": 3.517,
+        "beforeOverBase": 5.064,
+        "afterOverBefore": 0.695
+      }
+    },
+    "loads": {}
+  },
+  "checkpoint": {
+    "root": "agent-a31d2556d687bff74",
+    "round7": {
+      "chars": 256412,
+      "encodeMs": 429,
+      "decodeMs": 677,
+      "roundTrip": true,
+      "participantRows": 13121
+    },
+    "round46": {
+      "chars": 484051,
+      "encodeMs": 543,
+      "decodeMs": 864,
+      "roundTrip": true,
+      "participantRows": 19773
+    },
+    "t281Round46Chars": 481269,
+    "t281Round7Chars": 255919
+  },
+  "fullStatsRead": {
+    "world": "founded 2024 ENG season-archive, candidate model, round 46",
+    "largest": {
+      "kind": "cup",
+      "groupKey": "cup:ITA",
+      "players": 1912,
+      "clubs": 115,
+      "medianMs": 3.587
+    },
+    "roundMedianMs": 927,
+    "note": "fullStatsRead median of 50 after 20 warm-up reads; rounds timed under load 9-15"
+  },
+  "quietWait": {
+    "quiet": true,
+    "waitedMinutes": 8.6,
+    "load1": 5.06,
+    "seen": [
+      "/bin/zsh -c source",
+      "CLAUDE_PLUGIN_DATA='/Users/ihaelam/.claude/plugins/data/codex-openai-codex'",
+      "&& setopt NO_EXTENDED_GLOB",
+      "node /opt/homebrew/bin/pnpm exec",
+      "node /Users/ihaelam/Library/pnpm/.tools/pnpm/10.34.6/bin/pnpm exec",
+      "node ./node_modules/.bin/../tsx/dist/cli.mjs scripts/grid-bands.ts",
+      "/Users/ihaelam/.hermes/node/bin/node --require /Users/ihaelam/project/haeram-soccer/.claude/worktree"
+    ],
+    "at": "2026-10-21T18:45:18.559Z"
+  }
+}
