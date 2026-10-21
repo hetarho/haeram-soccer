@@ -16,9 +16,10 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:50Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:02Z | - |
 
 ## inbox
+- 261021 decided T299 T300 T301 T302 T303: package.json makes Vitest --changed force the whole suite → use an explicit affected 12-file task scope instead; reuse static passes only on the identical clean source and rerun all task checks after a correction. Full unit/contract/resource/browser verification remains the integration gate (alt: duplicate the complete suite during submission).
 - 261021 decided T299 T300 T301 T302 T303: the five isolated drafts now form one delivery and the standalone T299 browser gate timed out in existing journeys → release that attempt without done, then claim one presentation-foundation lane, compose the parallel commits and review/verify/push the complete foundation once; one live claim reserves the entire scope against the other global runner (alt: repeat full gates for unused intermediate modules). Local Chromium runs two workers with a 90-second default budget and one reported retry; explicit scenario budgets/assertions and CI remain unchanged.
 - 261021 decided T279 T280 T282: after T273 only T274 ran because T274, T279, T280 and T282 all listed docs/MATCH-MODEL-CONTRACT.md while none of their acceptance edits it → the aggregate tasks drop it from touches and leave contract-document gaps in their limits for T286's documentation pass, so T274, T279 and T282 run side by side (alt: keep them serial behind T274, which runs the whole group one task at a time)
 - 261021 decided T273 T274 T285 T286: T273's load-path refusal of future model metadata needs schema.ts, persistence.ts and host.ts, which no full-model task listed → T273's touches take them with their tests and it wires validateWorld/readCheckpoint/host metadata now; T274 owns the 991 > 990 side-minutes rounding T273 found; T285/T286 re-run the 9f69553 baseline with --seasons 100 on the same machine and T285 fixes the stale provisionalReason (alt: move the wiring to T282/T286 and drop T273 acceptance 3 and 6 | leave loads unwired until activation, leaving SAVE-23 unmet for hand-made container-2 files)
@@ -204,6 +205,7 @@
 - Migrate legacy FORMAT reference notation separately before adopting typed reference markers.
 
 ## log
+- 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
@@ -223,4 +225,3 @@
 - 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
 - 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
 - 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
-- 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
