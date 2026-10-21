@@ -7,7 +7,9 @@ import {
   respondBid,
 } from '../../packages/engine/src/index';
 import { ATTRIBUTES } from '../../packages/contracts/src/player';
-export function transferredScorerWorld() {
+import type { World } from '../../packages/contracts/src/types';
+/** `prepare` sets the founded world up before anything is played, as a match model's activation. */
+export function transferredScorerWorld(prepare?: (w: World) => unknown) {
   const w = createWorld({
     country: 'ENG',
     name: 'Synthetic Transfer Scorer',
@@ -16,6 +18,7 @@ export function transferredScorerWorld() {
     seed: 'transferred-scorer-c',
     level: 'easy',
   });
+  prepare?.(w);
   w.cash = '999999999999';
   const player = activePlayers(w).find((p) => p.position === 'ST')!;
   for (const key of ATTRIBUTES) player.attrs[key] = 99;

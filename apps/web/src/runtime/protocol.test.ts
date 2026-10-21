@@ -128,6 +128,21 @@ it('carries supported match-model metadata and refuses a future one, changing no
   }
 });
 
+it('reads one competition of complete statistics on request, never a playoff scope (→WEB-89)', () => {
+  const accepts = (body: unknown) => requestSchema.safeParse(request(body)).success;
+  for (const kind of ['league', 'lower', 'cup', 'europe']) {
+    const body = { type: 'full-stats', kind, groupKey: 'ENG:0:0' };
+    expect(requestSchema.parse(request(body)).body).toEqual(body);
+  }
+  // Every country's barrage shares one key and settles at the close: no view reads it.
+  expect(accepts({ type: 'full-stats', kind: 'playoff', groupKey: 'promotion' })).toBe(false);
+  expect(accepts({ type: 'full-stats', kind: 'league', groupKey: '' })).toBe(false);
+  expect(accepts({ type: 'full-stats', kind: 'league' })).toBe(false);
+  expect(accepts({ type: 'full-stats', kind: 'league', groupKey: 'ENG:0:0', year: 1990 })).toBe(
+    false,
+  );
+});
+
 it('preserves stable retained-coach identities beyond the original candidate slots', () => {
   const body = {
     type: 'command',

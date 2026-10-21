@@ -711,6 +711,7 @@ function modelCareer(w: World): World {
               {
                 club: other,
                 appearances: 1,
+                starts: 1,
                 metrics: row(12, 0),
                 detail: row(PLAYER_DETAIL_SIZE, 1),
               },

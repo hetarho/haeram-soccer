@@ -1,13 +1,25 @@
-import type { Player } from '../../../../packages/contracts/src/types';
+import type { Metrics, Player } from '../../../../packages/contracts/src/types';
 import { performanceRows, type PlayerScope } from './playerAnalysis';
 import { observedRate } from './matchAnalysis';
 import s from './Analysis.module.css';
-export function PlayerPerformance({ player, scope }: { player: Player; scope: PlayerScope }) {
-  const stats = player[scope],
+/**
+ * Totals and per-90 rates over actual minutes: an own player's season or club career, or any row
+ * of the same Metrics (a participant of the season's complete statistics) under its own title.
+ */
+export function PlayerPerformance(
+  props: { player: Player; scope: PlayerScope } | { stats: Metrics; title: string },
+) {
+  const stats = 'player' in props ? props.player[props.scope] : props.stats,
     pass = observedRate(stats[3], stats[2]);
+  const title =
+    'player' in props
+      ? props.scope === 'season'
+        ? '이번 시즌 · 모든 대회'
+        : '우리 클럽 통산 · 모든 대회'
+      : props.title;
   return (
     <section className={s.content} aria-label="선수 생산량 분석">
-      <h3>{scope === 'season' ? '이번 시즌 · 모든 대회' : '우리 클럽 통산 · 모든 대회'}</h3>
+      <h3>{title}</h3>
       <p className={s.note}>
         출전 {stats[10]}분 · 90분당 지표는 실제 출전 시간을 기준으로 계산해요.
       </p>

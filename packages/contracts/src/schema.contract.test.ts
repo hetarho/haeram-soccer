@@ -462,6 +462,7 @@ describe('match-model metadata on load (→SAVE-23)', () => {
               {
                 club: 'ENG:a',
                 appearances: 1,
+                starts: 0,
                 metrics: Array<number>(12).fill(0),
                 detail: emptyPlayerDetail(),
               },
@@ -506,10 +507,18 @@ describe('match-model metadata on load (→SAVE-23)', () => {
       { ...structuredClone(w), ownMatches: [{ id: 'f:1', model: future }] },
     ])
       expect(failure(input)).toBeInstanceOf(SaveCompatibilityError);
+    // A contribution's starts are some of its appearances, and always recorded (→HIST-13).
+    const contribution = (change: (part: Record<string, unknown>) => void) => {
+      const season = structuredClone(npcSeason);
+      change(season.competitions[0].players[0].clubs[0] as unknown as Record<string, unknown>);
+      return { ...structuredClone(w), npcSeason: season };
+    };
     for (const input of [
       { ...structuredClone(w), matchModel: { ...matchModel, coverage: 'partial' } },
       { ...structuredClone(w), matchModel: { ...matchModel, extra: 1 } },
       { ...structuredClone(w), npcSeason: { ...npcSeason, competitions: [{ kind: 'league' }] } },
+      contribution((part) => (part.starts = 2)),
+      contribution((part) => delete part.starts),
     ]) {
       const error = failure(input);
       expect(error).toBeInstanceOf(Error);

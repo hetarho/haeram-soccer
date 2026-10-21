@@ -1,23 +1,18 @@
 import type { Player, World } from '../../../../packages/contracts/src/types';
-import { PD, per90, playerAdvanced, share } from './advanced';
+import { PD, per90, playerAdvanced, share, type PlayerAdvanced } from './advanced';
 import { Term } from './Term';
 import s from './Analysis.module.css';
 
-/** A player's advanced production over the chosen scope, with totals and per-90 rates. */
-export function PlayerAdvancedStats({
-  w,
-  player,
-  scope,
-}: {
-  w: World;
-  player: Player;
-  scope: 'season' | 'career';
-}) {
-  const { matches, minutes, totals, spatialMatches, spatialMinutes } = playerAdvanced(
-    w,
-    player.id,
-    scope,
-  );
+/**
+ * A player's advanced production over the chosen scope, with totals and per-90 rates: an own
+ * player's records, or a participant's totals of the season's complete statistics, whose full-model
+ * matches carry every counter on either engine (`fullStatsAdvanced`).
+ */
+export function PlayerAdvancedStats(
+  props: { w: World; player: Player; scope: 'season' | 'career' } | { advanced: PlayerAdvanced },
+) {
+  const { matches, minutes, totals, spatialMatches, spatialMinutes } =
+    'advanced' in props ? props.advanced : playerAdvanced(props.w, props.player.id, props.scope);
   if (!matches)
     return (
       <p className={s.note} data-testid="player-advanced">

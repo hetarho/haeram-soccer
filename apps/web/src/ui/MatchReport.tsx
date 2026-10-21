@@ -3,6 +3,7 @@ import type { MatchRecord, World } from '../../../../packages/contracts/src/type
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { kindLabel, seasonName } from './format';
 import { matchComparison, PD, share, sideLines } from './advanced';
+import { hundredths, recordCounters } from './fullStatsView';
 import { Term } from './Term';
 import s from './Analysis.module.css';
 
@@ -28,8 +29,9 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
   );
   const [material, setMaterial] = useState(false);
   const rows = matchComparison(record);
-  const hundredths = (value: number) => (value / 100).toFixed(2);
-  const grid = !!record.lineCounts;
+  // A note names only the rules a match was played under, never the engine that settled it.
+  const counters = recordCounters(record),
+    grid = counters === 'all';
   const changes = new Map<string, string>();
   for (const incident of record.incidents ?? []) {
     if (incident.kind !== 'sub' || incident.side !== own) continue;
@@ -80,12 +82,12 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
           </li>
         ))}
       </ul>
-      {!record.detail && (
+      {counters === 'basic' && (
         <p className={s.note}>
           이 경기는 고급 지표(키패스·빅찬스·파이널 서드·PPDA 등)를 기록하기 전 규칙으로 치러졌어요.
         </p>
       )}
-      {record.detail && !grid && (
+      {counters === 'advanced' && (
         <p className={s.note}>
           이 경기는 박스 진입·라인 브레이킹 패스·xT·파울 같은 칸 기반 지표를 기록하기 전 규칙으로
           치러졌어요.

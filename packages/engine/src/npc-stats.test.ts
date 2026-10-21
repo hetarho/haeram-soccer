@@ -3,9 +3,10 @@ import { PD, TD } from '../../contracts/src/detail';
 import type { NpcCompetitionStats } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../contracts/src/types';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
+import { fixtureDay } from './calendar';
 import { M } from './grid/record';
 import { simulateMatch } from './match';
-import { npcCompetition, playerTotals, settleNpcSeason } from './npc-stats';
+import { fullStatsRead, npcCompetition, playerTotals, settleNpcSeason } from './npc-stats';
 import { recordMatch } from './season';
 import { founded } from './season.testkit';
 
@@ -39,6 +40,8 @@ function expectReconciled(c: NpcCompetitionStats) {
     const appearances = parts.reduce((n, part) => n + part.appearances, 0);
     expect(appearances).toBeGreaterThanOrEqual(11 * club.matches);
     expect(appearances).toBeLessThanOrEqual(16 * club.matches);
+    // Eleven start every match; the rest of the appearances came on.
+    expect(parts.reduce((n, part) => n + part.starts, 0)).toBe(11 * club.matches);
   }
 }
 /**
@@ -81,6 +84,8 @@ describe('complete current-season aggregates (→HIST-3, HIST-13, HIST-17)', () 
             .find((p) => p.id === line.id)!
             .clubs.find((part) => part.club === club)!;
           expect(part.appearances).toBe(1);
+          // Own records' rule: a substitute appearance is no start (→HIST-13).
+          expect(part.starts).toBe(came.has(line.id) ? 0 : 1);
           expect(part.metrics).toEqual(line.metrics);
           expect(part.detail).toEqual(line.detail);
           if (came.has(line.id)) expect(line.metrics[M.minutes]).toBeLessThan(90);
@@ -117,9 +122,11 @@ describe('complete current-season aggregates (→HIST-3, HIST-13, HIST-17)', () 
     const row = () => c.players.find((p) => p.id === mover.id)!;
     expect(row().clubs.map((part) => part.club)).toEqual([first.home, later.home]);
     expect(row().clubs.map((part) => part.appearances)).toEqual([1, 1]);
+    expect(row().clubs.map((part) => part.starts)).toEqual([1, 1]);
     expect(row().name).toBe(mover.name);
     const total = playerTotals(row());
     expect(total.appearances).toBe(2);
+    expect(total.starts).toBe(2);
     expect(total.metrics[M.minutes]).toBe(
       row().clubs.reduce((n, part) => n + part.metrics[M.minutes]!, 0),
     );
@@ -154,5 +161,92 @@ describe('complete current-season aggregates (→HIST-3, HIST-13, HIST-17)', () 
     settleNpcSeason(w, simulateMatch(w, g!));
     expect(w.npcSeason!.competitions).toHaveLength(1);
     expect(w.npcSeason!.trackedFrom).toEqual({ year: w.year, day: 1, round: 1 });
+  });
+
+  it('leaves the ledger untouched when a participant is missing', () => {
+    const w = candidate();
+    const [f, g] = groupFixtures(w);
+    // The away side's first starter is not in its match squad.
+    const missing = structuredClone(simulateMatch(w, g!));
+    const away = missing.record.players[missing.record.lineCounts![0]]!.id;
+    missing.squads[1] = missing.squads[1].filter((q) => q.id !== away);
+    // Neither a new scope nor the home club's row is added before the throw.
+    const empty = structuredClone(w.npcSeason);
+    expect(() => settleNpcSeason(w, missing)).toThrow(away);
+    expect(w.npcSeason).toEqual(empty);
+    settle(w, f!);
+    const settled = structuredClone(w.npcSeason);
+    expect(() => settleNpcSeason(w, missing)).toThrow(away);
+    expect(w.npcSeason).toEqual(settled);
+  });
+
+  it('follows a replaced list with its index', () => {
+    const w = candidate();
+    const fixtures = groupFixtures(w);
+    const first = fixtures[0]!;
+    settle(w, first);
+    const c = npcCompetition(w.npcSeason, first)!;
+    // As a load gives them: lists of the same sizes holding new rows.
+    c.clubs = structuredClone(c.clubs);
+    c.players = structuredClone(c.players);
+    const next = fixtures.find(
+      (f) => f.round > first.round && [f.home, f.away].includes(first.home),
+    )!;
+    settle(w, next);
+    expect(c.clubs.find((row) => row.club === first.home)!.matches).toBe(2);
+    expectReconciled(c);
+  });
+
+  it('reads a competition from its tracking boundary', () => {
+    // A pre-feature world plays its first round, then records the model from the next day.
+    const w = founded(2024);
+    const fixtures = groupFixtures(w);
+    const scope = { kind: 'league', groupKey: fixtures[0]!.groupKey } as const;
+    const before = fixtures.filter((f) => f.round === fixtures[0]!.round);
+    for (const f of before) settle(w, f);
+    w.round = before[0]!.round;
+    w.calendar = { day: fixtureDay(before[0]!) };
+    // No ledger for the season: unavailable, not a season of zeros.
+    expect(fullStatsRead(w, scope)).toBeUndefined();
+    withCandidateModel(w, 'activation');
+    const after = fixtures.filter((f) => f.round === before[0]!.round + 1);
+    expect(after.length).toBeGreaterThan(0);
+    const empty = fullStatsRead(w, scope)!;
+    // Tracked from the next day, nothing settled since: a real zero beside the untracked count.
+    expect(empty.trackedFrom).toEqual({
+      year: w.year,
+      day: fixtureDay(before[0]!) + 1,
+      round: before[0]!.round + 1,
+    });
+    expect(empty.untracked).toBe(before.length);
+    expect(empty.competition).toEqual({ ...scope, clubs: [], players: [] });
+    for (const f of after) settle(w, f);
+    const read = fullStatsRead(w, scope)!;
+    expect(read.untracked).toBe(before.length);
+    expect(read.competition.clubs.reduce((n, club) => n + club.matches, 0)).toBe(2 * after.length);
+    // Another scope of the same season reads empty; a playoff is never a read scope.
+    expect(fullStatsRead(w, { kind: 'league', groupKey: 'ENG:9:9' })!.competition.clubs).toEqual(
+      [],
+    );
+  });
+
+  it('does not mutate or redraw on read', () => {
+    const w = candidate();
+    const fixtures = groupFixtures(w);
+    settle(w, fixtures[0]!);
+    const unread = structuredClone(w);
+    const scope = { kind: 'league', groupKey: fixtures[0]!.groupKey } as const;
+    const read = fullStatsRead(w, scope)!;
+    expect(read.competition).toEqual(npcCompetition(w.npcSeason, scope));
+    // A copy: changing it leaves the ledger as it was, and a second read is the first again.
+    read.competition.players[0]!.clubs[0]!.appearances += 5;
+    read.competition.clubs.length = 0;
+    read.trackedFrom.day = 99;
+    expect(fullStatsRead(w, scope)).toEqual(fullStatsRead(unread, scope));
+    expect(w).toEqual(unread);
+    // Nothing is drawn: the next fixture plays the same after reads as without them.
+    expect(simulateMatch(w, fixtures[1]!).record).toEqual(
+      simulateMatch(unread, fixtures[1]!).record,
+    );
   });
 });

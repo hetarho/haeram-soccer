@@ -1048,7 +1048,12 @@ function Roster({ state, client }: Props) {
       </Panel>
       <TalkRulePanel w={w} client={client} />
       {comparing && (
-        <PlayerComparison w={w} initialScope={scope} onClose={() => setComparing(false)} />
+        <PlayerComparison
+          w={w}
+          client={client}
+          initialScope={scope}
+          onClose={() => setComparing(false)}
+        />
       )}
       {stancePlayer && (
         <StanceSheet

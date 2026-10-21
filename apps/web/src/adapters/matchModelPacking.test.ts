@@ -86,7 +86,16 @@ function npcSeason(w: World): NpcSeasonStats {
             id: `${club}:npc:${i}`,
             name: `Synthetic Player ${i}`,
             position: position(i),
-            clubs: [{ club, appearances: 2, metrics: row(12), detail: row(PLAYER_DETAIL_SIZE) }],
+            clubs: [
+              {
+                club,
+                appearances: 2,
+                // A real zero (two substitute appearances) beside starters.
+                starts: i % 3,
+                metrics: row(12),
+                detail: row(PLAYER_DETAIL_SIZE),
+              },
+            ],
           })),
           {
             id: 'ENG:transferred:1',
@@ -95,6 +104,7 @@ function npcSeason(w: World): NpcSeasonStats {
             clubs: [clubs[1], clubs[0]].map((club, i) => ({
               club,
               appearances: 1 + i,
+              starts: i,
               metrics: row(12),
               detail: row(PLAYER_DETAIL_SIZE),
             })),
@@ -104,7 +114,13 @@ function npcSeason(w: World): NpcSeasonStats {
             name: 'Retired Since',
             position: position(8),
             clubs: [
-              { club: clubs[2], appearances: 1, metrics: row(12), detail: row(PLAYER_DETAIL_SIZE) },
+              {
+                club: clubs[2],
+                appearances: 1,
+                starts: 1,
+                metrics: row(12),
+                detail: row(PLAYER_DETAIL_SIZE),
+              },
             ],
           },
         ],
@@ -303,12 +319,19 @@ describe('container-3 match-model streams (→SAVE-23, HIST-17)', () => {
                 .chain((clubs) =>
                   fc.tuple(
                     ...clubs.map((club) =>
-                      fc.record({
-                        club: fc.constant(club),
-                        appearances: fc.nat({ max: 1000 }),
-                        metrics: row(12),
-                        detail: row(PLAYER_DETAIL_SIZE),
-                      }),
+                      fc
+                        .record({
+                          club: fc.constant(club),
+                          counts: fc.tuple(fc.nat({ max: 1000 }), fc.nat({ max: 1000 })),
+                          metrics: row(12),
+                          detail: row(PLAYER_DETAIL_SIZE),
+                        })
+                        // Starts are some of the appearances, none included.
+                        .map(({ counts: [a, b], ...part }) => ({
+                          ...part,
+                          appearances: Math.max(a, b),
+                          starts: Math.min(a, b),
+                        })),
                     ),
                   ),
                 ),
@@ -445,7 +468,8 @@ describe('container-3 match-model streams (→SAVE-23, HIST-17)', () => {
     });
     fails((p) => replace(p, 'players', 4, (rows) => (rows[4] = rows[0])));
     fails((p) => {
-      const width = 2 + 12 + PLAYER_DETAIL_SIZE;
+      // [club, appearances, starts, metrics, detail]
+      const width = 3 + 12 + PLAYER_DETAIL_SIZE;
       const rows = readSparseTable(season(p).contributions, width);
       // The transferred player's two shares, in order after the six single-club players.
       rows[7 * width] = rows[6 * width];
