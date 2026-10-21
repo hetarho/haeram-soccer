@@ -21,7 +21,7 @@ import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-3';
+export const MATCH_PARITY_VERSION = 'match-parity-4';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
@@ -856,23 +856,82 @@ export const TACTIC_PAIRING_TARGET = {
   ] as readonly PairingOrdering[],
 };
 
+/** A season-level measure of MATCH-23's scoring concentration. */
+export type ScoringRow = 'clubTopScorerShare' | 'leagueTopScorerGoals' | 'hatTricksPerMatch';
 /**
- * Player scoring concentration beside the season scorer measurement (T278 limit 3): PROPOSED by
- * T284, not a MATCH decision yet, so a reading against it is context and never a verdict. Basis:
- * Premier League seasons 2013-14 … 2023-24 as published (league tables and golden boots): a club's
- * leading league scorer has on average about a quarter of its goals (club spread about 14–43%), the
- * league's top scorer 22–36 goals in 38 rounds, and about 10–15 hat-tricks in 380 matches.
+ * MATCH-23's scoring concentration of a top-tier 38-round league season, authoritative (ratified
+ * from T284's proposal; its source, Premier League 2013/14–2023/24, is in docs/MATCH-BASELINES.md
+ * "시즌 득점 집중도"). Readings get verdicts like any band.
  */
 export const SCORING_CONCENTRATION_TARGET = {
-  version: 1,
-  status: 'proposed',
-  source: 'T284 proposal; ratification belongs to update-ssot (MATCH-23/28)',
-  /** Mean over clubs of the leading scorer's share of the club's goals. */
-  clubTopScorerShare: [0.2, 0.3],
-  /** The league's leading scorer's goals in a 38-round season. */
-  leagueTopScorerGoals: [22, 32],
-  hatTricksPerMatch: [0.02, 0.05],
-} as const;
+  version: 2,
+  source: 'MATCH-23',
+  rows: {
+    clubTopScorerShare: {
+      label: "club top scorer's share of its league goals (mean over clubs)",
+      band: [0.2, 0.3],
+      unit: 'share',
+    },
+    leagueTopScorerGoals: {
+      label: "the league top scorer's goals in a 38-round season",
+      band: [22, 32],
+      unit: 'count',
+    },
+    hatTricksPerMatch: { label: 'hat-tricks a match', band: [0.02, 0.05], unit: 'count' },
+  } as Readonly<Record<ScoringRow, { label: string; band: readonly [number, number]; unit: Unit }>>,
+};
+/** A reading of a measure: its estimate, 95% interval and the observations behind it. */
+export interface MeasureReading {
+  value: number;
+  interval: readonly [number, number];
+  n: number;
+}
+/** A Poisson rate's reading: events a match with its 95% log interval (none seen: rule of three). */
+export function poissonReading(events: number, matches: number): MeasureReading {
+  const value = events / Math.max(1, matches);
+  const z = zInterval();
+  return {
+    value,
+    interval:
+      events > 0
+        ? [value * Math.exp(-z / Math.sqrt(events)), value * Math.exp(z / Math.sqrt(events))]
+        : [0, 3 / Math.max(1, matches)],
+    n: matches,
+  };
+}
+export interface ScoringVerdict {
+  id: ScoringRow;
+  label: string;
+  band: readonly [number, number];
+  status: 'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing';
+  value?: number;
+  interval?: readonly [number, number];
+  n: number;
+}
+/**
+ * MATCH-23's verdicts on scoring concentration, like any band: inside only when the 95% interval
+ * lies inside it, a measure without a reading missing, fewer than PARITY_CONFIG.minimumSamples
+ * observations underpowered.
+ */
+export function scoringConcentrationVerdicts(
+  readings: Partial<Record<ScoringRow, MeasureReading>>,
+): ScoringVerdict[] {
+  return (Object.keys(SCORING_CONCENTRATION_TARGET.rows) as ScoringRow[]).map((id) => {
+    const { label, band } = SCORING_CONCENTRATION_TARGET.rows[id];
+    const r = readings[id];
+    if (!r) return { id, label, band, status: 'missing', n: 0 };
+    const [lo, hi] = band;
+    const status =
+      r.n < PARITY_CONFIG.minimumSamples
+        ? 'underpowered'
+        : r.interval[0] >= lo && r.interval[1] <= hi
+          ? 'inside'
+          : r.interval[1] < lo || r.interval[0] > hi
+            ? 'outside'
+            : 'unresolved';
+    return { id, label, band, status, value: r.value, interval: r.interval, n: r.n };
+  });
+}
 
 // ---- Comparison, corpus and performance settings -----------------------------------------------
 
@@ -993,8 +1052,12 @@ export const NEUTRAL_SQUAD_FATIGUE = 0;
  * core condition; no unmeasured combination of families is claimed.
  */
 export const CORPUS_CONFIG = {
-  /** 2: tactic pairings declare their neutral squad fatigue (T284). */
-  version: 2,
+  /**
+   * 2: tactic pairings declare their neutral squad fatigue (T284). 3: a forced pairing fields
+   * squads built for the forced formation in both runners (T321), and its sample's `gap` rates
+   * those rosters at the formation played (`forcedGap`, T322).
+   */
+  version: 3,
   /** Fixture ids carry the partition, so every named match stream of a fixture differs by partition. */
   partitions: {
     calibration: { prefix: 'parity-calibration' },
@@ -1935,7 +1998,7 @@ export function buildCoverageReport(
 }
 
 export type TargetStatus =
-  'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing' | 'undefined';
+  'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing' | 'undefined' | 'detailed-only';
 export interface TargetResult {
   id: string;
   label: string;
@@ -1949,56 +2012,429 @@ export interface TargetResult {
   matches: number;
   missing: number;
 }
+/** Which engine a report reads: the aggregate path records no shot points or sequences (MATCH-23). */
+export type ReportPath = 'detailed' | 'aggregate';
+/**
+ * MATCH-23's rows that read ball positions or possession sequences bind the detailed engine only
+ * (→MATCH-26): on the aggregate path they are listed as detailed-only, never missing or failed.
+ */
+export const DETAILED_ONLY_REASON =
+  'MATCH-23: reads ball positions or possession sequences, which bind the detailed engine only (MATCH-26)';
 /**
  * Absolute target errors against the intended bands (→MATCH-23): only `inside` passes. Counts and
- * durations of a match that played extra time are read per 90 minutes (`perNinety`).
+ * durations of a match that played extra time are read per 90 minutes (`perNinety`). On the
+ * aggregate path the rows that read the detailed engine's diagnostics are `detailed-only`.
  */
-export function buildTargetReport(samples: readonly MatchSample[]): TargetResult[] {
-  return TARGET_BANDS.map((t) => {
-    const base = { id: t.id, label: t.label, band: t.band, unit: t.unit, matches: samples.length };
-    const parts = samples.map((s) => t.contribution(s));
-    const missing = parts.filter((p) => p === undefined).length;
-    if (missing || !samples.length) return { ...base, status: 'missing' as const, missing };
-    let value: number, interval: [number, number];
-    if (t.estimator === 'median') {
-      const sorted = (parts as (readonly number[])[]).flat().sort((a, b) => a - b);
-      const n = sorted.length;
-      if (!n) return { ...base, status: 'undefined' as const, missing };
-      const half = (zInterval() * Math.sqrt(n)) / 2;
-      value = quantile(sorted, 0.5);
-      interval = [
-        sorted[Math.max(0, Math.floor(n / 2 - half))]!,
-        sorted[Math.min(n - 1, Math.ceil(n / 2 + half))]!,
-      ];
-    } else {
-      const pairs = (parts as Contribution[]).map(([n, d], i): Contribution =>
-        t.perNinety ? [n, (d * matchMinutes(samples[i]!.record)) / 90] : [n, d],
+export function buildTargetReport(
+  samples: readonly MatchSample[],
+  path: ReportPath = 'detailed',
+): TargetResult[] {
+  return TARGET_BANDS.map((t) =>
+    path === 'aggregate' && t.reads === 'diagnostics'
+      ? {
+          id: t.id,
+          label: t.label,
+          band: t.band,
+          unit: t.unit,
+          matches: samples.length,
+          status: 'detailed-only' as const,
+          missing: 0,
+        }
+      : evaluateTarget(t, samples),
+  );
+}
+
+/** One band's estimate over the samples and its verdict (`buildTargetReport`'s rule). */
+function evaluateTarget(t: TargetBand, samples: readonly MatchSample[]): TargetResult {
+  const base = { id: t.id, label: t.label, band: t.band, unit: t.unit, matches: samples.length };
+  const parts = samples.map((s) => t.contribution(s));
+  const missing = parts.filter((p) => p === undefined).length;
+  if (missing || !samples.length) return { ...base, status: 'missing' as const, missing };
+  let value: number, interval: [number, number];
+  if (t.estimator === 'median') {
+    const sorted = (parts as (readonly number[])[]).flat().sort((a, b) => a - b);
+    const n = sorted.length;
+    if (!n) return { ...base, status: 'undefined' as const, missing };
+    const half = (zInterval() * Math.sqrt(n)) / 2;
+    value = quantile(sorted, 0.5);
+    interval = [
+      sorted[Math.max(0, Math.floor(n / 2 - half))]!,
+      sorted[Math.min(n - 1, Math.ceil(n / 2 + half))]!,
+    ];
+  } else {
+    const pairs = (parts as Contribution[]).map(([n, d], i): Contribution =>
+      t.perNinety ? [n, (d * matchMinutes(samples[i]!.record)) / 90] : [n, d],
+    );
+    const num = sum(pairs.map((p) => p[0])),
+      den = sum(pairs.map((p) => p[1]));
+    if (den === 0) return { ...base, status: 'undefined' as const, missing };
+    const ratio = num / den;
+    const c = pairs.length;
+    const variance =
+      c > 1
+        ? ((c / (c - 1)) * sum(pairs.map(([n, d]) => (n - ratio * d) ** 2))) / den ** 2
+        : Infinity;
+    const half = zInterval() * Math.sqrt(variance);
+    value = ratio * t.scale;
+    interval = [(ratio - half) * t.scale, (ratio + half) * t.scale];
+  }
+  const [lo, hi] = t.band;
+  const error = Math.max(lo - value, 0, value - hi);
+  if (samples.length < PARITY_CONFIG.minimumSamples)
+    return { ...base, status: 'underpowered' as const, value, interval, error, missing };
+  const status: TargetStatus =
+    interval[0] >= lo && interval[1] <= hi
+      ? 'inside'
+      : interval[1] < lo || interval[0] > hi
+        ? 'outside'
+        : 'unresolved';
+  return { ...base, status, value, interval, error, missing };
+}
+
+// ---- Advanced counters (MATCH-30) --------------------------------------------------------------
+
+/** Why a MATCH-13 counter stays unbanded (MATCH-30: held to MATCH-28 parity only). */
+export type AdvancedCounterBand =
+  | { band: readonly [number, number]; source: string }
+  | { matchTarget: string }
+  | { unbanded: string };
+export type AdvancedCounter = {
+  id: string;
+  /** MATCH-13's row. */
+  counter: string;
+  label: string;
+  /** The registry metric it reads (team rows; `pd.xa` is the sum of the side's player lines). */
+  reads: string;
+  unit: Unit;
+} & AdvancedCounterBand;
+
+const SB = 'StatsBomb open data 2015/16 (Premier League, La Liga, Serie A, Ligue 1), computed';
+const OPTA = 'FBref (Opta) squad tables 2017/18–2023/24, five leagues';
+/**
+ * MATCH-30's real-football level of every MATCH-13 advanced counter for equal top-tier sides, per
+ * team per match (docs/MATCH-BASELINES.md "MATCH-13 고급 지표 기준값", which holds each band's
+ * sources, league-seasons and mapping): a band is the span of the cited league-season means
+ * rounded outward, never an engine's output. Counters MATCH-23 already bands point at that row;
+ * a counter without a comparable public source is listed as unbanded with its reason and held to
+ * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's.
+ */
+export const ADVANCED_COUNTER_TARGET = {
+  version: 1,
+  source: 'MATCH-30',
+  counters: [
+    {
+      id: 'keyPasses',
+      counter: 'key pass',
+      label: 'key passes (team)',
+      reads: 'td.keyPasses',
+      unit: 'count',
+      band: [8.2, 10.7],
+      source: `${SB}; ${OPTA} (assisted shots)`,
+    },
+    {
+      id: 'xa',
+      counter: 'xA',
+      label: 'xA (team)',
+      reads: 'pd.xa',
+      unit: 'xg',
+      band: [0.75, 1.15],
+      source: `${SB}; ${OPTA} (xAG)`,
+    },
+    {
+      id: 'bigChances',
+      counter: 'big chance',
+      label: 'big chances (team)',
+      reads: 'td.bigChances',
+      unit: 'count',
+      band: [0.8, 1.05],
+      source: SB,
+    },
+    {
+      id: 'bigChancesScored',
+      counter: 'big chance',
+      label: 'big chances scored (team)',
+      reads: 'td.bigChancesScored',
+      unit: 'count',
+      band: [0.4, 0.55],
+      source: SB,
+    },
+    {
+      id: 'boxShots',
+      counter: 'box shot',
+      label: 'box shots (team)',
+      reads: 'td.boxShots',
+      unit: 'count',
+      band: [6.8, 7.7],
+      source: SB,
+    },
+    {
+      id: 'finalThirdPasses',
+      counter: 'final-third pass',
+      label: 'final-third passes (team)',
+      reads: 'td.finalThirdPasses',
+      unit: 'count',
+      band: [100, 121],
+      source: SB,
+    },
+    {
+      id: 'finalThirdCompleted',
+      counter: 'final-third pass',
+      label: 'final-third passes completed (team)',
+      reads: 'td.finalThirdCompleted',
+      unit: 'count',
+      band: [65, 85],
+      source: SB,
+    },
+    {
+      id: 'progressivePasses',
+      counter: 'progressive pass',
+      label: 'progressive passes (team)',
+      reads: 'td.progressivePasses',
+      unit: 'count',
+      band: [116, 124],
+      source: SB,
+    },
+    {
+      id: 'takeOns',
+      counter: 'take-on',
+      label: 'take-ons (team)',
+      reads: 'td.takeOns',
+      unit: 'count',
+      matchTarget: 'takeOns',
+    },
+    {
+      id: 'takeOnSuccess',
+      counter: 'take-on',
+      label: 'take-ons successful',
+      reads: 'ratio.takeOnSuccess',
+      unit: 'percent',
+      matchTarget: 'takeOnSuccess',
+    },
+    {
+      id: 'highTurnovers',
+      counter: 'high turnover',
+      label: 'high turnovers (team)',
+      reads: 'td.highTurnovers',
+      unit: 'count',
+      unbanded:
+        "sources disagree under MATCH-13's zone: StatsBomb 2015/16 open-play possessions won in the final third 1.0–1.2 a team against its ball-winning events there 12–13, and Opta publishes sequences from 40 m or less (about 7.5 a team); decision requested",
+    },
+    {
+      id: 'ppda',
+      counter: 'PPDA',
+      label: 'PPDA',
+      reads: 'ratio.ppda',
+      unit: 'ratio',
+      unbanded:
+        "published PPDA (Opta, StatsBomb, Understat) divides by defensive actions with fouls and challenges, not MATCH-13's tackles + interceptions; computed from StatsBomb 2015/16 under MATCH-13 it is 33–44, but StatsBomb's tackles run about a quarter below FBref's, which MATCH-23's tackle band reads; decision requested",
+    },
+    {
+      id: 'fieldTilt',
+      counter: 'field tilt',
+      label: 'field tilt (home side)',
+      reads: 'ratio.fieldTilt',
+      unit: 'percent',
+      unbanded:
+        "between equal sides it is 50% by construction (each side's share of both sides' final-third passes), so a level band says nothing; held to parity",
+    },
+    {
+      id: 'boxEntries',
+      counter: 'box entry',
+      label: 'box entries (team)',
+      reads: 'td.boxEntries',
+      unit: 'count',
+      band: [13, 16],
+      source: SB,
+    },
+    {
+      id: 'frontOfBoxEntries',
+      counter: 'front-of-box entry',
+      label: 'front-of-box entries (team)',
+      reads: 'td.frontOfBoxEntries',
+      unit: 'count',
+      band: [42.5, 45.5],
+      source: SB,
+    },
+    {
+      id: 'lineBreakingPasses',
+      counter: 'line-breaking pass',
+      label: 'line-breaking passes (team)',
+      reads: 'td.lineBreakingPasses',
+      unit: 'count',
+      unbanded:
+        "needs every opponent line's deepest player at each pass: public event data (StatsBomb, Wyscout) carries no line membership or full positions, and FIFA's published line breaks are tournament counts under its own line set; held to parity",
+    },
+    {
+      id: 'xtAdded',
+      counter: 'xT added',
+      label: 'xT added (team)',
+      reads: 'td.xtAdded',
+      unit: 'xt',
+      band: [2, 2.3],
+      source: `${SB} on the 40 cells' xT`,
+    },
+    {
+      id: 'cutBacks',
+      counter: 'cut-back',
+      label: 'cut-backs (team)',
+      reads: 'td.cutBacks',
+      unit: 'count',
+      band: [0.35, 0.6],
+      source: SB,
+    },
+    {
+      id: 'crosses',
+      counter: 'cross',
+      label: 'crosses (team)',
+      reads: 'td.crosses',
+      unit: 'count',
+      matchTarget: 'crosses',
+    },
+    {
+      id: 'crossCompletion',
+      counter: 'cross',
+      label: 'crosses completed',
+      reads: 'ratio.crossCompletion',
+      unit: 'percent',
+      matchTarget: 'crossCompletion',
+    },
+    {
+      id: 'throughBalls',
+      counter: 'through ball',
+      label: 'through balls (team)',
+      reads: 'td.throughBalls',
+      unit: 'count',
+      band: [0.45, 2.2],
+      source: `${SB}; ${OPTA} (through balls)`,
+    },
+    {
+      id: 'throughBallsCompleted',
+      counter: 'through ball',
+      label: 'through balls completed (team)',
+      reads: 'td.throughBallsCompleted',
+      unit: 'count',
+      band: [0.6, 0.85],
+      source: SB,
+    },
+    {
+      id: 'progressiveCarries',
+      counter: 'progressive carry',
+      label: 'progressive carries (team)',
+      reads: 'td.progressiveCarries',
+      unit: 'count',
+      band: [58.5, 63],
+      source: SB,
+    },
+  ] as readonly AdvancedCounter[],
+};
+
+/** A side's team-row reading of an advanced counter in canonical units; undefined when absent. */
+function counterReading(
+  s: MatchSample,
+  d: MetricDefinition | undefined,
+  side: Side,
+): number | undefined {
+  if (!d || d.index === undefined) return undefined;
+  if (d.family === 'player-detail') {
+    const lines = sideLines(s.record, side);
+    return lines?.length ? sum(lines.map((l) => l.detail?.[d.index!] ?? 0)) * d.scale : undefined;
+  }
+  const row = d.family === 'team-detail' ? s.record.detail?.[side] : s.record.metrics[side];
+  const v = row?.[d.index];
+  return v === undefined ? undefined : v * d.scale;
+}
+/** An advanced counter's estimate as a target band (its own, or a wide one for context). */
+function counterBand(c: AdvancedCounter, range: readonly [number, number]): TargetBand {
+  const metric = METRIC_BY_ID.get(c.reads);
+  const ratio = metric?.ratio;
+  const contribution = (s: MatchSample): Contribution | undefined => {
+    if (ratio) {
+      const n = METRIC_BY_ID.get(ratio.numerator),
+        d = METRIC_BY_ID.get(ratio.denominator);
+      // Field tilt is the home side's share; PPDA and the success rates pool both sides.
+      if (ratio.denominatorSide === 'both') {
+        const own = counterReading(s, n, 0),
+          a = counterReading(s, d, 0),
+          b = counterReading(s, d, 1);
+        return own === undefined || a === undefined || b === undefined ? undefined : [own, a + b];
+      }
+      return share(
+        both(s, (side) => counterReading(s, n, side)),
+        both(s, (side) => counterReading(s, d, side)),
       );
-      const num = sum(pairs.map((p) => p[0])),
-        den = sum(pairs.map((p) => p[1]));
-      if (den === 0) return { ...base, status: 'undefined' as const, missing };
-      const ratio = num / den;
-      const c = pairs.length;
-      const variance =
-        c > 1
-          ? ((c / (c - 1)) * sum(pairs.map(([n, d]) => (n - ratio * d) ** 2))) / den ** 2
-          : Infinity;
-      const half = zInterval() * Math.sqrt(variance);
-      value = ratio * t.scale;
-      interval = [(ratio - half) * t.scale, (ratio + half) * t.scale];
     }
-    const [lo, hi] = t.band;
-    const error = Math.max(lo - value, 0, value - hi);
-    if (samples.length < PARITY_CONFIG.minimumSamples)
-      return { ...base, status: 'underpowered' as const, value, interval, error, missing };
-    const status: TargetStatus =
-      interval[0] >= lo && interval[1] <= hi
-        ? 'inside'
-        : interval[1] < lo || interval[0] > hi
-          ? 'outside'
-          : 'unresolved';
-    return { ...base, status, value, interval, error, missing };
+    return perTeam(both(s, (side) => counterReading(s, metric, side)));
+  };
+  return {
+    id: c.id,
+    label: c.label,
+    band: range,
+    unit: c.unit,
+    source: 'MATCH-30',
+    reads: 'record',
+    estimator: 'ratio',
+    contribution,
+    scale: c.unit === 'percent' ? 100 : 1,
+    // Counts and sums over the match are read per 90 minutes played; ratios are not.
+    perNinety: !ratio,
+  };
+}
+
+export type AdvancedCounterStatus = TargetStatus | 'unbanded';
+export interface AdvancedCounterResult extends Omit<TargetResult, 'status' | 'band'> {
+  counter: string;
+  status: AdvancedCounterStatus;
+  band?: readonly [number, number];
+  /** The MATCH-23 row that bands it, or why it has no band. */
+  matchTarget?: string;
+  reason?: string;
+}
+/**
+ * MATCH-30's verdict on every advanced counter: a banded counter by its 95% interval like a
+ * MATCH-23 row (only `inside` passes), a counter MATCH-23 bands by that row, and an unbanded one
+ * listed with its reason and its measured level for the MATCH-28 parity it is held to.
+ */
+export function advancedCounterVerdicts(samples: readonly MatchSample[]): AdvancedCounterResult[] {
+  return ADVANCED_COUNTER_TARGET.counters.map((c): AdvancedCounterResult => {
+    if ('matchTarget' in c) {
+      const row = TARGET_BANDS.find((t) => t.id === c.matchTarget)!;
+      return { ...evaluateTarget(row, samples), counter: c.counter, matchTarget: row.id };
+    }
+    if ('unbanded' in c) {
+      const measured = evaluateTarget(counterBand(c, [-Infinity, Infinity]), samples);
+      return {
+        id: c.id,
+        label: c.label,
+        unit: c.unit,
+        counter: c.counter,
+        status: 'unbanded',
+        reason: c.unbanded,
+        matches: measured.matches,
+        missing: measured.missing,
+        ...(measured.value !== undefined && { value: measured.value, interval: measured.interval }),
+      };
+    }
+    return { ...evaluateTarget(counterBand(c, c.band), samples), counter: c.counter };
   });
+}
+
+/** One line per advanced counter, printed the same by both runners. */
+export function describeAdvancedCounters(
+  rows: readonly Pick<
+    AdvancedCounterResult,
+    'id' | 'status' | 'band' | 'value' | 'interval' | 'matchTarget'
+  >[],
+): string[] {
+  const n = (x: number | undefined) => (x === undefined ? '—' : x.toFixed(x < 10 ? 2 : 1));
+  const counts = new Map<string, number>();
+  for (const r of rows) counts.set(r.status, (counts.get(r.status) ?? 0) + 1);
+  return [
+    `MATCH-30 advanced counters (target v${ADVANCED_COUNTER_TARGET.version}, ${MATCH_PARITY_VERSION}): ${[...counts].map(([k, v]) => `${v} ${k}`).join(', ')}`,
+    ...rows.map(
+      (r) =>
+        `  ${r.id}: ${r.status}${r.band ? ` [${r.band[0]}, ${r.band[1]}]` : ''} ${n(r.value)}${r.interval ? ` (${n(r.interval[0])}–${n(r.interval[1])})` : ''}${r.matchTarget ? ` (MATCH-23 ${r.matchTarget})` : ''}`,
+    ),
+  ];
 }
 
 type Outcomes = { homeWin: number; draw: number; awayWin: number };

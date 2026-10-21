@@ -134,7 +134,7 @@ export function playGrid(setup: GridSetup): GridResult {
   /** Added-time seconds of a stoppage: the pre-feature credit, or what the candidate clock really spent. */
   const charge = (old: number, spent: number) => (candidate ? spent : old);
   const ctx = shotContext(s);
-  const tally = new Tally(setup);
+  const tally = new Tally(setup, s);
   const tracer = new Tracer(setup.observe, () => tally.running());
   const added: number[] = [];
   const credits = [0, 0, 0, 0];
@@ -672,10 +672,8 @@ export function playGrid(setup: GridSetup): GridResult {
             ok: res.outcome.kind === 'shot' || res.outcome.kind === 'complete',
             kind: 'cross',
           });
-        } else if (res.outcome.kind === 'complete' && res.outcome.receiver !== res.taker)
-          tally.pass(rs.side, res.taker, true);
-        else if (res.kind !== 'shot' && res.kind !== 'penalty')
-          tally.pass(rs.side, res.taker, false);
+        } else if (res.kind !== 'shot' && res.kind !== 'penalty')
+          tally.restartPass(rs.side, res.taker, rs.spot, res);
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
         apply(rs.side, res.taker, res.outcome);

@@ -42,12 +42,16 @@ import type {
   World,
 } from '../packages/contracts/src/types';
 import {
+  cohesionMultiplier,
   createWorld,
+  fatigueLoad,
+  formationOf,
   integer,
   isUnavailable,
   npcSquad,
   random,
   rating,
+  slotOvr,
 } from '../packages/engine/src/index';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
@@ -61,6 +65,8 @@ import {
   type GridSetup,
 } from '../packages/engine/src/grid/setup';
 import {
+  ADVANCED_COUNTER_TARGET,
+  advancedCounterVerdicts,
   buildInvariantReport,
   buildOutcomeTargetReport,
   buildTargetReport,
@@ -68,8 +74,11 @@ import {
   conditionOf,
   CORPUS_CONFIG,
   corpusFixtureId,
+  describeAdvancedCounters,
   describeTacticPairings,
   MATCH_PARITY_VERSION,
+  poissonReading,
+  scoringConcentrationVerdicts,
   tacticPairingVerdicts,
   type MatchSample,
   type ParityCondition,
@@ -456,8 +465,12 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       diagnostics: result.diagnostics,
       incidentsTracked: true,
       condition: c.id,
-      // Match strength of two clubs nobody owns: XI ratings and home ground (MATCH-2).
-      gap: rating(w, home, f) + 3 - rating(w, away, f),
+      // Match strength of two clubs nobody owns: XI ratings and home ground (MATCH-2); a forced
+      // pairing rates the rosters it fields, as the aggregate runner does (`forcedGap`).
+      gap:
+        c.family === 'tactics'
+          ? forcedGap([home, away], setup.rosters, setup.tactics)
+          : rating(w, home, f) + 3 - rating(w, away, f),
       // MATCH-29's freshness measures a tactic's in-match cost only from the declared fatigue.
       ...(c.family !== 'tactics' || fatigueApplied
         ? { freshness: result.diagnostics.freshness }
@@ -496,6 +509,34 @@ export function forcedRosters(
     return [...xi, ...named];
   }) as [Player[], Player[]];
 }
+
+/**
+ * An XI rated at the formation it plays, as world.ts `rating` rates a club nobody owns (MATCH-2):
+ * the players' OVR at their slots times the club's 조직력, less the fatigue past match fitness.
+ */
+export function rosterRating(club: Club, xi: readonly Player[], tactic: Tactic): number {
+  const slots = formationOf(tactic);
+  let ovr = 0,
+    load = 0;
+  xi.slice(0, slots.length).forEach((p, i) => {
+    ovr += slotOvr(p, slots[i]!);
+    load += fatigueLoad(p.fatigue) / 6;
+  });
+  return Math.round((ovr * cohesionMultiplier(club) - load) / 11);
+}
+/**
+ * A forced pairing's home-minus-away match strength before form (CORPUS_CONFIG v3): the rosters
+ * it fields rated at the formations played, plus home ground — the same in both runners, never the
+ * clubs' own XIs with their weekly press load.
+ */
+export const forcedGap = (
+  clubs: readonly [Club, Club],
+  rosters: readonly (readonly Player[])[],
+  tactics: readonly [Tactic, Tactic],
+) =>
+  rosterRating(clubs[0], rosters[0]!, tactics[0]) +
+  3 -
+  rosterRating(clubs[1], rosters[1]!, tactics[1]);
 
 /** Whether a forced pairing's rosters start from its declared squad fatigue; freshness is read only then. */
 export const forcedFatigueApplied = (
@@ -592,8 +633,9 @@ function meanCi(xs: readonly number[]): { mean: number; ci: [number, number] } {
 }
 
 /**
- * Player scoring concentration: braces and hat-tricks per match, and per club with 20+ goals in the
- * sample its top scorer's share of the club's goals and his goals per 38 club matches.
+ * Player scoring concentration: braces and hat-tricks per match (MATCH-23's hat-trick row gets its
+ * verdict), and per club with 20+ goals in the sample its top scorer's share of the club's goals
+ * and his goals per 38 club matches — context only, since MATCH-23 reads those over whole seasons.
  */
 function concentration(samples: readonly MatchSample[]) {
   let braces = 0,
@@ -624,6 +666,9 @@ function concentration(samples: readonly MatchSample[]) {
   return {
     bracesPerMatch: braces / samples.length,
     hatTricksPerMatch: hatTricks / samples.length,
+    hatTricks: scoringConcentrationVerdicts({
+      hatTricksPerMatch: poissonReading(hatTricks, samples.length),
+    }).find((v) => v.id === 'hatTricksPerMatch'),
     clubsWith20Goals: scored.length,
     topScorerShare: meanCi(scored.map((c) => top(c) / c.goals)),
     topScorerGoalsPer38: meanCi(scored.map((c) => (38 * top(c)) / c.matches)),
@@ -672,6 +717,14 @@ function summarise(job: Job) {
       value: t.value,
       interval: t.interval,
       error: t.error,
+    })),
+    advancedCounters: advancedCounterVerdicts(samples).map((a) => ({
+      id: a.id,
+      status: a.status,
+      band: a.band,
+      value: a.value,
+      interval: a.interval,
+      ...(a.matchTarget && { matchTarget: a.matchTarget }),
     })),
     invariants: {
       failed: invariants
@@ -830,6 +883,14 @@ async function runReport() {
     },
     outcomeCurve: curve,
     tacticPairings,
+    advancedCounterTarget: {
+      note: 'MATCH-30 bands and sources: scripts/lib/match-parity.ts ADVANCED_COUNTER_TARGET, docs/MATCH-BASELINES.md',
+      unbanded: Object.fromEntries(
+        ADVANCED_COUNTER_TARGET.counters.flatMap((c) =>
+          'unbanded' in c ? [[c.id, c.unbanded]] : [],
+        ),
+      ),
+    },
     conditions: done.map((d) => ({
       ...d,
       gapScores: undefined,
@@ -846,13 +907,15 @@ async function runReport() {
     `wrote ${out}: ${done.length} conditions in ${report.speed.elapsedSeconds.toFixed(0)} s, fingerprint ${source.sha256}`,
   );
   const core = done.find((d) => d.family === 'core');
-  if (core)
+  if (core) {
     console.log(
       `core targets inside ${core.targets.filter((t) => t.status === 'inside').length}/${core.targets.length}; outside ${core.targets
         .filter((t) => t.status === 'outside')
         .map((t) => `${t.id}=${t.value?.toFixed(2)}`)
         .join(' ')}`,
     );
+    for (const line of describeAdvancedCounters(core.advancedCounters)) console.log(line);
+  }
   if (curve) console.log(`outcome curve mean absolute error (−10…+40): ${curve.meanAbsoluteError}`);
   if (tacticPairings) for (const line of describeTacticPairings(tacticPairings)) console.log(line);
 }

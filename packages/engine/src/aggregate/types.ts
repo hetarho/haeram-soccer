@@ -153,7 +153,11 @@ export interface AggregateStreams {
   readonly draw: (family: AggregateStreamFamily, period?: AggregatePeriod) => () => number;
 }
 
-/** Pass kinds of MATCH-13's classifications, then the carrying kinds. */
+/**
+ * The kernel's pass kinds, then the carrying kinds. Crosses and through balls are MATCH-13's
+ * counters by kind; `cutBack` is the kernel's pull-back flow, while MATCH-13's cut-back counter
+ * reads the cells of any pass (grid/record.ts `isCutBack`), as the detailed tally does.
+ */
 export const AGGREGATE_PASS_KINDS = ['short', 'long', 'through', 'cross', 'cutBack'] as const;
 export const AGGREGATE_MOVE_KINDS = [...AGGREGATE_PASS_KINDS, 'carry', 'takeOn'] as const;
 export type AggregateMoveKind = (typeof AGGREGATE_MOVE_KINDS)[number];
@@ -173,7 +177,10 @@ export interface AggregateMove {
   setPiece?: 'corner' | 'freeKick';
   attempts: number;
   completed: number;
-  /** Completed passes played beyond an opponent line. */
+  /**
+   * Completed passes played beyond an opponent line (MATCH-13): a pass of any kind that ends in a
+   * higher band than it starts.
+   */
   lineBreaking: number;
   offside: number;
   intercepted: number;

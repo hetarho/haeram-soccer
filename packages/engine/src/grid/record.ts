@@ -1,15 +1,53 @@
 /** The only place a grid match is counted: team and player metrics, goals, xG and possession (→MATCH-11, MATCH-13). */
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/src/detail';
+import type { Line } from '../../../contracts/src/player';
 import type { Incident, MatchMaterial, MatchRecord } from '../../../contracts/src/types';
 import { MATERIAL_LAYOUT, REPORT_SLOTS, SHOT_OUTCOMES } from '../material';
+import { FORMATIONS, lineOf } from '../player';
 import { zeroMetrics } from '../primitives';
 import { CELL_BASELINES } from './baselines';
-import { attackFrame, BAND_EDGES, bandOf, cellOf, inBox, laneOf, PITCH, type Point } from './pitch';
+import {
+  attackFrame,
+  BAND_EDGES,
+  bandOf,
+  cellBand,
+  cellLane,
+  cellOf,
+  inBox,
+  laneOf,
+  PITCH,
+  type Point,
+} from './pitch';
 import type { RestartKind } from './restarts';
 import type { Outcome } from './resolve';
 import type { GridSetup } from './setup';
 import type { GridState } from './state';
 import type { Tags } from './tags';
+
+/**
+ * MATCH-13's zones on MATCH-14's bands, in the acting side's attack frame, read alike by the grid's
+ * tally (points) and the aggregate ledger (cells): a pass that starts from band `finalThird` on is
+ * a final-third pass, and below it a build-up pass (PPDA's numerator: the passer's own two thirds);
+ * a ball won from band `press` on is won in the opponent's own two thirds (PPDA's denominator), and
+ * from band `highTurnover` on in its defensive third (a high turnover).
+ */
+export const COUNTER_ZONES = { finalThird: 5, press: 3, highTurnover: 5 } as const;
+/** The band of the same strip in the other side's attack frame (the bands mirror at halfway). */
+export const mirrorBand = (band: number) => 7 - band;
+/** The box: the inner three lanes of the box and goal-area bands (`inBox` on cells, →MATCH-14). */
+export const inBoxCell = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) % 4 !== 0;
+/** MATCH-14's cut-back zones: the half-space cells of the goal-area band. */
+const inCutBackZone = (cell: number) =>
+  cellBand(cell) === 7 && (cellLane(cell) === 1 || cellLane(cell) === 3);
+/**
+ * MATCH-13's cut-back, the one rule both paths count by: a pass from a cut-back zone back into the
+ * box, counted when completed, whatever kind of pass it was (a low cross pulled back counts as a
+ * cross and a cut-back). From the goal-area band every box cell is level or back, so "back" adds
+ * no condition at cell resolution.
+ */
+export const isCutBack = (from: number, to: number) => inCutBackZone(from) && inBoxCell(to);
+/** Opponent lines a line-breaking pass is played beyond (MATCH-13: the deepest player of a line). */
+const BROKEN_LINES: readonly Line[] = ['DF', 'MF'];
 
 /**
  * Where a cross arrived, in the crosser's attack frame: the teammate who controlled or headed it when it reached
@@ -39,9 +77,71 @@ export const M = {
 /** Values per side in `Tally.running()`: the counts before `M.minutes`, possession seconds and xG. */
 export const RUNNING = M.minutes + 2;
 
-/** x (attack frame) where the final third starts, and where a won ball counts as a press action. */
-const FINAL_THIRD = BAND_EDGES[5];
-const PRESS_FROM = BAND_EDGES[3];
+/** x (attack frame) where MATCH-13's zones start (`COUNTER_ZONES`): the final third, press, high turnover. */
+const FINAL_THIRD = BAND_EDGES[COUNTER_ZONES.finalThird];
+const PRESS_FROM = BAND_EDGES[COUNTER_ZONES.press];
+const HIGH_FROM = BAND_EDGES[COUNTER_ZONES.highTurnover];
+
+/**
+ * The deepest x, in `attacking`'s frame, of the on-pitch outfielders of `defending` that `keep`
+ * selects by their slot's line; undefined when there is none.
+ */
+function deepest(
+  s: GridState,
+  defending: 0 | 1,
+  attacking: 0 | 1,
+  keep: (line: Line) => boolean,
+): number | undefined {
+  let x: number | undefined;
+  // state.ts's `onPitch` and `slotOf`, read inline: the aggregate path imports this module, and
+  // state.ts's imports lead back to it.
+  const slots = FORMATIONS[s.setup.tactics[defending]].slots;
+  for (const gp of s.players[defending]) {
+    if (!gp.onPitch || gp.sentOff || gp.slot < 0) continue;
+    const line = lineOf(slots[gp.slot]!.position);
+    if (line === 'GK' || !keep(line)) continue;
+    const at = attackFrame(attacking, gp.pos)[0];
+    x = x === undefined ? at : Math.max(x, at);
+  }
+  return x;
+}
+/** Played from at or behind `line` to beyond it, along the attack frame's x. */
+const beyond = (line: number | undefined, from: Point, to: Point) =>
+  line !== undefined && from[0] <= line && to[0] > line;
+
+/**
+ * How MATCH-13 classifies a pass of `side` from `from` to `to` (its attack frame) with the players
+ * where they stand when it is played: a cut-back by its cells; otherwise a through ball when it is
+ * played from at or behind the deepest outfield opponent into the space beyond him (MATCH-15's
+ * "in behind"); a line-breaking pass when it is played from at or behind the deepest player of an
+ * opponent line (defenders or midfielders) to beyond him. A cross stays a cross. Read by the
+ * candidate model's tally only; the pre-feature tally keeps the decision's labels.
+ */
+function classifyPass(
+  s: GridState,
+  side: 0 | 1,
+  e: { from: Point; to: Point; kind: string },
+): { cutBack: boolean; through: boolean; lineBreaking: boolean } {
+  const foe = side === 0 ? 1 : 0;
+  const cross = e.kind === 'cross';
+  const cutBack = isCutBack(cellOf(e.from), cellOf(e.to));
+  const through =
+    !cross &&
+    !cutBack &&
+    beyond(
+      deepest(s, foe, side, () => true),
+      e.from,
+      e.to,
+    );
+  const lineBreaking = BROKEN_LINES.some((line) =>
+    beyond(
+      deepest(s, foe, side, (l) => l === line),
+      e.from,
+      e.to,
+    ),
+  );
+  return { cutBack, through, lineBreaking };
+}
 
 /** One shot as T215's band script reads it (attack-frame metres). */
 export interface ShotDiagnostic {
@@ -320,7 +420,14 @@ export class Tally {
     shot: false,
   };
 
-  constructor(private readonly setup: GridSetup) {
+  /**
+   * `state` is the match being counted: the candidate model reads where the players stand when a
+   * pass is played (`classifyPass`) and where a restart's receiver is.
+   */
+  constructor(
+    private readonly setup: GridSetup,
+    private readonly state?: GridState,
+  ) {
     this.lines = [
       setup.rosters[0].map(() => zeroMetrics()),
       setup.rosters[1].map(() => zeroMetrics()),
@@ -347,7 +454,9 @@ export class Tally {
 
   /**
    * A pass, cross or cut-back by `idx`. Points are in the passer's attack frame: the pass starts at
-   * `from` and reaches `to`; `ok` when a teammate got it.
+   * `from` and is played to `to`; `ok` when a teammate got it. The candidate model classifies it
+   * by MATCH-13's rules where the players stand (`classifyPass`); the pre-feature model keeps the
+   * decision's kind and line-breaking flag.
    */
   passEvent(
     side: 0 | 1,
@@ -360,11 +469,65 @@ export class Tally {
       lineBreaking?: boolean;
     },
   ): void {
-    this.pass(side, idx, e.ok);
-    this.material?.pass(side, e.kind, e.ok);
     const [dx, dy] = [e.to[0] - e.from[0], e.to[1] - e.from[1]];
     const direction = e.kind === 'cross' || dx > Math.abs(dy) ? 0 : -dx > Math.abs(dy) ? 2 : 1;
     this.diagnostics.directions[side][direction]!++;
+    this.counted(side, idx, e);
+  }
+
+  /**
+   * A restart played as a pass (a throw-in, goal kick, kick-off, short corner or free kick) by
+   * `idx` from `spot` (engine frame) to the receiver he chose, `target`. It is a pass attempt like
+   * any other; the candidate model also counts it by where it starts and ends (MATCH-13: final-third
+   * and build-up passes, progression, entries, xT, lines broken), as the aggregate ledger counts
+   * every pass. Open-play pass directions (MATCH-23) leave it out on both models.
+   */
+  restartPass(
+    side: 0 | 1,
+    idx: number,
+    spot: Point,
+    res: { target?: number; outcome: Outcome },
+  ): void {
+    const ok = res.outcome.kind === 'complete' && res.outcome.receiver !== idx;
+    if (this.setup.model === undefined) return this.pass(side, idx, ok);
+    const from = attackFrame(side, spot);
+    const target =
+      res.target === undefined ? undefined : this.matchState().players[side][res.target];
+    const to = target ? attackFrame(side, target.pos) : from;
+    this.counted(side, idx, { from, to, ok, kind: 'short' });
+  }
+
+  private matchState(): GridState {
+    if (!this.state) throw new Error('the candidate tally reads the match state');
+    return this.state;
+  }
+
+  /** A pass attempt's counters under MATCH-13 (`passEvent`, `restartPass`). */
+  private counted(
+    side: 0 | 1,
+    idx: number,
+    e: {
+      from: Point;
+      to: Point;
+      ok: boolean;
+      kind: 'short' | 'long' | 'switch' | 'through' | 'cross' | 'cutBack';
+      lineBreaking?: boolean;
+    },
+  ): void {
+    this.pass(side, idx, e.ok);
+    const rules =
+      this.setup.model === undefined
+        ? {
+            cutBack: e.kind === 'cutBack',
+            through: e.kind === 'through',
+            lineBreaking: e.lineBreaking ?? false,
+          }
+        : classifyPass(this.matchState(), side, e);
+    const cross = e.kind === 'cross';
+    // The material report counts by the same classification (a pulled-back cross is both).
+    if (cross) this.material?.pass(side, 'cross', e.ok);
+    if (rules.cutBack) this.material?.pass(side, 'cutBack', e.ok);
+    if (rules.through) this.material?.pass(side, 'through', e.ok);
     const start = bandOf(e.from[0]);
     const end = bandOf(e.to[0]);
     if (e.from[0] < FINAL_THIRD) this.count(side, undefined, TD.buildUpPasses, undefined);
@@ -372,18 +535,18 @@ export class Tally {
       this.count(side, idx, TD.finalThirdPasses, PD.finalThirdPasses);
       if (e.ok) this.count(side, idx, TD.finalThirdCompleted, PD.finalThirdCompleted);
     }
-    if (e.kind === 'cross') {
+    if (cross) {
       this.count(side, idx, TD.crosses, PD.crosses);
       if (e.ok) this.count(side, idx, TD.crossesCompleted, PD.crossesCompleted);
     }
-    if (e.kind === 'cutBack' && e.ok) this.count(side, idx, TD.cutBacks, PD.cutBacks);
-    if (e.kind === 'through') {
+    if (rules.cutBack && e.ok) this.count(side, idx, TD.cutBacks, PD.cutBacks);
+    if (rules.through) {
       this.count(side, idx, TD.throughBalls, PD.throughBalls);
       if (e.ok) this.count(side, idx, TD.throughBallsCompleted, PD.throughBallsCompleted);
     }
     if (!e.ok) return;
     if (end > start) this.count(side, idx, TD.progressivePasses, PD.progressivePasses);
-    if (e.lineBreaking) this.count(side, idx, TD.lineBreakingPasses, PD.lineBreakingPasses);
+    if (rules.lineBreaking) this.count(side, idx, TD.lineBreakingPasses, PD.lineBreakingPasses);
     this.movement(side, idx, e.from, e.to);
   }
 
@@ -414,7 +577,7 @@ export class Tally {
 
   /** The ball won by `(side, idx)` at `at` (his attack frame): a high turnover from x ≥ 70. */
   regain(side: 0 | 1, idx: number, at: Point): void {
-    if (at[0] >= FINAL_THIRD) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
+    if (at[0] >= HIGH_FROM) this.count(side, idx, TD.highTurnovers, PD.highTurnovers);
     this.material?.regain(side, at);
   }
 

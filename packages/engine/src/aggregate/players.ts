@@ -10,7 +10,7 @@
 import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
 import { cellBand } from '../grid/pitch';
-import { M } from '../grid/record';
+import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
@@ -45,8 +45,7 @@ type Rng = () => number;
 type Table = Readonly<Record<Line, number>>;
 
 /** MATCH-13's definitions as the ledger reads them (ledger.ts `sideCounters`). */
-const FINAL_THIRD_BAND = 5;
-const HIGH_TURNOVER_BAND = 2;
+const FINAL_THIRD_BAND = COUNTER_ZONES.finalThird;
 const BIG_CHANCE = 30;
 const LAST_BAND = 7;
 
@@ -366,6 +365,8 @@ interface MoveTraits {
   fromBand: number;
   toBand: number;
   boxEntry: boolean;
+  /** MATCH-13's cut-back by its cells (grid/record.ts `isCutBack`), whatever the move's kind. */
+  cutBack: boolean;
   xt: number;
 }
 function moveTraits(move: AggregateMove): MoveTraits {
@@ -375,6 +376,7 @@ function moveTraits(move: AggregateMove): MoveTraits {
     fromBand: cellBand(move.from),
     toBand: cellBand(move.to),
     boxEntry: inBoxCell(move.to) && !inBoxCell(move.from),
+    cutBack: isPassKind(move.kind) && isCutBack(move.from, move.to),
     xt: xtGain(move.from, move.to),
   };
 }
@@ -401,7 +403,7 @@ function creditMove(row: Row, move: MoveTraits, attempts: number, done: number, 
       d[PD.throughBalls]! += attempts;
       d[PD.throughBallsCompleted]! += done;
     }
-    if (move.kind === 'cutBack') d[PD.cutBacks]! += done;
+    if (move.cutBack) d[PD.cutBacks]! += done;
   } else {
     if (toBand > fromBand) d[PD.progressiveCarries]! += done;
     if (move.kind === 'takeOn') {
@@ -551,7 +553,8 @@ function attributeSide(
         const k = split[line]!;
         if (k === 0) continue;
         opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
-        if (at <= HIGH_TURNOVER_BAND) opp.rows[line]!.detail[PD.highTurnovers]! += k;
+        if (mirrorBand(at) >= COUNTER_ZONES.highTurnover)
+          opp.rows[line]!.detail[PD.highTurnovers]! += k;
       }
     }
   }
