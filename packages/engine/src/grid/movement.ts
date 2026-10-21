@@ -1,0 +1,259 @@
+/**
+ * Bounded movement on one match clock for the candidate match model (→MATCH-12, MATCH-17;
+ * docs/MATCH-MODEL-CONTRACT.md "One match-time coordinate"): players accelerate, brake and turn
+ * within limits up to their pace/fatigue speed, the ball flies at bounded speeds, and an action or a
+ * restart lasts until its route is physically done. The pre-feature path keeps `moveAll`.
+ */
+import { clamp, PITCH } from './pitch';
+import type { Restart } from './restarts';
+import { speedOf, targetOf, type ShapeCache } from './shape';
+import { onPitch, type GridPlayer, type GridState } from './state';
+
+/**
+ * Player motion. Top speed is `speedOf` (pace and fatigue); these bound how it changes. Initial
+ * values from the contract, to be measured (T278 may tune them against the unchanged targets).
+ */
+export const GRID_MOVEMENT_CONFIG = {
+  /** m/s² speeding up and slowing down. */
+  acceleration: 4,
+  braking: 6,
+  /** Degrees a moving player's heading turns per match second; a standing player faces any way. */
+  turn: 180,
+  /** Integration step, match seconds; reach times are whole steps. */
+  step: 0.2,
+  /** Metres within which a player has arrived and stops. */
+  arrive: 0.05,
+  /** Match seconds a reach estimate looks ahead before giving up. */
+  horizon: 300,
+} as const;
+
+/**
+ * Ball speeds in metres per match second, never above `max`; a ball out of play is carried back to
+ * its restart spot at `retrieval` and set down in `placement` seconds.
+ */
+export const GRID_BALL_CONFIG = {
+  pass: 20,
+  turnover: 20,
+  restart: 18,
+  shot: 30,
+  max: 40,
+  retrieval: 6,
+  placement: 1.5,
+} as const;
+
+export type BallSpeed = Exclude<keyof typeof GRID_BALL_CONFIG, 'retrieval' | 'placement'>;
+
+/** A semantic point of the ball's route (engine frame, absolute elapsed match seconds). */
+export interface MotionKnot {
+  kind: 'retrieve' | 'place' | 'kick' | 'touch' | 'receive' | 'arrive' | 'carry' | 'tackle';
+  at: number;
+  ball: [number, number];
+}
+
+/** What moves: a position and, once moving, a velocity (m/s, engine frame). */
+export interface Mover {
+  pos: [number, number];
+  vel?: [number, number];
+}
+
+const RAD = Math.PI / 180;
+const FULL_TURN = GRID_MOVEMENT_CONFIG.turn * RAD * GRID_MOVEMENT_CONFIG.step;
+const FULL_COS = Math.cos(FULL_TURN);
+const FULL_SIN = Math.sin(FULL_TURN);
+
+/**
+ * One step of `h` seconds toward `target`: the heading turns at most `turn`·h, speed changes by at
+ * most `acceleration`·h up or `braking`·h down, never past `vmax`, and the player slows so as to
+ * stop on the target (he slows further while facing away from it).
+ */
+export function stepToward(m: Mover, target: readonly [number, number], vmax: number, h: number) {
+  const C = GRID_MOVEMENT_CONFIG;
+  const v = (m.vel ??= [0, 0]);
+  // Standing on the point already: nothing to do.
+  if (v[0] === 0 && v[1] === 0 && m.pos[0] === target[0] && m.pos[1] === target[1]) return;
+  const dx = target[0] - m.pos[0],
+    dy = target[1] - m.pos[1];
+  const dist = Math.hypot(dx, dy);
+  const speed = Math.hypot(v[0], v[1]);
+  // Arrived: within reach of the point at a speed one whole step's braking stops.
+  if (dist <= C.arrive && speed <= C.braking * C.step + 1e-9) {
+    m.pos[0] = target[0];
+    m.pos[1] = target[1];
+    v[0] = v[1] = 0;
+    return;
+  }
+  const ux = dist > 0 ? dx / dist : speed > 0 ? v[0] / speed : 1;
+  const uy = dist > 0 ? dy / dist : speed > 0 ? v[1] / speed : 0;
+  let hx = ux,
+    hy = uy,
+    aligned = true;
+  if (speed > 1e-9) {
+    const cx = v[0] / speed,
+      cy = v[1] / speed;
+    const full = h === C.step;
+    const turn = full ? FULL_TURN : C.turn * RAD * h;
+    const c = full ? FULL_COS : Math.cos(turn);
+    if (cx * ux + cy * uy < c) {
+      aligned = false;
+      const s = (cx * uy - cy * ux >= 0 ? 1 : -1) * (full ? FULL_SIN : Math.sin(turn));
+      hx = cx * c - cy * s;
+      hy = cx * s + cy * c;
+    }
+  }
+  const facing = aligned ? 1 : Math.max(0, hx * ux + hy * uy);
+  // The fastest speed that braking step by step still stops within `dist`.
+  const stop = C.braking * (Math.sqrt((h * h) / 4 + (2 * dist) / C.braking) - h / 2);
+  const want = Math.min(vmax, stop) * facing;
+  const next =
+    want > speed
+      ? Math.min(want, speed + C.acceleration * h)
+      : Math.max(want, speed - C.braking * h);
+  v[0] = hx * next;
+  v[1] = hy * next;
+  if (dist > 0 && aligned && next * h >= dist) {
+    m.pos[0] = target[0];
+    m.pos[1] = target[1];
+    return;
+  }
+  m.pos[0] = clamp(m.pos[0] + v[0] * h, 0, PITCH.length);
+  m.pos[1] = clamp(m.pos[1] + v[1] * h, 0, PITCH.width);
+}
+
+/** On the point and slow enough that the next step stops him there. */
+const at = (m: Mover, p: readonly [number, number]) =>
+  m.pos[0] === p[0] &&
+  m.pos[1] === p[1] &&
+  Math.hypot(m.vel?.[0] ?? 0, m.vel?.[1] ?? 0) <=
+    GRID_MOVEMENT_CONFIG.braking * GRID_MOVEMENT_CONFIG.step + 1e-9;
+
+/**
+ * Match seconds, in whole steps, `m` needs to stand on `target` from where and how he moves now
+ * (a running player brakes and comes back); a dry run of `stepToward`, so `advance` gets him there
+ * in exactly that time and he stays.
+ */
+export function reachSeconds(m: Mover, point: readonly [number, number], vmax: number): number {
+  const C = GRID_MOVEMENT_CONFIG;
+  const target = inside(point);
+  if (at(m, target)) return 0;
+  const probe: Mover = {
+    pos: [m.pos[0], m.pos[1]],
+    vel: m.vel ? [m.vel[0], m.vel[1]] : [0, 0],
+  };
+  let steps = 0;
+  while (!at(probe, target) && steps * C.step < C.horizon) {
+    stepToward(probe, target, vmax, C.step);
+    steps++;
+  }
+  return steps * C.step;
+}
+
+/** Seconds a ball takes from `from` to `to` at a kind's speed, capped at `max`. */
+export function flightSeconds(
+  from: readonly [number, number],
+  to: readonly [number, number],
+  speed: BallSpeed,
+): number {
+  const v = Math.min(GRID_BALL_CONFIG[speed], GRID_BALL_CONFIG.max);
+  return Math.hypot(to[0] - from[0], to[1] - from[1]) / v;
+}
+
+/**
+ * A player sent to `to`, or to his shape target when absent; `holdUntil` keeps him where he stands
+ * for that many seconds first (the player on the ball until he plays it).
+ */
+export interface Move {
+  gp: GridPlayer;
+  to?: readonly [number, number];
+  holdUntil?: number;
+}
+
+/** A player a restart needs on a spot: its taker or one of its scene. */
+export type Placement = Required<Pick<Move, 'gp' | 'to'>>;
+
+/** A point on the pitch: players never leave it, so neither do the points they run to. */
+const inside = (p: readonly [number, number]): [number, number] => [
+  clamp(p[0], 0, PITCH.length),
+  clamp(p[1], 0, PITCH.width),
+];
+
+/**
+ * Moves every player on the pitch for `dt` match seconds in whole steps: the planned ones toward
+ * their points, everyone else toward his shape target (→MATCH-17). Targets and top speeds are read
+ * once at the start, before anyone moves.
+ */
+export function advance(s: GridState, dt: number, plan: readonly Move[] = []): void {
+  const C = GRID_MOVEMENT_CONFIG;
+  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const planned = new Map(plan.map((m) => [m.gp, m]));
+  const movers: {
+    gp: GridPlayer;
+    to: readonly [number, number];
+    vmax: number;
+    holdUntil: number;
+    hold: [number, number];
+  }[] = [];
+  for (const side of [0, 1] as const)
+    for (const gp of s.players[side]) {
+      if (!onPitch(gp)) continue;
+      const p = planned.get(gp);
+      movers.push({
+        gp,
+        to: inside(p?.to ?? targetOf(s, side, gp.idx, cache)),
+        vmax: speedOf(s, gp),
+        holdUntil: p?.holdUntil ?? 0,
+        hold: [gp.pos[0], gp.pos[1]],
+      });
+    }
+  const whole = Math.floor(dt / C.step + 1e-9);
+  const rest = dt - whole * C.step;
+  for (let i = 0; i <= whole; i++) {
+    const h = i < whole ? C.step : rest;
+    if (h <= 1e-9) break;
+    const t = i * C.step;
+    for (const m of movers) stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
+  }
+}
+
+/** Where a substitute waits to come on: the halfway line on his side's touchline. */
+export const benchPoint = (side: 0 | 1): [number, number] => [
+  PITCH.length / 2,
+  side === 0 ? 0 : PITCH.width,
+];
+
+/**
+ * Prepares a restart on the clock (→MATCH-12, MATCH-18): the ball is carried from `rest`, where it
+ * went dead, to the spot and set down while the taker walks there and `scene` takes its places;
+ * everyone else moves to his shape. Its dead time is the nominal one or, when longer, what that
+ * takes, never both. Advances the clock, hands the taker the ball on the spot, sets `rs.dead` to
+ * the time used and returns the retrieval and placement knots.
+ */
+export function prepareRestart(
+  s: GridState,
+  rs: Restart,
+  taker: number,
+  rest: readonly [number, number],
+  scene: readonly Placement[] = [],
+): MotionKnot[] {
+  const B = GRID_BALL_CONFIG;
+  const start = s.elapsed;
+  const gp = s.players[rs.side][taker]!;
+  const spot: [number, number] = [rs.spot[0], rs.spot[1]];
+  const carried = Math.hypot(spot[0] - rest[0], spot[1] - rest[1]);
+  const placed = carried / B.retrieval + B.placement;
+  const plan = [{ gp, to: spot }, ...scene.filter((m) => m.gp !== gp)];
+  let seconds = Math.max(rs.dead, placed);
+  for (const m of plan) seconds = Math.max(seconds, reachSeconds(m.gp, m.to, speedOf(s, m.gp)));
+  s.ball = spot;
+  s.possession = rs.side;
+  s.owner = [rs.side, taker];
+  advance(s, seconds, plan);
+  s.t += seconds;
+  s.elapsed += seconds;
+  gp.pos = [spot[0], spot[1]];
+  gp.vel = [0, 0];
+  rs.dead = seconds;
+  return [
+    { kind: 'retrieve', at: start, ball: [rest[0], rest[1]] },
+    { kind: 'place', at: start + placed, ball: spot },
+  ];
+}

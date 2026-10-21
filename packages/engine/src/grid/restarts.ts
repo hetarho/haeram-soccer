@@ -17,7 +17,14 @@ import {
   type Outcome,
   type ShotContext,
 } from './resolve';
-import { lineX, offsideLine, SHAPE_CONFIG, setPieceShape } from './shape';
+import {
+  holdSetPiece,
+  lineX,
+  offsideLine,
+  SHAPE_CONFIG,
+  setPieceTargets,
+  type SetPieceScene,
+} from './shape';
 import { onPitch, other, skill, type GridPlayer, type GridState } from './state';
 import { computeTags } from './tags';
 
@@ -181,11 +188,28 @@ function takerFor(s: GridState, side: 0 | 1, key: TakerKey): number {
   return best >= 0 ? best : set;
 }
 
-function place(s: GridState, side: 0 | 1, idx: number, spot: [number, number]) {
-  s.players[side][idx]!.pos = [spot[0], spot[1]];
+/**
+ * Gets the taker and a delivery's scene to the restart before it is taken. The pre-feature path
+ * places them at once (`placeAtOnce`); the candidate model walks them there on the clock while the
+ * ball is retrieved (`prepareRestart`, →MATCH-12).
+ */
+export type RestartPreparer = (
+  s: GridState,
+  rs: Restart,
+  taker: number,
+  scene?: SetPieceScene,
+) => void;
+
+/** The pre-feature preparation: taker and ball on the spot, the scene on its spots, at once. */
+export function placeAtOnce(s: GridState, rs: Restart, taker: number, scene?: SetPieceScene) {
+  const { side, spot } = rs;
+  s.players[side][taker]!.pos = [spot[0], spot[1]];
   s.ball = [spot[0], spot[1]];
-  s.owner = [side, idx];
+  s.owner = [side, taker];
   s.possession = side;
+  if (!scene) return;
+  for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
+  holdSetPiece(scene, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
 }
 
 const pickFrom = (options: ReturnType<typeof passOptions>, tau: number, r: () => number) =>
@@ -212,15 +236,17 @@ function nearestFree(
   return (mates.find(({ gp }) => isFree(gp)) ?? mates[0])?.gp.idx;
 }
 
-/** Plays a restart: places the taker at the spot and resolves it. */
+/** Plays a restart: gets the taker to the spot through `prepare` and resolves it. */
 export function playRestart(
   s: GridState,
   rs: Restart,
   r: () => number,
   ctx: ShotContext,
+  prepare: RestartPreparer = placeAtOnce,
 ): RestartResult {
   const K = RESTART_CONFIG;
   const { side } = rs;
+  const place = (taker: number, scene?: SetPieceScene) => prepare(s, rs, taker, scene);
   const lead = () => {
     const slots = FORMATIONS[s.setup.tactics[side]].slots;
     const owner = s.owner && s.owner[0] === side ? s.owner[1] : -1;
@@ -231,12 +257,12 @@ export function playRestart(
   };
   if (rs.kind === 'penalty') {
     const taker = takerFor(s, side, 'penalty');
-    place(s, side, taker, rs.spot);
+    place(taker);
     return { taker, kind: 'penalty', outcome: resolvePenalty(s, side, taker, r) };
   }
   if (rs.kind === 'goalKick') {
     const taker = s.players[side].find((gp) => gp.slot === 0 && onPitch(gp))?.idx ?? 0;
-    place(s, side, taker, rs.spot);
+    place(taker);
     const { target, kind } = keeperDistribution(s, side, r);
     const tags = computeTags(s, side, taker, { setPiece: true });
     return {
@@ -248,7 +274,7 @@ export function playRestart(
   }
   if (rs.kind === 'kickoff') {
     const taker = lead();
-    place(s, side, taker, rs.spot);
+    place(taker);
     const tags = computeTags(s, side, taker, { setPiece: true });
     const behind = (gp: GridPlayer) => attackFrame(side, gp.pos)[0] < attackFrame(side, rs.spot)[0];
     let options = passOptions(s, side, taker, tags, {
@@ -279,7 +305,7 @@ export function playRestart(
       const d = Math.hypot(gp.pos[0] - rs.spot[0], gp.pos[1] - rs.spot[1]);
       if (d < nearest) [thrower, nearest] = [gp.idx, d];
     }
-    place(s, side, thrower, rs.spot);
+    place(thrower);
     // Short to the nearest free teammate within reach; when nobody is near, to the nearest one at all.
     const target =
       nearestFree(s, side, thrower, K.throwReach, K.throwFree) ??
@@ -313,8 +339,7 @@ export function playRestart(
   }
   if (rs.kind === 'corner') {
     const taker = takerFor(s, side, 'corner');
-    place(s, side, taker, rs.spot);
-    setPieceShape(s, side, taker, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
+    place(taker, setPieceTargets(s, side, taker));
     const tags = computeTags(s, side, taker, { setPiece: true });
     if (r() < K.shortCorner) {
       const target = nearestFree(s, side, taker, 1e9, 0);
@@ -340,7 +365,7 @@ export function playRestart(
     goalDistance(spotInFrame) <= K.directRange;
   if (direct && r() < K.directChance) {
     const taker = takerFor(s, side, 'directFreeKick');
-    place(s, side, taker, rs.spot);
+    place(taker);
     const tags = computeTags(s, side, taker, { setPiece: true });
     return {
       taker,
@@ -350,12 +375,12 @@ export function playRestart(
   }
   const wide = lane === 0 || lane === 4;
   const taker = takerFor(s, side, wide || band >= 5 ? 'corner' : 'directFreeKick');
-  place(s, side, taker, rs.spot);
   if (band >= 5) {
-    setPieceShape(s, side, taker, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
+    place(taker, setPieceTargets(s, side, taker));
     const tags = computeTags(s, side, taker, { setPiece: true });
     return { taker, kind: 'cross', outcome: resolveCross(s, side, taker, tags, ctx, r) };
   }
+  place(taker);
   const tags = computeTags(s, side, taker, { setPiece: true });
   const options = passOptions(s, side, taker, tags);
   if (!options.length) return { taker, kind: 'short', outcome: { kind: 'held' } };
