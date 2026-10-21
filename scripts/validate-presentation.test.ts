@@ -193,6 +193,8 @@ describe('static presentation resource validation', () => {
     tree.write(tree.theme.stylesheet, ':root {}');
     tree.theme.icons.home.variants = { optional: { type: 'image', resource: '/missing-icon.svg' } };
     tree.json(tree.themeUrl, tree.theme);
-    await expect(validatePresentation(tree.root)).rejects.toThrow('Missing theme icon');
+    await expect(validatePresentation(tree.root)).rejects.toMatchObject({
+      cause: { message: expect.stringContaining('Missing theme image') },
+    });
   });
 });
