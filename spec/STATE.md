@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T09:29Z | 2026-10-21T09:29Z | - |
 
 ## inbox
 - 261021 decided T301 T303: clean WebKit rejects the current WOFF2 representation while identical-glyph WOFF loads; native multi-source CSS also stalls there → implement data-declared ordered per-source FontFace attempts, preserving preferred WOFF2 for capable engines and a licensed WOFF compatibility representation. Extend explicit asset/preview touches; no other active attempt owns these paths, no browser-ID branches, and total font failure still retains the previous theme (alt: send the measured 74%-larger WOFF representation to every browser).
@@ -208,6 +209,7 @@
 - T275 is runnable now (T274 done); it shares docs/MATCH-ENGINE-DESIGN.md with T277, so run them one after the other. T281 follows T280, T283 follows T281; explore T278, T284, T285 then T286; T306 waits for T304 and T286.
 - the full-model work group's runtime state lives only in this host's clone (hq-dev1); on another machine run the remaining tasks standalone or start a new group. The released pre-split T304 attempt is kept on local branch task/full-model/T304-36f498aa (not needed: the new T304 is done).
 - CI: e1896bc (T273+T274) passed every job; the later code pushes (T279, and T276/T304/T305 with this session's close) have not been checked by this session.
+
 ## log
 - 261021 f6n3 stopped at the owner's request (moving to another machine): full-model integrated T273 T274 T276 T279 T282 T304 T305 into main; T280 (changes requested) and T277 (partial) pushed to wip/full-model-T280 and wip/full-model-T277; report 261021-f6n3.
 - 261021 T305 integrated
