@@ -2047,6 +2047,11 @@
     padding-top: calc(6px + env(safe-area-inset-top));
     padding-bottom: 6px;
   }
+  /* The start HUD shares its existing row with settings, keeping the full founding form in view. */
+  .startLayout .hud {
+    padding-top: calc(3px + env(safe-area-inset-top));
+    padding-bottom: 3px;
+  }
   .playLayout .sidebar {
     display: none;
   }

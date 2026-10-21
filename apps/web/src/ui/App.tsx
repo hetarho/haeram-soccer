@@ -645,6 +645,7 @@ const GameHud = memo(function GameHud({
         </div>
       </div>
       <ReadonlyBadge />
+      {!playing && <PresentationSettingsTrigger />}
       {playing && <HudCash client={client} />}
     </header>
   );
