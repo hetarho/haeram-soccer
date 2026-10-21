@@ -196,6 +196,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
+- 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
 - 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.
 - 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
 - 261021 merged UI batch verified: 1,458 unit tests (4 existing skips), 39 contract tests and all 217 Chromium journeys pass; typecheck, lint, format, catalogs, build and spec lint pass. T273 compatibility changes and the UI alerts are validated together.
@@ -214,5 +216,3 @@
 - 261021 create-task T296 and implement-task start on 6d31c81: portal runtime alerts above the page, preserving their actions and ordinary dialog layering.
 - 261021 update-ssot WEB r103 start: floating runtime warnings and errors; prior controller/settings/mediation work committed as 6d31c81.
 - 261021 T295 done: compact structured mediation review and stable confirm styling during pending previews; fast checks/build and a focused owner-requested Chromium appearance/blocking check pass.
-- 261021 WEB r102 freshness: T275 T283 T286 bases to WEB@102; their cited match/record decisions are unchanged by mediation presentation.
-- 261021 create-task T295 and implement-task start on 9f69553: compact mediation presentation while preserving preview freshness, decisions and retained history.
