@@ -2,9 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
 import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
+import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
 import { M } from '../../packages/engine/src/grid/record';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
-import { aggregateRun, conditionedMatch, rareEvents, settlementReport } from '../match-parity';
+import {
+  aggregateFreshness,
+  aggregateRun,
+  conditionedMatch,
+  rareEvents,
+  settlementReport,
+} from '../match-parity';
 import {
   buildCoverageReport,
   buildEquivalenceReport,
@@ -1013,6 +1020,53 @@ describe('aggregate measurement (T284)', () => {
     );
     expect(s.ledger!.shots.every((x) => ['GK', 'DF', 'MF', 'FW'].includes(x.line))).toBe(true);
     expect(s.freshness![0]).toBeGreaterThan(s.freshness![1]!);
+  });
+
+  it("counts a moved player's freshness from when he came on", () => {
+    // T320 review: the planner restarted a player's fatigue clock when he only changed slot (a
+    // keeper sent off, an outfielder in goal); the grid counts from his entry (`onMin`).
+    const w = createWorld({
+      country: 'ENG',
+      name: 'Parity Pilot',
+      color: '#2a5d8f',
+      seed: 'grid-bands-1',
+      level: 'normal',
+    });
+    const clubs = w.clubs.filter((c) => c.tier === 0 && c.id !== w.playerClub);
+    let moved = 0;
+    for (let i = 0; i < 600 && moved < 2; i++) {
+      const f: Fixture = {
+        ...w.fixtures[0]!,
+        id: `moved:${i}`,
+        year: 2024,
+        round: 1,
+        kind: 'league',
+        home: clubs[i % clubs.length]!.id,
+        away: clubs[(i + 7) % clubs.length]!.id,
+      };
+      const { match } = aggregateRun(w, f, 'core:equal-top-tier');
+      const { length, stints } = match.participation;
+      for (const side of [0, 1] as const) {
+        const on = [...new Set(stints[side].filter((x) => x.to === length).map((x) => x.line))];
+        const spans = (line: number) => stints[side].filter((x) => x.line === line);
+        if (!on.some((line) => spans(line).length > 1)) continue;
+        moved++;
+        const plan = match.plan.sides[side];
+        const fresh = (from: (line: number) => number) =>
+          100 -
+          on.reduce((a, line) => {
+            const c = plan.candidates[line]!;
+            const minutes = length - from(line);
+            return a + inMatchFatigue(c.fatigue, c.stamina, minutes, plan.pressing, plan.drain);
+          }, 0) /
+            on.length;
+        const entry = fresh((line) => Math.min(...spans(line).map((x) => x.from)));
+        const restarted = fresh((line) => Math.max(...spans(line).map((x) => x.from)));
+        expect(aggregateFreshness(match)[side]).toBeCloseTo(entry, 10);
+        expect(entry).toBeLessThan(restarted);
+      }
+    }
+    expect(moved).toBeGreaterThan(0);
   });
 
   it('reports rare events short of power and the red-card settlement as measured', () => {
