@@ -2,6 +2,7 @@
 import { MOTION_STATES, PLAYBACK_CONFIG } from './playback';
 import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
 import type { Outcome, ShotOutcome } from './resolve';
+import type { EndedIntention, Intention, IntentionKind } from './intentions';
 import type { MotionKnot } from './movement';
 import type { Restart } from './restarts';
 import { pressers, targetOf, type ShapeCache } from './shape';
@@ -81,6 +82,12 @@ export interface TraceEntry {
   targets: Float32Array;
   /** Each slot's motion state, an index into `MOTION_STATES`. */
   states: Uint8Array;
+  /**
+   * Candidate model only (→MATCH-17): each slot's intention as the engine holds it after the entry,
+   * whose target is the slot's `targets`; else the one that ended since it was last traced, with
+   * its ending and reason; null when neither. Laid out as `slots`; references are roster indexes.
+   */
+  intentions?: (Intention | EndedIntention | null)[];
   /** `Tally.running()` after the entry. */
   totals: Float64Array;
 }
@@ -96,7 +103,10 @@ export interface TraceAction {
   knots?: MotionKnot[];
 }
 
-type Snapshot = Pick<TraceEntry, 'ball' | 'positions' | 'slots' | 'targets' | 'states' | 'totals'>;
+type Snapshot = Pick<
+  TraceEntry,
+  'ball' | 'positions' | 'slots' | 'targets' | 'states' | 'totals' | 'intentions'
+>;
 type Detail = Omit<Partial<TraceEntry>, keyof Snapshot>;
 
 const STATE_INDEX = Object.fromEntries(MOTION_STATES.map((st, i) => [st, i])) as Record<
@@ -191,7 +201,21 @@ function detailOf(s: GridState, side: 0 | 1, idx: number, a: TraceAction): Detai
   return d;
 }
 
-/** The motion state the engine gives a player now (design §10.2). */
+/** The motion state an intention shows as. */
+const INTENTION_STATE: Record<IntentionKind, (typeof MOTION_STATES)[number]> = {
+  support: 'support',
+  receive: 'support',
+  run: 'run',
+  press: 'press',
+  mark: 'mark',
+  cover: 'mark',
+  recover: 'recover',
+  carry: 'carry',
+  restart: 'shape',
+  exit: 'recover',
+};
+
+/** The motion state the engine gives a player now (design §10.2); an intention shows as its own. */
 function stateOf(
   s: GridState,
   gp: GridPlayer,
@@ -204,6 +228,7 @@ function stateOf(
     Math.hypot(p[0] - gp.pos[0], p[1] - gp.pos[1]) <= d;
   if (s.owner && s.owner[0] === gp.side && s.owner[1] === gp.idx) return STATE_INDEX.carry;
   if (gp.slot === 0) return STATE_INDEX.keeper;
+  if (gp.intention) return STATE_INDEX[INTENTION_STATE[gp.intention.kind]];
   if (!attacking && press.includes(gp.idx)) return STATE_INDEX.press;
   if (gp.run && gp.run.until > s.elapsed) return STATE_INDEX.run;
   if (!near(target, c.recover)) return STATE_INDEX.recover;
@@ -216,14 +241,27 @@ function stateOf(
   return STATE_INDEX.shape;
 }
 
-function snapshot(s: GridState, totals: Float64Array): Snapshot {
+/**
+ * The positions, targets, states and (candidate model) intentions of every slot now; `fresh` says
+ * whether an ended intention has not been traced yet, and marks it traced.
+ */
+function snapshot(
+  s: GridState,
+  totals: Float64Array,
+  fresh: (ended: EndedIntention) => boolean,
+): Snapshot {
   const positions = new Float32Array(44).fill(NaN);
   const targets = new Float32Array(44).fill(NaN);
   const slots = new Int8Array(22).fill(-1);
   const states = new Uint8Array(22);
+  const candidate = s.setup.model !== undefined;
+  const intentions: (Intention | EndedIntention | null)[] | undefined = candidate
+    ? new Array<null>(22).fill(null)
+    : undefined;
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
   for (const sd of [0, 1] as const) {
-    const press = sd === s.possession ? [] : pressers(s, sd);
+    // On the candidate model only a press intention presses (`targetOf`).
+    const press = sd === s.possession || candidate ? [] : pressers(s, sd);
     s.players[sd].forEach((gp: GridPlayer) => {
       if (!onPitch(gp) || gp.slot < 0 || gp.slot >= 11) return;
       const k = sd * 11 + gp.slot;
@@ -235,9 +273,20 @@ function snapshot(s: GridState, totals: Float64Array): Snapshot {
       targets[k * 2 + 1] = target[1];
       slots[k] = gp.idx;
       states[k] = stateOf(s, gp, target, press);
+      if (!intentions) return;
+      const i = gp.intention ?? (gp.ended && fresh(gp.ended) ? gp.ended : undefined);
+      if (i) intentions[k] = { ...i, target: [i.target[0], i.target[1]] };
     });
   }
-  return { ball: [s.ball[0], s.ball[1]], positions, slots, targets, states, totals };
+  return {
+    ball: [s.ball[0], s.ball[1]],
+    positions,
+    slots,
+    targets,
+    states,
+    totals,
+    ...(intentions ? { intentions } : {}),
+  };
 }
 
 export class Tracer {
@@ -245,6 +294,13 @@ export class Tracer {
   /** Incidents of the action under way; they follow its entry (a card follows its foul). */
   private held?: Detail[];
   private detail: Detail = {};
+  /** Ended intentions already traced: each shows once, at the first entry after it ended. */
+  private readonly traced = new WeakSet<EndedIntention>();
+  private readonly fresh = (ended: EndedIntention) => {
+    if (this.traced.has(ended)) return false;
+    this.traced.add(ended);
+    return true;
+  };
 
   constructor(
     private readonly on: boolean,
@@ -270,7 +326,7 @@ export class Tracer {
     from?: [number, number],
   ): void {
     if (!this.on) return;
-    const shot = snapshot(s, this.totals());
+    const shot = snapshot(s, this.totals(), this.fresh);
     const at = { elapsed: s.elapsed, period: s.period, t: s.t };
     this.entries.push({
       ...at,
@@ -318,7 +374,7 @@ export class Tracer {
         action: kind,
         outcome: 'incident',
         ...extra,
-        ...snapshot(s, this.totals()),
+        ...snapshot(s, this.totals(), this.fresh),
       });
   }
 }

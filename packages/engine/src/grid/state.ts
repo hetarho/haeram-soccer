@@ -3,6 +3,7 @@ import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
+import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, PITCH, type Point } from './pitch';
 import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
@@ -30,7 +31,12 @@ export interface GridPlayer {
   offMin?: number;
   /** Attribute values at his slot before the day's shift and in-match drain; index = `ATTRIBUTES.indexOf(a)`. */
   base: Float64Array;
+  /** A run under way; on the candidate model the view of his run intention, set and cleared with it. */
   run?: { kind: 'behind' | 'overlap' | 'box'; until: number; target: [number, number] };
+  /** Candidate model only: his individual football intention (`intentions.ts`, →MATCH-17). */
+  intention?: Intention;
+  /** Candidate model only: the last intention that ended, and why. */
+  ended?: EndedIntention;
 }
 
 export interface GridState {

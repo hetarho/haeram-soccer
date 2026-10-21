@@ -4,6 +4,7 @@
  * Korean commentary, the minute's label and pace. Presentation only: it reads a played result and
  * draws from its own stream, never the match's.
  */
+import type { IntentionObservation } from '../../../contracts/src/match-model';
 import type {
   Manager,
   MatchEvent,
@@ -19,6 +20,7 @@ import { FORMATIONS } from '../player';
 import { clamp, random } from '../primitives';
 import { describe } from './commentary';
 import type { GridResult } from './engine';
+import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, bandOf, PITCH } from './pitch';
 import { M, RUNNING } from './record';
 import type { GridSetup } from './setup';
@@ -349,6 +351,29 @@ function lastAt(values: readonly number[], v: number): number {
     else hi = mid - 1;
   }
   return found;
+}
+
+/**
+ * A traced intention as the frame shows it (→MATCH-17): its target in the period's units, its
+ * teammate and opponent by player ID, and its ending once it has ended.
+ */
+function observed(
+  i: Intention | EndedIntention,
+  side: 0 | 1,
+  mirror: (u: Units) => Units,
+  id: (side: 0 | 1, idx: number | undefined) => string,
+): IntentionObservation {
+  const target = mirror(units(i.target));
+  return {
+    kind: i.kind,
+    priority: i.priority,
+    target: [clamp(target[0], 0, 100), clamp(target[1], 0, 100)],
+    ...(i.teammate === undefined ? {} : { teammate: id(side, i.teammate) }),
+    ...(i.opponent === undefined ? {} : { opponent: id(side === 0 ? 1 : 0, i.opponent) }),
+    since: i.since,
+    until: i.until,
+    ...('end' in i ? { ended: i.end } : {}),
+  };
 }
 
 function slotIn(e: TraceEntry, side: 0 | 1, idx: number): number {
@@ -718,6 +743,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
               : position;
             const holder = ball.holder?.[0] === side && ball.holder[1] === idx;
             const state = MOTION_STATES[snap.states[side * 11 + slot]!] ?? 'shape';
+            const intention = snap.intentions?.[side * 11 + slot];
             list.push({
               id: id(side, idx),
               position,
@@ -726,6 +752,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
                 : [0, 0],
               state: holder ? 'carry' : state === 'carry' ? 'support' : state,
               intent: [clamp(target[0], 0, 100), clamp(target[1], 0, 100)],
+              ...(intention ? { intention: observed(intention, side, mirror, id) } : {}),
             });
           }
           return list;
