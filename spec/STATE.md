@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:34Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:47Z | - |
 
 ## inbox
 - 261021 decided T299 T300 T301 T302 T303: upstream manager-history planning adds only WEB-92/HIST-18/19/SAVE-24 → accept its fresh base metadata while retaining the claimed presentation-foundation lane; every previously cited decision and all application files remain unchanged, so existing source checks are reused and review is repinned to WEB r106 (alt: integrate against stale canonical specifications).
@@ -209,11 +209,12 @@
 | full-model | 3 | 14 | 3 | 11 | 2 | 0 | 0 | 2026-10-21T04:15:21.056Z | [history](work/full-model.json) |
 
 ## next
-- Compose and submit the T299-T303 presentation-foundation lane, then independent review and the complete pre-push gate. Production keeps one ko-KR locale and one pixel theme.
+- Complete final T299-T303 correction review, then the full pre-push gate after the independent heavy-slot owner finishes. Production keeps one ko-KR locale and one pixel theme.
 - Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
 - Manager-history preparation T304 then T305 can run alongside earlier tasks; T306 waits for T304 and T286, then T307/T308 connect and verify. Planning only this session; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
 - 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
 - 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
