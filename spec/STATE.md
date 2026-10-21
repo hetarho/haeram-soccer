@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T15:59Z | T320 |
+| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T16:29Z | T321 |
 
 ## inbox
+- 261022 decided T321 T284: T320 found grid-bands' forced tactics leave press-style clubs at pre-match fatigue 32 whatever they play, so the freshness ordering mixed squad state with tactic cost → both sides of a pairing start from the same pre-match fatigue and a forced tactic moves only in-match behaviour and cost; T284 adds a forced-tactic option to the aggregate measurement (alt: let a forced tactic also set the squad fatigue its weekly load implies)
 - 261022 decided T320 T321: T278 left press dominant (79/12/9 at home to counter) with MATCH-8 stating tradeoffs only in words → MATCH r16 adds MATCH-29: per-pairing draws 20–30%, win-share gap at most 12 pp, counter at least press head to head, each tactic's points within 0.15 of the mean, possession/xG-conceded/high-regain/freshness orderings; T320 registers them with one evaluator, then explore T321 tunes the detailed engine beside T284 (which also measures them on the aggregate path) before T286 (alt: interim engineering targets inside a task with the SSOT later | accept the imbalance at activation). New IDs start at T320 because T309–T314 are in other sessions' uncommitted work
 - 261021 decided T283: T281 left the aggregate ledger with appearances only while own data splits starts and substitute appearances, and T283 must use the same appearance semantics → T283 adds a `starts` counter through the contract, strict schema and container-3 packing (not yet written in production, so no migration) (alt: show NPC appearances without the split and label it unavailable)
 - 261021 decided T281: T280's review left `playAggregate` throwing after 8 unreconciled re-draws, which would abort a season once fixtures dispatch there → T281 (which already touches aggregate/engine.ts) ends the retries with a deterministic, validated settlement and a forced-exhaustion test; T284 measures the retry bias (alt: T284 owns the fallback, leaving T281's dispatch able to throw until then)
@@ -186,11 +187,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | todo |
+| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | doing@261022.h3t6 |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 | todo |
-| T320 | Register the tactic-pairing bands and one shared evaluator | MATCH ARCH | T278 | doing@261022.h3t6 |
-| T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | todo |
+| T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | doing@261022.h3t6 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -211,6 +211,7 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261022 T320 integrated (h3t6): MATCH-29 bands and one evaluator for both engines; tactic measurements start from equal pre-match fatigue (T321, T284)
 - 261022 T278 integrated (h3t6; explore exit: period-end fixed, 30/38 core MATCH-23 rows inside and 0 outside, draws, curve and MATCH-8 tactics unresolved → MATCH-29, T320, T321; one review round fixed the extra-time clock)
 - 261022 refresh T285 T306 bases only: MATCH r16 adds MATCH-29, which neither cites
 - 261022 create-task MATCH r16: T320 (MATCH-29 bands and shared evaluator) then explore T321 (detailed tactic pairings) beside T284; T284 and T286 gain MATCH-29 and the new deps
@@ -230,4 +231,3 @@
 - 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
-- 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.

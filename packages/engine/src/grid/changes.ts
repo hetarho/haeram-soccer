@@ -84,16 +84,46 @@ export function drawInjury(s: GridState, dt: number, r: () => number): GridPlaye
   return undefined;
 }
 
+/**
+ * In-match fatigue after `minutes` on the pitch (design §8.1): the pre-match fatigue plus the drain
+ * of missing 체력, faster under press and by the side's drain. The aggregate planner applies the
+ * same rule (aggregate/participation.ts).
+ */
+export function inMatchFatigue(
+  fatigue: number,
+  stamina: number,
+  minutes: number,
+  pressing: boolean,
+  drain: number,
+): number {
+  return (
+    fatigue +
+    (((100 - stamina) * minutes) / 90) *
+      CHANGES_CONFIG.drain *
+      (pressing ? CHANGES_CONFIG.pressDrain : 1) *
+      drain
+  );
+}
+
 /** A player's fatigue now: his pre-match fatigue plus what his minutes have drained (design §8.1). */
 export function matchFatigue(s: GridState, gp: GridPlayer): number {
   const { setup } = s;
-  return (
-    gp.player.fatigue +
-    (((100 - gp.player.attrs.stamina) * (regMinute(s) - gp.onMin)) / 90) *
-      CHANGES_CONFIG.drain *
-      (setup.pressing[gp.side] ? CHANGES_CONFIG.pressDrain : 1) *
-      setup.drain[gp.side]
+  return inMatchFatigue(
+    gp.player.fatigue,
+    gp.player.attrs.stamina,
+    regMinute(s) - gp.onMin,
+    setup.pressing[gp.side],
+    setup.drain[gp.side],
   );
+}
+
+/**
+ * A side's freshness now (→MATCH-29): 100 minus the mean in-match fatigue of its players on the
+ * pitch. Read at the final whistle for measurement only; nothing in play reads it.
+ */
+export function sideFreshness(s: GridState, side: 0 | 1): number {
+  const on = s.players[side].filter(onPitch);
+  return 100 - on.reduce((a, gp) => a + matchFatigue(s, gp), 0) / on.length;
 }
 
 const isTired = (s: GridState, gp: GridPlayer) =>
