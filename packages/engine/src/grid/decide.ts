@@ -96,6 +96,13 @@ export const DECISION_CONFIG = {
     margin: 0.5,
   },
   keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
+  /**
+   * Candidate model only (→MATCH-16, MATCH-17): teammates' intentions bend the carrier's choice. A
+   * teammate showing for him scores `show` more; an overlap combining with him scores `release` more
+   * once it is level with him or ahead, and until then an unpressured carrier carries `wait` times
+   * as often while it arrives.
+   */
+  combination: { show: 0.6, release: 0.9, wait: 1.5 },
 } as const;
 
 const DEG = Math.PI / 180;
@@ -203,6 +210,9 @@ export function actionMix(
     mix.shot *= C.trailing.shot;
     mix.cross *= C.trailing.cross;
   }
+  // An overlap still arriving: unpressured, he holds the ball for it.
+  if (tags.pressure < 1 && s.players[side].some((gp) => combination(s, gp, idx, c) === 'waiting'))
+    mix.carry *= C.combination.wait;
   // His head on shots.
   const decisions = skill(s, side, idx, 'decisions');
   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
@@ -256,6 +266,24 @@ function pressureAt(s: GridState, side: 0 | 1, p: Point): number {
       sum += o[0] > p[0] ? 1 : 0.5;
   }
   return sum;
+}
+
+/**
+ * What `gp`'s intention offers carrier `idx`, whose attack-frame place is `c` (candidate model,
+ * →MATCH-16): `show` when he shows for him, an overlap that is `waiting` behind the carrier or ready
+ * to `release` level with or ahead of him, else nothing.
+ */
+export function combination(
+  s: GridState,
+  gp: GridPlayer,
+  idx: number,
+  c: Point,
+): 'show' | 'waiting' | 'release' | undefined {
+  const i = gp.intention;
+  if (!i || i.teammate !== idx || !onPitch(gp)) return undefined;
+  if (i.kind === 'support') return i.support === 'open' ? undefined : 'show';
+  if (i.kind !== 'run' || i.run !== 'overlap') return undefined;
+  return attackFrame(gp.side, gp.pos)[0] >= c[0] ? 'release' : 'waiting';
 }
 
 /** The scored receivers a carrier may find; `filter` narrows who counts. */
@@ -319,12 +347,18 @@ export function passOptions(
       behindRun || p[0] > offside
         ? P.through * actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
+    const combo = combination(s, gp, idx, c);
     const score =
       gain +
       P.open * open -
       P.risk * (opts.riskScale ?? 1) * risk -
       Math.max(0, dist - P.tooFar) / 10 +
-      through;
+      through +
+      (combo === 'show'
+        ? DECISION_CONFIG.combination.show
+        : combo === 'release'
+          ? DECISION_CONFIG.combination.release
+          : 0);
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1);
     const kind: PassOption['kind'] =

@@ -142,6 +142,22 @@ export function targetOf(
   const gp = s.players[side][idx]!;
   // The candidate model's intentions (`intentions.ts`) take him where they go, ahead of his shape.
   if (gp.intention) return intentionTarget(s, gp);
+  if (gp.run && gp.run.until > s.elapsed && lineOfSlot(s, gp) !== 'GK') return [...gp.run.target];
+  return shapePlace(s, side, idx, cache);
+}
+
+/**
+ * A player's place in his side's shape now (engine frame), whatever he intends: his slot's phase
+ * spot moved by role habit, block height and the ball, the keeper's own place, the pre-feature
+ * presser's press. Coordination reads it as the zone a player leaves for a job (→MATCH-17).
+ */
+export function shapePlace(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+): [number, number] {
+  const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
   const cfg = SHAPE_CONFIG.tactic[tactic];
   const b = attackFrame(side, s.ball);
@@ -155,7 +171,6 @@ export function targetOf(
     x = clamp(x, 2, high ? SHAPE_CONFIG.keeperMax.sweeperKeeper : SHAPE_CONFIG.keeperMax.other);
     return toEngine(side, [x, CENTRE + (b[1] - CENTRE) * 0.15]);
   }
-  if (gp.run && gp.run.until > s.elapsed) return [...gp.run.target];
   const spot = SPOTS[tactic][gp.slot]!;
   const inPossession = s.possession === side;
   let x = spot[0],

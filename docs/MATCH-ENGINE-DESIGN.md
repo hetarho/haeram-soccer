@@ -41,6 +41,7 @@ Reference data:
 | `shape.ts` | tactic shapes, off-ball targets, movement, runs | T206 |
 | `movement.ts` | candidate model: bounded player motion, ball speeds, action timing, restart preparation | T274 |
 | `intentions.ts` | candidate model: individual intentions, their lifecycle, priorities and reasons | T276 |
+| `coordination.ts` | candidate model: each side's support, press, cover, mark, recover and run jobs, planned from one snapshot | T277 |
 | `tags.ts` | per-touch tags | T207 |
 | `decide.ts` | action mix, target choice | T208 |
 | `resolve.ts` | duels and the xG model | T209 |
@@ -310,7 +311,7 @@ On the candidate match model (`GridSetup.model` set) `movement.ts` replaces this
 On the candidate model `intentions.ts` gives each player an individual intention (MATCH-17) in place of §4.3's per-update pressers and run draws; the pre-feature path is unchanged. `GridPlayer.intention` holds `kind` (`INTENTION_KINDS`), `priority`, `target` (engine frame), an optional `teammate`/`opponent` roster index, a run's kind, `since` and `until`. `GridPlayer.ended` keeps the last one that ended, with its ending (`INTENTION_ENDS`) and reason. A run is an intention whose `GridPlayer.run` view `decide.ts` still reads.
 
 - **One lifecycle.** An intention keeps its target and references through ordinary updates while it is feasible. A tracked target follows its reference: a press goes goal-side of the carrier, a mark goal-side of the runner, a cover `coverDepth` (8) m behind the presser toward goal. Everything else holds the target it was given.
-  - It ends **achieved** on arrival (within 1 m) or when what it answered is over (`cleared`). A committed run is the exception: it holds its spot (a box spot kept for the second ball) and never ends on arrival. It ends **expired** at `until`, or **infeasible** when the target cannot be reached by `until` + 1 s, its carrier no longer has the ball (`moved`), the pass or ball went elsewhere (`lost`), or a reference left (`departed`).
+  - It ends **achieved** on arrival (within 1 m), when what it answered is over (`cleared`), or when a marker hands his runner to a teammate (`handover`, §4.6). A committed run is the exception: it holds its spot (a box spot kept for the second ball) and never ends on arrival. It ends **expired** at `until`, or **infeasible** when the target cannot be reached by `until` + 1 s, its carrier no longer has the ball (`moved`), the pass or ball went elsewhere (`lost`), an opponent took the space a combination needed (`closed`, §4.6), or a reference left (`departed`).
   - It is **displaced** only by a higher priority (`replaced`, `danger`) or a reasoned event: a turnover, a restart, a substitution, an injury or a sending-off. `INTENTION_REASONS` maps every reason to its ending.
 - **Priority**, highest first (`INTENTION_PRIORITIES`):
   - `exit`: leaving the pitch.
@@ -325,15 +326,15 @@ On the candidate model `intentions.ts` gives each player an individual intention
   - A change of side interrupts every intention below `restart` on both sides (`turnover`).
   - A dead ball interrupts every intention below `exit` (`restart`). Its taker and scene then take `restart` intentions, achieved as the kick is taken, and the players who went up hold their box spots for `setPiece.stay` (8) s as committed box runs.
   - A player who leaves ends his intention with his reason (`substitution`, `injury`, `dismissal`). Every intention that names him as teammate or opponent ends as `departed`, so a roster index never outlives a change.
-- **Update.** `updateIntentions` runs once per action, after the action has been applied and before anyone moves, so everyone reacts to the pass, carry or turnover as it happens. It first reviews every intention, then lets free players choose:
-  - **Danger.** The defending side is in danger when the carrier is within `danger` (30) m of its goal, or a runner is already beyond its second-last player. In danger the first presser and the markers of runners take `danger` priority and displace tactical jobs. A presser already on the carrier when the danger starts keeps his intention, raised to `danger`. An urgent presser leaves his line's bounds. A danger intention ends `cleared` once the danger passes.
+- **Update.** `updateIntentions` runs once per action, after the action has been applied and before anyone moves, so everyone reacts to the pass, carry or turnover as it happens. It first reviews every intention against the same state and only then ends the ones that are over; a cover whose presser stopped, or a mark whose runner stopped, ends in the same update. Then it gives out the jobs `planCoordination` planned for both sides (§4.6). The choices:
+  - **Danger.** The defending side is in danger when the carrier is within `danger` (30) m of its goal, or a runner is already beyond its second-last player. In danger the first presser and the markers of runners take `danger` priority and displace tactical jobs. When the danger starts while the carrier is already pressed, the presser nearest him keeps his intention, raised to `danger`. An urgent presser leaves his line's bounds. A danger intention ends `cleared` once the danger passes.
   - **Press.** The carrier is pressed by the man with the lowest distance ÷ (press weight × freshness) within the tactic's press reach (counter-press reach just after a loss). Under press a second presser comes within 0.6 × reach. A tactical press ends when the carrier is 1.6 × reach away.
-  - **Cover.** One defender or DM steps behind the first presser. Only a man whose shape place is within `coverNear` (10) m of the cover point is eligible. A covering role (cover defender, anchor ×1.5; ball-winner, defensive full-back ×1.2) is chosen first.
-  - **Mark.** The nearest free man within 20 m picks up each runner and gives him up past 28 m.
+  - **Cover.** One defender or DM steps behind the presser nearest the carrier; a side never has two covers for one carrier. Only a man whose shape place is within `coverNear` (10) m of the cover point is eligible. A covering role (cover defender, anchor ×1.5; ball-winner, defensive full-back ×1.2) is chosen first.
+  - **Mark.** Each runner has one marker. Free men within 20 m pick up runners nearest pair first, and a marker gives his runner up past 28 m or hands him over (§4.6).
   - **Recover.** For 6 s after a loss, a free player further than 14 × (1 − 0.4 × 판단력) m from his shape target goes back to it.
-  - **Support.** A carrier with an opponent within 4.6 m gets one teammate to show. The teammate is the nearest within 22 m, by distance ÷ his `key` weight. He shows with odds 0.45 + 0.45 × 침착성, 9 m from the carrier. With odds 판단력 he shows on the side away from the presser, otherwise on his own line. The draw is named by the carrier and the spell of possession, so it does not reroll at every touch.
-  - **Runs.** §4.3's run kinds and targets (`runPlan`, shared with `startRuns`). The chance is scaled by 판단력 timing (0.8–1.2) × freshness. Freshness is 1 − 0.5 × min(1, minutes/90) × (100 − 체력)/100.
-- Attribute odds read `skill` (slot, day and in-match drain) as a 0–1 share. Draws come from `${seed}:${fixture}:intention:${decision}:${side}:${player}:${moment}`, never from the match stream, an update order or an observer. Ties break by roster index.
+  - **Support.** A carrier with an opponent within 4.6 m gets one teammate to show (`support: 'show'`). The teammate is the nearest within 22 m, by distance ÷ his `key` weight, outside the rest defence (§4.6). He shows with odds 0.45 + 0.45 × 침착성, 9 m from the carrier. With odds 판단력 he shows on the side away from the presser, otherwise on his own line, never beyond the offside line. The draw is named by the carrier and the spell of possession, so it does not reroll at every touch.
+  - **Runs.** §4.3's run kinds and targets (`runPlan`, shared with `startRuns`). The chance is scaled by 판단력 timing (0.8–1.2) × freshness. Freshness is 1 − 0.5 × min(1, minutes/90) × (100 − 체력)/100. An overlap names the carrier as its teammate; one flank takes one overlap.
+- Attribute odds read `skill` (slot, day and in-match drain) as a 0–1 share. Draws come from `${seed}:${fixture}:intention:${decision}:${side}:${player}:${moment}`, never from the match stream, an update order or an observer. Ties break by player ID (T277; T276 broke them by roster index).
 - Measured on grid-bands' 600 equal-strength 2024 fixtures (all 16 tactic pairings), compared with T274's recorded candidate values on the same population (not a paired rerun):
   - Ball in play 58.5 → 59.5 min, goals 2.94 → 2.74.
   - Tackles + interceptions 27.6 → 25.7, throw-ins 17.0 → 16.2, possessions 95.2 → 95.4.
@@ -343,6 +344,24 @@ On the candidate model `intentions.ts` gives each player an individual intention
   - Outside their MATCH-23 bands: goal-area shots 11.3%, crosses 21.4, throw-ins 16.2, goal kicks 9.2, fouls 9.6, yellow cards 3.26, penalty goals 5.1%, headed goals 20.8%, FW goals 62%, ball in play 59.5 min.
   - Press still beats every other tactic (press v counter: home wins 92%).
   - T278 calibrates `INTENTION_CONFIG` and the tactic balance; the bands stay.
+
+### 4.6 Coordination (candidate model, T277)
+
+`coordination.ts` turns §4.5's individual choices into team jobs (MATCH-16, MATCH-17). After the review, `planCoordination(state, danger)` reads one snapshot and plans every job of both sides. It changes nothing: inspecting a plan, or tracing it, changes no outcome. `applyCoordination` then gives the jobs out. Each job goes to a different player, so the order they are given out in changes nothing. Candidates are ranked by cost, and equal costs break by player ID, never by roster index or the order players are visited. A player claimed for one job takes no other in the same plan. Values are `COORDINATION_CONFIG`.
+
+- **Pressing.** The defending tactic sets how many press: `pressers` (press 2, the others 1), the second from within `second` (0.6) × reach. Existing pressers count toward the number. Reach is §4.2's `press`, or `counterPress` just after a loss: possession and press counter-press, counter does not.
+- **Cover behind the press.** The cover steps `coverDepth` behind the presser nearest the carrier (§4.5). It ends `cleared` in the same update as that press.
+- **Marking and handover.** Runners are matched to markers by their distance, nearest pair first, so no runner gets two markers and no marker two runners. A tactical marker hands his runner over once the runner enters a teammate's zone. The teammate must be free and within 20 m of the runner. His shape place (`shapePlace`) must be within `mark.zone` (12) m of the runner and at least `mark.handover` (6) m nearer than the marker's own. The marker's intention ends `handover` (achieved), and his ended record names the teammate who took over. The teammate marks with tactical priority. An urgent danger mark is never handed over.
+- **Showing and clearing the lane.** When a teammate shows for a pressured carrier, another teammate may stand within `open.lane` (3) m of the line the ball would travel to the show. He steps `open.distance` (8) m out of it at a right angle, taking his marker along (`support: 'open'`, same carrier, `seconds.support`). Only one teammate shows and one clears per carrier.
+- **Legality.** A show or a clearance never goes beyond the offside line, the ball or halfway, whichever is furthest upfield. While the ball is in the opponent's half, the rest defence (`rest`: CB and DM slots) stays home: it neither shows nor runs. Runs in behind keep §4.3's target, timed on the line. Defensive jobs keep §4.3's bounds (a defender presses inside his line unless the danger is urgent), and only DF and DM players cover. Every job is an intention, so it moves through the same bounded scheduler (`movement.ts`, §4.4).
+- **Closing a combination.** A show, or an overlap that names a carrier, is a combination. It ends `closed` (infeasible) when an opponent stands within `combination.closed` (2.5) m of its target. An overlap also ends `moved` once its carrier plays the ball or loses it. A player who gave up a job as closed takes no job of that kind for `combination.retry` (3) s.
+- **The carrier's choice** (`decide.ts`, §6.3). The pass options read the teammates' intentions as they are, not a forecast. A teammate showing for this carrier scores `combination.show` (0.6) more. An overlap that names him scores `combination.release` (0.9) more once the overlapper is level with him or ahead. While it is still arriving behind him, an unpressured carrier carries `combination.wait` (1.5) times as often. A clearance, or a combination with another carrier, bends nothing. Without intentions (the pre-feature path) nothing changes.
+- Measured on grid-bands' 600 equal-strength 2024 fixtures (all 16 tactic pairings), paired with the T276 tree on the same fixtures:
+  - Goals 2.74 → 2.75, tackles + interceptions 25.66 → 25.67, ball in play 59.49 → 59.56 min, passes 472.6 → 474.4, completion 77.2 → 77.5%, forward passes 35.3 → 34.5%, shots 11.82 → 11.74.
+  - Goal-area shots 11.3 → 10.0%, crosses 21.4 → 20.6, FW goals 62.2 → 58.5% (now inside its band), penalty goals 5.1 → 3.8%.
+  - Press against counter: home wins 92 → 81%; counter against press 24 → 13%.
+  - Per observed match: about 335 shows, 5 lane clearances, 346 covers (124 cleared with their press), 0.2 handovers, 7 shows and 0.2 overlaps closed, 24 overlaps ended once the carrier played on.
+  - T278 calibrates `COORDINATION_CONFIG`, `DECISION_CONFIG.combination` and the tactic balance; the bands stay.
 
 ---
 
@@ -442,6 +461,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 - `risk = Σ_opp exp(−d_lane / 2)`, where `d_lane` is the opponent's distance to the pass segment (only opponents projecting inside it)
 - `score_j = 1.0·gain + 0.8·open − 0.6·risk − max(0, dist − 15)/10 + through_j`
 - `through_j = 0.8 × actionWeight(role, traits, 'key')` when j is on a `behind` run or `inBehind`, else 0
+- candidate model only: `+ combination.show` (0.6) when j shows for the carrier, `+ combination.release` (0.9) when j's overlap combines with him and j is level with him or ahead (§4.6)
 
 **Direction prior.** `dir_j` is forward, lateral or back by ±45° in the attack frame.
 
