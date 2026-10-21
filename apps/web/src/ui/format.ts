@@ -1,14 +1,32 @@
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { currency } from '../../../../packages/catalogs/src/index';
+import type { LocaleFormatters } from '../presentation/locale';
+
+let localeFormatters: LocaleFormatters | undefined;
+/** Initialized before App mounts; pure helpers remain usable in isolated non-React callers. */
+export function setLocaleFormatters(formatters?: LocaleFormatters) {
+  localeFormatters = formatters;
+}
+const integer = (value: bigint) => localeFormatters?.number(value) ?? value.toLocaleString();
+const digits = (value: bigint, width: number) =>
+  localeFormatters
+    ? localeFormatters.decimal(value, {
+        useGrouping: false,
+        minimumIntegerDigits: width,
+        maximumFractionDigits: 0,
+      })
+    : String(value).padStart(width, '0');
+const decimalSeparator = () =>
+  localeFormatters?.numberParts(1.1).find((part) => part.type === 'decimal')?.value ?? '.';
 export function money(value: string, code: string, year: number) {
   const c = currency(code, year),
     n = BigInt(value),
     sign = n < 0 ? '−' : '',
     abs = n < 0 ? -n : n;
   if (c.code === 'GBP-LSD')
-    return `${sign}£${(abs / 240n).toLocaleString('en-GB')} ${(abs % 240n) / 12n}s ${abs % 12n}d`;
+    return `${sign}£${integer(abs / 240n)} ${digits((abs % 240n) / 12n, 1)}s ${digits(abs % 12n, 1)}d`;
   const units = BigInt(c.units);
-  return `${sign}${c.symbol}${(abs / units).toLocaleString('en-GB')}${c.units === 100 ? '.' + String(abs % units).padStart(2, '0') : ''}`;
+  return `${sign}${c.symbol}${integer(abs / units)}${c.units === 100 ? decimalSeparator() + digits(abs % units, 2) : ''}`;
 }
 /**
  * The one money notation (→WEB-67): whole major units below 100,000, then K/M/B at three
@@ -21,7 +39,7 @@ export function compactMoney(value: string, code: string, year: number) {
     n = BigInt(value),
     sign = n < 0n ? '−' : '',
     major = (n < 0n ? -n : n) / BigInt(c.units);
-  if (major < 100_000n) return `${sign}${c.symbol}${major.toLocaleString('en-GB')}`;
+  if (major < 100_000n) return `${sign}${c.symbol}${integer(major)}`;
   const [unit, size]: [string, bigint] =
     major >= 1_000_000_000n
       ? ['B', 1_000_000_000n]
@@ -32,13 +50,19 @@ export function compactMoney(value: string, code: string, year: number) {
     places = whole >= 100n ? 0 : whole >= 10n ? 1 : 2,
     scale = 10n ** BigInt(places),
     fraction = ((major * scale) / size) % scale;
-  return `${sign}${c.symbol}${whole.toLocaleString('en-GB')}${places ? '.' + String(fraction).padStart(places, '0') : ''}${unit}`;
+  return `${sign}${c.symbol}${integer(whole)}${places ? decimalSeparator() + digits(fraction, places) : ''}${unit}`;
 }
-export const number = (n: number) => Math.round(n).toLocaleString('ko-KR');
+export const number = (n: number) => localeFormatters?.number(n) ?? Math.round(n).toLocaleString();
 /** A difference with its sign: "+3", "−1.5", "0". */
 export const signed = (value: number, digits = 0) => {
-  const text = digits ? Math.abs(value).toFixed(digits) : number(Math.abs(value));
-  return value > 0 ? `+${text}` : value < 0 ? `−${text}` : digits ? (0).toFixed(digits) : '0';
+  const text = digits
+    ? (localeFormatters?.decimal(Number(Math.abs(value).toFixed(digits)), {
+        useGrouping: false,
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      }) ?? Math.abs(value).toFixed(digits))
+    : number(Math.abs(value));
+  return value > 0 ? `+${text}` : value < 0 ? `−${text}` : text;
 };
 export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2)}`;
 /**
@@ -50,7 +74,11 @@ export function contractLine(until: number, year: number) {
     ? `계약 이번 시즌(${seasonName(year)}) 끝까지`
     : `계약 ${seasonName(until - 1)} 시즌 끝까지`;
 }
-export const percent = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : '—');
+export const percent = (a: number, b: number) => {
+  if (!b) return '—';
+  const rounded = Math.round((a / b) * 100);
+  return `${localeFormatters?.decimal(rounded, { useGrouping: false, maximumFractionDigits: 0 }) ?? rounded}%`;
+};
 export const kindLabel: Record<string, string> = {
   league: '리그',
   lower: '아마추어 리그',

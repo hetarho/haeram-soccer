@@ -13,6 +13,7 @@ import type {
   ContractTerm,
   ManagerStyle,
   ManagerTrait,
+  PersonCareer,
   Player,
   Staff,
   StaffRole,
@@ -332,41 +333,65 @@ const candidateCache = new Map<string, readonly StaffCandidate[]>();
 /** Three seeded candidates per role and season; anyone already employed is not offered. */
 export function staffCandidates(w: World, role: StaffRole): StaffCandidate[] {
   if (!STAFF_ROLES.includes(role)) return [];
+  return staffMarket(w, [role])[role]!;
+}
+/**
+ * Every role's candidates at once, reading the person registry a single time: it grows with the
+ * career, and the view lists every department each day.
+ */
+export function staffMarket(
+  w: World,
+  roles: readonly StaffRole[] = STAFF_ROLES,
+): Partial<Record<StaffRole, StaffCandidate[]>> {
   const code = clubOf(w).country,
     employed = new Set((w.staff || []).map((member) => member.id)),
-    key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}`;
-  let drawn = candidateCache.get(key);
-  if (!drawn) {
-    drawn = drawCandidates(w, role, code);
-    if (candidateCache.size > 512) candidateCache.clear();
-    candidateCache.set(key, drawn);
+    ready = new Map<StaffRole, PersonCareer[]>();
+  for (const person of Object.values(w.people || {})) {
+    const role = person.coaching?.role;
+    if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;
+    const same = ready.get(role);
+    if (same) same.push(person);
+    else ready.set(role, [person]);
   }
-  const retained: StaffCandidate[] = Object.values(w.people || {})
-    .filter((person) => coachingEntryReady(person) && person.coaching?.role === role)
-    .sort((a, b) => compareIds(a.id, b.id))
-    .map((person) => {
-      const coaching = person.coaching!;
-      const wage = coachWage(w, coaching.ability);
-      return {
-        id: person.id,
-        person: person.id,
-        name: person.name,
-        born: person.born,
+  return Object.fromEntries(
+    roles.map((role) => {
+      const key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}`;
+      let drawn = candidateCache.get(key);
+      if (!drawn) {
+        drawn = drawCandidates(w, role, code);
+        if (candidateCache.size > 512) candidateCache.clear();
+        candidateCache.set(key, drawn);
+      }
+      const retained: StaffCandidate[] = (ready.get(role) ?? [])
+        .sort((a, b) => compareIds(a.id, b.id))
+        .map((person) => {
+          const coaching = person.coaching!;
+          const wage = coachWage(w, coaching.ability);
+          return {
+            id: person.id,
+            person: person.id,
+            name: person.name,
+            born: person.born,
+            role,
+            ability: coaching.ability,
+            potential: coaching.potential,
+            wage,
+            since: w.year,
+            until: w.year + 3,
+            fee: ratio(wage, 1n, 4n),
+          };
+        });
+      return [
         role,
-        ability: coaching.ability,
-        potential: coaching.potential,
-        wage,
-        since: w.year,
-        until: w.year + 3,
-        fee: ratio(wage, 1n, 4n),
-      };
-    });
-  return [
-    ...drawn
-      .filter((candidate) => !employed.has(candidate.id))
-      .map((candidate) => ({ ...candidate })),
-    ...retained,
-  ];
+        [
+          ...drawn
+            .filter((candidate) => !employed.has(candidate.id))
+            .map((candidate) => ({ ...candidate })),
+          ...retained,
+        ],
+      ];
+    }),
+  );
 }
 function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate[] {
   return CANDIDATE_ABILITY.map(([min, max], i) => {

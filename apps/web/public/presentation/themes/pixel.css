@@ -1,0 +1,5 @@
+/* Optional concept styling; shared consumers own layout and interaction. */
+body {
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}

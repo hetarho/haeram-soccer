@@ -192,8 +192,11 @@ function clubCandidates(w: World): ManagerCandidate[] {
       compensation: ((BigInt(manager.wage) * COMPENSATION[0]) / COMPENSATION[1]).toString(),
     }));
 }
+/** Retained career managers' drawn traits, which only their seed and profile decide. */
+const careerDraws = new Map<string, Manager>();
 /** Retained career profiles add places without replacing the ordinary market. */
 function careerCandidates(w: World): ManagerCandidate[] {
+  const code = clubOf(w).country;
   return Object.values(w.people ?? {}).flatMap((person) => {
     const profile = person.management;
     if (
@@ -210,13 +213,13 @@ function careerCandidates(w: World): ManagerCandidate[] {
     if (job && !internal && job.wage === undefined) return [];
     const style = profile.school,
       info = STYLE_INFO[style],
-      drawn = makeManager(
-        clubOf(w).country,
-        `${w.seed}:career-manager:${person.id}`,
-        profile.at.year,
-        1,
-        style,
-      );
+      key = `${code}|${w.seed}|${person.id}|${profile.at.year}|${style}`;
+    let drawn = careerDraws.get(key);
+    if (!drawn) {
+      drawn = makeManager(code, `${w.seed}:career-manager:${person.id}`, profile.at.year, 1, style);
+      if (careerDraws.size > 8192) careerDraws.clear();
+      careerDraws.set(key, drawn);
+    }
     const manager = {
       ...drawn,
       id: person.id,

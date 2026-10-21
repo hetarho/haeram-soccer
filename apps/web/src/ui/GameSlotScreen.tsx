@@ -7,6 +7,8 @@ import type { Crest } from './crests';
 import { Dialog } from './Dialog';
 import a from './App.module.css';
 import s from './GameSlotScreen.module.css';
+import { useLocale } from '../presentation/react';
+import { PresentationSettingsTrigger } from './PresentationSettings';
 
 const gameStoreWorld = () => gameStore.getSnapshot().view?.world;
 
@@ -37,6 +39,7 @@ export function GameSlotScreen({
   /** The game in play was deleted: a fresh page reads what remains, on this screen. */
   onRemovedInPlay: () => void;
 }) {
+  const { t } = useLocale();
   const world = useGameState((state) => state.view?.world);
   const readonly = useGameState((state) => state.readonly);
   const loading = useGameState((state) => state.busy && !state.view);
@@ -85,9 +88,9 @@ export function GameSlotScreen({
   const live = (entry: GameEntry) =>
     world && entry.worldId === world.id ? summarize(world) : entry.summary;
   const exportSlot = (slot: number) =>
-    run('기록을 꺼내는 중…', async () => {
+    run('slots.exporting', async () => {
       const raw = await slots.exportRaw(slot);
-      if (!raw) throw new Error('이 슬롯의 기록을 찾지 못했어요.');
+      if (!raw) throw new Error(t('slots.missingRecord'));
       onExport(raw, entryOf(slot)!.summary.club);
     });
   const importInto = (slot: number, file?: File) => {
@@ -96,27 +99,28 @@ export function GameSlotScreen({
       setError('파일 크기는 8 MiB 이하이어야 합니다.');
       return;
     }
-    void run('기록을 가져오는 중…', async () => {
+    void run('slots.importing', async () => {
       await slots.importInto(slot, await file.text());
       onEnter();
     });
   };
   const locked = readonly || busy;
   return (
-    <section className={s.screen} data-testid="game-slots" aria-label="게임 슬롯">
+    <section className={s.screen} data-testid="game-slots" aria-label={t('slots.title')}>
       <header className={s.head}>
         <span>HAERAM FOOTBALL</span>
-        <h2>게임 슬롯</h2>
-        <p>슬롯마다 다른 클럽을 키울 수 있어요. 기록은 이 브라우저에 저장돼요.</p>
+        <h2>{t('slots.title')}</h2>
+        <PresentationSettingsTrigger />
+        <p>{t('slots.description')}</p>
       </header>
       {readonly && (
         <p className={s.note} role="status">
-          다른 탭에서 플레이 중이에요. 이 탭에서는 진행 중인 게임을 읽기 전용으로만 볼 수 있어요.
+          {t('slots.readonly')}
         </p>
       )}
       {!slots.canPark && (
         <p className={s.note} role="status">
-          이 브라우저는 게임 보관함(IndexedDB)을 지원하지 않아 진행 중인 게임 하나만 쓸 수 있어요.
+          {t('slots.storageUnavailable')}
         </p>
       )}
       {(error || clientError) && (
@@ -126,29 +130,33 @@ export function GameSlotScreen({
       )}
       {working && (
         <p className={s.note} role="status">
-          {working}
+          {t(working)}
         </p>
       )}
       <ol className={s.list}>
         {index.slots.map((entry, slot) => {
-          const label = `슬롯 ${slot + 1}`;
+          const label = t('slots.label', { slot: slot + 1 });
           if (!entry)
             return (
-              <li key={slot} className={`${s.slot} ${s.empty}`} aria-label={`${label} · 빈 슬롯`}>
+              <li
+                key={slot}
+                className={`${s.slot} ${s.empty}`}
+                aria-label={t('slots.emptyLabel', { label })}
+              >
                 <div className={s.slotHead}>
                   <span className={s.number}>{label}</span>
-                  <b>빈 슬롯</b>
+                  <b>{t('slots.empty')}</b>
                 </div>
                 <div className={s.actions}>
                   <button
                     className={a.primary}
                     disabled={locked || (!!world && !slots.canPark)}
-                    onClick={() => void run('새 게임을 준비하는 중…', async () => onNew(slot))}
+                    onClick={() => void run('slots.preparing', async () => onNew(slot))}
                   >
-                    새 게임
+                    {t('slots.new')}
                   </button>
                   <label className={`${a.fileButton} ${locked ? s.disabled : ''}`}>
-                    파일 가져오기
+                    {t('slots.import')}
                     <input
                       className={a.fileInput}
                       type="file"
@@ -172,12 +180,12 @@ export function GameSlotScreen({
               <li
                 key={entry.id}
                 className={`${s.slot} ${s.earlier}`}
-                aria-label={`${label} · 이전 규칙`}
+                aria-label={t('slots.earlierLabel', { label })}
                 data-testid={`slot-earlier-${slot}`}
               >
                 <div className={s.slotHead}>
                   <span className={s.number}>{label}</span>
-                  <em>이전 규칙 ({earlier})</em>
+                  <em>{t('slots.earlierRules', { version: earlier })}</em>
                 </div>
                 <div className={s.club}>
                   <CrestMark crest={entry.summary.crest as Crest} size={40} />
@@ -190,20 +198,23 @@ export function GameSlotScreen({
                     )}
                     {entry.summary.seasons > 0 && (
                       <small>
-                        {entry.summary.seasons}번째 시즌 · {entry.summary.date}
+                        {t('slots.seasonDate', {
+                          seasons: entry.summary.seasons,
+                          date: entry.summary.date,
+                        })}
                       </small>
                     )}
                     <small className={s.played}>
-                      규칙 {earlier} 커리어라 이 버전에서는 열 수 없어요. 파일로 내보내 보관하세요.
+                      {t('slots.earlierNotice', { version: earlier })}
                     </small>
                   </div>
                 </div>
                 <div className={s.actions}>
                   <button disabled={busy} onClick={() => void exportSlot(slot)}>
-                    내보내기
+                    {t('slots.export')}
                   </button>
                   <button disabled={locked} onClick={() => setConfirm({ kind: 'delete', slot })}>
-                    삭제
+                    {t('slots.delete')}
                   </button>
                 </div>
               </li>
@@ -212,7 +223,7 @@ export function GameSlotScreen({
             <li key={entry.id} className={`${s.slot} ${inPlay ? s.inPlay : ''}`} aria-label={label}>
               <div className={s.slotHead}>
                 <span className={s.number}>{label}</span>
-                {inPlay && <em>진행 중</em>}
+                {inPlay && <em>{t('slots.inPlay')}</em>}
               </div>
               <div className={s.club}>
                 <CrestMark crest={summary.crest as Crest} size={40} />
@@ -222,10 +233,12 @@ export function GameSlotScreen({
                     {summary.country} · {summary.division}
                   </small>
                   <small>
-                    {summary.seasons}번째 시즌 · {summary.date}
+                    {t('slots.seasonDate', { seasons: summary.seasons, date: summary.date })}
                   </small>
                   {played(entry.playedAt) && (
-                    <small className={s.played}>최근 플레이 {played(entry.playedAt)}</small>
+                    <small className={s.played}>
+                      {t('slots.lastPlayed', { date: played(entry.playedAt) })}
+                    </small>
                   )}
                 </div>
               </div>
@@ -234,28 +247,28 @@ export function GameSlotScreen({
                   className={a.primary}
                   disabled={busy || (readonly && !inPlay)}
                   onClick={() =>
-                    void run('게임을 불러오는 중…', async () => {
+                    void run('slots.loadingGame', async () => {
                       await slots.continue(slot);
                       onEnter();
                     })
                   }
                 >
-                  {loading && index.active === slot ? '불러오는 중…' : '이어하기'}
+                  {t(loading && index.active === slot ? 'slots.loading' : 'slots.continue')}
                 </button>
                 <details className={s.more}>
-                  <summary>관리</summary>
+                  <summary>{t('slots.manage')}</summary>
                   <div className={s.moreActions}>
                     <button disabled={busy} onClick={() => void exportSlot(slot)}>
-                      내보내기
+                      {t('slots.export')}
                     </button>
                     <button
                       disabled={locked}
                       onClick={() => setConfirm({ kind: 'overwrite', slot })}
                     >
-                      새 게임으로 덮어쓰기
+                      {t('slots.overwrite')}
                     </button>
                     <button disabled={locked} onClick={() => setConfirm({ kind: 'delete', slot })}>
-                      삭제
+                      {t('slots.delete')}
                     </button>
                   </div>
                 </details>
@@ -266,32 +279,31 @@ export function GameSlotScreen({
       </ol>
       {confirm && entryOf(confirm.slot) && (
         <Dialog
-          label={confirm.kind === 'delete' ? '게임 삭제 확인' : '새 게임 덮어쓰기 확인'}
+          label={t(confirm.kind === 'delete' ? 'slots.confirmDelete' : 'slots.confirmOverwrite')}
           onClose={() => setConfirm(undefined)}
         >
           <p>
-            슬롯 {confirm.slot + 1}의 ‘{entryOf(confirm.slot)!.summary.club}’ 기록이 이 브라우저에서
-            사라져요. 보관하려면 먼저 파일로 내보내세요.
+            {t('slots.removeNotice', {
+              slot: confirm.slot + 1,
+              club: entryOf(confirm.slot)!.summary.club,
+            })}
           </p>
           <div className={a.actions}>
-            <button onClick={() => void exportSlot(confirm.slot)}>기록 내보내기</button>
-            <button onClick={() => setConfirm(undefined)}>취소</button>
+            <button onClick={() => void exportSlot(confirm.slot)}>{t('save.export')}</button>
+            <button onClick={() => setConfirm(undefined)}>{t('common.cancel')}</button>
             <button
               className={a.primary}
               onClick={() => {
                 const { kind, slot } = confirm;
                 setConfirm(undefined);
-                void run(
-                  kind === 'delete' ? '기록을 지우는 중…' : '새 게임을 준비하는 중…',
-                  async () => {
-                    if (kind === 'overwrite') return onNew(slot);
-                    // The game in play leaves with its checkpoints; the slot screen stays.
-                    if (await slots.remove(slot)) onRemovedInPlay();
-                  },
-                );
+                void run(kind === 'delete' ? 'slots.deleting' : 'slots.preparing', async () => {
+                  if (kind === 'overwrite') return onNew(slot);
+                  // The game in play leaves with its checkpoints; the slot screen stays.
+                  if (await slots.remove(slot)) onRemovedInPlay();
+                });
               }}
             >
-              {confirm.kind === 'delete' ? '삭제' : '새 게임 시작'}
+              {t(confirm.kind === 'delete' ? 'slots.delete' : 'slots.startNew')}
             </button>
           </div>
         </Dialog>
