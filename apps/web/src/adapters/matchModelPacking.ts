@@ -42,7 +42,7 @@ export interface PackedNpcSeason {
   clubs: SparseTable;
   /** `[id, name, position, contribution rows]` per player row, competitions in order. */
   players: SparseTable;
-  /** `[club, appearances, …metrics(12), …detail(PD)]` per contribution, players in order. */
+  /** `[club, appearances, starts, …metrics(12), …detail(PD)]` per contribution, players in order. */
   contributions: SparseTable;
 }
 
@@ -53,7 +53,7 @@ const HEADER_WIDTH = 5;
 const COMPETITION_WIDTH = 4;
 const CLUB_WIDTH = 4 + METRICS + TEAM_DETAIL_SIZE;
 const PLAYER_WIDTH = 4;
-const CONTRIBUTION_WIDTH = 2 + METRICS + PLAYER_DETAIL_SIZE;
+const CONTRIBUTION_WIDTH = 3 + METRICS + PLAYER_DETAIL_SIZE;
 /** Bounds of the world schema's NPC season and own records; no stream is larger. */
 const MAX_REVISIONS = 16;
 const MAX_RECORDS = 100000;
@@ -242,6 +242,7 @@ function packSeason(
         contributions.push(
           ref(share.club),
           share.appearances,
+          share.starts,
           ...exactRow(share.metrics, METRICS, '선수 지표'),
           ...exactRow(share.detail, PLAYER_DETAIL_SIZE, '선수 고급 지표'),
         );
@@ -434,8 +435,9 @@ function unpackSeason(
             return {
               club: str(r[0]),
               appearances: r[1],
-              metrics: r.slice(2, 2 + METRICS),
-              detail: r.slice(2 + METRICS),
+              starts: r[2],
+              metrics: r.slice(3, 3 + METRICS),
+              detail: r.slice(3 + METRICS),
             };
           }),
         };

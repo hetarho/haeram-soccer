@@ -1,4 +1,5 @@
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
+import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
 import { staffMarket } from '../../../../packages/engine/src/staff';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
@@ -98,6 +99,7 @@ export class Host {
       type === 'recruitment-history' ||
       type === 'mediation-preview' ||
       type === 'league-fixtures' ||
+      type === 'full-stats' ||
       type === 'club-records' ||
       type === 'archive'
     )
@@ -130,8 +132,10 @@ export class Host {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
-    const { people: _people, ...projected } = w;
+    // The season's complete statistics are read on request (`full-stats`), not sent every day.
+    const { people: _people, npcSeason: _season, ...projected } = w;
     void _people;
+    void _season;
     return {
       coaches: staffMarket(w),
       careers: Object.fromEntries(
@@ -275,6 +279,10 @@ export class Host {
             (f) => f.year === w.year && f.kind === 'league' && f.groupKey === key,
           ),
         };
+      }
+      if (body.type === 'full-stats') {
+        const read = fullStatsRead(w, { kind: body.kind, groupKey: body.groupKey });
+        return { requestId: request.requestId, ok: true, ...(read ? { fullStats: read } : {}) };
       }
       if (body.type === 'club-records')
         return {

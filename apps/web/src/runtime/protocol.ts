@@ -23,7 +23,9 @@ import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import {
   assertMatchModelFormat,
+  FULL_STATS_KINDS,
   matchModelStateSchema,
+  type FullStatsRead,
 } from '../../../../packages/contracts/src/match-model';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
@@ -258,13 +260,22 @@ export const requestSchema = z.object({
       tier: z.number().int().min(0).max(20),
       group: z.number().int().min(0).max(20),
     }),
+    // One competition of the season in progress, its complete statistics (→WEB-89).
+    z.strictObject({
+      type: z.literal('full-stats'),
+      kind: z.enum(FULL_STATS_KINDS),
+      groupKey: ref,
+    }),
     z.object({ type: z.literal('ack-critical') }),
   ]),
 });
 export type Request = z.infer<typeof requestSchema>;
 export type Body = Request['body'];
-/** Daily projection excludes the lifetime person registry and bounds resolved recruitment history. */
-export type ProjectedWorld = Omit<World, 'people'> & { people?: never };
+/**
+ * Daily projection excludes the lifetime person registry and bounds resolved recruitment history.
+ * The season's complete statistics come with a `full-stats` read when a view asks (→WEB-89).
+ */
+export type ProjectedWorld = Omit<World, 'people' | 'npcSeason'> & { people?: never };
 export interface View {
   world: ProjectedWorld;
   careers: Record<string, CareerAssessment>;
@@ -344,6 +355,8 @@ export interface Reply {
   };
   /** Another league's fixtures this season; the view carries only the own league's (→WEB-65). */
   leagueFixtures?: Fixture[];
+  /** A competition's complete statistics this season; absent while the season keeps none. */
+  fullStats?: FullStatsRead;
   progress?: number;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */

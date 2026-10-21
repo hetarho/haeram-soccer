@@ -10,9 +10,11 @@ import {
   useEffect,
   useRef,
   useState,
+  type ComponentProps,
   type KeyboardEvent,
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
+import { activeMatchModel } from '../../../../packages/contracts/src/match-model';
 import {
   daysUntilNextMatch,
   nextOwnFixture,
@@ -36,6 +38,17 @@ const ClosedSeason = lazy(() =>
 );
 /** The match theatre loads when the match pane first renders, outside the entry (→ARCH-28). */
 const Pitch = lazy(() => import('./Pitch').then((module) => ({ default: module.Pitch })));
+/** The season's complete statistics load with the league tab that shows them (→ARCH-28). */
+const LazyFullStats = lazy(() =>
+  import('./LeagueFullStats').then((module) => ({ default: module.LeagueFullStats })),
+);
+function LeagueFullStats(props: ComponentProps<typeof LazyFullStats>) {
+  return (
+    <Suspense fallback={null}>
+      <LazyFullStats {...props} />
+    </Suspense>
+  );
+}
 import { seasonName } from './format';
 import {
   leagueIds,
@@ -299,11 +312,13 @@ const TablePane = memo(function TablePane({
   );
 });
 const TeamPane = memo(function TeamPane({
+  client,
   league,
   onLeague,
   part,
   onPart,
 }: {
+  client: GameClient;
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
   part: 'table' | 'rank';
@@ -328,7 +343,10 @@ const TeamPane = memo(function TeamPane({
         onChange={onPart}
       />
       {part === 'table' ? (
-        <CompetitionRecords w={w} rows={rows} />
+        <>
+          <CompetitionRecords w={w} rows={rows} />
+          <LeagueFullStats client={client} league={league} lens="teams" />
+        </>
       ) : other ? (
         <UnavailableLeagueRecord
           league={league!}
@@ -342,18 +360,23 @@ const TeamPane = memo(function TeamPane({
   );
 });
 const PlayerPane = memo(function PlayerPane({
+  client,
   league,
   onLeague,
   part,
   onPart,
 }: {
+  client: GameClient;
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
   part: 'scorers' | 'trend';
   onPart: (value: 'scorers' | 'trend') => void;
 }) {
   const w = useGameState(selectScorerWorld)!,
-    other = league && !sameLeague(league, ownLeague(w));
+    other = league && !sameLeague(league, ownLeague(w)),
+    // With complete statistics another league's leaders come from the lens below (→WEB-89); only
+    // the round-by-round race stays our league's alone (→WEB-65).
+    full = activeMatchModel(w) !== undefined;
   return (
     <>
       <Segments
@@ -368,16 +391,19 @@ const PlayerPane = memo(function PlayerPane({
         onChange={onPart}
       />
       {other ? (
-        <UnavailableLeagueRecord
-          league={league!}
-          label="선수별 득점 기록"
-          onOwn={() => onLeague(undefined)}
-        />
+        full && part === 'scorers' ? null : (
+          <UnavailableLeagueRecord
+            league={league!}
+            label={full ? '라운드별 득점왕 기록' : '선수별 득점 기록'}
+            onOwn={() => onLeague(undefined)}
+          />
+        )
       ) : part === 'trend' ? (
         <ScorerHistory w={w} />
       ) : (
         <ScorerStandings w={w} />
       )}
+      {part === 'scorers' && <LeagueFullStats client={client} league={league} lens="players" />}
       {part === 'scorers' && <DisciplineTable league={league} />}
     </>
   );
@@ -672,9 +698,16 @@ export const LiveSeason = memo(function LiveSeason({
           ) : !opened.includes(id) ? null : id === 'table' ? (
             <TablePane client={client} league={league} />
           ) : id === 'teams' ? (
-            <TeamPane league={league} onLeague={setLeague} part={teamPart} onPart={setTeamPart} />
+            <TeamPane
+              client={client}
+              league={league}
+              onLeague={setLeague}
+              part={teamPart}
+              onPart={setTeamPart}
+            />
           ) : id === 'players' ? (
             <PlayerPane
+              client={client}
               league={league}
               onLeague={setLeague}
               part={playerPart}

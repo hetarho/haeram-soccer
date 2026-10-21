@@ -102,10 +102,14 @@ export interface NpcClubTotals {
   xg: number;
   xga: number;
 }
-/** What a player actually contributed for one club: appearances count lines with minutes > 0. */
+/**
+ * What a player actually contributed for one club. Appearances count lines with minutes > 0 as own
+ * records do (→HIST-13): `starts` of them began the match, the rest came on as a substitute.
+ */
 export interface NpcContribution {
   club: string;
   appearances: number;
+  starts: number;
   metrics: Metrics;
   detail: Metrics;
 }
@@ -136,6 +140,32 @@ export interface NpcSeasonStats {
   model: MatchModelRevision;
   trackedFrom: TrackingBoundary;
   competitions: NpcCompetitionStats[];
+}
+/**
+ * A competition scope a full-statistics read serves (→HIST-6, WEB-89). Promotion playoffs are left
+ * out: they settle at the close into the ledger the next season replaces, and every country's
+ * barrage shares one group key.
+ */
+export const FULL_STATS_KINDS = [
+  'league',
+  'lower',
+  'cup',
+  'europe',
+] as const satisfies readonly Exclude<Fixture['kind'], 'playoff'>[];
+export interface FullStatsScope {
+  kind: (typeof FULL_STATS_KINDS)[number];
+  groupKey: string;
+}
+/**
+ * One competition of the season in progress, read on request (→WEB-89): a copy of its settled
+ * aggregates (empty rows when nothing settled yet, a real zero), where counting started and how
+ * many of its fixtures settled before that and stay untracked, never zero (→HIST-17).
+ */
+export interface FullStatsRead {
+  year: number;
+  trackedFrom: TrackingBoundary;
+  untracked: number;
+  competition: NpcCompetitionStats;
 }
 
 /** What an observed player is doing and why (→MATCH-17); observation only, never archived. */

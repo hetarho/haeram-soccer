@@ -1,4 +1,5 @@
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
+import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbPreviousStore } from '../adapters/previousStore';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
@@ -630,6 +631,15 @@ export class GameClient {
       group: league.group,
     });
     return reply.leagueFixtures ?? [];
+  }
+  /**
+   * A competition's complete statistics this season (→WEB-89), read like head-to-head without the
+   * command queue; undefined while the season keeps none.
+   */
+  async fullStats(scope: FullStatsScope) {
+    const reply = await this.rpc({ type: 'full-stats', ...scope });
+    if (!reply.ok) throw new Error(reply.error ?? '세부 기록 응답이 없습니다.');
+    return reply.fullStats;
   }
   private rawBackup() {
     if (this.saves.incompatibleBackup) return this.saves.incompatibleBackup;

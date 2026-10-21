@@ -375,12 +375,16 @@ const npcSeasonSchema = z.strictObject({
               position,
               clubs: z
                 .array(
-                  z.strictObject({
-                    club: id,
-                    appearances: z.number().int().nonnegative().max(1000),
-                    metrics,
-                    detail: playerDetail,
-                  }),
+                  z
+                    .strictObject({
+                      club: id,
+                      appearances: z.number().int().nonnegative().max(1000),
+                      // Appearances are starts plus substitute appearances (→HIST-13).
+                      starts: z.number().int().nonnegative().max(1000),
+                      metrics,
+                      detail: playerDetail,
+                    })
+                    .refine((part) => part.starts <= part.appearances),
                 )
                 .min(1)
                 .max(50),

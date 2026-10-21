@@ -34,7 +34,8 @@ import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-op
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { npcCompetition } from '../../../../packages/engine/src/npc-stats';
+import { cachedWorld, simulatedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
@@ -637,6 +638,38 @@ describe('career view projection', () => {
     expect(Object.keys(saved.world.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
     expect(canonical(saved.world.people)).toBe(canonical(h.world!.people));
     expect(h.world!.revision).toBe(revision);
+  });
+});
+
+describe('complete statistics reads (→WEB-89, HIST-17)', () => {
+  it('keeps the season ledger out of views and reads one competition on request', async () => {
+    const h = new Host();
+    await h.handle(req('full-found', -1, { type: 'found', input }));
+    const w = h.world!;
+    const f = w.fixtures.find(
+      (x) => x.kind === 'league' && x.home !== w.playerClub && x.away !== w.playerClub,
+    )!;
+    const scope = { type: 'full-stats', kind: 'league', groupKey: f.groupKey } as const;
+    // The pre-feature model keeps no ledger: the read answers with nothing, not zeros.
+    const none = await h.handle(req('full-none', w.revision, scope));
+    expect(none).toMatchObject({ ok: true });
+    expect(none.fullStats).toBeUndefined();
+    withCandidateModel(w);
+    const played = simulateMatch(w, f);
+    f.score = played.record.score;
+    recordMatch(w, played, true);
+    const before = canonical(w);
+    const read = await h.handle(req('full-read', w.revision, scope));
+    expect(read.view).toBeUndefined();
+    expect(read.fullStats!.competition).toEqual(npcCompetition(w.npcSeason, f));
+    expect(read.fullStats!.competition.clubs.map((c) => c.club)).toEqual([f.home, f.away]);
+    expect(canonical(w)).toBe(before);
+    // A published view carries the model metadata, never the ledger itself.
+    const view = await h.handle(
+      req('full-view', w.revision, { type: 'command', command: { type: 'read-inbox' } }),
+    );
+    expect(view.view!.world.matchModel).toEqual(w.matchModel);
+    expect(view.view!.world).not.toHaveProperty('npcSeason');
   });
 });
 

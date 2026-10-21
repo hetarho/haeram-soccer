@@ -9,6 +9,8 @@ import { emptyPlayerDetail, emptyTeamDetail } from '../../contracts/src/detail';
 import {
   activeMatchModel,
   type FullMatchRecord,
+  type FullStatsRead,
+  type FullStatsScope,
   type NpcClubTotals,
   type NpcCompetitionStats,
   type NpcContribution,
@@ -17,7 +19,7 @@ import {
   type TrackingBoundary,
 } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, Metrics, Player, World } from '../../contracts/src/types';
-import { currentDay, SEASON_ROUNDS } from './calendar';
+import { currentDay, fixtureDay, SEASON_ROUNDS } from './calendar';
 import { M } from './grid/record';
 import { zeroMetrics } from './primitives';
 
@@ -51,9 +53,10 @@ export function npcCompetition(
 
 /** A participant's totals in one competition, his clubs' contributions summed; nothing changes. */
 export function playerTotals(player: NpcPlayerTotals): Omit<NpcContribution, 'club'> {
-  const total = { appearances: 0, metrics: zeroMetrics(), detail: emptyPlayerDetail() };
+  const total = { appearances: 0, starts: 0, metrics: zeroMetrics(), detail: emptyPlayerDetail() };
   for (const part of player.clubs) {
     total.appearances += part.appearances;
+    total.starts += part.starts;
     add(total.metrics, part.metrics);
     add(total.detail, part.detail);
   }
@@ -61,18 +64,56 @@ export function playerTotals(player: NpcPlayerTotals): Omit<NpcContribution, 'cl
 }
 
 /**
- * Clubs and participants by ID per competition, kept beside the stats (never in the world) and
- * rebuilt whenever the lists were replaced or grew elsewhere, as after a load.
+ * One competition of the season in progress for a view, read on request (→WEB-89, HIST-6): a copy,
+ * so a reader can neither change the ledger nor alias it, and nothing is drawn. Nothing when the
+ * world keeps no ledger for this season (the pre-feature model): that period is unavailable, not
+ * zero. `untracked` counts the competition's fixtures settled before the tracking boundary's day.
+ */
+export function fullStatsRead(w: World, scope: FullStatsScope): FullStatsRead | undefined {
+  const stats = w.npcSeason;
+  if (!stats || stats.year !== w.year) return undefined;
+  const { kind, groupKey } = scope;
+  const fixtures =
+    kind === 'europe'
+      ? w.europe.flatMap((t) => t.fixtures)
+      : kind === 'cup'
+        ? (w.cups ?? []).flatMap((cup) => cup.fixtures)
+        : w.fixtures;
+  const untracked = fixtures.filter(
+    (f) =>
+      f.year === stats.year &&
+      f.kind === kind &&
+      f.groupKey === groupKey &&
+      f.score !== undefined &&
+      fixtureDay(f) < stats.trackedFrom.day,
+  ).length;
+  const competition = npcCompetition(stats, scope) ?? { kind, groupKey, clubs: [], players: [] };
+  return structuredClone({
+    year: stats.year,
+    trackedFrom: stats.trackedFrom,
+    untracked,
+    competition,
+  });
+}
+
+/**
+ * Clubs and participants by ID per competition, kept beside the stats (never in the world). The
+ * reducer is the only writer of the lists, so the index follows the lists themselves: a list that
+ * was replaced, as after a load or a copy, rebuilds it.
  */
 interface CompetitionIndex {
+  clubRows: NpcClubTotals[];
+  playerRows: NpcPlayerTotals[];
   clubs: Map<string, NpcClubTotals>;
   players: Map<string, NpcPlayerTotals>;
 }
 const indexes = new WeakMap<NpcCompetitionStats, CompetitionIndex>();
 function indexFor(c: NpcCompetitionStats): CompetitionIndex {
   let ix = indexes.get(c);
-  if (!ix || ix.clubs.size !== c.clubs.length || ix.players.size !== c.players.length) {
+  if (!ix || ix.clubRows !== c.clubs || ix.playerRows !== c.players) {
     ix = {
+      clubRows: c.clubs,
+      playerRows: c.players,
       clubs: new Map(c.clubs.map((row) => [row.club, row])),
       players: new Map(c.players.map((row) => [row.id, row])),
     };
@@ -91,26 +132,41 @@ function add(into: Metrics, row: Metrics) {
  * identity — a scheduled fixture with a score is never played again, an own result already saved
  * is a no-op and the worker serializes commands — so it keeps no outcome list of its own and draws
  * nothing. Each side's club adds the match, its team row and its xG for and against; each line
- * that played adds an appearance and his counters to his contribution for that club (→HIST-13).
- * Results of the pre-feature model, of another season or with no open season are not counted:
- * untracked stays absent, never zero (→HIST-17).
+ * that played adds an appearance — a start, or a substitute appearance when he came on — and his
+ * counters to his contribution for that club (→HIST-13). Results of the pre-feature model, of
+ * another season or with no open season are not counted: untracked stays absent, never zero
+ * (→HIST-17). Every participant is found before anything is added, so a record naming someone
+ * outside the match squads throws with the ledger untouched.
  */
 export function settleNpcSeason(w: World, playback: MatchPlayback): void {
   const r = playback.record;
   const stats = w.npcSeason;
   if (r.model === undefined || !stats || stats.year !== r.year || stats.model !== r.model) return;
   const full = r as FullMatchRecord;
+  const people = new Map<string, Player>();
+  for (const squad of playback.squads) for (const p of squad) people.set(p.id, p);
+  // Own records' rule (playerAnalysis `appearanceCounts`): he came on if a change brought him.
+  const came = new Set(full.incidents.flatMap((x) => (x.kind === 'sub' && x.other) || []));
+  const played: { side: 0 | 1; line: FullMatchRecord['players'][number]; person: Player }[] = [];
+  let at = 0;
+  for (const side of [0, 1] as const)
+    for (const end = at + full.lineCounts[side]; at < end; at++) {
+      const line = full.players[at]!;
+      // An appearance is a line with minutes; a substitute who never came on has none.
+      if (!(line.metrics[M.minutes]! > 0)) continue;
+      const person = people.get(line.id);
+      if (!person) throw new Error(`경기 기록의 선수가 경기 명단에 없습니다: ${line.id}`);
+      played.push({ side, line, person });
+    }
   let competition = npcCompetition(stats, r);
   if (!competition) {
     competition = { kind: r.kind, groupKey: r.groupKey, clubs: [], players: [] };
     stats.competitions.push(competition);
   }
   const ix = indexFor(competition);
-  const people = new Map<string, Player>();
-  for (const squad of playback.squads) for (const p of squad) people.set(p.id, p);
-  let line = 0;
+  const clubs = [r.home, r.away] as const;
   for (const side of [0, 1] as const) {
-    const club = side === 0 ? r.home : r.away;
+    const club = clubs[side];
     let row = ix.clubs.get(club);
     if (!row) {
       row = { club, matches: 0, metrics: zeroMetrics(), detail: emptyTeamDetail(), xg: 0, xga: 0 };
@@ -122,26 +178,29 @@ export function settleNpcSeason(w: World, playback: MatchPlayback): void {
     add(row.detail, full.detail[side]);
     row.xg += Math.round(full.xg[side] * 100);
     row.xga += Math.round(full.xg[side === 0 ? 1 : 0] * 100);
-    for (const end = line + full.lineCounts[side]; line < end; line++) {
-      const l = full.players[line]!;
-      // An appearance is a line with minutes; a substitute who never came on has none.
-      if (!(l.metrics[M.minutes]! > 0)) continue;
-      const person = people.get(l.id);
-      if (!person) throw new Error(`경기 기록의 선수가 경기 명단에 없습니다: ${l.id}`);
-      let player = ix.players.get(l.id);
-      if (!player) {
-        player = { id: l.id, name: person.name, position: person.position, clubs: [] };
-        competition.players.push(player);
-        ix.players.set(l.id, player);
-      }
-      let part = player.clubs.find((c) => c.club === club);
-      if (!part) {
-        part = { club, appearances: 0, metrics: zeroMetrics(), detail: emptyPlayerDetail() };
-        player.clubs.push(part);
-      }
-      part.appearances++;
-      add(part.metrics, l.metrics);
-      add(part.detail, l.detail);
+  }
+  for (const { side, line, person } of played) {
+    const club = clubs[side];
+    let player = ix.players.get(line.id);
+    if (!player) {
+      player = { id: line.id, name: person.name, position: person.position, clubs: [] };
+      competition.players.push(player);
+      ix.players.set(line.id, player);
     }
+    let part = player.clubs.find((c) => c.club === club);
+    if (!part) {
+      part = {
+        club,
+        appearances: 0,
+        starts: 0,
+        metrics: zeroMetrics(),
+        detail: emptyPlayerDetail(),
+      };
+      player.clubs.push(part);
+    }
+    part.appearances++;
+    if (!came.has(line.id)) part.starts++;
+    add(part.metrics, line.metrics);
+    add(part.detail, line.detail);
   }
 }
