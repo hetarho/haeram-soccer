@@ -3,7 +3,7 @@ import type {
   PresentationPreferencesStore,
   PresentationPreferences,
 } from '../adapters/presentationPreferences';
-import type { InstalledTheme, installThemeResources } from '../adapters/themeResources';
+import type { InstalledTheme, prepareThemeResources } from '../adapters/themeResources';
 import type { PackRegistry, ThemeRegistryEntry } from './contracts';
 import { createLoadedLocale, type LoadedLocale } from './locale';
 import { resolvePackEntry } from './registry';
@@ -27,7 +27,7 @@ export interface PresentationSnapshot {
 export interface PresentationControllerOptions {
   resources: ReturnType<typeof createPresentationResources>;
   preferences: PresentationPreferencesStore;
-  installTheme: typeof installThemeResources;
+  prepareTheme: typeof prepareThemeResources;
   applyLocale?: (locale: LoadedLocale) => void;
 }
 
@@ -93,15 +93,18 @@ export function createPresentationController(options: PresentationControllerOpti
         };
       }
       if (theme !== snapshot.theme) {
-        const next = await options.installTheme(theme, {
-          previous: installed,
-          isCurrent: current,
+        const prepared = await options.prepareTheme(theme, {
           requiredImages: collectThemeImageResources(theme, [...needs.values()]),
         });
+        if (!current()) {
+          prepared.dispose();
+          return;
+        }
+        // Commit ownership and publish the corresponding services in one synchronous stack.
+        const next = prepared.commit({ previous: installed, isCurrent: current });
         if (!next) return;
         installed = next;
       }
-      if (!current()) return;
       options.applyLocale?.(locale);
       options.preferences.write({ localeId: locale.id, themeId: theme.id });
       publish({

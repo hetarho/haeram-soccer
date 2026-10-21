@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { PresentationPreferencesStore } from '../adapters/presentationPreferences';
 import { createPresentationResources } from '../adapters/presentationResources';
-import { installThemeResources, type ThemeInstallationPorts } from '../adapters/themeResources';
+import { prepareThemeResources, type ThemeInstallationPorts } from '../adapters/themeResources';
 import type { LocalePack, ThemePack } from './contracts';
 import { createPresentationController } from './controller';
 
@@ -25,7 +25,12 @@ const deferred = <T>() => {
   return { promise, resolve };
 };
 
-function setup(saved = {}, portsOverride?: Partial<ThemeInstallationPorts>, baseUrl?: string) {
+function setup(
+  saved = {},
+  portsOverride?: Partial<ThemeInstallationPorts>,
+  baseUrl?: string,
+  observeResources?: (id: string, ready: Promise<unknown>) => void,
+) {
   const documents = new Map<string, unknown>([
     [
       '/presentation/locales/index.json',
@@ -114,7 +119,11 @@ function setup(saved = {}, portsOverride?: Partial<ThemeInstallationPorts>, base
   const controller = createPresentationController({
     resources: createPresentationResources({ fetch, baseUrl }),
     preferences,
-    installTheme: (theme, options) => installThemeResources(theme, { ...options, ports }),
+    prepareTheme: (theme, options) => {
+      const ready = prepareThemeResources(theme, { ...options, ports });
+      observeResources?.(theme.id, ready);
+      return ready;
+    },
     applyLocale,
   });
   return { controller, documents, storage, writes, applyLocale, activations, releases, fetch };
@@ -324,6 +333,65 @@ describe('one presentation controller', () => {
     expect(activated).toEqual(['/presentation/themes/synthetic-one/heritage/stadium-1.webp']);
     expect(controller.getSnapshot().theme?.id).toBe('synthetic-one');
   }, 10000);
+
+  it('keeps actual resources and published selection consistent after a completion observer invalidates a failed retry', async () => {
+    let actualTheme: string | undefined;
+    let baselineReleases = 0;
+    let observed = false;
+    const { controller, storage } = setup(
+      {},
+      {
+        stageImage: async (url) => {
+          if (url.includes('/synthetic-one/') && url.endsWith('stadium-1.webp'))
+            throw new Error('The newly mounted candidate scene is unavailable');
+          return { activate() {}, dispose() {} };
+        },
+        installTokens: (theme) => {
+          actualTheme = theme.id;
+          return {
+            dispose() {
+              if (theme.id === themeRegistry.defaultId) baselineReleases++;
+              if (actualTheme === theme.id) actualTheme = undefined;
+            },
+          };
+        },
+      },
+      undefined,
+      (id, ready) => {
+        if (id !== 'synthetic-one' || observed) return;
+        observed = true;
+        // Register before the controller attaches its await continuation to this same promise.
+        void ready.then(() =>
+          controller.registerNeed({
+            type: 'facility',
+            era: 'heritage',
+            kind: 'stadium',
+            stage: 1,
+          }),
+        );
+      },
+    );
+    try {
+      await controller.initialize();
+      const baseline = controller.getSnapshot().theme!;
+      expect(actualTheme).toBe(baseline.id);
+      await controller.select({ themeId: 'synthetic-one' });
+      await vi.waitFor(() => {
+        expect(controller.getSnapshot().pending).toBe(false);
+        expect(controller.getSnapshot().error).toBeTruthy();
+      });
+      expect(observed).toBe(true);
+      expect(controller.getSnapshot().theme).toBe(baseline);
+      expect(actualTheme).toBe(baseline.id);
+      expect(baselineReleases).toBe(0);
+      expect(JSON.parse(storage.get('haeram-soccor:presentation')!)).toEqual({
+        localeId: localeRegistry.defaultId,
+        themeId: baseline.id,
+      });
+    } finally {
+      controller.dispose();
+    }
+  });
 
   it('offers retry after an initial registry load fails', async () => {
     const { controller, documents } = setup();

@@ -11,7 +11,7 @@ async function start() {
     { createPresentationController },
     { createPresentationResources },
     { PresentationPreferencesStore },
-    { installThemeResources },
+    { prepareThemeResources },
   ] = await Promise.all([
     import('./presentation/controller'),
     import('./adapters/presentationResources'),
@@ -21,7 +21,7 @@ async function start() {
   const controller = createPresentationController({
     resources: createPresentationResources({ fetch }),
     preferences: new PresentationPreferencesStore(),
-    installTheme: installThemeResources,
+    prepareTheme: prepareThemeResources,
     applyLocale(locale) {
       document.documentElement.lang = locale.id;
       document.documentElement.dir = locale.direction;
