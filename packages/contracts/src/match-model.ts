@@ -14,7 +14,12 @@ import type {
   Position,
   World,
 } from './types';
-import { SaveCompatibilityError } from './versions';
+import {
+  CURRENT_CHECKPOINT_SCHEMA,
+  FULL_MODEL_CHECKPOINT_SCHEMA,
+  SaveCompatibilityError,
+  type CheckpointSchema,
+} from './versions';
 
 /** The candidate model; a world or record naming any other revision is from a newer game. */
 export const MATCH_MODEL_REVISION = 'continuous-aggregate-1';
@@ -46,10 +51,28 @@ export interface MatchModelState {
 export const activeMatchModel = (w: Pick<World, 'matchModel'>): MatchModelRevision | undefined =>
   w.matchModel?.revision;
 
-const count = z.number().int().min(0).max(1_000_000_000);
+/** Whether a world holds anything only the full model writes: its metadata, aggregates or records. */
+export const carriesMatchModel = (w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>) =>
+  !!w.matchModel || !!w.npcSeason || w.ownMatches.some((m) => m.model !== undefined);
+/**
+ * The checkpoint container a world is written in (→SAVE-23): unactivated worlds keep the current
+ * container. A world carrying full-model data needs `FULL_MODEL_CHECKPOINT_SCHEMA`, whose codec does
+ * not exist yet, so writing one fails rather than letting an older reader drop its fields.
+ */
+export function checkpointSchemaFor(
+  w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>,
+): CheckpointSchema {
+  if (carriesMatchModel(w))
+    throw new Error(
+      `경기 모델 데이터는 저장 컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}가 필요하지만 아직 쓸 수 없습니다.`,
+    );
+  return CURRENT_CHECKPOINT_SCHEMA;
+}
+
+const count = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const day = z.number().int().min(0).max(365);
 const year = z.number().int().min(1800).max(4000);
-const trackingBoundarySchema = z.strictObject({
+export const trackingBoundarySchema = z.strictObject({
   year,
   day,
   round: z.number().int().min(0).max(46),

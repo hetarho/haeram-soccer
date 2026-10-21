@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   activeMatchModel,
   assertMatchModelFormat,
+  checkpointSchemaFor,
   frameTimeIssues,
   MATCH_MODEL_REVISION,
   matchModelStateSchema,
@@ -76,6 +77,19 @@ describe('match-model metadata (→SAVE-23)', () => {
     expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"3.0.0"}`)).toBe(
       undefined,
     );
+  });
+
+  it('keeps the current container for unactivated worlds and never writes model data in it', () => {
+    const plain = { ownMatches: [oldRecord] } as unknown as World;
+    expect(checkpointSchemaFor(plain)).toBe(CURRENT_CHECKPOINT_SCHEMA);
+    for (const activated of [
+      { ...plain, matchModel: state },
+      { ...plain, npcSeason: { model: MATCH_MODEL_REVISION } },
+      { ownMatches: [{ ...oldRecord, model: MATCH_MODEL_REVISION }] },
+    ])
+      expect(() => checkpointSchemaFor(activated as unknown as World)).toThrow(
+        `컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}`,
+      );
   });
 });
 
