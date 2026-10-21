@@ -22,6 +22,7 @@
 - flow: records → manager history → tenure and factual accomplishments → relevant club-season record → preserved manager/list context.
 - v1: current/former/interim own-club tenures, dated honours/promotions, best league finishes, recorded match totals/runs and honest coverage states. Structured attribution survives save/export/import and the summary loads on demand.
 - Scope excludes broader other-club careers, subjective manager ratings, a deepest-cup-run ranking and new gameplay/reward mechanics.
+- delivery: T304 prepares pure fact/query modules and T305 prepares a props-driven view in new files alongside earlier work. T306 integrates engine/save changes after T286, then T307 connects worker/navigation and T308 proves browser/capacity continuity. This changes task boundaries, not the product rules.
 
 ## domains
 - WEB: per-tenure accomplishment summaries, coverage states and contextual club-season navigation (WEB-92). →WEB
