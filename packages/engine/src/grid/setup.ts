@@ -1,5 +1,6 @@
 /** Everything a grid match needs before kick-off: era rules, rosters, bench, takers and bends (→MATCH-2, MATCH-18, MATCH-20, CLUB-6). */
 import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contracts/src/types';
+import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
 import { FORMATIONS, lineOf } from '../player';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
 import { prepareMatch } from '../match';
@@ -169,6 +170,8 @@ export interface GridSetup {
   decide?: DecideRule;
   observe: boolean;
   recordPlayers: boolean;
+  /** The match model this fixture plays; absent is the pre-feature model (→SAVE-23). */
+  model?: MatchModelRevision;
 }
 
 const NO_BEND: StyleBend = { pass: 0, possession: 0, shot: 0, defense: 0, lineHigh: 0, lineLow: 0 };
@@ -182,8 +185,14 @@ export function buildGridSetup(
     decide?: DecideRule;
     /** Test-only: play these tactics instead of the clubs' own. */
     tactics?: [Tactic, Tactic];
+    /**
+     * Tests and measurements only: play this candidate revision instead of the world's active
+     * model. It draws nothing, so generation, recruitment and finance streams are untouched.
+     */
+    model?: MatchModelRevision;
   },
 ): GridSetup {
+  const model = opts.model ?? activeMatchModel(w);
   const prepared = prepareMatch(w, f);
   const { teams, squads, ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
@@ -228,5 +237,6 @@ export function buildGridSetup(
     ...(opts.decide ? { decide: opts.decide } : {}),
     observe: opts.observe,
     recordPlayers: opts.recordPlayers,
+    ...(model ? { model } : {}),
   };
 }

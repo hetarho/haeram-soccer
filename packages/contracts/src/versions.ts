@@ -94,6 +94,13 @@ export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
  * refuses such a save instead of silently dropping the designs.
  */
 export const CURRENT_CHECKPOINT_SCHEMA = 2;
+/**
+ * The container after the identity container, for checkpoints carrying full-model metadata or NPC
+ * season aggregates (→SAVE-23), so an older reader refuses them instead of dropping fields. Declared
+ * only: until its codec and activation exist, unactivated worlds keep writing the current container
+ * and this version refuses container 3 like any other future one.
+ */
+export const FULL_MODEL_CHECKPOINT_SCHEMA = 3;
 /** Containers this version reads; any other is a compatibility failure, never corruption. */
 export const SUPPORTED_CHECKPOINT_SCHEMAS = [1, CURRENT_CHECKPOINT_SCHEMA] as const;
 export type CheckpointSchema = (typeof SUPPORTED_CHECKPOINT_SCHEMAS)[number];

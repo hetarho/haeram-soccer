@@ -3,7 +3,10 @@ import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
 import { DIRECTION_INFO, DIRECTION_KEYS } from '../../../../packages/engine/src/direction';
-import { requestSchema } from './protocol';
+import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
+import type { World } from '../../../../packages/contracts/src/types';
+import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
+import { requestSchema, worldMetadataOf } from './protocol';
 
 const request = (body: unknown) => ({
   protocol: 1,
@@ -89,6 +92,40 @@ it('takes a next-fixture kit role in the engine vocabulary or null, nothing else
   expect(accepts({ type: 'match-kit', fixtureId: 'f:1', role: 'home', club: 'ENG:rival' })).toBe(
     false,
   );
+});
+
+it('carries supported match-model metadata and refuses a future one, changing nothing (→SAVE-23)', () => {
+  const matchModel = {
+    revision: MATCH_MODEL_REVISION,
+    activated: { year: 1990, day: 12, revision: 40 },
+    trackedFrom: { year: 1990, day: 13, round: 2 },
+    coverage: 'activation' as const,
+  };
+  const world = (extra: object) =>
+    ({ id: 'world', revision: 41, engine: '4.0.0', ownMatches: [], ...extra }) as unknown as World;
+  expect(worldMetadataOf(world({}))).toEqual({ id: 'world', revision: 41 });
+
+  const activated = world({ matchModel });
+  const before = structuredClone(activated);
+  const metadata = worldMetadataOf(activated);
+  expect(metadata).toEqual({ id: 'world', revision: 41, matchModel });
+  metadata.matchModel!.trackedFrom.round = 9;
+  expect(activated).toEqual(before);
+
+  for (const future of [
+    world({ matchModel: { ...matchModel, revision: 'continuous-aggregate-2' } }),
+    world({ ownMatches: [{ id: 'f:1', model: 'continuous-aggregate-2' }] }),
+  ]) {
+    const unchanged = structuredClone(future);
+    let error: unknown;
+    try {
+      worldMetadataOf(future);
+    } catch (e) {
+      error = e;
+    }
+    expect(isSaveCompatibilityError(error)).toBe(true);
+    expect(future).toEqual(unchanged);
+  }
 });
 
 it('preserves stable retained-coach identities beyond the original candidate slots', () => {
