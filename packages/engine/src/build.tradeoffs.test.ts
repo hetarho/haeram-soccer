@@ -6,7 +6,10 @@ describe('tactical roster tradeoffs', () => {
   // The grid engine's tactics are not balanced yet: press beats every other tactic at equal
   // strength (STATE inbox 261019 suggest T216 MATCH-8), so the cases preferring another tactic
   // wait for that tuning. T278 measured the same on the candidate model (press 66–79% at home
-  // against counter and balanced, docs/CALIBRATION.md) and leaves them skipped.
+  // against counter and balanced, docs/CALIBRATION.md) and leaves them skipped. T321 narrowed it
+  // on the candidate model but press still beats counter and balanced there (MATCH-29 verdicts in
+  // docs/benchmarks/detailed-model-calibration.json), and these cases play the active pre-feature
+  // model, so they stay skipped until the candidate holds MATCH-29 and is activated (T286).
   const tradeoffs = [
     {
       name: 'passing midfield against balanced opponents',

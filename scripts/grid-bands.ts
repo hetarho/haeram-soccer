@@ -41,19 +41,25 @@ import type {
   World,
 } from '../packages/contracts/src/types';
 import {
-  clubStyle,
   createWorld,
-  fatigueLoad,
   integer,
-  PRESS_LOAD_FATIGUE,
+  isUnavailable,
   random,
   rating,
+  slotOvr,
+  squad,
 } from '../packages/engine/src/index';
+import { FORMATIONS } from '../packages/engine/src/player';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from '../packages/engine/src/grid/movement';
 import { M } from '../packages/engine/src/grid/record';
-import { buildGridSetup, type DecideRule } from '../packages/engine/src/grid/setup';
+import {
+  buildGridSetup,
+  takersFor,
+  type DecideRule,
+  type GridSetup,
+} from '../packages/engine/src/grid/setup';
 import {
   buildInvariantReport,
   buildOutcomeTargetReport,
@@ -417,12 +423,7 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       ...(c.family === 'tactics' ? { tactics: [params.home!, params.away!] } : {}),
       ...(params.decide ? { decide: params.decide } : {}),
     });
-    // A forced tactic carries its weekly press load (MATCH-2): a club nobody owns pays it in its
-    // squad's fatigue only for its own pressing style, so the load moves with the tactic played.
-    if (c.family === 'tactics')
-      [home, away].forEach((club, side) => {
-        setup.shift[side] += pressLoad(clubStyle(club)) - pressLoad(setup.tactics[side]!);
-      });
+    if (c.family === 'tactics') forceTacticRosters(w, f, setup, [home, away]);
     const result = playGrid(setup);
     samples.push({
       record: result.record,
@@ -437,9 +438,37 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
   return { samples, ms: (performance.now() - started) / Math.max(1, job.count) };
 }
 
-/** Skill points a squad's weekly press load costs an outfielder (slotSkill: an eighth of the excess). */
-const pressLoad = (tactic: Tactic) =>
-  tactic === 'press' ? fatigueLoad(PRESS_LOAD_FATIGUE) / 8 : 0;
+/**
+ * The pre-match fatigue both sides of a tactic pairing start from: what a club nobody owns carries
+ * without the weekly press load (`npcSquad`; MATCH-2 gives a pressing club fatigue 32).
+ */
+const NEUTRAL_FATIGUE = 0;
+
+/**
+ * A forced tactic pairing's rosters (MATCH-29, T321): a forced tactic changes only in-match
+ * behaviour and its in-match cost. Each club fields the XI it would pick for the forced formation,
+ * slot by slot the best remaining squad player by `slotOvr`, instead of its own formation's XI in
+ * slot order (a back four's right-back at centre-back, a holding midfielder at wing-back), names
+ * its bench behind it, and both sides start from the same pre-match squad fatigue.
+ */
+export function forceTacticRosters(w: World, f: Fixture, setup: GridSetup, clubs: [Club, Club]) {
+  ([0, 1] as const).forEach((side) => {
+    const club = clubs[side];
+    const pool = squad(w, club).filter((p) => !isUnavailable(w, p, club.id, f));
+    const xi = FORMATIONS[setup.tactics[side]].slots.map((slot) => {
+      let best = 0;
+      for (let i = 1; i < pool.length; i++)
+        if (slotOvr(pool[i]!, slot) > slotOvr(pool[best]!, slot)) best = i;
+      return pool.splice(best, 1)[0]!;
+    });
+    const bench = pool.slice(0, setup.bench[side]);
+    setup.rosters[side] = [...xi, ...bench].map((p) =>
+      p.fatigue === NEUTRAL_FATIGUE ? p : { ...p, fatigue: NEUTRAL_FATIGUE },
+    );
+    setup.bench[side] = bench.length;
+    setup.takers[side] = takersFor(setup.rosters[side].slice(0, xi.length));
+  });
+}
 
 /**
  * What MATCH-29 reads of a match (tactics, results, team rows, xG and freshness), small enough to
@@ -732,7 +761,7 @@ async function runReport() {
       movement: GRID_MOVEMENT_CONFIG,
       ball: GRID_BALL_CONFIG,
       forcedTactics:
-        "tactic pairings force both tactics on the core pairs; the weekly press load (MATCH-2, fatigue 32: 1.5 skill points an outfielder) moves with the tactic played, while end-of-match freshness (MATCH-29) starts from each club's own squad fatigue",
+        'tactic pairings force both tactics on the core pairs; each club fields its best XI for the forced formation (slot by slot by slotOvr) and both sides start from the same pre-match squad fatigue (0, a club nobody owns without the weekly press load), so a forced tactic changes only in-match behaviour and its in-match cost, and end-of-match freshness (MATCH-29) measures that cost',
       knockouts:
         'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
     },

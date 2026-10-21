@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
@@ -11,6 +12,7 @@ import {
   SHAPE_CONFIG,
   speedOf,
   startRuns,
+  tacticShape,
   targetOf,
 } from './shape';
 import { onPitch } from './state';
@@ -95,6 +97,25 @@ describe('grid shape and movement', () => {
     expect(outs.press).toBeGreaterThan(outs.possession!);
     expect(outs.possession).toBeGreaterThan(outs.balanced!);
     expect(outs.balanced).toBeGreaterThan(outs.counter!);
+  });
+
+  it('plays the candidate shape of a tactic on the candidate model only', () => {
+    for (const tactic of TACTICS) {
+      const kit = gridKit([tactic, 'balanced']);
+      expect(tacticShape(kit.state, 0)).toBe(SHAPE_CONFIG.tactic[tactic]);
+      kit.state.ball = [52.5, 34];
+      kit.state.possession = 0;
+      kit.state.owner = [0, 9];
+      const before = targets(kit)[6]!;
+      kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
+      const shape = SHAPE_CONFIG.candidate.tactic[tactic] ?? SHAPE_CONFIG.tactic[tactic];
+      expect(tacticShape(kit.state, 0)).toBe(shape);
+      // A midfielder with the ball moves by the change of his side's step up (T321).
+      expect(targets(kit)[6]![0] - before[0]).toBeCloseTo(
+        shape.advance - SHAPE_CONFIG.tactic[tactic].advance,
+        9,
+      );
+    }
   });
 
   const presserCount = (kit: ReturnType<typeof gridKit>) => {
