@@ -8,6 +8,7 @@ import {
   type PackRegistry,
   type ThemePack,
 } from '../apps/web/src/presentation/contracts';
+import { getFontSources } from '../apps/web/src/presentation/fonts';
 import { resolvePackUrl, resolveRegistryUrl } from '../apps/web/src/presentation/registry';
 import { createThemeResolver } from '../apps/web/src/presentation/theme';
 import { partTop } from '../packages/engine/src/facilities';
@@ -49,7 +50,8 @@ function deployment() {
   const theme = structuredClone(baseline.theme);
   function themeAssets(pack: ThemePack, url: string) {
     const resolver = createThemeResolver(pack, { url });
-    for (const font of resolver.fonts) write(font.resource, 'synthetic font file');
+    for (const font of resolver.fonts)
+      for (const source of getFontSources(font)) write(source.resource, 'synthetic font file');
     if (resolver.stylesheet) write(resolver.stylesheet, ':root {}');
     for (const era of FACILITY_ERAS)
       for (const kind of FACILITY_KINDS)
@@ -195,6 +197,27 @@ describe('static presentation resource validation', () => {
     tree.json(tree.themeUrl, tree.theme);
     await expect(validatePresentation(tree.root)).rejects.toMatchObject({
       cause: { message: expect.stringContaining('Missing theme image') },
+    });
+  });
+
+  it('checks every ordered font fallback even when the primary resource exists', async () => {
+    const tree = deployment();
+    tree.theme.fonts[0].fallbacks = [
+      { resource: './formats/first.woff', format: 'woff' },
+      { resource: './formats/second.woff', format: 'woff' },
+    ];
+    tree.json(tree.themeUrl, tree.theme);
+    const resolver = tree.themeAssets(tree.theme, tree.themeUrl);
+    const sources = getFontSources(resolver.fonts[0]);
+    const inventory = await validatePresentation(tree.root);
+    expect(inventory.assets).toEqual(expect.arrayContaining(sources.map(({ resource }) => resource)));
+
+    const missing = sources[2].resource;
+    rmSync(tree.file(missing));
+    await expect(validatePresentation(tree.root)).rejects.toMatchObject({
+      cause: {
+        message: `Missing theme font ${tree.theme.id}/${resolver.fonts[0].family}: ${missing}`,
+      },
     });
   });
 });
