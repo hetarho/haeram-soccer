@@ -8,9 +8,15 @@ import {
   yellowWarning,
 } from './discipline';
 import { activePlayers, createWorld, ownLeagueClubs, ownStarters, startingSquad } from './index';
-import { buildGridSetup } from './grid/setup';
+import { matchdayRosters } from './aggregate/engine';
+import { currentDay } from './calendar';
+import { buildGridSetup, eraRules } from './grid/setup';
+import { prepareMatch, simulateMatch } from './match';
 import { lineOf } from './player';
+import { advanceRound } from './season';
+import { founded } from './season.testkit';
 import { squad } from './world';
+import { withCandidateModel } from '../../../tests/fixtures/worlds';
 
 function world() {
   return createWorld({
@@ -191,5 +197,73 @@ describe('discipline (→MATCH-19)', () => {
     };
     expect(yellowWarning(w, p)).toBe(true);
     expect(yellowWarning(w, q)).toBe(false);
+  });
+});
+
+describe('candidate model incidents and availability (→LEAGUE-15, MATCH-19, MATCH-21)', () => {
+  it('carries incidents into the next lineup', () => {
+    const w = withCandidateModel(founded(2024));
+    const others = w.fixtures.filter(
+      (f) =>
+        f.round === 1 && f.kind === 'league' && f.home !== w.playerClub && f.away !== w.playerClub,
+    );
+    // What the first round's aggregate matches settle: the same facts on every call.
+    const incidents = others.flatMap((f) => {
+      const r = simulateMatch(w, f).record;
+      return r.incidents!.map((x) => ({ x, club: x.side === 0 ? r.home : r.away }));
+    });
+    const hurt = incidents.filter(({ x }) => x.kind === 'injury');
+    const sent = incidents.filter(({ x }) => x.kind === 'red' || x.kind === 'secondYellow');
+    expect(hurt.length).toBeGreaterThan(0);
+    expect(sent.length).toBeGreaterThan(0);
+    advanceRound(w, undefined, false);
+    // Each became the world's own: an injury entry for his club, a ban by person.
+    const d = w.discipline!;
+    for (const { x, club } of hurt)
+      expect(d.out.some((o) => o.player === x.player && o.club === club)).toBe(true);
+    for (const { x, club } of sent)
+      expect(d.bans.some((b) => b.player === x.player && b.club === club)).toBe(true);
+    // The club's next league match leaves out whoever is still unavailable for it.
+    let left = 0;
+    for (const { x, club } of [...hurt, ...sent]) {
+      const next = w.fixtures
+        .filter((f) => !f.score && f.kind === 'league' && (f.home === club || f.away === club))
+        .sort((a, b) => a.round - b.round)[0]!;
+      if (!isUnavailable(w, x.player, club, next)) continue;
+      const p = simulateMatch(w, next);
+      expect(p.squads[next.home === club ? 0 : 1].map((q) => q.id)).not.toContain(x.player);
+      expect(p.record.players.map((l) => l.id)).not.toContain(x.player);
+      left++;
+    }
+    expect(left).toBeGreaterThanOrEqual(sent.length);
+  });
+
+  it('shares one availability rule on both candidate paths', () => {
+    const w = withCandidateModel(founded(2024));
+    const f = leagueFixtures(w)[0]!;
+    const side = ownSide(w, f);
+    const xi = ownStarters(w, f);
+    const [fit, ...spare] = activePlayers(w).filter((p) => !xi.includes(p));
+    // Two starters are hurt and so is every other player but one: too few are fit, so the XI
+    // keeps the hurt starters and one fit player waits on the bench.
+    const hurt = [xi[3]!, xi[7]!];
+    for (const p of [...hurt, ...spare])
+      p.injury = { year: w.year, day: currentDay(w) + 30, label: '테스트 부상' };
+    expect(ownStarters(w, f)).toEqual(expect.arrayContaining(hurt));
+    // The detailed engine sends the fit substitute on for the first, as the aggregate path would.
+    const setup = buildGridSetup(w, f, { observe: false, recordPlayers: true });
+    expect(setup.model).toBeDefined();
+    expect(setup.rosters[side].map((p) => p.id)).toEqual(
+      xi.map((p, slot) => (slot === 3 ? fit! : p).id),
+    );
+    expect(setup.bench[side]).toBe(0);
+    const shared = matchdayRosters(w, f, prepareMatch(w, f), eraRules(f.year));
+    expect(setup.rosters).toEqual(shared);
+    // The pre-feature grid keeps him, as its settled matches always have.
+    const plain = structuredClone(w);
+    delete plain.matchModel;
+    delete plain.npcSeason;
+    const before = buildGridSetup(plain, f, { observe: false, recordPlayers: true });
+    expect(before.rosters[side].map((p) => p.id)).toEqual([...xi, fit!].map((p) => p.id));
   });
 });

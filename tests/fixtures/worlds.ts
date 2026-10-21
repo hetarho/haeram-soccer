@@ -14,8 +14,19 @@ import {
 } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  MATCH_MODEL_REVISION,
+  type MatchModelState,
+} from '../../packages/contracts/src/match-model';
 import type { Founding, World } from '../../packages/contracts/src/types';
-import { advanceRound, createWorld, simulateSeason } from '../../packages/engine/src/index';
+import {
+  advanceRound,
+  createWorld,
+  currentDay,
+  openNpcSeason,
+  simulateSeason,
+  trackingBoundary,
+} from '../../packages/engine/src/index';
 
 /**
  * Simulated test worlds, built once and shared.
@@ -220,4 +231,27 @@ export function simulatedWorld(input: Founding, span: Simulated = {}): World {
     },
     undefined,
   );
+}
+
+/**
+ * `w` on the candidate match model (→SAVE-23), for tests and measurements while the release switch
+ * stays off: the model recorded at the world's current boundary with its season's complete
+ * aggregates opened there — the engine state a writer activation leaves (T286 owns that writer).
+ * `coverage` is `founding` for a world straight from `createWorld`, `activation` otherwise.
+ */
+export function withCandidateModel(
+  w: World,
+  coverage: MatchModelState['coverage'] = w.round === 0 && w.ownMatches.length === 0
+    ? 'founding'
+    : 'activation',
+): World {
+  const trackedFrom = trackingBoundary(w);
+  w.matchModel = {
+    revision: MATCH_MODEL_REVISION,
+    activated: { year: w.year, day: currentDay(w), revision: w.revision },
+    trackedFrom,
+    coverage,
+  };
+  openNpcSeason(w, trackedFrom);
+  return w;
 }

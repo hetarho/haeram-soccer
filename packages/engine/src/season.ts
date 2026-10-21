@@ -78,6 +78,9 @@ import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
 import { applyDiscipline, closeDisciplineSeason, recordNpcInjury, serveBans } from './discipline';
 import { captureAppearance } from './match-appearance';
+import { assertFullMatchRecord } from './match-model';
+import { openNpcSeason, settleNpcSeason } from './npc-stats';
+import { activeMatchModel } from '../../contracts/src/match-model';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -185,6 +188,8 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
   if (lifecycle) {
     closeDisciplineSeason(w);
     materializePeople(w);
+    // An active model's complete aggregates start the new season empty and tracked whole.
+    if (activeMatchModel(w) !== undefined) openNpcSeason(w);
   }
   prepareScorers(w);
   w.rankHistory = (w.rankHistory || []).filter((s) => s.year >= w.year - 9 && s.year < w.year);
@@ -271,10 +276,17 @@ function settleTable(row: TableRow, gf: number, ga: number) {
     row.points++;
   } else row.lost++;
 }
+/**
+ * Settles one played fixture's facts into the world, once: its callers settle a scheduled fixture
+ * only while it has no score, and an own result already saved is a no-op here. Fixture, discipline,
+ * Elo, table, scorer, own-club, injury and complete-aggregate effects all read the same record;
+ * a full-model record passes the shared check first (→MATCH-27).
+ */
 export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   const m = playback.record;
   const own = m.home === w.playerClub || m.away === w.playerClub;
   if (own && w.ownMatches.some((existing) => existing.id === m.id)) return;
+  if (m.model !== undefined) assertFullMatchRecord(m);
   // The shirts and crests worn, frozen before the live playback and the saved record share it.
   if (own) captureAppearance(w, m);
   // Earlier bans serve this fixture before its own cards make new ones (→MATCH-19).
@@ -332,6 +344,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     settleWinBonus(w, saved);
   }
   injuriesFromMatch(w, m);
+  settleNpcSeason(w, playback);
 }
 /** The own substitutes who came on, each with the XI slot of the player he replaced. */
 function substitutes(m: MatchRecord, side: 0 | 1, xi: readonly Player[]) {

@@ -7,7 +7,7 @@ import { createWorld, ownLeagueClubs } from '../index';
 import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
 import { eraRules } from '../grid/setup';
 import { prepareMatch } from '../match';
-import { matchdayRosters, playAggregate, simulateAggregate } from './engine';
+import { aggregateRecord, matchdayRosters, playAggregate, simulateAggregate } from './engine';
 import { rebalanceIssues, scoreBefore } from './participation';
 
 /**
@@ -171,6 +171,35 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     });
     expect(made).toBeGreaterThan(0);
     expect(withheld).toBeGreaterThan(0);
+  });
+
+  it('settles a fixture that exhausts its red-card retries', () => {
+    // Forced: one decision set and no retry, so an answer the score contradicts cannot be searched
+    // away; a fixture never aborts the world for it.
+    const { w, fixtures } = others(400, 2024);
+    const tight = { rebalanceSearches: 1, rebalanceRetries: 0 };
+    const play = (f: Fixture, limits?: typeof tight) => {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      return { rosters, match: playAggregate(w, f, prepared, rosters, undefined, limits) };
+    };
+    const f = fixtures.find((f) => play(f, tight).match.unreconciled)!;
+    expect(f).toBeDefined();
+    const { rosters, match } = play(f, tight);
+    // The last retry's searched plan with the fewest disagreeing answers, listed, as a valid record.
+    expect(match.retry).toBe(0);
+    expect(match.unreconciled!.length).toBeGreaterThan(0);
+    expect(match.unreconciled).toEqual(rebalanceIssues(match.participation, match.facts));
+    expect(validateFullMatchRecord(aggregateRecord(f, rosters, match))).toEqual([]);
+    // The same settlement on every call.
+    const again = play(f, tight).match;
+    expect(again.facts).toEqual(match.facts);
+    expect(again.participation).toEqual(match.participation);
+    expect(again.players).toEqual(match.players);
+    // The configured search reconciles the same fixture.
+    const settled = play(f).match;
+    expect(settled.unreconciled).toBeUndefined();
+    expect(rebalanceIssues(settled.participation, settled.facts)).toEqual([]);
   });
 
   it("draws each side's cards, injuries and stoppages on its own streams", () => {
