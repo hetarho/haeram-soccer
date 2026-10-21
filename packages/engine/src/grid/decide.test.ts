@@ -289,7 +289,7 @@ describe('grid decisions', () => {
     );
   });
 
-  it('sends a runner through on goal on toward it on the candidate model', () => {
+  it('has a runner through on goal shoot first on the candidate model', () => {
     const K = DECISION_CONFIG;
     const bend = (band: number, candidate: boolean) => {
       const sc = scene(ST, centre(band, 2));
@@ -301,10 +301,13 @@ describe('grid decisions', () => {
         shot: on.shot / on.pass / (off.shot / off.pass),
       };
     };
-    // In front of the box (band 5) he carries on rather than passes (T321, →MATCH-16).
+    // In front of the box (band 5) shooting is his strongest pull, then carrying on, both ahead
+    // of a pass (T324, →MATCH-16: in behind favours a shot).
     const front = K.candidate.inBehind;
     expect(bend(5, true).carry).toBeCloseTo(front.carry / front.pass, 9);
     expect(bend(5, true).shot).toBeCloseTo(front.shot / front.pass, 9);
+    expect(bend(5, true).shot).toBeGreaterThan(bend(5, true).carry);
+    expect(bend(5, true).carry).toBeGreaterThan(1);
     // In the box and on the pre-feature model the shared bend holds.
     expect(bend(6, true).carry).toBeCloseTo(K.inBehind.carry, 9);
     expect(bend(6, true).shot).toBeCloseTo(K.inBehind.shot, 9);
@@ -315,13 +318,16 @@ describe('grid decisions', () => {
   it('scales take-ons and the pull of a run in behind on the candidate model only (T324)', () => {
     const K = DECISION_CONFIG;
     const at = centre(4, 2);
-    const ratio = (candidate: boolean) => {
-      const sc = scene(CM, at);
+    const ratio = (candidate: boolean, where: Point = at) => {
+      const sc = scene(CM, where);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
       const mix = actionMix(sc.s, 0, CM, sc.tags());
       return mix.takeOn / mix.pass;
     };
     expect(ratio(true) / ratio(false)).toBeCloseTo(K.candidate.takeOnScale, 9);
+    // In the box the position profiles' rate holds on both models.
+    const box = centre(6, 2);
+    expect(ratio(true, box) / ratio(false, box)).toBeCloseTo(1, 9);
     // A teammate running in behind scores the candidate's through-ball pull instead of the shared one.
     const score = (candidate: boolean) => {
       const sc = scene(CM, at);

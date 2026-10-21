@@ -115,6 +115,35 @@ describe('grid open-play resolution', () => {
     expect(marks[1]).toBeGreaterThan(marks[2]!);
   });
 
+  it('plays a through ball to its lead point `at` instead of the receiver’s feet (T324)', () => {
+    const sc = passScene();
+    const tags = sc.tags();
+    const at: Point = [95, 34];
+    const r = random('lead');
+    let done: Outcome | undefined;
+    for (let i = 0; i < 50 && done?.kind !== 'complete'; i++)
+      done = resolvePass(sc.s, 0, 7, 8, tags, 'through', false, r, 0, at);
+    expect(done).toEqual({ kind: 'complete', to: at, receiver: 8 });
+    // A defender on the way to the lead point, beyond the receiver, cuts it out there.
+    sc.s.players[1][3]!.pos = [85, 34];
+    const cut = random('lead-cut');
+    let intercepted: Outcome | undefined;
+    for (let i = 0; i < 2000 && intercepted?.kind !== 'intercepted'; i++)
+      intercepted = resolvePass(sc.s, 0, 7, 8, tags, 'through', false, cut, 0, at);
+    expect(intercepted).toMatchObject({ kind: 'intercepted', by: 3 });
+    const [x, y] = (intercepted as Extract<Outcome, { kind: 'intercepted' }>).at;
+    expect(x).toBeGreaterThan(sc.s.players[0][8]!.pos[0]);
+    expect(y).toBeCloseTo(34, 9);
+    // The longer ball to the lead point is completed less often than one to his feet.
+    sc.s.players[1][3]!.pos = [102, 66];
+    const rate = (lead?: Point) => {
+      const rr = random('lead-rate');
+      const o = tally(6000, () => resolvePass(sc.s, 0, 7, 8, tags, 'through', false, rr, 0, lead));
+      return (o.complete ?? 0) / 6000;
+    };
+    expect(rate(at)).toBeLessThan(rate() - 0.02);
+  });
+
   it('splits lost passes into interceptions, loose balls and balls out by DUEL_CONFIG', () => {
     const sc = passScene();
     sc.s.players[1][3]!.pos = [65, 34];
