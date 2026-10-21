@@ -51,6 +51,25 @@ describe('injected presentation resources', () => {
     ]);
   });
 
+  it('calls the fetch capability without an options-object receiver', async () => {
+    const receivers: unknown[] = [];
+    const urls: string[] = [];
+    const fetch = async function (this: unknown, url: string): Promise<PresentationResponse> {
+      receivers.push(this);
+      if (this !== undefined) throw new TypeError('Illegal invocation');
+      urls.push(url);
+      return response(url.endsWith('/index.json') ? registry : pack);
+    };
+    const resources = createPresentationResources({ fetch });
+    const loadedRegistry = await resources.loadRegistry('locale');
+    expect((await resources.loadPack('locale', loadedRegistry.entries[0])).pack).toEqual(pack);
+    expect(receivers).toEqual([undefined, undefined]);
+    expect(urls).toEqual([
+      '/presentation/locales/index.json',
+      '/presentation/locales/new/fr-CA.json',
+    ]);
+  });
+
   it('caches validated successes and shares concurrent fetches', async () => {
     const { fetch, resources } = fixtures();
     const [first, second] = await Promise.all([

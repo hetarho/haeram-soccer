@@ -48,6 +48,7 @@ export function createPresentationResources(options: {
   baseUrl?: string;
 }) {
   const baseUrl = options.baseUrl ?? globalThis.location?.href;
+  const fetch = options.fetch;
   const cache = new Map<string, unknown>();
   const pending = new Map<string, Promise<unknown>>();
   const registryUrls = new Map<PackKind, string>();
@@ -65,7 +66,7 @@ export function createPresentationResources(options: {
     if (pending.has(key)) return pending.get(key) as Promise<T>;
     const request = (async () => {
       try {
-        const response = await options.fetch(url, {
+        const response = await fetch(url, {
           cache: 'no-cache',
           credentials: 'same-origin',
         });
