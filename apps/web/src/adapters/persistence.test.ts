@@ -64,6 +64,7 @@ import {
   MATCH_MODEL_REVISION,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
+import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import { KIT_ROLES, type ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
 import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
@@ -263,7 +264,9 @@ describe('recoverable persistence', () => {
     await expect(decode(JSON.stringify({ ...e, checksum: '0'.repeat(64) }))).rejects.toThrow(
       '체크섬',
     );
-    await expect(decode(JSON.stringify({ ...e, schema: 3 }))).rejects.toThrow('버전');
+    await expect(
+      decode(JSON.stringify({ ...e, schema: FULL_MODEL_CHECKPOINT_SCHEMA + 1 })),
+    ).rejects.toThrow('버전');
     await expect(decode('x'.repeat(8 * 1024 * 1024 + 1))).rejects.toThrow('너무');
   });
   it('commits manifest last and retains previous world on quota failure', async () => {
@@ -542,7 +545,7 @@ describe('incompatible checkpoint protection', () => {
 describe('checkpoint container schema 2', () => {
   it('writes container 2 with unchanged world schema, codec, checksum, catalog pin and rules', async () => {
     expect(CURRENT_CHECKPOINT_SCHEMA).toBe(2);
-    expect(SUPPORTED_CHECKPOINT_SCHEMAS).toEqual([1, 2]);
+    expect(SUPPORTED_CHECKPOINT_SCHEMAS).toEqual([1, 2, FULL_MODEL_CHECKPOINT_SCHEMA]);
     expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
     const w = withIdentity(observed(1), IDENTITY);
     const two = JSON.parse(await encode(w, 3, 2)),
@@ -594,7 +597,7 @@ describe('checkpoint container schema 2', () => {
   it('future envelope or nested identity version remains a compatibility error', async () => {
     const w = world();
     const current = JSON.parse(await encode(w));
-    for (const schema of [0, 3, 99])
+    for (const schema of [0, FULL_MODEL_CHECKPOINT_SCHEMA + 1, 99])
       await expect(decode(JSON.stringify({ ...current, schema }))).rejects.toBeInstanceOf(
         SaveCompatibilityError,
       );
@@ -616,47 +619,6 @@ describe('checkpoint container schema 2', () => {
     // A malformed current-version identity is ordinary invalid data.
     const malformed = withIdentity(w, { ...IDENTITY, colours: ['red'] });
     const invalid = await decode(await encode(malformed)).catch((error: unknown) => error);
-    expect(invalid).toBeInstanceOf(Error);
-    expect(isSaveCompatibilityError(invalid)).toBe(false);
-  });
-
-  it('refuses a future match-model revision on load and keeps supported metadata (→SAVE-23)', async () => {
-    const w = world();
-    const matchModel: MatchModelState = {
-      revision: MATCH_MODEL_REVISION,
-      activated: { year: w.year, day: 0, revision: w.revision },
-      trackedFrom: { year: w.year, day: 1, round: w.round },
-      coverage: 'activation',
-    };
-    const supported: World = { ...w, matchModel };
-    // The writer keeps container 2 for unactivated worlds and never puts model data in it.
-    expect(JSON.parse(await encode(w)).schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
-    await expect(encode(supported)).rejects.toThrow(`컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}`);
-    // Supported metadata in a readable container loads unchanged instead of being dropped.
-    const loaded = await decode(await seal(supported, pack(supported), 2));
-    expect(loaded.world.matchModel).toEqual(matchModel);
-    const future = {
-      ...w,
-      matchModel: { ...matchModel, revision: 'continuous-aggregate-2' },
-    } as unknown as World;
-    for (const schema of [1, 2])
-      await expect(decode(await seal(future, pack(future), schema))).rejects.toBeInstanceOf(
-        SaveCompatibilityError,
-      );
-    // The preflight runs before unpacking: damage elsewhere is not reported for a newer game.
-    const damaged = structuredClone(pack(future));
-    damaged.dict = 'damaged' as unknown as string[];
-    await expect(decode(await seal(future, damaged, 2))).rejects.toBeInstanceOf(
-      SaveCompatibilityError,
-    );
-    // A malformed supported revision is ordinary invalid data.
-    const malformed = {
-      ...w,
-      matchModel: { ...matchModel, coverage: 'partial' },
-    } as unknown as World;
-    const invalid = await decode(await seal(malformed, pack(malformed), 2)).catch(
-      (error: unknown) => error,
-    );
     expect(invalid).toBeInstanceOf(Error);
     expect(isSaveCompatibilityError(invalid)).toBe(false);
   });
@@ -706,6 +668,196 @@ const identityCareer = () =>
     return w;
   });
 
+const MODEL_STATE = (w: World): MatchModelState => ({
+  revision: MATCH_MODEL_REVISION,
+  activated: { year: w.year, day: 3, revision: w.revision },
+  trackedFrom: { year: w.year, day: 4, round: w.round },
+  coverage: 'activation',
+});
+/**
+ * `w` with every kind of model data (synthetic values): metadata, NPC aggregates naming a departed
+ * player and a full own record. The cached world is left untouched.
+ */
+function modelCareer(w: World): World {
+  const copy = structuredClone(w);
+  const other = copy.clubs.find((club) => club.id !== copy.playerClub)!.id;
+  const row = (width: number, at: number) =>
+    Array.from({ length: width }, (_, i) => (i === at ? 2 ** 36 + i : 0));
+  copy.matchModel = MODEL_STATE(copy);
+  copy.npcSeason = {
+    year: copy.year,
+    model: MATCH_MODEL_REVISION,
+    trackedFrom: MODEL_STATE(copy).trackedFrom,
+    competitions: [
+      {
+        kind: 'league',
+        groupKey: copy.fixtures[0].groupKey,
+        clubs: [
+          {
+            club: other,
+            matches: 1,
+            metrics: row(12, 0),
+            detail: row(TEAM_DETAIL_SIZE, 3),
+            xg: 131,
+            xga: 0,
+          },
+        ],
+        players: [
+          {
+            id: 'ENG:departed:9',
+            name: 'Gone Before Close',
+            position: copy.players[0].position,
+            clubs: [
+              {
+                club: other,
+                appearances: 1,
+                metrics: row(12, 0),
+                detail: row(PLAYER_DETAIL_SIZE, 1),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  copy.ownMatches[copy.ownMatches.length - 1].model = MATCH_MODEL_REVISION;
+  return copy;
+}
+describe('checkpoint container 3 (→SAVE-23)', () => {
+  it('round trips a model career through the codec in container 3 only', async () => {
+    const w = modelCareer(observed(1));
+    const raw = await encode(w, 2, 1);
+    expect(JSON.parse(raw).schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    const loaded = await decode(raw);
+    expect(loaded.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    expect(loaded.world.schema).toBe(1);
+    expect(canonical(loaded.world)).toBe(canonical(w));
+    expect((await checkpoint(w)).envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    // Model data in an older container is no writer this version knows: kept, never recovered over.
+    for (const schema of [1, 2])
+      await expect(decode(await seal(w, pack(w), schema))).rejects.toBeInstanceOf(
+        SaveCompatibilityError,
+      );
+    // Nor is a world without model data in container 3.
+    const plain = observed(1);
+    await expect(
+      decode(await seal(plain, pack(plain), FULL_MODEL_CHECKPOINT_SCHEMA)),
+    ).rejects.toBeInstanceOf(SaveCompatibilityError);
+    // Inline model data in the compact world is malformed, not a newer game.
+    const inline = pack(w);
+    inline.world = { ...inline.world, matchModel: w.matchModel };
+    const invalid = await decode(await seal(w, inline, FULL_MODEL_CHECKPOINT_SCHEMA)).catch(
+      (error: unknown) => error,
+    );
+    expect(invalid).toBeInstanceOf(Error);
+    expect(isSaveCompatibilityError(invalid)).toBe(false);
+  });
+
+  it('reads supported identity-era checkpoints', async () => {
+    // Container 2 with identities and recorded appearances, and container 1 before identities.
+    const identity = withIdentity(observed(1), IDENTITY);
+    const legacy = preIdentityCareer();
+    for (const [w, raw] of [
+      [identity, await seal(identity, pack(identity), 2)],
+      [legacy, await containerOneCheckpoint(legacy)],
+    ] as const) {
+      const loaded = await decode(raw);
+      expect(loaded.envelope.schema).toBeLessThan(FULL_MODEL_CHECKPOINT_SCHEMA);
+      expect(loaded.world.engine).toBe(CURRENT_ENGINE_VERSION);
+      expect(canonical(loaded.world)).toBe(canonical(w));
+      // Counters that were never tracked stay absent: no metadata, aggregates or record models.
+      expect(loaded.world).not.toHaveProperty('matchModel');
+      expect(loaded.world).not.toHaveProperty('npcSeason');
+      expect(loaded.world.ownMatches.every((m) => !('model' in m))).toBe(true);
+      // Unactivated, it is written again in the current container, never in the model one.
+      expect(JSON.parse(await encode(loaded.world)).schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
+    }
+  });
+
+  it('refuses a future model container', async () => {
+    const w = modelCareer(observed(1));
+    const current = JSON.parse(await encode(w));
+    // The next container is refused before decompression, and its header grants no reset.
+    const next = JSON.stringify({ ...current, schema: FULL_MODEL_CHECKPOINT_SCHEMA + 1 });
+    await expect(decode(next)).rejects.toBeInstanceOf(SaveCompatibilityError);
+    expect(envelopeEngine(next)).toBeUndefined();
+    // A newer model section or revision inside container 3, before anything is unpacked.
+    const future = (edit: (p: ReturnType<typeof pack>) => void) => {
+      const packed = structuredClone(pack(w));
+      edit(packed);
+      return seal(w, packed, FULL_MODEL_CHECKPOINT_SCHEMA);
+    };
+    for (const edit of [
+      (p: ReturnType<typeof pack>) => (p.model!.version = 2 as 1),
+      (p: ReturnType<typeof pack>) => (p.model!.revisions = ['continuous-aggregate-2']),
+      (p: ReturnType<typeof pack>) => {
+        p.model!.revisions = ['continuous-aggregate-2'];
+        p.dict = 'damaged' as unknown as string[];
+      },
+      (p: ReturnType<typeof pack>) => {
+        p.world = {
+          ...p.world,
+          matchModel: { ...w.matchModel!, revision: 'continuous-aggregate-2' },
+        } as unknown as World;
+      },
+    ])
+      await expect(decode(await future(edit))).rejects.toBeInstanceOf(SaveCompatibilityError);
+    // A malformed supported section is ordinary invalid data.
+    for (const edit of [
+      (p: ReturnType<typeof pack>) => (p.model!.state![7] = 9),
+      (p: ReturnType<typeof pack>) => p.model!.season!.header.pop(),
+      (p: ReturnType<typeof pack>) => (p.model!.records = [0, 1]),
+    ]) {
+      const invalid = await decode(await future(edit)).catch((error: unknown) => error);
+      expect(invalid).toBeInstanceOf(Error);
+      expect(isSaveCompatibilityError(invalid)).toBe(false);
+    }
+    // A newer model inside a world-schema-valid world is refused the same way through validation.
+    const revision = structuredClone(w);
+    (revision.npcSeason as { model: string }).model = 'continuous-aggregate-2';
+    await expect(encode(revision).then(decode)).rejects.toBeInstanceOf(SaveCompatibilityError);
+  });
+
+  it('keeps current and previous on failed writes', async () => {
+    const port = new Memory();
+    const previous = new MemoryPrevious();
+    const saves = new Saves(port, decode, previous);
+    const first = await saves.save(observed(1));
+    const manifest = port.getItem(MANIFEST);
+    const w = modelCareer(observed(2));
+    // A failed write of the active copy keeps the committed checkpoint and its verified copy.
+    port.fail = SLOT[0];
+    await expect(saves.save(w)).rejects.toThrow('Quota');
+    expect(port.getItem(SLOT[0])).toBe(first);
+    expect(port.getItem(MANIFEST)).toBe(manifest);
+    expect(previous.value).toBe(first);
+    expect(canonical((await new Saves(port, decode, previous).load())!.world)).toBe(
+      canonical(observed(1)),
+    );
+    // The progress in memory still exports and imports whole.
+    expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
+    port.fail = '';
+    const second = await saves.save(w);
+    const reloaded = (await new Saves(port, decode, previous).load())!;
+    expect(reloaded.envelope).toMatchObject({
+      schema: FULL_MODEL_CHECKPOINT_SCHEMA,
+      generation: 2,
+      parentGeneration: 1,
+    });
+    expect(canonical(reloaded.world)).toBe(canonical(w));
+    expect(previous.value).toBe(first);
+    // A later failure keeps the container-3 checkpoint committed, now with itself as the copy.
+    const later = structuredClone(w);
+    later.npcSeason!.competitions[0].clubs[0].matches = 2;
+    port.fail = SLOT[0];
+    await expect(saves.save(later)).rejects.toThrow('Quota');
+    const kept = (await new Saves(port, decode, previous).load())!;
+    expect(kept.raw).toBe(second);
+    expect(kept.recovered).toBe(false);
+    expect(canonical(kept.world)).toBe(canonical(w));
+    expect(previous.value).toBe(second);
+  });
+});
 describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () => {
   it('survive a real codec round trip as separate copies', async () => {
     const w = identityCareer();

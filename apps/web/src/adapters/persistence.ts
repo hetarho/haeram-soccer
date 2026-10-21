@@ -15,9 +15,12 @@ import { writeCheckpoint } from './checkpointWriter';
 import { encodePayload, decodePayload } from './compression';
 import {
   assertMatchModelFormat,
+  carriesMatchModel,
   checkpointSchemaFor,
 } from '../../../../packages/contracts/src/match-model';
+import { readMatchModelFormat } from './matchModelPacking';
 import {
+  FULL_MODEL_CHECKPOINT_SCHEMA,
   isCheckpointSchema,
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
@@ -124,11 +127,21 @@ async function readCheckpoint(
   const { json, envelope } = await readEnvelope(raw, supported);
   // A newer game's identity or match-model data is a compatibility failure before unpacking can
   // call it corrupt.
-  const packed = json as { format?: unknown; world?: unknown } | null;
-  const world = packed?.format === 'compact1' ? packed.world : json;
+  const packed = json as { format?: unknown; world?: unknown; model?: unknown } | null;
+  const compact = packed?.format === 'compact1';
+  const world = compact ? packed.world : json;
   assertIdentityFormatVersions(world);
   assertMatchModelFormat(world);
-  return { value: unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld), envelope };
+  if (compact && packed.model !== undefined) readMatchModelFormat(packed.model);
+  const value = unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld);
+  // Model data travels only in its own container, which an older reader refuses (→SAVE-23). A
+  // checksum-valid payload in the other container is no writer this version knows, so it is kept
+  // as incompatible rather than recovered over (→SAVE-11).
+  if (carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
+    throw new SaveCompatibilityError(
+      '저장 컨테이너와 경기 모델 데이터가 맞지 않습니다. 원본 파일을 보관하세요.',
+    );
+  return { value, envelope };
 }
 /**
  * Integrity and known historical metadata, independently of today's unpacking and world schema:
@@ -137,6 +150,8 @@ async function readCheckpoint(
 export async function recognizedLegacy(raw: string): Promise<boolean> {
   try {
     const { json, envelope } = await readEnvelope(raw, LEGACY_ENGINE_VERSIONS);
+    // Earlier rules were never written in the match-model container.
+    if (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA) return false;
     const packed = json as { format?: unknown; world?: Partial<World> } | null;
     const world = packed?.world;
     return (
