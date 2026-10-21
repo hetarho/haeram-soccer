@@ -196,7 +196,7 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 3 | 11 | 0 | 1 | 1 | 2026-10-21T05:25:18.052Z | [history](work/full-model.json) |
+| full-model | 3 | 19 | 3 | 16 | 0 | 2 | 0 | 2026-10-21T06:05:34.408Z | [history](work/full-model.json) |
 
 ## next
 - implement-task T299 for the presentation foundation; T300/T301 follow independently, then T302 and T303. Production keeps one ko-KR locale and one pixel theme.
