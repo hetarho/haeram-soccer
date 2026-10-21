@@ -169,7 +169,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T273 | Define candidate match contracts and supported-career compatibility | MATCH HIST SAVE ARCH | T255 T272 | todo |
 | T274 | Make candidate actions and restart preparation physically continuous | MATCH ARCH | T273 | todo |
 | T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
 | T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
@@ -191,15 +190,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 0 | 14 | 0 | 0 | 0 | 2026-10-21T00:30:25.499Z | [history](work/full-model.json) |
+| full-model | 3 | 14 | 1 | 13 | 0 | 0 | 0 | 2026-10-21T01:46:52.833Z | [history](work/full-model.json) |
 
 ## next
-- implement-task T273 (T255 and T272 are done): capture the post-T255 baseline with the T272 runner before T273 changes football, then follow T274–T286 dependencies; exploration results must pass the final release gate
-- identity work group: every identity task is integrated; since the planning merge the group also lists T273–T286, so continue them with `work run --work identity` or close it with `work finish --work identity`; old lane/integration worktrees and wip/identity-*, wip/r3m9 branches are removable with the owner's approval (the disk had 2 GiB free)
-- grid tactic balance (owner to confirm MATCH-8 bands) re-enables the four skipped tactic cases
-- FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
+- inspect work board for remaining tasks
 
 ## log
+- 261021 T273 integrated
 - 261021 r3m9 stopped: identity group integrated T240–T254 and T272 with CI green on every push; T255 done (benchmarks and CI 39517672764 on a3c9881); MATCH r15; report 261021-r3m9.
 - 261021 T255 done: final identity source passes the century storage benchmark with 101 design edits and a pending kit choice (worst checkpoint 2,406,812 B) and the browser benchmark with pattern rendering (entry 245,985 B gzip, load 4.4 s, p95 47 ms, 60 FPS).
 - 261020 T254 integrated
@@ -219,4 +216,3 @@
 - 261021 update-ssot impact: active identity-engine/editor attempts cite unchanged decisions; new feature gates are scoped to the follow-up model, existing bases remain frozen and require the usual freshness check.
 - 261021 T291 done: notifications beside settings without floating reserve, full-width NEXT MATCH above progress, WEB r99; 13 affected tests/typecheck/lint/format/build pass, browser layout checks updated for batch.
 - 261021 create-task WEB r99 → T291; T291 start at 4af396f, inline clock notifications and home order.
-- 261021 update-ssot WEB r99 start: notifications beside clock settings, NEXT MATCH above home progress; remove floating/draft-hiding launcher rules and retain compact lower achievement banners.

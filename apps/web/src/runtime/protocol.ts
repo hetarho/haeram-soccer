@@ -21,6 +21,10 @@ import {
 } from '../../../../packages/contracts/src/identitySchema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
+import {
+  assertMatchModelFormat,
+  matchModelStateSchema,
+} from '../../../../packages/contracts/src/match-model';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import type { NewsItem } from '../../../../packages/engine/src/news';
@@ -279,6 +283,21 @@ export interface View {
   /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
 }
+/** What a metadata-only inspection reports: identity, revision and any persisted match model. */
+export type WorldMetadata = Pick<World, 'id' | 'revision' | 'matchModel'>;
+/**
+ * A checkpoint world's metadata (→SAVE-23): a future model revision is a typed compatibility
+ * failure, a supported one is carried as a validated copy. It neither activates the world nor
+ * changes any of its facts.
+ */
+export function worldMetadataOf(w: World): WorldMetadata {
+  assertMatchModelFormat(w);
+  return {
+    id: w.id,
+    revision: w.revision,
+    ...(w.matchModel ? { matchModel: matchModelStateSchema.parse(w.matchModel) } : {}),
+  };
+}
 export interface Reply {
   requestId: string;
   ok: boolean;
@@ -290,7 +309,7 @@ export interface Reply {
   raw?: string;
   envelope?: Envelope;
   candidate?: World;
-  worldMetadata?: Pick<World, 'id' | 'revision'>;
+  worldMetadata?: WorldMetadata;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   headToHead?: HeadToHead;
   /** Our match records over every own match (→WEB-54); the view keeps only recent matches. */

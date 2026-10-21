@@ -23,6 +23,7 @@ export * from './detail';
 export * from './schema';
 export * from './identity';
 export * from './identitySchema';
+export * from './match-model';
 
 export * from './hall-of-fame';
 export * from './versions';

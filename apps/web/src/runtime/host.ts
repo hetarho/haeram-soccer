@@ -30,7 +30,14 @@ import { CURRENT_CATALOG } from '../../../../packages/catalogs/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
-import { requestSchema, type CodecJob, type Request, type Reply, type View } from './protocol';
+import {
+  requestSchema,
+  worldMetadataOf,
+  type CodecJob,
+  type Request,
+  type Reply,
+  type View,
+} from './protocol';
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
 import { tallies } from '../ui/playerAnalysis';
@@ -297,7 +304,7 @@ export class Host {
             ? adoptIdentities(rules, rules !== result.world)
             : rules;
         upgraded = activated !== result.world;
-        if (r.body.metadataOnly) worldMetadata = { id: activated.id, revision: activated.revision };
+        if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
         if (r.body.activate) this.world = activated;
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);

@@ -10,6 +10,12 @@ import {
   fixtureKitChoiceSchema,
   matchAppearanceSchema,
 } from './identitySchema';
+import {
+  assertMatchModelFormat,
+  MATCH_MODEL_REVISIONS,
+  matchModelStateSchema,
+  trackingBoundarySchema,
+} from './match-model';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -336,8 +342,55 @@ const match = fixture
       })
       .optional(),
     appearance: matchAppearanceSchema.optional(),
+    model: z.enum(MATCH_MODEL_REVISIONS).optional(),
   })
   .refine((m) => !m.lineCounts || m.lineCounts[0] + m.lineCounts[1] === m.players.length);
+/** Current-season NPC aggregates under the full model (→HIST-17); widths follow the record rows. */
+const npcSeasonSchema = z.strictObject({
+  year: season,
+  model: z.enum(MATCH_MODEL_REVISIONS),
+  trackedFrom: trackingBoundarySchema,
+  competitions: z
+    .array(
+      z.strictObject({
+        kind: z.enum(['league', 'cup', 'europe', 'playoff', 'lower']),
+        groupKey: id,
+        clubs: z
+          .array(
+            z.strictObject({
+              club: id,
+              matches: z.number().int().nonnegative().max(1000),
+              metrics,
+              detail: teamDetail,
+              xg: z.number().int().nonnegative(),
+              xga: z.number().int().nonnegative(),
+            }),
+          )
+          .max(1000),
+        players: z
+          .array(
+            z.strictObject({
+              id,
+              name: text,
+              position,
+              clubs: z
+                .array(
+                  z.strictObject({
+                    club: id,
+                    appearances: z.number().int().nonnegative().max(1000),
+                    metrics,
+                    detail: playerDetail,
+                  }),
+                )
+                .min(1)
+                .max(50),
+            }),
+          )
+          .max(100000),
+      }),
+    )
+    .max(1000),
+});
 const event = z.object({
   year: number,
   round: number,
@@ -973,6 +1026,8 @@ const worldSchema: z.ZodType<World> = z.object({
   tables: z.record(id, table),
   kitChoice: fixtureKitChoiceSchema.optional(),
   ownMatches: z.array(match).max(100000),
+  matchModel: matchModelStateSchema.optional(),
+  npcSeason: npcSeasonSchema.optional(),
   history: z.array(archive).max(2200),
   events: z.array(event).max(100000),
   cash: money,
@@ -1157,6 +1212,7 @@ function scorerClubsValid<C extends string | number>(
 
 export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertIdentityFormatVersions(input);
+  assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
   for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {

@@ -9,7 +9,8 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
 import { validateWorld, type LoadCatalog } from './schema';
 import type { LedgerKind, Sponsor, SponsorContract, World } from './types';
-import { PD, TD } from './detail';
+import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
+import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
 import { createWorld, simulateSeason } from '../../engine/src/index';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 it('round trips exact monetary strings without losing integer precision', () => {
@@ -425,4 +426,94 @@ it('rejects dangling career/arrival/post references, overlapping jobs and change
     mutate(copy);
     expect(() => validateWorld(copy)).toThrow();
   }
+});
+
+describe('match-model metadata on load (→SAVE-23)', () => {
+  const matchModel: MatchModelState = {
+    revision: MATCH_MODEL_REVISION,
+    activated: { year: 1950, day: 3, revision: 7 },
+    trackedFrom: { year: 1950, day: 4, round: 1 },
+    coverage: 'activation',
+  };
+  const npcSeason: NpcSeasonStats = {
+    year: 1950,
+    model: MATCH_MODEL_REVISION,
+    trackedFrom: matchModel.trackedFrom,
+    competitions: [
+      {
+        kind: 'league',
+        groupKey: 'ENG:1:0',
+        clubs: [
+          {
+            club: 'ENG:a',
+            matches: 1,
+            metrics: Array<number>(12).fill(1),
+            detail: emptyTeamDetail(),
+            xg: 120,
+            xga: 80,
+          },
+        ],
+        players: [
+          {
+            id: 'p:1',
+            name: 'Retained Forward',
+            position: 'ST',
+            clubs: [
+              {
+                club: 'ENG:a',
+                appearances: 1,
+                metrics: Array<number>(12).fill(0),
+                detail: emptyPlayerDetail(),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const failure = (input: unknown) => {
+    try {
+      validateWorld(input);
+    } catch (error) {
+      return error;
+    }
+    return undefined;
+  };
+
+  it('keeps supported metadata, aggregates and record models instead of dropping them', () => {
+    const w = world();
+    const loaded = validateWorld({
+      ...structuredClone(w),
+      matchModel,
+      npcSeason,
+      ownMatches: w.ownMatches.map((m) => ({ ...structuredClone(m), model: MATCH_MODEL_REVISION })),
+    });
+    expect(loaded.matchModel).toEqual(matchModel);
+    expect(loaded.npcSeason).toEqual(npcSeason);
+    expect(loaded.ownMatches.every((m) => m.model === MATCH_MODEL_REVISION)).toBe(true);
+    // A world without them loads as the pre-feature model, with nothing installed.
+    const plain = validateWorld(structuredClone(w));
+    expect(plain.matchModel).toBeUndefined();
+    expect(plain.npcSeason).toBeUndefined();
+  });
+
+  it('refuses future model metadata as a compatibility failure, malformed data as invalid', () => {
+    const w = world();
+    const future = 'continuous-aggregate-2';
+    for (const input of [
+      { ...structuredClone(w), matchModel: { ...matchModel, revision: future } },
+      { ...structuredClone(w), npcSeason: { ...npcSeason, model: future } },
+      { ...structuredClone(w), ownMatches: [{ id: 'f:1', model: future }] },
+    ])
+      expect(failure(input)).toBeInstanceOf(SaveCompatibilityError);
+    for (const input of [
+      { ...structuredClone(w), matchModel: { ...matchModel, coverage: 'partial' } },
+      { ...structuredClone(w), matchModel: { ...matchModel, extra: 1 } },
+      { ...structuredClone(w), npcSeason: { ...npcSeason, competitions: [{ kind: 'league' }] } },
+    ]) {
+      const error = failure(input);
+      expect(error).toBeInstanceOf(Error);
+      expect(error).not.toBeInstanceOf(SaveCompatibilityError);
+    }
+  });
 });
