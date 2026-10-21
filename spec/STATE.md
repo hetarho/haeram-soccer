@@ -18,6 +18,8 @@
 | h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T20:01Z | T322 |
 
 ## inbox
+- 261022 decided T328: T324 found counter cannot beat press through behaviour without breaking MATCH-23 (25–40% of through balls in behind pushed FW goals to 69–72%, goal-area shots to 10.6–13.9%) and pointed at counter's 4-4-2 role table → explore T328 measures role-table variants from PLAYER-5's roles on the candidate path and recommends a STAFF-22/MATCH-8 counter row, ratified afterwards through update-ssot; MATCH-29's counter row stays unless T328 shows no role table can meet it, which is then the owner's call (alt: relax MATCH-29's counter row now | change the counter row now without evidence)
+- 261022 decided T327 MATCH-3: T324 found counter keeping 51–52% possession under every lever because the detailed engine measures time on the ball (flights included) → MATCH-3 r19 measures possession as the share of attempted passes, the published convention, on both paths; T327 implements it with PPDA and high turnovers (alt: keep time share and change counter's behaviour)
 - 261022 decided T327 MATCH-13: T322 found MATCH-13's PPDA (÷ tackles+interceptions) and high turnover (ball won in the defensive third) unbandable — sources disagree under those definitions (PPDA 33–44 on StatsBomb; high turnovers 1.0–13 a team) → MATCH-13 r18 adopts the published conventions (PPDA over the opponent's 60% ÷ tackles, interceptions, challenges and fouls; high turnover = sequence from an open-play win within 40 m), so the numbers match what fans read; T327 counts and bands them (alt: keep both unbanded | band PPDA 33–44 from StatsBomb under the old definition)
 - 261022 decided T286 ARCH-31: T285 measured every throughput gate failing by far (non-own fixture 11.59× the summary path against 0.5; candidate seasons ~3.1–4.1× the baseline against 0.8; own detailed matches alone fill the season budget) and recommended absolute budgets instead → ARCH-31 is kept: relaxing a release gate to pass is not an autopilot call, so activation stays off until it is met; T325 (detailed own-match speed) and T326 (aggregate cost against accuracy) measure how close it can get. OWNER: whether ARCH-31 should become absolute budgets (e.g. a season ≤ 15 s, a fixture ≤ 1 ms on a reference machine) is yours to decide with T325/T326's evidence (alt: restate as absolute budgets now | redesign the aggregate with recalibration first)
 - 261022 decided T324: T321 left MATCH-29 outside (press +0.39 points, press v counter win gap 0.415) and named two behaviour causes → one explore T324 combines counter breaks behind a high line (through balls into the runner's path, off-ball reactions to the ball in flight) with press attacking volume (shots per entry, the 4-2-3-1's spots), with goal-area recalibration, before T323 and T286; a band or formation change only on evidence via update-ssot (alt: two separate explores | revisit MATCH-29 now)
@@ -177,7 +179,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 18 | 18 | - | 0 |
+| MATCH | 19 | 19 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -194,13 +196,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 | todo |
 | T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | doing@261022.h3t6 |
-| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 | todo |
+| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
 | T324 | Make counter breaks and press volume meet the tactic-pairing bands | MATCH STAFF ARCH | T321 | doing@261022.h3t6 |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T327 | Count PPDA and high turnovers by the published conventions and band them | MATCH WEB ARCH | T322 | todo |
+| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | todo |
+| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -221,6 +224,9 @@
 - CI: 9e67be5 passed every job.
 
 ## log
+- 261022 create-task T328 (explore): counter role-table variants against press under MATCH-29, evidence for a STAFF-22/MATCH-8 update; T327 also counts possession by pass share; T323 and T286 wait for T328
+- 261022 update-ssot MATCH r19: MATCH-3 possession is the share of attempted passes (from T324's decision request)
+- 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r19, which T327 implements first
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r18 changes MATCH-13's PPDA and high turnover, which T327 implements first
 - 261022 create-task MATCH r18: T327 (PPDA and high turnovers by the published conventions, both paths, sourced bands) after T322, before T323
 - 261022 update-ssot MATCH r18: MATCH-13 PPDA and high turnover follow the published conventions (from T322's decision requests)
@@ -238,6 +244,3 @@
 - 261022 create-task MATCH r16: T320 (MATCH-29 bands and shared evaluator) then explore T321 (detailed tactic pairings) beside T284; T284 and T286 gain MATCH-29 and the new deps
 - 261022 update-ssot MATCH r16: MATCH-29+ tactic-pairing bands at equal strength (from T278's unresolved press dominance)
 - 261021 T283 integrated (h3t6; one review round fixed the phone sample and the other-league notice)
-- 261021 T281 integrated (h3t6; implementer and separate reviewer subagents, approved with P3 notes routed to T283 T284 T285 T286)
-- 261021 T280 integrated (h3t6, from wip/full-model-T280)
-- 261021 f6n3 stopped at 21:00 KST as the owner asked: full-model integrated T273 T274 T275 T276 T277 T279 T282 T304 T305 into main; T280 approved, on wip/full-model-T280 awaiting its batch gate; report 261021-f6n3.

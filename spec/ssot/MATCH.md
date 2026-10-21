@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r18 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r19 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -13,6 +13,7 @@
   - home, manager and morale points and the form move every player's skills too (half the difference between the sides to each), so a strength point counts the same wherever it comes from.
   - calibration target: Elo with 16 Elo per rating point (docs/CALIBRATION.md); the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, and each calibration records its measured error there.
 - MATCH-3 [o] Provide possession, goals, assists, shots, shots on target, attempted/completed passes, tackles, interceptions, dribbles, saves, fouls, yellow and red cards, corners, offsides, minutes played, substitutions, injuries and player contributions.
+  - possession is a side's share of both sides' attempted passes (the published convention), the same on both paths.
 - MATCH-4 [o] Display counts, denominators and defined ratios; no attempts means no defined percentage. Compare own match, season and career totals.
 - MATCH-5 [o] Observed current fixtures expose every touch at its place, the action chain, cumulative xG per minute, timeline and progressive statistics. Own matches of the current season keep their post-match material (→MATCH-25) until the season close; then each own player keeps one season heat map and the matches keep outcomes, highlights, each side's match xG and counters, never frame traces or per-match maps. ← bounded retention protects long careers (measured 261017, 100-season checkpoint: 1,564,446 bytes, about 99.5% of the then 1.5 MiB limit; current budget →SAVE-4)
 - MATCH-6 [o] A cup match that must produce a winner and is level after 90 minutes plays extra time, two halves of 15 minutes on the same engine, then a penalty shootout kick by kick: five each, then sudden death. All scores are settled once.
@@ -221,6 +222,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r19 261022 MATCH-3✎ possession unspecified (the detailed engine measured time on the ball)→a side's share of both sides' attempted passes, the published convention
 - r18 261022 MATCH-13✎ high turnover ball won in the opponent's defensive third→a sequence starting with an open-play ball won within 40 m of its goal; PPDA own two thirds ÷ tackles+interceptions→own 60% ÷ tackles, interceptions, challenges and fouls (published conventions)
 - r17 261022 MATCH-23✎ both engines hold every row→trace-only rows (possessions, passes in one, possessions ending in a shot, shot distance, 30 m+, own half) bind the detailed engine only; MATCH-23+ season scoring concentration (top-scorer share 20–30%, league top scorer 22–32, hat-tricks 0.02–0.05); MATCH-30+ advanced counters at sourced real-football bands, unsourced ones parity only
 - r16 261022 MATCH-29+ tactic pairings at equal strength: per-pairing draw and win-gap bands, counter at least press head to head, points within 0.15 of the mean, possession, xG-conceded, high-regain and freshness orderings
