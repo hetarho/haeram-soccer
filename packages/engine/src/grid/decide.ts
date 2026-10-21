@@ -105,11 +105,15 @@ export const DECISION_CONFIG = {
   combination: { show: 0.6, release: 0.9, wait: 1.5 },
   /**
    * Candidate model only (T278, →MATCH-23): the open-play cross and shot scales, the box band's shot
-   * weight and the forward line's in place of `crossScale`, `shotScale`, `shotBox` and
-   * `shotLine.FW`, against too many crosses, headed goals, goal-area shots and forwards' goals and,
-   * once headers count less, too few goals.
+   * weight and the lines' in place of `crossScale`, `shotScale`, `shotBox` and `shotLine`, against
+   * too many crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals.
    */
-  candidate: { crossScale: 6.3, shotScale: 0.195, shotBox: 0.5, shotLineFW: 0.82 },
+  candidate: {
+    crossScale: 6.3,
+    shotScale: 0.19,
+    shotBox: 0.52,
+    shotLine: { GK: 0, DF: 1.2, MF: 3.8, FW: 0.76 },
+  },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
    * scoring a forward pass `forward` more and a back pass `back` times as often.
@@ -171,7 +175,7 @@ export function actionMix(
   mix.cutBack *= crossFactor;
   const candidate = s.setup.model !== undefined;
   mix.shot *=
-    (candidate && line === 'FW' ? C.candidate.shotLineFW : C.shotLine[line]) *
+    (candidate ? C.candidate.shotLine : C.shotLine)[line] *
     (candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
