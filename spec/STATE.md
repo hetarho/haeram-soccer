@@ -205,7 +205,7 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
 | full-model | 3 | 24 | 4 | 20 | 0 | 2 | 0 | 2026-10-21T07:10:37.227Z | [history](work/full-model.json) |
-| presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T07:55:55.229Z | [history](work/presentation-261021.json) |
+| presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:36:12.259Z | [history](work/presentation-261021.json) |
 
 ## next
 - inspect work board for remaining tasks

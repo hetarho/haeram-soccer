@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T07:55:55.229Z",
-  "sourceCommit": "e9109ac0ba7a441657b1537a89f1110d9d65d762",
+  "snapshotAt": "2026-10-21T08:36:12.259Z",
+  "sourceCommit": "84d8ef63bf2d81234341013b71332113f3b2b48a",
   "group": {
     "id": "presentation-261021",
     "branch": "work/presentation-261021",
@@ -13,7 +13,13 @@
       "maxPending": 4
     },
     "push": "main",
-    "review": "all"
+    "review": "all",
+    "pushed": {
+      "commit": "e936c9cfef570c2c527b318580dcf5c81adc046f",
+      "branch": "main",
+      "remote": "origin",
+      "at": "2026-10-21T08:30:47.246Z"
+    }
   },
   "summary": {
     "total": 20,
@@ -263,6 +269,8 @@
       "submittedBase": "aecc7d2287c53b3412fbdf9611fba4f296681379",
       "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
       "submittedAt": "2026-10-21T07:51:15.278Z",
+      "integratedCommit": "e936c9cfef570c2c527b318580dcf5c81adc046f",
+      "integratedAt": "2026-10-21T08:30:45.438Z",
       "risk": null,
       "review": {
         "id": "d027b66c-c1f3-413b-b3cd-b2fd806ae582",
@@ -472,6 +480,48 @@
           "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
           "startedAt": "2026-10-21T07:51:05.511Z",
           "finishedAt": "2026-10-21T07:51:14.729Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git fetch --quiet origin main && git merge-base --is-ancestor origin/main HEAD",
+          "startedAt": "2026-10-21T08:00:17.928Z",
+          "finishedAt": "2026-10-21T08:00:18.459Z"
+        },
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-10-21T08:00:18.510Z",
+          "finishedAt": "2026-10-21T08:00:20.932Z"
+        },
+        {
+          "command": "pnpm run test:unit",
+          "startedAt": "2026-10-21T08:00:20.981Z",
+          "finishedAt": "2026-10-21T08:09:07.812Z"
+        },
+        {
+          "command": "pnpm run test:contract",
+          "startedAt": "2026-10-21T08:09:07.862Z",
+          "finishedAt": "2026-10-21T08:09:44.078Z"
+        },
+        {
+          "command": "pnpm run validate:catalogs",
+          "startedAt": "2026-10-21T08:09:44.127Z",
+          "finishedAt": "2026-10-21T08:09:45.538Z"
+        },
+        {
+          "command": "pnpm run validate:presentation",
+          "startedAt": "2026-10-21T08:09:45.589Z",
+          "finishedAt": "2026-10-21T08:09:47.666Z"
+        },
+        {
+          "command": "pnpm run build",
+          "startedAt": "2026-10-21T08:09:47.713Z",
+          "finishedAt": "2026-10-21T08:09:53.581Z"
+        },
+        {
+          "command": "PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium --workers=2 --timeout=90000 --retries=1",
+          "startedAt": "2026-10-21T08:09:53.630Z",
+          "finishedAt": "2026-10-21T08:30:45.205Z"
         }
       ]
     }
@@ -3039,6 +3089,105 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 518,
+      "at": "2026-10-21T08:30:45.342Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git fetch --quiet origin main && git merge-base --is-ancestor origin/main HEAD",
+            "startedAt": "2026-10-21T08:00:17.928Z",
+            "finishedAt": "2026-10-21T08:00:18.459Z"
+          },
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T08:00:18.510Z",
+            "finishedAt": "2026-10-21T08:00:20.932Z"
+          },
+          {
+            "command": "pnpm run test:unit",
+            "startedAt": "2026-10-21T08:00:20.981Z",
+            "finishedAt": "2026-10-21T08:09:07.812Z"
+          },
+          {
+            "command": "pnpm run test:contract",
+            "startedAt": "2026-10-21T08:09:07.862Z",
+            "finishedAt": "2026-10-21T08:09:44.078Z"
+          },
+          {
+            "command": "pnpm run validate:catalogs",
+            "startedAt": "2026-10-21T08:09:44.127Z",
+            "finishedAt": "2026-10-21T08:09:45.538Z"
+          },
+          {
+            "command": "pnpm run validate:presentation",
+            "startedAt": "2026-10-21T08:09:45.589Z",
+            "finishedAt": "2026-10-21T08:09:47.666Z"
+          },
+          {
+            "command": "pnpm run build",
+            "startedAt": "2026-10-21T08:09:47.713Z",
+            "finishedAt": "2026-10-21T08:09:53.581Z"
+          },
+          {
+            "command": "PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium --workers=2 --timeout=90000 --retries=1",
+            "startedAt": "2026-10-21T08:09:53.630Z",
+            "finishedAt": "2026-10-21T08:30:45.205Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 519,
+      "at": "2026-10-21T08:30:45.438Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e936c9cfef570c2c527b318580dcf5c81adc046f",
+        "integratedAt": "2026-10-21T08:30:45.438Z"
+      }
+    },
+    {
+      "sequence": 520,
+      "at": "2026-10-21T08:30:47.268Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "e936c9cfef570c2c527b318580dcf5c81adc046f",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T08:30:47.246Z"
+        }
       }
     }
   ]
