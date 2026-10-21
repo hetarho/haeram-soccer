@@ -17,6 +17,7 @@
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 | p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T05:03Z | - |
+| mgha | hq-dev1-pve2-vm2 | pair | 2026-10-21T05:56Z | 2026-10-21T05:56Z | - |
 
 ## inbox
 - 261021 decided T275 T276 T277 T278 T280 T281 T283 T284 T285 T286: p8l3's WEB r105 / ARCH r17 (registry-driven locale and theme packs, ARCH-32) left these bases stale and the integration spec check refused both groups' candidates → bases raised with no content change: themes leave the live pitch, trajectories and clock mapping intact (T275), full feature-copy extraction is later work so T283's views keep Korean text, and engine/protocol code imports no pack registry (alt: re-plan the presentation-facing tasks onto message packs now, which WEB r105 defers)
@@ -205,6 +206,7 @@
 - Continue ideation manager-achievements to choose accomplishment categories and tenure attribution; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
 
 ## log
+- 261021 update-ssot HIST SAVE WEB and create-task start: reserve T304-T306 for own-club manager achievements; planning only, no implementation or active-task contract changes.
 - 261021 ideation manager-achievements recorded: accomplishments alongside own-club manager tenures adopted; titles, promotions, best finishes, presentation and mid-season attribution remain open.
 - 261021 ideation manager-achievements start: capture the owner's request to show what each manager achieved during his own-club tenure.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
@@ -224,4 +226,3 @@
 - 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
 - 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
 - 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
-- 261021 T297 done: exact 선수 19명 home advice floats outside page flow; focused Chromium at 360/390/1280 verifies placement and more action; typecheck, 14 state tests, targeted lint/format, build and spec lint pass.
