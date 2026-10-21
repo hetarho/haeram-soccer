@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T09:29Z | 2026-10-21T09:29Z | - |
 
 ## inbox
 - 261021 decided T278: T275's review found every period's last candidate action running up to 32 s past the period's final minute, undrawable under T273's 60 s minute, with no task owning it → T278 (which tunes the candidate engine's timing) ends the period's last action by the final minute, with a compact test, before T286 activation (alt: widen the frame contract's minute in T286, which changes the shared timestamp check)
@@ -204,9 +203,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- inspect work board for remaining tasks
-
+- T280 (approved by review after four rounds, task checks passed; batch gate not run — it was stopped at 21:00 KST): take branch wip/full-model-T280 (25bae72), merge main, run the batch gate (unit, contract, catalogs, build, Chromium) and merge to main. Review P3 for T281/T284: the aggregate re-draw throws after 8 tries — season dispatch needs a fallback.
+- then T281 (needs T280 and T282), T283; explore T278 (now also owns the period-end overrun T275 found), T284, T285, then T286; T306 waits for T304 and T286, then T307/T308.
+- the full-model work group's runtime state lives only in this host's clone (hq-dev1); on another machine run the remaining tasks standalone or start a new group.
+- known flaky Chromium checks on a loaded host: club-identity-founding "exact previewed design … after reload" (club-hub not visible within 5 s) and growth-core "19-player advice floats" (43.9999 px < 44 px); both passed on rerun of the same tree.
+- CI: e1896bc passed every job; later code pushes (0e2b819 T279, 1b01b63 T276/T304/T305, 604590a T275, 01406b2 T277) not checked by this session.
 ## log
+- 261021 f6n3 stopped at 21:00 KST as the owner asked: full-model integrated T273 T274 T275 T276 T277 T279 T282 T304 T305 into main; T280 approved, on wip/full-model-T280 awaiting its batch gate; report 261021-f6n3.
 - 261021 T277 integrated
 - 261021 T275 integrated
 - 261021 f6n3 stopped at the owner's request (moving to another machine): full-model integrated T273 T274 T276 T279 T282 T304 T305 into main; T280 (changes requested) and T277 (partial) pushed to wip/full-model-T280 and wip/full-model-T277; report 261021-f6n3.
@@ -226,4 +229,3 @@
 - 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
-- 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
