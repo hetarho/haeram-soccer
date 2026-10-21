@@ -215,6 +215,8 @@ export const requestSchema = z.object({
   expectedRevision: z.number().int().min(-1),
   generation: z.number().int().positive(),
   parentGeneration: z.number().int().nonnegative(),
+  /** The published view the client holds; a reply then carries only the parts that changed. */
+  viewBase: z.number().int().nonnegative().optional(),
   body: z.discriminatedUnion('type', [
     z.object({
       type: z.literal('inspect'),
@@ -283,6 +285,22 @@ export interface View {
   /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
 }
+/**
+ * Published views each side keeps, so a reply can still name the base a client holds after a
+ * request whose view it does not take (an export or a save inspection).
+ */
+export const PUBLISHED_VIEWS = 2;
+/**
+ * The view parts that changed since the client's `viewBase` (→ARCH-6): changed top-level parts,
+ * changed keys of the projected world and the keys either no longer has.
+ */
+export interface ViewDelta {
+  base: number;
+  parts: Partial<Omit<View, 'world'>>;
+  world: Partial<ProjectedWorld>;
+  /** Removed keys; projected world keys are named `world.<key>`. */
+  dropped: string[];
+}
 /** What a metadata-only inspection reports: identity, revision and any persisted match model. */
 export type WorldMetadata = Pick<World, 'id' | 'revision' | 'matchModel'>;
 /**
@@ -305,6 +323,10 @@ export interface Reply {
   errorCode?: typeof SAVE_COMPATIBILITY_CODE;
   upgraded?: boolean;
   view?: View;
+  /** Names the view this reply publishes, whole or as a delta, for later requests' `viewBase`. */
+  viewSeq?: number;
+  /** Sent instead of `view` when the request's `viewBase` is a view the host still remembers. */
+  viewDelta?: ViewDelta;
   playback?: MatchPlayback;
   raw?: string;
   envelope?: Envelope;

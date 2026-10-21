@@ -10,7 +10,7 @@ import {
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
-import type { Body, CodecResult, Reply, View } from './protocol';
+import { PUBLISHED_VIEWS, type Body, type CodecResult, type Reply, type View } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
@@ -80,6 +80,9 @@ export class GameClient {
     }
   >();
   private queue = Promise.resolve();
+  /** The latest published views this tab holds by sequence, the newest its state's (→ARCH-6). */
+  private views = new Map<number, View>();
+  private viewSeq?: number;
   private release?: () => void;
   private lockWait?: AbortController;
   private cancelled = false;
@@ -126,7 +129,18 @@ export class GameClient {
       }
       clearTimeout(pending.timer);
       this.waiters.delete(r.requestId);
-      if (r.view && pending.publishView) this.state.view = shareView(this.state.view, r.view);
+      const view = this.viewOf(r);
+      if (view && pending.publishView) {
+        this.state.view = shareView(this.state.view, view);
+        if (r.viewSeq !== undefined) {
+          this.views.set(r.viewSeq, this.state.view!);
+          this.viewSeq = r.viewSeq;
+          while (this.views.size > PUBLISHED_VIEWS)
+            this.views.delete(this.views.keys().next().value!);
+        }
+      }
+      // Callers read the whole view, sharing the published state's references.
+      if (view) r.view = pending.publishView ? this.state.view : view;
       if (r.ok) pending.resolve(r);
       else
         pending.reject(
@@ -310,6 +324,18 @@ export class GameClient {
     }
     this.emit();
   }
+  /** The whole view a reply carries, rebuilt on the base it names when it sends only changes. */
+  private viewOf(r: Reply): View | undefined {
+    if (r.view) return r.view;
+    const delta = r.viewDelta,
+      base = delta && this.views.get(delta.base);
+    if (!delta || !base) return undefined;
+    const view = { ...base, ...delta.parts, world: { ...base.world, ...delta.world } } as View;
+    for (const key of delta.dropped)
+      if (key.startsWith('world.')) delete (view.world as Record<string, unknown>)[key.slice(6)];
+      else delete (view as unknown as Record<string, unknown>)[key];
+    return view;
+  }
   private requestId() {
     return `${this.session.slice(0, 8)}:${++this.serial}`;
   }
@@ -335,6 +361,7 @@ export class GameClient {
         requestId,
         expectedRevision: this.state.view?.world.revision ?? -1,
         ...this.saves.generationInfo,
+        viewBase: this.state.view ? this.viewSeq : undefined,
         body,
       });
     });
@@ -692,6 +719,7 @@ export class GameClient {
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;
+      this.views.clear();
       this.state.playback = undefined;
       this.emit();
     });
