@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T08:36:12.259Z",
-  "sourceCommit": "84d8ef63bf2d81234341013b71332113f3b2b48a",
+  "snapshotAt": "2026-10-21T08:56:27.409Z",
+  "sourceCommit": "8a4495910395a596fe3997e6430b38bd15f73b03",
   "group": {
     "id": "presentation-261021",
     "branch": "work/presentation-261021",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "all",
     "pushed": {
-      "commit": "e936c9cfef570c2c527b318580dcf5c81adc046f",
+      "commit": "cc3ee8807e0446773d1cc74db8f211deae3931a9",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T08:30:47.246Z"
+      "at": "2026-10-21T08:36:15.425Z"
     }
   },
   "summary": {
@@ -3187,6 +3187,22 @@
           "branch": "main",
           "remote": "origin",
           "at": "2026-10-21T08:30:47.246Z"
+        }
+      }
+    },
+    {
+      "sequence": 521,
+      "at": "2026-10-21T08:36:15.449Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "cc3ee8807e0446773d1cc74db8f211deae3931a9",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T08:36:15.425Z"
         }
       }
     }
