@@ -16,7 +16,7 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
-| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T06:47Z | - |
+| p8l3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T05:03Z | 2026-10-21T07:43Z | - |
 
 ## inbox
 - 261021 decided T301 T303: clean WebKit rejects the current WOFF2 representation while identical-glyph WOFF loads; native multi-source CSS also stalls there → implement data-declared ordered per-source FontFace attempts, preserving preferred WOFF2 for capable engines and a licensed WOFF compatibility representation. Extend explicit asset/preview touches; no other active attempt owns these paths, no browser-ID branches, and total font failure still retains the previous theme (alt: send the measured 74%-larger WOFF representation to every browser).
@@ -139,6 +139,7 @@
 - 261020 decided T229 HIST-13: the UI world holds only the last 30 own matches, so counting appearances there undercounts seasons and careers → the worker computes per-player appearances, substitute appearances, cards and this season's heat (`tallies` in the view data, protocol 1 unchanged; touches outside the task: runtime/protocol.ts, runtime/host.ts) (alt: send every own record to the UI, which grows each update with the career)
 - 261021 decided T275 T279 T281 T283 T284 T285 T286 T299 T300 T301 T302 T303: mgha's manager-history plan (HIST r17, SAVE r51, WEB r106) left these bases stale and the shared spec check refused every group's integration → bases raised with no content change: tenure attribution, its activation boundary (SAVE-24) and its own checkpoint container are T304–T306's, and WEB r106 adds only the manager-history view, which the locale/theme foundation does not touch (alt: wait for each owning session to refresh its own tasks, which keeps the full-model and presentation groups blocked meanwhile)
 - 261021 decided T275 T276 T277 T278 T280 T281 T283 T284 T285 T286: p8l3's WEB r105 / ARCH r17 (registry-driven locale and theme packs, ARCH-32) left these bases stale and the integration spec check refused both groups' candidates → bases raised with no content change: themes leave the live pitch, trajectories and clock mapping intact (T275), full feature-copy extraction is later work so T283's views keep Korean text, and engine/protocol code imports no pack registry (alt: re-plan the presentation-facing tasks onto message packs now, which WEB r105 defers)
+- 261021 decided T304: the full-model runner claimed T304 from the group branch's pre-split contract (shared season/cups/europe/packing files) while main 944b6aa had split it into new-file-only T304 → that attempt's work is kept as a WIP commit on task/full-model/T304-36f498aa and released, the planning space took main, and the current T304 runs in this group beside the full-model tasks, as mgha's next allows (alt: keep implementing the superseded shared-file contract, which collides with T281)
 
 ## ideation
 | id | st |
@@ -182,7 +183,6 @@
 | T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
 | T277 | Connect player intentions through support, pressing and covering reactions | MATCH PLAYER STAFF ARCH | T276 | todo |
 | T278 | Measure and calibrate continuous football and coordinated tactics | MATCH ARCH | T275 T277 T281 T272 | todo |
-| T279 | Generate coupled complete team facts without spatial or minute simulation | MATCH PLAYER STAFF ARCH | T273 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
 | T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
 | T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
@@ -207,12 +207,11 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 3 | 11 | 2 | 0 | 0 | 2026-10-21T04:15:21.056Z | [history](work/full-model.json) |
+| full-model | 3 | 24 | 4 | 20 | 0 | 2 | 0 | 2026-10-21T07:10:37.227Z | [history](work/full-model.json) |
 
 ## next
 - Complete final T299-T303 correction review, then the full pre-push gate after the independent heavy-slot owner finishes. Production keeps one ko-KR locale and one pixel theme.
-- Inspect work board for ongoing full-model execution; its task contracts are unchanged by this planning unit.
-- Manager-history preparation T304 then T305 can run alongside earlier tasks; T306 waits for T304 and T286, then T307/T308 connect and verify. Planning only this session; separately migrate legacy FORMAT reference notation before adopting typed reference markers.
+- inspect work board for remaining tasks
 
 ## log
 - 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
@@ -221,7 +220,6 @@
 - 261021 create-task T299-T303 regroup: isolated drafts complete; one claimed presentation-foundation lane retains per-task commits and parallel authorship, with one complete review/verification/main push. Standalone T299 was not marked done.
 - 261021 refresh T275-T281 T283-T286 bases only: ARCH r17 adds ARCH-32 and WEB r105 changes WEB-1/10/38/72/73 plus WEB-90/91, none cited by these engine tasks; goals, acceptance, deps and worker ownership unchanged. This removes freshness warnings that unit integration treats as errors.
 - 261021 create-task T299-T303 complete: runtime JSON registries, Korean/pixel baseline resources, shared settings/consumers and resource-only extension tests; ARCH r17 and WEB r105 fully tasked, no implementation or additional production packs.
-- 261021 create-task ARCH WEB start: T299-T303 cover registry loading, Korean locale services, current theme resources, app binding and resource-only extension evidence; no additional production packs.
 - 261021 update-ssot WEB r105 and create-architecture ARCH r17: one ko-KR/pixel pack, runtime registries, resource-only additions and unchanged stored prose; active T276/T279 contracts and football behavior unchanged, sync additive presentation rules before future integration.
 - 261021 update-ssot WEB and create-architecture ARCH start: one Korean locale and one current pixel theme, resource-only extension; create-task reserves T299-T303 in main without changing active full-model contracts.
 - 261021 T282 integrated
@@ -229,10 +227,10 @@
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
 - 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.
-- 261021 create-task T298 and implement-task start at 5c0383d: CI 39534910810 reports a Firefox browser exit at the first page.goto in the 390px founding fallback case; bound worker recovery without changing assertions.
 - 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
 - 261021 manager-achievements attribution confirmed: the owner chose the manager in charge when the outcome is settled; earlier managers retain their own match results. HIST-19 and T304-T306 already follow this rule; all new tasks remain todo.
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
+- 261021 T279 integrated

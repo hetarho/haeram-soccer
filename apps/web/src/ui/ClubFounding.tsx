@@ -11,7 +11,6 @@ import { CrestMark } from './ClubCrest';
 import { Dialog } from './Dialog';
 import s from './ClubFounding.module.css';
 import { useLocale } from '../presentation/react';
-import { PresentationSettingsTrigger } from './PresentationSettings';
 import presentationStyle from './PresentationSettings.module.css';
 
 /** The editor and its pitch preview load only when 꾸미기 opens them (WEB-86/87). */
@@ -80,7 +79,6 @@ export function ClubFounding({
       <header>
         <div className={`${s.slotBar} ${presentationStyle.startBar}`}>
           <span>{t('founding.slot', { slot: slot + 1 })}</span>
-          <PresentationSettingsTrigger />
           {onBack && (
             <button type="button" onClick={onBack}>
               {t('founding.backToSlots')}
