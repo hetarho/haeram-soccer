@@ -10,8 +10,8 @@ import {
   onPitchAt,
   participationTimelineIssues,
   planParticipation,
+  rebalanceIssues,
   scoreBefore,
-  withheldRebalances,
 } from './participation';
 import { settleParticipation } from './engine';
 import { aggregateStreams, generateTeamFacts } from './team';
@@ -167,43 +167,49 @@ describe('aggregate participation plan (→MATCH-19, MATCH-20, MATCH-21, MATCH-2
   });
 
   it('makes no red-card rebalance while trailing', () => {
-    let withheldMatches = 0,
-      kept = 0;
+    let made = 0,
+      withheld = 0;
     for (const fixture of fixtures(400, 'trailing')) {
       const { input, plan } = syntheticMatch(2008, 0);
-      const withheld = new Set<string>();
-      const { participation, facts } = settleParticipation(
-        input,
-        plan,
-        aggregateStreams('synthetic', fixture),
-        90,
-        withheld,
-        () => input.access,
-      );
+      const streams = aggregateStreams('synthetic', fixture);
+      const settled = settleParticipation(input, plan, streams, 90, () => input.access);
+      // A stretch no decision agrees with is drawn again by the match (engine.test.ts).
+      if (!settled) continue;
+      const { participation, facts, decisions } = settled;
       expect(participationTimelineIssues(input, participation, plan.era)).toEqual([]);
-      // Every rebalance left in the settled match was made level or ahead (→STAFF-45).
+      expect(rebalanceIssues(participation, facts)).toEqual([]);
+      // Every answer agrees with the score at its stoppage (→STAFF-45).
       for (const x of participation.rebalances ?? []) {
-        expect(scoreBefore(facts, x.side, x.minute)).toBeGreaterThanOrEqual(0);
-        kept++;
-      }
-      expect(withheldRebalances(participation, facts)).toEqual([]);
-      if (withheld.size === 0) continue;
-      withheldMatches++;
-      // The first plan rebalanced a trailing ten-man side (a replay can turn up another); the
-      // settled one does not, and the red card still leaves the side a man short.
-      const first = planParticipation(input, plan, aggregateStreams('synthetic', fixture), 90);
-      expect(first.rebalances!.some((x) => withheld.has(x.key))).toBe(true);
-      for (const key of withheld) {
-        expect(participation.rebalances!.some((x) => x.key === key)).toBe(false);
-        const side = Number(key.split(':')[0]) as AggregateSide;
-        const reds = participation.incidents.filter(
-          (x) => x.side === side && (x.kind === 'red' || x.kind === 'secondYellow'),
+        const score = scoreBefore(facts, x.side, x.minute);
+        const subsThen = (p: AggregateParticipation) =>
+          p.incidents.filter((y) => y.side === x.side && y.kind === 'sub' && y.minute === x.minute);
+        if (x.made) {
+          expect(score).toBeGreaterThanOrEqual(0);
+          made++;
+          continue;
+        }
+        // A trailing ten-man side makes no rebalance: answering would change that stoppage's
+        // substitutions (it may still make an ordinary change there), and the red still leaves
+        // it a man short.
+        expect(score).toBeLessThan(0);
+        withheld++;
+        const answered = planParticipation(
+          input,
+          plan,
+          streams,
+          90,
+          new Map(decisions).set(x.key, true),
         );
-        expect(onPitch(participation, side, 90)).toBe(11 - reds.length);
+        expect(answered.rebalances!.find((y) => y.key === x.key)!.made).toBe(true);
+        expect(subsThen(answered)).not.toEqual(subsThen(participation));
+        const reds = participation.incidents.filter(
+          (y) => y.side === x.side && (y.kind === 'red' || y.kind === 'secondYellow'),
+        );
+        expect(onPitch(participation, x.side, 90)).toBe(11 - reds.length);
       }
     }
-    expect(withheldMatches).toBeGreaterThan(0);
-    expect(kept).toBeGreaterThan(0);
+    expect(made).toBeGreaterThan(0);
+    expect(withheld).toBeGreaterThan(0);
   });
 
   it('records an injury and replacement once', () => {

@@ -5,7 +5,10 @@ import type { Fixture, MatchRecord, World } from '../../../contracts/src/types';
 import { M } from '../grid/record';
 import { createWorld, ownLeagueClubs } from '../index';
 import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
-import { simulateAggregate } from './engine';
+import { eraRules } from '../grid/setup';
+import { prepareMatch } from '../match';
+import { matchdayRosters, playAggregate, simulateAggregate } from './engine';
+import { rebalanceIssues, scoreBefore } from './participation';
 
 /**
  * Fixtures between clubs nobody owns in a freshly founded world (→ARCH-21: a founding, no
@@ -135,6 +138,39 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     // Another order, other fixtures in between: no draw depends on what ran before.
     const again = [...fixtures].reverse().map((f) => simulateAggregate(w, f, CUP).record);
     expect(again.reverse()).toEqual(first);
+  });
+
+  it('answers a red card only when level or ahead', () => {
+    // World fixtures: the team facts move with the answer, which synthetic skills hardly show.
+    const { w, fixtures } = others(400, 2024);
+    let made = 0,
+      withheld = 0;
+    fixtures.forEach((f, i) => {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      const decide = i % 4 === 0 ? CUP : undefined;
+      const match = playAggregate(w, f, prepared, rosters, decide);
+      // Neither a rebalance made while trailing nor one withheld while level or ahead (→STAFF-45).
+      expect(rebalanceIssues(match.participation, match.facts)).toEqual([]);
+      for (const x of match.participation.rebalances ?? []) {
+        const score = scoreBefore(match.facts, x.side, x.minute);
+        if (x.made) {
+          made++;
+          expect(score).toBeGreaterThanOrEqual(0);
+        } else {
+          withheld++;
+          expect(score).toBeLessThan(0);
+        }
+      }
+      // A fixture drawn again settles on the same retry streams every time.
+      if (match.retry > 0) {
+        const again = playAggregate(w, f, prepared, rosters, decide);
+        expect(again.retry).toBe(match.retry);
+        expect(again.facts).toEqual(match.facts);
+      }
+    });
+    expect(made).toBeGreaterThan(0);
+    expect(withheld).toBeGreaterThan(0);
   });
 
   it('produces valid man-short records in eras without substitutes', () => {

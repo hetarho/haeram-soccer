@@ -179,6 +179,12 @@ export const AGGREGATE_PARTICIPATION_CONFIG = {
     jitter: 3,
     /** A red card is answered at the stoppage this many minutes later (1 up to it). */
     afterRed: 3,
+    /**
+     * Red-card rebalance decisions tried for one stretch of the match before it is drawn again on
+     * the fixture's next retry streams, and the retries allowed (→STAFF-45).
+     */
+    rebalanceSearches: 16,
+    rebalanceRetries: 8,
   },
 } as const;
 

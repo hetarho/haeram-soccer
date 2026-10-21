@@ -109,20 +109,25 @@ export interface AggregateParticipation {
   length: AggregateLength;
   stints: readonly [readonly AggregateStint[], readonly AggregateStint[]];
   incidents: readonly Incident[];
-  /** The red-card rebalances the plan made, for the score check after the facts (→STAFF-45). */
+  /** The red-card rebalances the plan could make, made or withheld, for the score check (→STAFF-45). */
   rebalances?: readonly AggregateRebalance[];
 }
 /**
- * A side's answer to a red card (→STAFF-45): made only when it is level or ahead at that
- * stoppage, which the plan cannot know before the facts, so the match checks it afterwards.
+ * A side's answer to a red card at the next stoppage (→STAFF-45): made when it is level or ahead
+ * there and withheld when it trails, which the plan cannot know before the facts, so the match
+ * checks it afterwards. Only a rebalance the side could make (a forward on, a slot to fill, a
+ * defender or midfielder on the bench, a change left) is listed.
  */
 export interface AggregateRebalance {
   side: AggregateSide;
-  /** The substitution's stamped minute. */
+  /** The stoppage's stamped minute. */
   minute: number;
   /** Names the red card answered: the side and its count of reds then, as `side:reds`. */
   key: string;
+  made: boolean;
 }
+/** Per red card (`side:reds`), whether the plan makes its rebalance; unlisted ones are made. */
+export type AggregateRebalanceDecisions = ReadonlyMap<string, boolean>;
 
 /** The decision families a fixture's kernel draws from, each on a stream of its own. */
 export const AGGREGATE_STREAM_FAMILIES = [

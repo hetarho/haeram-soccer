@@ -44,7 +44,8 @@ import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
 import { buildAggregateInput } from './input';
-import { onPitchAt, planParticipation, slotAt, withheldRebalances } from './participation';
+import { AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
+import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
@@ -55,6 +56,7 @@ import type {
   AggregateParticipation,
   AggregatePlan,
   AggregatePlayerFacts,
+  AggregateRebalanceDecisions,
   AggregateSide,
   AggregateSkillAccess,
   AggregateStint,
@@ -283,6 +285,9 @@ export interface AggregateMatch {
   facts: AggregateTeamFacts;
   players: AggregatePlayerFacts;
   shootout?: Score;
+  decisions: AggregateRebalanceDecisions;
+  /** Which of the fixture's retry streams settled it; 0 is its own streams. */
+  retry: number;
 }
 
 const UNPLANNED: AggregateSkillAccess = {
@@ -293,34 +298,58 @@ const UNPLANNED: AggregateSkillAccess = {
   targetChance,
 };
 
+/** A planned and produced stretch of the match and the rebalance decisions it was planned with. */
+export interface AggregateStretch {
+  input: AggregateInput;
+  participation: AggregateParticipation;
+  facts: AggregateTeamFacts;
+  decisions: AggregateRebalanceDecisions;
+}
+
 /**
- * A planned and produced stretch of the match whose red-card rebalances agree with its score
- * (→STAFF-45): a rebalance the facts show was made while the side trailed joins `withheld`, and
- * the match is planned and produced again on the same streams. `withheld` only grows and every
- * replay adds a red card to it, so the replays end; a rebalance is never left trailing.
+ * A planned and produced stretch of the match whose red-card answers agree with its score
+ * (→STAFF-45): every rebalance made level or ahead, every withheld one trailing. The facts of a
+ * period depend on the whole period's participation, so answering a red moves the goals before
+ * it too; the decisions are searched on the same streams, from `prefer` and then flipping the
+ * answers each plan reached, earliest first, until the score agrees with all of them. Undefined
+ * when none of the configured searches agrees, for the caller to draw the match again.
  */
 export function settleParticipation(
   base: AggregateInput,
   plan: AggregatePlan,
   streams: AggregateStreams,
   length: AggregateLength,
-  withheld: Set<string>,
   accessFor: (participation: AggregateParticipation) => AggregateSkillAccess,
-): { input: AggregateInput; participation: AggregateParticipation; facts: AggregateTeamFacts } {
-  for (;;) {
-    const participation = planParticipation(base, plan, streams, length, withheld);
+  prefer: AggregateRebalanceDecisions = new Map(),
+): AggregateStretch | undefined {
+  const tried = new Set<string>();
+  const queue: AggregateRebalanceDecisions[] = [prefer];
+  for (let searched = 0; searched < PC.changes.rebalanceSearches && queue.length > 0;) {
+    const decisions = queue.shift()!;
+    const id = [...decisions]
+      .map(([key, made]) => `${key}=${made}`)
+      .sort()
+      .join(',');
+    if (tried.has(id)) continue;
+    tried.add(id);
+    searched++;
+    const participation = planParticipation(base, plan, streams, length, decisions);
     const input = { ...base, access: accessFor(participation) };
     const facts = generateTeamFacts(input, streams, participation);
-    const trailing = withheldRebalances(participation, facts);
-    if (trailing.length === 0) return { input, participation, facts };
-    for (const key of trailing) withheld.add(key);
+    if (rebalanceIssues(participation, facts).length === 0)
+      return { input, participation, facts, decisions };
+    const reached = [...(participation.rebalances ?? [])].sort((a, b) => a.minute - b.minute);
+    for (const x of reached) queue.push(new Map(decisions).set(x.key, !x.made));
   }
+  return undefined;
 }
 
 /**
  * Plans, plays and attributes one fixture: 90 minutes, then — when `decide` says the tie is still
- * level — the same match extended to 120 with its regulation facts unchanged, and a shoot-out if
- * it is level after extra time. Rebalances withheld in the 90 stay withheld in the 120.
+ * level — the same match extended to 120 with its regulation facts and decisions unchanged, and a
+ * shoot-out if it is level after extra time. A fixture whose red-card answers cannot agree with
+ * its score on its streams is drawn again on its next retry streams (`<fixture>:retry<n>`), the
+ * same for every call, so the settled record always follows STAFF-45.
  */
 export function playAggregate(
   w: World,
@@ -330,30 +359,32 @@ export function playAggregate(
   decide?: DecideRule,
 ): AggregateMatch {
   const era = eraRules(f.year);
-  const streams = aggregateStreams(w.seed, f.id);
   const base = buildAggregateInput(prepared, UNPLANNED, rosters);
   const plan = aggregatePlan(w, prepared, rosters, era);
-  const withheld = new Set<string>();
-  const play = (length: AggregateLength) =>
-    settleParticipation(base, plan, streams, length, withheld, (participation) =>
-      aggregateSkillAccess(prepared, rosters, participation),
-    );
-  let match = play(90);
+  const access = (participation: AggregateParticipation) =>
+    aggregateSkillAccess(prepared, rosters, participation);
   const level = (facts: AggregateTeamFacts) =>
     !!decide && isLevel(decide, facts.score[0], facts.score[1]);
-  if (level(match.facts)) match = play(120);
-  const shootout =
-    match.facts.length === 120 && level(match.facts)
-      ? aggregateShootout(match.input, match.participation, streams)
-      : undefined;
-  const players = attributePlayerFacts(
-    match.input,
-    plan,
-    match.participation,
-    match.facts,
-    streams,
-  );
-  return { ...match, plan, players, ...(shootout && { shootout }) };
+  for (let retry = 0; retry <= PC.changes.rebalanceRetries; retry++) {
+    const streams = aggregateStreams(w.seed, retry === 0 ? f.id : `${f.id}:retry${retry}`);
+    let match = settleParticipation(base, plan, streams, 90, access);
+    if (match && level(match.facts))
+      match = settleParticipation(base, plan, streams, 120, access, match.decisions);
+    if (!match) continue;
+    const shootout =
+      match.facts.length === 120 && level(match.facts)
+        ? aggregateShootout(match.input, match.participation, streams)
+        : undefined;
+    const players = attributePlayerFacts(
+      match.input,
+      plan,
+      match.participation,
+      match.facts,
+      streams,
+    );
+    return { ...match, plan, players, retry, ...(shootout && { shootout }) };
+  }
+  throw new Error(`집계 경기의 레드카드 대응이 점수와 맞지 않습니다: ${f.id}`);
 }
 
 /** The full-model record of an aggregate match (→MATCH-26), validated before it is returned. */
