@@ -168,6 +168,35 @@ describe('locale messages', () => {
     );
   });
 
+  it('uses the message source locale for a fallback plural', () => {
+    const defaultPack: LocalePack = {
+      schemaVersion: 1,
+      id: 'en-US',
+      messages: {
+        'shell.items': { plural: 'n', forms: { one: '{n} item', other: '{n} items' } },
+        'shell.localizedItems': { plural: 'n', forms: { one: '{n} item', other: '{n} items' } },
+      },
+    };
+    const selected: LocalePack = {
+      schemaVersion: 1,
+      id: 'fr-FR',
+      messages: {
+        'shell.localizedItems': {
+          plural: 'n',
+          forms: { one: '{n} élément', other: '{n} éléments' },
+        },
+      },
+    };
+    const t = createTranslator(selected, defaultPack, { onDiagnostic: vi.fn() });
+    // French treats zero as singular; the English fallback still needs its English grammar.
+    expect([0, 1, 2].map((n) => t('shell.items', { n }))).toEqual(['0 items', '1 item', '2 items']);
+    expect([0, 1, 2].map((n) => t('shell.localizedItems', { n }))).toEqual([
+      '0 élément',
+      '1 élément',
+      '2 éléments',
+    ]);
+  });
+
   it('keeps plural fallback readable when its numeric parameter is missing or invalid', () => {
     const onDiagnostic = vi.fn();
     const t = createTranslator(korean, korean, { onDiagnostic });
