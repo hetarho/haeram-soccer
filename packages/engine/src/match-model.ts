@@ -9,7 +9,7 @@ import {
   type FullMatchRecord,
   type MatchModelRevision,
 } from '../../contracts/src/match-model';
-import type { MatchRecord, Metrics } from '../../contracts/src/types';
+import type { Incident, MatchRecord, Metrics } from '../../contracts/src/types';
 import { M } from './grid/record';
 import { eraRules } from './grid/setup';
 import { zeroMetrics } from './primitives';
@@ -26,6 +26,13 @@ export const MATCH_MODEL_RELEASE: {
 
 const sides = [0, 1] as const;
 const METRICS_SIZE = zeroMetrics().length;
+/** The most xG one shot can carry, in hundredths, as the world schema bounds player xG and xA. */
+const MAX_SHOT_XG = 80;
+/**
+ * How far a line's whole minutes may sit from his stamped interval: incident minutes are stamped
+ * after the fact and added time reads as the period's last minute (grid/changes.test.ts).
+ */
+const MINUTE_ROUNDING = 2;
 /** Player counters named like a team counter add up to it exactly (→MATCH-27). */
 const SHARED_DETAIL = (Object.keys(PD) as (keyof typeof PD)[]).filter(
   (key): key is keyof typeof PD & keyof typeof TD => key in TD,
@@ -44,7 +51,8 @@ function rowIssues(out: string[], what: string, row: Metrics | undefined, width:
  * and counters present at their widths, then the exact invariants — score and goals, successes
  * within attempts, shot classes within shots, player lines reconciling with their side, minutes
  * within the match, incidents naming participants under the era's substitution rules and agreeing
- * with the card counters, and the period/shoot-out shape. It checks and never repairs a record.
+ * with the card counters, lines and minutes following the substitution and dismissal timeline, and
+ * the period/shoot-out shape. It checks and never repairs a record.
  */
 export function validateFullMatchRecord(r: MatchRecord): string[] {
   const out: string[] = [];
@@ -71,7 +79,12 @@ export function validateFullMatchRecord(r: MatchRecord): string[] {
   if (full.lineCounts[0] + full.lineCounts[1] !== full.players.length)
     out.push(`line split ${full.lineCounts} ≠ ${full.players.length} lines`);
   if (out.length) return out;
-  return [...resultIssues(full), ...participationIssues(full), ...incidentIssues(full)];
+  return [
+    ...resultIssues(full),
+    ...participationIssues(full),
+    ...incidentIssues(full),
+    ...timelineIssues(full),
+  ];
 }
 
 /** Throws before settlement when `validateFullMatchRecord` finds anything (→MATCH-27). */
@@ -124,6 +137,9 @@ function resultIssues(r: FullMatchRecord) {
     );
     atMost(out, `${who} penalties scored`, t[TD.penaltiesScored]!, t[TD.penalties]!);
     atMost(out, `${who} dribbles`, m[M.dribbles]!, t[TD.takeOns]!);
+    atMost(out, `${who} final-third passes`, t[TD.finalThirdPasses]!, m[M.passes]!);
+    atMost(out, `${who} progressive passes`, t[TD.progressivePasses]!, m[M.completed]!);
+    atMost(out, `${who} build-up passes`, t[TD.buildUpPasses]!, m[M.passes]!);
     if (m[M.shots] === 0 && r.xg[side] !== 0) out.push(`${who} xG without shots`);
   }
   return out;
@@ -131,14 +147,12 @@ function resultIssues(r: FullMatchRecord) {
 
 function participationIssues(r: FullMatchRecord) {
   const out: string[] = [];
-  const length = lengthOf(r),
-    era = eraRules(r.year);
+  const length = lengthOf(r);
   const ids = r.players.map((p) => p.id);
   if (new Set(ids).size !== ids.length) out.push('a player has two lines');
   for (const side of sides) {
     const lines = linesOf(r, side),
       who = `side ${side}`;
-    if (lines.length > 11 + era.maxSubs) out.push(`${who} fields ${lines.length} players`);
     let minutes = 0;
     for (const p of lines) {
       const m = p.metrics,
@@ -163,6 +177,8 @@ function participationIssues(r: FullMatchRecord) {
         d[PD.throughBalls]!,
       );
       atMost(out, `${p.id} big chances created`, d[PD.bigChancesCreated]!, d[PD.keyPasses]!);
+      atMost(out, `${p.id} xG`, d[PD.xg]!, MAX_SHOT_XG * m[M.shots]!);
+      atMost(out, `${p.id} xA`, d[PD.xa]!, MAX_SHOT_XG * d[PD.keyPasses]!);
     }
     if (minutes > 11 * length) out.push(`${who} minutes ${minutes} > ${11 * length}`);
     const sum = (row: (p: FullMatchRecord['players'][number]) => Metrics, index: number) =>
@@ -205,7 +221,6 @@ function incidentIssues(r: FullMatchRecord) {
     era = eraRules(r.year);
   const roster = sides.map((side) => new Set(linesOf(r, side).map((p) => p.id)));
   const booked = new Set<string>(),
-    off = new Set<string>(),
     hurt = new Set<string>();
   const subs = [0, 0],
     yellows = [0, 0],
@@ -217,20 +232,15 @@ function incidentIssues(r: FullMatchRecord) {
     last = x.minute;
     for (const id of x.kind === 'sub' ? [x.player, x.other] : [x.player])
       if (!id || !roster[x.side]!.has(id)) out.push(`${x.kind} names ${id} outside side ${x.side}`);
-    if (off.has(x.player)) out.push(`${x.player} acts after leaving the pitch`);
     if (x.kind === 'yellow' || x.kind === 'secondYellow') yellows[x.side]!++;
     if (x.kind === 'red' || x.kind === 'secondYellow') reds[x.side]!++;
     if (x.kind === 'yellow') booked.add(x.player);
     if (x.kind === 'secondYellow' && !booked.has(x.player))
       out.push(`${x.player} second yellow without a first`);
-    if (x.kind === 'red' || x.kind === 'secondYellow') off.add(x.player);
     if (x.kind === 'injury') hurt.add(x.player);
     if (x.kind === 'sub') {
       subs[x.side]!++;
       if (era.injuryOnly && !hurt.has(x.player)) out.push(`${x.player} replaced without an injury`);
-      // A substituted player does not return (→MATCH-20).
-      if (x.other && off.has(x.other)) out.push(`${x.other} returns after leaving`);
-      off.add(x.player);
     }
   }
   for (const side of sides) {
@@ -240,6 +250,66 @@ function incidentIssues(r: FullMatchRecord) {
       out.push(`side ${side} yellow cards disagree with incidents`);
     if (r.detail[side][TD.redCards] !== reds[side])
       out.push(`side ${side} red cards disagree with incidents`);
+  }
+  return out;
+}
+
+/**
+ * Participation shares the incident timeline (→MATCH-20, MATCH-27): a side's lines are its eleven
+ * starters, then each substitute in the order he came on; every incident names a player on the
+ * pitch at that moment (an injured player who left may still be replaced), a substitute enters
+ * once and never a starter, and each line's minutes run from his entry to his exit — a minute
+ * before the stamp of his substitution, sending-off or injury — within `MINUTE_ROUNDING`.
+ */
+function timelineIssues(r: FullMatchRecord) {
+  const out: string[] = [];
+  const length = lengthOf(r);
+  for (const side of sides) {
+    const lines = linesOf(r, side),
+      own = r.incidents.filter((x) => x.side === side),
+      who = `side ${side}`;
+    const incoming = own.filter((x) => x.kind === 'sub').map((x) => x.other);
+    if (lines.length !== 11 + incoming.length)
+      out.push(`${who} has ${lines.length} lines for ${incoming.length} substitutions`);
+    const entered = lines.slice(11).map((p) => p.id);
+    if (entered.join('\n') !== incoming.join('\n'))
+      out.push(`${who} substitutes ${entered.join(' ')} ≠ incoming ${incoming.join(' ')}`);
+    const starters = new Set(lines.slice(0, 11).map((p) => p.id));
+    const on = new Set(starters),
+      came = new Set<string>(),
+      injuredOff = new Set<string>();
+    for (const x of own) {
+      if (x.kind === 'sub') {
+        if (!on.has(x.player) && !injuredOff.has(x.player))
+          out.push(`${x.player} replaced at ${x.minute} while off the pitch`);
+        if (!x.other || starters.has(x.other) || came.has(x.other))
+          out.push(`${x.other} comes on at ${x.minute} as a starter or a second time`);
+        on.delete(x.player);
+        injuredOff.delete(x.player);
+        if (x.other) {
+          on.add(x.other);
+          came.add(x.other);
+        }
+      } else if (!on.has(x.player))
+        out.push(`${x.kind} at ${x.minute} names ${x.player} off the pitch`);
+      else if (x.kind !== 'yellow') {
+        on.delete(x.player);
+        if (x.kind === 'injury') injuredOff.add(x.player);
+      }
+    }
+    const stamp = (x: Incident | undefined, fallback: number) => (x ? x.minute - 1 : fallback);
+    for (const p of lines) {
+      const entry = stamp(
+        own.find((x) => x.kind === 'sub' && x.other === p.id),
+        0,
+      );
+      const exit = stamp(
+        own.find((x) => x.kind !== 'yellow' && x.player === p.id),
+        length,
+      );
+      if (Math.abs(p.metrics[M.minutes]! - (exit - entry)) > MINUTE_ROUNDING)
+        out.push(`${p.id} minutes ${p.metrics[M.minutes]} for ${entry}′–${exit}′ on the pitch`);
+    }
   }
   return out;
 }

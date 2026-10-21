@@ -178,10 +178,52 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
         ];
         r.detail[0][TD.redCards] = 1;
         r.players[5]!.detail[PD.redCards] = 1;
+        r.players[5]!.metrics[M.minutes] = 19;
       }).join(),
-    ).toMatch(/after leaving/);
+    ).toMatch(/injury at 50 names h:3 off the pitch/);
     // Extra time without four added periods; a level shoot-out.
     expect(issues((r) => (r.regulation = { home: 1, away: 0 })).join()).toMatch(/added-time/);
     expect(issues((r) => (r.shootout = { home: 3, away: 3 })).join()).toMatch(/shoot-out/);
+    // The counters the world schema bounds: final-third and build-up passes within passes,
+    // progressive passes within completions, one shot's xG at most 0.80.
+    expect(issues((r) => (r.detail[1][TD.finalThirdPasses] = 6)).join()).toMatch(/final-third/);
+    expect(issues((r) => (r.detail[1][TD.buildUpPasses] = 6)).join()).toMatch(/build-up/);
+    expect(issues((r) => (r.detail[1][TD.progressivePasses] = 5)).join()).toMatch(/progressive/);
+    expect(issues((r) => (r.players[1]!.detail[PD.xa] = 81)).join()).toMatch(/xA/);
+  });
+
+  it('ties every line to the substitution and dismissal timeline', () => {
+    /** The home starter h:0 replaced by h:sub at `minute`, credited the given minutes. */
+    const swap = (minute: number, starter: number, substitute: number, other = 'h:sub') => {
+      const r = fullRecord();
+      const sub = { ...structuredClone(r.players[2]!), id: 'h:sub' };
+      sub.metrics[M.minutes] = substitute;
+      r.players[2]!.metrics[M.minutes] = starter;
+      r.players.splice(11, 0, sub);
+      r.lineCounts = [12, 11];
+      r.incidents = [{ minute, side: 0, kind: 'sub', player: 'h:0', other }];
+      return validateFullMatchRecord(r);
+    };
+    // Off a minute before the 61st-minute stamp: 60 and 30 minutes.
+    expect(swap(61, 60, 30)).toEqual([]);
+    // A starter replaced at 30′ credited 90; a substitute entering at 80′ credited 60.
+    expect(swap(31, 90, 60).join()).toMatch(/h:0 minutes 90 for 0′–30′/);
+    expect(swap(81, 80, 60).join()).toMatch(/h:sub minutes 60 for 80′–90′/);
+    // The incoming player is a starter already on the pitch.
+    expect(swap(61, 60, 30, 'h:1').join()).toMatch(/h:1 comes on at 61 as a starter/);
+    // A twelfth line without a substitution.
+    const extra = fullRecord();
+    extra.players.splice(11, 0, { ...structuredClone(extra.players[2]!), id: 'h:extra' });
+    extra.lineCounts = [12, 11];
+    expect(validateFullMatchRecord(extra).join()).toMatch(/12 lines for 0 substitutions/);
+    // A player sent off cannot be replaced afterwards, and his minutes stop at the card.
+    const off = fullRecord();
+    off.incidents = [{ minute: 41, side: 1, kind: 'red', player: 'a:4' }];
+    off.detail[1][TD.redCards] = 1;
+    off.players[15]!.detail[PD.redCards] = 1;
+    off.players[15]!.metrics[M.minutes] = 40;
+    expect(validateFullMatchRecord(off)).toEqual([]);
+    off.players[15]!.metrics[M.minutes] = 90;
+    expect(validateFullMatchRecord(off).join()).toMatch(/a:4 minutes 90 for 0′–40′/);
   });
 });
