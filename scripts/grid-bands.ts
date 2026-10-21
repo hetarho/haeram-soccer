@@ -66,6 +66,7 @@ import {
   MATCH_PARITY_VERSION,
   tacticPairingVerdicts,
   type MatchSample,
+  type ParityCondition,
   type Partition,
 } from './lib/match-parity';
 
@@ -362,54 +363,78 @@ export function coreFixturePairs() {
   return corePairs;
 }
 
+/** What a condition's parameters may set (CORPUS_CONFIG). */
+export interface ConditionParams {
+  home?: Tactic;
+  away?: Tactic;
+  bucket?: number;
+  low?: number;
+  high?: number;
+  year?: number;
+  fatigue?: number;
+  decide?: DecideRule;
+  fixture?: { year: number; round: number; kind: Fixture['kind'] };
+}
+
+/** A condition's stream of pool-club draws, consumed in fixture order (gap and tier conditions). */
+export const conditionClubs = (c: ParityCondition, partition: Partition, round: number) =>
+  random(`${CORPUS_CONFIG.partitions[partition].prefix}:r${round}:${c.id}:clubs`);
+
+/**
+ * A condition's `i`th fixture, the same on every path that measures it (scripts/match-parity.ts
+ * plays these on the aggregate path): gap and tier conditions draw pool clubs from `r`
+ * (`conditionClubs`), every other condition plays the core pairs.
+ */
+export function conditionFixture(
+  c: ParityCondition,
+  partition: Partition,
+  round: number,
+  i: number,
+  r: () => number,
+): { w: World; home: Club; away: Club; f: Fixture } {
+  const params = c.params as ConditionParams;
+  let w: World, home: Club, away: Club;
+  if (c.family === 'gap' || c.family === 'tier') {
+    let hs: number, as: number;
+    if (c.family === 'gap') {
+      // Strengths around a tier base whose home-minus-away gap (home +3) aims at the bucket.
+      const base = GAP_BASES[i % GAP_BASES.length]! + (r() - 0.5) * 6;
+      const spread = params.bucket! - 3 + (r() - 0.5) * 5;
+      hs = base + spread / 2;
+      as = base - spread / 2;
+    } else {
+      hs = integer(r, params.low!, params.high!);
+      as = integer(r, params.low!, params.high!);
+    }
+    const h = poolClub(hs, r()),
+      a = poolClub(as, r());
+    w = h.w;
+    home = h.club;
+    away = a.club === h.club ? pools.get(a.club.strength)!.find((x) => x !== h.club)! : a.club;
+  } else {
+    const pairs = coreFixturePairs();
+    ({ w, home, away } = pairs[i % pairs.length]!);
+  }
+  const f: Fixture = {
+    ...w.fixtures[0]!,
+    ...(params.fixture ?? { year: 2024, round: 1, kind: 'league' as const }),
+    ...(params.year ? { year: params.year } : {}),
+    id: corpusFixtureId(partition, c.id, i, round),
+    home: home.id,
+    away: away.id,
+  };
+  return { w, home, away, f };
+}
+
 /** One condition's fixtures on the candidate model, as samples the shared reports read. */
 function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
   const c = conditionOf(job.condition);
-  const params = c.params as {
-    home?: Tactic;
-    away?: Tactic;
-    bucket?: number;
-    low?: number;
-    high?: number;
-    year?: number;
-    decide?: DecideRule;
-    fixture?: { year: number; round: number; kind: Fixture['kind'] };
-  };
-  const prefix = CORPUS_CONFIG.partitions[job.partition].prefix;
-  const r = random(`${prefix}:r${job.round}:${c.id}:clubs`);
+  const params = c.params as ConditionParams;
+  const r = conditionClubs(c, job.partition, job.round);
   const samples: MatchSample[] = [];
   const started = performance.now();
   for (let i = 0; i < job.count; i++) {
-    let w: World, home: Club, away: Club;
-    if (c.family === 'gap' || c.family === 'tier') {
-      let hs: number, as: number;
-      if (c.family === 'gap') {
-        // Strengths around a tier base whose home-minus-away gap (home +3) aims at the bucket.
-        const base = GAP_BASES[i % GAP_BASES.length]! + (r() - 0.5) * 6;
-        const spread = params.bucket! - 3 + (r() - 0.5) * 5;
-        hs = base + spread / 2;
-        as = base - spread / 2;
-      } else {
-        hs = integer(r, params.low!, params.high!);
-        as = integer(r, params.low!, params.high!);
-      }
-      const h = poolClub(hs, r()),
-        a = poolClub(as, r());
-      w = h.w;
-      home = h.club;
-      away = a.club === h.club ? pools.get(a.club.strength)!.find((x) => x !== h.club)! : a.club;
-    } else {
-      const pairs = coreFixturePairs();
-      ({ w, home, away } = pairs[i % pairs.length]!);
-    }
-    const f: Fixture = {
-      ...w.fixtures[0]!,
-      ...(params.fixture ?? { year: 2024, round: 1, kind: 'league' as const }),
-      ...(params.year ? { year: params.year } : {}),
-      id: corpusFixtureId(job.partition, c.id, i, job.round),
-      home: home.id,
-      away: away.id,
-    };
+    const { w, home, away, f } = conditionFixture(c, job.partition, job.round, i, r);
     const setup = buildGridSetup(w, f, {
       observe: false,
       recordPlayers: true,

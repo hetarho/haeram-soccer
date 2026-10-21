@@ -7,7 +7,7 @@
  */
 import type { Incident } from '../../../contracts/src/types';
 import type { Line } from '../../../contracts/src/player';
-import { CHANGES_CONFIG } from '../grid/changes';
+import { CHANGES_CONFIG, inMatchFatigue } from '../grid/changes';
 import { INTERVAL_STAMPS } from '../match-model';
 import type { EraRules } from '../grid/setup';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
@@ -356,6 +356,8 @@ class SidePlanner {
   private readonly slotOf: (number | undefined)[];
   private readonly holder: (number | undefined)[];
   private readonly start: number[];
+  /** When each line came on: a move to another slot does not restart his fatigue (grid `onMin`). */
+  private readonly onSince: number[];
   private readonly bench: number[];
   private readonly booked = new Set<number>();
   private injured: { line: number; slot: number }[] = [];
@@ -383,6 +385,7 @@ class SidePlanner {
     this.slotOf = Array.from({ length: n }, (_, line) => (line < slots ? line : undefined));
     this.holder = Array.from({ length: slots }, (_, slot) => (slot < n ? slot : undefined));
     this.start = Array<number>(n).fill(0);
+    this.onSince = Array<number>(n).fill(0);
     this.bench = Array.from({ length: Math.max(0, n - slots) }, (_, i) => slots + i);
   }
 
@@ -407,6 +410,7 @@ class SidePlanner {
     this.slotOf[line] = slot;
     this.holder[slot] = line;
     this.start[line] = at;
+    this.onSince[line] = at;
     this.scheduleInjury(line, at);
   }
   /** Moves an on-pitch line to another slot at `at`, without leaving the pitch. */
@@ -577,14 +581,15 @@ class SidePlanner {
     if (keeper !== undefined) this.move(keeper, 0, at);
   }
 
+  /** His in-match fatigue at `t`: the detailed engine's rule over his minutes since he came on. */
   private fatigue(line: number, t: number) {
     const c = this.plan.candidates[line]!;
-    return (
-      c.fatigue +
-      (((100 - c.stamina) * (t - this.start[line]!)) / 90) *
-        CHANGES_CONFIG.drain *
-        (this.plan.pressing ? CHANGES_CONFIG.pressDrain : 1) *
-        this.plan.drain
+    return inMatchFatigue(
+      c.fatigue,
+      c.stamina,
+      t - this.onSince[line]!,
+      this.plan.pressing,
+      this.plan.drain,
     );
   }
 

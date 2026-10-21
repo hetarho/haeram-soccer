@@ -28,16 +28,22 @@ export const AGGREGATE_CONFIG = {
     sideSd: 0.05,
   },
   /** How far a side that has more of the ball plays up the pitch, from its share above a half. */
-  territory: { dominance: 1.4 },
+  territory: { dominance: 0.6 },
   completion: {
     min: 0.3,
     max: 0.97,
     /** Effective-skill points (passing against pressing) per unit of completion. */
     skillScale: 450,
     /** Lifts the reference rates to the band once direction, length and the box take theirs. */
-    bias: 0.06,
+    bias: 0.05,
     /** Completion per point of prepared match strength gap. */
     strength: 0.002,
+    /**
+     * Completion per hundred profile points (the side's pass against the opponent's pressure): the
+     * summary path's profile points move its chance model, and at full weight here they lifted a
+     * possession mirror to 88% completion (T284).
+     */
+    profile: 0.5,
     /** By direction, before the per-cell rate is renormalised to keep its mean. */
     direction: { forward: -0.1, lateral: 0.05, back: 0.09 },
     /** A forward pass that skips a band, and a pass into the box, are harder still. */
@@ -54,12 +60,12 @@ export const AGGREGATE_CONFIG = {
     completion: 0.38,
   },
   /** Scale on the reference cross share of a cell's passes. */
-  crosses: { scale: 0.6, completion: 0.2, goalArea: 0.3 },
+  crosses: { scale: 0.6, completion: 0.17, goalArea: 0.25 },
   /** Completed passes of each kind played beyond an opponent line. */
   lineBreaking: { short: 0.1, long: 0.45, through: 0.9 },
   /** How a failed pass ends: offside (into the final third), touchline, byline, interception. */
   failed: {
-    offside: { forward: 0.05, through: 0.3 },
+    offside: { forward: 0.06, through: 0.3 },
     touch: 0.42,
     byline: 0.7,
     intercepted: 0.16,
@@ -85,11 +91,11 @@ export const AGGREGATE_CONFIG = {
     /** Fouls a side commits in 90 minutes beyond those its cards were shown for. */
     perMatch: 9.4,
     /** Relative foul rate on actions in each band (own goal area … opponent goal area). */
-    band: [0.3, 0.3, 0.8, 1, 1.1, 1.2, 0.5, 0.4],
+    band: [0.3, 0.3, 0.8, 1, 1.1, 1.2, 0.4, 0.3],
   },
   shots: {
     /** Scale on the reference shot share of a cell, per completed arrival of each kind. */
-    scale: 0.62,
+    scale: 0.565,
     kind: {
       short: 1,
       long: 0.9,
@@ -99,13 +105,24 @@ export const AGGREGATE_CONFIG = {
       carry: 0.8,
       takeOn: 1.5,
     },
+    /**
+     * Scale on the open-play shot rate by where the arrival ends: outside the box, in it, in the
+     * goal area (T284: MATCH-23 shot place on calibration seeds).
+     */
+    place: { outside: 1.7, box: 1, goalArea: 0.4 },
     /** Effective-skill points (attack against defence) per e-fold of shot rate. */
-    skillScale: 120,
+    skillScale: 190,
+    /**
+     * Points at which the attack-against-defence margin saturates (MATCH-11's 30 × tanh(margin /
+     * 30)), so a far stronger side's chances do not grow without limit (T284: with the lower
+     * `territory.dominance` gaps of 35–40 went from 4.4 to about 4.0 goals; detailed 3.6–3.8).
+     */
+    saturation: 30,
     /** The summary path's base chance rate the profiles' points are relative to. */
     profileBase: 18,
     /** Shots a defender blocks before they reach goal; blocks and saves going out for a corner. */
-    blocked: 0.35,
-    cornerFromBlock: 0.45,
+    blocked: 0.44,
+    cornerFromBlock: 0.35,
     cornerFromSave: 0.25,
     /** A cross is met by a header this often. */
     header: 0.7,
@@ -125,7 +142,7 @@ export const AGGREGATE_CONFIG = {
     /** Log-normal spread of one chance's quality. */
     spread: 0.55,
     /** Effective-skill points (attack against defence) per e-fold of chance quality. */
-    matchupScale: 150,
+    matchupScale: 300,
     fallback: 0.03,
     /** A shot's most and least xG in hundredths, as the record schema bounds them. */
     max: 80,
@@ -135,22 +152,66 @@ export const AGGREGATE_CONFIG = {
   },
   penalty: { xg: 76, base: 0.78, min: 0.6, max: 0.92, skillScale: 400 },
   setPieces: {
-    corner: { completion: 0.3, shot: 0.55, goalArea: 0.35 },
+    corner: { completion: 0.35, shot: 1.4, goalArea: 0.3 },
     /** Fouls in the opponent half's inner lanes outside the box: a direct shot this often. */
     directShot: 0.3,
     directXg: 6,
     /** Other attacking free kicks delivered into the box this often. */
-    delivery: 0.45,
-    deliveryShot: 0.5,
+    delivery: 0.6,
+    deliveryShot: 1.1,
   },
   /** Per player a side is short, the share of its attack lost and of its defence opened. */
   manShort: { attack: 0.1, defence: 0.1 },
-  /** How each preset plays the ball beyond its profile points (→MATCH-8). */
+  /**
+   * How each preset plays the ball beyond its profile points (→MATCH-8): `shot` scales its own
+   * open-play shots per completed arrival (possession: fewer direct shots), `guard` the opponent's
+   * chance rate against it (balanced: defensive stability). PROVISIONAL: T284 calibrated `shot`
+   * and `guard` on MATCH-29's bands with forced pairings that seat each club's XI in the forced
+   * formation's slots, so out-of-position players (levelFactor down to 0.6) weaken some tactics
+   * and these values may compensate that artefact; T323 re-measures and re-tunes them once forced
+   * pairings field squads built for the forced formation at equal strength.
+   */
   tactics: {
-    balanced: { tempo: 1, direct: 1, through: 1, carries: 1, fouls: 1, press: 1 },
-    possession: { tempo: 1.06, direct: 0.8, through: 0.9, carries: 1, fouls: 0.9, press: 1 },
-    counter: { tempo: 0.92, direct: 1.45, through: 1.6, carries: 1.2, fouls: 1, press: 0.8 },
-    press: { tempo: 1.02, direct: 1.05, through: 1.1, carries: 1, fouls: 1.2, press: 1.45 },
+    balanced: {
+      tempo: 1,
+      direct: 1,
+      through: 1,
+      carries: 1,
+      fouls: 1,
+      press: 1,
+      shot: 1,
+      guard: 0.94,
+    },
+    possession: {
+      tempo: 1.06,
+      direct: 0.8,
+      through: 0.9,
+      carries: 1,
+      fouls: 0.9,
+      press: 1,
+      shot: 0.85,
+      guard: 1,
+    },
+    counter: {
+      tempo: 0.92,
+      direct: 1.45,
+      through: 1.6,
+      carries: 1.2,
+      fouls: 1,
+      press: 0.8,
+      shot: 1.2,
+      guard: 0.95,
+    },
+    press: {
+      tempo: 1.02,
+      direct: 1.05,
+      through: 1.1,
+      carries: 1,
+      fouls: 1.2,
+      press: 1.35,
+      shot: 1,
+      guard: 1,
+    },
   } satisfies Record<Tactic, Record<string, number>>,
 } as const;
 

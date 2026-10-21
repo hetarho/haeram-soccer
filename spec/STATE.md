@@ -18,6 +18,7 @@
 | h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T16:29Z | T321 |
 
 ## inbox
+- 261022 decided T321 T323: T284's review found forced-tactic conditions keep each club's XI in the forced formation's slots (mean slot level 0.86–0.92, forced goals 2.49 v 2.74, tactic points shifted up to ~0.15), which tuning would bake into real worlds → both clubs' squads are built for the forced formation at equal strength (T321 in grid-bands, shared by the aggregate runner); T284's aggregate tactic values stay provisional for T323 (alt: re-pick each club's XI for the forced formation from its own squad, keeping some misfit)
 - 261022 decided T322 T323: T284 found MATCH-13's advanced counters without intended levels (the detailed engine ~40 through balls a team, parity 44–54 of 108 metrics different) → MATCH-30: both engines hold sourced real-football bands kept in docs/MATCH-BASELINES.md, unsourced counters parity only; T322 registers bands and one counting rule, explore T323 calibrates both engines (alt: the detailed engine as reference | unify definitions only)
 - 261022 decided MATCH-23: six rows need ball positions or possession sequences the aggregate path never records → they bind the detailed engine only (alt: make the aggregate generate positions and sequences only to fill the rows)
 - 261022 decided MATCH-23: T284 proposed season scoring concentration from Premier League 2013/14–2023/24 → ratified: club top scorer 20–30% of its league goals, league top scorer 22–32 goals a 38-round season, hat-tricks 0.02–0.05 a match; T322 records the source (alt: keep it a proposal)
@@ -190,8 +191,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 T320 | doing@261022.h3t6 |
-| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
+| T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | doing@261022.h3t6 |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 | todo |
 | T321 | Calibrate the detailed engine's tactic pairings to their bands | MATCH STAFF ARCH | T320 | doing@261022.h3t6 |
 | T322 | Register sourced advanced-counter bands and one counting rule per counter | MATCH ARCH | T321 T284 T285 | todo |
@@ -216,6 +216,7 @@
 - CI: 9e67be5 passed every job.
 
 ## log
+- 261022 T284 integrated (h3t6; explore exit: aggregate core MATCH-23 31/32 measurable rows inside and 0 outside, curve 1.8점, 0 invariant failures in 260,000; parity and advanced-counter bands unresolved → MATCH r17, T322, T323; review named the forced-tactic out-of-position confound)
 - 261022 create-task MATCH r17: T322 (sourced advanced-counter bands, one counting rule) then explore T323 (calibrate both engines, parity at a resolving size) before T286; T285 runs beside T321 first
 - 261022 update-ssot MATCH r17: MATCH-23 trace-only rows bind the detailed engine only and season scoring concentration joins it; MATCH-30+ sourced advanced-counter bands (from T284's decision requests)
 - 261022 refresh T285 T306 bases only: MATCH r17 changes nothing they cite
@@ -235,4 +236,3 @@
 - 261021 T276 integrated
 - 261021 T304 integrated
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
-- 261021 create-task manager-achievements replan start: T304-T306 are unassigned todo; reserve T307-T308 to separate independent preparation from engine/save/runtime integration after T286.
