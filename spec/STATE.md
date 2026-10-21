@@ -190,7 +190,6 @@
 | T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
 | T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
 | T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
-| T304 | Define isolated manager-history facts and accomplishment queries | HIST SAVE WEB MATCH ARCH | - | todo |
 | T305 | Prepare the manager-history view against explicit summary props | WEB HIST ARCH | T304 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
@@ -203,12 +202,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 24 | 4 | 20 | 0 | 2 | 0 | 2026-10-21T07:10:37.227Z | [history](work/full-model.json) |
+| full-model | 3 | 24 | 5 | 19 | 0 | 1 | 0 | 2026-10-21T07:34:43.518Z | [history](work/full-model.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T304 integrated
 - 261021 T279 integrated
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
 - 261021 manager-history overlap audit passed: T304/T305 touch no file owned by any remaining task below T304; every T306-T308 overlap with T281/T283/T285/T286 is ordered by the T286 dependency chain. New manager tasks have no runtime assignment; no implementation started.
@@ -228,4 +228,3 @@
 - 261021 T274 integrated
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
-- 261021 T298 done: CI Firefox retries one worker after a transient exit, local retries remain zero; fast checks, build, changed-unit selection and executable project-configuration assertions pass. Repeated Firefox cases and the full gate follow in the batch.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T07:10:37.227Z",
-  "sourceCommit": "01f281be328d7b1ba18e84d2d606420c9bab534b",
+  "snapshotAt": "2026-10-21T07:34:43.518Z",
+  "sourceCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,11 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "eb68314b9165d7c9f74e4c355282a621d97f0a90",
+      "commit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T06:05:35.943Z",
-      "error": "To https://github.com/hetarho/haeram-soccer.git\n ! [rejected]        eb68314b9165d7c9f74e4c355282a621d97f0a90 -> main (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/hetarho/haeram-soccer.git'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details."
+      "at": "2026-10-21T07:34:41.808Z"
     },
     "runner": {
       "id": "5ca6081a-1afc-4dcd-a676-18cc8374b893",
@@ -95,10 +94,10 @@
   },
   "summary": {
     "total": 24,
-    "completed": 4,
-    "remaining": 20,
+    "completed": 5,
+    "remaining": 19,
     "running": 0,
-    "review": 2,
+    "review": 1,
     "blocked": 0,
     "unassigned": 18
   },
@@ -231,12 +230,6 @@
         "T302"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T304",
-      "title": "Define isolated manager-history facts and accomplishment queries",
-      "dep": [],
-      "status": "approved"
     },
     {
       "id": "T305",
@@ -544,6 +537,8 @@
       "submittedBase": "fffc9ae201d2f402c10e53985a55ab955eed05f7",
       "submissionId": "dab7b300-46ac-40aa-99ca-cd36f4253d5b",
       "submittedAt": "2026-10-21T06:12:47.533Z",
+      "integratedCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+      "integratedAt": "2026-10-21T07:34:39.848Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -737,6 +732,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T06:11:43.745Z",
           "finishedAt": "2026-10-21T06:12:47.223Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T07:10:37.514Z",
+          "finishedAt": "2026-10-21T07:34:39.580Z"
         }
       ]
     },
@@ -1077,7 +1079,7 @@
       "contributors": [
         "manager-mgha"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-21T06:37:50.699Z",
       "startCommit": "01f281be328d7b1ba18e84d2d606420c9bab534b",
@@ -6003,6 +6005,70 @@
       "group": "full-model",
       "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
       "taskId": "T279",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 491,
+      "at": "2026-10-21T07:34:39.775Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T07:10:37.514Z",
+            "finishedAt": "2026-10-21T07:34:39.580Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 492,
+      "at": "2026-10-21T07:34:39.848Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "77014d95-7933-4ec1-9a8b-e6a88f331085",
+      "taskId": "T279",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+        "integratedAt": "2026-10-21T07:34:39.848Z"
+      }
+    },
+    {
+      "sequence": 493,
+      "at": "2026-10-21T07:34:41.827Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "0e2b8197cf029192b1be46c3b11ef2b2bb3de078",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T07:34:41.808Z"
+        }
+      }
+    },
+    {
+      "sequence": 495,
+      "at": "2026-10-21T07:34:41.966Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "cff8482e-581d-452f-b8dc-840d8ac758c7",
+      "taskId": "T304",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
