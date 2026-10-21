@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "defaultId": "pixel",
+  "entries": [
+    {
+      "id": "pixel",
+      "label": "픽셀아트",
+      "resource": "pixel.json"
+    }
+  ]
+}

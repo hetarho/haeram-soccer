@@ -191,11 +191,6 @@
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 | todo |
-| T299 | Define presentation pack contracts and load registry resources | ARCH WEB | - | todo |
-| T300 | Structure the current Korean locale behind shared message services | ARCH WEB | T299 | todo |
-| T301 | Structure the current pixel concept as one theme resource pack | ARCH WEB | T299 | todo |
-| T302 | Connect registry-driven presentation settings to the shared app | ARCH WEB | T300 T301 | todo |
-| T303 | Prove resource-only locale/theme extension and document the pack contract | ARCH WEB | T302 | todo |
 | T304 | Define isolated manager-history facts and accomplishment queries | HIST SAVE WEB MATCH ARCH | - | todo |
 | T305 | Prepare the manager-history view against explicit summary props | WEB HIST ARCH | T304 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
@@ -210,12 +205,13 @@
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
 | full-model | 3 | 24 | 4 | 20 | 0 | 2 | 0 | 2026-10-21T07:10:37.227Z | [history](work/full-model.json) |
+| presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T07:55:55.229Z | [history](work/presentation-261021.json) |
 
 ## next
-- Complete final T299-T303 correction review, then the full pre-push gate after the independent heavy-slot owner finishes. Production keeps one ko-KR locale and one pixel theme.
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T299 T300 T301 T302 T303 integrated
 - 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
 - 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
 - 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
@@ -235,4 +231,3 @@
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
 - 261021 create-task manager-achievements replanned: T304 pure facts/query and T305 controlled view use only new files; T306 engine/save integration waits for T286, followed by T307 runtime/navigation and T308 continuity/capacity. All five tasks remain todo; product rules and earlier execution contracts unchanged.
-- 261021 T279 integrated

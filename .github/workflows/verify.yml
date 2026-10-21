@@ -31,6 +31,7 @@ jobs:
       - run: pnpm run format:check
       - run: pnpm run test:contract
       - run: pnpm run validate:catalogs
+      - run: pnpm run validate:presentation
       - run: pnpm run build
 
   unit:

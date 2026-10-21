@@ -1,0 +1,3045 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-21T07:55:55.229Z",
+  "sourceCommit": "e9109ac0ba7a441657b1537a89f1110d9d65d762",
+  "group": {
+    "id": "presentation-261021",
+    "branch": "work/presentation-261021",
+    "status": "active",
+    "createdAt": "2026-10-21T05:04:11.015Z",
+    "limits": {
+      "workers": 2,
+      "reviewers": 1,
+      "maxPending": 4
+    },
+    "push": "main",
+    "review": "all"
+  },
+  "summary": {
+    "total": 20,
+    "completed": 5,
+    "remaining": 15,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 15
+  },
+  "tasks": [
+    {
+      "id": "T275",
+      "title": "Render continuous paths at the owner's uniformly selected speed",
+      "dep": [
+        "T274"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T276",
+      "title": "Retain and interrupt individual football intentions for explicit reasons",
+      "dep": [
+        "T274"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T277",
+      "title": "Connect player intentions through support, pressing and covering reactions",
+      "dep": [
+        "T276"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T278",
+      "title": "Measure and calibrate continuous football and coordinated tactics",
+      "dep": [
+        "T275",
+        "T277",
+        "T281",
+        "T272"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T280",
+      "title": "Couple full player records with legal participation and incidents",
+      "dep": [
+        "T279"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T281",
+      "title": "Dispatch candidate fixtures and settle complete world statistics once",
+      "dep": [
+        "T280",
+        "T282"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T283",
+      "title": "Show comparable full statistics with honest tracking coverage",
+      "dep": [
+        "T281"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T284",
+      "title": "Measure and tune complete aggregate records against football targets",
+      "dep": [
+        "T278",
+        "T281",
+        "T272"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T285",
+      "title": "Profile and optimize complete-result season progression",
+      "dep": [
+        "T284",
+        "T283"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T286",
+      "title": "Activate the complete model only with combined accuracy and continuity evidence",
+      "dep": [
+        "T275",
+        "T283",
+        "T284",
+        "T285"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T304",
+      "title": "Define isolated manager-history facts and accomplishment queries",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T305",
+      "title": "Prepare the manager-history view against explicit summary props",
+      "dep": [
+        "T304"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T306",
+      "title": "Connect manager attribution to settled gameplay and checkpoints",
+      "dep": [
+        "T304",
+        "T286"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T307",
+      "title": "Connect the bounded manager-history query and records navigation",
+      "dep": [
+        "T305",
+        "T306"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T308",
+      "title": "Verify manager-history journeys and lossless century capacity",
+      "dep": [
+        "T307"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "group": "presentation-261021",
+      "taskId": "T299",
+      "tasks": [
+        "T299"
+      ],
+      "lane": null,
+      "owner": "codex-p8l3-t299",
+      "contributors": [
+        "codex-p8l3-t299"
+      ],
+      "status": "released",
+      "reason": "Superseded by one presentation-foundation lane after all five isolated drafts completed; standalone gate stopped after three existing browser timeouts. Workspace, artifacts and review history retained; no task marked done.",
+      "createdAt": "2026-10-21T05:04:17.616Z",
+      "startCommit": "03c0f414fdf3fa379062622ac10f94f72bda2f35",
+      "verifiedCommit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+      "submittedBase": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+      "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+      "submittedAt": "2026-10-21T05:18:24.193Z",
+      "releasedAt": "2026-10-21T05:50:53.340Z",
+      "risk": null,
+      "reviewHistory": [
+        {
+          "id": "7e0ccc05-5812-48f2-8d43-d3270fe4bd20",
+          "owner": "codex-p8l3-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T299's focused 22 tests pass, but refreshing a redirected registry mixes old entries with the latest registry URL and causes a reproducible spurious 404.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/adapters/presentationResources.ts:122",
+              "message": "T299: loadPack resolves every entry against registryUrls.get(kind), which loadRegistry overwrites on refresh. Reproduction: load the registry redirected to /v1/locales/index.json with resource ko-KR.json, then reload it redirected to /v2/locales/index.json with resource new/ko-KR.json. Both declared packs load successfully. Calling loadPack with the entry returned by the first registry now requests /v2/locales/ko-KR.json and fails with HTTP 404, although the original resource remains valid and cached. The URL combines an entry and base from different registry generations, violating resolution relative to the declaring JSON. Preserve the declaring registry URL with its entries, or otherwise resolve an entry and its base from the same registry generation. Add a regression covering a refresh that changes both the redirect base and relative resource path. Reproduced independently with injected fetch in /tmp/t299-review-registry-origin.mts."
+            }
+          ],
+          "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+          "baseCommit": "7f53877409add2f72565fd37766bda68d4c77e0c",
+          "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+          "createdAt": "2026-10-21T05:12:02.032Z",
+          "finishedAt": "2026-10-21T05:13:59.125Z",
+          "invalidatedAt": "2026-10-21T05:14:07.603Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "4d5a5f5b-ea7c-4815-87d5-dd8ac41409e2",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T299 commit 833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4 resolves the previous P2 by retaining each returned registry entry's declaring URL in a WeakMap. Cached and initially uncached entries continue resolving against their own registry after both redirect base and relative resource path change. Independent focused verification passed all 24 tests across registry.test.ts and presentationResources.test.ts. The correction preserves the public API, successful-resource caching, retry behavior and resource-only discovery. No remaining P1/P2 findings.",
+          "findings": [],
+          "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+          "baseCommit": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+          "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+          "createdAt": "2026-10-21T05:18:26.835Z",
+          "finishedAt": "2026-10-21T05:19:03.021Z",
+          "invalidatedAt": "2026-10-21T05:50:53.340Z",
+          "invalidationReason": "attempt released"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T299",
+          "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+          "at": "2026-10-21T05:18:24.173Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T05:15:53.701Z",
+              "finishedAt": "2026-10-21T05:18:23.925Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T05:15:53.701Z",
+          "finishedAt": "2026-10-21T05:18:23.925Z"
+        }
+      ]
+    },
+    {
+      "id": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "group": "presentation-261021",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "lane": "presentation-foundation",
+      "owner": "codex-p8l3-presentation",
+      "contributors": [
+        "codex-p8l3-presentation"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-21T05:50:55.115Z",
+      "startCommit": "6c0af664e5daa78920be6e25262ffd62ba7e3361",
+      "verifiedCommit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+      "submittedBase": "aecc7d2287c53b3412fbdf9611fba4f296681379",
+      "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
+      "submittedAt": "2026-10-21T07:51:15.278Z",
+      "risk": null,
+      "review": {
+        "id": "d027b66c-c1f3-413b-b3cd-b2fd806ae582",
+        "owner": "codex-p8l3-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh independent review of all T299-T303 in submission 59fc9a9c-79c3-4fae-91c9-88a683f0ef69, pinned commit 02ac6d4811e72d5a0f0043d2cfaea3c44752b544 against base aecc7d2287c53b3412fbdf9611fba4f296681379. Verified exact currentReview metadata, a clean pinned checkout, unchanged cited ARCH/WEB decisions and all 51 non-spec changes within canonical task touches. Relative to the preceding reviewed presentation implementation ea8dabd, application changes are limited to App.tsx, ClubFounding.tsx and App.module.css; the other incoming source is T279's seven aggregate files already present in this base. Reviewed the actual overflow diagnosis: a new 48px trigger enlarged the founding slot-label row and caused the 25/28px vertical overflow. Moving that trigger into the existing non-playing GameHud and reducing only mobile start-HUD vertical padding to 3px retains the original 56px row, 48px target, safe-area inset and founding content/recovery controls. Playing HUD behavior, navigation, form spacing, prose and test geometry tolerances are unchanged. The shared settings host remains independent of game ownership and commands. All other T299-T303 source, tests, resources and guide are unchanged, preserving the previously corrected registry-origin/cache, native-fetch receiver, message-source plural, synchronous transaction/publication and data-only extension behavior. Matched the pinned WOFF2/WOFF SHA-256 hashes to the preceding independently recomputed glyph/cmap/metrics/all-outline equivalence proof; the single ko-KR/pixel registries and license are unchanged. Official install/typecheck/lint/format and 13 focused files passed 134 cases; build index-CkAMPeIh.js and 79-asset resource validation are recorded. Read the new raw browser reports: seven Chromium presentation-settings journeys passed with retry 0, and all 18 existing founding/native-touch cases passed across Chromium, Firefox and WebKit, six per engine, with no skipped/flaky/failed cases or retries. The six additional actual-build bootstrap/geometry observations show five loaded semantic font faces, ko-KR/ltr, no initial/page error, HUD 56px, uncovered 48px trigger, settings opening/closing, and overflow 0px at 360x740 or 1px at 390x844 before/after FRA selection and closing settings. Chromium/Firefox request no WOFF alternatives; WebKit loads the three same-font WOFF representations. Independently matched the observed build entry SHA and source checkpoint 93b635f to the exact pinned submission. Also read incoming main 3922b872's client/host/protocol view-delta reconstruction, tests and manager/staff projections: its paths do not overlap canonical touches, it changes no SSOT, and no presentation provider/storage/command interaction defect was found. Those incoming main changes are outside the exact-02ac browser evidence; the coordinator owns their combined-candidate full integration gate. No P1/P2 findings. Evidence: /tmp/presentation-review-d027b66c-scope-and-reused-evidence.json, /tmp/presentation-review-d027b66c-incoming-main.json, /tmp/presentation-review-d027b66c-browser-evidence.json, /tmp/presentation-settings-hud-4200-summary.json and /tmp/presentation-final-fit-native-4198-summary.json.",
+        "findings": [],
+        "commit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+        "baseCommit": "aecc7d2287c53b3412fbdf9611fba4f296681379",
+        "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
+        "createdAt": "2026-10-21T07:51:53.749Z",
+        "finishedAt": "2026-10-21T07:55:33.159Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+          "owner": "codex-p8l3-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/presentation/controller.ts:96",
+              "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+            },
+            {
+              "priority": "P2",
+              "where": "apps/web/src/presentation/theme.test.ts:20",
+              "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+            }
+          ],
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+          "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+          "createdAt": "2026-10-21T05:57:48.408Z",
+          "finishedAt": "2026-10-21T06:00:52.245Z",
+          "invalidatedAt": "2026-10-21T06:01:05.872Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+          "findings": [],
+          "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+          "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+          "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+          "createdAt": "2026-10-21T06:07:39.126Z",
+          "finishedAt": "2026-10-21T06:09:13.246Z",
+          "invalidatedAt": "2026-10-21T06:10:35.009Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh review of submission 726c66cf-9295-4bcb-9f11-95ced7e34471 at cecacde57cf93b0b32bc5035fd9a6adb89d16838 against base 283f940a1c5f5757b92ee808fd9b70bb6b104b84. Verified the exact attempt/review assignment in the new pinned checkout. Every non-spec file is identical to reviewed implementation e520f16; the incoming base also has no non-spec changes relative to the preceding reviewed base. T299-T303 each now quote ARCH@17 WEB@106, with acceptance and implementation scope unchanged. Compared all 25 uniquely cited decision blocks between the bases: none changed or disappeared. The added WEB-92, HIST-18/19 and SAVE-24 specify separate prospective manager-history work; they do not alter existing presentation policies, permit saved-prose rewriting or couple presentation preferences to worker/save attribution. The existing presentation implementation remains compatible with these added policies. The fresh official verification reran all twelve focused files and passed 118 cases. Prior static/build/resource evidence is reused under the parent directive because application, test, tooling and guide sources are byte-identical. No P1/P2 findings; the prior asynchronous transaction and resource-extension fixes remain unchanged. Full/browser verification remains the integration gate.",
+          "findings": [],
+          "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+          "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+          "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+          "createdAt": "2026-10-21T06:13:23.212Z",
+          "finishedAt": "2026-10-21T06:14:08.828Z",
+          "invalidatedAt": "2026-10-21T06:32:31.668Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "82ebefc6-3715-492a-8ba9-b4842f260e2f",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh pinned review of T299-T303, submission 276d0287-c675-4fb2-976e-1c61a0003582, commit 86e0ab274f62c3599916cbf87ceefb920811570b against base 1296b04f586345d9bc20e1cac66c0259058a68f2. Relative to the previous reviewed implementation, non-spec changes are limited to the fetch capability capture, its ordinary-function receiver regression and two browser expectation corrections. Capturing options.fetch and invoking the local function removes the erroneous options-object receiver; the recorded failing regression and actual Chromium diagnostic both reproduce the original Illegal invocation before any registry request. Official install/typecheck/lint/format and twelve focused files now pass 119 cases. Reviewed the corrected production bootstrap evidence: founding is visible; registries, packs, stylesheet and fonts load with 200 responses; locale/direction/background/font aliases are applied; no initial or page errors remain. The build's application sources are byte-identical to this pinned commit. The seven settings browser cases pass with zero failures and zero retries. The reload expectation matches initialScreen/openSlots policies verified byte-identical to the base; selecting the visible fixture image preserves the actual resource-use assertion at mobile width. The original game-fact, draft, stored-prose, retry and read-only checks remain intact. Incoming base changes are spec bookkeeping/planning only, with no application interaction change. Previous transaction/resource-extension corrections are unchanged. No P1/P2 findings. The coordinator still owns the combined-candidate full integration gate. Evidence: /tmp/presentation-fetch-diagnostic-final.json, /tmp/presentation-fetch-receiver-red.log, /tmp/presentation-bootstrap-corrected.json and /tmp/presentation-settings-chromium-4187-rerun-summary.json.",
+          "findings": [],
+          "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+          "baseCommit": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+          "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+          "createdAt": "2026-10-21T06:48:55.155Z",
+          "finishedAt": "2026-10-21T06:50:25.147Z",
+          "invalidatedAt": "2026-10-21T07:08:36.432Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "1bd3db19-edff-430c-b002-46fb3a73ea90",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh independent review of all T299-T303 in submission e16757b5-0a22-451f-b548-c07e9b4300a6, pinned commit ea8dabdebea975fce602e8b1e6ccf0c7f48d5483 against base b0413477be048dbade50c267d29ca383c791b8f2. Verified the exact currentReview metadata and clean pinned checkout. The incoming base changes only task scope notes and report/STATE bookkeeping; cited ARCH/WEB SSOT is unchanged. All 51 non-spec changes are within the five canonical task touches, including the shared font helper/tests, three WOFF assets and preview MIME configuration. Reviewed the new optional ordered FontSource alternatives across shared schema, relative resolution, semantic aliases, browser installation, static validation and guide. Existing single-resource packs remain valid. Separate detached FontFace attempts preserve declaration order, stop at the first success and register only that successful face at the existing synchronous transaction boundary. Total font failure still rejects preparation and retains the previous usable theme; no browser-ID branch or font-error bypass is present. All declared alternatives receive the same URL/format constraints and static file coverage. The previous registry-origin, fetch-receiver, default-message plural, transaction-publication and resource-only-extension corrections remain intact. Independently recomputed glyph order, cmap, every hmtx entry, all glyph RecordingPen outlines and line metrics from the pinned WOFF2/WOFF files: all three pairs are identical. Original WOFF2/license and single ko-KR/pixel registries are unchanged. Official install/typecheck/lint/format and 13 focused files passed 134 cases; resource validation reports 79 assets and production build passed. Reviewed the authorized three-engine bootstrap evidence: founding initializes and all five semantic faces load in Chromium, Firefox and WebKit; Chromium/Firefox request no WOFF alternatives, while WebKit successfully uses the three same-font WOFF representations. The pre-existing Firefox schemas CSP eval warning does not prevent bootstrap/font loading. Independently verified c9f5fb-to-ea8dabd production source equality and SHA-256 equality of all 195 built files linking that evidence to this submission. The final exact-ea8dabd Chromium presentation-settings raw report and summary show all seven journeys passed, retry 0, with no skips/flakes. No P1/P2 findings. Full combined-candidate integration verification remains with the coordinator. Independent evidence: /tmp/presentation-review-1bd3db19-font-equivalence.json and /tmp/presentation-review-1bd3db19-scope-and-build-equivalence.json; browser evidence: /tmp/presentation-font-source-bootstrap.json and /tmp/presentation-settings-chromium-final-4197-summary.json.",
+          "findings": [],
+          "commit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483",
+          "baseCommit": "b0413477be048dbade50c267d29ca383c791b8f2",
+          "submissionId": "e16757b5-0a22-451f-b548-c07e9b4300a6",
+          "createdAt": "2026-10-21T07:26:43.332Z",
+          "finishedAt": "2026-10-21T07:32:22.330Z",
+          "invalidatedAt": "2026-10-21T07:44:07.278Z",
+          "invalidationReason": "worker resumed or blocked"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T299",
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "at": "2026-10-21T05:57:43.261Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+              "startedAt": "2026-10-21T05:57:37.239Z",
+              "finishedAt": "2026-10-21T05:57:42.895Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T300",
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "at": "2026-10-21T05:57:43.261Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+              "startedAt": "2026-10-21T05:57:37.239Z",
+              "finishedAt": "2026-10-21T05:57:42.895Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T301",
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "at": "2026-10-21T05:57:43.261Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+              "startedAt": "2026-10-21T05:57:37.239Z",
+              "finishedAt": "2026-10-21T05:57:42.895Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T302",
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "at": "2026-10-21T05:57:43.261Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+              "startedAt": "2026-10-21T05:57:37.239Z",
+              "finishedAt": "2026-10-21T05:57:42.895Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T303",
+          "commit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+          "at": "2026-10-21T07:51:15.246Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline",
+              "startedAt": "2026-10-21T07:49:32.228Z",
+              "finishedAt": "2026-10-21T07:49:34.073Z"
+            },
+            {
+              "command": "pnpm run typecheck",
+              "startedAt": "2026-10-21T07:49:34.119Z",
+              "finishedAt": "2026-10-21T07:50:10.956Z"
+            },
+            {
+              "command": "pnpm run lint",
+              "startedAt": "2026-10-21T07:50:11.014Z",
+              "finishedAt": "2026-10-21T07:50:33.226Z"
+            },
+            {
+              "command": "pnpm run format:check",
+              "startedAt": "2026-10-21T07:50:33.293Z",
+              "finishedAt": "2026-10-21T07:51:05.433Z"
+            },
+            {
+              "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+              "startedAt": "2026-10-21T07:51:05.511Z",
+              "finishedAt": "2026-10-21T07:51:14.729Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-10-21T07:49:32.228Z",
+          "finishedAt": "2026-10-21T07:49:34.073Z"
+        },
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-10-21T07:49:34.119Z",
+          "finishedAt": "2026-10-21T07:50:10.956Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-10-21T07:50:11.014Z",
+          "finishedAt": "2026-10-21T07:50:33.226Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-10-21T07:50:33.293Z",
+          "finishedAt": "2026-10-21T07:51:05.433Z"
+        },
+        {
+          "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+          "startedAt": "2026-10-21T07:51:05.511Z",
+          "finishedAt": "2026-10-21T07:51:14.729Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 348,
+      "at": "2026-10-21T05:04:11.031Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "presentation-261021",
+        "branch": "work/presentation-261021",
+        "status": "preparing",
+        "createdAt": "2026-10-21T05:04:11.015Z",
+        "limits": {
+          "workers": 2,
+          "reviewers": 1,
+          "maxPending": 4
+        },
+        "push": "main",
+        "review": "all"
+      }
+    },
+    {
+      "sequence": 349,
+      "at": "2026-10-21T05:04:11.314Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 350,
+      "at": "2026-10-21T05:04:17.617Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+        "group": "presentation-261021",
+        "taskId": "T299",
+        "tasks": [
+          "T299"
+        ],
+        "lane": null,
+        "owner": "codex-p8l3-t299",
+        "contributors": [
+          "codex-p8l3-t299"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T05:04:17.616Z",
+        "startCommit": "03c0f414fdf3fa379062622ac10f94f72bda2f35"
+      }
+    },
+    {
+      "sequence": 351,
+      "at": "2026-10-21T05:04:17.929Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 352,
+      "at": "2026-10-21T05:07:38.502Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "push": null
+      }
+    },
+    {
+      "sequence": 353,
+      "at": "2026-10-21T05:09:44.598Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 354,
+      "at": "2026-10-21T05:10:37.832Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 360,
+      "at": "2026-10-21T05:11:42.680Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "b82bad8517ddf3deff515d013847089b771743a8",
+        "submittedBase": "7f53877409add2f72565fd37766bda68d4c77e0c",
+        "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+        "submittedAt": "2026-10-21T05:11:42.680Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+            "at": "2026-10-21T05:11:42.661Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T05:10:38.065Z",
+                "finishedAt": "2026-10-21T05:11:42.417Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T05:10:38.065Z",
+            "finishedAt": "2026-10-21T05:11:42.417Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 361,
+      "at": "2026-10-21T05:12:02.033Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7e0ccc05-5812-48f2-8d43-d3270fe4bd20",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+          "baseCommit": "7f53877409add2f72565fd37766bda68d4c77e0c",
+          "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+          "createdAt": "2026-10-21T05:12:02.032Z"
+        }
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-10-21T05:13:59.126Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T299's focused 22 tests pass, but refreshing a redirected registry mixes old entries with the latest registry URL and causes a reproducible spurious 404.",
+        "review": {
+          "id": "7e0ccc05-5812-48f2-8d43-d3270fe4bd20",
+          "owner": "codex-p8l3-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T299's focused 22 tests pass, but refreshing a redirected registry mixes old entries with the latest registry URL and causes a reproducible spurious 404.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/adapters/presentationResources.ts:122",
+              "message": "T299: loadPack resolves every entry against registryUrls.get(kind), which loadRegistry overwrites on refresh. Reproduction: load the registry redirected to /v1/locales/index.json with resource ko-KR.json, then reload it redirected to /v2/locales/index.json with resource new/ko-KR.json. Both declared packs load successfully. Calling loadPack with the entry returned by the first registry now requests /v2/locales/ko-KR.json and fails with HTTP 404, although the original resource remains valid and cached. The URL combines an entry and base from different registry generations, violating resolution relative to the declaring JSON. Preserve the declaring registry URL with its entries, or otherwise resolve an entry and its base from the same registry generation. Add a regression covering a refresh that changes both the redirect base and relative resource path. Reproduced independently with injected fetch in /tmp/t299-review-registry-origin.mts."
+            }
+          ],
+          "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+          "baseCommit": "7f53877409add2f72565fd37766bda68d4c77e0c",
+          "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+          "createdAt": "2026-10-21T05:12:02.032Z",
+          "finishedAt": "2026-10-21T05:13:59.125Z"
+        }
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-10-21T05:14:07.603Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "7e0ccc05-5812-48f2-8d43-d3270fe4bd20",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T299's focused 22 tests pass, but refreshing a redirected registry mixes old entries with the latest registry URL and causes a reproducible spurious 404.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/adapters/presentationResources.ts:122",
+                "message": "T299: loadPack resolves every entry against registryUrls.get(kind), which loadRegistry overwrites on refresh. Reproduction: load the registry redirected to /v1/locales/index.json with resource ko-KR.json, then reload it redirected to /v2/locales/index.json with resource new/ko-KR.json. Both declared packs load successfully. Calling loadPack with the entry returned by the first registry now requests /v2/locales/ko-KR.json and fails with HTTP 404, although the original resource remains valid and cached. The URL combines an entry and base from different registry generations, violating resolution relative to the declaring JSON. Preserve the declaring registry URL with its entries, or otherwise resolve an entry and its base from the same registry generation. Add a regression covering a refresh that changes both the redirect base and relative resource path. Reproduced independently with injected fetch in /tmp/t299-review-registry-origin.mts."
+              }
+            ],
+            "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+            "baseCommit": "7f53877409add2f72565fd37766bda68d4c77e0c",
+            "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+            "createdAt": "2026-10-21T05:12:02.032Z",
+            "finishedAt": "2026-10-21T05:13:59.125Z",
+            "invalidatedAt": "2026-10-21T05:14:07.603Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-10-21T05:15:25.134Z",
+      "type": "group",
+      "group": "presentation-261021",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "push": "main"
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-10-21T05:15:53.026Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 368,
+      "at": "2026-10-21T05:18:24.193Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+        "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+        "submittedAt": "2026-10-21T05:18:24.193Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+            "at": "2026-10-21T05:18:24.173Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T05:15:53.701Z",
+                "finishedAt": "2026-10-21T05:18:23.925Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T05:15:53.701Z",
+            "finishedAt": "2026-10-21T05:18:23.925Z"
+          }
+        ],
+        "verifiedCommit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4"
+      }
+    },
+    {
+      "sequence": 369,
+      "at": "2026-10-21T05:18:26.835Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4d5a5f5b-ea7c-4815-87d5-dd8ac41409e2",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+          "baseCommit": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+          "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+          "createdAt": "2026-10-21T05:18:26.835Z"
+        }
+      }
+    },
+    {
+      "sequence": 373,
+      "at": "2026-10-21T05:19:03.021Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4d5a5f5b-ea7c-4815-87d5-dd8ac41409e2",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T299 commit 833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4 resolves the previous P2 by retaining each returned registry entry's declaring URL in a WeakMap. Cached and initially uncached entries continue resolving against their own registry after both redirect base and relative resource path change. Independent focused verification passed all 24 tests across registry.test.ts and presentationResources.test.ts. The correction preserves the public API, successful-resource caching, retry behavior and resource-only discovery. No remaining P1/P2 findings.",
+          "findings": [],
+          "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+          "baseCommit": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+          "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+          "createdAt": "2026-10-21T05:18:26.835Z",
+          "finishedAt": "2026-10-21T05:19:03.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 374,
+      "at": "2026-10-21T05:19:20.889Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 375,
+      "at": "2026-10-21T05:19:22.346Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 379,
+      "at": "2026-10-21T05:22:54.920Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 390,
+      "at": "2026-10-21T05:49:59.077Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium"
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-10-21T05:50:53.340Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "ae112cd4-729b-460d-88c9-f92ff78f307d",
+      "taskId": "T299",
+      "previousStatus": "approved",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Superseded by one presentation-foundation lane after all five isolated drafts completed; standalone gate stopped after three existing browser timeouts. Workspace, artifacts and review history retained; no task marked done.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "7e0ccc05-5812-48f2-8d43-d3270fe4bd20",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T299's focused 22 tests pass, but refreshing a redirected registry mixes old entries with the latest registry URL and causes a reproducible spurious 404.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/adapters/presentationResources.ts:122",
+                "message": "T299: loadPack resolves every entry against registryUrls.get(kind), which loadRegistry overwrites on refresh. Reproduction: load the registry redirected to /v1/locales/index.json with resource ko-KR.json, then reload it redirected to /v2/locales/index.json with resource new/ko-KR.json. Both declared packs load successfully. Calling loadPack with the entry returned by the first registry now requests /v2/locales/ko-KR.json and fails with HTTP 404, although the original resource remains valid and cached. The URL combines an entry and base from different registry generations, violating resolution relative to the declaring JSON. Preserve the declaring registry URL with its entries, or otherwise resolve an entry and its base from the same registry generation. Add a regression covering a refresh that changes both the redirect base and relative resource path. Reproduced independently with injected fetch in /tmp/t299-review-registry-origin.mts."
+              }
+            ],
+            "commit": "b82bad8517ddf3deff515d013847089b771743a8",
+            "baseCommit": "7f53877409add2f72565fd37766bda68d4c77e0c",
+            "submissionId": "dc8a22ac-8284-40a0-b000-06b19fedbd86",
+            "createdAt": "2026-10-21T05:12:02.032Z",
+            "finishedAt": "2026-10-21T05:13:59.125Z",
+            "invalidatedAt": "2026-10-21T05:14:07.603Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "4d5a5f5b-ea7c-4815-87d5-dd8ac41409e2",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T299 commit 833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4 resolves the previous P2 by retaining each returned registry entry's declaring URL in a WeakMap. Cached and initially uncached entries continue resolving against their own registry after both redirect base and relative resource path change. Independent focused verification passed all 24 tests across registry.test.ts and presentationResources.test.ts. The correction preserves the public API, successful-resource caching, retry behavior and resource-only discovery. No remaining P1/P2 findings.",
+            "findings": [],
+            "commit": "833e6d8702d3b6db12f20ec1bd20a0c392bb5cd4",
+            "baseCommit": "e2c30fcaa68ebd996d33daa52f598cc76606474b",
+            "submissionId": "5bcb9c21-3b5b-4b0d-b285-53974b5a2a55",
+            "createdAt": "2026-10-21T05:18:26.835Z",
+            "finishedAt": "2026-10-21T05:19:03.021Z",
+            "invalidatedAt": "2026-10-21T05:50:53.340Z",
+            "invalidationReason": "attempt released"
+          }
+        ],
+        "releasedAt": "2026-10-21T05:50:53.340Z"
+      }
+    },
+    {
+      "sequence": 392,
+      "at": "2026-10-21T05:50:55.115Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+        "group": "presentation-261021",
+        "taskId": "T299",
+        "tasks": [
+          "T299",
+          "T300",
+          "T301",
+          "T302",
+          "T303"
+        ],
+        "lane": "presentation-foundation",
+        "owner": "codex-p8l3-presentation",
+        "contributors": [
+          "codex-p8l3-presentation"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T05:50:55.115Z",
+        "startCommit": "6c0af664e5daa78920be6e25262ffd62ba7e3361"
+      }
+    },
+    {
+      "sequence": 393,
+      "at": "2026-10-21T05:50:56.108Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 394,
+      "at": "2026-10-21T05:53:20.230Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 395,
+      "at": "2026-10-21T05:56:27.663Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+      }
+    },
+    {
+      "sequence": 396,
+      "at": "2026-10-21T05:57:26.305Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 397,
+      "at": "2026-10-21T05:57:36.786Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T299",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 398,
+      "at": "2026-10-21T05:57:43.280Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T303",
+        "status": "ready",
+        "verifiedCommit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+        "submittedBase": "3508e730a32033c17c2ed806240a2b32ef281844",
+        "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+        "submittedAt": "2026-10-21T05:57:43.280Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+            "startedAt": "2026-10-21T05:57:37.239Z",
+            "finishedAt": "2026-10-21T05:57:42.895Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 399,
+      "at": "2026-10-21T05:57:48.409Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+          "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+          "createdAt": "2026-10-21T05:57:48.408Z"
+        }
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-10-21T06:00:52.245Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+        "review": {
+          "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+          "owner": "codex-p8l3-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/presentation/controller.ts:96",
+              "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+            },
+            {
+              "priority": "P2",
+              "where": "apps/web/src/presentation/theme.test.ts:20",
+              "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+            }
+          ],
+          "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+          "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+          "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+          "createdAt": "2026-10-21T05:57:48.408Z",
+          "finishedAt": "2026-10-21T06:00:52.245Z"
+        }
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-10-21T06:01:05.873Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/controller.ts:96",
+                "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/theme.test.ts:20",
+                "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+              }
+            ],
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+            "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+            "createdAt": "2026-10-21T05:57:48.408Z",
+            "finishedAt": "2026-10-21T06:00:52.245Z",
+            "invalidatedAt": "2026-10-21T06:01:05.872Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 424,
+      "at": "2026-10-21T06:06:22.955Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 425,
+      "at": "2026-10-21T06:07:38.530Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+        "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+        "submittedAt": "2026-10-21T06:07:38.530Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+            "at": "2026-10-21T06:07:38.505Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-10-21T06:06:23.237Z",
+                "finishedAt": "2026-10-21T06:06:24.830Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-10-21T06:06:24.863Z",
+                "finishedAt": "2026-10-21T06:07:01.272Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-10-21T06:07:01.306Z",
+                "finishedAt": "2026-10-21T06:07:15.000Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-10-21T06:07:15.031Z",
+                "finishedAt": "2026-10-21T06:07:34.251Z"
+              },
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T06:07:34.280Z",
+                "finishedAt": "2026-10-21T06:07:38.197Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T06:06:23.237Z",
+            "finishedAt": "2026-10-21T06:06:24.830Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-10-21T06:06:24.863Z",
+            "finishedAt": "2026-10-21T06:07:01.272Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-10-21T06:07:01.306Z",
+            "finishedAt": "2026-10-21T06:07:15.000Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-10-21T06:07:15.031Z",
+            "finishedAt": "2026-10-21T06:07:34.251Z"
+          },
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+            "startedAt": "2026-10-21T06:07:34.280Z",
+            "finishedAt": "2026-10-21T06:07:38.197Z"
+          }
+        ],
+        "verifiedCommit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359"
+      }
+    },
+    {
+      "sequence": 426,
+      "at": "2026-10-21T06:07:39.126Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+          "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+          "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+          "createdAt": "2026-10-21T06:07:39.126Z"
+        }
+      }
+    },
+    {
+      "sequence": 427,
+      "at": "2026-10-21T06:09:13.246Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+          "findings": [],
+          "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+          "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+          "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+          "createdAt": "2026-10-21T06:07:39.126Z",
+          "finishedAt": "2026-10-21T06:09:13.246Z"
+        }
+      }
+    },
+    {
+      "sequence": 429,
+      "at": "2026-10-21T06:10:35.009Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/controller.ts:96",
+                "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/theme.test.ts:20",
+                "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+              }
+            ],
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+            "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+            "createdAt": "2026-10-21T05:57:48.408Z",
+            "finishedAt": "2026-10-21T06:00:52.245Z",
+            "invalidatedAt": "2026-10-21T06:01:05.872Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+            "findings": [],
+            "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+            "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+            "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+            "createdAt": "2026-10-21T06:07:39.126Z",
+            "finishedAt": "2026-10-21T06:09:13.246Z",
+            "invalidatedAt": "2026-10-21T06:10:35.009Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 430,
+      "at": "2026-10-21T06:11:31.313Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 431,
+      "at": "2026-10-21T06:11:31.586Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T299: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 435,
+      "at": "2026-10-21T06:12:56.975Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 436,
+      "at": "2026-10-21T06:13:01.608Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+        "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+        "submittedAt": "2026-10-21T06:13:01.608Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+            "at": "2026-10-21T06:13:01.589Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T06:12:57.256Z",
+                "finishedAt": "2026-10-21T06:13:01.304Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+            "startedAt": "2026-10-21T06:12:57.256Z",
+            "finishedAt": "2026-10-21T06:13:01.304Z"
+          }
+        ],
+        "verifiedCommit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838"
+      }
+    },
+    {
+      "sequence": 445,
+      "at": "2026-10-21T06:13:23.212Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+          "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+          "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+          "createdAt": "2026-10-21T06:13:23.212Z"
+        }
+      }
+    },
+    {
+      "sequence": 446,
+      "at": "2026-10-21T06:14:08.829Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh review of submission 726c66cf-9295-4bcb-9f11-95ced7e34471 at cecacde57cf93b0b32bc5035fd9a6adb89d16838 against base 283f940a1c5f5757b92ee808fd9b70bb6b104b84. Verified the exact attempt/review assignment in the new pinned checkout. Every non-spec file is identical to reviewed implementation e520f16; the incoming base also has no non-spec changes relative to the preceding reviewed base. T299-T303 each now quote ARCH@17 WEB@106, with acceptance and implementation scope unchanged. Compared all 25 uniquely cited decision blocks between the bases: none changed or disappeared. The added WEB-92, HIST-18/19 and SAVE-24 specify separate prospective manager-history work; they do not alter existing presentation policies, permit saved-prose rewriting or couple presentation preferences to worker/save attribution. The existing presentation implementation remains compatible with these added policies. The fresh official verification reran all twelve focused files and passed 118 cases. Prior static/build/resource evidence is reused under the parent directive because application, test, tooling and guide sources are byte-identical. No P1/P2 findings; the prior asynchronous transaction and resource-extension fixes remain unchanged. Full/browser verification remains the integration gate.",
+          "findings": [],
+          "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+          "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+          "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+          "createdAt": "2026-10-21T06:13:23.212Z",
+          "finishedAt": "2026-10-21T06:14:08.828Z"
+        }
+      }
+    },
+    {
+      "sequence": 447,
+      "at": "2026-10-21T06:14:21.967Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 459,
+      "at": "2026-10-21T06:32:05.825Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium --workers=2 --timeout=90000 --retries=1"
+      }
+    },
+    {
+      "sequence": 460,
+      "at": "2026-10-21T06:32:31.670Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/controller.ts:96",
+                "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/theme.test.ts:20",
+                "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+              }
+            ],
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+            "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+            "createdAt": "2026-10-21T05:57:48.408Z",
+            "finishedAt": "2026-10-21T06:00:52.245Z",
+            "invalidatedAt": "2026-10-21T06:01:05.872Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+            "findings": [],
+            "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+            "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+            "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+            "createdAt": "2026-10-21T06:07:39.126Z",
+            "finishedAt": "2026-10-21T06:09:13.246Z",
+            "invalidatedAt": "2026-10-21T06:10:35.009Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh review of submission 726c66cf-9295-4bcb-9f11-95ced7e34471 at cecacde57cf93b0b32bc5035fd9a6adb89d16838 against base 283f940a1c5f5757b92ee808fd9b70bb6b104b84. Verified the exact attempt/review assignment in the new pinned checkout. Every non-spec file is identical to reviewed implementation e520f16; the incoming base also has no non-spec changes relative to the preceding reviewed base. T299-T303 each now quote ARCH@17 WEB@106, with acceptance and implementation scope unchanged. Compared all 25 uniquely cited decision blocks between the bases: none changed or disappeared. The added WEB-92, HIST-18/19 and SAVE-24 specify separate prospective manager-history work; they do not alter existing presentation policies, permit saved-prose rewriting or couple presentation preferences to worker/save attribution. The existing presentation implementation remains compatible with these added policies. The fresh official verification reran all twelve focused files and passed 118 cases. Prior static/build/resource evidence is reused under the parent directive because application, test, tooling and guide sources are byte-identical. No P1/P2 findings; the prior asynchronous transaction and resource-extension fixes remain unchanged. Full/browser verification remains the integration gate.",
+            "findings": [],
+            "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+            "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+            "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+            "createdAt": "2026-10-21T06:13:23.212Z",
+            "finishedAt": "2026-10-21T06:14:08.828Z",
+            "invalidatedAt": "2026-10-21T06:32:31.668Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 463,
+      "at": "2026-10-21T06:36:35.780Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 466,
+      "at": "2026-10-21T06:42:17.750Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "774b5b50b00835457ca0380c9c048a4ddbf18e88",
+        "submissionId": "31e3e17f-795f-4b44-8fe2-5038b359d0d2",
+        "submittedAt": "2026-10-21T06:42:17.750Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "02cce79b781b9697076928a0783e267a4a1f646c",
+            "at": "2026-10-21T06:42:17.715Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-10-21T06:36:39.921Z",
+                "finishedAt": "2026-10-21T06:36:47.587Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-10-21T06:36:47.832Z",
+                "finishedAt": "2026-10-21T06:39:39.162Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-10-21T06:39:39.410Z",
+                "finishedAt": "2026-10-21T06:40:29.139Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-10-21T06:40:29.329Z",
+                "finishedAt": "2026-10-21T06:42:00.400Z"
+              },
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T06:42:00.612Z",
+                "finishedAt": "2026-10-21T06:42:15.871Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T06:36:39.921Z",
+            "finishedAt": "2026-10-21T06:36:47.587Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-10-21T06:36:47.832Z",
+            "finishedAt": "2026-10-21T06:39:39.162Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-10-21T06:39:39.410Z",
+            "finishedAt": "2026-10-21T06:40:29.139Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-10-21T06:40:29.329Z",
+            "finishedAt": "2026-10-21T06:42:00.400Z"
+          },
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+            "startedAt": "2026-10-21T06:42:00.612Z",
+            "finishedAt": "2026-10-21T06:42:15.871Z"
+          }
+        ],
+        "verifiedCommit": "02cce79b781b9697076928a0783e267a4a1f646c"
+      }
+    },
+    {
+      "sequence": 467,
+      "at": "2026-10-21T06:42:42.268Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 468,
+      "at": "2026-10-21T06:44:27.465Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 470,
+      "at": "2026-10-21T06:48:20.070Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+        "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+        "submittedAt": "2026-10-21T06:48:20.070Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+            "at": "2026-10-21T06:48:20.018Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-10-21T06:44:28.525Z",
+                "finishedAt": "2026-10-21T06:44:32.968Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-10-21T06:44:33.167Z",
+                "finishedAt": "2026-10-21T06:46:36.725Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-10-21T06:46:36.892Z",
+                "finishedAt": "2026-10-21T06:47:20.300Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-10-21T06:47:20.459Z",
+                "finishedAt": "2026-10-21T06:48:08.475Z"
+              },
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T06:48:08.539Z",
+                "finishedAt": "2026-10-21T06:48:19.372Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T06:44:28.525Z",
+            "finishedAt": "2026-10-21T06:44:32.968Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-10-21T06:44:33.167Z",
+            "finishedAt": "2026-10-21T06:46:36.725Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-10-21T06:46:36.892Z",
+            "finishedAt": "2026-10-21T06:47:20.300Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-10-21T06:47:20.459Z",
+            "finishedAt": "2026-10-21T06:48:08.475Z"
+          },
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+            "startedAt": "2026-10-21T06:48:08.539Z",
+            "finishedAt": "2026-10-21T06:48:19.372Z"
+          }
+        ],
+        "verifiedCommit": "86e0ab274f62c3599916cbf87ceefb920811570b"
+      }
+    },
+    {
+      "sequence": 471,
+      "at": "2026-10-21T06:48:55.155Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "82ebefc6-3715-492a-8ba9-b4842f260e2f",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+          "baseCommit": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+          "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+          "createdAt": "2026-10-21T06:48:55.155Z"
+        }
+      }
+    },
+    {
+      "sequence": 473,
+      "at": "2026-10-21T06:50:25.147Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "82ebefc6-3715-492a-8ba9-b4842f260e2f",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh pinned review of T299-T303, submission 276d0287-c675-4fb2-976e-1c61a0003582, commit 86e0ab274f62c3599916cbf87ceefb920811570b against base 1296b04f586345d9bc20e1cac66c0259058a68f2. Relative to the previous reviewed implementation, non-spec changes are limited to the fetch capability capture, its ordinary-function receiver regression and two browser expectation corrections. Capturing options.fetch and invoking the local function removes the erroneous options-object receiver; the recorded failing regression and actual Chromium diagnostic both reproduce the original Illegal invocation before any registry request. Official install/typecheck/lint/format and twelve focused files now pass 119 cases. Reviewed the corrected production bootstrap evidence: founding is visible; registries, packs, stylesheet and fonts load with 200 responses; locale/direction/background/font aliases are applied; no initial or page errors remain. The build's application sources are byte-identical to this pinned commit. The seven settings browser cases pass with zero failures and zero retries. The reload expectation matches initialScreen/openSlots policies verified byte-identical to the base; selecting the visible fixture image preserves the actual resource-use assertion at mobile width. The original game-fact, draft, stored-prose, retry and read-only checks remain intact. Incoming base changes are spec bookkeeping/planning only, with no application interaction change. Previous transaction/resource-extension corrections are unchanged. No P1/P2 findings. The coordinator still owns the combined-candidate full integration gate. Evidence: /tmp/presentation-fetch-diagnostic-final.json, /tmp/presentation-fetch-receiver-red.log, /tmp/presentation-bootstrap-corrected.json and /tmp/presentation-settings-chromium-4187-rerun-summary.json.",
+          "findings": [],
+          "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+          "baseCommit": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+          "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+          "createdAt": "2026-10-21T06:48:55.155Z",
+          "finishedAt": "2026-10-21T06:50:25.147Z"
+        }
+      }
+    },
+    {
+      "sequence": 482,
+      "at": "2026-10-21T07:08:36.433Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/controller.ts:96",
+                "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/theme.test.ts:20",
+                "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+              }
+            ],
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+            "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+            "createdAt": "2026-10-21T05:57:48.408Z",
+            "finishedAt": "2026-10-21T06:00:52.245Z",
+            "invalidatedAt": "2026-10-21T06:01:05.872Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+            "findings": [],
+            "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+            "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+            "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+            "createdAt": "2026-10-21T06:07:39.126Z",
+            "finishedAt": "2026-10-21T06:09:13.246Z",
+            "invalidatedAt": "2026-10-21T06:10:35.009Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh review of submission 726c66cf-9295-4bcb-9f11-95ced7e34471 at cecacde57cf93b0b32bc5035fd9a6adb89d16838 against base 283f940a1c5f5757b92ee808fd9b70bb6b104b84. Verified the exact attempt/review assignment in the new pinned checkout. Every non-spec file is identical to reviewed implementation e520f16; the incoming base also has no non-spec changes relative to the preceding reviewed base. T299-T303 each now quote ARCH@17 WEB@106, with acceptance and implementation scope unchanged. Compared all 25 uniquely cited decision blocks between the bases: none changed or disappeared. The added WEB-92, HIST-18/19 and SAVE-24 specify separate prospective manager-history work; they do not alter existing presentation policies, permit saved-prose rewriting or couple presentation preferences to worker/save attribution. The existing presentation implementation remains compatible with these added policies. The fresh official verification reran all twelve focused files and passed 118 cases. Prior static/build/resource evidence is reused under the parent directive because application, test, tooling and guide sources are byte-identical. No P1/P2 findings; the prior asynchronous transaction and resource-extension fixes remain unchanged. Full/browser verification remains the integration gate.",
+            "findings": [],
+            "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+            "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+            "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+            "createdAt": "2026-10-21T06:13:23.212Z",
+            "finishedAt": "2026-10-21T06:14:08.828Z",
+            "invalidatedAt": "2026-10-21T06:32:31.668Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "82ebefc6-3715-492a-8ba9-b4842f260e2f",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh pinned review of T299-T303, submission 276d0287-c675-4fb2-976e-1c61a0003582, commit 86e0ab274f62c3599916cbf87ceefb920811570b against base 1296b04f586345d9bc20e1cac66c0259058a68f2. Relative to the previous reviewed implementation, non-spec changes are limited to the fetch capability capture, its ordinary-function receiver regression and two browser expectation corrections. Capturing options.fetch and invoking the local function removes the erroneous options-object receiver; the recorded failing regression and actual Chromium diagnostic both reproduce the original Illegal invocation before any registry request. Official install/typecheck/lint/format and twelve focused files now pass 119 cases. Reviewed the corrected production bootstrap evidence: founding is visible; registries, packs, stylesheet and fonts load with 200 responses; locale/direction/background/font aliases are applied; no initial or page errors remain. The build's application sources are byte-identical to this pinned commit. The seven settings browser cases pass with zero failures and zero retries. The reload expectation matches initialScreen/openSlots policies verified byte-identical to the base; selecting the visible fixture image preserves the actual resource-use assertion at mobile width. The original game-fact, draft, stored-prose, retry and read-only checks remain intact. Incoming base changes are spec bookkeeping/planning only, with no application interaction change. Previous transaction/resource-extension corrections are unchanged. No P1/P2 findings. The coordinator still owns the combined-candidate full integration gate. Evidence: /tmp/presentation-fetch-diagnostic-final.json, /tmp/presentation-fetch-receiver-red.log, /tmp/presentation-bootstrap-corrected.json and /tmp/presentation-settings-chromium-4187-rerun-summary.json.",
+            "findings": [],
+            "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+            "baseCommit": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+            "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+            "createdAt": "2026-10-21T06:48:55.155Z",
+            "finishedAt": "2026-10-21T06:50:25.147Z",
+            "invalidatedAt": "2026-10-21T07:08:36.432Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 486,
+      "at": "2026-10-21T07:24:43.864Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 487,
+      "at": "2026-10-21T07:26:00.025Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "b0413477be048dbade50c267d29ca383c791b8f2",
+        "submissionId": "e16757b5-0a22-451f-b548-c07e9b4300a6",
+        "submittedAt": "2026-10-21T07:26:00.025Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483",
+            "at": "2026-10-21T07:25:59.988Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-10-21T07:24:44.226Z",
+                "finishedAt": "2026-10-21T07:24:46.008Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-10-21T07:24:46.045Z",
+                "finishedAt": "2026-10-21T07:25:15.935Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-10-21T07:25:15.991Z",
+                "finishedAt": "2026-10-21T07:25:33.179Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-10-21T07:25:33.220Z",
+                "finishedAt": "2026-10-21T07:25:54.034Z"
+              },
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+                "startedAt": "2026-10-21T07:25:54.072Z",
+                "finishedAt": "2026-10-21T07:25:59.613Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T07:24:44.226Z",
+            "finishedAt": "2026-10-21T07:24:46.008Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-10-21T07:24:46.045Z",
+            "finishedAt": "2026-10-21T07:25:15.935Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-10-21T07:25:15.991Z",
+            "finishedAt": "2026-10-21T07:25:33.179Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-10-21T07:25:33.220Z",
+            "finishedAt": "2026-10-21T07:25:54.034Z"
+          },
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+            "startedAt": "2026-10-21T07:25:54.072Z",
+            "finishedAt": "2026-10-21T07:25:59.613Z"
+          }
+        ],
+        "verifiedCommit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483"
+      }
+    },
+    {
+      "sequence": 488,
+      "at": "2026-10-21T07:26:43.333Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1bd3db19-edff-430c-b002-46fb3a73ea90",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483",
+          "baseCommit": "b0413477be048dbade50c267d29ca383c791b8f2",
+          "submissionId": "e16757b5-0a22-451f-b548-c07e9b4300a6",
+          "createdAt": "2026-10-21T07:26:43.332Z"
+        }
+      }
+    },
+    {
+      "sequence": 489,
+      "at": "2026-10-21T07:32:22.331Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "1bd3db19-edff-430c-b002-46fb3a73ea90",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh independent review of all T299-T303 in submission e16757b5-0a22-451f-b548-c07e9b4300a6, pinned commit ea8dabdebea975fce602e8b1e6ccf0c7f48d5483 against base b0413477be048dbade50c267d29ca383c791b8f2. Verified the exact currentReview metadata and clean pinned checkout. The incoming base changes only task scope notes and report/STATE bookkeeping; cited ARCH/WEB SSOT is unchanged. All 51 non-spec changes are within the five canonical task touches, including the shared font helper/tests, three WOFF assets and preview MIME configuration. Reviewed the new optional ordered FontSource alternatives across shared schema, relative resolution, semantic aliases, browser installation, static validation and guide. Existing single-resource packs remain valid. Separate detached FontFace attempts preserve declaration order, stop at the first success and register only that successful face at the existing synchronous transaction boundary. Total font failure still rejects preparation and retains the previous usable theme; no browser-ID branch or font-error bypass is present. All declared alternatives receive the same URL/format constraints and static file coverage. The previous registry-origin, fetch-receiver, default-message plural, transaction-publication and resource-only-extension corrections remain intact. Independently recomputed glyph order, cmap, every hmtx entry, all glyph RecordingPen outlines and line metrics from the pinned WOFF2/WOFF files: all three pairs are identical. Original WOFF2/license and single ko-KR/pixel registries are unchanged. Official install/typecheck/lint/format and 13 focused files passed 134 cases; resource validation reports 79 assets and production build passed. Reviewed the authorized three-engine bootstrap evidence: founding initializes and all five semantic faces load in Chromium, Firefox and WebKit; Chromium/Firefox request no WOFF alternatives, while WebKit successfully uses the three same-font WOFF representations. The pre-existing Firefox schemas CSP eval warning does not prevent bootstrap/font loading. Independently verified c9f5fb-to-ea8dabd production source equality and SHA-256 equality of all 195 built files linking that evidence to this submission. The final exact-ea8dabd Chromium presentation-settings raw report and summary show all seven journeys passed, retry 0, with no skips/flakes. No P1/P2 findings. Full combined-candidate integration verification remains with the coordinator. Independent evidence: /tmp/presentation-review-1bd3db19-font-equivalence.json and /tmp/presentation-review-1bd3db19-scope-and-build-equivalence.json; browser evidence: /tmp/presentation-font-source-bootstrap.json and /tmp/presentation-settings-chromium-final-4197-summary.json.",
+          "findings": [],
+          "commit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483",
+          "baseCommit": "b0413477be048dbade50c267d29ca383c791b8f2",
+          "submissionId": "e16757b5-0a22-451f-b548-c07e9b4300a6",
+          "createdAt": "2026-10-21T07:26:43.332Z",
+          "finishedAt": "2026-10-21T07:32:22.330Z"
+        }
+      }
+    },
+    {
+      "sequence": 490,
+      "at": "2026-10-21T07:32:48.629Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 494,
+      "at": "2026-10-21T07:34:41.901Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: git fetch --quiet origin main && git merge-base --is-ancestor origin/main HEAD"
+      }
+    },
+    {
+      "sequence": 496,
+      "at": "2026-10-21T07:36:04.301Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 500,
+      "at": "2026-10-21T07:43:28.438Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "integrating",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "interrupted operation; inspect preserved workspace before resubmitting"
+      }
+    },
+    {
+      "sequence": 501,
+      "at": "2026-10-21T07:44:07.278Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6972811-3de8-43de-97f9-d6c5a041e00f",
+            "owner": "codex-p8l3-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Reviewed all T299-T303 at pinned commit 7bbf007 against base 3508e73 and the base SSOT. T299's five source/test files exactly match approved commit 833e6d8; the recorded 12-file, 113-test focused verification passed. Two independent reproductions remain: an installation/publication await gap leaves mixed theme state after invalidation and failure, and the shipped one-entry theme assertion blocks a valid resource-only extension. Full/browser suites were not run in this review.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/controller.ts:96",
+                "message": "T301/T302: installThemeResources activates candidate resources and disposes the previous theme before this awaited call returns, but the controller only publishes the candidate after resuming and checking current() again at line 104. Registering a mounted image need in a completion observer before that await continuation invalidates needsRevision after the physical commit. The controller returns without publishing, then its automatic retry can fail loading the new scene. The pinned implementation finishes with snapshotTheme='pixel', installedTokens='candidate', pending=false and error=true: previous resources are already released while consumers still resolve the old pack. This violates the transactional/latest-request-wins requirement and ARCH-32's usable-selection preservation. Commit resource ownership and snapshot publication in one synchronous current-generation transaction, or restore the actual previous resources on invalidation; add a regression for this completion/needs-revision boundary followed by a failed retry. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-transaction.mts. It uses the pinned controller and real installer with injected ports, prints the mismatch and fails the consistency assertion."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/presentation/theme.test.ts:20",
+                "message": "T301/T303: expect(registry.entries).toHaveLength(1) turns the current inventory into a permanent unit-suite constraint. In an isolated public tree, appending a conforming data-only-extension entry and matching cloned pack while retaining pixel as the default passes the actual validatePresentation function with both IDs. Running this exact, unmodified theme.test.ts against that tree then fails only this assertion (7 other cases pass). A resource-only theme addition therefore requires a TypeScript test edit to pass CI, contrary to ARCH-32 and T303's explicit prohibition on fixed supported-ID/one-entry assertions. Record this release's sole pixel inventory in the result/guide and validate shipped entries without restricting their count; retain extension coverage that accepts a second conforming resource without editing the shared test. Reproduction: pnpm exec tsx /tmp/presentation-review-e6972811-extension.mts; it preserves all repository files, validates the temporary two-theme tree, then runs the unchanged focused theme test there."
+              }
+            ],
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "baseCommit": "3508e730a32033c17c2ed806240a2b32ef281844",
+            "submissionId": "b43ba472-b736-481f-8f55-e7811ff3e563",
+            "createdAt": "2026-10-21T05:57:48.408Z",
+            "finishedAt": "2026-10-21T06:00:52.245Z",
+            "invalidatedAt": "2026-10-21T06:01:05.872Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "30c5fecb-bee6-41f1-9b07-aa31be70e8cd",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Reviewed all T299-T303 at e520f16f44625c3fcd4d01b8c0cb5501b5d99359 against base 2954398d899db2ac6d41350a3526ea55ded1cb58. The base ARCH/WEB decisions are unchanged from the previous review; T299's five source/test files still exactly match approved 833e6d8. Both previous P2 findings are resolved. The controller now awaits inactive preparation, checks generation/needs freshness, then commits ownership and publishes locale/preferences/snapshot synchronously. An independent completion-observer/needs-revision/failed-image-retry reproduction passes with snapshotTheme and installedTokens both pixel. Prepared-handle ownership, disposal, stale commits and single-use commit behavior match the new tests and guide. The fixed theme tests validate all registry entries without a count limit; an independently prepared two-theme public tree passes the real validator and all nine unchanged theme tests. Official install, typecheck, lint, format and twelve focused files (118 cases) passed; build/resource validation (76 assets) and spec lint are recorded for the identical source checkpoint. No remaining P1/P2 findings. Full/browser verification remains with the integration gate. Independent reproducers: /tmp/presentation-review-30c5fecb-transaction.mts and /tmp/presentation-review-30c5fecb-extension.mts.",
+            "findings": [],
+            "commit": "e520f16f44625c3fcd4d01b8c0cb5501b5d99359",
+            "baseCommit": "2954398d899db2ac6d41350a3526ea55ded1cb58",
+            "submissionId": "29e3744e-8814-42a7-9b01-6c530c6e1596",
+            "createdAt": "2026-10-21T06:07:39.126Z",
+            "finishedAt": "2026-10-21T06:09:13.246Z",
+            "invalidatedAt": "2026-10-21T06:10:35.009Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "81f904f0-202e-40d5-b8fd-27573bf0cb98",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh review of submission 726c66cf-9295-4bcb-9f11-95ced7e34471 at cecacde57cf93b0b32bc5035fd9a6adb89d16838 against base 283f940a1c5f5757b92ee808fd9b70bb6b104b84. Verified the exact attempt/review assignment in the new pinned checkout. Every non-spec file is identical to reviewed implementation e520f16; the incoming base also has no non-spec changes relative to the preceding reviewed base. T299-T303 each now quote ARCH@17 WEB@106, with acceptance and implementation scope unchanged. Compared all 25 uniquely cited decision blocks between the bases: none changed or disappeared. The added WEB-92, HIST-18/19 and SAVE-24 specify separate prospective manager-history work; they do not alter existing presentation policies, permit saved-prose rewriting or couple presentation preferences to worker/save attribution. The existing presentation implementation remains compatible with these added policies. The fresh official verification reran all twelve focused files and passed 118 cases. Prior static/build/resource evidence is reused under the parent directive because application, test, tooling and guide sources are byte-identical. No P1/P2 findings; the prior asynchronous transaction and resource-extension fixes remain unchanged. Full/browser verification remains the integration gate.",
+            "findings": [],
+            "commit": "cecacde57cf93b0b32bc5035fd9a6adb89d16838",
+            "baseCommit": "283f940a1c5f5757b92ee808fd9b70bb6b104b84",
+            "submissionId": "726c66cf-9295-4bcb-9f11-95ced7e34471",
+            "createdAt": "2026-10-21T06:13:23.212Z",
+            "finishedAt": "2026-10-21T06:14:08.828Z",
+            "invalidatedAt": "2026-10-21T06:32:31.668Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "82ebefc6-3715-492a-8ba9-b4842f260e2f",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh pinned review of T299-T303, submission 276d0287-c675-4fb2-976e-1c61a0003582, commit 86e0ab274f62c3599916cbf87ceefb920811570b against base 1296b04f586345d9bc20e1cac66c0259058a68f2. Relative to the previous reviewed implementation, non-spec changes are limited to the fetch capability capture, its ordinary-function receiver regression and two browser expectation corrections. Capturing options.fetch and invoking the local function removes the erroneous options-object receiver; the recorded failing regression and actual Chromium diagnostic both reproduce the original Illegal invocation before any registry request. Official install/typecheck/lint/format and twelve focused files now pass 119 cases. Reviewed the corrected production bootstrap evidence: founding is visible; registries, packs, stylesheet and fonts load with 200 responses; locale/direction/background/font aliases are applied; no initial or page errors remain. The build's application sources are byte-identical to this pinned commit. The seven settings browser cases pass with zero failures and zero retries. The reload expectation matches initialScreen/openSlots policies verified byte-identical to the base; selecting the visible fixture image preserves the actual resource-use assertion at mobile width. The original game-fact, draft, stored-prose, retry and read-only checks remain intact. Incoming base changes are spec bookkeeping/planning only, with no application interaction change. Previous transaction/resource-extension corrections are unchanged. No P1/P2 findings. The coordinator still owns the combined-candidate full integration gate. Evidence: /tmp/presentation-fetch-diagnostic-final.json, /tmp/presentation-fetch-receiver-red.log, /tmp/presentation-bootstrap-corrected.json and /tmp/presentation-settings-chromium-4187-rerun-summary.json.",
+            "findings": [],
+            "commit": "86e0ab274f62c3599916cbf87ceefb920811570b",
+            "baseCommit": "1296b04f586345d9bc20e1cac66c0259058a68f2",
+            "submissionId": "276d0287-c675-4fb2-976e-1c61a0003582",
+            "createdAt": "2026-10-21T06:48:55.155Z",
+            "finishedAt": "2026-10-21T06:50:25.147Z",
+            "invalidatedAt": "2026-10-21T07:08:36.432Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "1bd3db19-edff-430c-b002-46fb3a73ea90",
+            "owner": "codex-p8l3-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Fresh independent review of all T299-T303 in submission e16757b5-0a22-451f-b548-c07e9b4300a6, pinned commit ea8dabdebea975fce602e8b1e6ccf0c7f48d5483 against base b0413477be048dbade50c267d29ca383c791b8f2. Verified the exact currentReview metadata and clean pinned checkout. The incoming base changes only task scope notes and report/STATE bookkeeping; cited ARCH/WEB SSOT is unchanged. All 51 non-spec changes are within the five canonical task touches, including the shared font helper/tests, three WOFF assets and preview MIME configuration. Reviewed the new optional ordered FontSource alternatives across shared schema, relative resolution, semantic aliases, browser installation, static validation and guide. Existing single-resource packs remain valid. Separate detached FontFace attempts preserve declaration order, stop at the first success and register only that successful face at the existing synchronous transaction boundary. Total font failure still rejects preparation and retains the previous usable theme; no browser-ID branch or font-error bypass is present. All declared alternatives receive the same URL/format constraints and static file coverage. The previous registry-origin, fetch-receiver, default-message plural, transaction-publication and resource-only-extension corrections remain intact. Independently recomputed glyph order, cmap, every hmtx entry, all glyph RecordingPen outlines and line metrics from the pinned WOFF2/WOFF files: all three pairs are identical. Original WOFF2/license and single ko-KR/pixel registries are unchanged. Official install/typecheck/lint/format and 13 focused files passed 134 cases; resource validation reports 79 assets and production build passed. Reviewed the authorized three-engine bootstrap evidence: founding initializes and all five semantic faces load in Chromium, Firefox and WebKit; Chromium/Firefox request no WOFF alternatives, while WebKit successfully uses the three same-font WOFF representations. The pre-existing Firefox schemas CSP eval warning does not prevent bootstrap/font loading. Independently verified c9f5fb-to-ea8dabd production source equality and SHA-256 equality of all 195 built files linking that evidence to this submission. The final exact-ea8dabd Chromium presentation-settings raw report and summary show all seven journeys passed, retry 0, with no skips/flakes. No P1/P2 findings. Full combined-candidate integration verification remains with the coordinator. Independent evidence: /tmp/presentation-review-1bd3db19-font-equivalence.json and /tmp/presentation-review-1bd3db19-scope-and-build-equivalence.json; browser evidence: /tmp/presentation-font-source-bootstrap.json and /tmp/presentation-settings-chromium-final-4197-summary.json.",
+            "findings": [],
+            "commit": "ea8dabdebea975fce602e8b1e6ccf0c7f48d5483",
+            "baseCommit": "b0413477be048dbade50c267d29ca383c791b8f2",
+            "submissionId": "e16757b5-0a22-451f-b548-c07e9b4300a6",
+            "createdAt": "2026-10-21T07:26:43.332Z",
+            "finishedAt": "2026-10-21T07:32:22.330Z",
+            "invalidatedAt": "2026-10-21T07:44:07.278Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 503,
+      "at": "2026-10-21T07:49:31.800Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 504,
+      "at": "2026-10-21T07:51:15.278Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "aecc7d2287c53b3412fbdf9611fba4f296681379",
+        "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
+        "submittedAt": "2026-10-21T07:51:15.278Z",
+        "steps": [
+          {
+            "taskId": "T299",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T300",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T301",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T302",
+            "commit": "7bbf007cd841bdf7c4ce828240e4cbb7fff36ef0",
+            "at": "2026-10-21T05:57:43.261Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts",
+                "startedAt": "2026-10-21T05:57:37.239Z",
+                "finishedAt": "2026-10-21T05:57:42.895Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T303",
+            "commit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+            "at": "2026-10-21T07:51:15.246Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-10-21T07:49:32.228Z",
+                "finishedAt": "2026-10-21T07:49:34.073Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-10-21T07:49:34.119Z",
+                "finishedAt": "2026-10-21T07:50:10.956Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-10-21T07:50:11.014Z",
+                "finishedAt": "2026-10-21T07:50:33.226Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-10-21T07:50:33.293Z",
+                "finishedAt": "2026-10-21T07:51:05.433Z"
+              },
+              {
+                "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+                "startedAt": "2026-10-21T07:51:05.511Z",
+                "finishedAt": "2026-10-21T07:51:14.729Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-10-21T07:49:32.228Z",
+            "finishedAt": "2026-10-21T07:49:34.073Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-10-21T07:49:34.119Z",
+            "finishedAt": "2026-10-21T07:50:10.956Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-10-21T07:50:11.014Z",
+            "finishedAt": "2026-10-21T07:50:33.226Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-10-21T07:50:33.293Z",
+            "finishedAt": "2026-10-21T07:51:05.433Z"
+          },
+          {
+            "command": "pnpm exec vitest run apps/web/src/presentation/registry.test.ts apps/web/src/adapters/presentationResources.test.ts apps/web/src/presentation/controller.test.ts apps/web/src/adapters/presentationPreferences.test.ts apps/web/src/ui/format.test.ts apps/web/src/ui/facilityScene.test.ts apps/web/src/ui/identityEditorMarkup.test.ts apps/web/src/ui/ClubHub.test.ts apps/web/src/presentation/locale.test.ts apps/web/src/presentation/theme.test.ts apps/web/src/adapters/themeResources.test.ts scripts/validate-presentation.test.ts apps/web/src/presentation/fonts.test.ts",
+            "startedAt": "2026-10-21T07:51:05.511Z",
+            "finishedAt": "2026-10-21T07:51:14.729Z"
+          }
+        ],
+        "verifiedCommit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544"
+      }
+    },
+    {
+      "sequence": 505,
+      "at": "2026-10-21T07:51:53.749Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d027b66c-c1f3-413b-b3cd-b2fd806ae582",
+          "owner": "codex-p8l3-review",
+          "status": "reviewing",
+          "commit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+          "baseCommit": "aecc7d2287c53b3412fbdf9611fba4f296681379",
+          "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
+          "createdAt": "2026-10-21T07:51:53.749Z"
+        }
+      }
+    },
+    {
+      "sequence": 506,
+      "at": "2026-10-21T07:55:33.159Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d027b66c-c1f3-413b-b3cd-b2fd806ae582",
+          "owner": "codex-p8l3-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh independent review of all T299-T303 in submission 59fc9a9c-79c3-4fae-91c9-88a683f0ef69, pinned commit 02ac6d4811e72d5a0f0043d2cfaea3c44752b544 against base aecc7d2287c53b3412fbdf9611fba4f296681379. Verified exact currentReview metadata, a clean pinned checkout, unchanged cited ARCH/WEB decisions and all 51 non-spec changes within canonical task touches. Relative to the preceding reviewed presentation implementation ea8dabd, application changes are limited to App.tsx, ClubFounding.tsx and App.module.css; the other incoming source is T279's seven aggregate files already present in this base. Reviewed the actual overflow diagnosis: a new 48px trigger enlarged the founding slot-label row and caused the 25/28px vertical overflow. Moving that trigger into the existing non-playing GameHud and reducing only mobile start-HUD vertical padding to 3px retains the original 56px row, 48px target, safe-area inset and founding content/recovery controls. Playing HUD behavior, navigation, form spacing, prose and test geometry tolerances are unchanged. The shared settings host remains independent of game ownership and commands. All other T299-T303 source, tests, resources and guide are unchanged, preserving the previously corrected registry-origin/cache, native-fetch receiver, message-source plural, synchronous transaction/publication and data-only extension behavior. Matched the pinned WOFF2/WOFF SHA-256 hashes to the preceding independently recomputed glyph/cmap/metrics/all-outline equivalence proof; the single ko-KR/pixel registries and license are unchanged. Official install/typecheck/lint/format and 13 focused files passed 134 cases; build index-CkAMPeIh.js and 79-asset resource validation are recorded. Read the new raw browser reports: seven Chromium presentation-settings journeys passed with retry 0, and all 18 existing founding/native-touch cases passed across Chromium, Firefox and WebKit, six per engine, with no skipped/flaky/failed cases or retries. The six additional actual-build bootstrap/geometry observations show five loaded semantic font faces, ko-KR/ltr, no initial/page error, HUD 56px, uncovered 48px trigger, settings opening/closing, and overflow 0px at 360x740 or 1px at 390x844 before/after FRA selection and closing settings. Chromium/Firefox request no WOFF alternatives; WebKit loads the three same-font WOFF representations. Independently matched the observed build entry SHA and source checkpoint 93b635f to the exact pinned submission. Also read incoming main 3922b872's client/host/protocol view-delta reconstruction, tests and manager/staff projections: its paths do not overlap canonical touches, it changes no SSOT, and no presentation provider/storage/command interaction defect was found. Those incoming main changes are outside the exact-02ac browser evidence; the coordinator owns their combined-candidate full integration gate. No P1/P2 findings. Evidence: /tmp/presentation-review-d027b66c-scope-and-reused-evidence.json, /tmp/presentation-review-d027b66c-incoming-main.json, /tmp/presentation-review-d027b66c-browser-evidence.json, /tmp/presentation-settings-hud-4200-summary.json and /tmp/presentation-final-fit-native-4198-summary.json.",
+          "findings": [],
+          "commit": "02ac6d4811e72d5a0f0043d2cfaea3c44752b544",
+          "baseCommit": "aecc7d2287c53b3412fbdf9611fba4f296681379",
+          "submissionId": "59fc9a9c-79c3-4fae-91c9-88a683f0ef69",
+          "createdAt": "2026-10-21T07:51:53.749Z",
+          "finishedAt": "2026-10-21T07:55:33.159Z"
+        }
+      }
+    },
+    {
+      "sequence": 507,
+      "at": "2026-10-21T07:55:53.623Z",
+      "type": "attempt",
+      "group": "presentation-261021",
+      "attemptId": "437d98f4-ec16-499a-890d-c0451b38ebe0",
+      "taskId": "T303",
+      "tasks": [
+        "T299",
+        "T300",
+        "T301",
+        "T302",
+        "T303"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}
