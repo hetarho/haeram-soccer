@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r106 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r107 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -27,7 +27,7 @@
   - wider screens name the right tabs 선수단 (선수단·스태프), 훈련 (훈련·육성) and 구단 (구단 운영).
   - read-only ownership shows as a compact HUD badge that explains itself on tap, never a content banner.
   - the page background and fixed bars follow the active theme; the default pixel theme uses flat charcoal surfaces with fine neutral dividers (→WEB-38/91).
-  - phones pack rows: no view repeats its tab's name as a title, and panels keep tight padding.
+  - Management views omit repeated page titles and introductory prose that merely explains the tabs or obvious actions. Current game facts and primary actions lead; rules, formulas and hiring previews remain available in labelled disclosures. Panels use compact spacing and wider screens group related panels side by side. Preserve error/empty states, decision ownership and cost/risk/effect timing before commitment.
   - wording follows Korean football media: continental competitions are 클럽대항전 (never 대륙컵, which reads as a national-team tournament), morale is 분위기 (a bare 사기 also reads as fraud), money runway is 자금 여력 in weeks or months, and the squad-support policy is 선수단 투자. ← football fans read the game in the words of their own media
 
 - WEB-11 [o] Home leads with the current club: season rank, strength and record over the illustrated stadium scene (→WEB-72), team state (→WEB-44) and next-match preparation. A compact season-progress strip shows elapsed calendar days as a percentage and a progress bar; club name, year and league identity stay in the HUD without a repeated home title.
@@ -157,6 +157,7 @@
   - in manual mode, deciding an event leaves progression stopped until the next explicit progression action. Both modes use the same event trigger configuration.
 
 - WEB-43 [o] 선수단·스태프 holds 선수, 이적시장, 감독 and 스태프 as page tabs, retaining /people?view= with players omitted and market/manager/coaches unchanged.
+  - 선수, 감독 and 스태프 open with a full-width facility illustration beneath their tab bar (→WEB-72), followed by the people and their primary actions.
   - 선수 shows the current roster with OVR/position/adaptation, injuries/retirement, wage versus market wage, contract and unhappy reason, stance/talk actions, view settings/full metrics and current contract responsibility (→WEB-55/59/68). Current-player detail offers contextual training, contract where available and next-match preparation actions; former players remain historical.
   - 이적시장 leads with the window/deadline, manager's outstanding slot requests and consequences, and actionable negotiations. Candidate filters/comparison and relevant candidates follow. The full scout shortlist retains draw/next-draw dates and named picks; full delegation/sale rules are disclosed below the operational content. Recruitment policy opens its exact department as a contextual sheet (→WEB-77).
   - 감독 keeps present OVR/POT, school, contract/renewal terms, owner requests/tactics and replacement. Hiring candidates keep their effects, compensation, terms and explicit confirmation (→STAFF-17/18). Future appointment criteria are distinguished from replacing the present manager.
@@ -303,7 +304,7 @@
 - WEB-68 [o] Squad cards show each player's wage against his market wage, his contract end, an 언해피 badge with its reason, an injury or ban badge with the matches or days left and a warning one yellow short of a league ban (→CLUB-45); a contract talk (→CLUB-26) — a renewal or an improved contract, named so in the sheet and the inbox — opens a sheet with his agent's rating and premium (→CLUB-30), demand, floor, the term by window (1–5 seasons in summer, ½–4½ in winter), the new contract's clauses (→CLUB-29), the yearly cost, runway after it and the manager's chance of talking him round if declined (→CLUB-27). ← the owner should see what a refusal risks before making it
 - WEB-69 [o] Page tab bars (league, a closed season, cups, records, 사람, 훈련, 방향) read as navigation, never as buttons: label text over a hairline, the selected tab marked by an accent underline and accent text, no filled or outlined boxes, at least 44 px tall, scrolling sideways when they do not fit. A choice between views inside a tab is a segment control with a track and the selected segment raised; boxed buttons stay for actions. ← tabs drawn as filled buttons read as actions
 - WEB-70 [o] 훈련·육성 holds 1군 훈련 and 유소년, retaining /training?view= with training omitted and academy unchanged.
-  - 1군 훈련 leads with active focus, the responsible assistant, who chose it, its reason/remaining rounds and a visible 제안·강행 action. The actual action location is described truthfully. Full balanced/recovery/hard comparisons and automatic rules are expandable reference information.
+  - 1군 훈련 opens with the full-width training-ground illustration and completed-stage label beneath its tab bar, followed by active focus, the responsible assistant, who chose it, its reason/remaining rounds and a visible 제안·강행 action. The actual action location is described truthfully. Full balanced/recovery/hard comparisons and automatic rules are expandable reference information.
   - Owner interventions preserve coach judgement, acceptance/resignation chances, per-player cooldown and four-round duration (→STAFF-19). Explain next-round settlement rather than imply immediate ability/fatigue improvement or a permanent training programme.
   - A focused player-development list brings training, fatigue/adaptation, growth and OVR/POT together, with useful all/attention/growth views and the relevant player action. Avoid three mandatory full-squad passes. Adaptation facts, unsettled flags, complete growth factors and young-player accumulated growth remain inspectable, including links to the responsible staff, investment and facilities.
   - 유소년 leads with prospects/readiness, next intake and active youth training/action. Preserve age groups, growth factors, OVR/POT/age, promotion/release eligibility and decision ownership (→CLUB-16/31/32).
@@ -330,6 +331,7 @@
   - Backgrounds stay subordinate to the interface; the default theme uses a light charcoal dim and reduced saturation. Apply image treatments only to the image, preserving the clarity of HTML text and controls.
   - Select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground levels have their own image in each era. An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
+  - The squad and manager overview reuse the current locker-room artwork; the staff overview reuses the training ground. These are views of existing facilities, with no additional upgrade or baked-in club facts. Overview illustrations have a bounded responsive height, preserve the scene composition and use accessible HTML captions.
   - Home presents the stadium as one full illustration, with readable HTML labels for the current stage, venue name, capacity and supporter count.
   - Atmospheric artwork conveys the facility's relative scale and quality; authoritative stadium-stage labels, capacity, club identity, fixture and training figures come from the current world rather than baked-in numbers.
   - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
@@ -440,6 +442,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r107 261021 WEB-10✎ management intros/stacked rules→compact action-first views; WEB-43✎ text-led people tabs→facility overviews; WEB-70✎ mid-page art→training-ground first; WEB-72✎ preparation locker art only→squad/manager reuse and staff training view
 - r106 261021 WEB-92+ per-tenure manager accomplishments, honest incomplete-history states and contextual season-record navigation
 - r105 261021 WEB-1✎ Korean-only delivery→one default Korean locale behind an extensible registry; WEB-10✎ fixed charcoal/no presentation settings→theme surfaces and shared preferences; WEB-38/72/73✎ universal pixel styling→default pixel pack with shared theme semantics; WEB-90/91+ single-locale/single-theme foundation, resource-only extension and stored-text preservation
 - r104 261021 WEB-44✎ urgent advice below team-state tiles→floating home alert with unchanged remedies, behind higher-priority runtime/critical alerts

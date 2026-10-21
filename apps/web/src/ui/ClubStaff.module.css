@@ -532,8 +532,7 @@
 /* A department card's 기준 disclosure spans the whole card. */
 .department {
   grid-column: 1 / -1;
-  display: grid;
-  gap: 6px;
+  display: block;
   min-width: 0;
 }
 .coachCriteria {
@@ -584,4 +583,22 @@
   padding: 8px 0;
   color: var(--accent-text);
   font-size: 15px;
+}
+
+/* Keep the directory compact on wide screens; each post retains all of its actions. */
+@media (min-width: 1280px) {
+  .staff > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .staff > ul > li {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+  .staff > ul > li > .rowActions {
+    grid-column: 1 / -1;
+  }
+}
+
+.staff .department {
+  margin: 0;
 }

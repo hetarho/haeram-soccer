@@ -90,7 +90,14 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByTestId('decision-owner-staff')).toContainText(
       '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
+    await expect(page.getByTestId('coach-pick-attack')).toBeHidden();
+    await staff
+      .locator('[data-role="attack"]')
+      .getByText('담당 업무·추천 후보', { exact: true })
+      .click();
+    await expect(page.getByTestId('coach-pick-attack')).toBeVisible();
     await expect(page.getByTestId('coach-pick-attack')).toContainText('코치 기조로 뽑는다면');
+    await page.getByText('스태프 선임 기준', { exact: true }).click();
     // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
     await page.getByRole('button', { name: /^코치 기조 · 표준/ }).click();
     const staffArea = page

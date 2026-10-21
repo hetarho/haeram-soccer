@@ -13,7 +13,9 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
+  await expect(
+    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
+  ).toBeVisible();
   // 사람 opens on 선수; the market, the manager's office and the coaches are tabs beside it.
   const peopleTab = (name: string) =>
     page

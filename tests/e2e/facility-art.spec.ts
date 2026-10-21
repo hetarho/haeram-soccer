@@ -65,7 +65,7 @@ async function expectArt(page: Page, kind: string, era: string, stage: number) {
   await expect(img).toBeVisible();
   await expect(img).toHaveAttribute('src', `/art/scenes/${era}/${kind}-${stage}.webp`);
   await expect(img).toHaveAttribute('alt', /픽셀아트$/);
-  // Training actions lead on phones; its lazy illustration loads when the owner reveals it.
+  // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
@@ -97,8 +97,41 @@ for (const scenario of [
     await expect(dialog).toBeVisible();
     await expectArt(page, 'locker', scenario.era, scenario.stadium);
     await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    const people = page.getByRole('tabpanel');
+    const overview = page.getByTestId('facility-overview');
+    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
+    for (const [tab, kind, stage] of [
+      ['선수', 'locker', scenario.stadium],
+      ['감독', 'locker', scenario.stadium],
+      ['스태프', 'training', scenario.training],
+    ] as const) {
+      await tabs.getByRole('tab', { name: tab, exact: true }).click();
+      await expectArt(page, kind, scenario.era, stage);
+      await expect(people.locator(':scope > :first-child')).toHaveAttribute(
+        'data-testid',
+        'facility-overview',
+      );
+      const art = overview.locator('[data-facility-art]');
+      const bounds = (await art.boundingBox())!;
+      expect(bounds.height).toBeGreaterThanOrEqual(144);
+      expect(bounds.height).toBeLessThanOrEqual(240);
+      await expectHomeBounds(page);
+    }
+    await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
+    await expect(overview).toHaveCount(0);
     await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
     await expectArt(page, 'training', scenario.era, scenario.training);
+    await expect(page.getByRole('tabpanel').locator(':scope > :first-child')).toHaveAttribute(
+      'data-testid',
+      'facility-overview',
+    );
+    const scene = (await overview.boundingBox())!;
+    const focus = (await page
+      .getByRole('region', { name: '훈련 방향', exact: true })
+      .boundingBox())!;
+    expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
     expect([...requested].sort()).toEqual(
       [
         `/art/scenes/${scenario.era}/locker-${scenario.stadium}.webp`,

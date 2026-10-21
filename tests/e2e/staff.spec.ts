@@ -139,6 +139,8 @@ test.describe('사람 at 360x740', () => {
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
       '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
+    await expect(post.getByTestId('manager-pick')).toBeHidden();
+    await post.getByText('감독 선임 기준·추천 후보', { exact: true }).click();
     await expect(post.getByRole('button', { name: /^선호 학파 · 상관없음/ })).toBeVisible();
     const pick = post.getByTestId('manager-pick');
     await expect(pick).toContainText('지금 방향이면');
@@ -203,7 +205,9 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '선수단·스태프', level: 2 })).toBeVisible();
+  await expect(
+    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
+  ).toBeVisible();
   await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/people\?view=manager$/);
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).

@@ -164,7 +164,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 106 | 106 | - | 0 |
+| WEB | 107 | 107 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 2 | 2 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -210,6 +210,8 @@
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261021 T310 committed on main (u6v1): compact management overviews; task checks and responsive journey changes retained for the next browser batch.
+- 261021 T310 start (u6v1): WEB r107 records compact management overviews; implementation scopes remain independent of the engine and history tasks.
 - 261021 T281 integrated (h3t6; implementer and separate reviewer subagents, approved with P3 notes routed to T283 T284 T285 T286)
 - 261021 T280 integrated (h3t6, from wip/full-model-T280)
 - 261021 f6n3 stopped at 21:00 KST as the owner asked: full-model integrated T273 T274 T275 T276 T277 T279 T282 T304 T305 into main; T280 approved, on wip/full-model-T280 awaiting its batch gate; report 261021-f6n3.
@@ -228,5 +230,3 @@
 - 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.
 - 261021 T299 T300 T301 T302 T303 integrated
 - 261021 implement-task T299-T303 browser correction: native fetch is called as a function capability; receiver regression and production bootstrap pass. Corrected new test assumptions preserve existing reload policy and inspect the visible mobile icon; all seven presentation Chromium journeys pass without retries. Final independent review and complete integration remain.
-- 261021 implement-task T299-T303 integration correction: complete unit/contract/resource/build stages passed, but actual Chromium bootstrap exposed an invalid native-fetch receiver before registry I/O; preserve traces and correct the shared adapter with receiver-sensitive coverage before re-review and the full gate.
-- 261021 implement-task T299-T303 review: official 113-case affected check passed; independent review requested atomic installation/publication and removal of the one-theme test constraint. Corrections continue in the same lane.
