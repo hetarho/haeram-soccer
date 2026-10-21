@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| r3m9 | ihaelam-ui-MacBookPro | autopilot | 2026-10-20T15:49Z | 2026-10-20T15:49Z | - |
 
 ## inbox
+- 261021 decided -: CI 39439433028's failing WebKit cup-history journey seeds its two archived seasons instead of sending identities only on change, because the identity view, host step and save costs measured unchanged and the journey checks archive views, not event stepping (alt: identity-on-change view publishing, which touches T244/T245 files with no measured gain)
+- 261021 decided T272: in the identity group the coordinator stays p7x5 (no transfer command; r3m9 continued p7x5) and T272 runs as the runner's lane-less unit once the planning merge put it in the group, instead of a main-session subagent (alt: a new coordinator tag, which the CLI refuses)
 - 261021 decided T253 T251: T253's observation spec recolours a paused match through T251's 구단 디자인 tab, which only the identity-founding lane adds → identity-founding integrates first and identity-match-kit re-merges it and confirms the case in the batch Chromium run; T251 joins T253's deps, contents unchanged (alt: hold the lane on a new dep without re-merging | move the case to T254 and drop that clause from T253 acceptance)
 - 261021 decided MATCH-28 T272: how the equivalence gate treats metrics both paths hold constant and metrics a condition's rules make impossible (strict, so no league condition could pass even grid against grid) → equal constants are equivalent by their zero difference and stay listed as constant; MATCH-6/MATCH-20-impossible metrics are not applicable for that condition, listed and outside its verdict; applicability only from rules, never from measured absence (alt: keep the strict gate and judge release from the constant list | equal constants only, without per-condition applicability)
 - 261021 decided T250 T251 T252 T253 T254 T255 T275 T283 T286: the owner's settings and home commits raised WEB r95–r99 under the open identity and follow-up tasks → bases to WEB@99 with contents unchanged; WEB-74 now discards only central-settings drafts on dismissal and keeps other policy drafts, which T251's retained club-design draft already follows, and WEB-10/11/18/50/51/52/79 move settings, the next-match row and the watch entry, not kits or crests (alt: re-plan T251 and T253 against the new home layout, which changes none of their acceptance)
@@ -165,7 +166,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T255 | Validate the complete identity feature against release and century budgets | KIT WEB SAVE ARCH | T254 | todo |
 | T273 | Define candidate match contracts and supported-career compatibility | MATCH HIST SAVE ARCH | T255 T272 | todo |
 | T274 | Make candidate actions and restart preparation physically continuous | MATCH ARCH | T273 | todo |
 | T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
@@ -190,9 +190,14 @@
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
 
 ## next
-- inspect work board for remaining tasks
+- implement-task T273 (T255 and T272 are done): capture the post-T255 baseline with the T272 runner before T273 changes football, then follow T274–T286 dependencies; exploration results must pass the final release gate
+- identity work group: every identity task is integrated; since the planning merge the group also lists T273–T286, so continue them with `work run --work identity` or close it with `work finish --work identity`; old lane/integration worktrees and wip/identity-*, wip/r3m9 branches are removable with the owner's approval (the disk had 2 GiB free)
+- grid tactic balance (owner to confirm MATCH-8 bands) re-enables the four skipped tactic cases
+- FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
 
 ## log
+- 261021 r3m9 stopped: identity group integrated T240–T254 and T272 with CI green on every push; T255 done (benchmarks and CI 39517672764 on a3c9881); MATCH r15; report 261021-r3m9.
+- 261021 T255 done: final identity source passes the century storage benchmark with 101 design edits and a pending kit choice (worst checkpoint 2,406,812 B) and the browser benchmark with pattern rendering (entry 245,985 B gzip, load 4.4 s, p95 47 ms, 60 FPS).
 - 261020 T254 integrated
 - 261020 T252 T253 integrated
 - 261020 T250 T251 integrated
@@ -211,5 +216,3 @@
 - 261021 T291 done: notifications beside settings without floating reserve, full-width NEXT MATCH above progress, WEB r99; 13 affected tests/typecheck/lint/format/build pass, browser layout checks updated for batch.
 - 261021 create-task WEB r99 → T291; T291 start at 4af396f, inline clock notifications and home order.
 - 261021 update-ssot WEB r99 start: notifications beside clock settings, NEXT MATCH above home progress; remove floating/draft-hiding launcher rules and retain compact lower achievement banners.
-- 261021 T290 done: compact horizontal preparation-only NEXT MATCH, watch/return/season action in HUD menu, event watching retained; WEB r98; 10 affected tests/typecheck/lint/format/build pass; browser journeys and benchmark entry updated for batch.
-- 261021 create-task WEB r98 → T290; T290 start at 4af396f, compact NEXT MATCH and event/menu watch routing.
