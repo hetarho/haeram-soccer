@@ -1,6 +1,6 @@
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { personCareer } from './personCareer';
-import { STAFF_ROLES, staffCandidates } from '../../../../packages/engine/src/staff';
+import { staffMarket } from '../../../../packages/engine/src/staff';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
@@ -31,6 +31,7 @@ import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import {
+  PUBLISHED_VIEWS,
   requestSchema,
   worldMetadataOf,
   type CodecJob,
@@ -57,6 +58,14 @@ function adoptIdentities(w: World, revised: boolean): World {
   }
   return candidate;
 }
+/** A view part as JSON, to compare with the last one sent; none when it cannot be written so. */
+function partText(value: unknown) {
+  try {
+    return JSON.stringify(value) ?? 'undefined';
+  } catch {
+    return undefined;
+  }
+}
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
   ok: false,
@@ -71,6 +80,10 @@ export class Host {
   // string; never reuse a live world or trust header/checksum identity alone.
   private inspected?: { raw: string; result: Awaited<ReturnType<typeof decode>> };
   private newsCache?: { key: string; news: View['news'] };
+  /** The latest published views by sequence, each part's JSON kept to diff the next one against. */
+  private published: { seq: number; worldId: string; texts: Map<string, string | undefined> }[] =
+    [];
+  private viewSeq = 0;
   cancelled = false;
   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
   codec?: { postMessage(job: CodecJob): void };
@@ -120,7 +133,7 @@ export class Host {
     const { people: _people, ...projected } = w;
     void _people;
     return {
-      coaches: Object.fromEntries(STAFF_ROLES.map((role) => [role, staffCandidates(w, role)])),
+      coaches: staffMarket(w),
       careers: Object.fromEntries(
         [...w.players.filter((p) => p.status === 'active'), ...(w.academy?.players ?? [])].map(
           (p) => [p.id, careerAssessment(w, p, true)],
@@ -178,6 +191,36 @@ export class Host {
       finance: financialBreakdown(w),
       news: this.news(w),
     };
+  }
+  /**
+   * The view for a reply (→ARCH-6): whole, or only the parts that changed since `base` when the
+   * client holds that published view, so a day step no longer copies the whole career across.
+   */
+  private publish(base?: number): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
+    const view = this.view();
+    if (!view) return {};
+    const { world, ...rest } = view;
+    const texts = new Map<string, string | undefined>();
+    for (const [key, value] of Object.entries(rest)) texts.set(key, partText(value));
+    for (const [key, value] of Object.entries(world)) texts.set(`world.${key}`, partText(value));
+    const seq = ++this.viewSeq,
+      previous = this.published.find((p) => p.seq === base && p.worldId === world.id);
+    this.published = [
+      ...this.published.slice(1 - PUBLISHED_VIEWS),
+      { seq, worldId: world.id, texts },
+    ];
+    if (base === undefined || !previous) return { view, viewSeq: seq };
+    const parts: Record<string, unknown> = {},
+      worldParts: Record<string, unknown> = {},
+      dropped: string[] = [];
+    for (const [key, text] of texts) {
+      if (text !== undefined && previous.texts.get(key) === text) continue;
+      if (key.startsWith('world.'))
+        worldParts[key.slice(6)] = world[key.slice(6) as keyof typeof world];
+      else parts[key] = rest[key as keyof typeof rest];
+    }
+    for (const key of previous.texts.keys()) if (!texts.has(key)) dropped.push(key);
+    return { viewSeq: seq, viewDelta: { base, parts, world: worldParts, dropped } };
   }
   /**
    * Read-only requests, validated like commands but answered from the live world without a
@@ -408,7 +451,7 @@ export class Host {
       const reply: Reply = {
         requestId: r.requestId,
         ok: true,
-        view: this.view(),
+        ...this.publish(r.viewBase),
         playback,
         raw,
         envelope,
@@ -425,7 +468,7 @@ export class Host {
       return {
         ...failure(input, request, error),
         errorCode: isSaveCompatibilityError(error) ? error.code : undefined,
-        view: this.view(),
+        ...this.publish(request?.viewBase),
       };
     }
   }

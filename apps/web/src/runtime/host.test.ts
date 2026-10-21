@@ -3,7 +3,7 @@ import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/spons
 import { describe, it, expect, vi } from 'vitest';
 import { Host } from './host';
 import { build } from './codec';
-import type { CodecJob } from './protocol';
+import type { CodecJob, View } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -169,6 +169,45 @@ describe('worker command protocol', () => {
     expect(match.view?.world.ownMatches).toHaveLength(1);
     expect(match.playback?.record.id).toBe(match.view?.world.ownMatches[0].id);
     expect(match.view?.world.rankHistory).toHaveLength(2);
+  });
+  it('publishes only the view parts that changed since the view the client holds (→ARCH-6)', async () => {
+    const h = new Host();
+    const founded = await h.handle(req('create', -1, { type: 'found', input }));
+    expect(founded.view).toBeDefined();
+    expect(founded.viewDelta).toBeUndefined();
+    h.world!.settings = legacySettings(2);
+    for (const slot of sponsorSlots(h.world!))
+      if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
+    const day = await h.handle({
+      ...req('day', h.world!.revision, {
+        type: 'command',
+        command: { type: 'advance-days', days: 1 },
+      }),
+      viewBase: founded.viewSeq,
+    });
+    expect(day.ok, day.error).toBe(true);
+    expect(day.view).toBeUndefined();
+    const delta = day.viewDelta!;
+    expect(delta.base).toBe(founded.viewSeq);
+    // A day moves the date and leaves the season's settled parts where they were.
+    expect(delta.world.calendar?.day).toBe(1);
+    expect(delta.world).not.toHaveProperty('history');
+    expect(delta.world).not.toHaveProperty('clubs');
+    const { world, ...rest } = founded.view!;
+    const rebuilt = { ...rest, ...delta.parts, world: { ...world, ...delta.world } };
+    for (const key of delta.dropped)
+      if (key.startsWith('world.')) delete (rebuilt.world as Record<string, unknown>)[key.slice(6)];
+      else delete (rebuilt as Record<string, unknown>)[key];
+    // Rebuilt on its base, the delta is the whole view the host would publish now.
+    const whole = (h as unknown as { view(): View }).view();
+    expect(canonical(rebuilt)).toBe(canonical(structuredClone(whole)));
+    // A base the host no longer remembers also gets the whole view.
+    const stale = await h.handle({
+      ...req('stale', h.world!.revision, { type: 'command', command: { type: 'read-inbox' } }),
+      viewBase: 999,
+    });
+    expect(stale.view).toBeDefined();
+    expect(stale.viewDelta).toBeUndefined();
   });
   it('blocks automatic progression before applying days when a critical alert is pending', async () => {
     const h = new Host();
