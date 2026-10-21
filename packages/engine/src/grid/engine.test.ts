@@ -219,9 +219,9 @@ describe('grid engine', () => {
           expect(e.dead).toBeGreaterThanOrEqual(
             Math.min(...Object.values(RESTART_CONFIG.dead)) - 1e-9,
           );
-      // Each period stops inside its last added minute, and its minutes fill the clock whole.
+      // Each period stops inside its last added minute, and its minutes fill the clock exactly.
       const added = record.added!;
-      expect(elapsed).toBeCloseTo(5400 + (added[0]! + added[1]!) * 60, 6);
+      expect(elapsed).toBe(5400 + (added[0]! + added[1]!) * 60);
       for (const e of whistles) expect(e.elapsed % 60).toBeGreaterThan(0);
     }
   });
@@ -229,8 +229,11 @@ describe('grid engine', () => {
   it('marks substitution, injury, dismissal, goal and extra-time transitions', () => {
     const seen = { entry: 0, injury: 0, dismissal: 0, goal: 0, extra: 0 };
     for (let i = 0; i < 60 && Object.values(seen).some((n) => n === 0); i++) {
-      const { trace, record } = candidate(`cand-moment-${i}`, true, 2024, LEVEL);
+      const { trace, record, elapsed } = candidate(`cand-moment-${i}`, true, 2024, LEVEL);
       const t = trace!;
+      // Extra time included, the clock holds whole minutes: (90 or 120 + added) × 60 exactly.
+      const minutes = (record.regulation ? 120 : 90) + record.added!.reduce((a, b) => a + b, 0);
+      expect(elapsed).toBe(minutes * 60);
       t.forEach((e, k) => {
         if (e.transition === 'entry') {
           seen.entry++;

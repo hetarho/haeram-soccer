@@ -598,6 +598,8 @@ export function playGrid(setup: GridSetup): GridResult {
   for (const period of periods) {
     s.period = period;
     s.t = 0;
+    // Where the period starts on the match clock: a whole minute on the candidate model.
+    const begun = s.elapsed;
     const start: 0 | 1 = period % 2 === 1 ? 0 : 1;
     pending = { kind: 'kickoff', side: start, spot: CENTRE_SPOT, dead: 0 };
     for (let guard = 0; guard < 20000; guard++) {
@@ -780,14 +782,16 @@ export function playGrid(setup: GridSetup): GridResult {
       // The candidate referee adds the lost seconds themselves and stops after the action that
       // reaches them; the added minutes recorded are those that action reached, so the period's
       // last frame draws all of it (→MATCH-1/12). The pre-feature path plays whole announced minutes.
+      // Both are read on the match clock from the period's start, so its minutes are whole.
       const lost = Math.min(hi * 60, Math.max(lo * 60, credits[period - 1]!));
-      const extra = candidate
-        ? Math.max(lo, Math.ceil((s.t - length) / 60))
+      let extra = candidate
+        ? Math.max(lo, Math.ceil((s.elapsed - begun - length) / 60))
         : Math.min(hi, Math.max(lo, Math.ceil(credits[period - 1]! / 60)));
+      if (candidate) while (begun + length + extra * 60 < s.elapsed) extra++;
       // Cards of a play take the minute it ends, as their trace entries follow it; subs keep the stoppage.
       for (const i of tally.incidents.slice(held))
         if (i.kind !== 'sub') Object.assign(i, stampAt(period, s.t, extra));
-      if (s.t >= length + (candidate ? lost : extra * 60)) {
+      if ((candidate ? s.elapsed - begun : s.t) >= length + (candidate ? lost : extra * 60)) {
         added.push(extra);
         // Dissent is drawn once per side at the end of each period.
         for (const side of [0, 1] as const) {
@@ -798,7 +802,7 @@ export function playGrid(setup: GridSetup): GridResult {
         tally.spellTo(undefined);
         // The rest of the final minute after the whistle is the interval between periods, so the
         // next one starts on a minute boundary and every minute is drawn whole (→MATCH-12).
-        if (candidate) s.elapsed += length + extra * 60 - s.t;
+        if (candidate) s.elapsed = Math.max(s.elapsed, begun + length + extra * 60);
         break;
       }
     }
