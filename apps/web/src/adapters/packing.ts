@@ -1,5 +1,6 @@
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
+import { packMatchModel, unpackMatchModel, type PackedMatchModel } from './matchModelPacking';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
@@ -167,6 +168,11 @@ interface Packed {
   seasonHeat?: { counts: string; rows: BitColumns };
   /** Own records' appearance snapshots, absent when no record has one (identityPacking.ts). */
   appearances?: PackedAppearances;
+  /**
+   * Container 3 only: model metadata, NPC season aggregates and record models
+   * (matchModelPacking.ts), absent when the world carries none; never inline in `world`.
+   */
+  model?: PackedMatchModel;
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -406,6 +412,7 @@ export function pack(w: World): Packed {
     }
   }
   const appearances = packAppearances(w.ownMatches);
+  const model = packMatchModel(w, id);
   const careers =
     w.people === undefined
       ? undefined
@@ -420,6 +427,7 @@ export function pack(w: World): Packed {
     world: {
       ...w,
       ...(careers ? { people: undefined } : {}),
+      ...(model ? { matchModel: undefined, npcSeason: undefined } : {}),
       fixtures: [],
       ownMatches: [],
       events: [],
@@ -511,6 +519,7 @@ export function pack(w: World): Packed {
         }
       : {}),
     ...(appearances ? { appearances } : {}),
+    ...(model ? { model } : {}),
     ...(compactEvents
       ? {
           eventStats: integers(eventRows.flat(), 6),
@@ -883,6 +892,12 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   playerDetails?.done();
   // Snapshots attach to the rebuilt rows, whose home/away IDs they must name.
   readAppearances(p.appearances, matches);
+  if (p.world.matchModel !== undefined || p.world.npcSeason !== undefined)
+    throw new Error('경기 모델 데이터는 압축 스트림에만 있어야 합니다.');
+  const model = p.model === undefined ? undefined : unpackMatchModel(p.model, str, matches.length);
+  model?.records.forEach((revision, i) => {
+    if (revision !== undefined) matches[i].model = revision;
+  });
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
       throw new Error('정산 이벤트 압축 데이터 손상');
@@ -1058,6 +1073,8 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   return {
     ...p.world,
     ...(people === undefined ? {} : { people }),
+    ...(model?.matchModel ? { matchModel: model.matchModel } : {}),
+    ...(model?.npcSeason ? { npcSeason: model.npcSeason } : {}),
     fixtures: copy.fixtures,
     ownMatches: matches,
     history,

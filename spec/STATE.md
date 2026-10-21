@@ -177,7 +177,6 @@
 | T279 | Generate coupled complete team facts without spatial or minute simulation | MATCH PLAYER STAFF ARCH | T273 | todo |
 | T280 | Couple full player records with legal participation and incidents | MATCH CLUB LEAGUE WORLD ARCH | T279 | todo |
 | T281 | Dispatch candidate fixtures and settle complete world statistics once | MATCH HIST SAVE LEAGUE WORLD KIT ARCH | T280 T282 | todo |
-| T282 | Preserve full aggregates and model coverage in bounded checkpoints | MATCH HIST SAVE KIT ARCH | T273 | todo |
 | T283 | Show comparable full statistics with honest tracking coverage | MATCH HIST WEB SAVE ARCH | T281 | todo |
 | T284 | Measure and tune complete aggregate records against football targets | MATCH HIST ARCH | T278 T281 T272 | todo |
 | T285 | Profile and optimize complete-result season progression | MATCH HIST SAVE ARCH | T284 T283 | todo |
@@ -190,12 +189,13 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 2 | 12 | 1 | 1 | 0 | 2026-10-21T03:51:39.198Z | [history](work/full-model.json) |
+| full-model | 3 | 14 | 3 | 11 | 2 | 0 | 0 | 2026-10-21T04:15:21.056Z | [history](work/full-model.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261021 T282 integrated
 - 261021 T274 integrated
 - 261021 T298 batch: six Firefox founding-fallback runs pass on first attempts (three repeats at 360/390; shared-host command budget 90s, actual cases 8.7–13.7s). Current fast checks, build, 39 contracts and catalogs pass.
 - 261021 T298 validation reuse: apps/packages/tests and the common/Chromium/WebKit execution settings exactly match 5c0383d; reuse its 1,458-unit and 217-Chromium passes. Only CI Firefox worker retries changed; CI keeps its original timeouts and assertions.
@@ -215,4 +215,3 @@
 - 261021 T296 done: runtime warnings/errors float outside page flow; typecheck, affected units, targeted lint/format, build and spec lint pass; mobile/recovery browser coverage updated for the batch gate.
 - 261021 WEB r103 freshness: T275 T283 T286 bases to WEB@103; their cited match/record decisions are unchanged by runtime-alert placement.
 - 261021 create-task T296 and implement-task start on 6d31c81: portal runtime alerts above the page, preserving their actions and ordinary dialog layering.
-- 261021 update-ssot WEB r103 start: floating runtime warnings and errors; prior controller/settings/mediation work committed as 6d31c81.

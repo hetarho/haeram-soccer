@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T03:51:39.198Z",
-  "sourceCommit": "d7742d51983805f46bc99391707040386e9649dd",
+  "snapshotAt": "2026-10-21T04:15:21.056Z",
+  "sourceCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "f396ac99a9e34e64e1b3ac4438e56fa07d4e524d",
+      "commit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-21T02:24:09.107Z"
+      "at": "2026-10-21T04:13:52.021Z"
     },
     "runner": {
       "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
@@ -75,12 +75,12 @@
   },
   "summary": {
     "total": 14,
-    "completed": 2,
-    "remaining": 12,
-    "running": 1,
-    "review": 1,
+    "completed": 3,
+    "remaining": 11,
+    "running": 2,
+    "review": 0,
     "blocked": 0,
-    "unassigned": 10
+    "unassigned": 9
   },
   "tasks": [
     {
@@ -97,7 +97,7 @@
       "dep": [
         "T274"
       ],
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T277",
@@ -142,14 +142,6 @@
         "T282"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T282",
-      "title": "Preserve full aggregates and model coverage in bounded checkpoints",
-      "dep": [
-        "T273"
-      ],
-      "status": "ready"
     },
     {
       "id": "T283",
@@ -359,6 +351,8 @@
       "submittedBase": "d7742d51983805f46bc99391707040386e9649dd",
       "submissionId": "28d2d4bb-a9dc-47e5-ae0a-76b2f128ed8c",
       "submittedAt": "2026-10-21T03:39:46.090Z",
+      "integratedCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+      "integratedAt": "2026-10-21T04:13:49.843Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -430,6 +424,13 @@
           "startedAt": "2026-10-21T03:30:42.948Z",
           "finishedAt": "2026-10-21T03:39:45.534Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-21T03:51:39.354Z",
+          "finishedAt": "2026-10-21T04:13:49.648Z"
+        }
       ]
     },
     {
@@ -461,7 +462,7 @@
         "f6n3-T282",
         "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-21T02:43:02.895Z",
       "startCommit": "e4bb776845901abc8c2bcf48d76426f2b695e0c2",
@@ -482,17 +483,36 @@
         "files": 15
       },
       "dispatch": {
-        "id": "ff801ead-9b65-4c42-a674-f72184b96a2c",
+        "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
         "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-21T03:27:38.389Z",
-        "finishedAt": "2026-10-21T03:46:08.375Z",
+        "startedAt": "2026-10-21T04:13:54.294Z",
+        "finishedAt": "2026-10-21T04:15:19.476Z",
         "error": null,
-        "summary": "T282 리뷰 지적 3건을 모두 고쳤습니다.\n(P2) `tests/fixtures/club-identity.ts`의 미래 컨테이너 케이스를 `envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`(4)로 옮겼습니다. 이제 다시 알 수 없는 컨테이너를 검사하고 '지원하지 않는 저장 스키마 버전' 오류가 납니다. 컨테이너와 모델 데이터가 어긋날 때의 문구도 '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.'로 바꿔 다른 호환성 오류와 맞췄습니다.\n(P3) `bitpacking.ts`가 `rangeBits`를 export하고, `packBitColumns`와 `matchModelPacking.ts`의 `bitsOf`가 이것을 함께 씁니다.\n(P3) `unpackSeason`은 이제 대회 표를 먼저 읽습니다. 클럽·선수 표는 대회 행이 선언한 합계로 행 수 상한을 걸고, 기여 표는 선수 행의 소속 수 합계로 상한을 겁니다. 그래서 조작된 대형 표는 행을 할당하기 전에 '표 차원' 오류로 거부됩니다. 이를 확인하는 단위 테스트(빈 열 100만 행)도 추가했습니다.\n\n실행한 검사는 typecheck, lint, format:check, build입니다. 어댑터 테스트 4개 파일은 93개 모두 통과했습니다. `vitest run --changed d7742d5`는 201개 파일에서 1368개 통과, 4개 건너뜀이었습니다.\n`tests/e2e/club-identity-continuity.spec.ts`는 브라우저 spec이라 여기서 돌리지 않았고 묶음 Chromium 실행으로 넘겼습니다. touches 밖에서 수정한 파일은 `tests/fixtures/club-identity.ts`와 `bitpacking.ts` 두 개이며, result limits에 적어 두었습니다."
+        "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity."
+      },
+      "review": {
+        "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/adapters/matchModelPacking.ts:371-394 (T282)",
+            "message": "The new bounds only reject a table that claims more rows than the competitions declare. A crafted, checksum-valid import can still declare up to 1,000 competitions × 1,000 clubs (and players capped at MAX_ROWS) in its tiny competitions table, then supply zero-bit club columns. The reader would then allocate up to 1e6 × 47 cells before the leftover-row check. The impact is only local memory pressure on a user-supplied file, behind the decompressed-size budget, so this is optional. A tighter per-section total (e.g. a summed club/player cap well below MAX_ROWS) could be considered when T286 settles the century-workload limits."
+          }
+        ],
+        "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+        "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+        "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+        "createdAt": "2026-10-21T04:13:53.626Z",
+        "finishedAt": "2026-10-21T04:15:19.451Z"
       },
       "reviewHistory": [
         {
@@ -548,6 +568,32 @@
           "finishedAt": "2026-10-21T03:46:08.025Z"
         }
       ]
+    },
+    {
+      "id": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "group": "full-model",
+      "taskId": "T276",
+      "tasks": [
+        "T276"
+      ],
+      "lane": null,
+      "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+      "contributors": [
+        "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-21T04:13:52.337Z",
+      "startCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+      "dispatch": {
+        "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+        "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "running",
+        "startedAt": "2026-10-21T04:13:52.862Z"
+      }
     }
   ],
   "history": [
@@ -2377,6 +2423,275 @@
       "group": "full-model",
       "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
       "taskId": "T274",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 329,
+      "at": "2026-10-21T04:13:49.772Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-21T03:51:39.354Z",
+            "finishedAt": "2026-10-21T04:13:49.648Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 330,
+      "at": "2026-10-21T04:13:49.843Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "01285ad7-9802-49ea-b59c-a494dbec9a2d",
+      "taskId": "T274",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+        "integratedAt": "2026-10-21T04:13:49.843Z"
+      }
+    },
+    {
+      "sequence": 331,
+      "at": "2026-10-21T04:13:52.034Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T04:13:52.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 332,
+      "at": "2026-10-21T04:13:52.337Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+        "group": "full-model",
+        "taskId": "T276",
+        "tasks": [
+          "T276"
+        ],
+        "lane": null,
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+        "contributors": [
+          "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T04:13:52.337Z",
+        "startCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4"
+      }
+    },
+    {
+      "sequence": 333,
+      "at": "2026-10-21T04:13:52.645Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 334,
+      "at": "2026-10-21T04:13:52.862Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T04:13:52.862Z"
+        }
+      }
+    },
+    {
+      "sequence": 335,
+      "at": "2026-10-21T04:13:53.021Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "a8532444-ae34-46b0-bdc6-a88fc7afba66",
+      "taskId": "T276",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "393f0a3b-2761-4135-a505-a26e274b50ba",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T04:13:52.862Z"
+        }
+      }
+    },
+    {
+      "sequence": 336,
+      "at": "2026-10-21T04:13:53.626Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+          "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+          "createdAt": "2026-10-21T04:13:53.626Z"
+        }
+      }
+    },
+    {
+      "sequence": 337,
+      "at": "2026-10-21T04:13:54.294Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T04:13:54.294Z"
+        }
+      }
+    },
+    {
+      "sequence": 338,
+      "at": "2026-10-21T04:13:54.324Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T04:13:54.294Z"
+        }
+      }
+    },
+    {
+      "sequence": 339,
+      "at": "2026-10-21T04:15:19.451Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "313f246b-26bb-497b-85f6-b82081ea31f2",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/matchModelPacking.ts:371-394 (T282)",
+              "message": "The new bounds only reject a table that claims more rows than the competitions declare. A crafted, checksum-valid import can still declare up to 1,000 competitions × 1,000 clubs (and players capped at MAX_ROWS) in its tiny competitions table, then supply zero-bit club columns. The reader would then allocate up to 1e6 × 47 cells before the leftover-row check. The impact is only local memory pressure on a user-supplied file, behind the decompressed-size budget, so this is optional. A tighter per-section total (e.g. a summed club/player cap well below MAX_ROWS) could be considered when T286 settles the century-workload limits."
+            }
+          ],
+          "commit": "06e263a6021ac09f95031e10e654e5c1a360dfae",
+          "baseCommit": "e1896bc17969d5de5ce30a21f335092e63a26fd4",
+          "submissionId": "365854eb-4ce4-4b36-87b8-b3df8cb59286",
+          "createdAt": "2026-10-21T04:13:53.626Z",
+          "finishedAt": "2026-10-21T04:15:19.451Z"
+        }
+      }
+    },
+    {
+      "sequence": 340,
+      "at": "2026-10-21T04:15:19.476Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "83068775-72d0-42f3-bd2d-50e09f54f865",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T04:13:54.294Z",
+          "finishedAt": "2026-10-21T04:15:19.476Z",
+          "error": null,
+          "summary": "T282 correction 06e263a fixes all three findings from the previous review. (1) FUTURE_CHECKPOINTS now uses `FULL_MODEL_CHECKPOINT_SCHEMA + 1`, so the club-identity e2e case is titled 'envelope schema 4' and tests an unknown container again. readEnvelope refuses that container with '지원하지 않는 저장 스키마 버전…', which matches the spec's hasText '지원하지 않는' filter. The mismatch error is also reworded to start with '지원하지 않는'. (2) `rangeBits` is exported from bitpacking.ts and used both by packBitColumns and by the plain-or-sparse column choice, with no change in behavior. (3) unpackSeason reads competitions first and limits the club and player tables to the row counts the competitions declare. It then limits the contribution table to the summed share counts. Share validation moved earlier with the same 1..50 bounds, and a regression test covers a crafted million-row table. No other tests still treat container 3 as a future container. The base moved from d7742d5 to e1896bc (the T274 grid engine, UI work and e2e changes merged from main), and none of those files overlap this submission. The codec, the container-3 writer selection, legacy/recognizedLegacy handling, SAVE-FORMAT, and the out-of-touches edits explained in the result all still match SAVE-23 and the acceptance. I could not run tests: the review checkout has no node_modules and installing would modify it. Approval rests on the code review plus the worker's verify record (typecheck, lint, format, build, `vitest --changed`: 201 files, 1368 passed). The batch Chromium run still has to confirm club-identity-continuity."
+        }
+      }
+    },
+    {
+      "sequence": 341,
+      "at": "2026-10-21T04:15:19.549Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "626befdd-2837-410e-978e-65dd0274e5f8",
+      "taskId": "T282",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

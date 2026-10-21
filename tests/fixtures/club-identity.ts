@@ -2,6 +2,7 @@ import { encode } from '../../apps/web/src/adapters/persistence';
 import type { IdentityDraftAction } from '../../apps/web/src/ui/clubIdentityDraft';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
 import type { Founding, World } from '../../packages/contracts/src/types';
+import { FULL_MODEL_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { createWorld, identityOf, installMissingIdentities } from '../../packages/engine/src/index';
 import { simulatedWorld } from './worlds';
 
@@ -137,8 +138,16 @@ export const FUTURE_CHECKPOINTS: Record<
   string,
   (w: World, generation: number, parentGeneration: number) => Promise<string>
 > = {
-  'envelope schema 3': async (w, generation, parentGeneration) =>
-    JSON.stringify({ ...JSON.parse(await encode(w, generation, parentGeneration)), schema: 3 }),
+  // The container after the match-model one (→SAVE-23), which this version cannot know.
+  [`envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`]: async (
+    w,
+    generation,
+    parentGeneration,
+  ) =>
+    JSON.stringify({
+      ...JSON.parse(await encode(w, generation, parentGeneration)),
+      schema: FULL_MODEL_CHECKPOINT_SCHEMA + 1,
+    }),
   'identity format 2': async (w, generation, parentGeneration) => {
     const future = structuredClone(w);
     const own = future.clubs.find((club) => club.id === future.playerClub)!;
