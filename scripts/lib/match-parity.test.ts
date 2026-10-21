@@ -4,6 +4,7 @@ import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/
 import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
 import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
 import { M } from '../../packages/engine/src/grid/record';
+import { FORMATIONS, levelFactor } from '../../packages/engine/src/player';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
 import {
   aggregateFreshness,
@@ -1006,6 +1007,18 @@ describe('aggregate measurement (T284)', () => {
     expect(plain.rosters[0].every((p) => p.fatigue === PRESS_LOAD_FATIGUE)).toBe(true);
     expect(forced.gap).toBe(plain.gap + 2);
     expect(forced.prepared.profiles[1]!.pressure).toBeGreaterThan(0);
+    // Each squad is built for its forced formation, as the detailed runner's (T321): every starter
+    // plays his own position, and without a declared squad fatigue there is no freshness reading.
+    forced.rosters.forEach((side, i) => {
+      const slots = FORMATIONS[forced.prepared.tactics[i]!].slots;
+      expect(side.slice(0, 11).map((p, k) => levelFactor(p.positions, slots[k]!.position))).toEqual(
+        Array(11).fill(1),
+      );
+    });
+    const undeclared = aggregateRun(w, f, 'tactics:counter-press', undefined, {
+      tactics: ['counter', 'press'],
+    });
+    expect(undeclared.sample.freshness).toBeUndefined();
     // The aggregate adapter's ledger readings agree with the record they come with.
     const { sample: s } = aggregateRun(w, f, 'tactics:counter-press', undefined, {
       tactics: ['counter', 'press'],

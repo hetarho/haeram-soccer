@@ -37,6 +37,7 @@ import type {
   Fixture,
   Founding,
   MatchRecord,
+  Player,
   Tactic,
   World,
 } from '../packages/contracts/src/types';
@@ -447,7 +448,8 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       ...(c.family === 'tactics' ? { tactics: [params.home!, params.away!] } : {}),
       ...(params.decide ? { decide: params.decide } : {}),
     });
-    const fatigueApplied = c.family === 'tactics' && forceTacticRosters(w, f, setup, [home, away]);
+    const fatigueApplied =
+      c.family === 'tactics' && forceTacticRosters(w, f, setup, [home, away], params.fatigue);
     const result = playGrid(setup);
     samples.push({
       record: result.record,
@@ -466,42 +468,60 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
 }
 
 /**
- * The pre-match fatigue both sides of a tactic pairing start from: what a club nobody owns carries
- * without the weekly press load (`npcSquad`; MATCH-2 gives a pressing club fatigue 32).
+ * A forced tactic pairing's matchday rosters (MATCH-29, T321), the one rule both engines' runners
+ * use: a forced tactic changes only in-match behaviour and its in-match cost. Each club's squad is
+ * built for the forced formation (`npcSquad` with the forced tactic's squad places, at the club's
+ * own strength, so the pair stays as equal as the core condition's): its XI is that squad's
+ * formation slots, its bench the next `bench[side]` available players, and every one of them
+ * starts from the condition's declared squad fatigue (`fatigue`; none declared keeps the
+ * generated value, which `forcedFatigueApplied` reports).
  */
-const NEUTRAL_FATIGUE = 0;
+export function forcedRosters(
+  w: World,
+  f: Fixture,
+  clubs: readonly [Club, Club],
+  tactics: readonly [Tactic, Tactic],
+  bench: readonly [number, number],
+  fatigue?: number,
+): [Player[], Player[]] {
+  return ([0, 1] as const).map((side) => {
+    const players = npcSquad(w.seed, w.year, clubs[side], tactics[side]).map((p) =>
+      fatigue === undefined ? p : { ...p, fatigue },
+    );
+    const xi = players.slice(0, FORMATIONS[tactics[side]].slots.length);
+    const named = players
+      .slice(xi.length)
+      .filter((p) => !isUnavailable(w, p, clubs[side].id, f))
+      .slice(0, bench[side]);
+    return [...xi, ...named];
+  }) as [Player[], Player[]];
+}
+
+/** Whether a forced pairing's rosters start from its declared squad fatigue; freshness is read only then. */
+export const forcedFatigueApplied = (
+  rosters: readonly (readonly Player[])[],
+  fatigue: number | undefined,
+) => fatigue !== undefined && rosters.every((side) => side.every((p) => p.fatigue === fatigue));
 
 /**
- * A forced tactic pairing's rosters (MATCH-29, T321): a forced tactic changes only in-match
- * behaviour and its in-match cost. Each club's squad is built for the forced formation
- * (`npcSquad` with the forced tactic's squad places, at the club's own strength, so the pair stays
- * as equal as the core condition's), its XI is that squad's formation slots and its bench the
- * named substitutes behind them, and both sides start from the same pre-match squad fatigue.
- * Returns whether that declared fatigue was applied; freshness is read only when it was.
+ * The detailed engine's forced pairing (`forcedRosters` on the setup): rosters, bench sizes and
+ * set-piece takers follow the squads built for the forced formations. Returns whether the declared
+ * squad fatigue was applied.
  */
 export function forceTacticRosters(
   w: World,
   f: Fixture,
   setup: GridSetup,
   clubs: [Club, Club],
+  fatigue: number | undefined,
 ): boolean {
-  let applied = true;
+  const xi = [0, 1].map((side) => FORMATIONS[setup.tactics[side as 0 | 1]].slots.length);
+  setup.rosters = forcedRosters(w, f, clubs, setup.tactics, setup.bench, fatigue);
   ([0, 1] as const).forEach((side) => {
-    const players = npcSquad(w.seed, w.year, clubs[side], setup.tactics[side]).map((p) => ({
-      ...p,
-      fatigue: NEUTRAL_FATIGUE,
-    }));
-    const xi = players.slice(0, FORMATIONS[setup.tactics[side]].slots.length);
-    const bench = players
-      .slice(xi.length)
-      .filter((p) => !isUnavailable(w, p, clubs[side].id, f))
-      .slice(0, setup.bench[side]);
-    setup.rosters[side] = [...xi, ...bench];
-    setup.bench[side] = bench.length;
-    setup.takers[side] = takersFor(xi);
-    applied &&= setup.rosters[side].every((p) => p.fatigue === NEUTRAL_FATIGUE);
+    setup.bench[side] = setup.rosters[side].length - xi[side]!;
+    setup.takers[side] = takersFor(setup.rosters[side].slice(0, xi[side]));
   });
-  return applied;
+  return forcedFatigueApplied(setup.rosters, fatigue);
 }
 
 /**
@@ -795,7 +815,7 @@ async function runReport() {
       movement: GRID_MOVEMENT_CONFIG,
       ball: GRID_BALL_CONFIG,
       forcedTactics:
-        "tactic pairings force both tactics on the core pairs; each club's squad is built for the forced formation (npcSquad with the forced tactic's squad places at the club's strength; XI = its formation slots) and both sides start from the same pre-match squad fatigue (0, a club nobody owns without the weekly press load), so a forced tactic changes only in-match behaviour and its in-match cost; end-of-match freshness (MATCH-29) is read only when that fatigue was applied",
+        "tactic pairings force both tactics on the core pairs; each club's squad is built for the forced formation (forcedRosters: npcSquad with the forced tactic's squad places at the club's strength; XI = its formation slots) and both sides start from the condition's declared squad fatigue (NEUTRAL_SQUAD_FATIGUE), so a forced tactic changes only in-match behaviour and its in-match cost; end-of-match freshness (MATCH-29) is read only when that fatigue was applied",
       knockouts:
         'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
     },
