@@ -164,9 +164,9 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 17 | 17 | - | 2 |
-| WEB | 108 | 108 | - | 0 |
+| WEB | 109 | 109 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 2 | 2 | - | 0 |
+| KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
 | MATCH | 15 | 15 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
@@ -205,11 +205,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
+- FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - h3t6 (autopilot, MacBook) runs the rest standalone with session subagents: T280 merged from wip/full-model-T280 with its batch gate; T281 (owns the aggregate re-draw fallback) beside it, then T283 beside explore T278, T284, T285, T286, T306–T308.
 - known flaky Chromium checks on a loaded host: club-identity-founding "exact previewed design … after reload" (club-hub not visible within 5 s) and growth-core "19-player advice floats" (43.9999 px < 44 px); both passed on rerun of the same tree.
 - CI: 01406b2 (T277) passed every job.
 
 ## log
+- 261021 T309 done (c9k2): three linked named colours and random crest; KIT r3 / WEB r109; remaining implementation touches disjoint; KIT-12 and WEB-49 unchanged; browser gate remains with the next code batch.
 - 261021 T311 committed on main (u6v1): original manager/staff office artwork and separate theme roles; 33 focused cases and task checks pass; browser batch pending.
 - 261021 T311 start (u6v1): WEB r108 replaces reused manager/staff scenes with original generated rooms.
 - 261021 T310 committed on main (u6v1): compact management overviews; task checks and responsive journey changes retained for the next browser batch.
@@ -229,4 +231,3 @@
 - 261021 create-task T304-T306 complete: attributed tenure retention/codec, bounded worker summaries, then manager UI/season return and continuity/capacity evidence; HIST r17 SAVE r51 WEB r106 fully tasked, all new tasks todo, no code implemented.
 - 261021 manager-achievements freshness: additive HIST-18/19 SAVE-24 WEB-92 leave existing cited football/presentation rules unchanged; T275 T281 T283-T286 and active T299-T303 need fresh bases/sync before implementation or integration. T276/T279 execution contracts remain unchanged; existing T279 ARCH-base warning predates this planning.
 - 261021 update-ssot HIST r17 SAVE r51 WEB r106: stable manager tenures and factual accomplishments; planning default credits final outcomes at actual settlement, with shared-season and incomplete-history labels.
-- 261021 finish T299-T303: main e936c9cf; 1,611 unit and 39 contract cases plus 224 Chromium journeys pass; exact CI 39569832332 passes all eight jobs. Presentation report closed; other task ownership retained.

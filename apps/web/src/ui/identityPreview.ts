@@ -16,8 +16,8 @@ import { describeShirt } from './kitPainting';
 
 export const KIT_ROLE_LABELS: Readonly<Record<KitRole, string>> = {
   home: '홈',
-  away: '원정',
-  third: '서드',
+  away: '어웨이',
+  third: '세컨',
 };
 
 export type PreviewOpponent = 'light' | 'dark';

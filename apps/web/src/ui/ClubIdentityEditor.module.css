@@ -151,9 +151,7 @@
   flex-wrap: wrap;
   gap: 6px;
 }
-.add,
-.toggle,
-.reuse {
+.toggle {
   min-height: 44px;
   padding: 8px 14px;
 }
@@ -163,11 +161,6 @@
 .toggle[aria-expanded='true'] {
   border-color: var(--accent);
   color: var(--accent-text);
-}
-.reuse {
-  border-color: var(--accent);
-  background: var(--accent-fill);
-  color: var(--on-accent);
 }
 .composer {
   display: grid;

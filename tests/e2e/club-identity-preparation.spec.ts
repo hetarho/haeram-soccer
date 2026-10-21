@@ -23,7 +23,7 @@ import { watchNext } from './watch';
  * then an away one, then an away cup tie) and enter through the ordinary file import.
  */
 
-const LABEL: Record<KitRole, string> = { home: '홈', away: '원정', third: '서드' };
+const LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 const ownSide = (w: World, f: Fixture) => (f.home === w.playerClub ? 0 : 1);
 
 /** A new career with every business decision delegated, after `matches` own matches. */

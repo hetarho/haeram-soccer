@@ -3,6 +3,7 @@ import {
   CREST_PATTERNS,
   CREST_PRESETS,
   CREST_SHAPES,
+  KIT_ROLES,
   SHIRT_PATTERNS,
   type ClubIdentity,
   type CrestDesign,
@@ -23,9 +24,13 @@ import {
  * the editor's own UI state, not part of the identity.
  */
 export type IdentityDraftAction =
-  /** Sets one existing representative colour; the crest and shirts keep theirs (KIT-10). */
+  /** One of the three named shirt colours, linked to the crest and other shirt regions. */
+  | { type: 'kit-colour'; role: KitRole; colour: string }
+  /** A locally drawn composition, with all current colours and shirts preserved. */
+  | { type: 'crest-random'; shape: CrestShape; pattern: CrestPattern; emblem: CrestEmblem }
+  /** Legacy v1 palette operation, retained for existing identity fixtures. */
   | { type: 'colour'; index: 0 | 1 | 2; colour: string }
-  /** Appends a representative colour, up to three (KIT-4). */
+  /** Legacy v1 palette operation, up to three colours. */
   | { type: 'add-colour'; colour: string }
   /** Removes the second or third representative colour; the main one always stays. */
   | { type: 'remove-colour'; index: 1 | 2 }
@@ -43,7 +48,7 @@ export type IdentityDraftAction =
   /** A colour region of one shirt; null removes its optional trim. */
   | { type: 'shirt-colour'; role: KitRole; region: 'primary' | 'secondary'; colour: string }
   | { type: 'shirt-colour'; role: KitRole; region: 'trim'; colour: string | null }
-  /** 대표색 적용: the representative colours into this shirt only, its pattern kept (KIT-10). */
+  /** Legacy v1 palette copy, retained for existing identity fixtures. */
   | { type: 'shirt-reuse'; role: KitRole }
   /** 취소/되돌리기: an independent copy of the identity the editor was opened with (WEB-86). */
   | { type: 'reset'; entry: ClubIdentity };
@@ -115,6 +120,53 @@ const withShirt = (value: ClubIdentity, role: KitRole, shirt: ShirtDesign): Club
   kits: { ...value.kits, [role]: shirt },
 });
 const withCrest = (value: ClubIdentity, crest: CrestDesign): ClubIdentity => ({ ...value, crest });
+const crestInKitColours = (
+  value: ClubIdentity,
+  parts: Pick<CrestDesign, 'shape' | 'pattern' | 'emblem'>,
+) => crestOf(parts, value.kits.home.primary, value.kits.away.primary, undefined);
+
+/** KIT-1/4/10: the editor's only palette is the three shirt bases. */
+export function linkedIdentityColours(value: ClubIdentity): ClubIdentity {
+  const { home, away, third } = value.kits;
+  const shirt = (role: KitRole) => {
+    const current = value.kits[role];
+    const second = role === 'home' ? away.primary : home.primary;
+    return shirtOf(
+      current.pattern,
+      current.primary,
+      second,
+      current.trim === undefined ? undefined : second,
+    );
+  };
+  return {
+    ...value,
+    colours: [home.primary, away.primary, third.primary],
+    crest: crestInKitColours(value, value.crest),
+    kits: { home: shirt('home'), away: shirt('away'), third: shirt('third') },
+  };
+}
+
+/** Uniformly choose one of the other catalogue compositions, without a sporting PRNG. */
+export function randomCrestAction(
+  crest: CrestDesign,
+  random: () => number = Math.random,
+): Extract<IdentityDraftAction, { type: 'crest-random' }> {
+  const patterns = CREST_PATTERNS.length;
+  const emblems = CREST_EMBLEMS.length;
+  const current =
+    (CREST_SHAPES.indexOf(crest.shape) * patterns + CREST_PATTERNS.indexOf(crest.pattern)) *
+      emblems +
+    CREST_EMBLEMS.indexOf(crest.emblem);
+  const alternatives = CREST_SHAPES.length * patterns * emblems - 1;
+  const drawn = Math.floor(random() * alternatives);
+  const index = drawn >= current ? drawn + 1 : drawn;
+  return {
+    type: 'crest-random',
+    shape: CREST_SHAPES[Math.floor(index / (patterns * emblems))]!,
+    pattern: CREST_PATTERNS[Math.floor(index / emblems) % patterns]!,
+    emblem: CREST_EMBLEMS[index % emblems]!,
+  };
+}
 
 /**
  * The draft after one editor action. An action that cannot apply — an invalid colour, a region the
@@ -135,6 +187,18 @@ export function reduceIdentityDraft(
   }
   const { colours, crest } = value;
   switch (action.type) {
+    case 'kit-colour':
+      return KIT_ROLES.includes(action.role)
+        ? linkedIdentityColours(
+            withShirt(value, action.role, { ...value.kits[action.role], primary: action.colour }),
+          )
+        : value;
+    case 'crest-random':
+      return CREST_SHAPES.includes(action.shape) &&
+        CREST_PATTERNS.includes(action.pattern) &&
+        CREST_EMBLEMS.includes(action.emblem)
+        ? withCrest(value, crestInKitColours(value, action))
+        : value;
     case 'colour': {
       if (action.index >= colours.length) return value;
       const next = [...colours] as IdentityColours;
@@ -151,13 +215,11 @@ export function reduceIdentityDraft(
         : value;
     case 'crest-preset': {
       const preset = CREST_PRESETS[action.index];
-      return preset
-        ? withCrest(value, crestOf(preset, crest.primary, crest.secondary, crest.accent))
-        : value;
+      return preset ? withCrest(value, crestInKitColours(value, preset)) : value;
     }
     case 'crest-part':
       return PARTS[action.part].includes(action.value)
-        ? withCrest(value, { ...crest, [action.part]: action.value })
+        ? withCrest(value, crestInKitColours(value, { ...crest, [action.part]: action.value }))
         : value;
     case 'crest-colour': {
       const { region, colour } = action;
@@ -176,8 +238,9 @@ export function reduceIdentityDraft(
     case 'shirt-pattern': {
       if (!(SHIRT_PATTERNS as readonly string[]).includes(action.pattern)) return value;
       const shirt = value.kits[action.role];
-      // Entering a pattern names its secondary visibly: the shirt's own, else the representative.
-      const secondary = shirt.secondary ?? colours[1] ?? colours[0];
+      // Entering a pattern uses the linked alternate base when no secondary is present yet.
+      const secondary =
+        shirt.secondary ?? value.kits[action.role === 'home' ? 'away' : 'home'].primary;
       return withShirt(
         value,
         action.role,

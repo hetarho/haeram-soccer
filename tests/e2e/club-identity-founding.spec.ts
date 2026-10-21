@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
+  linkedIdentityColours,
   reduceIdentityDraft,
   type IdentityDraftAction,
 } from '../../apps/web/src/ui/clubIdentityDraft';
@@ -24,16 +25,15 @@ const FIRST_COLOUR = '#bf7956';
 /** What `customise` does in the editor, as the editor's own draft actions. */
 const CUSTOMISED: IdentityDraftAction[] = [
   // Upper-case on purpose: the stored spelling is kept (KIT-1).
-  { type: 'colour', index: 0, colour: '#1D6F42' },
+  { type: 'kit-colour', role: 'home', colour: '#1D6F42' },
   { type: 'crest-preset', index: 4 },
-  { type: 'crest-colour', region: 'primary', colour: '#1D6F42' },
   { type: 'shirt-pattern', role: 'away', pattern: 'halves' },
-  { type: 'shirt-colour', role: 'away', region: 'secondary', colour: '#E0218A' },
+  { type: 'kit-colour', role: 'away', colour: '#E0218A' },
 ];
 
 /** The design a founding session starts from: its seed and the first country, ENG. */
 const sessionDraft = (seed: string) =>
-  createIdentityDraft({ country: 'ENG', seed, color: FIRST_COLOUR });
+  linkedIdentityColours(createIdentityDraft({ country: 'ENG', seed, color: FIRST_COLOUR }));
 const customised = (seed: string) =>
   CUSTOMISED.reduce<ClubIdentity>(reduceIdentityDraft, sessionDraft(seed));
 
@@ -62,29 +62,25 @@ const designEntry = (page: Page) =>
 async function openDesign(page: Page) {
   await designEntry(page).click();
   const editor = page.getByRole('dialog', { name: '구단 디자인' });
-  await expect(editor.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await expect(editor.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   return editor;
 }
 /** The editor steps of `CUSTOMISED`, through its real controls. */
 async function customise(editor: Locator) {
-  await editor.getByLabel('대표 주색 색 코드', { exact: true }).fill('#1D6F42');
+  await editor.getByLabel('홈 색 코드', { exact: true }).fill('#1D6F42');
   await editor
     .getByRole('group', { name: '기본 엠블럼', exact: true })
     .getByRole('button', { name: '마름모 · 번개', exact: true })
     .click();
-  await editor.getByLabel('바탕색 색 코드', { exact: true }).fill('#1D6F42');
   await editor
     .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '원정 유니폼', exact: true })
+    .getByRole('button', { name: '어웨이 유니폼', exact: true })
     .click();
   await editor
-    .getByRole('group', { name: '원정 유니폼 무늬', exact: true })
+    .getByRole('group', { name: '어웨이 유니폼 무늬', exact: true })
     .getByRole('button', { name: '좌우 반반', exact: true })
     .click();
-  await editor
-    .getByRole('group', { name: '원정 유니폼 색', exact: true })
-    .getByLabel('보조색 색 코드', { exact: true })
-    .fill('#E0218A');
+  await editor.getByLabel('어웨이 색 코드', { exact: true }).fill('#E0218A');
 }
 const useDesign = (editor: Locator) =>
   editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
@@ -123,7 +119,7 @@ test('the exact previewed design is the founded identity after reload and contin
   await expect(designEntry(page).locator('svg rect').first()).toHaveAttribute('fill', '#1D6F42');
   // Reopening shows exactly the used design.
   const again = await openDesign(page);
-  await expect(again.getByLabel('대표 주색 색 코드', { exact: true })).toHaveValue('#1D6F42');
+  await expect(again.getByLabel('홈 색 코드', { exact: true })).toHaveValue('#1D6F42');
   await expect(
     again.getByRole('group', { name: '기본 엠블럼', exact: true }).getByRole('button', {
       name: '마름모 · 번개',
@@ -211,26 +207,26 @@ test('changing seed and country keeps a customised design, and cancel restores t
   await useDesign(editor);
   // 취소 drops an unfinished edit: the design on editor entry stays.
   const cancelled = await openDesign(page);
-  await cancelled.getByLabel('대표 주색 색 코드', { exact: true }).fill('#000000');
+  await cancelled.getByLabel('홈 색 코드', { exact: true }).fill('#000000');
   await cancelled.getByRole('button', { name: '취소', exact: true }).click();
   await expect(cancelled).toHaveCount(0);
   // Neither the seed nor the country rerolls the session's design.
   await founding.getByLabel('세계 생성 시드').fill('identity-founding-other-seed');
   await chooseOption(founding.getByRole('combobox', { name: '창단 국가', exact: true }), 'FRA');
   const kept = await openDesign(page);
-  await expect(kept.getByLabel('대표 주색 색 코드', { exact: true })).toHaveValue('#1D6F42');
+  await expect(kept.getByLabel('홈 색 코드', { exact: true })).toHaveValue('#1D6F42');
   await kept
     .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '원정 유니폼', exact: true })
+    .getByRole('button', { name: '어웨이 유니폼', exact: true })
     .click();
   await expect(
-    kept.getByRole('group', { name: '원정 유니폼 무늬', exact: true }).getByRole('button', {
+    kept.getByRole('group', { name: '어웨이 유니폼 무늬', exact: true }).getByRole('button', {
       name: '좌우 반반',
       exact: true,
     }),
   ).toHaveAttribute('aria-pressed', 'true');
   // Closing without 사용 keeps the session design too.
-  await kept.getByLabel('대표 주색 색 코드', { exact: true }).fill('#000000');
+  await kept.getByLabel('홈 색 코드', { exact: true }).fill('#000000');
   await page.keyboard.press('Escape');
   await expect(kept).toHaveCount(0);
   await founding.getByRole('button', { name: '클럽 창단' }).click();
@@ -250,7 +246,7 @@ test('the design editor keeps every control reachable and returns focus to its e
   await entry.focus();
   await page.keyboard.press('Enter');
   const editor = page.getByRole('dialog', { name: '구단 디자인' });
-  await expect(editor.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await expect(editor.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   // With the composer open every control the editor has is on screen.
   await editor.getByRole('button', { name: '직접 꾸미기', exact: true }).click();
   await expect(editor.getByRole('group', { name: '엠블럼 모양', exact: true })).toBeVisible();
@@ -339,9 +335,57 @@ test('another founding slot starts from a clean design', async ({ page }) => {
   await expect(founding).toContainText('슬롯 3 · 새 게임');
   const seed = await sessionSeed(founding);
   const clean = await openDesign(page);
-  await expect(clean.getByLabel('대표 주색 색 코드', { exact: true })).toHaveValue(FIRST_COLOUR);
+  await expect(clean.getByLabel('홈 색 코드', { exact: true })).toHaveValue(FIRST_COLOUR);
   await clean.getByRole('button', { name: '취소', exact: true }).click();
   await founding.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   expect(ownClub(await exportWorld(page)).identity).toEqual(sessionDraft(seed));
+});
+
+test('random crest selection keeps the three colours and persists the previewed composition', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const editor = await openDesign(page);
+  const chosen = { home: '#123456', away: '#ABCDEF', third: '#5A2478' };
+  await editor.getByLabel('홈 색 코드', { exact: true }).fill(chosen.home);
+  await editor.getByLabel('어웨이 색 코드', { exact: true }).fill(chosen.away);
+  await editor.getByLabel('세컨 색 코드', { exact: true }).fill(chosen.third);
+  await editor.getByRole('button', { name: '직접 꾸미기', exact: true }).click();
+  const parts = async () =>
+    Promise.all(
+      ['모양', '바탕 무늬', '엠블럼 모양'].map((name) =>
+        editor
+          .getByRole('group', { name, exact: true })
+          .getByRole('button', { pressed: true })
+          .getAttribute('aria-label'),
+      ),
+    );
+  const before = await parts();
+  await editor.getByRole('button', { name: '엠블럼 랜덤 선택', exact: true }).click();
+  const after = await parts();
+  expect(after).not.toEqual(before);
+  await expect(editor.getByLabel('홈 색 코드', { exact: true })).toHaveValue(chosen.home);
+  await expect(editor.getByLabel('어웨이 색 코드', { exact: true })).toHaveValue(chosen.away);
+  await expect(editor.getByLabel('세컨 색 코드', { exact: true })).toHaveValue(chosen.third);
+  await useDesign(editor);
+  const again = await openDesign(page);
+  if (
+    (await again
+      .getByRole('button', { name: '직접 꾸미기', exact: true })
+      .getAttribute('aria-expanded')) === 'false'
+  )
+    await again.getByRole('button', { name: '직접 꾸미기', exact: true }).click();
+  expect(await parts()).toEqual(after);
+  await useDesign(again);
+  await page.getByTestId('club-founding').getByRole('button', { name: '클럽 창단' }).click();
+  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+  const identity = ownClub(await exportWorld(page)).identity!;
+  expect(identity.colours).toEqual([chosen.home, chosen.away, chosen.third]);
+  expect(identity.crest).toMatchObject({ primary: chosen.home, secondary: chosen.away });
+  expect(identity.crest).not.toHaveProperty('accent');
+  expect(
+    Object.fromEntries(Object.entries(identity.kits).map(([role, shirt]) => [role, shirt.primary])),
+  ).toEqual(chosen);
 });

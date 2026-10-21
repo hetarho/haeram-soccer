@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r108 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r109 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -398,8 +398,8 @@
 - WEB-85 [o] Preparation shows the manager's bench and set-piece and penalty takers with the lineup (→CLUB-6), and unavailable players with their injury or ban; the era's substitute rule is named (→MATCH-20).
 
 - WEB-86 [o] One club-design editor is available before founding and under 구단 운영 › 구단 디자인 afterwards.
-  - Start with ready-made crest previews and their visible 1–3 colour controls; directly label the region changed by each control. 직접 꾸미기 continues from the chosen design and exposes shape, background pattern and emblem choices (→KIT-2).
-  - Home, away and third have separate shirt previews and colour/pattern controls. Make the representative-colour defaults and independent alternate palettes clear (→KIT-1); do not add shorts/socks or goalkeeper customisation (→KIT-3/8).
+  - Show exactly three colour controls labelled 홈, 어웨이 and 세컨 (→KIT-1/4/10). Ready-made crest previews use home/away colours. A 랜덤 button selects crest components; 직접 꾸미기 exposes the selected shape, background pattern and emblem (→KIT-2).
+  - Home, away and third have separate shirt previews and pattern choices; their colours follow the three named controls and linked second colours (→KIT-1/4/10). Do not add shorts/socks or goalkeeper customisation (→KIT-3/8).
   - Changes are drafts until explicit use at founding or 적용 in a career. 취소 restores the design present on editor entry; a failed apply retains the draft and the last applied identity with an actionable error.
   - Ordinary detours retain the editor draft within that game session under →WEB-74. Another slot or a new game never inherits it. Read-only ownership explains unavailable apply without hiding the design.
   - Colour controls have names and values, visible keyboard focus and an accessible selected state; the crest and shirt previews update while choosing, before the owner commits. Keep the phone scroll, target-size and contrast rules (→WEB-17/38/63).
@@ -443,6 +443,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r109 261021 WEB-86✎ independent region/palette controls→three linked named colours and crest randomisation
 - r108 261021 WEB-72✎ manager locker-room/staff training reuse→original private-office/shared-workroom images, separate semantic roles with a single period-neutral stage
 - r107 261021 WEB-10✎ management intros/stacked rules→compact action-first views; WEB-43✎ text-led people tabs→facility overviews; WEB-70✎ mid-page art→training-ground first; WEB-72✎ preparation locker art only→squad/manager reuse and staff training view
 - r106 261021 WEB-92+ per-tenure manager accomplishments, honest incomplete-history states and contextual season-record navigation

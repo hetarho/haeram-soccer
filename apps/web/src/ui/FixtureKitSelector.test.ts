@@ -138,19 +138,19 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     expect(html).toContain(fixtureKitContext(W, HOME));
     expect(html).toContain('읽기 전용 탭에서는 유니폼을 정할 수 없어요.');
     expect(html).toContain(
-      `자동 추천: 우리 ${['홈', '원정', '서드'][KIT_ROLES.indexOf(automatic.sides[0].role)]} 유니폼`,
+      `자동 추천: 우리 ${['홈', '어웨이', '세컨'][KIT_ROLES.indexOf(automatic.sides[0].role)]} 유니폼`,
     );
     const all = buttons(html);
     expect(all.map((b) => b.label)).toEqual([
       '우리 홈 유니폼',
-      '우리 원정 유니폼',
-      '우리 서드 유니폼',
+      '우리 어웨이 유니폼',
+      '우리 세컨 유니폼',
       '이 유니폼으로 정하기',
       '자동 선택으로 되돌리기',
     ]);
     expect(all.every((b) => b.disabled)).toBe(true);
     // Both sides' shirts and automatic keepers are shown before anything is committed.
-    expect(html).toMatch(/aria-label="Kit Town (홈|원정|서드) 유니폼: /);
+    expect(html).toMatch(/aria-label="Kit Town (홈|어웨이|세컨) 유니폼: /);
     expect(html).toContain(`골키퍼 자동 색 ${automatic.sides[1].goalkeeper}`);
   });
 
@@ -168,7 +168,7 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     const stored = render({ w, role: 'third' });
     expect(stored).toContain('직접 고름');
     const chosen = buttons(stored);
-    expect(chosen.find((b) => b.checked === 'true')?.label).toBe('우리 서드 유니폼');
+    expect(chosen.find((b) => b.checked === 'true')?.label).toBe('우리 세컨 유니폼');
     // The stored role needs no new command; returning to automatic does.
     expect(chosen.slice(3).map((b) => b.disabled)).toEqual([true, false]);
   });
@@ -189,7 +189,7 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     const html = render({ w, role: clash });
     expect(html).toContain('data-testid="fixture-kit-warning"');
     expect(html).toContain(
-      `더 잘 구분되는 ${automatic === 'away' ? '원정' : '서드'} 유니폼을 추천해요.`,
+      `더 잘 구분되는 ${automatic === 'away' ? '어웨이' : '세컨'} 유니폼을 추천해요.`,
     );
     expect(html).toContain('경고: 두 팀 유니폼이 비슷해 구분하기 어려워요.');
     const [confirm, reset] = buttons(html).slice(3);

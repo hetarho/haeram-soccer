@@ -88,15 +88,16 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
     const roles = buttons(html).filter((b) => b.label.endsWith(' 유니폼'));
     expect(roles.map((b) => [b.label, b.pressed])).toEqual([
       ['홈 유니폼', 'true'],
-      ['원정 유니폼', 'false'],
-      ['서드 유니폼', 'false'],
+      ['어웨이 유니폼', 'false'],
+      ['세컨 유니폼', 'false'],
     ]);
     const patterns = buttons(group(html, '홈 유니폼 무늬'));
     expect(patterns.map((b) => b.label)).toEqual(
       SHIRT_PATTERNS.map((p) => SHIRT_PATTERN_LABELS[p]),
     );
     expect(pressed(group(html, '홈 유니폼 무늬')).map((b) => b.label)).toEqual(['세로 줄무늬']);
-    expect(buttons(html).some((b) => b.label === '대표색 적용')).toBe(true);
+    expect(buttons(html).some((b) => b.label === '엠블럼 랜덤 선택')).toBe(true);
+    expect(html).not.toContain('대표색 적용');
     // No shorts, socks, goalkeeper, upload or sponsor control, and no apply/cancel of its own.
     const controls = [
       ...buttons(html).map((b) => b.label),
@@ -129,77 +130,6 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
     expect(choices.map(([, labels]) => labels.length)).toEqual([6, 10, 20]);
   });
 
-  it('discloses a one-colour crest and offers no hidden editable colour', () => {
-    const one = render(
-      withCrest({ shape: 'round', pattern: 'hoops', emblem: 'ball', primary: '#6A0DAD' }),
-    );
-    const colours = group(one, '엠블럼 색');
-    // Only the field colour is editable; the empty regions are explicit additions.
-    expect(inputs(colours).map((tag) => attr(tag, 'value'))).toEqual(['#6a0dad', '#6A0DAD']);
-    expect(buttons(colours).map((b) => b.label)).toEqual(['무늬색 추가', '엠블럼색 추가']);
-    expect(colours).not.toContain('<b>무늬색</b>');
-    expect(one).toContain('한 가지 색 엠블럼이에요. 무늬·원 테두리·엠블럼 자리는 비워 두어');
-    expect(one).toContain('바깥 테두리선은 모든 엠블럼에 같은 밝은 중립색으로 고정돼요.');
-    // The large preview paints only the chosen primary outside the mask that cuts its holes.
-    const preview = /<svg[^>]*aria-label="엠블럼 미리보기[^"]*"[^>]*>.*?<\/svg>/.exec(one)![0];
-    const painted = new Set(
-      [
-        ...preview.replace(/<mask[^>]*>.*?<\/mask>/g, '').matchAll(/ (?:fill|stroke)="([^"]*)"/g),
-      ].map(([, value]) => value),
-    );
-    expect(painted).toEqual(new Set(['#6A0DAD', 'none']));
-    // With an accent the emblem keeps its colour and only the pattern and ring stay empty.
-    const accented = render(
-      withCrest({
-        shape: 'round',
-        pattern: 'hoops',
-        emblem: 'ball',
-        primary: '#6A0DAD',
-        accent: '#fcbf49',
-      }),
-    );
-    expect(accented).toContain('무늬·원 테두리 자리는 비워 두어');
-    expect(buttons(group(accented, '엠블럼 색')).map((b) => b.label)).toEqual([
-      '엠블럼색 빼기',
-      '무늬색 추가',
-    ]);
-    // Two colours: both regions are fields and nothing is called one-colour.
-    const two = render(IDENTITY);
-    expect(two).not.toContain('한 가지 색 엠블럼');
-    expect(inputs(group(two, '엠블럼 색')).map((tag) => attr(tag, 'value'))).toEqual([
-      '#d62828',
-      '#d62828',
-      '#ffffff',
-      '#FFFFFF',
-    ]);
-  });
-
-  it('names every region the crest’s secondary paints, and only those', () => {
-    const hint = (crest: CrestDesign) =>
-      /<b>무늬색<\/b><small id="[^"]*">([^<]*)<\/small>/.exec(
-        group(render(withCrest(crest)), '엠블럼 색'),
-      )?.[1];
-    const actions = (crest: CrestDesign) =>
-      buttons(group(render(withCrest(crest)), '엠블럼 색')).map((b) => b.label);
-    // Without an accent the secondary also paints the emblem (CrestMark: accent ?? secondary).
-    expect(hint(IDENTITY.crest)).toBe('바탕 무늬(세로 줄무늬) · 원 테두리 · 엠블럼(별)');
-    expect(actions(IDENTITY.crest)).toEqual(['무늬색 빼기', '엠블럼색 따로 정하기']);
-    // A plain field has no pattern for it to paint.
-    const plain: CrestDesign = { ...IDENTITY.crest, pattern: 'plain', emblem: 'ball' };
-    expect(hint(plain)).toBe('원 테두리 · 엠블럼(공)');
-    // With an accent the emblem has its own field, and the secondary keeps the pattern and ring.
-    const accented: CrestDesign = { ...IDENTITY.crest, accent: '#fcbf49' };
-    expect(hint(accented)).toBe('바탕 무늬(세로 줄무늬) · 원 테두리');
-    expect(group(render(withCrest(accented)), '엠블럼 색')).toContain('<b>엠블럼색</b><small id');
-    expect(hint({ ...plain, accent: '#fcbf49' })).toBe('원 테두리');
-    // A one-colour plain field leaves only the ring and emblem empty.
-    expect(
-      render(withCrest({ shape: 'round', pattern: 'plain', emblem: 'ball', primary: '#6A0DAD' })),
-    ).toContain(
-      '한 가지 색 엠블럼이에요. 원 테두리·엠블럼 자리는 비워 두어 뒤 배경이 비쳐 보여요.',
-    );
-  });
-
   it('disables every change control when read-only and keeps the design visible', () => {
     const html = render(IDENTITY, true);
     expect(html).toContain('읽기 전용 탭이에요.');
@@ -210,12 +140,6 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
       expect(button.disabled, button.label).toBe(!viewing);
     }
     for (const tag of inputs(html)) expect(tag).toContain(' disabled=""');
-    expect(inputs(group(html, '홈 유니폼 색')).map((tag) => attr(tag, 'value'))).toEqual([
-      '#d62828',
-      '#d62828',
-      '#ffffff',
-      '#FFFFFF',
-    ]);
     // The writer's editor enables the same controls.
     const writable = render(IDENTITY);
     expect(writable).not.toContain('읽기 전용');
@@ -225,50 +149,46 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
 
   it('labels the selected shirt with the controlled value’s own design', () => {
     const html = render(IDENTITY);
-    const { home, away, third } = IDENTITY.kits;
+    const { home, away } = IDENTITY.kits;
     expect(html).toContain(`aria-label="홈 유니폼: ${describeShirt(home)}"`);
     for (const role of ['home', 'away', 'third'] as const)
       expect(html).toContain(
         `aria-label="${KIT_ROLE_LABELS[role]} 유니폼: ${describeShirt(IDENTITY.kits[role])}"`,
       );
-    const colours = group(html, '홈 유니폼 색');
-    expect(colours).toContain('<b>주색</b>');
-    expect(colours).toContain('<b>보조색</b>');
-    expect(colours).not.toContain('<b>테두리</b>');
-    expect(buttons(colours).map((b) => b.label)).toEqual(['테두리 추가', '대표색 적용']);
-    for (const other of [away.trim, third.secondary, third.trim])
-      expect(colours.toLowerCase()).not.toContain(other!.toLowerCase());
-    // A plain shirt has no secondary region; its optional trim is removable.
+    // Pattern choices show the alternate shirt colour when entering a new pattern.
     const plain = render({ ...IDENTITY, kits: { ...IDENTITY.kits, home: away } });
-    const plainColours = group(plain, '홈 유니폼 색');
-    expect(plainColours).not.toContain('<b>보조색</b>');
-    expect(plainColours).toContain('<b>테두리</b>');
-    expect(buttons(plainColours).map((b) => b.label)).toEqual(['테두리 빼기', '대표색 적용']);
-    expect(pressed(group(plain, '홈 유니폼 무늬')).map((b) => b.label)).toEqual(['단색']);
-    // Each pattern choice pictures the shirt it would make, its secondary named explicitly.
     const checks = {
       pattern: 'checks',
       primary: away.primary,
-      secondary: '#FFFFFF',
+      secondary: away.primary,
       trim: away.trim,
     } as const;
     expect(group(plain, '홈 유니폼 무늬')).toContain(`aria-label="체크: ${describeShirt(checks)}"`);
   });
 
-  it('shows one to three representative colours with explicit add and remove', () => {
-    const fields = (value: ClubIdentity) =>
-      [...group(render(value), '대표색').matchAll(/<b>(대표 [^<]+)<\/b>/g)].map(
-        ([, label]) => label,
-      );
-    const actions = (value: ClubIdentity) =>
-      buttons(group(render(value), '대표색')).map((b) => b.label);
-    expect(fields(IDENTITY)).toEqual(['대표 주색', '대표 보조색']);
-    expect(actions(IDENTITY)).toEqual(['대표 보조색 빼기', '대표 강조색 추가']);
-    const three: ClubIdentity = { ...IDENTITY, colours: ['#d62828', '#FFFFFF', '#fcbf49'] };
-    expect(fields(three)).toEqual(['대표 주색', '대표 보조색', '대표 강조색']);
-    expect(actions(three)).toEqual(['대표 보조색 빼기', '대표 강조색 빼기']);
-    const one: ClubIdentity = { ...IDENTITY, colours: ['#d62828'] };
-    expect(fields(one)).toEqual(['대표 주색']);
-    expect(actions(one)).toEqual(['대표 보조색 추가']);
+  it('shows exactly three named colours from shirt bases, including older palettes', () => {
+    for (const colours of [
+      ['#d62828'],
+      ['#d62828', '#FFFFFF'],
+      ['#d62828', '#FFFFFF', '#fcbf49'],
+    ] as const) {
+      const html = render({ ...IDENTITY, colours: [...colours] });
+      const fields = inputs(group(html, '색상'));
+      expect(fields.filter((tag) => attr(tag, 'type') === 'color')).toHaveLength(3);
+      expect(
+        fields
+          .filter((tag) => attr(tag, 'type') === 'text')
+          .map((tag) => [attr(tag, 'aria-label'), attr(tag, 'value')]),
+      ).toEqual([
+        ['홈 색 코드', IDENTITY.kits.home.primary],
+        ['어웨이 색 코드', IDENTITY.kits.away.primary],
+        ['세컨 색 코드', IDENTITY.kits.third.primary],
+      ]);
+      expect(inputs(html)).toHaveLength(6);
+      expect(buttons(group(html, '색상'))).toEqual([]);
+      expect(html).not.toMatch(/대표색|대표 주색|대표 보조색|테두리 추가|무늬색 추가/);
+      expect(html).toContain('엠블럼은 홈·어웨이 색으로 배색돼요.');
+      expect(html).toContain('바깥 테두리선은 모든 엠블럼에 같은 밝은 중립색으로 고정돼요.');
+    }
   });
 });

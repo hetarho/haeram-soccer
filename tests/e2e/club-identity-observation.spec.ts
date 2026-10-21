@@ -279,12 +279,12 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
   // The editor loads lazily with the tab (T251).
   const design = page.getByRole('region', { name: '구단 디자인', exact: true });
-  await expect(design.getByRole('group', { name: '대표색', exact: true })).toBeVisible();
+  await expect(design.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   await design
     .getByRole('group', { name: '편집할 유니폼', exact: true })
     .getByRole('button', { name: '홈 유니폼', exact: true })
     .click();
-  await design.getByLabel('주색 색 코드', { exact: true }).fill(edited);
+  await design.getByLabel('홈 색 코드', { exact: true }).fill(edited);
   await design
     .getByRole('group', { name: '구단 디자인 적용', exact: true })
     .getByRole('button', { name: '적용', exact: true })

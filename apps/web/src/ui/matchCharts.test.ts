@@ -126,7 +126,7 @@ describe('chart series against the worn shirts (→WEB-49, KIT-12)', () => {
     expect(lines[0]).toContain(`stroke="${away.colour}"`);
     // The swatch shows the actual shirt, not the lifted line colour.
     expect(html).toContain(`aria-label="CHA 홈 유니폼: ${describeShirt(NAVY.sides[0].shirt)}"`);
-    expect(html).toContain(`aria-label="OPP 원정 유니폼: ${describeShirt(NAVY.sides[1].shirt)}"`);
+    expect(html).toContain(`aria-label="OPP 어웨이 유니폼: ${describeShirt(NAVY.sides[1].shirt)}"`);
     expect(html).toContain('(실선)');
     expect(html).toContain('(점선)');
   });
