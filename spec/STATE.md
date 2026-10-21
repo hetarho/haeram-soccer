@@ -15,9 +15,9 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| h3t6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-21T12:47Z | 2026-10-21T22:46Z | T327 |
 
 ## inbox
+- 261022 decided T327: MATCH-13 r18's 40 m and 60% fall between MATCH-14's band edges → both paths use the nearest band edge (35 m from goal; the two-thirds edge), one rule with exact parity, stating the offset beside the bands when they are sourced (alt: exact metres on the grid and the nearest band on the aggregate, a built-in parity gap)
 - 261022 decided T324: shot scale 0.42 keeps core goals inside (2.755) at the cost of MATCH-29 (9/6/10 against 15/4/6 at 0.35, where goals fell to 2.50) → keep 0.42, since goals is a hard MATCH-23 row and counter-at-least-press fails at both; T328's counter roles and more midfield and defender goals are the named fixes (alt: 0.35 with goals outside)
 - 261022 decided T328: T324 found counter cannot beat press through behaviour without breaking MATCH-23 (25–40% of through balls in behind pushed FW goals to 69–72%, goal-area shots to 10.6–13.9%) and pointed at counter's 4-4-2 role table → explore T328 measures role-table variants from PLAYER-5's roles on the candidate path and recommends a STAFF-22/MATCH-8 counter row, ratified afterwards through update-ssot; MATCH-29's counter row stays unless T328 shows no role table can meet it, which is then the owner's call (alt: relax MATCH-29's counter row now | change the counter row now without evidence)
 - 261022 decided T327 MATCH-3: T324 found counter keeping 51–52% possession under every lever because the detailed engine measures time on the ball (flights included) → MATCH-3 r19 measures possession as the share of attempted passes, the published convention, on both paths; T327 implements it with PPDA and high turnovers (alt: keep time share and change counter's behaviour)
@@ -201,8 +201,8 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | doing@261022.h3t6 |
-| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | doing@261022.h3t6 |
+| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | todo |
+| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -219,11 +219,17 @@
 
 ## next
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
-- h3t6 (autopilot, MacBook) runs the rest standalone with session subagents (implementer plus separate reviewer each; gates on a clean detached worktree because other sessions edit the main checkout): explore T321 (detailed tactic pairings, MATCH-29) and explore T284 (aggregate calibration) run side by side, then T285, T286, T306–T308.
-- known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (43.9999 px < 44 px); Firefox CI — staff.spec.ts:80 and :247 failing at the mediation dialog's 단장 우선 radio `.check()` in `tests/e2e/events.ts` (604590a, 34ebd1b; 48/48 locally); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner (87 s normally).
-- CI: 9e67be5 passed every job.
+- h3t6 stopped at 08:50 KST on 261022 (owner moving machines). Resume standalone (implementer and separate reviewer per task; batch gate before each code push):
+  - T327 (counting done, outcomes unchanged; bands open): branch wip/h3t6-T327 (602bb34) on 74cbb95 — merge main, review, gate, integrate. Its PPDA and high-turnover bands need published league-season figures (Opta high turnovers; Opta/StatsBomb/Understat PPDA), fetched in a session that can reach the web; zones use the nearest band edge (decided).
+  - T328 (explore, counter role variants): branch wip/h3t6-T328 (432ae29) — resume from its `## result` progress record (calibration readings for the base and eight PLAYER-5 role tables: none reaches counter ≥ press, best screenMezzala −0.137 against −0.215; held-out check and exit left, resume commands in its limits), then exit, review, integrate; a recommended counter row goes through update-ssot.
+  - then T323 (needs T322 T324 T327 T328), T325 and T326 side by side, T286, T306–T308.
+- OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
+- known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
+- test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
+- FIRST (fix CI before feature work): CI 39690281623 on 5f80730 (the UI merge) failed e2e on Chromium — cups-and-club.spec.ts:43 (390x844, transfer stance from the roster; click timeout 30 s), recruitment.spec.ts:92 (filters and compares candidates; click timeout), staff.spec.ts:81 (360x740) — and on Firefox — the same cups-and-club and recruitment journeys plus facility-art.spec.ts:97 (current terraces/contemporary facility scenes at 390/1440). The same Chromium journeys passed in h3t6's local gate on 74cbb95 (230/230), so compare CI's traces with T314's market and T310–T313's art changes; CI for 3f45758 was still running at the stop.
 
 ## log
+- 261022 h3t6 stopped at 08:50 KST as the owner asked (moving machines): integrated T280 T281 T283 T278 T320 T284 T321 T285 T322 T324 and the local UI work (T309–T314) into main; T327 and T328 pushed as wip/h3t6-T327 and wip/h3t6-T328; report 261021-h3t6
 - 261022 merged the e2e fixes for the UI merge batch (10 Chromium failures, all stale specs; 59/59 in those files pass)
 - 261022 T324 integrated (h3t6; explore exit: MATCH-29 9 inside / 6 outside / 10 insufficient at shot scale 0.42, press edge +0.23; core goals back inside; FW, MF and penalty goals and goal kicks residual → T328, T323)
 - 261022 T322 integrated (h3t6; one review round: through-ball attempts band from StatsBomb only, FBref TB counts completions): MATCH-30 bands for 13 counters with sources, one counting rule on both paths, scoring concentration ratified in the target
@@ -243,4 +249,3 @@
 - 261022 create-task T325 T326 (explore): detailed own-match speed, bit-identical, and aggregate fixture cost with its accuracy trade-off, after T323 and before T286
 - 261022 T285 integrated (h3t6; explore exit: bit-identical optimisations, aggregate fixture ×0.53, candidate season ×0.69; every ARCH-31 throughput gate still fails; century checkpoint estimated 2.95–3.12 MiB)
 - 261022 create-task T324 (explore): counter breaks behind a high line and press attacking volume, T321's named follow-ups for MATCH-29, before T323 and T286
-- 261022 T321 integrated (h3t6; explore exit: press edge +0.71→+0.39 points, MATCH-29 8 inside / 8 outside / 9 insufficient, core MATCH-23 30–36/38 inside and 0 outside; forced pairings field squads built for the forced formation in both runners)
