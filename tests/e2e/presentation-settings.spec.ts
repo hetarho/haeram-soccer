@@ -150,8 +150,9 @@ for (const viewport of [
     await openSettings(page);
     await expectRegistryChoices(page);
     await closeSettings(page);
+    // Slots keep /journal; reloading resumes the game already played in this tab (WEB-62).
     await page.reload();
-    await expect(page.getByTestId('game-slots')).toBeVisible();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
     await openSettings(page);
     await expectRegistryChoices(page);
   });
@@ -282,7 +283,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
       ),
     )
     .toBe(true);
-  await expect(page.locator('img[src$="/__presentation-fixtures/home.svg"]').first()).toBeVisible();
+  await expect(page.locator('img[src$="/__presentation-fixtures/home.svg"]:visible')).toBeVisible();
   expect(
     await page.evaluate(() =>
       getComputedStyle(document.documentElement)
