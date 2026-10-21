@@ -34,12 +34,11 @@ import type { Intention, IntentionKind, IntentionPriority, IntentionReason } fro
 /** Initial values for the candidate model; T278 calibrates them against the unchanged targets. */
 export const COORDINATION_CONFIG = {
   /**
-   * How many players press the carrier, by the defending side's tactic (→MATCH-8). T321: one for
-   * press too, which still regains the ball highest, since two pressers won it too easily.
+   * How many players press the carrier from within the press reach, by the defending side's tactic
+   * (→MATCH-8). T321: one for press too, which still regains the ball highest, since two pressers
+   * won it too easily (T324 dropped the second presser's shorter reach, which nothing read).
    */
   pressers: { possession: 1, press: 1, counter: 1, balanced: 1 } satisfies Record<Tactic, number>,
-  /** A second presser joins only from within this share of the press reach. */
-  second: 0.6,
   /**
    * A carrier under pressure (an opponent within `TAG_CONFIG.pressureRadius`): the teammate within
    * `near` m whose role and traits look most for the pass shows `distance` m from him with odds
@@ -228,7 +227,7 @@ function defend(
     const urgent = danger && all.length === 0;
     const priority = urgent ? 'danger' : 'tactical';
     if (!free(c.gp, priority)) continue;
-    if (!urgent && c.d > (all.length === 0 ? reach : CC.second * reach)) continue;
+    if (!urgent && c.d > reach) continue;
     job(
       c.gp,
       { kind: 'press', priority, target: [carrier.pos[0], carrier.pos[1]], opponent: carrier.idx },
@@ -462,6 +461,7 @@ function attack(
       ctx,
       stream(s, gp, 'run', s.elapsed),
       timing * fresh(s, gp) * breaking,
+      breaking > 1,
     );
     return p ? [{ gp, p }] : [];
   });

@@ -1,6 +1,6 @@
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
 import type { MatchRecord, Score } from '../../../contracts/src/types';
-import { choosePass, decide, DECISION_CONFIG, type Decision } from './decide';
+import { choosePass, decide, DECISION_CONFIG, throughPoint, type Decision } from './decide';
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
@@ -48,6 +48,7 @@ import {
   onPitch,
   other,
   slotOf,
+  type GridPlayer,
   type GridState,
 } from './state';
 import { lineOf } from '../player';
@@ -58,7 +59,9 @@ import {
   advance,
   benchPoint,
   flightSeconds,
+  heading,
   prepareRestart,
+  readAt,
   reachSeconds,
   type BallSpeed,
   type MotionKnot,
@@ -413,6 +416,8 @@ export function playGrid(setup: GridSetup): GridResult {
    * lasts at least `least` and until its route is done — the ball's flight to where it ended at
    * bounded speed and the new owner's run to it. The actor keeps the ball until the kick, timed so
    * the ball lands as the action ends; the new owner runs to the ball, everyone else to his shape.
+   * With `before` (where everyone was heading before the action) the others keep going there until
+   * the kick and only then react to the ball (→MATCH-17).
    */
   function motionOf(
     actor: Ref,
@@ -421,6 +426,7 @@ export function playGrid(setup: GridSetup): GridResult {
     speed: BallSpeed,
     least: number,
     start: number,
+    before?: ReadonlyMap<GridPlayer, readonly [number, number]>,
   ): Motion {
     const gp = s.players[actor[0]][actor[1]]!;
     const carry = o !== 'offside' && o.kind === 'complete' && o.receiver === actor[1];
@@ -450,6 +456,10 @@ export function playGrid(setup: GridSetup): GridResult {
     const plan: Move[] = [];
     if (owner) plan.push({ gp: owner, to: ball });
     if (owner !== gp) plan.push({ gp, holdUntil: dt - flight });
+    if (before && flight > 0)
+      for (const [p, to] of before)
+        if (p !== owner && p !== gp && onPitch(p))
+          plan.push({ gp: p, before: to, readAt: readAt(s, p, actor[0], dt - flight) });
     const knots: MotionKnot[] = [];
     if (carry)
       knots.push(
@@ -504,7 +514,10 @@ export function playGrid(setup: GridSetup): GridResult {
           return { key: d.kind ?? 'short', outcome: 'offside' };
         }
         const from = attackFrame(side, s.players[side][idx]!.pos);
-        const to = attackFrame(side, s.players[side][d.target]!.pos);
+        // On the candidate model a through ball goes into the runner's path (T324).
+        const lead =
+          candidate && d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
+        const to = attackFrame(side, lead ?? s.players[side][d.target]!.pos);
         const o = resolvePass(
           s,
           side,
@@ -514,6 +527,8 @@ export function playGrid(setup: GridSetup): GridResult {
           d.kind ?? 'short',
           d.lineBreaking ?? false,
           r,
+          0,
+          lead,
         );
         tally.passEvent(side, idx, {
           from,
@@ -743,13 +758,15 @@ export function playGrid(setup: GridSetup): GridResult {
             : decide(s, owner[0], owner[1], tags, r);
         } else d = decide(s, owner[0], owner[1], tags, r);
         tracer.hold();
+        // Where everyone heads before the action: off the ball they keep on until they read the kick.
+        const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d);
         // Tracing draws nothing, so the duration's draw may come before it.
         const least = candidate ? secondsOf(played.key) * (0.85 + 0.3 * r()) : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
         if (candidate) updateIntentions(s);
         const motion = candidate
-          ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed)
+          ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed, before)
           : undefined;
         tracer.act(s, owner[0], owner[1], {
           outcome: played.outcome,

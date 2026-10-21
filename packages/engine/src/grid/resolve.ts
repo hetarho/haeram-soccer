@@ -299,7 +299,8 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
 
 /**
  * A pass. Draws, in order: completion; on failure the split; for a loose ball the winner.
- * Offside is checked by the caller before this resolves (T210).
+ * Offside is checked by the caller before this resolves (T210). `at` (engine frame) is where the
+ * ball is played when not to the receiver's feet: a through ball into his path (T324).
  */
 export function resolvePass(
   s: GridState,
@@ -311,11 +312,12 @@ export function resolvePass(
   lineBreaking: boolean,
   r: () => number,
   bonus = 0,
+  at?: readonly [number, number],
 ): Outcome {
   const P = DUEL_CONFIG.pass;
   const from = attackFrame(side, s.players[side][idx]!.pos);
   const receiver = s.players[side][target]!;
-  const to = attackFrame(side, receiver.pos);
+  const to = attackFrame(side, at ?? receiver.pos);
   const dist = Math.hypot(to[0] - from[0], to[1] - from[1]);
   const keeper = slotPosition(s, s.players[side][idx]!) === 'GK';
   const long = kind === 'long' || kind === 'through' || kind === 'switch' || lineBreaking;

@@ -13,6 +13,7 @@ import {
   goalDistance,
   inBox,
   PITCH,
+  toEngine,
   type Point,
 } from './pitch';
 import { offsideLine } from './shape';
@@ -110,27 +111,49 @@ export const DECISION_CONFIG = {
    * crosses, headed goals, goal-area shots and forwards' goals and too few defenders' goals. T321
    * gave the shadow striker his own weight, raised the midfield and defence lines' and lowered the
    * forwards' so the lines' shares of goals hold, and raised the box band's (0.52) against shots
-   * from the goal area.
+   * from the goal area. T324 recalibrated the lines (DF 1.3, MF 7.5, FW 0.62 before) and the volume
+   * scale (0.215) after through balls into the runner's path and players reacting at the kick
+   * moved goals to the forwards and closer to goal.
    */
   candidate: {
     crossScale: 6.3,
     shotBox: 0.56,
-    shotLine: { GK: 0, DF: 1.3, MF: 7.5, FW: 0.62 },
+    shotLine: { GK: 0, DF: 3.2, MF: 20, FW: 0.36 },
     /**
-     * Positions whose shot weight replaces their line's (T321, →MATCH-16): a 4-2-3-1 shadow
-     * striker lives in the box like a forward, so the midfield line's weight made him take most
-     * of press's shots.
+     * Positions that shoot with another line's weight (T321, →MATCH-16): a 4-2-3-1 shadow striker
+     * lives in the box like a forward, so the midfield line's weight made him take most of press's
+     * shots. T324: he takes the forwards' weight itself instead of a weight of his own (1.5), so
+     * press's volume comes from its shape and pressing.
      */
-    shotPosition: { AM: 1.5 } as Partial<Record<Position, number>>,
+    shotPosition: { AM: 'FW' } as Partial<Record<Position, 'GK' | 'DF' | 'MF' | 'FW'>>,
     /**
      * In behind the line in a central lane in front of the box (band 5), in place of `inBehind`
-     * (T321, →MATCH-16: in behind favours a shot): a runner through on goal carries on toward it
-     * instead of passing, so a through ball behind a high line becomes a chance. In the box the
-     * shared `inBehind` holds.
+     * (T321, →MATCH-16: in behind favours a shot). T324: now that a through ball reaches a runner
+     * in his path, he shoots (shot 2) rather than carrying on into the goal area (carry 3 under
+     * T321). In the box the shared `inBehind` holds.
      */
-    inBehind: { shot: 1.3, carry: 3, pass: 0.5 },
-    /** The global shot-volume scale, in place of `shotScale` (T321). */
-    shotScale: 0.215,
+    inBehind: { shot: 2, carry: 1.3, pass: 0.5 },
+    /** The global shot-volume scale, in place of `shotScale` (T321, T324). */
+    shotScale: 0.32,
+    /**
+     * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
+     * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
+     */
+    longShotScale: 4,
+    /**
+     * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
+     * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
+     * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
+     * ball now really puts him through.
+     */
+    through: { lead: 5, depth: 88, score: 0.4, space: 12 },
+    /**
+     * Press's shot weight in the opponents' half just after a regain, in place of
+     * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
+     */
+    shotAfterRegain: 1,
+    /** Take-on volume outside the box against the position profiles' rate (T324). */
+    takeOnScale: 1.35,
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -186,8 +209,10 @@ export function actionMix(
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
-  mix.takeOn *= clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]);
   const candidate = s.setup.model !== undefined;
+  mix.takeOn *=
+    clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
+    (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
   const crossFactor =
     clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) *
     (candidate ? C.candidate.crossScale : C.crossScale);
@@ -195,11 +220,14 @@ export function actionMix(
   mix.cutBack *= crossFactor;
   mix.shot *=
     (candidate
-      ? (C.candidate.shotPosition[slot.position] ?? C.candidate.shotLine[line])
+      ? C.candidate.shotLine[C.candidate.shotPosition[slot.position] ?? line]
       : C.shotLine[line]) *
     (candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
-    Math.exp(-Math.max(0, goalDistance(c) - C.longShot.from) / C.longShot.scale);
+    Math.exp(
+      -Math.max(0, goalDistance(c) - C.longShot.from) /
+        (candidate ? C.candidate.longShotScale : C.longShot.scale),
+    );
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');
@@ -220,7 +248,7 @@ export function actionMix(
     s.elapsed - s.lastRegain.at <= C.tactic.press.regainSeconds &&
     tags.band >= 5
   )
-    mix.shot *= C.tactic.press.shotAfterRegain;
+    mix.shot *= candidate ? C.candidate.shotAfterRegain : C.tactic.press.shotAfterRegain;
   mix.pass *= 1 + bend.possession / 50;
   mix.carry *= 1 - bend.possession / 100;
   mix.shot *= (1 + bend.shot / 20) * (1 - oppBend.defense / 20);
@@ -399,7 +427,8 @@ export function passOptions(
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
     const through =
       behindRun || p[0] > offside
-        ? P.through * actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
+        ? (s.setup.model !== undefined ? DECISION_CONFIG.candidate.through.score : P.through) *
+          actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
     const score =
@@ -429,6 +458,37 @@ export function passOptions(
     );
     return { target: gp.idx, score, prior, direction: dir, kind, lineBreaking };
   });
+}
+
+/**
+ * Where `passer`'s through ball to `target` is played on the candidate model (engine frame,
+ * →MATCH-16): into his path, `through.lead` metres ahead of him along his run (toward goal when he
+ * stands or turns), never deeper than `through.depth`, when the opponents' line leaves at least
+ * `through.space` metres behind it before that depth; to his feet otherwise or when that would not
+ * take the ball further from the passer. A through ball goes to a runner in behind or to a man
+ * past the line whose run the offside draw found timed (`isOffside`).
+ */
+export function throughPoint(
+  s: GridState,
+  side: 0 | 1,
+  passer: number,
+  target: number,
+): [number, number] {
+  const T = DECISION_CONFIG.candidate.through;
+  const gp = s.players[side][target]!;
+  const feet: [number, number] = [gp.pos[0], gp.pos[1]];
+  if (T.depth - offsideLine(s, other(side)) < T.space) return feet;
+  const v = gp.vel ?? [0, 0];
+  const speed = Math.hypot(v[0], v[1]);
+  let dx = (side === 0 ? v[0] : -v[0]) / (speed || 1),
+    dy = (side === 0 ? v[1] : -v[1]) / (speed || 1);
+  if (dx <= 0) [dx, dy] = [1, 0];
+  const p = attackFrame(side, gp.pos);
+  const c = attackFrame(side, s.players[side][passer]!.pos);
+  const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * T.lead);
+  const q: Point = [x, clamp(p[1] + (dy * (x - p[0])) / dx, 0.5, PITCH.width - 0.5)];
+  const further = Math.hypot(q[0] - c[0], q[1] - c[1]) > Math.hypot(p[0] - c[0], p[1] - c[1]);
+  return further ? toEngine(side, q) : feet;
 }
 
 /** The deepest (largest x in the passer's frame) outfield player of an opponent line. */

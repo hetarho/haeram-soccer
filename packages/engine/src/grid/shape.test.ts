@@ -8,6 +8,8 @@ import {
   lineX,
   moveAll,
   offsideLine,
+  runContext,
+  runPlan,
   setPieceShape,
   SHAPE_CONFIG,
   speedOf,
@@ -97,6 +99,28 @@ describe('grid shape and movement', () => {
     expect(outs.press).toBeGreaterThan(outs.possession!);
     expect(outs.possession).toBeGreaterThan(outs.balanced!);
     expect(outs.balanced).toBeGreaterThan(outs.counter!);
+  });
+
+  it('keeps the MATCH-8 order of the candidate shapes wherever the ball is (T324)', () => {
+    const mean = (tactic: Tactic, inPossession: boolean, x: number) => {
+      const kit = gridKit([tactic, 'balanced']);
+      kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
+      kit.state.ball = [inPossession ? x : 105 - x, 34];
+      kit.state.possession = inPossession ? 0 : 1;
+      kit.state.owner = [inPossession ? 0 : 1, 9];
+      return outfieldMeanX(kit);
+    };
+    // The ball in the side's own third, at halfway and in the final third of its attack.
+    for (const x of [30, 52.5, 75]) {
+      const ins = Object.fromEntries(TACTICS.map((t) => [t, mean(t, true, x)]));
+      expect(ins.press, `in possession at ${x}`).toBeGreaterThanOrEqual(ins.possession!);
+      expect(ins.possession).toBeGreaterThan(ins.balanced!);
+      expect(ins.balanced).toBeGreaterThan(ins.counter!);
+      const outs = Object.fromEntries(TACTICS.map((t) => [t, mean(t, false, x)]));
+      expect(outs.press, `out of possession at ${x}`).toBeGreaterThan(outs.possession!);
+      expect(outs.possession).toBeGreaterThan(outs.balanced!);
+      expect(outs.balanced, `out of possession at ${x}`).toBeGreaterThan(outs.counter!);
+    }
   });
 
   it('plays the candidate shape of a tactic on the candidate model only', () => {
@@ -257,6 +281,22 @@ describe('grid shape and movement', () => {
     expect(first.some((e) => e.endsWith('behind'))).toBe(true);
     expect(first.some((e) => e.endsWith('overlap'))).toBe(true);
     expect(play()).toEqual(first);
+  });
+
+  it("sends a 4-4-2's wide midfielders in behind only while it breaks on the candidate model (T324)", () => {
+    const kit = gridKit(['counter', 'balanced']);
+    const s = kit.state;
+    s.ball = [40, 34];
+    s.possession = 0;
+    s.owner = [0, 6];
+    const wide = s.players[0].find((gp) => FORMATIONS.counter.slots[gp.slot]?.position === 'LM')!;
+    expect(SHAPE_CONFIG.breakRoles).toContain(FORMATIONS.counter.slots[wide.slot]!.role);
+    const always = () => 0;
+    const plan = (breaking: boolean) => runPlan(s, wide, runContext(s, 0), always, 1, breaking);
+    expect(plan(true)).toBeUndefined();
+    s.setup = { ...s.setup, model: MATCH_MODEL_REVISION };
+    expect(plan(false)).toBeUndefined();
+    expect(plan(true)?.kind).toBe('behind');
   });
 
   it('never moves a player faster than his pace allows', () => {

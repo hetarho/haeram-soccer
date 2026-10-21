@@ -7,15 +7,17 @@ import {
   flightSeconds,
   GRID_BALL_CONFIG,
   GRID_MOVEMENT_CONFIG,
+  heading,
   prepareRestart,
   reachSeconds,
+  readAt,
   stepToward,
   type Mover,
 } from './movement';
 import { RESTART_CONFIG, type Restart } from './restarts';
 import { buildGridSetup } from './setup';
-import { SHAPE_CONFIG, setPieceTargets, speedOf } from './shape';
-import { onPitch, type GridState } from './state';
+import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf } from './shape';
+import { onPitch, skill, type GridState } from './state';
 import type { TraceEntry } from './trace';
 import { gridKit } from './testkit';
 
@@ -224,6 +226,42 @@ describe('grid movement', () => {
       0,
     );
     expect(restarts).toBe(expected - watched.reduce((n, r) => n + r.record.added!.length, 0));
+  });
+
+  it('keeps off-ball players on their way until they read the kick (T324)', () => {
+    const s = field();
+    const [mate, foe] = [s.players[0][6]!, s.players[1][3]!];
+    mate.pos = [40, 30];
+    foe.pos = [60, 30];
+    // Both were heading upfield (x + 20) before the pass and now turn back to x − 20.
+    const plan = [mate, foe].map((gp) => ({
+      gp,
+      to: [gp.pos[0] - 20, 30] as [number, number],
+      before: [gp.pos[0] + 20, 30] as [number, number],
+      readAt: 1,
+    }));
+    advance(s, 1, plan);
+    expect(mate.pos[0]).toBeGreaterThan(40);
+    expect(foe.pos[0]).toBeGreaterThan(60);
+    // After the read they brake and come back toward the new point.
+    advance(
+      s,
+      4,
+      [mate, foe].map((gp) => ({ gp, to: [gp === mate ? 20 : 40, 30] as [number, number] })),
+    );
+    expect(mate.vel![0]).toBeLessThan(0);
+    // A teammate reads at the kick; a defender earlier by his 위치선정, never before the action.
+    const kick = 1.5;
+    expect(readAt(s, mate, 0, kick)).toBe(kick);
+    const read = GRID_MOVEMENT_CONFIG.read;
+    const share = Math.min(99, Math.max(1, skill(s, 1, foe.idx, 'positioning'))) / 99;
+    expect(readAt(s, foe, 0, kick)).toBeCloseTo(Math.max(0, kick * (1 - read * share)), 9);
+    expect(readAt(s, foe, 0, kick)).toBeGreaterThanOrEqual(0);
+    expect(readAt(s, foe, 0, kick)).toBeLessThanOrEqual(kick);
+    // `heading` reads where everyone was going before the action changed the state.
+    const h = heading(s);
+    expect(h.get(mate)).toEqual(targetOf(s, 0, mate.idx));
+    expect(h.get(foe)).toEqual(targetOf(s, 1, foe.idx));
   });
 
   it('waits for a long flight to land', () => {

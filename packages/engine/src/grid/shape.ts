@@ -1,4 +1,5 @@
 /** Off the ball: formation shape by phase and tactic, role habit, pressing, marking, runs and movement (→MATCH-8, MATCH-17). */
+import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
 import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
@@ -26,14 +27,24 @@ export const SHAPE_CONFIG = {
   /**
    * Candidate model only (→MATCH-8, T321): tactics whose shape replaces their `tactic` entry. Press
    * steps up 4 m with the ball instead of 6, so its 4-2-3-1 does not crowd the box edge; counter's
-   * low-to-mid block engages around halfway (−5 and line 22–42 instead of −10 and 18–38, press 11
-   * instead of 8); balanced keeps its stability with a deeper, more compact mid block that
-   * counter-presses 12 m instead of 8.
+   * low-to-mid block engages around halfway (line 22–42 instead of 18–38, press 11 instead of 8);
+   * balanced keeps its stability with a deeper, more compact mid block that counter-presses 12 m
+   * instead of 8. T324 restored MATCH-8's order of the shapes wherever the ball is: counter's
+   * block stands 8 m deep (−5 under T321, −10 before), below balanced's, and possession, patient
+   * on the ball, steps up 7 m instead of 8, below press's vertical side.
    */
   candidate: {
     tactic: {
+      possession: {
+        advance: 7,
+        defend: -2,
+        line: [28, 55],
+        press: 12,
+        counterPress: 18,
+        compact: 0.35,
+      },
       press: { advance: 4, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
-      counter: { advance: 2, defend: -5, line: [22, 42], press: 11, counterPress: 0, compact: 0.3 },
+      counter: { advance: 2, defend: -8, line: [22, 42], press: 11, counterPress: 0, compact: 0.3 },
       balanced: {
         advance: 4,
         defend: -6,
@@ -63,6 +74,12 @@ export const SHAPE_CONFIG = {
   recoverySpeed: 1.15,
   speed: { base: 5.2, pace: 2.8, tired: 0.25 },
   run: { chance: 0.04, seconds: [4, 6], behindDepth: 6, overlapAhead: 10, boxX: 95 },
+  /**
+   * Candidate model only (→MATCH-8, T324): roles that also run in behind while their side breaks
+   * straight after a regain (`COORDINATION_CONFIG.transition`), so a 4-4-2's wide midfielders go
+   * with its forwards instead of holding their spots.
+   */
+  breakRoles: ['wideMidfielder'] as readonly RoleId[],
   /**
    * A corner or a free kick crossed into the box (→MATCH-18, T215): the attacking side's best headers go up,
    * the defenders mark them goal-side and hold the six-yard line; attack-frame metres of the attacking side.
@@ -365,10 +382,14 @@ export function runPlan(
   { b, band, line }: RunContext,
   r: () => number,
   scale = 1,
+  breaking = false,
 ): RunPlan | undefined {
   const cfg = SHAPE_CONFIG.run;
   const { role } = slotOf(s, gp);
-  const behind = lineOfSlot(s, gp) === 'FW' || BEHIND_ROLES.includes(role);
+  const behind =
+    lineOfSlot(s, gp) === 'FW' ||
+    BEHIND_ROLES.includes(role) ||
+    (breaking && s.setup.model !== undefined && SHAPE_CONFIG.breakRoles.includes(role));
   const overlap = OVERLAP_ROLES.includes(role);
   const box = BOX_ROLES.includes(role) && band >= 5;
   if (!behind && !overlap && !box) return undefined;
