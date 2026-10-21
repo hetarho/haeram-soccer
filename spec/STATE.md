@@ -18,6 +18,7 @@
 | f6n3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-21T00:29Z | 2026-10-21T00:29Z | - |
 
 ## inbox
+- 261021 decided T273 T274 T285 T286: T273's load-path refusal of future model metadata needs schema.ts, persistence.ts and host.ts, which no full-model task listed → T273's touches take them with their tests and it wires validateWorld/readCheckpoint/host metadata now; T274 owns the 991 > 990 side-minutes rounding T273 found; T285/T286 re-run the 9f69553 baseline with --seasons 100 on the same machine and T285 fixes the stale provisionalReason (alt: move the wiring to T282/T286 and drop T273 acceptance 3 and 6 | leave loads unwired until activation, leaving SAVE-23 unmet for hand-made container-2 files)
 - 261021 decided T273 T282: the owner asked for parallel autopilot on this host, whose clone does not hold the Mac's identity group state → a new group full-model here with T273, T274–T277 (grid continuity) beside T279–T282 (aggregate records) and T283, lane-less so the runner fans out after T273; explore tasks T278 T284 T285 and T286 follow in the main session (alt: resume the identity group, which exists only on the Mac | one lane per stream, which needs task edits and serialises T275 behind T277)
 - 261021 decided -: CI 39439433028's failing WebKit cup-history journey seeds its two archived seasons instead of sending identities only on change, because the identity view, host step and save costs measured unchanged and the journey checks archive views, not event stepping (alt: identity-on-change view publishing, which touches T244/T245 files with no measured gain)
 - 261021 decided T272: in the identity group the coordinator stays p7x5 (no transfer command; r3m9 continued p7x5) and T272 runs as the runner's lane-less unit once the planning merge put it in the group, instead of a main-session subagent (alt: a new coordinator tag, which the CLI refuses)
@@ -168,7 +169,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T273 | Define candidate match contracts and supported-career compatibility | MATCH HIST SAVE ARCH | T255 T272 | todo |
 | T274 | Make candidate actions and restart preparation physically continuous | MATCH ARCH | T273 | todo |
 | T275 | Render continuous paths at the owner's uniformly selected speed | MATCH WEB KIT SAVE ARCH | T274 | todo |
 | T276 | Retain and interrupt individual football intentions for explicit reasons | MATCH PLAYER STAFF ARCH | T274 | todo |
@@ -190,15 +190,14 @@
 | club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
 | refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
 | identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 14 | 0 | 14 | 0 | 0 | 0 | 2026-10-21T00:30:25.499Z | [history](work/full-model.json) |
+| full-model | 3 | 14 | 1 | 13 | 0 | 0 | 0 | 2026-10-21T01:46:52.833Z | [history](work/full-model.json) |
 
 ## next
-- implement-task T273 (T255 and T272 are done): capture the post-T255 baseline with the T272 runner before T273 changes football, then follow T274–T286 dependencies; exploration results must pass the final release gate
-- identity work group: every identity task is integrated; since the planning merge the group also lists T273–T286, so continue them with `work run --work identity` or close it with `work finish --work identity`; old lane/integration worktrees and wip/identity-*, wip/r3m9 branches are removable with the owner's approval (the disk had 2 GiB free)
-- grid tactic balance (owner to confirm MATCH-8 bands) re-enables the four skipped tactic cases
-- FORMAT reference-kind migration remains separate; these revisions keep the existing unclassified arrow notation
+- inspect work board for remaining tasks
 
 ## log
+- 261021 UI batch merge: retain T273 load compatibility and completion state beside WEB@104; revalidate the combined tree before push.
+- 261021 T273 integrated
 - 261021 UI batch verified on 6d31c81 plus alert fixes: 1,446 unit tests (4 existing skips), 37 contract tests, catalogs, build, fast checks and spec lint pass; 217 Chromium journeys pass across the full run and 14 failed-only reruns, plus 2 navigation/stacking regressions.
 - 261021 fix home advice visibility: the retained hidden home no longer portals advice over other pages; the previously blocked rules-three journey passes after the navigation guard.
 - 261021 fix event layering: cards, compact event launcher and event group use layer 95, above advice/outcome layer 90 and below dialog layer 1000; prepare the accumulated UI batch for push.
@@ -217,5 +216,3 @@
 - 261021 T294 done: horizontal observation toggles; settings units, typecheck, targeted lint/format, build and spec lint pass; browser geometry remains at the batch gate.
 - 261021 WEB r101 freshness: T275 T283 T286 bases to WEB@101; their cited match and record decisions are unchanged by central observation-toggle styling.
 - 261021 create-task T294 and implement-task start on 9f69553: preserve native checkbox semantics and existing stop/draft rules while presenting horizontal toggles.
-- 261021 update-ssot WEB r101 start: horizontal observation-stop toggle cards in central settings.
-- 261021 T293 done: single-row clock, settings-only mode and pace dropdown; affected units and build pass, browser specs updated for the batch gate; owner's HTTPS dev preview on 19501.

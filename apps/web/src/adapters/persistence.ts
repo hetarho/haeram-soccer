@@ -14,7 +14,10 @@ import { pack, unpack } from './packing';
 import { writeCheckpoint } from './checkpointWriter';
 import { encodePayload, decodePayload } from './compression';
 import {
-  CURRENT_CHECKPOINT_SCHEMA,
+  assertMatchModelFormat,
+  checkpointSchemaFor,
+} from '../../../../packages/contracts/src/match-model';
+import {
   isCheckpointSchema,
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
@@ -40,10 +43,11 @@ async function digest(bytes: Uint8Array) {
   ).join('');
 }
 export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
+  const schema = checkpointSchemaFor(w);
   const bytes = new TextEncoder().encode(canonical(pack(w)));
   const payload = await encodePayload(bytes);
   const e: Envelope = {
-    schema: CURRENT_CHECKPOINT_SCHEMA,
+    schema,
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -118,9 +122,12 @@ async function readCheckpoint(
   validateExpandedWorld = false,
 ) {
   const { json, envelope } = await readEnvelope(raw, supported);
-  // A newer game's identity data is a compatibility failure before unpacking can call it corrupt.
+  // A newer game's identity or match-model data is a compatibility failure before unpacking can
+  // call it corrupt.
   const packed = json as { format?: unknown; world?: unknown } | null;
-  assertIdentityFormatVersions(packed?.format === 'compact1' ? packed.world : json);
+  const world = packed?.format === 'compact1' ? packed.world : json;
+  assertIdentityFormatVersions(world);
+  assertMatchModelFormat(world);
   return { value: unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld), envelope };
 }
 /**

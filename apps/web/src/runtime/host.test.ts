@@ -20,6 +20,12 @@ import {
   identityOf,
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
+import {
+  MATCH_MODEL_REVISION,
+  type MatchModelState,
+} from '../../../../packages/contracts/src/match-model';
+import { pack } from '../adapters/packing';
+import { encodePayload } from '../adapters/compression';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
 import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
@@ -685,4 +691,59 @@ it('consumes only an exact validated inspection without sharing a live world or 
   } finally {
     spy.mockRestore();
   }
+});
+
+/** A container-2 checkpoint of `w` as written, without the writer's container selection. */
+async function sealed(w: World) {
+  const bytes = new TextEncoder().encode(canonical(pack(w)));
+  const { codec, payload } = await encodePayload(bytes);
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+  return JSON.stringify({
+    schema: 2,
+    engine: w.engine,
+    catalog: w.catalog,
+    catalogHash: w.catalogHash,
+    worldId: w.id,
+    generation: 1,
+    parentGeneration: 0,
+    codec,
+    checksum: Array.from(digest, (b) => b.toString(16).padStart(2, '0')).join(''),
+    payload,
+  });
+}
+
+it('reports supported match-model metadata and refuses a future one without activating (→SAVE-23)', async () => {
+  const { createWorld } = await import('../../../../packages/engine/src/index');
+  const source = createWorld(input);
+  const matchModel: MatchModelState = {
+    revision: MATCH_MODEL_REVISION,
+    activated: { year: source.year, day: 0, revision: source.revision },
+    trackedFrom: { year: source.year, day: 1, round: source.round },
+    coverage: 'activation',
+  };
+  const host = new Host();
+  const supported = await host.handle(
+    req('meta-model', -1, {
+      type: 'inspect',
+      raw: await sealed({ ...source, matchModel }),
+      metadataOnly: true,
+    }),
+  );
+  expect(supported.ok, supported.error).toBe(true);
+  expect(supported.worldMetadata).toEqual({ id: source.id, revision: source.revision, matchModel });
+  expect(host.world).toBeUndefined();
+  const future = await host.handle(
+    req('meta-future', -1, {
+      type: 'inspect',
+      raw: await sealed({
+        ...source,
+        matchModel: { ...matchModel, revision: 'continuous-aggregate-2' },
+      } as unknown as World),
+      metadataOnly: true,
+    }),
+  );
+  expect(future.ok).toBe(false);
+  expect(future.errorCode).toBe('save-compatibility');
+  expect(future.worldMetadata).toBeUndefined();
+  expect(host.world).toBeUndefined();
 });

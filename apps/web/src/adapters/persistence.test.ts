@@ -45,6 +45,7 @@ import {
   CURRENT_CHECKPOINT_SCHEMA,
   CURRENT_ENGINE_VERSION,
   envelopeEngine,
+  FULL_MODEL_CHECKPOINT_SCHEMA,
   isEarlierEngine,
   isSaveCompatibilityError,
   PRIOR_CATALOG_HASHES,
@@ -59,6 +60,10 @@ import {
   CURRENT_CATALOG,
 } from '../../../../packages/catalogs/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
+import {
+  MATCH_MODEL_REVISION,
+  type MatchModelState,
+} from '../../../../packages/contracts/src/match-model';
 import { KIT_ROLES, type ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
 import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
@@ -611,6 +616,47 @@ describe('checkpoint container schema 2', () => {
     // A malformed current-version identity is ordinary invalid data.
     const malformed = withIdentity(w, { ...IDENTITY, colours: ['red'] });
     const invalid = await decode(await encode(malformed)).catch((error: unknown) => error);
+    expect(invalid).toBeInstanceOf(Error);
+    expect(isSaveCompatibilityError(invalid)).toBe(false);
+  });
+
+  it('refuses a future match-model revision on load and keeps supported metadata (→SAVE-23)', async () => {
+    const w = world();
+    const matchModel: MatchModelState = {
+      revision: MATCH_MODEL_REVISION,
+      activated: { year: w.year, day: 0, revision: w.revision },
+      trackedFrom: { year: w.year, day: 1, round: w.round },
+      coverage: 'activation',
+    };
+    const supported: World = { ...w, matchModel };
+    // The writer keeps container 2 for unactivated worlds and never puts model data in it.
+    expect(JSON.parse(await encode(w)).schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
+    await expect(encode(supported)).rejects.toThrow(`컨테이너 ${FULL_MODEL_CHECKPOINT_SCHEMA}`);
+    // Supported metadata in a readable container loads unchanged instead of being dropped.
+    const loaded = await decode(await seal(supported, pack(supported), 2));
+    expect(loaded.world.matchModel).toEqual(matchModel);
+    const future = {
+      ...w,
+      matchModel: { ...matchModel, revision: 'continuous-aggregate-2' },
+    } as unknown as World;
+    for (const schema of [1, 2])
+      await expect(decode(await seal(future, pack(future), schema))).rejects.toBeInstanceOf(
+        SaveCompatibilityError,
+      );
+    // The preflight runs before unpacking: damage elsewhere is not reported for a newer game.
+    const damaged = structuredClone(pack(future));
+    damaged.dict = 'damaged' as unknown as string[];
+    await expect(decode(await seal(future, damaged, 2))).rejects.toBeInstanceOf(
+      SaveCompatibilityError,
+    );
+    // A malformed supported revision is ordinary invalid data.
+    const malformed = {
+      ...w,
+      matchModel: { ...matchModel, coverage: 'partial' },
+    } as unknown as World;
+    const invalid = await decode(await seal(malformed, pack(malformed), 2)).catch(
+      (error: unknown) => error,
+    );
     expect(invalid).toBeInstanceOf(Error);
     expect(isSaveCompatibilityError(invalid)).toBe(false);
   });

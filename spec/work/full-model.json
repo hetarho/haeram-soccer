@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-21T00:30:25.499Z",
-  "sourceCommit": "4c9d5c65452fda35efbdbc59ecdaf6792a07268d",
+  "snapshotAt": "2026-10-21T01:46:52.833Z",
+  "sourceCommit": "9fa83603ead69eaef44f082ba31289efd797f3a0",
   "group": {
     "id": "full-model",
     "branch": "work/full-model",
@@ -14,6 +14,36 @@
     },
     "push": "main",
     "review": "risky",
+    "pushed": {
+      "commit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+      "branch": "main",
+      "remote": "origin",
+      "at": "2026-10-21T00:30:28.149Z"
+    },
+    "runner": {
+      "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.304 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-21T00:40:04.375Z"
+    },
     "lastRun": {
       "id": "a74865ee-36ac-4474-8c8d-a72d24e74a7a",
       "adapter": "builtin",
@@ -45,23 +75,14 @@
   },
   "summary": {
     "total": 14,
-    "completed": 0,
-    "remaining": 14,
+    "completed": 1,
+    "remaining": 13,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 14
+    "unassigned": 13
   },
   "tasks": [
-    {
-      "id": "T273",
-      "title": "Define candidate match contracts and supported-career compatibility",
-      "dep": [
-        "T255",
-        "T272"
-      ],
-      "status": "todo"
-    },
     {
       "id": "T274",
       "title": "Make candidate actions and restart preparation physically continuous",
@@ -177,7 +198,147 @@
       "status": "todo"
     }
   ],
-  "attempts": [],
+  "attempts": [
+    {
+      "id": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "group": "full-model",
+      "taskId": "T273",
+      "tasks": [
+        "T273"
+      ],
+      "lane": null,
+      "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+      "contributors": [
+        "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-21T00:40:04.627Z",
+      "startCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+      "verifiedCommit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+      "submittedBase": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+      "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
+      "submittedAt": "2026-10-21T01:45:05.110Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "5789 changed lines (limit 300)",
+          "outside touches: apps/web/src/adapters/persistence.test.ts apps/web/src/adapters/persistence.ts apps/web/src/runtime/host.test.ts apps/web/src/runtime/host.ts packages/contracts/src/schema.contract.test.ts",
+          "review paths: docs/SAVE-FORMAT.md packages/contracts/src/types.ts packages/contracts/src/versions.ts",
+          "reworked after a review or integration failure",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 5789,
+        "files": 19
+      },
+      "dispatch": {
+        "id": "c80a9d1c-494a-48bf-9128-c724e95e5d01",
+        "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-21T01:45:09.402Z",
+        "finishedAt": "2026-10-21T01:46:48.051Z",
+        "error": null,
+        "summary": "I reviewed T273 at dae3d0b against 9fa8360. The two P2 findings from correction 3525e61e are fixed.\n\n(1) Load path. `validateWorld` and `readCheckpoint` now run `assertMatchModelFormat` before unpacking or Zod parsing. The world and match schemas keep supported `matchModel` (strict), `npcSeason` (strict, its shape matches `NpcSeasonStats`) and record `model`. The host answers metadata-only inspections with `worldMetadataOf`. Tests cover a future revision as a `SaveCompatibilityError` in containers 1 and 2, the check running before damaged packing is detected, malformed data as an ordinary error, and the host refusing without activating the world. `checkpointSchemaFor` keeps unactivated worlds writing container 2 and refuses to write model data until T282 adds container 3, which satisfies SAVE-23's rule that data must not be silently dropped.\n\n(2) MATCH-27 timeline. Each side now has exactly 11 lines plus one per substitution, and the substitutes appear in the order they came on. An incoming player cannot be a starter or come on twice. Every incident must name a player on the pitch. Each line's minutes must match its entry–exit interval within 2 minutes; I checked this against the grid, where an injured player leaves at once and red cards and substitutions both call `leave`. With the line count tied to substitutions, removing the old `11 + maxSubs` line cap loses nothing, because the substitution count is still limited to the era's maximum. P3 finding 3 is covered (the counter bounds), and the planner reassigned P3 findings 4 and 5 in 9fa8360 (STATE inbox, T274/T285/T286). The risk entry about files outside `touches` is out of date: base 9fa8360 adds persistence, host, schema and their tests to the touches list.\n\nI could not re-run the tests: the review checkout has no node_modules, and I did not want to use another checkout. The worker reports typecheck, lint, format:check and build passing, plus 129 targeted tests and a wider affected set of 422 tests. The full changed-file run and the unit/contract suites are still left to the runner. Only minor improvements remain."
+      },
+      "review": {
+        "id": "c3574936-3324-4d45-b13c-11c6904040bb",
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I reviewed T273 at dae3d0b against 9fa8360. The two P2 findings from correction 3525e61e are fixed.\n\n(1) Load path. `validateWorld` and `readCheckpoint` now run `assertMatchModelFormat` before unpacking or Zod parsing. The world and match schemas keep supported `matchModel` (strict), `npcSeason` (strict, its shape matches `NpcSeasonStats`) and record `model`. The host answers metadata-only inspections with `worldMetadataOf`. Tests cover a future revision as a `SaveCompatibilityError` in containers 1 and 2, the check running before damaged packing is detected, malformed data as an ordinary error, and the host refusing without activating the world. `checkpointSchemaFor` keeps unactivated worlds writing container 2 and refuses to write model data until T282 adds container 3, which satisfies SAVE-23's rule that data must not be silently dropped.\n\n(2) MATCH-27 timeline. Each side now has exactly 11 lines plus one per substitution, and the substitutes appear in the order they came on. An incoming player cannot be a starter or come on twice. Every incident must name a player on the pitch. Each line's minutes must match its entry–exit interval within 2 minutes; I checked this against the grid, where an injured player leaves at once and red cards and substitutions both call `leave`. With the line count tied to substitutions, removing the old `11 + maxSubs` line cap loses nothing, because the substitution count is still limited to the era's maximum. P3 finding 3 is covered (the counter bounds), and the planner reassigned P3 findings 4 and 5 in 9fa8360 (STATE inbox, T274/T285/T286). The risk entry about files outside `touches` is out of date: base 9fa8360 adds persistence, host, schema and their tests to the touches list.\n\nI could not re-run the tests: the review checkout has no node_modules, and I did not want to use another checkout. The worker reports typecheck, lint, format:check and build passing, plus 129 targeted tests and a wider affected set of 422 tests. The full changed-file run and the unit/contract suites are still left to the runner. Only minor improvements remain.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/adapters/persistence.ts:46 / packages/contracts/src/match-model.ts:317 (T273)",
+            "message": "A hand-made container-2 checkpoint that carries supported `matchModel`/`npcSeason` passes `decode` and can be activated as the writer. After that, every commit's `encode` throws `checkpointSchemaFor`'s plain Error (no typed error code), so the career cannot be saved, and no test covers that commit path. Real saves cannot reach this while activation is off, but consider refusing such worlds at activation (or giving the write failure an actionable error) until T282 adds container 3. If you keep the current behaviour, note it as T282's handoff."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/contracts/src/schema.ts:~386 (T273 npcSeasonSchema)",
+            "message": "`npcSeasonSchema` leaves the club `xg`/`xga` integers without an upper bound, while every other count in the schema is bounded. Bounding them (e.g., the `count` cap in match-model.ts) keeps the strict schema consistent before T280/T281 start writing aggregates."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/match-model.ts:739 (T273 timelineIssues)",
+            "message": "A `sub` incident with no `other` reports `undefined comes on … as a starter or a second time`, which hides the real fault (a missing incoming player). incidentIssues already flags it as `names undefined outside side`, so this second message is noise. Give the missing-`other` case its own message."
+          }
+        ],
+        "commit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+        "baseCommit": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+        "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
+        "createdAt": "2026-10-21T01:45:07.484Z",
+        "finishedAt": "2026-10-21T01:46:47.993Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "3525e61e-5aff-41e6-b2b4-7918ee38b2d3",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T273 adds the DTOs, revision, container constant, frame-time checks and a shared validator, and the baseline was captured on the clean base 9f69553. The code is well scoped, but two acceptance claims are not met in practice. First, no load or protocol path rejects future model metadata: validateWorld's non-strict world schema silently drops the new fields, and no remaining task in the group owns schema.ts. Second, the shared validateFullMatchRecord does not tie participation to the substitution timeline, which MATCH-27 requires. Tests could not be re-run here because the review checkout has no node_modules.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/contracts/src/match-model.ts:221 (T273; packages/contracts/src/schema.ts:776/1158)",
+              "message": "Acceptance 3 and 6 are checked [v], but assertMatchModelFormat is not called anywhere a save is read. validateWorld (schema.ts:1158) runs only assertIdentityFormatVersions, and worldSchema is a plain z.object (schema.ts:776), so it strips unknown keys. Repro: a container-2 checkpoint world with matchModel.revision 'continuous-aggregate-2' (or ownMatches[i].model set to it) loads through persistence.ts:150 with the metadata silently dropped instead of failing with SaveCompatibilityError, and the next commit rewrites the save without it. SAVE-23 requires a refusal, not silently dropped fields. Supported matchModel/npcSeason/MatchRecord.model would be stripped the same way once T281/T282 write them. Similarly, host.ts:300 still builds { id, revision } itself, so worldMetadataOf is never used at runtime. No remaining group task (T274–T286) lists schema.ts in its touches. Fix: make worldSchema/match accept matchModel (matchModelStateSchema), npcSeason and model (z.enum(MATCH_MODEL_REVISIONS)), call assertMatchModelFormat in validateWorld and beside assertIdentityFormatVersions in persistence.ts:123, and add a load test with a future revision. If touches cannot widen, hand this explicitly to the planner (add schema.ts and persistence wiring to T282, host.ts wiring to T286) and leave acceptance 3/6 unchecked until then."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/match-model.ts:132-245 (T273 validateFullMatchRecord)",
+              "message": "MATCH-27 and the contract doc say the shared validator checks substitutions sharing the roster and timeline, and time legality. It does not. A side can have 12–16 lines with no 'sub' incident and still pass, because only lines ≤ 11 + maxSubs and the 11×length minute total are checked. A sub's `other` can be a player already on the pitch or a starter. Line minutes are never compared with the incident minutes (a starter replaced at 30′ credited 90 minutes, or a substitute entering at 80′ credited 60, both pass). The limits note says intervals cannot be checked because records lack per-event times, but sub and red-card incidents carry minutes, so every line's on-pitch interval is derivable. T280's aggregate participation relies on this validator, so these gaps would let incoherent aggregate records settle. Fix: per side, require lines = 11 + sub incidents; each incoming `other` must be distinct, not a starter and not already on; minutes for starters, subs and dismissed players must match the incident timeline within the documented added-time rounding. Add the corresponding cases to 'rejects impossible participation and contribution sums'."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/match-model.ts:87 vs packages/contracts/src/schema.ts:1060 (T273)",
+              "message": "validateFullMatchRecord re-implements the existing detailConsistent invariants but leaves some out: finalThirdPasses ≤ passes, progressivePasses ≤ completed passes, buildUpPasses ≤ passes, PD.xg ≤ 80×shots, PD.xa ≤ 80×keyPasses. A full record can pass the shared validator and still be refused by validateWorld as an own match. Share one invariant helper, or at least cover the existing set, so the two checks cannot drift."
+            },
+            {
+              "priority": "P3",
+              "where": "docs/benchmarks/match-model-baseline.json (T273 acceptance 1; T285/T286)",
+              "message": "The baseline ran its century profiles at 20 seasons instead of the configured release 100, and the provisionalReason was hand-edited in the JSON while scripts/match-model-baseline.ts still emits the stale pre-T255 string. It is honestly marked provisional/releaseEvidence:false. However, T285 says it compares with 'T273's captured baseline', and T286 does not explicitly re-run the baseline source for 100 seasons. Planner handoff: state in T285/T286 that the paired release run re-executes source 9f69553 with --seasons 100 on the same machine, and fix the runner's reason string in the task that owns the script."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/match-model.ts:167 (T273 → T274–T277)",
+              "message": "The limits note says 3 of the 600 current grid pilot records have a side's minutes at 991 > 990. These records would fail assertFullMatchRecord once grid records carry the model. No downstream task's acceptance names this rounding fix. Hand it to the planner so T274 (or whichever task first tags grid records with the model) owns it, rather than loosening the check."
+            }
+          ],
+          "commit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+          "baseCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+          "submissionId": "66682e15-e585-43b1-8044-c2c5e77edf2b",
+          "createdAt": "2026-10-21T01:14:59.772Z",
+          "finishedAt": "2026-10-21T01:18:39.018Z",
+          "invalidatedAt": "2026-10-21T01:18:39.077Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T273",
+          "commit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+          "at": "2026-10-21T01:45:04.959Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-21T01:36:37.790Z",
+              "finishedAt": "2026-10-21T01:45:03.402Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-21T01:36:37.790Z",
+          "finishedAt": "2026-10-21T01:45:03.402Z"
+        }
+      ]
+    }
+  ],
   "history": [
     {
       "sequence": 252,
@@ -282,6 +443,855 @@
           "outcome": "needs-attention",
           "failures": []
         }
+      }
+    },
+    {
+      "sequence": 256,
+      "at": "2026-10-21T00:30:28.158Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-21T00:30:28.149Z"
+        }
+      }
+    },
+    {
+      "sequence": 258,
+      "at": "2026-10-21T00:40:04.384Z",
+      "type": "group",
+      "group": "full-model",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.304 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-21T00:40:04.375Z"
+        }
+      }
+    },
+    {
+      "sequence": 259,
+      "at": "2026-10-21T00:40:04.627Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+        "group": "full-model",
+        "taskId": "T273",
+        "tasks": [
+          "T273"
+        ],
+        "lane": null,
+        "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1",
+        "contributors": [
+          "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-21T00:40:04.627Z",
+        "startCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f"
+      }
+    },
+    {
+      "sequence": 260,
+      "at": "2026-10-21T00:40:04.937Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 261,
+      "at": "2026-10-21T00:40:05.135Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d3c7b3f4-61ce-4025-af8f-df06e8e9e6ce",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T00:40:05.135Z"
+        }
+      }
+    },
+    {
+      "sequence": 262,
+      "at": "2026-10-21T00:40:05.262Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d3c7b3f4-61ce-4025-af8f-df06e8e9e6ce",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T00:40:05.135Z"
+        }
+      }
+    },
+    {
+      "sequence": 263,
+      "at": "2026-10-21T01:06:09.811Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 264,
+      "at": "2026-10-21T01:06:10.263Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 265,
+      "at": "2026-10-21T01:06:10.300Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 266,
+      "at": "2026-10-21T01:14:59.195Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+        "submittedBase": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+        "submissionId": "66682e15-e585-43b1-8044-c2c5e77edf2b",
+        "submittedAt": "2026-10-21T01:14:59.195Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "5355 changed lines (limit 300)",
+            "review paths: docs/SAVE-FORMAT.md packages/contracts/src/types.ts packages/contracts/src/versions.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 5355,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T273",
+            "commit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+            "at": "2026-10-21T01:14:59.156Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T01:06:10.523Z",
+                "finishedAt": "2026-10-21T01:14:58.899Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T01:06:10.523Z",
+            "finishedAt": "2026-10-21T01:14:58.899Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 267,
+      "at": "2026-10-21T01:14:59.212Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "d3c7b3f4-61ce-4025-af8f-df06e8e9e6ce",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T00:40:05.135Z",
+          "finishedAt": "2026-10-21T01:14:59.212Z",
+          "error": null,
+          "summary": "T273 완료. 기준 측정을 잡았고 공유 계약을 구현했습니다. 다만 기준 측정의 시즌 수를 100개가 아니라 20개로 줄였고, 변경 파일 단위 테스트(199개 파일)는 다 돌리지 못했습니다(아래 한계 참고).\n\n**기준 측정:** 편집 전 깨끗한 T255 이후 소스(9f695530)에서 T272 실행기를 full 모드로 돌렸습니다. 결과는 docs/benchmarks/match-model-baseline.json에 지문 64c07633…, 설정, 측정값과 함께 남겼습니다.\n- 경기당 중앙값: 요약 경로 0.194 ms, 그리드 87.4 ms\n- 시즌당 중앙값: 11.37 s(기본), 11.61 s(능동 관리)\n- 반복 실행과 관전 실행이 같은 기록을 정산함을 확인했습니다.\n\n**구현한 계약:**\n- packages/contracts/src/match-model.ts\n  - 모델 리비전과 월드 활성화·커버리지 메타데이터\n  - FullMatchRecord, NpcSeasonStats\n  - 프레임·공 궤적 시각과 그 검증(`frameTimeIssues`)\n  - 선수 의도 관전 필드\n  - 미래 리비전을 기존 호환성 오류로 거절하는 사전 검사(`assertMatchModelFormat`)\n- versions.ts: `FULL_MODEL_CHECKPOINT_SCHEMA = 3`을 선언만 했습니다. 읽기는 [1, 2], 쓰기는 2 그대로입니다.\n- packages/engine/src/match-model.ts: 출시 스위치 `MATCH_MODEL_RELEASE`(꺼짐)와 두 경로가 함께 쓰는 정확 검사 `validateFullMatchRecord`·`assertFullMatchRecord`\n- 그리드 셋업: 테스트·측정용으로 후보 모델을 명시할 수 있고, 지정하지 않으면 월드의 활성 모델을 읽습니다. 난수는 뽑지 않습니다.\n- protocol.ts `worldMetadataOf`: 지원 메타데이터는 검증한 복사본으로 넘기고, 미래 버전은 호환성 오류를 냅니다. 월드를 활성화하거나 바꾸지 않습니다.\n- 문서 두 개(MATCH-MODEL-CONTRACT, SAVE-FORMAT)를 갱신했습니다.\n- 현재 그리드 경기 200개의 기록이 새 검증을 모두 통과했습니다.\n\n**실행한 검사(모두 통과):** typecheck, lint, format:check, build, 새 테스트 14개, 영향받는 단위 테스트 22개 파일·197개, contract/host 테스트 3개 파일·55개.\n\n**한계:**\n1. 기준 측정의 세기 프로필은 프로필당 20시즌만 돌렸습니다. 100시즌은 약 30분인데, 이 세션은 10분 넘는 명령이나 백그라운드 실행을 할 수 없었습니다. 그래서 provisional로 남겼고, 100시즌은 T286의 짝 비교에서 다시 돌립니다.\n2. 실행기(scripts/match-model-baseline.ts) 안의 provisionalReason 문구가 T255 이전 내용이라 결과 JSON에서만 고쳤습니다. 실행기는 작업 범위 밖이라 그대로입니다.\n3. `vitest --changed`는 199개 파일(거의 전체 단위 테스트, 30~40분)을 고르기 때문에 위 부분 집합만 돌렸습니다. 전체 변경 테스트는 러너의 태스크 검증에, test:unit·test:contract는 묶음 관문에 넘깁니다.\n4. 작업 범위 밖이라 연결하지 못한 곳이 있습니다(T282·활성화 작업에서 연결 필요):\n   - `validateWorld`와 `readCheckpoint`가 `assertMatchModelFormat`을 호출해야 합니다.\n   - Zod 스키마가 새 필드를 받아야 합니다. 지금은 읽을 때 그냥 지워지지만, 스위치가 꺼져 있어 아직 이 필드를 쓰는 곳이 없습니다.\n   - packing이 새 필드를 실어야 하고, host.ts는 `worldMetadataOf`를 써야 합니다.\n5. 측정 중 발견: 파일럿 600경기 중 3경기에서 한 팀의 출전 시간 합이 991분으로 상한 990분을 넘었습니다. 새 검증은 이런 기록을 거절하므로 T274~T277에서 반올림을 고쳐야 합니다."
+        }
+      }
+    },
+    {
+      "sequence": 268,
+      "at": "2026-10-21T01:14:59.772Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3525e61e-5aff-41e6-b2b4-7918ee38b2d3",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+          "baseCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+          "submissionId": "66682e15-e585-43b1-8044-c2c5e77edf2b",
+          "createdAt": "2026-10-21T01:14:59.772Z"
+        }
+      }
+    },
+    {
+      "sequence": 269,
+      "at": "2026-10-21T01:15:00.401Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "85b14620-626e-4696-9ce4-9706155689fb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T01:15:00.401Z"
+        }
+      }
+    },
+    {
+      "sequence": 270,
+      "at": "2026-10-21T01:15:00.422Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "85b14620-626e-4696-9ce4-9706155689fb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T01:15:00.401Z"
+        }
+      }
+    },
+    {
+      "sequence": 271,
+      "at": "2026-10-21T01:18:39.018Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T273 adds the DTOs, revision, container constant, frame-time checks and a shared validator, and the baseline was captured on the clean base 9f69553. The code is well scoped, but two acceptance claims are not met in practice. First, no load or protocol path rejects future model metadata: validateWorld's non-strict world schema silently drops the new fields, and no remaining task in the group owns schema.ts. Second, the shared validateFullMatchRecord does not tie participation to the substitution timeline, which MATCH-27 requires. Tests could not be re-run here because the review checkout has no node_modules.",
+        "review": {
+          "id": "3525e61e-5aff-41e6-b2b4-7918ee38b2d3",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T273 adds the DTOs, revision, container constant, frame-time checks and a shared validator, and the baseline was captured on the clean base 9f69553. The code is well scoped, but two acceptance claims are not met in practice. First, no load or protocol path rejects future model metadata: validateWorld's non-strict world schema silently drops the new fields, and no remaining task in the group owns schema.ts. Second, the shared validateFullMatchRecord does not tie participation to the substitution timeline, which MATCH-27 requires. Tests could not be re-run here because the review checkout has no node_modules.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/contracts/src/match-model.ts:221 (T273; packages/contracts/src/schema.ts:776/1158)",
+              "message": "Acceptance 3 and 6 are checked [v], but assertMatchModelFormat is not called anywhere a save is read. validateWorld (schema.ts:1158) runs only assertIdentityFormatVersions, and worldSchema is a plain z.object (schema.ts:776), so it strips unknown keys. Repro: a container-2 checkpoint world with matchModel.revision 'continuous-aggregate-2' (or ownMatches[i].model set to it) loads through persistence.ts:150 with the metadata silently dropped instead of failing with SaveCompatibilityError, and the next commit rewrites the save without it. SAVE-23 requires a refusal, not silently dropped fields. Supported matchModel/npcSeason/MatchRecord.model would be stripped the same way once T281/T282 write them. Similarly, host.ts:300 still builds { id, revision } itself, so worldMetadataOf is never used at runtime. No remaining group task (T274–T286) lists schema.ts in its touches. Fix: make worldSchema/match accept matchModel (matchModelStateSchema), npcSeason and model (z.enum(MATCH_MODEL_REVISIONS)), call assertMatchModelFormat in validateWorld and beside assertIdentityFormatVersions in persistence.ts:123, and add a load test with a future revision. If touches cannot widen, hand this explicitly to the planner (add schema.ts and persistence wiring to T282, host.ts wiring to T286) and leave acceptance 3/6 unchecked until then."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/match-model.ts:132-245 (T273 validateFullMatchRecord)",
+              "message": "MATCH-27 and the contract doc say the shared validator checks substitutions sharing the roster and timeline, and time legality. It does not. A side can have 12–16 lines with no 'sub' incident and still pass, because only lines ≤ 11 + maxSubs and the 11×length minute total are checked. A sub's `other` can be a player already on the pitch or a starter. Line minutes are never compared with the incident minutes (a starter replaced at 30′ credited 90 minutes, or a substitute entering at 80′ credited 60, both pass). The limits note says intervals cannot be checked because records lack per-event times, but sub and red-card incidents carry minutes, so every line's on-pitch interval is derivable. T280's aggregate participation relies on this validator, so these gaps would let incoherent aggregate records settle. Fix: per side, require lines = 11 + sub incidents; each incoming `other` must be distinct, not a starter and not already on; minutes for starters, subs and dismissed players must match the incident timeline within the documented added-time rounding. Add the corresponding cases to 'rejects impossible participation and contribution sums'."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/match-model.ts:87 vs packages/contracts/src/schema.ts:1060 (T273)",
+              "message": "validateFullMatchRecord re-implements the existing detailConsistent invariants but leaves some out: finalThirdPasses ≤ passes, progressivePasses ≤ completed passes, buildUpPasses ≤ passes, PD.xg ≤ 80×shots, PD.xa ≤ 80×keyPasses. A full record can pass the shared validator and still be refused by validateWorld as an own match. Share one invariant helper, or at least cover the existing set, so the two checks cannot drift."
+            },
+            {
+              "priority": "P3",
+              "where": "docs/benchmarks/match-model-baseline.json (T273 acceptance 1; T285/T286)",
+              "message": "The baseline ran its century profiles at 20 seasons instead of the configured release 100, and the provisionalReason was hand-edited in the JSON while scripts/match-model-baseline.ts still emits the stale pre-T255 string. It is honestly marked provisional/releaseEvidence:false. However, T285 says it compares with 'T273's captured baseline', and T286 does not explicitly re-run the baseline source for 100 seasons. Planner handoff: state in T285/T286 that the paired release run re-executes source 9f69553 with --seasons 100 on the same machine, and fix the runner's reason string in the task that owns the script."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/match-model.ts:167 (T273 → T274–T277)",
+              "message": "The limits note says 3 of the 600 current grid pilot records have a side's minutes at 991 > 990. These records would fail assertFullMatchRecord once grid records carry the model. No downstream task's acceptance names this rounding fix. Hand it to the planner so T274 (or whichever task first tags grid records with the model) owns it, rather than loosening the check."
+            }
+          ],
+          "commit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+          "baseCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+          "submissionId": "66682e15-e585-43b1-8044-c2c5e77edf2b",
+          "createdAt": "2026-10-21T01:14:59.772Z",
+          "finishedAt": "2026-10-21T01:18:39.018Z"
+        }
+      }
+    },
+    {
+      "sequence": 272,
+      "at": "2026-10-21T01:18:39.036Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "85b14620-626e-4696-9ce4-9706155689fb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T01:15:00.401Z",
+          "finishedAt": "2026-10-21T01:18:39.036Z",
+          "error": null,
+          "summary": "T273 adds the DTOs, revision, container constant, frame-time checks and a shared validator, and the baseline was captured on the clean base 9f69553. The code is well scoped, but two acceptance claims are not met in practice. First, no load or protocol path rejects future model metadata: validateWorld's non-strict world schema silently drops the new fields, and no remaining task in the group owns schema.ts. Second, the shared validateFullMatchRecord does not tie participation to the substitution timeline, which MATCH-27 requires. Tests could not be re-run here because the review checkout has no node_modules."
+        }
+      }
+    },
+    {
+      "sequence": 273,
+      "at": "2026-10-21T01:18:39.077Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "3525e61e-5aff-41e6-b2b4-7918ee38b2d3",
+            "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T273 adds the DTOs, revision, container constant, frame-time checks and a shared validator, and the baseline was captured on the clean base 9f69553. The code is well scoped, but two acceptance claims are not met in practice. First, no load or protocol path rejects future model metadata: validateWorld's non-strict world schema silently drops the new fields, and no remaining task in the group owns schema.ts. Second, the shared validateFullMatchRecord does not tie participation to the substitution timeline, which MATCH-27 requires. Tests could not be re-run here because the review checkout has no node_modules.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/match-model.ts:221 (T273; packages/contracts/src/schema.ts:776/1158)",
+                "message": "Acceptance 3 and 6 are checked [v], but assertMatchModelFormat is not called anywhere a save is read. validateWorld (schema.ts:1158) runs only assertIdentityFormatVersions, and worldSchema is a plain z.object (schema.ts:776), so it strips unknown keys. Repro: a container-2 checkpoint world with matchModel.revision 'continuous-aggregate-2' (or ownMatches[i].model set to it) loads through persistence.ts:150 with the metadata silently dropped instead of failing with SaveCompatibilityError, and the next commit rewrites the save without it. SAVE-23 requires a refusal, not silently dropped fields. Supported matchModel/npcSeason/MatchRecord.model would be stripped the same way once T281/T282 write them. Similarly, host.ts:300 still builds { id, revision } itself, so worldMetadataOf is never used at runtime. No remaining group task (T274–T286) lists schema.ts in its touches. Fix: make worldSchema/match accept matchModel (matchModelStateSchema), npcSeason and model (z.enum(MATCH_MODEL_REVISIONS)), call assertMatchModelFormat in validateWorld and beside assertIdentityFormatVersions in persistence.ts:123, and add a load test with a future revision. If touches cannot widen, hand this explicitly to the planner (add schema.ts and persistence wiring to T282, host.ts wiring to T286) and leave acceptance 3/6 unchecked until then."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/match-model.ts:132-245 (T273 validateFullMatchRecord)",
+                "message": "MATCH-27 and the contract doc say the shared validator checks substitutions sharing the roster and timeline, and time legality. It does not. A side can have 12–16 lines with no 'sub' incident and still pass, because only lines ≤ 11 + maxSubs and the 11×length minute total are checked. A sub's `other` can be a player already on the pitch or a starter. Line minutes are never compared with the incident minutes (a starter replaced at 30′ credited 90 minutes, or a substitute entering at 80′ credited 60, both pass). The limits note says intervals cannot be checked because records lack per-event times, but sub and red-card incidents carry minutes, so every line's on-pitch interval is derivable. T280's aggregate participation relies on this validator, so these gaps would let incoherent aggregate records settle. Fix: per side, require lines = 11 + sub incidents; each incoming `other` must be distinct, not a starter and not already on; minutes for starters, subs and dismissed players must match the incident timeline within the documented added-time rounding. Add the corresponding cases to 'rejects impossible participation and contribution sums'."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/match-model.ts:87 vs packages/contracts/src/schema.ts:1060 (T273)",
+                "message": "validateFullMatchRecord re-implements the existing detailConsistent invariants but leaves some out: finalThirdPasses ≤ passes, progressivePasses ≤ completed passes, buildUpPasses ≤ passes, PD.xg ≤ 80×shots, PD.xa ≤ 80×keyPasses. A full record can pass the shared validator and still be refused by validateWorld as an own match. Share one invariant helper, or at least cover the existing set, so the two checks cannot drift."
+              },
+              {
+                "priority": "P3",
+                "where": "docs/benchmarks/match-model-baseline.json (T273 acceptance 1; T285/T286)",
+                "message": "The baseline ran its century profiles at 20 seasons instead of the configured release 100, and the provisionalReason was hand-edited in the JSON while scripts/match-model-baseline.ts still emits the stale pre-T255 string. It is honestly marked provisional/releaseEvidence:false. However, T285 says it compares with 'T273's captured baseline', and T286 does not explicitly re-run the baseline source for 100 seasons. Planner handoff: state in T285/T286 that the paired release run re-executes source 9f69553 with --seasons 100 on the same machine, and fix the runner's reason string in the task that owns the script."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/match-model.ts:167 (T273 → T274–T277)",
+                "message": "The limits note says 3 of the 600 current grid pilot records have a side's minutes at 991 > 990. These records would fail assertFullMatchRecord once grid records carry the model. No downstream task's acceptance names this rounding fix. Hand it to the planner so T274 (or whichever task first tags grid records with the model) owns it, rather than loosening the check."
+              }
+            ],
+            "commit": "f23b7dfb4fd30402f28ae4b78480b9addd7fb2be",
+            "baseCommit": "9f695530d740807c6fd2b0cded4e86b5d16c8b7f",
+            "submissionId": "66682e15-e585-43b1-8044-c2c5e77edf2b",
+            "createdAt": "2026-10-21T01:14:59.772Z",
+            "finishedAt": "2026-10-21T01:18:39.018Z",
+            "invalidatedAt": "2026-10-21T01:18:39.077Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 274,
+      "at": "2026-10-21T01:18:39.133Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5fa2d047-15b9-4c27-8e00-ad105a51bfeb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T01:18:39.133Z"
+        }
+      }
+    },
+    {
+      "sequence": 275,
+      "at": "2026-10-21T01:18:39.253Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5fa2d047-15b9-4c27-8e00-ad105a51bfeb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T01:18:39.133Z"
+        }
+      }
+    },
+    {
+      "sequence": 276,
+      "at": "2026-10-21T01:24:41.075Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: Rejecting future full-model metadata on load (correction finding 1, T273 acceptance 3 and 6) means editing packages/contracts/src/schema.ts, apps/web/src/adapters/persistence.ts and apps/web/src/runtime/host.ts. All three are outside T273's touches, and no task in the full-model group lists them. What it takes: the world/match schemas accept matchModel/npcSeason/model, validateWorld and readCheckpoint call assertMatchModelFormat, host returns worldMetadataOf, plus a load test with a future revision. Who should own this change?"
+      }
+    },
+    {
+      "sequence": 277,
+      "at": "2026-10-21T01:24:41.099Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "5fa2d047-15b9-4c27-8e00-ad105a51bfeb",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T01:18:39.133Z",
+          "finishedAt": "2026-10-21T01:24:41.099Z",
+          "error": null,
+          "summary": "T273 보정 결과: 리뷰 지적 2·3은 고쳤고, 1·4·5는 이 태스크가 수정할 수 있는 파일 범위 밖이라 기획 결정이 필요해 blocked로 돌려드립니다. 그래서 완료기준 3과 6은 다시 미체크로 되돌렸습니다.\n\n**고친 것**\n- **지적 2 (교체 타임라인):** `validateFullMatchRecord`가 이제 선수 출전을 교체·퇴장 기록과 맞춰 봅니다.\n  - 한 팀의 선수 라인은 선발 11명 뒤에 교체 투입 순서대로 이어지고, 개수는 11 + 교체 수여야 합니다.\n  - 모든 사건(카드·교체·부상)은 그 순간 경기장에 있는 선수를 가리켜야 합니다. 부상으로 나간 선수의 교체는 허용합니다.\n  - 교체 투입 선수는 한 번만, 선발이 아닌 선수만 들어올 수 있습니다.\n  - 각 선수의 출전 분은 투입~퇴장 구간과 ±2분 안에서 맞아야 합니다. 이 오차는 grid/changes.test.ts에 이미 문서화된 반올림 폭입니다.\n- **지적 3 (기존 저장 스키마 경계):** 저장 스키마가 이미 거는 경계를 검증기에도 넣었습니다(파이널서드·빌드업 패스 ≤ 패스, 전진 패스 ≤ 성공 패스, 선수 xG ≤ 슈팅×0.80, xA ≤ 키패스×0.80). 다만 schema.ts의 원본 함수가 범위 밖이고 export되지 않아 공용 함수로 합치지는 못했습니다.\n- 테스트(15개)와 계약 문서·저장 형식 문서도 갱신했습니다.\n\n**실제 그리드 경기로 확인한 것:** 1950·1966·2010·2024 규칙과 컵 경기 120개(연장 21개)를 합쳐 600경기, 교체 3,169건을 새 검증에 넣었습니다. 타임라인·로스터·카운터 경계 실패는 0건이었습니다. 실패 5건은 모두 이미 알려진 '팀 출전 분 합계 991 > 990' 반올림 문제입니다.\n\n**실행해서 통과한 검사:** typecheck, lint, format:check, 경기 모델·프로토콜 테스트 3개 파일(15개).\n**돌리지 않은 것:** 변경 파일 전체 단위 테스트는 199개 파일(30~40분)이라 이번에도 실행하지 않았고 러너의 task-verify에 맡깁니다. 이번 보정에서는 build도 다시 돌리지 않았습니다.\n\n**기획 결정이 필요한 것**\n- **지적 1 (막힌 원인):** 미래 모델 버전을 저장 읽기 단계에서 거절하려면 세 파일을 고쳐야 하는데, 모두 T273 수정 범위 밖이고 그룹 안 다른 태스크(T274~T286)도 이 파일들을 맡고 있지 않습니다.\n  - packages/contracts/src/schema.ts: 월드 스키마가 새 필드를 받게 하고, `validateWorld`에서 `assertMatchModelFormat`을 호출\n  - apps/web/src/adapters/persistence.ts: `readCheckpoint`에서 호출\n  - apps/web/src/runtime/host.ts: `worldMetadataOf` 사용\n  - 지금은 미래 메타데이터가 붙은 저장이 에러 없이 열리고, 그 필드는 조용히 지워집니다.\n- **지적 4:** T285·T286에 '짝 비교 때 9f69553 소스를 `--seasons 100`으로 같은 기계에서 다시 측정한다'를 명시하고, 실행기의 낡은 provisionalReason 문구를 고칠 태스크를 정해야 합니다.\n- **지적 5:** 991 > 990 반올림 수정은 T274(또는 그리드 기록에 모델을 처음 붙이는 태스크)의 완료기준에 넣어야 합니다. 검증을 느슨하게 하지는 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 278,
+      "at": "2026-10-21T01:25:34.580Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 279,
+      "at": "2026-10-21T01:25:37.512Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "19f24955-cd46-444c-bace-ad74b4dfe501",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T01:25:37.512Z"
+        }
+      }
+    },
+    {
+      "sequence": 280,
+      "at": "2026-10-21T01:25:37.648Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "19f24955-cd46-444c-bace-ad74b4dfe501",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T01:25:37.512Z"
+        }
+      }
+    },
+    {
+      "sequence": 281,
+      "at": "2026-10-21T01:36:37.049Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 282,
+      "at": "2026-10-21T01:36:37.526Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 283,
+      "at": "2026-10-21T01:36:37.565Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 284,
+      "at": "2026-10-21T01:45:05.110Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+        "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
+        "submittedAt": "2026-10-21T01:45:05.110Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "5789 changed lines (limit 300)",
+            "outside touches: apps/web/src/adapters/persistence.test.ts apps/web/src/adapters/persistence.ts apps/web/src/runtime/host.test.ts apps/web/src/runtime/host.ts packages/contracts/src/schema.contract.test.ts",
+            "review paths: docs/SAVE-FORMAT.md packages/contracts/src/types.ts packages/contracts/src/versions.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 5789,
+          "files": 19
+        },
+        "steps": [
+          {
+            "taskId": "T273",
+            "commit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+            "at": "2026-10-21T01:45:04.959Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-21T01:36:37.790Z",
+                "finishedAt": "2026-10-21T01:45:03.402Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-21T01:36:37.790Z",
+            "finishedAt": "2026-10-21T01:45:03.402Z"
+          }
+        ],
+        "verifiedCommit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d"
+      }
+    },
+    {
+      "sequence": 285,
+      "at": "2026-10-21T01:45:05.164Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "19f24955-cd46-444c-bace-ad74b4dfe501",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T01:25:37.512Z",
+          "finishedAt": "2026-10-21T01:45:05.164Z",
+          "error": null,
+          "summary": "T273 보정 완료. 미래 버전의 경기 모델 메타데이터를 이제 저장 읽기 경로에서 실제로 거절합니다. 완료기준 3과 6은 다시 체크했습니다.\n\n**연결한 것 (기획 결정으로 넓어진 범위 안)**\n- **불러오기:** `readCheckpoint`(persistence.ts)와 `validateWorld`(schema.ts)가 미래 버전 검사를 먼저 돌립니다. 그래서 미래 버전의 경기 모델 정보(`matchModel.revision`, `npcSeason.model`, 기록별 `model`)는 필드가 조용히 지워지지 않고 기존 호환성 오류(`SaveCompatibilityError`)로 거절됩니다.\n- **월드 스키마:** 지원하는 버전의 새 필드는 지우지 않고 보존합니다. 모델 상태와 NPC 시즌 집계는 엄격 스키마로 검증합니다.\n- **호스트:** 메타데이터만 요청하는 검사가 이제 `worldMetadataOf`로 답하므로, 지원 모델 정보가 그대로 실립니다. 월드를 활성화하지도 바꾸지도 않습니다.\n- **쓰기 쪽 보호 장치 추가:** `checkpointSchemaFor`가 활성화되지 않은 월드는 기존 컨테이너 2로 계속 쓰게 합니다. 모델 데이터를 가진 월드는 T282의 컨테이너 3 코덱이 생길 때까지 저장 자체를 거부합니다. 구버전 리더가 필드를 몰래 버리는 상황을 막기 위해서입니다.\n\n**추가한 테스트**\n- 미래 버전이 담긴 파일을 불러오면 호환성 오류가 납니다(압축 해제 전에 걸러짐).\n- 지원 버전의 메타데이터는 불러온 뒤에도 그대로 남습니다.\n- 형식이 잘못된 데이터는 호환성 오류가 아닌 일반 오류로 처리됩니다.\n- 그 밖에 스키마 보존·거절, 호스트의 메타데이터 응답과 미활성화, 쓰기 컨테이너 선택을 확인합니다.\n\n**실행해서 통과한 검사**\n- typecheck, lint, format:check, build\n- 관련 테스트 7개 파일 129개\n- 영향 범위(contracts, adapters, runtime, grid) 49개 파일 422개\n\n**돌리지 않은 것:** 변경 파일 전체 단위 테스트(`vitest --changed`, 거의 전체 스위트)는 실행하지 않았고 러너의 task-verify와 묶음 관문에 맡깁니다.\n\n**남은 한계**\n- 압축 저장 형식이 기록별 `model` 필드를 아직 싣지 못합니다. 이건 T282(컨테이너 3 패킹) 몫이고, 그 전까지는 위의 쓰기 거부가 데이터 유실을 막습니다.\n- 팀 출전 분 합계 991 > 990 반올림 문제는 T274가 맡습니다.\n- 기준 측정을 100시즌으로 다시 돌리는 일과 실행기의 낡은 provisionalReason 문구 수정은 T285·T286으로 넘어갔습니다(기획 커밋 9fa8360)."
+        }
+      }
+    },
+    {
+      "sequence": 286,
+      "at": "2026-10-21T01:45:07.484Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c3574936-3324-4d45-b13c-11c6904040bb",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "reviewing",
+          "commit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+          "baseCommit": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+          "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
+          "createdAt": "2026-10-21T01:45:07.484Z"
+        }
+      }
+    },
+    {
+      "sequence": 287,
+      "at": "2026-10-21T01:45:09.402Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c80a9d1c-494a-48bf-9128-c724e95e5d01",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-21T01:45:09.402Z"
+        }
+      }
+    },
+    {
+      "sequence": 288,
+      "at": "2026-10-21T01:45:09.455Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c80a9d1c-494a-48bf-9128-c724e95e5d01",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-21T01:45:09.402Z"
+        }
+      }
+    },
+    {
+      "sequence": 289,
+      "at": "2026-10-21T01:46:47.993Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "c3574936-3324-4d45-b13c-11c6904040bb",
+          "owner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I reviewed T273 at dae3d0b against 9fa8360. The two P2 findings from correction 3525e61e are fixed.\n\n(1) Load path. `validateWorld` and `readCheckpoint` now run `assertMatchModelFormat` before unpacking or Zod parsing. The world and match schemas keep supported `matchModel` (strict), `npcSeason` (strict, its shape matches `NpcSeasonStats`) and record `model`. The host answers metadata-only inspections with `worldMetadataOf`. Tests cover a future revision as a `SaveCompatibilityError` in containers 1 and 2, the check running before damaged packing is detected, malformed data as an ordinary error, and the host refusing without activating the world. `checkpointSchemaFor` keeps unactivated worlds writing container 2 and refuses to write model data until T282 adds container 3, which satisfies SAVE-23's rule that data must not be silently dropped.\n\n(2) MATCH-27 timeline. Each side now has exactly 11 lines plus one per substitution, and the substitutes appear in the order they came on. An incoming player cannot be a starter or come on twice. Every incident must name a player on the pitch. Each line's minutes must match its entry–exit interval within 2 minutes; I checked this against the grid, where an injured player leaves at once and red cards and substitutions both call `leave`. With the line count tied to substitutions, removing the old `11 + maxSubs` line cap loses nothing, because the substitution count is still limited to the era's maximum. P3 finding 3 is covered (the counter bounds), and the planner reassigned P3 findings 4 and 5 in 9fa8360 (STATE inbox, T274/T285/T286). The risk entry about files outside `touches` is out of date: base 9fa8360 adds persistence, host, schema and their tests to the touches list.\n\nI could not re-run the tests: the review checkout has no node_modules, and I did not want to use another checkout. The worker reports typecheck, lint, format:check and build passing, plus 129 targeted tests and a wider affected set of 422 tests. The full changed-file run and the unit/contract suites are still left to the runner. Only minor improvements remain.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/persistence.ts:46 / packages/contracts/src/match-model.ts:317 (T273)",
+              "message": "A hand-made container-2 checkpoint that carries supported `matchModel`/`npcSeason` passes `decode` and can be activated as the writer. After that, every commit's `encode` throws `checkpointSchemaFor`'s plain Error (no typed error code), so the career cannot be saved, and no test covers that commit path. Real saves cannot reach this while activation is off, but consider refusing such worlds at activation (or giving the write failure an actionable error) until T282 adds container 3. If you keep the current behaviour, note it as T282's handoff."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/contracts/src/schema.ts:~386 (T273 npcSeasonSchema)",
+              "message": "`npcSeasonSchema` leaves the club `xg`/`xga` integers without an upper bound, while every other count in the schema is bounded. Bounding them (e.g., the `count` cap in match-model.ts) keeps the strict schema consistent before T280/T281 start writing aggregates."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/match-model.ts:739 (T273 timelineIssues)",
+              "message": "A `sub` incident with no `other` reports `undefined comes on … as a starter or a second time`, which hides the real fault (a missing incoming player). incidentIssues already flags it as `names undefined outside side`, so this second message is noise. Give the missing-`other` case its own message."
+            }
+          ],
+          "commit": "dae3d0b540629d2ca9aeb11ed411b7fc38d6a14d",
+          "baseCommit": "9fa83603ead69eaef44f082ba31289efd797f3a0",
+          "submissionId": "91e978ca-b654-4459-aaa6-65875a5f3345",
+          "createdAt": "2026-10-21T01:45:07.484Z",
+          "finishedAt": "2026-10-21T01:46:47.993Z"
+        }
+      }
+    },
+    {
+      "sequence": 290,
+      "at": "2026-10-21T01:46:48.051Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "c80a9d1c-494a-48bf-9128-c724e95e5d01",
+          "runner": "7ec8fb9c-2ffd-4838-8e56-a17cb1ccdbb4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-21T01:45:09.402Z",
+          "finishedAt": "2026-10-21T01:46:48.051Z",
+          "error": null,
+          "summary": "I reviewed T273 at dae3d0b against 9fa8360. The two P2 findings from correction 3525e61e are fixed.\n\n(1) Load path. `validateWorld` and `readCheckpoint` now run `assertMatchModelFormat` before unpacking or Zod parsing. The world and match schemas keep supported `matchModel` (strict), `npcSeason` (strict, its shape matches `NpcSeasonStats`) and record `model`. The host answers metadata-only inspections with `worldMetadataOf`. Tests cover a future revision as a `SaveCompatibilityError` in containers 1 and 2, the check running before damaged packing is detected, malformed data as an ordinary error, and the host refusing without activating the world. `checkpointSchemaFor` keeps unactivated worlds writing container 2 and refuses to write model data until T282 adds container 3, which satisfies SAVE-23's rule that data must not be silently dropped.\n\n(2) MATCH-27 timeline. Each side now has exactly 11 lines plus one per substitution, and the substitutes appear in the order they came on. An incoming player cannot be a starter or come on twice. Every incident must name a player on the pitch. Each line's minutes must match its entry–exit interval within 2 minutes; I checked this against the grid, where an injured player leaves at once and red cards and substitutions both call `leave`. With the line count tied to substitutions, removing the old `11 + maxSubs` line cap loses nothing, because the substitution count is still limited to the era's maximum. P3 finding 3 is covered (the counter bounds), and the planner reassigned P3 findings 4 and 5 in 9fa8360 (STATE inbox, T274/T285/T286). The risk entry about files outside `touches` is out of date: base 9fa8360 adds persistence, host, schema and their tests to the touches list.\n\nI could not re-run the tests: the review checkout has no node_modules, and I did not want to use another checkout. The worker reports typecheck, lint, format:check and build passing, plus 129 targeted tests and a wider affected set of 422 tests. The full changed-file run and the unit/contract suites are still left to the runner. Only minor improvements remain."
+        }
+      }
+    },
+    {
+      "sequence": 291,
+      "at": "2026-10-21T01:46:48.316Z",
+      "type": "attempt",
+      "group": "full-model",
+      "attemptId": "d554ae5a-ba43-45d2-bf8a-85cb4c2e999b",
+      "taskId": "T273",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

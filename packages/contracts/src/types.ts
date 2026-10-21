@@ -1,6 +1,12 @@
 import type { ClubBuild } from './build';
 import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
 import type {
+  IntentionObservation,
+  MatchModelRevision,
+  MatchModelState,
+  NpcSeasonStats,
+} from './match-model';
+import type {
   Attributes,
   Line,
   OffPitchQualities,
@@ -637,6 +643,8 @@ export interface MatchRecord extends Fixture {
   material?: MatchMaterial;
   /** What both sides actually wore, frozen at settlement (→KIT-12); absent before identities. */
   appearance?: MatchAppearance;
+  /** The match model that settled it (→SAVE-23); absent under the pre-feature model. */
+  model?: MatchModelRevision;
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
@@ -646,6 +654,8 @@ export interface PlayerMotion {
   velocity: [number, number];
   state: PlayerMotionState;
   intent: [number, number];
+  /** The intention the engine holds for him (→MATCH-17); candidate observation only. */
+  intention?: IntentionObservation;
 }
 export interface MatchMotionSample {
   elapsedSeconds: number;
@@ -723,10 +733,16 @@ export interface MatchFrame {
    * matches only; never stored).
    */
   ballTrack?: [number, number, number][];
+  /**
+   * Elapsed match seconds where this minute starts and of each `ballTrack` knot (→MATCH-12);
+   * absent on legacy frames, which decode at equal intervals.
+   */
+  startSeconds?: number;
+  ballTimes?: number[];
   period: 1 | 2 | 3 | 4;
   /** '23', '45+2', '90+4', '105+1'. */
   label: string;
-  /** Presentation weight, mean 1 over the match (→WEB-32). */
+  /** Presentation weight, mean 1 over the match (→WEB-32); candidate frames hold it neutral. */
   pace: number;
   /** Player IDs on the pitch at the minute's end, in slot order where filled. */
   onPitch: [string[], string[]];
@@ -1092,6 +1108,10 @@ export interface World {
   /** The owner's shirt for one named unplayed own fixture (→KIT-7); absent is automatic. */
   kitChoice?: FixtureKitChoice;
   ownMatches: MatchRecord[];
+  /** The persisted match model and its counters' coverage (→SAVE-23); absent before activation. */
+  matchModel?: MatchModelState;
+  /** Current-season NPC aggregates under the full model (→HIST-17); absent before activation. */
+  npcSeason?: NpcSeasonStats;
   history: SeasonArchive[];
   events: Event[];
   cash: string;
