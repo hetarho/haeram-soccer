@@ -198,11 +198,7 @@ function TrainingFocusPanel({
           {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
         </button>
       </p>
-      <button
-        type="button"
-        className={`${s.homeLine} ${s.primary}`}
-        onClick={() => onSheet({ coach: 'assistant' })}
-      >
+      <button type="button" className={s.homeLine} onClick={() => onSheet({ coach: 'assistant' })}>
         <span>
           <b>수석코치에게 훈련 제안·강행</b>
           <small>다음 라운드부터 4라운드 · 강행 시 사임 위험</small>

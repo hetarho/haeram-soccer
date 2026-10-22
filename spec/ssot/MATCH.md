@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r19 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r20 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -52,7 +52,7 @@
   - the last completed pass before the shot is the key pass and earns the assist, unless the shooter beat his marker alone (then the shot is unassisted).
   - player contributions record the actual passer, receiver, marker, shooter, keeper, fouler, carded player and substitute.
 - MATCH-12 [o] Observed playback draws the engine's own positions for every touch: the ball flies along the recorded actions and players stand where the engine puts them. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
-  - the selected speed applies uniformly in and out of play, through build-up, chances and restarts; 1x maps every 60 match seconds to 4 real seconds (→WEB-32). Added time and extra time use the same mapping. Seeking and the interval between periods are explicit transitions, not running play.
+  - the selected speed applies uniformly in and out of play, through build-up, chances and restarts; 1x maps every 60 match seconds to 4 real seconds (→WEB-32). Added time and extra time use the same mapping. Goal-feedback holds (→WEB-94), seeking and the interval between periods are explicit presentation transitions outside running play; a goal hold adds no simulated time or engine stoppage credit.
   - action durations and restart preparation allow the ball and players to traverse their recorded routes. Player speed, acceleration and turning are bounded by movement rules using pace and fatigue; kicks have bounded travel speed and a visible departure and arrival. No path is compressed to catch a later action or replaced by an instantaneous position assignment.
   - flight: a quadratic curve from launch to landing whose sideways bend grows with distance; passes of 18+ units rise with distance (up to 9, about 30% of long balls driven low), shots stay low; bend and height come from the motion stream only.
   - every flight ends where the engine recorded it: at the receiver, the interceptor, the tackler, out of play or in the net. After the ball leaves play it returns to the real restart spot through a recorded retrieval/placement interval; the taker and set-piece participants travel there before the kick. Substitutions and the change of ends have explicit entry/exit or period transitions.
@@ -122,6 +122,7 @@
   - a challenge may be a foul, more often for a reckless 태클, under the press tactic and when stopping a counter, less often by a booked player; a foul gives a free kick at its spot, inside the box a penalty.
   - ball out of play: a throw-in at its touchline spot, a goal kick, or a corner when the defending side touched it last over its byline.
   - free kicks within shooting range may be shot directly or crossed; corners and wide free kicks are delivered into the box for aerial duels and second balls.
+  - during corners and delivered free kicks, both sides act through preparation, the delivery and the second ball. Defenders track attacking runs, protect goal-side space and cover one another; the goalkeeper adjusts to the delivery. Their intentions follow the ball and runners after the kick, with continuous recorded movement (→MATCH-12/17), rather than ending at initial placement. Holding a useful position is valid; freezing the defensive side solely because a set piece is in progress is not.
   - a penalty is the taker's 슈팅 and 침착성 against the keeper's 선방.
   - offside: a receiving teammate in the opponent's half and beyond both the ball and the second-last opponent when the pass is played is offside; an indirect free kick restarts play. A high line can catch runners; a runner's 판단력 times his run.
   - the manager names the set-piece and penalty takers by their attributes.
@@ -222,6 +223,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r20 261022 MATCH-12✎ explicit transitions limited to seeking/period breaks→+goal-feedback holds outside simulated time; MATCH-18✎ set-piece delivery/duels→+continuous defensive tracking, cover, goalkeeper and second-ball responses
 - r19 261022 MATCH-3✎ possession unspecified (the detailed engine measured time on the ball)→a side's share of both sides' attempted passes, the published convention
 - r18 261022 MATCH-13✎ high turnover ball won in the opponent's defensive third→a sequence starting with an open-play ball won within 40 m of its goal; PPDA own two thirds ÷ tackles+interceptions→own 60% ÷ tackles, interceptions, challenges and fouls (published conventions)
 - r17 261022 MATCH-23✎ both engines hold every row→trace-only rows (possessions, passes in one, possessions ending in a shot, shot distance, 30 m+, own half) bind the detailed engine only; MATCH-23+ season scoring concentration (top-scorer share 20–30%, league top scorer 22–32, hat-tricks 0.02–0.05); MATCH-30+ advanced counters at sourced real-football bands, unsourced ones parity only

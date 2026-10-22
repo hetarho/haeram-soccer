@@ -283,10 +283,13 @@ export function StrategyBoard({
       {!department && (
         <>
           <header className={s.head}>
-            <p>
-              줄마다 하나씩 골라요. 카드 줄은 구단이 어떻게 할지, 투자 줄은 얼마나 쓸지예요. 누른
-              것은 화면 아래 초안에 모이고, 적용하면 한 번에 반영돼요. 언제든 다시 바꿀 수 있어요.
-            </p>
+            <details>
+              <summary>운영 방침 바꾸는 방법</summary>
+              <p>
+                줄마다 하나씩 골라요. 카드 줄은 구단이 어떻게 할지, 투자 줄은 얼마나 쓸지예요. 누른
+                것은 화면 아래 초안에 모이고, 적용하면 한 번에 반영돼요. 언제든 다시 바꿀 수 있어요.
+              </p>
+            </details>
           </header>
 
           <article className={s.current} aria-label="지금 방향">

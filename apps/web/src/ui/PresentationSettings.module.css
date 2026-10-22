@@ -10,6 +10,21 @@
 .settings > label > button {
   width: 100%;
 }
+/* A single picker already names its preference in the title. */
+.single > label > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.settings > p,
+.settings > div {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
 .trigger {
   flex-shrink: 0;
   min-height: 44px;

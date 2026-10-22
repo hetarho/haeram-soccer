@@ -4,15 +4,32 @@
   gap: 12px;
 }
 .intro {
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   color: var(--text-muted);
   line-height: 1.6;
+  font-size: 13px;
 }
 .bulkActions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 0;
+}
+.bulkActions button {
+  background: var(--subtle-fill);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sectionHead small {
+  font-size: 12px;
+  font-weight: 500;
 }
 .rows {
   display: grid;
@@ -27,7 +44,7 @@
   padding: 12px 0;
 }
 .rows .row + .row {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--table-line, var(--line));
 }
 .row > span {
   flex: 1;
@@ -35,6 +52,8 @@
 }
 .row b {
   display: block;
+  font-size: 14px;
+  font-weight: 600;
 }
 .row small {
   display: block;
@@ -48,6 +67,7 @@
   max-width: 52%;
   min-width: 110px;
   min-height: 44px;
+  background: transparent;
 }
 .section,
 .observations {
@@ -55,8 +75,8 @@
   gap: 12px;
 }
 .observations {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
 }
 .observations > p {
   grid-column: 1 / -1;
@@ -68,11 +88,11 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
-  min-height: 64px;
-  padding: 10px;
-  border: 1px solid var(--line);
+  min-height: 48px;
+  padding: 8px 0;
+  border: 0;
   border-radius: var(--control-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
+  background: transparent;
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -91,8 +111,7 @@
   cursor: inherit;
 }
 .observationToggle:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--surface-grain, none) var(--surface-2);
+  background: transparent;
   color: var(--text);
 }
 .observationToggle:has(input:focus-visible) {
@@ -109,7 +128,7 @@
   padding: 3px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
-  background: var(--surface-grain, none) var(--surface);
+  background: color-mix(in srgb, var(--text-faint) 24%, var(--surface-deep));
   pointer-events: none;
 }
 .switchIndicator::after {
@@ -144,6 +163,7 @@ input:checked ~ .switchIndicator::after {
   margin: 0;
   color: var(--text-muted);
   line-height: 1.6;
+  font-size: 13px;
 }
 .preview {
   display: grid;

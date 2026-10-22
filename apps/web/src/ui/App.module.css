@@ -3,6 +3,7 @@
   box-sizing: border-box;
 }
 :global(body) {
+  --mobile-nav-clearance: calc(82px + env(safe-area-inset-bottom));
   margin: 0;
   min-height: 100vh;
   background: var(--surface-grain, none) var(--bg);
@@ -38,12 +39,12 @@
 :global(button) {
   cursor: pointer;
   border: 1px solid var(--line-strong);
-  background: var(--surface-grain, none) var(--surface-2);
+  background: var(--surface-grain, none) var(--control-fill);
   color: var(--text);
   border-radius: var(--control-radius);
   min-height: 44px;
   padding: 8px 14px;
-  font-weight: 700;
+  font-weight: var(--control-weight);
   box-shadow: var(--control-shadow);
   transition:
     transform 0.08s,
@@ -515,6 +516,11 @@
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Filter the scroll container so its clip cannot cut off the outside shadow. */
+  filter: var(--feedback-shadow-filter);
+}
+.feedbackOverlay > * {
+  box-shadow: var(--feedback-edge-shadow);
 }
 .feedbackOverlay > .error,
 .feedbackOverlay > .critical {
@@ -1098,23 +1104,6 @@
 
 /* Shared app navigation and modal chrome keep touch layouts consistent across screens. */
 
-.moreMenu {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-.moreMenu button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  padding: 12px 14px;
-  text-align: left;
-  font-size: 14px;
-}
-.moreMenu .navIcon {
-  color: var(--text-muted);
-}
 /* Page tab bars read as navigation, not as buttons: labels over a hairline, the selected one
    underlined in the accent (→WEB-69). Choices inside a tab use .segments instead. */
 .seasonTabs {
@@ -1213,7 +1202,8 @@
   display: grid;
   place-items: center;
   border-radius: var(--control-radius);
-  background: var(--surface-grain, none) var(--surface-2);
+  background: transparent;
+  border-color: transparent;
   font-size: 27px;
   line-height: 1;
 }
@@ -1282,10 +1272,6 @@
   }
   .nav {
     display: none;
-  }
-  .moreMenu {
-    grid-template-columns: 1fr;
-    gap: 8px;
   }
 
   .main {
@@ -1549,6 +1535,17 @@
   width: 100%;
   min-width: 0;
 }
+.rosterTools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+.rosterTools .rosterSearch {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
 .rosterPages {
   display: flex;
   align-items: center;
@@ -1560,14 +1557,6 @@
 }
 .rosterPages button {
   min-height: 44px;
-}
-.guideOpen {
-  width: 100%;
-  min-height: 48px;
-  margin-bottom: 12px;
-  background: var(--surface-grain, none) var(--surface-2);
-  border-color: var(--line-strong);
-  color: var(--text);
 }
 @media (max-width: 760px) {
   .startLayout .sidebar,
@@ -1712,6 +1701,12 @@
   padding: 0;
   display: grid;
   place-items: center;
+  background: transparent;
+  border-color: transparent;
+}
+.hud .hudNotifications {
+  background: transparent;
+  border-color: transparent;
 }
 .hudClub {
   flex: 1;
@@ -1843,95 +1838,7 @@
   color: var(--danger);
 }
 
-.seasonControls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  padding: 8px 8px 8px 14px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-  box-shadow: none;
-}
-.clockRunning {
-  border-color: var(--running-line, var(--accent));
-  box-shadow: none;
-}
-.calendarSummary {
-  flex: 1;
-  min-width: 0;
-  display: grid;
-  gap: 1px;
-}
-.calendarSummary strong {
-  font-size: var(--subheading-size);
-  font-weight: 700;
-  font-variant-numeric: var(--numeric-variant);
-  white-space: nowrap;
-}
-.autoStatus {
-  display: block;
-  font-size: var(--label-size);
-  color: var(--text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--display);
-}
-.clockRunning .autoStatus {
-  color: var(--accent-text);
-}
-.calendarSummary progress {
-  display: none;
-  width: 100%;
-  height: 4px;
-  margin-top: 3px;
-}
-.clockButtons {
-  flex-shrink: 0;
-  display: flex;
-  gap: 6px;
-}
 /* Play and the pace dropdown keep full touch targets. */
-.clockButtons button {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 4px 8px;
-  border-radius: var(--control-radius);
-  font-size: var(--label-size);
-  font-weight: 700;
-  font-family: var(--display);
-}
-.clockButtons .clockToggle {
-  width: 50px;
-  display: grid;
-  place-items: center;
-  background: var(--surface-grain, none) var(--accent-fill);
-  border-color: var(--accent-edge);
-  box-shadow: none;
-}
-.clockToggle span {
-  width: 0;
-  height: 0;
-  margin-left: 4px;
-  border-left: 14px solid var(--on-accent);
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-}
-.clockButtons .clockPause {
-  background: var(--surface-grain, none) var(--surface-2);
-  border-color: var(--accent-edge);
-  box-shadow: none;
-}
-.clockPause span {
-  width: 13px;
-  height: 16px;
-  margin: 0;
-  border: 0;
-  border-left: 4px solid var(--text);
-  border-right: 4px solid var(--text);
-}
 
 .pageHead {
   display: grid;
@@ -2030,10 +1937,6 @@
   color: var(--text-faint);
   font-family: var(--display);
 }
-.moreMenu button[aria-current='page'] {
-  border-color: var(--accent);
-  color: var(--accent-text);
-}
 
 .mobileNav {
   display: none;
@@ -2061,37 +1964,23 @@
   .playLayout .main > .actions {
     display: none;
   }
-  .seasonControls {
-    gap: 8px;
-    margin-bottom: 10px;
-    padding: 6px 6px 6px 12px;
-  }
-  .calendarSummary strong {
-    font-size: 14px;
-  }
-  .clockButtons {
-    gap: 4px;
-  }
-  .clockButtons button {
-    min-width: 44px;
-    padding: 4px 6px;
-  }
-  .clockButtons .clockToggle {
-    width: 46px;
-  }
   .mobileNav {
     position: fixed;
-    inset: auto 0 0;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    max-width: 680px;
+    margin: 0 auto;
     z-index: 40;
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: end;
     gap: 2px;
-    padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom))
-      max(8px, env(safe-area-inset-left));
-    background: var(--surface-grain, none) var(--hud);
-    border-top: 1px solid var(--line);
-    box-shadow: none;
+    padding: 6px 8px;
+    background: var(--surface-grain, none) var(--nav-surface);
+    border: 1px solid var(--nav-edge);
+    border-radius: var(--nav-radius);
+    box-shadow: var(--nav-shadow);
   }
   .mobileNav button {
     display: grid;
@@ -2116,7 +2005,7 @@
     color: inherit;
   }
   .mobileNav button[aria-current='page'] {
-    color: var(--text);
+    color: var(--accent-text);
     background: transparent;
     box-shadow: inset 0 -2px var(--accent);
   }
@@ -2131,7 +2020,7 @@
     font-size: var(--label-size);
   }
   .mobileNav .homeTab[aria-current='page'] {
-    color: var(--text);
+    color: var(--accent-text);
     background: transparent;
     box-shadow: inset 0 -2px var(--accent);
   }
@@ -2230,7 +2119,7 @@
 }
 @media (max-width: 760px) {
   .main {
-    height: calc(100dvh - 70px - env(safe-area-inset-bottom));
+    height: calc(100dvh - var(--mobile-nav-clearance));
     padding: 0 var(--gutter);
   }
   .startLayout .main {
@@ -2313,9 +2202,6 @@
   accent-color: var(--accent);
 }
 
-@media (max-width: 760px) {
-  /* The gear lives in the full menu on phones, leaving room for date and speeds. */
-}
 @media (max-width: 400px) {
   .hudClub .crest {
     display: none;
@@ -2362,81 +2248,12 @@
 }
 
 /* One packed row: the date and status take what the buttons leave, the season bar rides the edge. */
-.seasonControls {
-  position: relative;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
-.seasonControls .calendarSummary {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.seasonProgress {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  border-radius: var(--tab-radius);
-  background: var(--surface-grain, none) var(--surface-2);
-  opacity: 0.85;
-  transition: width 600ms var(--ease, ease);
-}
-@media (max-width: 760px) {
-  .seasonControls {
-    gap: 6px;
-    margin-bottom: 8px;
-    padding: 4px 4px 4px 10px;
-  }
-  .calendarSummary strong {
-    font-size: 13px;
-    font-family: var(--display);
-    line-height: 1.15;
-    white-space: normal;
-    word-break: keep-all;
-    text-wrap: balance;
-  }
-  .calendarSummary .autoStatus {
-    font-size: var(--label-size);
-    font-family: var(--display);
-  }
-  .clockButtons {
-    flex: none;
-  }
-}
-@media (max-width: 420px) {
-  .seasonControls {
-    gap: 4px;
-  }
-  .seasonControls .clockButtons {
-    gap: 3px;
-  }
-  .seasonControls .clockButtons .clockToggle {
-    width: 45px;
-    min-width: 45px;
-  }
-}
-@media (max-width: 389px) {
-  .seasonControls {
-    padding-left: 8px;
-  }
-  .seasonControls .calendarSummary strong {
-    font-size: var(--label-size);
-    letter-spacing: var(--heading-tracking);
-    font-family: var(--display);
-  }
-}
-@media (max-width: 359px) {
-  .seasonControls {
-    gap: 4px;
-    padding-left: 8px;
-  }
-}
 
 @media (max-width: 760px) {
   .mobileNav {
     gap: 0;
-    padding-left: max(4px, env(safe-area-inset-left));
-    padding-right: max(4px, env(safe-area-inset-right));
+    padding-left: 6px;
+    padding-right: 6px;
   }
   .mobileNav button {
     font-size: var(--label-size);
@@ -2444,7 +2261,7 @@
     font-family: var(--display);
   }
   .mobileNav .homeTab {
-    margin: 0 2px;
+    margin: 0;
     font-size: var(--label-size);
     font-family: var(--display);
   }
@@ -2489,39 +2306,11 @@
 }
 /* Tabs and segments change without a pop: a pop on a pressed tab or segment crashed WebKit's page
    process when they were switched in a row (→WEB-46). */
-.moreMenu button[aria-current='page'] {
-  animation: pop 280ms var(--ease);
-}
 .mobileNav button[aria-current='page'] .navIcon {
   animation: pop 360ms var(--ease);
 }
-.moreMenu button,
 .toggles label {
   animation: rise 260ms var(--ease) both;
-}
-.moreMenu button:nth-child(2) {
-  animation-delay: 25ms;
-}
-.moreMenu button:nth-child(3) {
-  animation-delay: 50ms;
-}
-.moreMenu button:nth-child(4) {
-  animation-delay: 75ms;
-}
-.moreMenu button:nth-child(5) {
-  animation-delay: 100ms;
-}
-.moreMenu button:nth-child(6) {
-  animation-delay: 125ms;
-}
-.moreMenu button:nth-child(7) {
-  animation-delay: 150ms;
-}
-.moreMenu button:nth-child(8) {
-  animation-delay: 175ms;
-}
-.moreMenu button:nth-child(9) {
-  animation-delay: 200ms;
 }
 .toggles label:nth-child(2) {
   animation-delay: 25ms;
@@ -2549,11 +2338,6 @@
     background-color 0.18s,
     border-color 0.18s,
     color 0.18s;
-}
-.seasonControls {
-  transition:
-    border-color 240ms,
-    box-shadow 240ms;
 }
 .miniClock {
   animation: rise 220ms var(--ease) both;
@@ -3358,4 +3142,18 @@
 /* The mounted policy draft owns the bottom edge. */
 .newsLayout:has([data-testid='strategy-draft']) .scroller {
   padding-bottom: 0;
+}
+/* Appearance pickers stay small and centered over a light dim on every width, so the page
+   behind visibly takes each theme or language change. */
+.modalBackdrop.picker {
+  align-items: center;
+  padding: 24px 16px;
+  background: rgb(0 0 0 / 28%);
+}
+.picker > .modal {
+  max-width: 360px !important;
+  border-radius: var(--dialog-radius);
+}
+.picker .modalBody {
+  padding: 20px;
 }
