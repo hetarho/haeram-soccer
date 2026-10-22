@@ -242,6 +242,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 fix e2e (q8m5): business.spec:67 (founding plus eight cold reloads) runs as `test.slow()`; it timed out on Firefox CI 39791051931 at two different steps while every other job passed
 - 261022 T325 done (q8m5; explore exit, from k2r7's record): bit-identical grid speed-up merged over T336 (one conflict in `shapePlace`, T336's upfield factor kept); 15 digests re-recorded from main's own records and passing on the merged tree, 99 forced-tactic probe matches identical; own match 0.77 on the Xeon (context only), reference-machine timing left to T326/T286
 - 261022 T325 T345 taken over (q8m5, owner's M1 Max): k2r7 stale; T325 from `work/k2r7-T325`, T345 from T336's kept setting
 - 261022 T350 done (v7c3): normal view shows the controlling side beside the scoreboard and rings the recorded carrier on the pitch; the action under way (first event ending at or after the instant) leads, the sample owner falls back, sparse history stays neutral; 9 unit cases, phone/desktop/pixel/reduced-motion journeys on Chromium
@@ -261,4 +262,3 @@
 - 261022 ideation set-piece-defence-and-goal-feedback ready: remaining tasks lack explicit corner-defence movement and goal feedback; add SSOT-backed follow-ups as requested.
 - 261022 ideation set-piece-defence-and-goal-feedback start (g8s2): standalone checkout assigned by the owner; inspect remaining coverage before adding work.
 - 261022 T347 done (t6p4): home/settings/navigation cleanup with all seven management views inspected; 51 focused units and 33 Chromium journeys verified, including seven focused fixes/rechecks; final build and loaded cups/records inspection pass; no commit/push.
-- 261022 T347 start (t6p4): owner requests a broad UI cleanup focused on home/settings and contrasting bottom navigation; WEB r123 consumes those decisions into one cohesive presentation task, with all seven management views inspected.
