@@ -17,6 +17,7 @@
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
 
 ## inbox
+- 261022 decided T325: start the bit-identical detailed-engine speed task now beside T336/T345 instead of after T323 (dep T323 → T334) → it does not change football, and a faster engine shortens every later calibration run; timing stays last in a quiet window and identity is re-proved on the merged tree (alt: keep it after T323)
 - 261022 decided T336 T345: keep T336's combination (counter's settled pass weights only within 70 m of goal; counter's block stops following the ball upfield) although it moved one of four target rows, not two → on fresh seeds it beats T334's state (MATCH-29 12/1/12 v 9/2/14, high regains inside, curve 3.34 → 2.98, nothing inside → outside) and the possession rows do not move under any counter lever; MATCH-2's curve (T334 moved it 2.50 → 3.34 at gap −10) and possession's rows go to explore T345 before T323 (alt: keep T334 only | revert T334 to restore the curve)
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
 - 261022 decided ARCH-31 T325 T326 T286: owner's choice — ARCH r19 restates the throughput gates as absolute budgets on a recorded reference machine (fixture ≤ 1 ms median, season engine time ≤ 15 s median for both century profiles; the paired ratio is context) → T285's option (b); figures from T285 (fixture 0.82–0.88 ms, candidate season ~14 s, own matches 3.5–4 s); T325/T326 keep improving speed (alt: keep the ratios and leave activation off | keep both)
@@ -209,7 +210,7 @@
 |---|---|---|---|---|
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 | todo |
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 | todo |
-| T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
+| T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T334 | doing@261022.k2r7 |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T336 | Tune counter's settled play so it stops overshooting against possession and gives back press's high-regain lead | MATCH ARCH | T334 | doing@261022.k2r7 |
 | T345 | Give possession back its tactic rows and the underdog back its share of results | MATCH ARCH | T336 | todo |
@@ -235,6 +236,7 @@
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T325 start (k2r7): pulled ahead of T323, beside T336/T345
 - 261022 create-task T345 (explore 2h): possession's tactic rows and MATCH-2's underdog curve after T334/T336; T323 and T286 wait for it
 - 261022 update-ssot ARCH r19 (ARCH-31✎ absolute throughput budgets, owner decision) and create-task refresh: T325 T326 T286 restated against the budgets, T323 T325 T326 T286 base ARCH@19; r19 sits on the owner's unpushed ARCH r18 (ARCH-32, theme inventory)
 - 261022 sync: main fast-forwarded to d8411fa1 and the local stash restored; preserve remote engine work and renumber UI tasks T337–T344. Owner authorized omitting remaining long checks; completed 1,812 unit cases (4 existing skips), 39 contract cases, static/resource checks and build. Chromium stopped after 147 passes with five failures in recovery-button reachability and grain request accounting; recovery export moved into its alert and grain excluded from facility-scene accounting, then all five regressions passed with typecheck, focused lint/format and a rebuilt preview. Full remaining journeys/CI wait omitted by owner authorization.
@@ -254,4 +256,3 @@
 - 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
 - 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T334
 - 261022 create-task T334 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T334
-- 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
