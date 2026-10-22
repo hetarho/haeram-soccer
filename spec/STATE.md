@@ -29,6 +29,8 @@
 - 261023 decided T356 T357 MATCH-29: possession's halfway-guarded runs (×2.5, points inside on rounds 15 and 16 but goals 2.78 → 2.96 and the curve 2.65 → 3.37) are trialled again inside T357 together with its curve levers, kept only if possession's rows and the curve hold together → the extra goals are what cost the draws, which is T357's curve problem (alt: T323 as the worker suggested | accept a known miss via update-ssot on MATCH-29 | possession's role table, a STAFF-22 change)
 - 261023 decided T357 T365 MATCH-2 MATCH-29: keep T357's validated pair (candidate side share 0.8 of each side's distance from the level, possession's runs ×2.5 past halfway) as an exception to its per-row keep rule, adopted in T365 with tests and a fresh validation → pooled over rounds 21+22 the curve falls 3.09 → 1.65 (inside 2.5), MATCH-29 17/3/5 → 20/1/4 and possession's points move inside, while each reading moves one different borderline row inside → insufficient within noise and none inside → outside; bands stay and T286 still needs every row inside, as with T336's exception (alt: hand the pair to T323 as its start | keep the base and the 3.09 curve)
 - 261023 decided T365: renumbered T360 → T365 because session u4h2 published its own T360–T362 (owner office UI) to main meanwhile; T363–T364 left free for it (alt: T363)
+- 261023 decided T366: its acceptance to fix playback or trace recording is met by a check-only fix → nothing drops the job; T348's check counted any mark since the kick on the trace side but only committed ones in the samples, and every constraint (no draw moved, digests and pre-feature path unchanged) holds (alt: reopen it as a playback change)
+- 261023 decided T366 T367: the kick's urgent pairing taking a scene marker off his runner becomes candidate-only task T367 after T323 and before T286 → it changes football, so it does not land under T323's running reference; T286's registry re-measures the combined source (alt: hand it to T323 | leave it)
 - 261022 decided T325 T345: session q8m5 runs T325's merge and T345 side by side with session subagents in their own worktrees, as k2r7 did for T327/T328 (both explore, so no work group); main pushed once at the end (alt: one after the other)
 - 261022 decided T345 T356 MATCH-29: possession's rows (still outside after T345: points −0.205, about 10 shots a match against 13) go to explore T356 — runs outside a break (T345's lever a′, the only one that moved them) with a guard on press's high-regain lead, then possession's 4-3-3 role table if that fails → it is the one lever with a clear effect, and the bands stay as they are (alt: role table first | accept a known miss, which needs update-ssot on MATCH-29)
 - 261022 decided T345 T357 MATCH-2: the curve above 2.5 (2.79 pooled) and the gap −10 underdog (wins 13–15% against 18% under every tactic) go to explore T357 on the strength gradient, after T356 → T345 found it is not a tactic effect; MATCH-2's form draw, gap formula and home points stay rules (alt: fold it into T323 | accept the curve error)
@@ -227,13 +229,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 | todo |
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 T356 T357 T358 T365 | doing@261023.q8m5 |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T366 | Show every recorded set-piece job in playback until the next play | MATCH WEB ARCH | T365 | doing@261023.q8m5 |
+| T367 | Keep a set-piece marker on his runner when the kick's urgent pairing runs | MATCH ARCH | T323 T366 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -251,6 +253,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T366 done (q8m5): playback drops no set-piece job; the check now reads one job definition on both sides over all four scene matches (100 samples, 265 jobs) plus a case for the kick's urgent jobs; no engine change, digests unchanged
+- 261023 create-task T367 (q8m5, from T366's limit): the kick's urgent pairing keeps scene markers on their runners; after T323, before T286
 - 261023 T365 done (q8m5; kept under its recorded exception): candidate side share 0.8 and possession's runs ×2.5 past halfway; fresh rounds 23+24 pooled curve 2.81 → 1.76, MATCH-29 inside 14 → 19, possession's points inside, core 34 → 35, nothing inside → outside; penalty goals outside → T323
 - 261023 create-task T366 (q8m5, from T365's limit): playback drops a defending set-piece job in `set-piece-1`; T286 waits for it
 - 261023 merge origin/main (q8m5): u4h2's owner office UI (T355, T360–T362, WEB r128–r130) joins `work/q8m5`; this session's T360 renumbered T365
@@ -269,5 +273,3 @@
 - 261023 T356 done (q8m5; explore exit, nothing kept): possession's runs reach its rows only with more goals (halfway-guarded ×2.5: points inside on rounds 15+16, curve 2.65 → 3.37, draw rows inside → insufficient); scripts keep the probes → T357 trials it with the curve
 - 261023 T348 done (q8m5): candidate defenders keep set-piece jobs after the kick (markers on their men, zone guards goal-side, keeper toward the delivery) until a turnover, the next restart or the ball 30 m out; the cause was `restartTaken` ending every defensive place at the kick; 600-fixture bands 34 → 35 of 37 (MF goals inside), set-piece goals 23.2 → 22.6%; default path unchanged; `set-piece-defence.spec.ts` left to the batch run
 - 261023 create-task T359 (q8m5, from T348's limit): a recorded snapshot at each restart's kick for playback; T286 waits for it
-- 261023 create-task T358 (q8m5): host-portable outcome-critical math for the candidate grid, after T348/T356, before T323; T323 and T286 wait for it
-- 261022 T345 done (q8m5; explore exit, kept): candidate score state (DECISION_CONFIG.candidate.leadingShot 0.5, trailingPush 1.6); validation rounds 13+14 curve 3.23 → 2.79, MATCH-29 11/3/11 → 14/2/9, nothing inside → outside; possession still outside → T356, curve above 2.5 → T357; grid digests split into host-free facts and darwin-arm64 positions
