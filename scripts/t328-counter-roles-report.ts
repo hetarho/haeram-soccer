@@ -95,6 +95,11 @@ if (pairing.length) {
       }
   const pts = Object.entries(report.tactics).map(([t, x]) => `${t} ${f3(valueOf(x.points))}`);
   console.log(`  points a match: ${pts.join(', ')}`);
+  // T356: each tactic's high regains a match, for press's lead.
+  const regains = Object.entries(report.tactics).map(
+    ([t, x]) => `${t} ${f3(valueOf(x.highRegains), 1, 2)}`,
+  );
+  console.log(`  high regains a match: ${regains.join(', ')}`);
   // Each tactic's points a match against each other tactic, venues pooled.
   const tally: Record<string, [number, number]> = {};
   for (const s of pairing) {

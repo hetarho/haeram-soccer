@@ -60,6 +60,37 @@ export const VARIANTS: Record<string, SlotSpec[]> = {
   }),
 };
 
+const POSSESSION_BASE: SlotSpec[] = [
+  ['GK', 'sweeperKeeper'],
+  ['LB', 'invertedFullBack'],
+  ['CB', 'ballPlayingDefender'],
+  ['CB', 'coverDefender'],
+  ['RB', 'overlappingFullBack'],
+  ['DM', 'anchor'],
+  ['CM', 'mezzala'],
+  ['CM', 'deepLyingPlaymaker'],
+  ['LW', 'invertedWinger'],
+  ['ST', 'falseNine'],
+  ['RW', 'traditionalWinger'],
+];
+const swapPossession = (changes: Record<number, SlotSpec>): SlotSpec[] =>
+  POSSESSION_BASE.map((s, i) => changes[i] ?? s);
+/**
+ * T356 lever (c): possession 4-3-3 role tables from PLAYER-5's roles (`--possession <name>`), slot
+ * order as STAFF-22. Measured only: STAFF-22 names possession's slots, so a kept table is an SSOT
+ * change.
+ */
+export const POSSESSION_VARIANTS: Record<string, SlotSpec[]> = {
+  base: POSSESSION_BASE,
+  // A striker who stays up and shoots instead of the false nine who drops.
+  completeForward: swapPossession({ 9: ['ST', 'completeForward'] }),
+  poacher: swapPossession({ 9: ['ST', 'poacher'] }),
+  // The right winger cutting inside to shoot like the left.
+  insideRight: swapPossession({ 10: ['RW', 'invertedWinger'] }),
+  // An overlapping left back instead of the inverted full-back (MATCH-8 names the inverted one).
+  overlapLeft: swapPossession({ 1: ['LB', 'overlappingFullBack'] }),
+};
+
 /** A deep patch of the candidate configs, keyed by config. */
 export interface BehaviourPatch {
   decide?: object;
@@ -161,6 +192,12 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // (d) Balanced's block for its xG conceded: the pre-T321 counter-press reach, a tighter block.
   balCP8: { shape: { candidate: { tactic: { balanced: { counterPress: 8 } } } } },
   balTight: { shape: { candidate: { tactic: { balanced: { compact: 0.41 } } } } },
+  // T356 levers from T345's kept setting: (a) possession's runs outside a break at 1.6, 2 and 2.5
+  // times the odds, (b) the same only with the ball past halfway (band 4 on) or only for its
+  // forwards and wingers. They were measured at 35e0f9e–d68e955 through a neutral
+  // `COORDINATION_CONFIG.settledRuns` hook (`possRuns16` = `{ coordination: { settledRuns: { odds:
+  // { possession: 1.6 } } } }`, `possRunsHalf25` adds `from: 4`, `possRunsFw25` `lines: ['FW']`),
+  // since removed: none was kept.
 };
 
 function possession(p: object): BehaviourPatch {
