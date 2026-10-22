@@ -15,7 +15,7 @@ import { lineupSummary } from '../../packages/engine/src/strategy';
 import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
-import { chooseLevel, setResponsibility } from './events';
+import { chooseLevel, closeOutcome, setResponsibility } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
@@ -180,6 +180,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await freeCard.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await closeMarketPanel(page, '영입 후보 상세');
+  await closeOutcome(page, '선수를 영입했어요');
   await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
   await closeMarketPanel(page, '영입 정보');
   const recruited = await exportWorld(page);
@@ -200,6 +201,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await loanCard.getByRole('button', { name: '1시즌 임대', exact: true }).click();
   await expect(loanCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await closeMarketPanel(page, '영입 후보 상세');
+  await closeOutcome(page, '선수를 영입했어요');
   await expect(await marketInfo(page)).toContainText('선수단 정원 22/40');
   await closeMarketPanel(page, '영입 정보');
   const borrowed = await exportWorld(page);
@@ -265,6 +267,7 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
     await expect(card.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
     await expect(card.getByRole('button', { name: '1시즌 임대', exact: true })).toBeDisabled();
     await closeMarketPanel(page, '영입 후보 상세');
+    await closeOutcome(page, '선수를 영입했어요');
   }
   await expect(await marketInfo(page)).toContainText('선수단 정원 40/40 · 자리가 가득 찼어요.');
   await closeMarketPanel(page, '영입 정보');
