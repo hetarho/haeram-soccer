@@ -4,6 +4,7 @@ import { activeMatchModel, type MatchModelRevision } from '../../../contracts/sr
 import { FORMATIONS, lineOf } from '../player';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
 import { prepareMatch, type Prepared } from '../match';
+import { HOST_MATH, PORTABLE_MATH } from '../portable-math';
 import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
 
@@ -226,7 +227,8 @@ export function buildGridSetup(
   },
 ): GridSetup {
   const model = opts.model ?? activeMatchModel(w);
-  const prepared = prepareMatch(w, f);
+  // The candidate's form and gap on the portable table, as `GridState.math` binds it (T358).
+  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH);
   const { ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);

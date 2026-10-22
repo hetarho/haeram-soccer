@@ -2,6 +2,7 @@
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { actionWeight, finishing, goalChance, targetChance } from '../match';
 import { FORMATIONS, lineOf } from '../player';
+import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES } from './baselines';
 import {
   attackFrame,
@@ -141,11 +142,14 @@ export const SHOT_CONFIG = {
   candidate: { header: 0.42 },
 } as const;
 
-const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
+const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
 const slotPosition = (s: GridState, gp: GridPlayer) =>
   FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]?.position;
 
-/** Chance quality of a shot from `p` (the shooter's attack frame): place, angle, kind and pressure. */
+/**
+ * Chance quality of a shot from `p` (the shooter's attack frame): place, angle, kind and pressure;
+ * `math` is the match's (`GridState.math`).
+ */
 export function chanceXg(
   p: Point,
   opts: {
@@ -155,11 +159,12 @@ export function chanceXg(
     freeKick?: boolean;
     candidate?: boolean;
   } = {},
+  math: MatchMath = HOST_MATH,
 ): number {
   const C = SHOT_CONFIG;
-  const z = C.a + C.b * goalDistance(p) + C.c * goalAngle(p);
+  const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);
   return (
-    sigmoid(z) *
+    sigmoid(z, math) *
     (opts.header ? (opts.candidate ? C.candidate.header : C.header) : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
@@ -195,30 +200,40 @@ export function shotContext(s: GridState): ShotContext {
     levelFactor: finishing(
       count ? strengthScaled(s, shooting / count) : 55,
       strengthScaled(s, keeping / 2),
+      s.math,
     ),
   };
 }
 
-/** Distance from `p` to the segment `a`→`b`, and where along it (0–1) the nearest point lies. */
-function toSegment(p: Point, a: Point, b: Point): { d: number; t: number } {
+/**
+ * Distance from `p` to the segment `a`→`b`, and where along it (0–1) the nearest point lies;
+ * `hypot` is the match's.
+ */
+function toSegment(
+  p: Point,
+  a: Point,
+  b: Point,
+  hypot: MatchMath['hypot'],
+): { d: number; t: number } {
   const dx = b[0] - a[0],
     dy = b[1] - a[1];
   const len2 = dx * dx + dy * dy;
   const t = len2 === 0 ? 0 : clamp(((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len2, 0, 1);
-  return { d: Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy)), t };
+  return { d: hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy)), t };
 }
 
 function nearestToSegment(s: GridState, side: 0 | 1, a: Point, b: Point) {
   let best: { gp: GridPlayer; d: number; t: number } | undefined;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
-    const q = toSegment(attackFrame(side, gp.pos), a, b);
+    const q = toSegment(attackFrame(side, gp.pos), a, b, s.math.hypot);
     if (!best || q.d < best.d) best = { gp, ...q };
   }
   return best;
 }
 
 function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
+  const { exp, hypot } = s.math;
   let risk = 0;
   const dx = b[0] - a[0],
     dy = b[1] - a[1];
@@ -228,7 +243,7 @@ function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
     if (!onPitch(gp)) continue;
     const o = attackFrame(side, gp.pos);
     const t = ((o[0] - a[0]) * dx + (o[1] - a[1]) * dy) / len2;
-    if (t > 0 && t < 1) risk += Math.exp(-toSegment(o, a, b).d / 2);
+    if (t > 0 && t < 1) risk += exp(-toSegment(o, a, b, hypot).d / 2);
   }
   return risk;
 }
@@ -238,6 +253,7 @@ function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
  * `receiver`, the player a failed pass did not reach, weighs `DUEL_CONFIG.pass.receiverLoose` of that.
  */
 export function looseWinner(s: GridState, at: Point, r: () => number, receiver?: Ref): Ref {
+  const { hypot } = s.math;
   const near: { ref: Ref; w: number }[] = [];
   const weight = (side: 0 | 1, idx: number, d: number) =>
     (receiver && receiver[0] === side && receiver[1] === idx ? DUEL_CONFIG.pass.receiverLoose : 1) /
@@ -248,7 +264,7 @@ export function looseWinner(s: GridState, at: Point, r: () => number, receiver?:
         .filter(onPitch)
         .map((gp) => ({
           ref: [side, gp.idx] as Ref,
-          d: Math.hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]),
+          d: hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]),
         }))
         .sort((a, b) => a.d - b.d)
         .slice(0, 2)
@@ -277,7 +293,7 @@ export function looseBall(
     d = Infinity;
   for (const gp of s.players[foe]) {
     if (!onPitch(gp)) continue;
-    const v = Math.hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]);
+    const v = s.math.hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]);
     if (v < d) [by, d] = [gp, v];
   }
   if (!by) return { kind: 'loose', at, winner };
@@ -318,7 +334,7 @@ export function resolvePass(
   const from = attackFrame(side, s.players[side][idx]!.pos);
   const receiver = s.players[side][target]!;
   const to = attackFrame(side, at ?? receiver.pos);
-  const dist = Math.hypot(to[0] - from[0], to[1] - from[1]);
+  const dist = s.math.hypot(to[0] - from[0], to[1] - from[1]);
   const keeper = slotPosition(s, s.players[side][idx]!) === 'GK';
   const long = kind === 'long' || kind === 'through' || kind === 'switch' || lineBreaking;
   const passer = keeper
@@ -387,18 +403,22 @@ export function resolveShot(
 ): ShotOutcome {
   const C = SHOT_CONFIG;
   const from = attackFrame(side, s.players[side][idx]!.pos);
-  const xg = chanceXg(from, {
-    ...opts,
-    pressure: tags.pressure,
-    candidate: onCandidate(s),
-  });
+  const xg = chanceXg(
+    from,
+    {
+      ...opts,
+      pressure: tags.pressure,
+      candidate: onCandidate(s),
+    },
+    s.math,
+  );
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
   const shooting =
     (hard ? 0.65 : 0.8) * main + (hard ? 0.35 : 0.2) * skill(s, side, idx, 'composure');
   const keeper =
     s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
-  const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'));
+  const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
   const onTarget = targetChance(goal, shooting);
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
@@ -415,7 +435,7 @@ export function resolveShot(
     near = Infinity;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp) || gp === keeper) continue;
-    const q = toSegment(attackFrame(side, gp.pos), from, end);
+    const q = toSegment(attackFrame(side, gp.pos), from, end, s.math.hypot);
     if (q.d <= C.block.lane) {
       lane++;
       if (q.d < near) [blocker, near] = [gp, q.d];
@@ -463,7 +483,8 @@ function headerTarget(
   if (!pool.length) return undefined;
   let top = -Infinity;
   for (const p of pool) top = Math.max(top, p.v);
-  const weights = pool.map((p) => Math.exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
+  const { exp } = s.math;
+  const weights = pool.map((p) => exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
   const total = weights.reduce((a, b) => a + b, 0);
   let u = r() * total;
   for (let i = 0; i < pool.length; i++) {
@@ -522,7 +543,7 @@ export function resolveCross(
   const at = attackFrame(side, attacker.pos);
   const defender = defenders.reduce<{ gp: GridPlayer; d: number } | undefined>((best, gp) => {
     const o = attackFrame(side, gp.pos);
-    const d = Math.hypot(o[0] - at[0], o[1] - at[1]);
+    const d = s.math.hypot(o[0] - at[0], o[1] - at[1]);
     return !best || d < best.d ? { gp, d } : best;
   }, undefined)?.gp;
   if (defender) {
@@ -562,7 +583,7 @@ function nearestOpponent(s: GridState, side: 0 | 1, at: Point): GridPlayer | und
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
     const o = attackFrame(side, gp.pos);
-    const v = Math.hypot(o[0] - at[0], o[1] - at[1]);
+    const v = s.math.hypot(o[0] - at[0], o[1] - at[1]);
     if (v < d) [best, d] = [gp, v];
   }
   return best;
@@ -604,7 +625,7 @@ export function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | un
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
     const o = attackFrame(side, gp.pos);
-    const v = Math.hypot(o[0] - c[0], o[1] - c[1]);
+    const v = s.math.hypot(o[0] - c[0], o[1] - c[1]);
     if (o[0] >= c[0] && v <= d) [best, d] = [gp, v];
   }
   return best;

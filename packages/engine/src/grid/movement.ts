@@ -2,8 +2,11 @@
  * Bounded movement on one match clock for the candidate match model (→MATCH-12, MATCH-17;
  * docs/MATCH-MODEL-CONTRACT.md "One match-time coordinate"): players accelerate, brake and turn
  * within limits up to their pace/fatigue speed, the ball flies at bounded speeds, and an action or a
- * restart lasts until its route is physically done. The pre-feature path keeps `moveAll`.
+ * restart lasts until its route is physically done. The pre-feature path keeps `moveAll`. Only the
+ * candidate moves this way, so its distances and turns use the portable `hypot`, `cos` and `sin`
+ * (→ARCH-9, T358): the same paths on every host.
  */
+import { cos, hypot, sin } from '../portable-math';
 import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
 import { clamp, PITCH } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
@@ -67,8 +70,8 @@ export interface Mover {
 
 const RAD = Math.PI / 180;
 const FULL_TURN = GRID_MOVEMENT_CONFIG.turn * RAD * GRID_MOVEMENT_CONFIG.step;
-const FULL_COS = Math.cos(FULL_TURN);
-const FULL_SIN = Math.sin(FULL_TURN);
+const FULL_COS = cos(FULL_TURN);
+const FULL_SIN = sin(FULL_TURN);
 
 /**
  * One step of `h` seconds toward `target`: the heading turns at most `turn`·h, speed changes by at
@@ -82,8 +85,8 @@ export function stepToward(m: Mover, target: readonly [number, number], vmax: nu
   if (v[0] === 0 && v[1] === 0 && m.pos[0] === target[0] && m.pos[1] === target[1]) return;
   const dx = target[0] - m.pos[0],
     dy = target[1] - m.pos[1];
-  const dist = Math.hypot(dx, dy);
-  const speed = Math.hypot(v[0], v[1]);
+  const dist = hypot(dx, dy);
+  const speed = hypot(v[0], v[1]);
   // Arrived: within reach of the point at a speed one whole step's braking stops.
   if (dist <= C.arrive && speed <= C.braking * C.step + 1e-9) {
     m.pos[0] = target[0];
@@ -101,10 +104,10 @@ export function stepToward(m: Mover, target: readonly [number, number], vmax: nu
       cy = v[1] / speed;
     const full = h === C.step;
     const turn = full ? FULL_TURN : C.turn * RAD * h;
-    const c = full ? FULL_COS : Math.cos(turn);
+    const c = full ? FULL_COS : cos(turn);
     if (cx * ux + cy * uy < c) {
       aligned = false;
-      const s = (cx * uy - cy * ux >= 0 ? 1 : -1) * (full ? FULL_SIN : Math.sin(turn));
+      const s = (cx * uy - cy * ux >= 0 ? 1 : -1) * (full ? FULL_SIN : sin(turn));
       hx = cx * c - cy * s;
       hy = cx * s + cy * c;
     }
@@ -132,7 +135,7 @@ export function stepToward(m: Mover, target: readonly [number, number], vmax: nu
 const at = (m: Mover, p: readonly [number, number]) =>
   m.pos[0] === p[0] &&
   m.pos[1] === p[1] &&
-  Math.hypot(m.vel?.[0] ?? 0, m.vel?.[1] ?? 0) <=
+  hypot(m.vel?.[0] ?? 0, m.vel?.[1] ?? 0) <=
     GRID_MOVEMENT_CONFIG.braking * GRID_MOVEMENT_CONFIG.step + 1e-9;
 
 /**
@@ -163,7 +166,7 @@ export function flightSeconds(
   speed: BallSpeed,
 ): number {
   const v = Math.min(GRID_BALL_CONFIG[speed], GRID_BALL_CONFIG.max);
-  return Math.hypot(to[0] - from[0], to[1] - from[1]) / v;
+  return hypot(to[0] - from[0], to[1] - from[1]) / v;
 }
 
 /**
@@ -282,7 +285,7 @@ export function prepareRestart(
   const start = s.elapsed;
   const gp = s.players[rs.side][taker]!;
   const spot: [number, number] = [rs.spot[0], rs.spot[1]];
-  const carried = Math.hypot(spot[0] - rest[0], spot[1] - rest[1]);
+  const carried = hypot(spot[0] - rest[0], spot[1] - rest[1]);
   const placed = carried / B.retrieval + B.placement;
   const plan = [{ gp, to: spot }, ...scene.filter((m) => m.gp !== gp)];
   let seconds = Math.max(rs.dead, placed);

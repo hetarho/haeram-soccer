@@ -2,6 +2,7 @@
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
+import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
 import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, PITCH, type Point } from './pitch';
@@ -61,6 +62,14 @@ export interface GridState {
   changes: [SideChanges, SideChanges];
   /** The match's level: the mean 실효 OVR of both starting XIs at kick-off. */
   level: number;
+  /**
+   * The transcendental functions this match's positions, distances and odds read, bound once at
+   * kick-off (→ARCH-5, ARCH-9, T358): the portable ones on the candidate model, so its facts are
+   * the same on every host, the host's `Math.*` on the pre-feature path, whose settled facts stay
+   * as they were. Code both models share reads them here; candidate-only code (`movement.ts`,
+   * `coordination.ts`) imports the portable ones itself.
+   */
+  math: MatchMath;
 }
 
 /** What a side has used of its changes and what is still owed at the next stoppage. */
@@ -213,6 +222,7 @@ export function createState(setup: GridSetup): GridState {
     score: [0, 0],
     possessionSince: 0,
     changes: [noChanges(), noChanges()],
+    math: setup.model === undefined ? HOST_MATH : PORTABLE_MATH,
   };
 }
 

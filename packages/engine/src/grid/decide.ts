@@ -3,6 +3,7 @@ import type { Position } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match';
+import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
 import {
   attackFrame,
@@ -274,8 +275,8 @@ export function actionMix(
       : C.shotLine[line]) *
     (candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
-    Math.exp(
-      -Math.max(0, goalDistance(c) - C.longShot.from) /
+    s.math.exp(
+      -Math.max(0, goalDistance(c, s.math) - C.longShot.from) /
         (candidate ? C.candidate.longShotScale : C.longShot.scale),
     );
   // Role and traits.
@@ -327,13 +328,15 @@ export function actionMix(
     if (tags.band === 5) mix.shot *= C.pocket.shotBand5;
   }
   if (tags.lead > 0)
-    mix.shot *=
-      (candidate ? C.candidate.leadingShot : C.leading.shot) **
-      Math.min(C.leading.maxLead, tags.lead);
+    mix.shot *= s.math.powInt(
+      candidate ? C.candidate.leadingShot : C.leading.shot,
+      Math.min(C.leading.maxLead, tags.lead),
+    );
   if (tags.lead < 0)
-    mix.shot *=
-      (candidate ? C.candidate.trailingPush : C.trailing.push) **
-      Math.min(C.leading.maxLead, -tags.lead);
+    mix.shot *= s.math.powInt(
+      candidate ? C.candidate.trailingPush : C.trailing.push,
+      Math.min(C.leading.maxLead, -tags.lead),
+    );
   if (tags.lead > 0 && tags.minute >= C.leading.minute) {
     mix.takeOn *= C.leading.takeOn;
     if (tags.band <= 2) mix.clearance *= C.leading.clearance;
@@ -390,12 +393,12 @@ export function temperature(s: GridState, side: 0 | 1, idx: number, tags: Tags):
 
 /** Pressure at a point of the attack frame: goal-side opponents weigh double. */
 function pressureAt(s: GridState, side: 0 | 1, p: Point): number {
+  const { hypot } = s.math;
   let sum = 0;
   for (const opp of s.players[other(side)]) {
     if (!onPitch(opp)) continue;
     const o = attackFrame(side, opp.pos);
-    if (Math.hypot(o[0] - p[0], o[1] - p[1]) <= TAG_CONFIG.pressureRadius)
-      sum += o[0] > p[0] ? 1 : 0.5;
+    if (hypot(o[0] - p[0], o[1] - p[1]) <= TAG_CONFIG.pressureRadius) sum += o[0] > p[0] ? 1 : 0.5;
   }
   return sum;
 }
@@ -432,6 +435,7 @@ export function passOptions(
   } = {},
 ): PassOption[] {
   const P = DECISION_CONFIG.pass;
+  const { atan2, exp, hypot } = s.math;
   const foe = other(side);
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
@@ -448,10 +452,10 @@ export function passOptions(
   for (const gp of s.players[side]) {
     if (gp.idx === idx || !onPitch(gp) || (opts.filter && !opts.filter(gp))) continue;
     const p = attackFrame(side, gp.pos);
-    const dist = Math.hypot(p[0] - c[0], p[1] - c[1]);
+    const dist = hypot(p[0] - c[0], p[1] - c[1]);
     if (dist > reach || dist < 1e-9) continue;
     if (opts.crossOnly && !inBox(p)) continue;
-    const angle = Math.abs(Math.atan2(p[1] - c[1], p[0] - c[0])) / DEG;
+    const angle = Math.abs(atan2(p[1] - c[1], p[0] - c[0])) / DEG;
     candidates.push({
       gp,
       p,
@@ -475,8 +479,9 @@ export function passOptions(
     const dx = p[0] - c[0],
       dy = p[1] - c[1];
     for (const o of opponents) {
-      // The distance is at least either offset: a man further off on one axis leaves `nearest` as it
-      // is. An offset that is not a number still reaches Math.min, which makes `nearest` NaN as before.
+      // The distance is at least either offset (with V8's and the portable hypot alike): a man
+      // further off on one axis leaves `nearest` as it is. An offset that is not a number still
+      // reaches Math.min, which makes `nearest` NaN as before.
       const ox = o[0] - p[0],
         oy = o[1] - p[1];
       if (
@@ -484,10 +489,9 @@ export function passOptions(
         Number.isNaN(ox) ||
         Number.isNaN(oy)
       )
-        nearest = Math.min(nearest, Math.hypot(ox, oy));
+        nearest = Math.min(nearest, hypot(ox, oy));
       const t = ((o[0] - c[0]) * dx + (o[1] - c[1]) * dy) / (dist * dist);
-      if (t > 0 && t < 1)
-        risk += Math.exp(-Math.hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
+      if (t > 0 && t < 1) risk += exp(-hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
     }
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
@@ -546,8 +550,9 @@ export function throughPoint(
   const gp = s.players[side][target]!;
   const feet: [number, number] = [gp.pos[0], gp.pos[1]];
   if (T.depth - offsideLine(s, other(side)) < T.space) return feet;
+  const { hypot } = s.math;
   const v = gp.vel ?? [0, 0];
-  const speed = Math.hypot(v[0], v[1]);
+  const speed = hypot(v[0], v[1]);
   let dx = (side === 0 ? v[0] : -v[0]) / (speed || 1),
     dy = (side === 0 ? v[1] : -v[1]) / (speed || 1);
   if (dx <= 0) [dx, dy] = [1, 0];
@@ -555,7 +560,7 @@ export function throughPoint(
   const c = attackFrame(side, s.players[side][passer]!.pos);
   const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * T.lead);
   const q: Point = [x, clamp(p[1] + (dy * (x - p[0])) / dx, 0.5, PITCH.width - 0.5)];
-  const further = Math.hypot(q[0] - c[0], q[1] - c[1]) > Math.hypot(p[0] - c[0], p[1] - c[1]);
+  const further = hypot(q[0] - c[0], q[1] - c[1]) > hypot(p[0] - c[0], p[1] - c[1]);
   return further ? toEngine(side, q) : feet;
 }
 
@@ -575,13 +580,18 @@ function lineDepth(
   return deepest;
 }
 
-/** The probabilities `choosePass` draws from, aligned with the options. */
-export function passProbabilities(options: readonly PassOption[], tau: number): number[] {
+/** The probabilities `choosePass` draws from, aligned with the options; `math` is the match's. */
+export function passProbabilities(
+  options: readonly PassOption[],
+  tau: number,
+  math: MatchMath = HOST_MATH,
+): number[] {
   if (!options.length) return [];
   // Math.max folded over the scores: the same value as spreading them, without the copies.
   let top = -Infinity;
   for (const o of options) top = Math.max(top, o.score);
-  const weights = options.map((o) => o.prior * Math.exp((o.score - top) / tau));
+  const { exp } = math;
+  const weights = options.map((o) => o.prior * exp((o.score - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   return total > 0 ? weights.map((w) => w / total) : options.map(() => 1 / options.length);
 }
@@ -606,7 +616,11 @@ export function choosePass(
 ): { target: number; kind: NonNullable<Decision['kind']>; lineBreaking: boolean } | undefined {
   const options = passOptions(s, side, idx, tags, opts);
   if (!options.length) return undefined;
-  const chosen = draw(options, passProbabilities(options, temperature(s, side, idx, tags)), r);
+  const chosen = draw(
+    options,
+    passProbabilities(options, temperature(s, side, idx, tags), s.math),
+    r,
+  );
   return { target: chosen.target, kind: chosen.kind, lineBreaking: chosen.lineBreaking };
 }
 
@@ -619,17 +633,18 @@ export function chooseCarry(
   r: () => number,
 ): [number, number] {
   const K = DECISION_CONFIG.carry;
+  const { atan2, cos, exp, sin } = s.math;
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
-  const toGoal = Math.atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
+  const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
   const [base, spread] = inBox(c) ? K.boxLength : K.length;
   const length = base + spread * r();
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
   const ends = K.headings.map((deg): Point => {
     const a = toGoal + deg * DEG;
     return [
-      clamp(c[0] + length * Math.cos(a), K.margin, PITCH.length - K.margin),
-      clamp(c[1] + length * Math.sin(a), K.margin, PITCH.width - K.margin),
+      clamp(c[0] + length * cos(a), K.margin, PITCH.length - K.margin),
+      clamp(c[1] + length * sin(a), K.margin, PITCH.width - K.margin),
     ];
   });
   const scores = ends.map(
@@ -638,7 +653,7 @@ export function chooseCarry(
   const tau = temperature(s, side, idx, tags);
   let top = -Infinity;
   for (const v of scores) top = Math.max(top, v);
-  const weights = scores.map((v) => Math.exp((v - top) / tau));
+  const weights = scores.map((v) => exp((v - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   const end = draw(
     ends,
@@ -683,7 +698,11 @@ export function keeperDistribution(
   const kind: 'short' | 'long' = wantShort ? 'short' : 'long';
   if (!options.length) options = passOptions(s, side, idx, tags);
   if (!options.length) return { target: idx === 0 ? 1 : 0, kind };
-  const chosen = draw(options, passProbabilities(options, temperature(s, side, idx, tags)), r);
+  const chosen = draw(
+    options,
+    passProbabilities(options, temperature(s, side, idx, tags), s.math),
+    r,
+  );
   return { target: chosen.target, kind };
 }
 
