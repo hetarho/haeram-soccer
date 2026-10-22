@@ -76,7 +76,7 @@ export const COORDINATION_CONFIG = {
   transition: { seconds: 8, odds: { counter: 2.5 } as Partial<Record<Tactic, number>> },
   /**
    * Outside a break, with the ball from band `from` on (past halfway), a listed side's outfielders
-   * start their runs `odds` times as often (T356, T357, T360, →MATCH-8): possession's patient
+   * start their runs `odds` times as often (T356, T357, T365, →MATCH-8): possession's patient
    * build-up still sends runners in behind and into the box once it is in the other half, while
    * its own half keeps the short options that hold press's high regains back.
    */
@@ -472,7 +472,7 @@ function attack(
       : 1;
   const ctx = runContext(s, side);
   if (ctx.band < 3 && breaking === 1) return;
-  // Settled play past halfway: the side's listed odds for its outfielders' runs (T360).
+  // Settled play past halfway: the side's listed odds for its outfielders' runs (T365).
   const SR = CC.settledRuns;
   const settled = breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
   const plans = mates.flatMap((gp) => {

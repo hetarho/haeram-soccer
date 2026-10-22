@@ -53,7 +53,7 @@ const facts = (w: World) => ({
  * 554eb98852d175c8 before) and T348's (the defending scene keeps its marks, zones and goal after a
  * delivery's kick; 41061a91531de1d7 before). T358's portable grid math (the candidate's `exp`,
  * `sin`, `cos`, `atan2`, `hypot` and integer powers built from IEEE basic operations) left both
- * digests unchanged on darwin-arm64. T360's side share (a side's skills keep 0.8 of its distance
+ * digests unchanged on darwin-arm64. T365's side share (a side's skills keep 0.8 of its distance
  * from the match's level) and possession's runs ×2.5 past halfway changed the candidate rounds
  * (aggregate records unchanged), re-recorded with its calibration artifact; c1b53321ff63cd81
  * before.

@@ -67,7 +67,7 @@ export interface GridState {
   /**
    * Per side, the rating points of its distance from the level (its XI's mean 실효 OVR plus the
    * day's shift, minus the level) its players' skills leave out: `1 − STRENGTH_CONFIG.candidate.side`
-   * of it on the candidate model, 0 on the pre-feature one (T357, T360).
+   * of it on the candidate model, 0 on the pre-feature one (T357, T365).
    */
   pull: [number, number];
   /**
@@ -225,7 +225,7 @@ export function createState(setup: GridSetup): GridState {
   const matchLevel = starters ? level / starters : 60;
   const C = STRENGTH_CONFIG;
   const candidate = setup.model !== undefined;
-  // T357/T360: the share of each side's distance from the level (its XI's mean plus the day's
+  // T357/T365: the share of each side's distance from the level (its XI's mean plus the day's
   // shift) its skills leave out, on the candidate model only; basic arithmetic, so the same on
   // every host (→ARCH-9).
   const leave = candidate ? 1 - C.candidate.side : 0;
@@ -270,7 +270,7 @@ export const STRENGTH_CONFIG = {
   skillScale: 1.8,
   anchor: 76,
   /**
-   * Candidate model only (T357, T360, →MATCH-2): its own `skillScale`, and the share of a side's
+   * Candidate model only (T357, T365, →MATCH-2): its own `skillScale`, and the share of a side's
    * distance from the match's level — its XI's mean 실효 OVR plus the day's shift (form, home,
    * manager and morale points and the gap diminishing returns take away) — that reaches its
    * players' skills (`side`). At 1, as on the pre-feature model, favourites won 4–7 points too

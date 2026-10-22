@@ -269,7 +269,7 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
     let periods = 0;
     // A knockout tie level after 90 minutes: `candidate-et-2` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
-    // `candidate-et-4`, T360's side share and possession runs `candidate-et-7`).
+    // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`).
     for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-2']) {
       const extraTime = id === 'candidate-et-2';
       const { result, frames } =
@@ -422,7 +422,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
   });
 
   it('defensive placement is not discarded before its job ends', () => {
-    // T360: `candidate-1` no longer completes a delivery against a full set of six jobs since the
+    // T365: `candidate-1` no longer completes a delivery against a full set of six jobs since the
     // side share and possession's runs, so the check reads `set-piece-2`.
     const played = match('set-piece-2');
     const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);

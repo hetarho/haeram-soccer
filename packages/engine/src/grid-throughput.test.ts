@@ -67,7 +67,7 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
  * decided on penalties (observed), and the pre-feature path for one league fixture. The knockout
  * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state, for
- * T348's set-piece defence and for T360's side share and possession runs, the first tie of each
+ * T348's set-piece defence and for T365's side share and possession runs, the first tie of each
  * kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10, 16/3 and 9/0).
  */
 const CASES = {
@@ -89,7 +89,7 @@ interface CandidateDigests {
  * state, T348's set-piece defence and T358's portable math moved facts or positions; T359's kick
  * snapshot moved positions only (1975 4d7573d60f7b864e and e4f41e13f37075d2 before it, 2024
  * c4a8a6a41c12516a and f9ca7911fa173494; T358 then moved 1995's 1c57051abec6e044 and
- * e42847d0748465d3 and 2024's shoot-out ee0eb1581ac782b3). T360's side share (0.8) and
+ * e42847d0748465d3 and 2024's shoot-out ee0eb1581ac782b3). T365's side share (0.8) and
  * possession's runs past halfway moved every value and the knockout ties (rescanned above); before
  * it, facts 1975 0a392030070b2389, bb531ef4fe2b9601, c16f0a0a7ed7b58a, 1995 915080a3feadc4f8,
  * 5bd3095cb95f88cc, fd24b6f51440b87c, 2024 f46d1dbd025b49b0, 931d04258f444c80, 12dbc52079c43f4f
