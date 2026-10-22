@@ -670,9 +670,14 @@ export function playGrid(setup: GridSetup): GridResult {
           tally.restartPass(rs.side, res.taker, rs.spot, res);
         if (res.outcome.kind === 'shot' && res.outcome.shooter === undefined)
           res.outcome.shooter = res.taker;
+        const kicked = s.owner;
         apply(rs.side, res.taker, res.outcome);
-        // Everyone reacts to the kick as it is played, before anyone moves (→MATCH-17).
-        if (candidate) updateIntentions(s);
+        // Everyone reacts to the kick as it is played, before anyone moves (→MATCH-17). A delivery
+        // (a corner, a free kick crossed) whose outcome handed the ball to nobody (a header
+        // resolved at the kick, a ball out, a foul; `setOwner` always writes a new pair) leaves its
+        // taker no carrier while it is in the air (T373).
+        const delivery = rs.kind === 'corner' || res.kind === 'cross';
+        if (candidate) updateIntentions(s, delivery && s.owner === kicked);
         const motion = candidate
           ? motionOf(
               actor,
