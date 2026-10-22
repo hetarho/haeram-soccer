@@ -8,7 +8,9 @@ import type { Position, RoleId } from '../packages/contracts/src/player';
 import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
+import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
+import { STRENGTH_CONFIG } from '../packages/engine/src/grid/state';
 
 export type SlotSpec = readonly [Position, RoleId];
 const BASE: SlotSpec[] = [
@@ -97,6 +99,9 @@ export interface BehaviourPatch {
   shape?: object;
   coordination?: object;
   changes?: object;
+  strength?: object;
+  duel?: object;
+  shot?: object;
 }
 
 const settled = (
@@ -197,7 +202,28 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // forwards and wingers. They were measured at 35e0f9e–d68e955 through a neutral
   // `COORDINATION_CONFIG.settledRuns` hook (`possRuns16` = `{ coordination: { settledRuns: { odds:
   // { possession: 1.6 } } } }`, `possRunsHalf25` adds `from: 4`, `possRunsFw25` `lines: ['FW']`),
-  // since removed: none was kept.
+  // since removed: none was kept. T357 re-adds the hook to pair the guarded runs with its curve
+  // levers.
+  possRunsHalf25: {
+    coordination: { settledRuns: { odds: { possession: 2.5 }, from: 4 } },
+  },
+  // T357 strength-gradient levers on the candidate model (neutral values in the shared configs):
+  // (a) the share of a side's distance from the match's level (XI, form, home, manager, morale,
+  // diminishing returns) that reaches its players' skills at every stage; (b) the same only where
+  // a pass is completed (passer against marker) or (c) only where a shot is converted (shooter
+  // against keeper); (d) the candidate's own skill scale, which also narrows the spread within a
+  // side; (e) a stronger score state for draws at small gaps.
+  side85: { strength: { candidate: { side: 0.85 } } },
+  side80: { strength: { candidate: { side: 0.8 } } },
+  side75: { strength: { candidate: { side: 0.75 } } },
+  side70: { strength: { candidate: { side: 0.7 } } },
+  passSide50: { duel: { candidate: { passSide: 0.5 } } },
+  passSide0: { duel: { candidate: { passSide: 0 } } },
+  shotSide50: { shot: { candidate: { side: 0.5 } } },
+  shotSide0: { shot: { candidate: { side: 0 } } },
+  scale16: { strength: { candidate: { skillScale: 1.6 } } },
+  scale15: { strength: { candidate: { skillScale: 1.5 } } },
+  scoreFx2: { decide: { candidate: { leadingShot: 0.45, trailingPush: 1.8 } } },
 };
 
 function possession(p: object): BehaviourPatch {
@@ -224,6 +250,9 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     shape: SHAPE_CONFIG,
     coordination: COORDINATION_CONFIG,
     changes: CHANGES_CONFIG,
+    strength: STRENGTH_CONFIG,
+    duel: DUEL_CONFIG,
+    shot: SHOT_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(

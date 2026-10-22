@@ -61,6 +61,18 @@ export interface GridState {
   changes: [SideChanges, SideChanges];
   /** The match's level: the mean 실효 OVR of both starting XIs at kick-off. */
   level: number;
+  /** The duels' skill scale on this fixture's model (`STRENGTH_CONFIG`, T357). */
+  scale: number;
+  /**
+   * Per side, its distance from the level in rating points at kick-off: its XI's mean 실효 OVR
+   * plus the day's shift, minus the level (T357).
+   */
+  distance: [number, number];
+  /**
+   * Per side, the points of its distance from the level its players' skills leave out: 0 on the
+   * pre-feature model and at the candidate's neutral `side` (T357).
+   */
+  pull: [number, number];
 }
 
 /** What a side has used of its changes and what is still owed at the next stoppage. */
@@ -191,19 +203,40 @@ export function createState(setup: GridSetup): GridState {
   );
   let level = 0,
     starters = 0;
+  const sideSum = [0, 0],
+    sideCount = [0, 0];
   for (const side of [0, 1] as const)
     for (const gp of players[side].slice(0, 11)) {
-      level += slotOvr(
+      const ovr = slotOvr(
         gp.player,
         FORMATIONS[setup.tactics[side]].slots[gp.slot]!,
         setup.multiplier[side](gp.player),
       );
+      level += ovr;
       starters++;
+      sideSum[side] += ovr;
+      sideCount[side]++;
     }
+  const matchLevel = starters ? level / starters : 60;
+  const C = STRENGTH_CONFIG;
+  const candidate = setup.model !== undefined;
+  // T357: each side's distance from the level (its XI's mean plus the day's shift), and the share
+  // of it its skills leave out on the candidate model.
+  const distance = [0, 1].map(
+    (side) =>
+      (sideCount[side]! ? sideSum[side]! / sideCount[side]! : matchLevel) +
+      setup.shift[side as 0 | 1] -
+      matchLevel,
+  ) as [number, number];
+  const leave = candidate ? 1 - C.candidate.side : 0;
+  const pull = distance.map((d) => (leave === 0 ? 0 : leave * d)) as [number, number];
   return {
     setup,
     players,
-    level: starters ? level / starters : 60,
+    level: matchLevel,
+    scale: candidate ? C.candidate.skillScale : C.skillScale,
+    distance,
+    pull,
     ball: [PITCH.length / 2, PITCH.width / 2],
     owner: [0, taker],
     possession: 0,
@@ -226,11 +259,21 @@ export function minutesOn(s: GridState, gp: GridPlayer): number {
  * match's level, spread by `skillScale` around `anchor` — the level T215 set the distributions at — so a
  * strength gap plays the same at every tier.
  */
-export const STRENGTH_CONFIG = { skillScale: 1.8, anchor: 76 } as const;
+export const STRENGTH_CONFIG = {
+  skillScale: 1.8,
+  anchor: 76,
+  /**
+   * Candidate model only (T357): its own `skillScale`, and the share of a side's distance from the
+   * match's level — its XI's mean 실효 OVR plus the day's shift (form, home, manager and morale
+   * points and the gap diminishing returns take away, →MATCH-2) — that reaches its players' skills
+   * (`side`; 1 is all of it, as on the pre-feature model).
+   */
+  candidate: { skillScale: 1.8, side: 1 },
+} as const;
 
 /** A raw skill value on the duels' scale. */
 export const strengthScaled = (s: GridState, raw: number) =>
-  STRENGTH_CONFIG.anchor + (raw - s.level) * STRENGTH_CONFIG.skillScale;
+  STRENGTH_CONFIG.anchor + (raw - s.level) * s.scale;
 
 /** Each attribute's index in `ATTRIBUTES` (and so in `GridPlayer.base`). */
 const ATTRIBUTE_INDEX = Object.fromEntries(ATTRIBUTES.map((a, i) => [a, i])) as Record<
@@ -249,7 +292,7 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
     90;
   return strengthScaled(
     s,
-    gp.base[ATTRIBUTE_INDEX[a]]! + setup.shift[side] - rate * minutesOn(s, gp),
+    gp.base[ATTRIBUTE_INDEX[a]]! + setup.shift[side] - rate * minutesOn(s, gp) - s.pull[side],
   );
 }
 

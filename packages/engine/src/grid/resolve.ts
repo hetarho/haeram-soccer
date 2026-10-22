@@ -109,10 +109,16 @@ export const DUEL_CONFIG = {
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
    */
-  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5 },
+  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5, passSide: 1 },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
 const onCandidate = (s: GridState) => s.setup.model !== undefined;
+/**
+ * T357 probe: the skill points a stage takes off a side's players when it keeps only `keep` of
+ * the side's distance from the level that still reaches its skills (0 at the neutral `keep` 1).
+ */
+const stageOff = (s: GridState, side: 0 | 1, keep: number) =>
+  keep === 1 ? 0 : (1 - keep) * s.scale * (s.distance[side] - s.pull[side]);
 /** How much more often a challenge is a foul on this fixture's model. */
 const foulScale = (s: GridState) => (onCandidate(s) ? DUEL_CONFIG.candidate.foul : 1);
 
@@ -138,7 +144,7 @@ export const SHOT_CONFIG = {
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
   /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
-  candidate: { header: 0.42 },
+  candidate: { header: 0.42, side: 1 },
 } as const;
 
 const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
@@ -321,13 +327,17 @@ export function resolvePass(
   const dist = Math.hypot(to[0] - from[0], to[1] - from[1]);
   const keeper = slotPosition(s, s.players[side][idx]!) === 'GK';
   const long = kind === 'long' || kind === 'through' || kind === 'switch' || lineBreaking;
-  const passer = keeper
-    ? skill(s, side, idx, 'distribution')
-    : long
-      ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
-      : skill(s, side, idx, 'passing');
+  const keep = onCandidate(s) ? DUEL_CONFIG.candidate.passSide : 1;
+  const passer =
+    (keeper
+      ? skill(s, side, idx, 'distribution')
+      : long
+        ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
+        : skill(s, side, idx, 'passing')) - stageOff(s, side, keep);
   const marker = nearestToSegment(s, side, from, to);
-  const markerSkill = marker ? skill(s, other(side), marker.gp.idx, 'positioning') : 60;
+  const markerSkill = marker
+    ? skill(s, other(side), marker.gp.idx, 'positioning') - stageOff(s, other(side), keep)
+    : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
@@ -394,11 +404,18 @@ export function resolveShot(
   });
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
+  const keep = onCandidate(s) ? C.candidate.side : 1;
   const shooting =
-    (hard ? 0.65 : 0.8) * main + (hard ? 0.35 : 0.2) * skill(s, side, idx, 'composure');
+    (hard ? 0.65 : 0.8) * main +
+    (hard ? 0.35 : 0.2) * skill(s, side, idx, 'composure') -
+    stageOff(s, side, keep);
   const keeper =
     s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
-  const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'));
+  const goal = goalChance(
+    xg,
+    shooting,
+    skill(s, other(side), keeper.idx, 'reflexes') - stageOff(s, other(side), keep),
+  );
   const onTarget = targetChance(goal, shooting);
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
