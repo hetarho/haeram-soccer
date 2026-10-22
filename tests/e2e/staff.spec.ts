@@ -161,7 +161,13 @@ test.describe('사람 at 360x740', () => {
     // Whom the staff would appoint today: a gegenpress manager, or why nobody.
     await expect(pick).toContainText(/게겐프레싱|감독 기조에 맞는 감독이 없어/);
     expect(await horizontalOverflow(page)).toBe(0);
+  });
 
+  // Split from the journey above, which ran close to its 30 s limit on a loaded host.
+  test('older 감독 and squad addresses land on their 사람 tabs', async ({ page }) => {
+    await found(page);
+    await chooseLevel(page, 2);
+    await setResponsibility(page, '스폰서 계약', 'delegated');
     // An old address of the candidates tab opens 감독 with the market open.
     await page.goto('/manager?view=candidates');
     await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');

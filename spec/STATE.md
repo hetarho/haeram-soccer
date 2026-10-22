@@ -232,6 +232,7 @@
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
 - 261022 T334 integrated (k2r7; explore exit, review approved with record fixes): counter keeps going forward or long once its break has passed, line floor 24; artifact refreshed (fingerprint b1633820); create-task T336 for the overshoot, T323 and T286 wait for it
 - 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
 - 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T334
@@ -251,4 +252,3 @@
 - 261022 create-task T328 (explore): counter role-table variants against press under MATCH-29, evidence for a STAFF-22/MATCH-8 update; T327 also counts possession by pass share; T323 and T286 wait for T328
 - 261022 update-ssot MATCH r19: MATCH-3 possession is the share of attempted passes (from T324's decision request)
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r19, which T327 implements first
-- 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r18 changes MATCH-13's PPDA and high turnover, which T327 implements first
