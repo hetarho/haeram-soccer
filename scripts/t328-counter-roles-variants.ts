@@ -60,6 +60,37 @@ export const VARIANTS: Record<string, SlotSpec[]> = {
   }),
 };
 
+const POSSESSION_BASE: SlotSpec[] = [
+  ['GK', 'sweeperKeeper'],
+  ['LB', 'invertedFullBack'],
+  ['CB', 'ballPlayingDefender'],
+  ['CB', 'coverDefender'],
+  ['RB', 'overlappingFullBack'],
+  ['DM', 'anchor'],
+  ['CM', 'mezzala'],
+  ['CM', 'deepLyingPlaymaker'],
+  ['LW', 'invertedWinger'],
+  ['ST', 'falseNine'],
+  ['RW', 'traditionalWinger'],
+];
+const swapPossession = (changes: Record<number, SlotSpec>): SlotSpec[] =>
+  POSSESSION_BASE.map((s, i) => changes[i] ?? s);
+/**
+ * T356 lever (c): possession 4-3-3 role tables from PLAYER-5's roles (`--possession <name>`), slot
+ * order as STAFF-22. Measured only: STAFF-22 names possession's slots, so a kept table is an SSOT
+ * change.
+ */
+export const POSSESSION_VARIANTS: Record<string, SlotSpec[]> = {
+  base: POSSESSION_BASE,
+  // A striker who stays up and shoots instead of the false nine who drops.
+  completeForward: swapPossession({ 9: ['ST', 'completeForward'] }),
+  poacher: swapPossession({ 9: ['ST', 'poacher'] }),
+  // The right winger cutting inside to shoot like the left.
+  insideRight: swapPossession({ 10: ['RW', 'invertedWinger'] }),
+  // An overlapping left back instead of the inverted full-back (MATCH-8 names the inverted one).
+  overlapLeft: swapPossession({ 1: ['LB', 'overlappingFullBack'] }),
+};
+
 /** A deep patch of the candidate configs, keyed by config. */
 export interface BehaviourPatch {
   decide?: object;

@@ -46,7 +46,12 @@ import {
   type MatchSample,
   type Partition,
 } from './lib/match-parity';
-import { applyBehaviour, behaviourOf, VARIANTS } from './t328-counter-roles-variants';
+import {
+  applyBehaviour,
+  behaviourOf,
+  POSSESSION_VARIANTS,
+  VARIANTS,
+} from './t328-counter-roles-variants';
 
 const args = process.argv.slice(2);
 const opt = (name: string, fallback: string) => {
@@ -59,6 +64,14 @@ const spec = VARIANTS[variant];
 if (!spec) throw new Error(`unknown variant ${variant}`);
 // The measurement's role map for counter: swapped in before anything reads the table.
 (FORMATIONS.counter as { slots: unknown }).slots = spec.map(([position, role]) => ({
+  position,
+  role,
+}));
+// T356: the measurement's role map for possession's 4-3-3, swapped in the same way.
+const possessionTable = opt('possession', 'base');
+const possessionSpec = POSSESSION_VARIANTS[possessionTable];
+if (!possessionSpec) throw new Error(`unknown possession table ${possessionTable}`);
+(FORMATIONS.possession as { slots: unknown }).slots = possessionSpec.map(([position, role]) => ({
   position,
   role,
 }));
@@ -334,6 +347,7 @@ if (args.includes('--child')) {
     JSON.stringify({
       variant,
       slots: spec,
+      possession: possessionTable,
       behaviour,
       patch,
       set,
