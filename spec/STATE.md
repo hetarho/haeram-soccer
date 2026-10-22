@@ -188,7 +188,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 124 | 124 | - | 0 |
+| WEB | 125 | 125 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -209,7 +209,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 | todo |
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T334 | doing@261022.k2r7 |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
@@ -218,8 +218,9 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T348 | Keep defenders responding through corners and delivered free kicks | MATCH ARCH | T325 T345 | todo |
+| T348 | Correct the measured set-piece placement and release lifecycle | MATCH ARCH | T325 T345 | todo |
 | T349 | Hold recorded goals briefly with a GOAL cue and scoreboard emphasis | MATCH WEB ARCH | - | todo |
+| T350 | Show the controlling team and recorded ball carrier during normal observation | MATCH WEB ARCH | T349 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -232,11 +233,14 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- implement-task T349 independently for goal feedback. k2r7: finish T325 and T336 → T345 → T348 (set-piece defence) → T323 → T326 → T286 → T306–T308; T286 also requires T349. T327/T328/T334/T335 are on main.
+- implement-task T349 → T350 for goal feedback and ball ownership. k2r7: finish T325 and T336 → T345 → T348 (measured set-piece lifecycle) → T323 → T326 → T286 → T306–T308; T286 also requires T349/T350. T327/T328/T334/T335 are on main.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 measured planning verified (g8s2): retained full-match reproducer matches all 8 runs/89 corner readings exactly; retained stage reproducer matches coordinates/jobs exactly; spec lint passes with existing stale/status warnings; no product code or push.
+- 261022 ideation/create-task measured follow-up (g8s2): 8 matches/89 corners plus isolated placement→moveAll probe replace the unverified stationary-defence diagnosis in T348; WEB r125/WEB-95 adds T350 normal-view team/carrier cues after T349, required by T286. Evidence and runnable probes retained in docs/benchmarks/set-piece-motion-261022.*.
+- 261022 ideation set-piece-defence-and-goal-feedback resumed: measure actual team movement before correcting the task; update-ssot WEB/create-task for ball ownership.
 - 261022 planning verified (g8s2): spec lint passes (11 remaining tasks; stale-base/status warnings retained), git diff --check clean; documentation only, no game implementation or push.
 - 261022 create-task MATCH WEB: T348 defensive set-piece response after T325/T345, T349 independent goal feedback; todo T323/T286 refreshed to MATCH r20 WEB r124 with follow-up dependencies; ideation converted.
 - 261022 create-task MATCH WEB start (g8s2): consume MATCH-12/18 and WEB-32/94 deltas without changing doing tasks.
@@ -254,6 +258,3 @@
 - 261022 sync: main fast-forwarded to d8411fa1 and the local stash restored; preserve remote engine work and renumber UI tasks T337–T344. Owner authorized omitting remaining long checks; completed 1,812 unit cases (4 existing skips), 39 contract cases, static/resource checks and build. Chromium stopped after 147 passes with five failures in recovery-button reachability and grain request accounting; recovery export moved into its alert and grain excluded from facility-scene accounting, then all five regressions passed with typecheck, focused lint/format and a rebuilt preview. Full remaining journeys/CI wait omitted by owner authorization.
 - 261022 sync start: preserve the local presentation batch in stash, fast-forward main, merge upstream journey fixes and renumber local UI tasks T337–T344 to avoid remote task collisions.
 - 261022 fix presentation: square mobile bottom sheets and underlined bottom-navigation controls; desktop dialogs retain 18px and standard controls 8px. CSS format/build and actual 390/1380px inspection pass; no overflow/page errors. No commit/push.
-- 261022 T344 done: centralized root theme styling, 174 semantic corner replacements and restrained standard radii/pressed feedback; pixel/layout/green/grain retained. 62 unit cases and static/build checks pass; actual desktop/mobile UI inspected; no commit/push.
-- 261022 T344 start: WEB r121 adds restrained modern standard corners; centralize neutral token defaults and shared root styling instead of per-component theme class branches.
-- 261022 T343 done: deeper standard surfaces and shared static UI grain (160px PNG, 24KB); pixel untouched, texture contrast >=4.69:1. Local rendering comparison, mobile/desktop inspection, 24 unit cases and static/build/resource checks complete; no commit/push.

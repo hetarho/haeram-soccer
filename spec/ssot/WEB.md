@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r124 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r125 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -460,6 +460,11 @@
   - While the document is hidden, cue time does not run. On returning, an unfinished cue completes its remaining visible hold before running playback resumes under →WEB-32.
   - The GOAL cue and restrained scoreboard pulse remain readable in every theme and at phone widths without covering match controls. Reduced motion uses a static label and score emphasis for the same hold, with no flashing or animated celebration (→WEB-46). Feedback uses only the retained event detail available under →WEB-23.
 
+- WEB-95 [o] Normal match observation identifies the side currently controlling the ball next to the scoreboard and marks the recorded ball carrier on the pitch, without opening player inspection or match details.
+  - The team cue combines a readable 볼 소유 label with team emphasis; the carrier has a distinct outline or marker that does not obscure his number or the ball. Team colours alone do not convey possession (→WEB-49/50).
+  - Read ownership at the currently presented instant from recorded player/side facts. A pass or shot in flight can retain a team cue only when the recorded action establishes that side; it has no carrier marker. A loose/contested ball, restart preparation or missing historical information uses the appropriate neutral state instead of guessing from proximity, the next receiver or the minute's leading action.
+  - Turnovers, seeks, goal holds and playback replacement update or clear both cues together with the presented clock (→WEB-23/32/94). Both themes, phone widths and reduced motion retain the same readable information; this feedback never changes football or saved facts.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -468,6 +473,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r125 261022 WEB-95+ normal-view recorded possession team and carrier cues with neutral flight/contested/unknown handling
 - r124 261022 WEB-32✎ uniform timeline without a goal transition→uniform running timeline with WEB-94 goal holds; WEB-94+ brief recorded-goal hold, GOAL cue and scoreboard emphasis with replay, visibility and reduced-motion rules
 - r123 261022 WEB-10/11/18/50/51/91✎ crowded controls, menu watching and buried preferences→compact home actions, inline menu preferences, grouped utilities, HUD news and distinct bottom navigation
 - r122 261022 WEB-91✎ flat floating feedback→restrained shadow and subtle edge in standard, preserving scroll bounds and pixel appearance
