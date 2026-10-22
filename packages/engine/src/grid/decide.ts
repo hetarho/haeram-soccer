@@ -167,10 +167,35 @@ export const DECISION_CONFIG = {
     seconds: 12,
     forward: { counter: 3 } as Partial<Record<Tactic, number>>,
     back: 0.5,
+    /**
+     * Candidate model only (→MATCH-8, T331): once a listed side's break has passed (outside
+     * `seconds` of a regain, or with no regain) it still plays forward or long rather than
+     * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
+     * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
+     * passes `pass` times as often against carrying on. Counter (T331): its pass share falls to
+     * the lowest of the four and it beats press through its play, not its roles.
+     */
+    settled: {
+      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75 },
+    } as Partial<
+      Record<Tactic, { forward: number; long: number; lateral: number; back: number; pass: number }>
+    >,
   },
 } as const;
 
 const DEG = Math.PI / 180;
+
+/** Whether `side` is breaking: within `direct.seconds` of its regain on the candidate model. */
+const breaking = (s: GridState, side: 0 | 1) =>
+  s.setup.model !== undefined &&
+  s.lastRegain?.side === side &&
+  s.elapsed - s.lastRegain.at <= DECISION_CONFIG.direct.seconds;
+
+/** The candidate's settled-play rule for `side` once its break has passed (T331), if its tactic has one. */
+const settledOf = (s: GridState, side: 0 | 1) =>
+  s.setup.model !== undefined && !breaking(s, side)
+    ? DECISION_CONFIG.direct.settled[s.setup.tactics[side]]
+    : undefined;
 
 /** The normalised action mix of the carrier. */
 export function actionMix(
@@ -245,6 +270,8 @@ export function actionMix(
     if (tags.band === 5) mix.shot *= C.tactic.possession.shotBand5;
   }
   if (tactic === 'counter' && tags.phase === 'counter') mix.shot *= C.tactic.counter.shotInCounter;
+  const settled = settledOf(s, side);
+  if (settled) mix.pass *= settled.pass;
   if (
     tactic === 'press' &&
     s.lastRegain?.side === side &&
@@ -408,12 +435,9 @@ export function passOptions(
   for (const cand of candidates) count[cand.dir]++;
   // Straight after a regain a breaking side goes forward (candidate model, →MATCH-8).
   const D = DECISION_CONFIG.direct;
-  const direct =
-    s.setup.model !== undefined &&
-    s.lastRegain?.side === side &&
-    s.elapsed - s.lastRegain.at <= D.seconds
-      ? (D.forward[s.setup.tactics[side]] ?? 0)
-      : 0;
+  const direct = breaking(s, side) ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
+  // Once the break has passed a listed side still goes forward or long (candidate, T331).
+  const settled = settledOf(s, side);
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
@@ -434,8 +458,17 @@ export function passOptions(
           actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
+    const kind: PassOption['kind'] =
+      through > 0
+        ? 'through'
+        : Math.abs(dy) > P.switch
+          ? 'switch'
+          : dist > P.long
+            ? 'long'
+            : 'short';
     const score =
-      (dir === 'forward' ? direct : 0) +
+      (dir === 'forward' ? direct + (settled?.forward ?? 0) : 0) +
+      (settled && (kind === 'long' || kind === 'switch') ? settled.long : 0) +
       gain +
       P.open * open -
       P.risk * (opts.riskScale ?? 1) * risk -
@@ -448,14 +481,7 @@ export function passOptions(
           : 0);
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
-    const kind: PassOption['kind'] =
-      through > 0
-        ? 'through'
-        : Math.abs(dy) > P.switch
-          ? 'switch'
-          : dist > P.long
-            ? 'long'
-            : 'short';
+    if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
     const lineBreaking = [dfDeep, mfDeep].some(
       (deep) => deep !== undefined && c[0] <= deep && p[0] > deep,
     );

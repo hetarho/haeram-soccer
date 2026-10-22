@@ -45,11 +45,13 @@ const facts = (w: World) => ({
  * counting rules (MATCH-3 r19 possession as the share of attempted passes; MATCH-13 r18 high
  * turnovers from every open-play ball won and PPDA over tackles, interceptions, challenges and
  * fouls) changed both digests' counters, not their outcomes: scores, xG, incidents, passes, shots
- * and discipline gave the same digests before and after it.
+ * and discipline gave the same digests before and after it. T331's candidate counter behaviour
+ * (settled directness, a higher back-line floor) changed the candidate rounds (aggregate records
+ * unchanged), re-recorded with its calibration artifact.
  */
 const BEFORE = {
   aggregateRecords: 'a3c1c7230ca5bc28',
-  candidateRounds: '2955d6675157a6aa',
+  candidateRounds: 'fed163154634471c',
 };
 
 describe('complete-result throughput (T285)', () => {
