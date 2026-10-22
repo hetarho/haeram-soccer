@@ -1,0 +1,6 @@
+core:equal-top-tier validation r33: 600 matches (82 s), patch none
+  a team a match: open-play passes 385.11, completed 309.95, completed to a receiver beyond the line 23.51 (of them on a run 7.48), offside calls 1.66 (calls ÷ (calls + beyond completions) 0.066)
+  decision kind through 37.80, completed 28.89, completed beyond 22.90; per decision: attackers offside 0.319, behind runners 0.141 (offside 0.071)
+core:equal-top-tier validation r33: 600 matches (100 s), patch none
+  a team a match: open-play passes 389.84, completed 316.87, completed to a receiver beyond the line 0.05 (of them on a run 0.03), offside calls 1.97 (calls ÷ (calls + beyond completions) 0.977)
+  decision kind through 12.12, completed 9.63, completed beyond 0.01; per decision: attackers offside 0.056, behind runners 0.167 (offside 0.005)
