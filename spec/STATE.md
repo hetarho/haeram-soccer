@@ -15,10 +15,13 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T327 |
+| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T328 |
 
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
 ## inbox
+- 261022 decided T327: PPDA band from Opta/The Analyst league-season pooled ratios only (12–14); Understat listed as reference, not banded → its tooltip counts the opposition half, its pass count is 54–59% of Opta's and its defensive actions are unstated (alt: include it, 11–14)
+- 261022 decided T327: engine zone offsets (35 m for high turnovers, the two-thirds edge for PPDA) are written beside the bands, the bands are not shifted (alt: adjust the bands for the offsets)
+- 261022 decided T327 T323: review P2 — the aggregate's high-turnover excess (13.6 v the grid's 5.8) is a loose-ball counting assumption; T323 draws who won each loose ball instead of T327 reopening the generator (alt: fix in T327)
 - 261022 decided T327: MATCH-13 r18's 40 m and 60% fall between MATCH-14's band edges → both paths use the nearest band edge (35 m from goal; the two-thirds edge), one rule with exact parity, stating the offset beside the bands when they are sourced (alt: exact metres on the grid and the nearest band on the aggregate, a built-in parity gap)
 - 261022 decided T324: shot scale 0.42 keeps core goals inside (2.755) at the cost of MATCH-29 (9/6/10 against 15/4/6 at 0.35, where goals fell to 2.50) → keep 0.42, since goals is a hard MATCH-23 row and counter-at-least-press fails at both; T328's counter roles and more midfield and defender goals are the named fixes (alt: 0.35 with goals outside)
 - 261022 decided T328: T324 found counter cannot beat press through behaviour without breaking MATCH-23 (25–40% of through balls in behind pushed FW goals to 69–72%, goal-area shots to 10.6–13.9%) and pointed at counter's 4-4-2 role table → explore T328 measures role-table variants from PLAYER-5's roles on the candidate path and recommends a STAFF-22/MATCH-8 counter row, ratified afterwards through update-ssot; MATCH-29's counter row stays unless T328 shows no role table can meet it, which is then the owner's call (alt: relax MATCH-29's counter row now | change the counter row now without evidence)
@@ -203,7 +206,6 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | doing@261022.k2r7 |
 | T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | doing@261022.k2r7 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
@@ -231,6 +233,7 @@
 - FIRST (fix CI before feature work): CI 39690281623 on 5f80730 (the UI merge) failed e2e on Chromium — cups-and-club.spec.ts:43 (390x844, transfer stance from the roster; click timeout 30 s), recruitment.spec.ts:92 (filters and compares candidates; click timeout), staff.spec.ts:81 (360x740) — and on Firefox — the same cups-and-club and recruitment journeys plus facility-art.spec.ts:97 (current terraces/contemporary facility scenes at 390/1440). The same Chromium journeys passed in h3t6's local gate on 74cbb95 (230/230), so compare CI's traces with T314's market and T310–T313's art changes; CI for 3f45758 was still running at the stop.
 
 ## log
+- 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
 - 261022 h3t6 stopped at 08:50 KST as the owner asked (moving machines): integrated T280 T281 T283 T278 T320 T284 T321 T285 T322 T324 and the local UI work (T309–T314) into main; T327 and T328 pushed as wip/h3t6-T327 and wip/h3t6-T328; report 261021-h3t6
 - 261022 merged the e2e fixes for the UI merge batch (10 Chromium failures, all stale specs; 59/59 in those files pass)
 - 261022 T324 integrated (h3t6; explore exit: MATCH-29 9 inside / 6 outside / 10 insufficient at shot scale 0.42, press edge +0.23; core goals back inside; FW, MF and penalty goals and goal kicks residual → T328, T323)
@@ -250,4 +253,3 @@
 - 261022 update-ssot MATCH r18: MATCH-13 PPDA and high turnover follow the published conventions (from T322's decision requests)
 - 261022 create-task T325 T326 (explore): detailed own-match speed, bit-identical, and aggregate fixture cost with its accuracy trade-off, after T323 and before T286
 - 261022 T285 integrated (h3t6; explore exit: bit-identical optimisations, aggregate fixture ×0.53, candidate season ×0.69; every ARCH-31 throughput gate still fails; century checkpoint estimated 2.95–3.12 MiB)
-- 261022 create-task T324 (explore): counter breaks behind a high line and press attacking volume, T321's named follow-ups for MATCH-29, before T323 and T286
