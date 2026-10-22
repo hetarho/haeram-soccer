@@ -115,9 +115,9 @@ for (const viewport of [
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1950년 8월 2일');
-    const menuButton = page.getByRole('button', { name: '전체 메뉴', exact: true });
+    const menuButton = page.getByRole('button', { name: '설정', exact: true });
     await menuButton.click();
-    const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+    const menu = page.getByRole('dialog', { name: '설정' });
     await expect(menu).toBeVisible();
     const opened = await date.innerText();
     await expect(date).not.toHaveText(opened);

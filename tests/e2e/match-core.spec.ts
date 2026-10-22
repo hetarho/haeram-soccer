@@ -200,7 +200,7 @@ for (const viewport of [
     await expect(page.getByTestId('match-readiness')).toContainText(
       `${tacticLabel[reference.tactic]} · 피로 ${lineupSummary(startingSquad(reference, clubOf(reference)), reference.tactic).fatigue}/100`,
     );
-    await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('다음 경기 관전');
+    await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
     const settled = await savedRaw(page);
     expect((await decode(settled)).world.ownMatches[0]).toEqual(reference.ownMatches[0]);
     // Preparation was skipped: the record wears the automatic selection, captured at settlement.

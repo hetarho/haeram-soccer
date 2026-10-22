@@ -77,6 +77,8 @@ export interface ProgressionState {
   pace: Pace;
   watching: boolean;
   reason: string;
+  /** Requests the current dated report again without advancing the game. */
+  eventRequest: number;
   /** Tomorrow's own fixture the clock stopped for, until the owner watches or plays through. */
   matchEve?: string;
   background: BackgroundSettings;
@@ -118,6 +120,12 @@ function storedClocks(): Record<string, ClockRecord> {
 export function stoppingEvents(w: World) {
   return stoppingReasons(w);
 }
+/** An enabled pre-match report still awaiting the owner's explicit match choice. */
+export function pendingMatchReport(w: World) {
+  return settingsOf(w).observations.matchEve && daysUntilNextMatch(w) === 1
+    ? nextOwnFixture(w)
+    : undefined;
+}
 /**
  * One tick of the clock. A multi-day catch-up step lands on a match eve instead of running
  * through the match day, and the host ends it early on the day an enabled event arrives.
@@ -143,6 +151,7 @@ export class ProgressionController {
     pace: 'x1',
     watching: false,
     reason: '',
+    eventRequest: 0,
     background: storedBackground(),
   }));
   /** A fixture the owner chose to play through without watching. */
@@ -160,7 +169,6 @@ export class ProgressionController {
   }
   private mode?: 'automatic' | 'manual';
   private worldId?: string;
-  private finishedId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
   private stepAt?: number;
   /** The next step owes the days since stepAt: the last step itself ran late, or time away. */
@@ -206,7 +214,6 @@ export class ProgressionController {
         // The world leaving play records its clock stopped: parked games never progress.
         this.stop('');
         this.worldId = id;
-        this.finishedId = undefined;
         this.seenMark = undefined;
         this.store.setState({ away: undefined });
         // A clock this world left running resumes once the game is on screen (→WEB-64).
@@ -228,13 +235,6 @@ export class ProgressionController {
               : '진행을 멈췄습니다.',
         );
       }
-      if (
-        this.store.getState().running &&
-        this.store.getState().watching &&
-        !state.processing &&
-        state.playback?.record.id === this.finishedId
-      )
-        void this.tick();
     });
     this.timer = setInterval(() => void this.tick(), PACE_MS.x1);
   }
@@ -388,7 +388,7 @@ export class ProgressionController {
     const previous = this.store.getState().watching;
     if (previous === watching) return;
     this.store.setState({ watching });
-    if (watching && this.store.getState().running) void this.tick();
+    if (watching && this.store.getState().running) this.beginWatch();
     if (!watching) this.endWatch();
   }
   /**
@@ -430,9 +430,18 @@ export class ProgressionController {
       state.error ||
       w.critical ||
       w.bankrupt ||
-      pendingDecisions(w).length
+      state.pendingActions
     )
       return;
+    const report = pendingMatchReport(w);
+    if (report) {
+      this.store.setState((progress) => ({
+        matchEve: report.id,
+        eventRequest: progress.eventRequest + 1,
+      }));
+      return;
+    }
+    if (pendingDecisions(w).length) return;
     this.inFlight = true;
     try {
       const reply = await this.client.command({ type: 'next-event' }, { background: true });
@@ -473,6 +482,7 @@ export class ProgressionController {
     const state = gameStore.getSnapshot();
     if (
       this.mode !== 'automatic' ||
+      this.store.getState().watching ||
       this.suspended ||
       state.readonly ||
       state.error ||
@@ -490,8 +500,7 @@ export class ProgressionController {
     this.stepAt = undefined;
     this.store.setState({ running: true, reason: '', matchEve: undefined });
     this.writeClock(true);
-    // Date progression starts on the next tick of the pace. Watching starts without an empty wait.
-    if (this.store.getState().watching) void this.tick();
+    // Date progression starts on the next tick of the pace.
   }
   stop(reason = '자동 진행을 멈췄습니다.') {
     const was = this.store.getState().running;
@@ -503,20 +512,11 @@ export class ProgressionController {
     // A clock that stops for any reason saves its automatic progress at once (→SAVE-8).
     this.client.saveSoon();
   }
-  finishMatch(id: string) {
-    if (this.finishedId === id) return;
-    this.finishedId = id;
-    if (this.store.getState().running && this.store.getState().watching) void this.tick();
-  }
-  beginMatch(id: string) {
-    if (this.finishedId === id) this.finishedId = undefined;
-  }
   /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
   private eveStop(w: World) {
     const progress = this.store.getState();
-    if (progress.watching || !settingsOf(w).observations.matchEve || daysUntilNextMatch(w) !== 1)
-      return false;
-    const next = nextOwnFixture(w);
+    if (progress.watching) return false;
+    const next = pendingMatchReport(w);
     if (!next || next.id === this.passedMatch) return false;
     this.stop('내일 경기가 있어요');
     this.store.setState({ matchEve: next.id });
@@ -544,7 +544,7 @@ export class ProgressionController {
   private async tick() {
     const progress = this.store.getState();
     const state = gameStore.getSnapshot();
-    if (this.mode !== 'automatic' || !progress.running || this.suspended) {
+    if (this.mode !== 'automatic' || !progress.running || progress.watching || this.suspended) {
       // Time spent stopped or behind a sheet is not owed to the calendar.
       this.stepAt = undefined;
       return;
@@ -559,15 +559,9 @@ export class ProgressionController {
     )
       return;
     // Saving runs in the background (→SAVE-8): an unsaved revision never holds the next step.
-    if (
-      progress.watching &&
-      state.playback?.frames.length &&
-      this.finishedId !== state.playback.record.id
-    )
-      return;
     let w = state.view.world;
     if (this.eveStop(w)) return;
-    const owed = progress.watching ? { days: 1, catchUp: false } : this.owed(w);
+    const owed = this.owed(w);
     const stepAt = (this.stepAt = Date.now());
     this.inFlight = true;
     try {
@@ -575,10 +569,10 @@ export class ProgressionController {
       while (debt > 0) {
         const seen = new Set(stoppingEvents(w).map((item) => item.id));
         const days = owed.catchUp ? Math.min(debt, CATCH_UP_STEP_DAYS) : debt;
-        const reply = await this.client.command(
-          progress.watching ? { type: 'next-match' } : command(days, w),
-          { background: true, automatic: true },
-        );
+        const reply = await this.client.command(command(days, w), {
+          background: true,
+          automatic: true,
+        });
         // A cancelled tick after an explicit stop (e.g. to watch) keeps that stop's reason.
         if (
           !reply?.ok ||

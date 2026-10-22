@@ -50,12 +50,12 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--control-gap);
 }
 .chip.chip {
-  min-height: 40px;
-  padding: 0 12px;
-  border-radius: var(--badge-radius);
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
+  border-radius: var(--control-radius);
   font-size: 12.5px;
   font-weight: 700;
 }
@@ -84,11 +84,11 @@
   margin: 0;
   padding: 0;
   overflow: visible;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
-  box-shadow: none;
+  box-shadow: var(--popover-shadow);
   transform-origin: calc(100% - var(--caret, 20px)) top;
 }
 .popover::before {
@@ -98,8 +98,8 @@
   right: var(--caret, 20px);
   width: 12px;
   height: 12px;
-  border-top: 1px solid var(--line-strong);
-  border-left: 1px solid var(--line-strong);
+  border-top: 1px solid var(--popover-edge);
+  border-left: 1px solid var(--popover-edge);
   border-top-left-radius: 3px;
   background: var(--surface-grain, none) var(--surface-2);
   transform: rotate(45deg);

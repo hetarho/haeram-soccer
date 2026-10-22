@@ -30,7 +30,7 @@ Shared optional `table-line`, `section-accent-line`, `warning-line`, `critical-l
 fall back to existing styling in shared CSS; the pixel pack explicitly supplies its original
 values so the registered default's optional tokens cannot replace them.
 
-The standard pack owns 31 smooth SVG icon roles, including independent trophy states, and 92
+The standard pack uses official Lucide SVG icons, including independent trophy states, and 92
 painted sports-comic facility illustrations. The selected art direction combines expressive brush
 inking, layered gouache colour, warm natural light and tactile material detail. Each completed
 stadium/locker, training and academy stage in each era has distinct generated artwork; manager
@@ -38,7 +38,12 @@ and staff offices use separate period-neutral interiors. Images remain in the ex
 slots, with 1440×480 self-hosted WebP resources and automatic image rendering. The live pitch and
 club identity retain their existing game-driven rendering.
 
-`node scripts/generate-standard-icons.mjs` regenerates only icon resources. Facility artwork is
+`node scripts/generate-standard-icons.mjs` imports icon resources from the pinned `lucide-static`
+development dependency. Original upstream paths and 2px round strokes are preserved; circles and
+rounded rectangles are converted mechanically to equivalent paths. `--check` verifies the generated
+pack and shipped `presentation/themes/Lucide-LICENSE.txt` against that distribution. The browser
+loads the generated pack, without importing the icon library into application JavaScript.
+Facility artwork is
 created with the built-in image generation tool; `scripts/prepare-standard-art.mjs` validates and
 encodes original generated sources for deployment. Prompts, source provenance and checksums live
 in `apps/web/public/art/standard/generation.json`. Reviewed candidates and retired vector scenes
@@ -180,6 +185,9 @@ a second schema into tooling. A theme contains:
 - `icons`: semantic roles from `THEME_ICON_ROLES`. Each has a `default` and optional named
   `variants`. Resources are SVG paths (`viewBox`, `layers`, optional `shapeRendering`) or local
   images (`resource`, optional dimensions). A missing variant uses that same role's default.
+  Path layers support `fill`, `fillRule`, `opacity` and optional `stroke`, `strokeWidth`,
+  `strokeLinecap` and `strokeLinejoin`. Filled pixel paths and outlined standard paths share
+  the same renderer; omitted stroke attributes retain their existing SVG defaults.
 - An optional local `stylesheet`, staged before activation alongside font resources.
 
 Each pack supplies its required tokens. Optional token values fall back by semantic key to the

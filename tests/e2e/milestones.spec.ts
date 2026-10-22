@@ -9,8 +9,8 @@ import { expectHomeBounds, settle } from './layout';
 import { currentDay, seasonLength } from '../../packages/engine/src/calendar';
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
@@ -42,7 +42,8 @@ for (const viewport of [
     await delegateSales(page);
     await expectCompactHome(page);
     const nextCard = hub.getByRole('region', { name: '다음 경기', exact: true });
-    await expect(nextCard.getByTestId('home-watch')).toBeVisible();
+    await expect(nextCard.getByTestId('home-watch')).toHaveCount(0);
+    await expect(nextCard.getByRole('button', { name: '전술·선발 준비' })).toBeVisible();
     await settle(page);
     const cardBox = (await nextCard.boundingBox())!;
     const hubBox = (await hub.boundingBox())!;

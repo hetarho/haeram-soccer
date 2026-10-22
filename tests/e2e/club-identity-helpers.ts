@@ -33,8 +33,8 @@ export const hud = (page: Page) =>
 export const crestFill = (scope: Locator, fill: string) => scope.locator(`[fill="${fill}"]`);
 
 async function openMenu(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  return page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  return page.getByRole('dialog', { name: '설정', exact: true });
 }
 const closeMenu = (menu: Locator) =>
   menu.getByRole('button', { name: '창 닫기', exact: true }).click();
@@ -313,7 +313,7 @@ export async function applyDesign(page: Page, view: Locator) {
   await expect(designStatus(view)).toHaveText('적용된 디자인');
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
 }
 
 export const hubPreparation = (page: Page) =>
@@ -337,7 +337,7 @@ export async function closePreparation(page: Page, dialog: Locator, decided: boo
   if (!decided) return;
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toBeVisible();
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect(outcome).toHaveCount(0);
 }
 

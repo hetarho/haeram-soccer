@@ -27,7 +27,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(metrics.every((button) => button.bottom <= 844)).toBe(true);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-  const more = page.getByRole('button', { name: '전체 메뉴', exact: true });
+  const more = page.getByRole('button', { name: '설정', exact: true });
   const moreBounds = await more.boundingBox();
   expect(moreBounds!.width).toBeGreaterThanOrEqual(44);
   expect(moreBounds!.height).toBeGreaterThanOrEqual(44);
@@ -42,7 +42,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(before).toBeGreaterThan(0);
   await more.focus();
   await more.click();
-  const dialog = page.getByRole('dialog', { name: '전체 메뉴' }),
+  const dialog = page.getByRole('dialog', { name: '설정' }),
     close = dialog.getByRole('button', { name: '창 닫기', exact: true });
   await expect(dialog).toBeVisible();
   await expect(close).toBeFocused();
@@ -85,9 +85,9 @@ test('keeps confirmation actions and its close control inside a small mobile vie
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('dialog', { name: '설정' })
     .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
   const slot = page.getByTestId('game-slots').getByRole('listitem', { name: '슬롯 1' });

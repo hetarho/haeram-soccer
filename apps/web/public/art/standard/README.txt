@@ -12,7 +12,8 @@ exact prompts, source provenance, logical references, sizes and checksums.
 Original generated PNG files remain at their tool-managed source paths.
 
 The existing HTML image slots, captions, game facts and pixel pack are retained.
-Smooth icon resources are separate: node scripts/generate-standard-icons.mjs.
+Lucide icon resources are separate: node scripts/generate-standard-icons.mjs.
+Their upstream license is shipped in presentation/themes/Lucide-LICENSE.txt.
 
 grain.png is a separate 160 x 160 grayscale/alpha UI texture, not a facility scene.
 It preserves the original CSS grain: SVG fractalNoise at frequency .82, three

@@ -157,62 +157,37 @@ describe('the global progression clock', () => {
     controller.stop();
     expect(s.saveSoon).toHaveBeenCalledTimes(1);
   });
-  it('holds the calendar throughout observation and starts next match at the finish signal', async () => {
+  it('holds the calendar in observation and never starts another fixture from its finish', async () => {
     const s = setup(playback('first'));
     controller = s.controller;
     controller.setWatching(true);
     controller.start();
     await vi.advanceTimersByTimeAsync(5000);
+    expect(controller.store.getState().running).toBe(false);
     expect(s.command).not.toHaveBeenCalled();
-    s.command.mockImplementation(async () => {
-      gameStore.publish({ ...gameStore.getSnapshot(), playback: playback('second') });
-      return { ok: true, requestId: 'next', view: { world: w } as View };
-    });
-    controller.finishMatch('first');
-    await vi.advanceTimersByTimeAsync(0);
-    expect(s.command).toHaveBeenCalledExactlyOnceWith(
-      { type: 'next-match' },
-      { background: true, automatic: true },
-    );
+    gameStore.publish({ ...gameStore.getSnapshot(), playback: playback('finished') });
     await vi.advanceTimersByTimeAsync(5000);
-    expect(s.command).toHaveBeenCalledTimes(1);
-    controller.finishMatch('first');
-    await vi.advanceTimersByTimeAsync(0);
-    expect(s.command).toHaveBeenCalledTimes(1);
+    expect(s.command).not.toHaveBeenCalled();
   });
-  it('resumes date progression in statistics, returns to the same live match, and interrupts on alerts', async () => {
+  it('stops a running clock on returning to live observation and resumes only on leaving', async () => {
     const s = setup(playback('live'));
     controller = s.controller;
-    controller.setWatching(true);
     controller.start();
+    controller.setWatching(true);
+    expect(controller.store.getState().running).toBe(false);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(s.command).not.toHaveBeenCalled();
     controller.setWatching(false);
     await vi.advanceTimersByTimeAsync(1000);
-    expect(s.command).toHaveBeenCalledTimes(1);
-    controller.setWatching(true);
-    await vi.advanceTimersByTimeAsync(2000);
-    expect(s.command).toHaveBeenCalledTimes(1);
+    expect(s.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'advance-days', days: 1, stop: ['match'] },
+      { background: true, automatic: true },
+    );
     gameStore.publish({
       ...gameStore.getSnapshot(),
       view: { world: { ...w, critical: '현금 부족' } } as View,
     });
     expect(controller.store.getState().running).toBe(false);
-    await vi.advanceTimersByTimeAsync(2000);
-    expect(s.command).toHaveBeenCalledTimes(1);
-  });
-  it('waits for a pending checkpoint before responding to a finish signal', async () => {
-    const s = setup(playback('pending'));
-    controller = s.controller;
-    controller.setWatching(true);
-    controller.start();
-    gameStore.publish({ ...gameStore.getSnapshot(), processing: true });
-    controller.finishMatch('pending');
-    expect(s.command).not.toHaveBeenCalled();
-    gameStore.publish({ ...gameStore.getSnapshot(), processing: false });
-    await vi.advanceTimersByTimeAsync(0);
-    expect(s.command).toHaveBeenCalledExactlyOnceWith(
-      { type: 'next-match' },
-      { background: true, automatic: true },
-    );
   });
 
   it('stops for a fresh attention event and keeps running past events already seen', async () => {
@@ -528,6 +503,68 @@ describe('explicit automatic and manual modes', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().running).toBe(false);
     expect(controller.store.getState().matchEve).toBeDefined();
+  });
+  it('reopens the same unresolved match report repeatedly without a game command or date change', async () => {
+    const world = manual();
+    world.calendar = { day: 6 };
+    const s = setup(undefined, world);
+    controller = s.controller;
+    const before = JSON.stringify(world);
+    await controller.nextEvent();
+    const fixture = controller.store.getState().matchEve;
+    expect(fixture).toBeDefined();
+    expect(controller.store.getState().eventRequest).toBe(1);
+    await controller.nextEvent();
+    expect(controller.store.getState()).toMatchObject({
+      matchEve: fixture,
+      eventRequest: 2,
+      running: false,
+    });
+    expect(s.command).not.toHaveBeenCalled();
+    expect(JSON.stringify(world)).toBe(before);
+    await controller.playThrough();
+    expect(s.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'advance-days', days: 1 },
+      { background: true },
+    );
+    expect(controller.store.getState().running).toBe(false);
+  });
+  it('allows access to a same-date match report while protecting unresolved owner decisions', async () => {
+    const world = manual();
+    world.calendar = { day: 6 };
+    world.settings!.responsibilities.manager = 'direct';
+    world.manager.interim = true;
+    const s = setup(undefined, world);
+    controller = s.controller;
+    await controller.nextEvent();
+    expect(controller.store.getState().eventRequest).toBe(1);
+    await controller.playThrough();
+    expect(s.command).not.toHaveBeenCalled();
+    expect(world.calendar.day).toBe(6);
+  });
+  it('keeps report reopening behind ownership, processing, action and recovery protections', async () => {
+    const world = manual();
+    world.calendar = { day: 6 };
+    const s = setup(undefined, world);
+    controller = s.controller;
+    for (const blocked of [
+      { readonly: true },
+      { error: 'failed' },
+      { processing: true },
+      { pendingActions: 1 },
+    ]) {
+      gameStore.publish({
+        ...gameStore.getSnapshot(),
+        readonly: false,
+        error: undefined,
+        processing: false,
+        pendingActions: 0,
+        ...blocked,
+      });
+      await controller.nextEvent();
+    }
+    expect(controller.store.getState().eventRequest).toBe(0);
+    expect(s.command).not.toHaveBeenCalled();
   });
   it('automatic-resume-after-last-decision: reading a sale notice never settles the actual sale', async () => {
     const s = setup();

@@ -37,7 +37,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
       return firstStopped === before;
     })
     .toBe(true);
-  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await chooseOption(pace, 'x2');
   await expect(pace).toHaveAttribute('data-value', 'x2');
   await play();
@@ -67,10 +67,10 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(eve).toContainText('내일 경기');
   await expect(date).toHaveText('1950년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   // Playing the match through as a result keeps going until the following match eve.
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
   await expect(eve).toContainText('내일 경기');
   await expect(date).not.toHaveText('1950년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();

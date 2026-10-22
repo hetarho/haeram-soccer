@@ -1,5 +1,5 @@
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
-import { chooseOption } from './select';
+import { openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
   createWorld,
@@ -218,16 +218,19 @@ test('mediation-handover-on-apply discloses work and never replays its recorded 
   const { configureResponsibilities } = await import('./events');
   const w = fixture();
   await importResponsibilityCareer(page, w);
-  await page.getByTestId('intervention-trigger').click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await chooseOption(dialog.getByRole('combobox', { name: '선수 영입', exact: true }), 'delegated');
+  const office = await openOffice(page);
+  await office
+    .getByRole('group', { name: '선수 영입', exact: true })
+    .getByRole('button', { name: '위임', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
   await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );
-  await dialog.getByRole('button', { name: '적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '위임하기', exact: true }).click();
   await page
     .getByTestId('action-outcome')
-    .getByRole('button', { name: '확인', exact: true })
+    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
     .click();
   const after = await exportedCareer(page);
   expect(after.mediations![0].status).toBe('resolved');

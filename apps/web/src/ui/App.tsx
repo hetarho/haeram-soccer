@@ -20,26 +20,21 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { openPeople, useInterventionDialog, useNavigation, type Page } from './state';
+import { openPeople, useNavigation, type Page } from './state';
 import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { PlayerPreparationHost } from './PlayerPreparationHost';
 import { TaskReturn } from './TaskReturn';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
-import { watchNextMatch } from './watch';
 import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
 import { Money } from './Money';
-import { ProgressControls } from './ProgressControls';
+import { ProgressControls, ProgressOverview } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 import { ClubHub, MatchAction } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
-);
-/** The responsibility settings load when the owner opens them, so the entry stays inside its budget (ARCH). */
-const InterventionSettings = lazy(() =>
-  import('./ResponsibilitySettings').then((module) => ({ default: module.ResponsibilitySettings })),
 );
 import { gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, useProgression } from '../runtime/progression';
@@ -183,15 +178,7 @@ export function Panel({
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
 }
-function ClubJournal({
-  state,
-  client,
-  controller,
-}: {
-  state: ClientState;
-  client: GameClient;
-  controller: ProgressionController;
-}) {
+function ClubJournal({ state }: { state: ClientState }) {
   const setPage = useNavigation((state) => state.setPage);
   const v = state.view!,
     w = v.world,
@@ -209,7 +196,6 @@ function ClubJournal({
       (f.home === w.playerClub || f.away === w.playerClub),
   ).length;
   const winRate = percent(t.won, t.played);
-  const watch = () => watchNextMatch(client, controller, () => setPage('match'));
   return (
     <>
       <div className={s.hero}>
@@ -272,13 +258,6 @@ function ClubJournal({
                   {away ? <ClubLink w={w} id={away.id} crest={20} /> : '다음 시즌을 기다립니다'}
                 </div>
               </div>
-              <button
-                className={s.coral}
-                disabled={state.busy || state.readonly}
-                onClick={() => void watch()}
-              >
-                {next ? '다음 경기 관전' : '다음 시즌 시작'} ▷
-              </button>
             </div>
             <div className={s.panelFoot}>
               최근 경기{' '}
@@ -493,13 +472,7 @@ const ConnectedFounding = memo(function ConnectedFounding({
     />
   );
 });
-const ConnectedDashboard = memo(function ConnectedDashboard({
-  client,
-  controller,
-}: {
-  client: GameClient;
-  controller: ProgressionController;
-}) {
+const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
   const state = useContentState();
   const setPage = useNavigation((state) => state.setPage);
   const w = state.view!.world;
@@ -507,15 +480,8 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
     <ClubHub
       w={w}
       client={client}
-      journal={<ClubJournal client={client} state={state} controller={controller} />}
-      matchAction={
-        <MatchAction
-          critical={!!w.critical}
-          next={!!nextOwnFixture(w)}
-          onWatch={() => watchNextMatch(client, controller, () => setPage('match'))}
-          onReturn={() => setPage('match')}
-        />
-      }
+      journal={<ClubJournal state={state} />}
+      matchAction={<MatchAction onReturn={() => setPage('match')} />}
     />
   );
 });
@@ -534,9 +500,11 @@ const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: Game
 /** Kept apart from the shell's renders: a page change re-renders only the page shown next. */
 const ConnectedRich = memo(function ConnectedRich({
   client,
+  controller,
   page,
 }: {
   client: GameClient;
+  controller: ProgressionController;
   page: Page;
 }) {
   const { t } = useLocale();
@@ -549,16 +517,10 @@ const ConnectedRich = memo(function ConnectedRich({
         </div>
       }
     >
-      <Rich client={client} state={state} page={page} />
+      <Rich client={client} controller={controller} state={state} page={page} />
     </Suspense>
   );
 });
-function CalendarText() {
-  const { t } = useLocale();
-  const year = useGameState((state) => state.view?.world.year)!;
-  const round = useGameState((state) => state.view?.world.round);
-  return <>{t('shell.calendar', { season: seasonName(year), round: round ?? 0 })}</>;
-}
 /**
  * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
  * shows how long it lasts and the ways to raise or save money (→WEB-44).
@@ -617,7 +579,6 @@ const GameHud = memo(function GameHud({
       ? state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub)
       : undefined,
   );
-  const lower = useGameState((state) => state.view?.world.lower);
   const crestWorld = useGameState((state) => state.view?.world.clubs && state.view.world);
   return (
     <header className={s.hud}>
@@ -641,16 +602,7 @@ const GameHud = memo(function GameHud({
         )}
         <div>
           <b>{own?.name || 'Haeram Football'}</b>
-          <small data-testid="calendar">
-            {own ? (
-              <>
-                {`${lower ? t('shell.amateurLeague') : t('shell.division', { division: own.tier + 1 })} · `}
-                <CalendarText />
-              </>
-            ) : (
-              '1950 · A NEW BEGINNING'
-            )}
-          </small>
+          {!own && <small data-testid="calendar">1950 · A NEW BEGINNING</small>}
         </div>
       </div>
       <ReadonlyBadge />
@@ -987,7 +939,6 @@ export function App() {
     [guideOpen, setGuideOpen] = useState(false);
   const { page, setPage, replacePage } = useNavigation();
   // One responsibility dialog for the clock, local task links and the main menu.
-  const stopSettings = useInterventionDialog((state) => state.open);
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
@@ -1225,7 +1176,11 @@ export function App() {
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressControls controller={controller} compact={page !== 'dashboard'} />
+          <ProgressOverview
+            client={client}
+            controller={controller}
+            compact={page !== 'dashboard'}
+          />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller ? (
@@ -1278,7 +1233,7 @@ export function App() {
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
                   <TaskReturn />
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
-                    <ConnectedDashboard client={client} controller={controller} />
+                    <ConnectedDashboard client={client} />
                   </div>
                   <LiveSeason
                     key={worldId}
@@ -1291,7 +1246,7 @@ export function App() {
                   </div>
                   {(['people', 'training', 'business', 'history'] as Page[]).includes(
                     contentPage,
-                  ) && <ConnectedRich page={contentPage} client={client} />}
+                  ) && <ConnectedRich page={contentPage} client={client} controller={controller} />}
                 </div>
               </>
             )
@@ -1310,6 +1265,9 @@ export function App() {
             />
           )}
         </div>
+        {client && controller && playing && !w.bankrupt && page !== 'match' && (
+          <ProgressControls controller={controller} />
+        )}
       </main>
       <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
         {TABS.map(([id, label, full, owns]) => (
@@ -1335,7 +1293,6 @@ export function App() {
       {moreOpen && (
         <AppMenu
           onClose={() => setMoreOpen(false)}
-          onResponsibilities={useInterventionDialog.getState().show}
           onNews={() => showNews('notifications')}
           onGuide={() => setGuideOpen(true)}
           onGlossary={showGlossary}
@@ -1353,15 +1310,6 @@ export function App() {
             </>
           }
         />
-      )}
-      {stopSettings && controller && client && (
-        <Suspense fallback={null}>
-          <InterventionSettings
-            client={client}
-            controller={controller}
-            onClose={useInterventionDialog.getState().close}
-          />
-        </Suspense>
       )}
       {guideOpen && w && (
         <Suspense fallback={null}>

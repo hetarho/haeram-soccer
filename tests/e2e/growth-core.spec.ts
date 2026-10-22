@@ -162,7 +162,7 @@ for (const viewport of [
     await expect(
       page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
     ).toBeVisible();
-    await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+    await expect(page.getByTestId('game-round')).toHaveText('1');
     await expect(page.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();

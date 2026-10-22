@@ -56,8 +56,8 @@ async function watchIdentityCommands(page: Page) {
 const commands = (page: Page) => page.evaluate(() => (window as ProbeWindow).identityProbe.sent);
 
 async function exportRaw(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
@@ -88,9 +88,9 @@ async function foundHere(page: Page, seed: string, name: string) {
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function openSlots(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('dialog', { name: '설정' })
     .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
   await expect(page.getByTestId('game-slots')).toBeVisible();

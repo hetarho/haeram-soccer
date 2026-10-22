@@ -1,25 +1,42 @@
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { gameStore } from '../runtime/store';
+import { daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
 
-/**
- * Watch the next own match: stop the clock for it, wait for queued work, play to kickoff and open
- * the match view. A watch that produces no match resumes the clock it stopped (→WEB-18).
- */
+/** A new observed fixture is admitted only from the match-eve dialog (→WEB-50). */
 export async function watchNextMatch(
   client: GameClient,
   controller: ProgressionController,
   open: () => void,
   { fromEve = false, background = false } = {},
 ) {
-  controller.beginWatch(fromEve);
+  const before = gameStore.getSnapshot();
+  const worldId = before.view?.world.id;
+  if (!fromEve || !worldId || daysUntilNextMatch(before.view!.world) !== 1) return;
+  controller.beginWatch(true);
   await client.whenIdle();
   const state = gameStore.getSnapshot();
-  if (state.readonly || state.error || state.view?.world.critical) {
+  if (
+    state.readonly ||
+    state.error ||
+    state.view?.world.critical ||
+    state.view?.world.bankrupt ||
+    state.view?.world.id !== worldId ||
+    daysUntilNextMatch(state.view.world) !== 1
+  ) {
+    controller.pause();
     controller.endWatch();
     return;
   }
-  const reply = await client.command({ type: 'next-match' }, { background });
+  let reply;
+  try {
+    reply = await client.command({ type: 'next-match' }, { background });
+  } catch {
+    // The client publishes its recovery error; a failed watch cannot resume progression.
+    controller.pause();
+    controller.endWatch();
+    return;
+  }
   if (reply?.playback) open();
   else controller.endWatch();
 }

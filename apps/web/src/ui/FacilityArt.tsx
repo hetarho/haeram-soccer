@@ -9,10 +9,12 @@ export function FacilityArt({
   kind,
   world,
   className,
+  eager = false,
 }: {
   kind: FacilityScene;
   world: World;
   className?: string;
+  eager?: boolean;
 }) {
   const locale = useLocale();
   const theme = useTheme();
@@ -33,7 +35,7 @@ export function FacilityArt({
         alt={scene.alt}
         width="240"
         height="80"
-        loading={kind === 'stadium' ? 'eager' : 'lazy'}
+        loading={eager || kind === 'stadium' ? 'eager' : 'lazy'}
         decoding="async"
         style={{
           objectFit: scene.treatment.objectFit,

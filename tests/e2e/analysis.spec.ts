@@ -60,7 +60,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);

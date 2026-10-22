@@ -2,10 +2,10 @@ import { ALL_DELEGATED, configureResponsibilities, acknowledgeEvents } from './e
 import { expect, test, type Page } from '@playwright/test';
 
 async function identity(page: Page) {
-  const text = await page.getByTestId('calendar').innerText();
-  const match = /(\d{4})\/.*라운드 (\d+)/.exec(text);
-  if (!match) throw new Error(`Missing season identity: ${text}`);
-  return { year: Number(match[1]), round: Number(match[2]) };
+  const year = await page.getByTestId('calendar').getAttribute('data-season');
+  const round = await page.getByTestId('game-round').innerText();
+  if (!year || !round) throw new Error('Missing season identity');
+  return { year: Number(year), round: Number(round) };
 }
 async function manual(page: Page, all = false) {
   await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();

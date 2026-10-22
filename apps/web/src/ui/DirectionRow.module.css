@@ -40,21 +40,22 @@
 }
 .options {
   display: grid;
-  gap: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 112px), 1fr));
+  gap: var(--control-gap);
 }
 .options button {
   min-width: 0;
-  min-height: 44px;
-  padding: 4px 3px;
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
   border-radius: var(--control-radius);
   font-size: 12px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.5;
   word-break: keep-all;
   overflow-wrap: anywhere;
   color: var(--text-muted);
   background: var(--surface-grain, none) var(--surface-deep);
-  border-color: var(--line);
+  border-color: var(--popover-edge);
   box-shadow: none;
   font-family: var(--display);
 }

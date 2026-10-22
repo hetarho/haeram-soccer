@@ -1,47 +1,54 @@
-import { chooseOption } from './select';
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
-
-/** Compatibility presets for older journeys, expressed only through the shared public dialog.
- * New responsibility tests select each category independently. */
-export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
-  await page.getByTestId('intervention-trigger').click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  const labels = [
-    '감독 인사',
-    '스태프 인사',
-    '선수 계약',
-    '선수 영입',
-    '선수 매각',
-    '유소년 승격·방출',
-    '스폰서 계약',
-  ];
-  for (let i = 0; i < labels.length; i++) {
-    const delegated =
-      level === 4 || (level >= 3 && i !== 3 && i !== 4) || (level === 2 && (i === 2 || i === 5));
-    await chooseOption(
-      dialog.getByRole('combobox', { name: labels[i], exact: true }),
-      delegated ? 'delegated' : 'direct',
-    );
+const LABELS: Record<ResponsibilityKey, string> = {
+  manager: '감독 인사',
+  staff: '스태프 인사',
+  contracts: '선수 계약',
+  recruitment: '선수 영입',
+  sales: '선수 매각',
+  academy: '유소년 승격·방출',
+  sponsors: '스폰서 계약',
+};
+export async function openOffice(page: Page) {
+  const eve = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
+  if (await eve.isVisible())
+    await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
+  if (!(await page.getByTestId('owner-office').isVisible())) {
+    await page
+      .getByRole('navigation')
+      .getByRole('button', { name: '구단 운영', exact: true })
+      .click();
+    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
   }
-  await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'automatic');
-  await dialog
-    .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
-    .setChecked(level <= 2);
-  await dialog
-    .getByRole('checkbox', { name: '이적시장 개장 이벤트', exact: true })
-    .setChecked(level <= 3);
-  const apply = dialog.getByRole('button', { name: '적용', exact: true });
-  if (await apply.isEnabled()) {
-    await apply.click();
-    const outcome = page.getByTestId('action-outcome');
-    await expect(outcome).toBeVisible();
-    await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(dialog).toHaveCount(0);
+  await expect(page.getByTestId('owner-office')).toBeVisible();
+  return page.getByTestId('owner-office');
 }
-
-/** Configure the seven categories through the public dialog, preserving unspecified choices. */
+export async function dismissSettingsToast(page: Page) {
+  const toast = page.getByTestId('action-outcome');
+  if (await toast.isVisible())
+    await toast.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+}
+async function confirmAuthority(page: Page, label: string, value: 'direct' | 'delegated') {
+  const choice = page
+    .getByTestId('owner-office')
+    .getByRole('group', { name: label, exact: true })
+    .getByRole('button', { name: value === 'delegated' ? '위임' : '직접 결정', exact: true });
+  if ((await choice.getAttribute('aria-pressed')) === 'true') return;
+  await choice.click();
+  const dialog = page.getByRole('dialog', {
+    name: value === 'delegated' ? '위임하겠습니다.' : '제가 관여하겠습니다.',
+    exact: true,
+  });
+  await dialog
+    .getByRole('button', {
+      name: value === 'delegated' ? '위임하기' : '직접 결정하기',
+      exact: true,
+    })
+    .click();
+  await expect(choice).toHaveAttribute('aria-pressed', 'true');
+  await dismissSettingsToast(page);
+}
+/** Change only requested office choices, then return to the originating public task. */
 export async function configureResponsibilities(
   page: Page,
   options: {
@@ -50,48 +57,115 @@ export async function configureResponsibilities(
     observations?: Partial<GameSettings['observations']>;
   },
 ) {
-  await page.getByTestId('intervention-trigger').click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  const labels: Record<ResponsibilityKey, string> = {
-    manager: '감독 인사',
-    staff: '스태프 인사',
-    contracts: '선수 계약',
-    recruitment: '선수 영입',
-    sales: '선수 매각',
-    academy: '유소년 승격·방출',
-    sponsors: '스폰서 계약',
-  };
-  for (const [key, value] of Object.entries(options.responsibilities ?? {}))
-    await chooseOption(
-      dialog.getByRole('combobox', { name: labels[key as ResponsibilityKey], exact: true }),
-      value,
+  const nav = page
+    .getByRole('navigation')
+    .getByRole('button')
+    .and(page.locator('[aria-current="page"]'));
+  const returnLabel = (await nav.count())
+    ? await nav.first().getAttribute('aria-label')
+    : undefined;
+  const businessTab =
+    returnLabel === '구단 운영'
+      ? await page.getByRole('tab', { selected: true }).first().innerText()
+      : undefined;
+  const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
+  if (await pause.isVisible()) await pause.click();
+  const office = await openOffice(page);
+  const entries = Object.entries(options.responsibilities ?? {});
+  if (
+    entries.length === Object.keys(LABELS).length &&
+    new Set(entries.map(([, value]) => value)).size === 1
+  ) {
+    const value = entries[0][1];
+    const bulk = office.getByRole('button', {
+      name: value === 'delegated' ? '전체 위임' : '전체 직접 결정',
+      exact: true,
+    });
+    const labels = Object.values(LABELS);
+    const selected = await Promise.all(
+      labels.map((label) =>
+        office
+          .getByRole('group', { name: label, exact: true })
+          .getByRole('button', { name: value === 'delegated' ? '위임' : '직접 결정', exact: true })
+          .getAttribute('aria-pressed'),
+      ),
     );
-  if (options.mode === 'automatic')
-    await chooseOption(
-      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
-      'automatic',
-    );
-  if (options.observations?.matchEve !== undefined)
-    await dialog
-      .getByRole('checkbox', { name: '경기 전날 이벤트', exact: true })
-      .setChecked(options.observations.matchEve);
-  if (options.observations?.windowOpen !== undefined)
-    await dialog
-      .getByRole('checkbox', { name: '이적시장 개장 이벤트', exact: true })
-      .setChecked(options.observations.windowOpen);
-  if (options.mode === 'manual')
-    await chooseOption(
-      dialog.getByRole('combobox', { name: '진행 모드', exact: true }),
-      options.mode,
-    );
-  const apply = dialog.getByRole('button', { name: '적용', exact: true });
-  if (await apply.isEnabled()) {
-    await apply.click();
-    const outcome = page.getByTestId('action-outcome');
-    await expect(outcome).toBeVisible();
-    await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(dialog).toHaveCount(0);
+    if (selected.some((pressed) => pressed !== 'true')) {
+      await bulk.click();
+      const dialog = page.getByRole('dialog', {
+        name: value === 'delegated' ? '위임하겠습니다.' : '제가 관여하겠습니다.',
+        exact: true,
+      });
+      await dialog
+        .getByRole('button', {
+          name: value === 'delegated' ? '위임하기' : '직접 결정하기',
+          exact: true,
+        })
+        .click();
+      await expect(dialog).toHaveCount(0);
+      await dismissSettingsToast(page);
+    }
+  } else
+    for (const [key, value] of entries)
+      await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
+  if (options.mode) {
+    const choice = office
+      .getByRole('group', { name: '진행 모드', exact: true })
+      .getByRole('button', {
+        name: options.mode === 'manual' ? '수동 진행' : '자동 진행',
+        exact: true,
+      });
+    if ((await choice.getAttribute('aria-pressed')) !== 'true') {
+      await choice.click();
+      const dialog = page.getByRole('dialog', {
+        name: '게임 진행 방식이 변경됩니다.',
+        exact: true,
+      });
+      if (await dialog.isVisible())
+        await dialog
+          .getByRole('button', {
+            name: options.mode === 'manual' ? '수동 모드로 변경' : '자동 모드로 변경',
+            exact: true,
+          })
+          .click();
+      await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await dismissSettingsToast(page);
+    }
+  }
+  // Explicit report choices are applied after the mode-entry default.
+  for (const [key, value] of Object.entries(options.observations ?? {})) {
+    const choice = office
+      .getByRole('group', {
+        name: key === 'matchEve' ? '경기 전날 보고' : '이적시장 개장 보고',
+        exact: true,
+      })
+      .getByRole('button', { name: value ? '받기' : '받지 않기', exact: true });
+    if ((await choice.getAttribute('aria-pressed')) !== 'true') {
+      await choice.click();
+      await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await dismissSettingsToast(page);
+    }
+  }
+  if (businessTab) await page.getByRole('tab', { name: businessTab, exact: true }).click();
+  else if (returnLabel)
+    await page
+      .getByRole('navigation')
+      .getByRole('button', { name: returnLabel, exact: true })
+      .click();
+}
+export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
+  const responsibilities: Partial<Record<ResponsibilityKey, 'direct' | 'delegated'>> = {};
+  Object.keys(LABELS).forEach((key, i) => {
+    responsibilities[key as ResponsibilityKey] =
+      level === 4 || (level >= 3 && i !== 3 && i !== 4) || (level === 2 && (i === 2 || i === 5))
+        ? 'delegated'
+        : 'direct';
+  });
+  await configureResponsibilities(page, {
+    responsibilities,
+    mode: 'automatic',
+    observations: { matchEve: level <= 2, windowOpen: level <= 3 },
+  });
 }
 export const ALL_DELEGATED: Record<ResponsibilityKey, 'delegated'> = {
   manager: 'delegated',
@@ -147,24 +221,16 @@ export async function acknowledgeEvents(page: Page) {
 export async function closeOutcome(page: Page, text: string) {
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toContainText(text);
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect(outcome).toHaveCount(0);
 }
 
-/** Keep unrelated match/navigation journeys from stopping on random incoming offers. */
+/** Keep unrelated navigation journeys from stopping on random offers. */
 export async function setResponsibility(page: Page, label: string, value: 'direct' | 'delegated') {
-  await page.getByTestId('intervention-trigger').click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await chooseOption(dialog.getByRole('combobox', { name: label, exact: true }), value);
-  const apply = dialog.getByRole('button', { name: '적용', exact: true });
-  if (await apply.isEnabled()) {
-    await apply.click();
-    const outcome = page.getByTestId('action-outcome');
-    await expect(outcome).toBeVisible();
-    await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  } else await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  const key = (Object.keys(LABELS) as ResponsibilityKey[]).find((key) => LABELS[key] === label);
+  if (!key) throw new Error(`Unknown responsibility ${label}`);
+  await configureResponsibilities(page, { responsibilities: { [key]: value } });
 }
-
 export async function delegateSales(page: Page) {
   await setResponsibility(page, '선수 매각', 'delegated');
 }

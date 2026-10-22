@@ -1,5 +1,5 @@
 import { marketInfo, closeMarketPanel } from './market';
-import { chooseOption } from './select';
+import { openOffice } from './events';
 import { closeOutcome } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import { combinedCareerFixture, exportedCareer } from './career-fixtures';
@@ -48,19 +48,19 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await expect(sheet).toHaveCount(0);
   await closeMarketPanel(page, '영입 정보');
   await closeOutcome(page, '방향을 정했어요');
-  await page.getByTestId('intervention-trigger').click();
-  const settings = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await chooseOption(
-    settings.getByRole('combobox', { name: '선수 영입', exact: true }),
-    'delegated',
-  );
+  const office = await openOffice(page);
+  await office
+    .getByRole('group', { name: '선수 영입', exact: true })
+    .getByRole('button', { name: '위임', exact: true })
+    .click();
+  const settings = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
   await expect(settings.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );
-  await settings.getByRole('button', { name: '적용', exact: true }).click();
+  await settings.getByRole('button', { name: '위임하기', exact: true }).click();
   await page
     .getByTestId('action-outcome')
-    .getByRole('button', { name: '확인', exact: true })
+    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
     .click();
   await operations(page);
   const draft = page.getByTestId('strategy-draft');

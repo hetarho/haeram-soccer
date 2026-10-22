@@ -25,8 +25,8 @@ async function openSettings(page: Page, field: Field = 'theme') {
   const trigger = page.getByTestId('presentation-settings-trigger');
   if (await trigger.isVisible()) await trigger.click();
   else {
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
     await menu.getByRole('button', { name: pickerRow[field] }).click();
     await expect(menu).toHaveCount(0);
   }
@@ -135,8 +135,8 @@ for (const width of [390, 1380])
     const date = await page.getByTestId('calendar').innerText();
     const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
     const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
     await expect(menu.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
     await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expectMenuRegistryChoices(page);
@@ -165,6 +165,31 @@ for (const width of [390, 1380])
     expect(await committedRaw(page)).toBe(raw);
     await expectHomeBounds(page);
   });
+
+test('pending theme resources add no feedback row or picker layout shift', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('club-founding').waitFor();
+  await openSettings(page);
+  const content = page.getByTestId('presentation-settings');
+  await settle(page);
+  const before = await content.boundingBox();
+  let release!: () => void;
+  const ready = new Promise<void>((resolve) => (release = resolve));
+  await page.route('**/presentation/themes/pixel.json', async (route) => {
+    await ready;
+    await route.continue();
+  });
+  try {
+    await chooseOption(page.getByTestId('presentation-theme'), 'pixel');
+    await expect(content).toHaveAttribute('aria-busy', 'true');
+    await expect(content.getByTestId('presentation-pending')).toHaveCount(0);
+    expect(await content.boundingBox()).toEqual(before);
+  } finally {
+    release();
+  }
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
+  await expect(content).toHaveAttribute('aria-busy', 'false');
+});
 
 test('theme reveal keeps controls in the composited dialog and backdrop', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -238,9 +263,9 @@ for (const viewport of [
     await founding.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectMenuRegistryChoices(page);
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page.getByRole('button', { name: '설정', exact: true }).click();
     await page
-      .getByRole('dialog', { name: '전체 메뉴', exact: true })
+      .getByRole('dialog', { name: '설정', exact: true })
       .getByRole('button', { name: '게임 슬롯', exact: true })
       .click();
     await expect(page.getByTestId('game-slots')).toBeVisible();

@@ -53,6 +53,7 @@ export const BUSINESS_TABS = [
   ['sponsor', '후원'],
   // The authoritative club-design editor (→WEB-71/86).
   ['identity', '구단 디자인'],
+  ['office', '구단주 사무실'],
 ] as const;
 export type BusinessView = (typeof BUSINESS_TABS)[number][0];
 /** Views from before 방향 open the tab that now holds their content. */
@@ -190,6 +191,11 @@ export const useCoachRequest = oneShot<{
   focus?: TrainingFocus | YouthFocus;
   player?: string;
 }>();
+/** The authoritative responsibility and progression page in club operations. */
+export function openOwnerOffice() {
+  beginTaskDetour('business');
+  openBusiness('office');
+}
 /** Opens 훈련 (유소년 for the youth director) on a coach's training sheet (→WEB-70). */
 export function openCoachSheet(
   coach: TrainingCoach,
@@ -217,20 +223,6 @@ export const useDepartmentPolicy = create<{
 export function openDirection(area: AreaKey) {
   useDepartmentPolicy.getState().open({ area });
 }
-
-/**
- * Whether the intervention dialog (levels and background play, →WEB-45) is open. The HUD menu,
- * each home's who-decides line and the match-eve card all open the one dialog.
- */
-export const useInterventionDialog = create<{
-  open: boolean;
-  show: () => void;
-  close: () => void;
-}>((set) => ({
-  open: false,
-  show: () => set({ open: true }),
-  close: () => set({ open: false }),
-}));
 
 /** Opens 사람 on a tab, or on 감독 with the manager market (`candidates`). */
 export function openPeople(tab: PeopleRequest) {

@@ -14,7 +14,8 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByText('Haeram Athletic', { exact: true }).first()).toBeVisible();
   await advanceOneRound(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1950');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
   // A round is lived one day at a time, one revision each (→LEAGUE-11): the page names the
   // revision it reached.
   const shown = /· r(\d+) ·/.exec((await page.getByTestId('save-status').textContent()) ?? '');
@@ -22,7 +23,8 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   expect(revision).toBeGreaterThan(0);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toHaveText(/1950\/51 · 라운드 1$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1950');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
   await expect(page.getByTestId('calendar')).toBeVisible();
 });
 test('observes event-backed metrics, historical locks and responsive navigation', async ({
@@ -72,13 +74,13 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     expect(bounds!.x + bounds!.width, label).toBeLessThanOrEqual(390);
     expect(bounds!.y + bounds!.height, label).toBeLessThanOrEqual(844);
   }
-  const menuButton = page.getByRole('button', { name: '전체 메뉴', exact: true });
+  const menuButton = page.getByRole('button', { name: '설정', exact: true });
   const menuBounds = await menuButton.boundingBox();
   expect(menuBounds).not.toBeNull();
   expect(menuBounds!.height).toBeGreaterThanOrEqual(44);
   expect(menuBounds!.y).toBeGreaterThanOrEqual(0);
   await menuButton.click();
-  const allMenu = page.getByRole('dialog', { name: '전체 메뉴' });
+  const allMenu = page.getByRole('dialog', { name: '설정' });
   await expect(allMenu).toBeVisible();
   // Tab destinations live in the tab bar; the menu lists none of them.
   for (const label of ['선수단·스태프', '훈련·육성', '구단 운영'])

@@ -196,7 +196,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 126 | 126 | - | 0 |
+| WEB | 130 | 130 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -242,23 +242,23 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
-- 261022 fix e2e (q8m5): business.spec:67 (founding plus eight cold reloads) runs as `test.slow()`; it timed out on Firefox CI 39791051931 at two different steps while every other job passed
-- 261022 T325 done (q8m5; explore exit, from k2r7's record): bit-identical grid speed-up merged over T336 (one conflict in `shapePlace`, T336's upfield factor kept); 15 digests re-recorded from main's own records and passing on the merged tree, 99 forced-tactic probe matches identical; own match 0.77 on the Xeon (context only), reference-machine timing left to T326/T286
-- 261022 T325 T345 taken over (q8m5, owner's M1 Max): k2r7 stale; T325 from `work/k2r7-T325`, T345 from T336's kept setting
-- 261022 T350 done (v7c3): normal view shows the controlling side beside the scoreboard and rings the recorded carrier on the pitch; the action under way (first event ending at or after the instant) leads, the sample owner falls back, sparse history stays neutral; 9 unit cases, phone/desktop/pixel/reduced-motion journeys on Chromium
-- 261022 T349 done (v7c3): recorded goals hold 1 s at every speed with a GOAL cue (side, scorer) and a boxed scoring-side score; the scoreboard shows the presented running score; seek passes goals without a cue; 11 unit cases, live and archived journeys on Chromium and Firefox
-- 261022 fix e2e (v7c3): progression-settings:163 picks the menu's settings row by its title prefix, since the row's name now carries its hint line (main CI red since b4d1c7f); intervention, management and news pass locally on Chromium and Firefox
-- 261022 T336 integrated (k2r7; explore exit, coordinator exception to its keep rule): counter's settled pass weights stop at 70 m and its block stops following a ball upfield; artifact round 11 MATCH-29 8/3/14 → 10/2/13, core 32/38, curve 3.43 → T345
-- 261022 T345 start (k2r7): on T336's kept setting, beside the T336 batch gate and T325's review
-- 261022 T351 done: menu theme/language entries open a small centered picker over a light dim so the page visibly changes; WEB r126. 10 presentation journeys, 677 web units, typecheck/lint/format/presentation/build pass; business.spec:67 fails identically on main before this change.
-- 261022 measured planning verified (g8s2): retained full-match reproducer matches all 8 runs/89 corner readings exactly; retained stage reproducer matches coordinates/jobs exactly; spec lint passes with existing stale/status warnings; no product code or push.
-- 261022 ideation/create-task measured follow-up (g8s2): 8 matches/89 corners plus isolated placement→moveAll probe replace the unverified stationary-defence diagnosis in T348; WEB r125/WEB-95 adds T350 normal-view team/carrier cues after T349, required by T286. Evidence and runnable probes retained in docs/benchmarks/set-piece-motion-261022.*.
-- 261022 ideation set-piece-defence-and-goal-feedback resumed: measure actual team movement before correcting the task; update-ssot WEB/create-task for ball ownership.
-- 261022 planning verified (g8s2): spec lint passes (11 remaining tasks; stale-base/status warnings retained), git diff --check clean; documentation only, no game implementation or push.
-- 261022 create-task MATCH WEB: T348 defensive set-piece response after T325/T345, T349 independent goal feedback; todo T323/T286 refreshed to MATCH r20 WEB r124 with follow-up dependencies; ideation converted.
-- 261022 create-task MATCH WEB start (g8s2): consume MATCH-12/18 and WEB-32/94 deltas without changing doing tasks.
-- 261022 update-ssot MATCH r20 WEB r124: explicit defensive set-piece responses and goal-presentation transitions; doing T325/T336 remain untouched. Todo T323/T286 need refreshed contracts and follow-up dependencies.
-- 261022 update-ssot MATCH WEB start: convert ideation/set-piece-defence-and-goal-feedback into the requested implementation backlog.
-- 261022 ideation set-piece-defence-and-goal-feedback ready: remaining tasks lack explicit corner-defence movement and goal feedback; add SSOT-backed follow-ups as requested.
-- 261022 ideation set-piece-defence-and-goal-feedback start (g8s2): standalone checkout assigned by the owner; inspect remaining coverage before adding work.
-- 261022 T347 done (t6p4): home/settings/navigation cleanup with all seven management views inspected; 51 focused units and 33 Chromium journeys verified, including seven focused fixes/rechecks; final build and loaded cups/records inspection pass; no commit/push.
+- 261023 publish UI (u4h2) start: local UI T356/T358 renumbered T360/T361 to retain origin/main's engine T356/T358; integrate origin and run the ARCH-30 batch gate before push.
+- 261023 T361 done (u4h2): shared padded controls/choices, non-clipped transport status, distinct NEXT MATCH card and inset themed roster hover/focus with separate stance/profile actions. Policy/filter/segment/select/training controls aligned. 37 focused units, type/lint/format/build/spec and both-theme 320/360/390/760/1380px manual geometry/interaction checks pass; browser specs deferred.
+- 261023 create-task WEB r130 → T361 doing (u4h2); T357 reserved by the other session, T286 base refreshed without scope changes.
+- 261023 update-ssot WEB r130: shared padded text controls and responsive choices, NEXT MATCH card surface and inset theme-shaped roster hover/focus.
+- 261023 update-ssot WEB start (u4h2): shared control spacing, report-card surfaces and roster hover/focus polish.
+- 261023 T360 done (u4h2): manual entry enables 경기 전날 보고, owner-office report/approval copy and NEXT MATCH title replace system-stop wording. Next-event reopens a dismissed unresolved match via a transient report request with no command, keeping same-date business blockers; explicit result/watch resolves it. 51 focused units, type/lint/format/resource/build and standard/pixel manual 360/390/1380px plus repeated close/reopen/world-fact and explicit-result checks pass; full browser specs deferred.
+- 261023 create-task WEB r129 → T360 doing (u4h2); T286 base refreshed without release-scope changes.
+- 261023 update-ssot WEB r129: entering manual enables pre-match reporting; role-based office copy and NEXT MATCH title; a dismissed match report reopens through next-event without settlement.
+- 261023 T355 done (u4h2): 구단주 사무실 replaces the responsibility sheet/HUD entry; themed illustrations and per-authority confirmation include pending work, observations use explicit on/off pairs, manual match eve is optional with next-result bounded progression, mode preserves triggers, and settings use a 3.2 s bottom toast. 97 focused units, type/lint/format/presentation/generator/build/spec checks and both-theme manual 360/390/1380px plus cancel/confirm/reload/next-result checks pass; full browser/contract suites deferred.
+- 261023 create-task WEB r128 → T355 doing (u4h2); T286 base refreshed, release scope unchanged.
+- 261023 update-ssot WEB r128: owner-office page with illustrated responsibility confirmations, optional manual match eve and compact bottom settings toast.
+- 261023 T354 done (u4h2): explained AUTO/MANUAL shortcut with successful opt-out persistence, HUD settings after notifications, league/full-date/prominent-round row and reserved bottom transport. New observation only from the match-eve dialog, finished match returns home and NEXT MATCH preparation sits right. 67 focused units, type/lint/format/resource/generator/build pass; standard/pixel manual checks at 360/390/1380px plus modal, reload and actual eve/watch/return flow pass. Full browser specs deferred.
+- 261023 create-task WEB r127 → T354 doing (u4h2); T286 WEB base refreshed with engine scope unchanged.
+- 261023 update-ssot WEB r127: mode shortcut with remembered explanation, HUD settings, prominent round/date row, bottom transport and match-eve-only new observation.
+- 261023 fix squad status: the squad tile gets a 108px minimum, status labels use 12px regular text and numeric counts use bold primary text, with no line wrapping. Standard/pixel manual checks at 360/390/1380px and double-digit injury/ban counts show one line with no overflow; 4 ClubHub units, typecheck/lint/format and build pass.
+- 261023 fix pixel play shape: theme-owned play-radius makes the clock's button and background square (0px) in pixel and circular (50%) in standard, including pause state. Manual Chromium radius/toggle inspection, build, presentation validation and focused format checks pass.
+- 261023 T353 clarification: the owner confirmed the club icon meant the lower navigation mark and accepted its updated appearance.
+- 261022 T353 done (u4h2): all 34 standard semantic icons now use official Lucide 1.61.0 data, connected chevrons and Building for club operations; shared SVG layers preserve stroke/cap/join data, upstream license shipped. 66 focused units, type/lint/format/resource/generator/build and six manual phone/desktop theme inspections pass; full browser specs deferred. Optional club-crest clarification remains open.
+- 261022 T352 done (u4h2): pack-driven play/pause/replay icons replace CSS marks in clock/replay controls; preference applying text removed, aria-busy retained. 45 focused units, typecheck/lint/format/presentation/build and manual Chromium geometry/icon/toggle inspection pass; full browser specs deferred.
+- 261022 fix preference surfaces: picker titles use 20px in both themes; select triggers/lists use the deep surface, floating edges and theme-provided opening shadows; modal header/footer dividers use the floating-edge token instead of transparent standard lines. Manual Chromium inspection at 360/390/1380px in standard/pixel: no page errors or picker overflow. Build/format pass; full browser specs not run.

@@ -291,7 +291,7 @@ test('a design applied while the match is paused mid-match leaves its recorded s
     .click();
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);

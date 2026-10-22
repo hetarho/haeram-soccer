@@ -56,8 +56,8 @@ const founded = (seed: string) =>
   });
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
@@ -130,7 +130,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1950년 8월 2일');
     await openTraining();
-    const mini = page.getByTestId('mini-clock');
+    const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
     const entered = await date.innerText();
     await expect(date).not.toHaveText(entered);
     await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
@@ -167,7 +167,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(sheet).toHaveCount(0);
     const outcome = page.getByTestId('action-outcome');
     await expect(outcome).toContainText('코치에게 훈련 방향을 전했어요');
-    await outcome.getByRole('button', { name: '확인', exact: true }).click();
+    await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
     await openTraining();
     await expect(page.getByTestId('training-focus')).toHaveText(
       '지금 하드 트레이닝 · 구단주 지시 · 4라운드 남음',

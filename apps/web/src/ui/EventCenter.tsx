@@ -20,7 +20,12 @@ import {
   useNotifications,
   type SystemNotification,
 } from '../runtime/store';
-import { stoppingEvents, useProgression, type ProgressionController } from '../runtime/progression';
+import {
+  pendingMatchReport,
+  stoppingEvents,
+  useProgression,
+  type ProgressionController,
+} from '../runtime/progression';
 import {
   openBusiness,
   openContractTalk,
@@ -28,7 +33,7 @@ import {
   openPeople,
   usePlayerSheet,
   openTraining,
-  useInterventionDialog,
+  openOwnerOffice,
   useNavigation,
 } from './state';
 import { competitionLabel } from './format';
@@ -93,38 +98,49 @@ export const EventCenter = memo(function EventCenter({
   const w = useGameState((state) => state.view?.world);
   const running = useProgression(controller, (state) => state.running);
   const [opened, setOpened] = useState<string>();
-  if (!w || running) return null;
-  const events = stoppingEvents(w);
-  if (!events.length) return null;
-  const key = seasonDate(w);
-  if (compact && opened !== key)
+  const eventRequest = useProgression(controller, (state) => state.eventRequest);
+  const page = useNavigation((state) => state.page);
+  const events = w && !running ? stoppingEvents(w) : [];
+  const key = w ? `${w.id}:${seasonDate(w)}` : '';
+  const date = w ? seasonDate(w) : '';
+  const eve = !running && w && !!pendingMatchReport(w);
+  const eveKey = eve ? key : undefined;
+  useEffect(() => setOpened(undefined), [page]);
+  useEffect(() => {
+    if (eveKey) setOpened(eveKey);
+  }, [eveKey, eventRequest]);
+  if (!w || running || !events.length) return null;
+  const inDialog = compact || eve;
+  if (inDialog && opened !== key)
     return (
       <button
         className={s.pill}
         data-testid="event-pill"
-        aria-label={`이벤트 ${events.length}개 · ${key} · 열기`}
+        aria-label={
+          eve ? `경기 준비 보고 · ${date} · 열기` : `이벤트 ${events.length}개 · ${date} · 열기`
+        }
         onClick={() => setOpened(key)}
       >
         <i aria-hidden="true">{events.length}</i>
-        <span>{key} 이벤트</span>
+        <span>{eve ? 'NEXT MATCH · 보고 확인' : `${date} 이벤트`}</span>
       </button>
     );
   const content = (
     <div className={s.group} data-testid="event-group">
       <h2>
-        {key} · 이벤트 {events.length}개
+        {date} · {eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
       </h2>
       {events.map((item) => (
         <EventCard key={item.id} client={client} controller={controller} item={item} />
       ))}
     </div>
   );
-  return compact ? (
-    <Dialog label={`${key} 이벤트`} onClose={() => setOpened(undefined)}>
+  return inDialog ? (
+    <Dialog label={eve ? 'NEXT MATCH' : `${date} 이벤트`} onClose={() => setOpened(undefined)}>
       {content}
     </Dialog>
   ) : (
-    <section className={s.eventGroup} aria-label={`${key} 이벤트`}>
+    <section className={s.eventGroup} aria-label={eve ? 'NEXT MATCH' : `${date} 이벤트`}>
       {content}
     </section>
   );
@@ -149,7 +165,6 @@ const EventCard = memo(function EventCard({
     controller.eventDecided();
   };
   const acting = useGameState((state) => !!state.pendingActions || state.readonly);
-  const showLevels = useInterventionDialog((state) => state.show);
   const setPage = useNavigation((state) => state.setPage);
   const next = nextOwnFixture(w);
   const eve = item.kind === 'match' && next?.id === item.ref ? next : undefined;
@@ -166,7 +181,7 @@ const EventCard = memo(function EventCard({
       <aside
         key={eve.id}
         ref={cardExit}
-        className={s.card}
+        className={`${s.card} ${s.matchReport}`}
         aria-label="이벤트"
         data-testid="event-card"
       >
@@ -180,8 +195,8 @@ const EventCard = memo(function EventCard({
         <p>
           {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
-        <button type="button" className={s.stops} onClick={showLevels}>
-          위임·진행 설정
+        <button type="button" className={s.stops} onClick={openOwnerOffice}>
+          구단주 사무실
         </button>
         <div className={s.actions}>
           <button className={s.primary} disabled={acting} onClick={() => void watch()}>

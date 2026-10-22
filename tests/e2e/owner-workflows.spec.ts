@@ -143,9 +143,9 @@ test('a different game never inherits the first career policy draft', async ({ p
   await youth.getByRole('button', { name: /아카데미 아이들을/ }).click();
   await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('dialog', { name: '설정' })
     .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
   await page
@@ -329,7 +329,7 @@ test('keeps the home briefing informational alongside the public clock and links
   await expect(page).toHaveURL(/\/history\?season=1950/);
   await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
   await advanceOneRound(page);
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
 });
 
 test('chooses a cup once and keeps its archived season through competition and club-record visits', async ({
@@ -352,7 +352,8 @@ test('chooses a cup once and keeps its archived season through competition and c
   await seedSlot(page, w);
   await page.goto('/');
   await continueSlot(page);
-  await expect(page.getByTestId('calendar')).toContainText('1952/53 · 라운드 0');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1952');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   await nav(page).getByRole('button', { name: '컵 대회', exact: true }).click();
   const competition = page.getByRole('tablist', { name: '컵 대회', exact: true });

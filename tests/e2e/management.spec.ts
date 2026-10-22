@@ -65,7 +65,8 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
@@ -112,14 +113,15 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await advanceOneRound(page);
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
   await page
     .locator('input[type=file]')
     .last()
     .setInputFiles({ name: 'career.json', mimeType: 'application/json', buffer: raw });
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기' }).click();
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
 });
 test('browses every historical regional group and resets filters on country changes', async ({
   page,
@@ -130,7 +132,8 @@ test('browses every historical regional group and resets filters on country chan
   await page.getByLabel('세계 생성 시드').fill('historical-regional-groups');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   await page.setViewportSize({ width: 390, height: 844 });
   // Other leagues' past tables live on the league page, never in the records room (→WEB-54).

@@ -134,13 +134,12 @@
     transform: translateY(14px) scale(0.97);
   }
 }
-/* Away from home a pending event waits as a small pill instead of covering the view. */
+/* Dismissed eves and events on other management views remain available above transport. */
 .pill {
   position: fixed;
   z-index: 95;
-  /* Left of the news button. */
-  right: 86px;
-  bottom: 28px;
+  right: 12px;
+  bottom: 80px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -166,8 +165,8 @@
 }
 @media (max-width: 760px) {
   .pill {
-    right: 72px;
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    right: 12px;
+    bottom: calc(156px + env(safe-area-inset-bottom));
   }
   .card {
     left: 12px;
@@ -177,7 +176,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .card,
+  .pill {
     animation: none;
   }
 }
@@ -269,4 +269,16 @@
   width: auto;
   max-height: none;
   overflow: visible;
+}
+
+@media (max-width: 760px) {
+  .eventGroup {
+    bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+}
+
+.matchReport .actions button {
+  padding: 8px 10px;
+  font-size: 12px;
+  white-space: nowrap;
 }

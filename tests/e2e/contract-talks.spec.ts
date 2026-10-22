@@ -139,7 +139,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // Six weeks later he hands in a transfer request.
   for (let next = round + 1; next <= due; next++) {
     await advanceOneRound(page);
-    await expect(page.getByTestId('calendar')).toHaveText(new RegExp(`라운드 ${next}$`));
+    await expect(page.getByTestId('game-round')).toHaveText(String(next));
   }
   await page.keyboard.press('Escape');
   await expect(card).toHaveCount(0);

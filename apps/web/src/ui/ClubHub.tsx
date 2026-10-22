@@ -1,12 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/world';
-import {
-  nextOwnFixture,
-  daysUntilNextMatch,
-  currentDay,
-  seasonLength,
-} from '../../../../packages/engine/src/calendar';
+import { nextOwnFixture, currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
 import { competitionLabel, number } from './format';
 import { cashState, teamStates, urgentState, type StateKey } from './teamState';
@@ -23,65 +18,19 @@ import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 
-export function MatchAction({
-  critical,
-  next,
-  onWatch,
-  onReturn,
-}: {
-  critical: boolean;
-  next: boolean;
-  onWatch: () => Promise<void>;
-  onReturn: () => void;
-}) {
-  const busy = useGameState((state) => state.busy);
-  const [pending, setPending] = useState(false);
-  const readonly = useGameState((state) => state.readonly);
-  const error = useGameState((state) => state.error);
-  const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
-  // An unfinished live match is still on: home leads back to it instead of starting another.
+/** Home can resume an existing match; only the eve dialog starts a new one. */
+export function MatchAction({ onReturn }: { onReturn: () => void }) {
   const live = useGameState((state) => state.playback?.record.id);
   const view = useMatchView();
-  const returning = !!live && view.matchId === live && !view.finished;
-  if (returning)
-    return (
-      <button
-        data-testid="home-watch"
-        className={`${s.play} ${s.returning}`}
-        aria-label="관전 이어보기"
-        aria-describedby="home-watch-hint"
-        onClick={onReturn}
-      >
-        <b>
-          관전 이어보기 <span aria-hidden="true">▶</span>
-        </b>
-        <small id="home-watch-hint">관전 중인 경기가 이어지고 있어요</small>
-      </button>
-    );
+  if (!live || view.matchId !== live || view.finished) return null;
   return (
     <button
       data-testid="home-watch"
-      className={s.play}
-      aria-label={next ? '다음 경기 관전' : '다음 시즌 시작'}
-      aria-describedby="home-watch-hint"
-      disabled={pending || busy || readonly || !!error || critical}
-      onClick={() => {
-        if (pending) return;
-        setPending(true);
-        void onWatch().finally(() => setPending(false));
-      }}
+      className={`${s.play} ${s.returning}`}
+      aria-label="관전 이어보기"
+      onClick={onReturn}
     >
-      <b>
-        {next ? (days ? `${days}일 후 관전` : '경기 관전') : '다음 시즌 시작'}{' '}
-        <span aria-hidden="true">▶</span>
-      </b>
-      <small id="home-watch-hint">
-        {next
-          ? days
-            ? `${days}일 진행 후 바로 킥오프`
-            : '지금 바로 킥오프'
-          : '시즌 정산 후 새 일정 시작'}
-      </small>
+      관전 이어보기 <span aria-hidden="true">▶</span>
     </button>
   );
 }
@@ -181,7 +130,11 @@ function TeamState({
                   {state.value}
                 </i>
               </b>
-              <small>{state.status}</small>
+              <small>
+                {state.status
+                  .split(/(\d+)/)
+                  .map((part, index) => (index % 2 ? <strong key={index}>{part}</strong> : part))}
+              </small>
             </button>
           </li>
         ))}

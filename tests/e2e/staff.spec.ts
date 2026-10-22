@@ -205,7 +205,8 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   operate(w, { type: 'hire', id: offer.id });
   simulateSeason(w);
   await importResponsibilityCareer(page, w);
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
@@ -247,7 +248,10 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await expect(founding).toHaveCount(0);
   await expect(page.getByText('FIRST TEAM MANAGER', { exact: true })).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
-  await page.getByTestId('mini-clock').getByRole('button', { name: '자동 진행 시작' }).click();
+  await page
+    .getByRole('region', { name: '시즌 진행', exact: true })
+    .getByRole('button', { name: '자동 진행 시작' })
+    .click();
   await expect(date).not.toHaveText('1950년 8월 1일');
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
 });

@@ -1,0 +1,34 @@
+/* Text choices keep their spacing as a group; the containing row decides when to wrap. */
+.choices {
+  display: flex;
+  align-items: stretch;
+  gap: var(--control-gap);
+  min-width: 0;
+}
+.choices > button {
+  flex: 1;
+  min-width: 88px;
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--control-radius);
+  background: var(--control-fill);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  box-shadow: none;
+}
+.choices > button[aria-pressed='true'] {
+  color: var(--accent-text);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-deep));
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  font-weight: 600;
+}
+@media (hover: hover) {
+  .choices > button:hover:not(:disabled, [aria-pressed='true']) {
+    background: var(--surface-2);
+    filter: none;
+  }
+}
