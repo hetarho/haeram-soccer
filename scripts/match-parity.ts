@@ -77,7 +77,9 @@ import {
   conditionFixture,
   coreFixturePairs,
   forcedFatigueApplied,
+  forcedGap,
   forcedRosters,
+  forceTacticRosters,
   rosterRating,
   type ConditionParams,
 } from './grid-bands';
@@ -350,8 +352,10 @@ export function aggregateCondition(
 
 /**
  * The same fixtures on the candidate detailed engine (grid-bands' procedure), for the equivalence
- * report. Conditions the detailed runner does not condition yet (forced tactics with a neutral squad
- * fatigue, a set squad fatigue) have no reference here.
+ * report. A tactics condition forces both tactics on squads built for the forced formations from
+ * the declared squad fatigue (grid-bands `forceTacticRosters`, as grid-bands and `conditionedMatch`
+ * do), a fatigue condition sets every matchday player's pre-match fatigue as `conditionedMatch`
+ * does (T323); seasons have no detailed reference here.
  */
 export function referenceCondition(
   conditionId: string,
@@ -360,27 +364,38 @@ export function referenceCondition(
   count: number,
 ) {
   const c = conditionOf(conditionId);
-  if (c.family === 'tactics' || c.family === 'fatigue' || c.family === 'season')
+  if (c.family === 'season')
     throw new Error(`${c.id}: the detailed runner does not condition ${c.family} yet`);
   const params = c.params as ConditionParams;
   const r = conditionClubs(c, partition, round);
+  const forced = c.family === 'tactics';
   return Array.from({ length: count }, (_, i): MatchSample => {
     const { w, home, away, f } = conditionFixture(c, partition, round, i, r);
-    const result = playGrid(
-      buildGridSetup(w, f, {
-        observe: false,
-        recordPlayers: true,
-        model: MATCH_MODEL_REVISION,
-        ...(params.decide ? { decide: params.decide } : {}),
-      }),
-    );
+    const setup = buildGridSetup(w, f, {
+      observe: false,
+      recordPlayers: true,
+      model: MATCH_MODEL_REVISION,
+      ...(forced ? { tactics: [params.home!, params.away!] } : {}),
+      ...(params.decide ? { decide: params.decide } : {}),
+    });
+    const fatigue = params.fatigue;
+    const applied = forced && forceTacticRosters(w, f, setup, [home, away], fatigue);
+    if (!forced && fatigue !== undefined)
+      setup.rosters = [
+        setup.rosters[0].map((p) => ({ ...p, fatigue })),
+        setup.rosters[1].map((p) => ({ ...p, fatigue })),
+      ];
+    const result = playGrid(setup);
     return {
       record: result.record,
       diagnostics: result.diagnostics,
       incidentsTracked: true,
       condition: c.id,
-      gap: rating(w, home, f) + 3 - rating(w, away, f),
-      freshness: result.diagnostics.freshness,
+      gap: forced
+        ? forcedGap([home, away], setup.rosters, setup.tactics)
+        : rating(w, home, f) + 3 - rating(w, away, f),
+      // MATCH-29's freshness of a forced pairing only from its declared squad fatigue (T321).
+      ...(!forced || applied ? { freshness: result.diagnostics.freshness } : {}),
     };
   });
 }
