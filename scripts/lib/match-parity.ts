@@ -2136,6 +2136,8 @@ export type AdvancedCounter = {
 
 const SB = 'StatsBomb open data 2015/16 (Premier League, La Liga, Serie A, Ligue 1), computed';
 const OPTA = 'FBref (Opta) squad tables 2017/18–2023/24, five leagues';
+const OPTA_SEQUENCES =
+  'Opta via The Analyst team sequence stats 2024/25–2025/26, five leagues (league totals: high turnovers per team-match, PPDA as opposition passes ÷ defensive actions)';
 /**
  * MATCH-30's real-football level of every MATCH-13 advanced counter for equal top-tier sides, per
  * team per match (docs/MATCH-BASELINES.md "MATCH-13 고급 지표 기준값", which holds each band's
@@ -2143,7 +2145,8 @@ const OPTA = 'FBref (Opta) squad tables 2017/18–2023/24, five leagues';
  * rounded outward, never an engine's output. Counters MATCH-23 already bands point at that row;
  * a counter without a comparable public source is listed as unbanded with its reason and held to
  * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's. v2 (T327): high
- * turnovers and PPDA count under MATCH-13 r18's published conventions.
+ * turnovers and PPDA count under MATCH-13 r18's published conventions and are banded from Opta's
+ * league-season figures under those conventions.
  */
 export const ADVANCED_COUNTER_TARGET = {
   version: 2,
@@ -2243,8 +2246,8 @@ export const ADVANCED_COUNTER_TARGET = {
       label: 'high turnovers (team)',
       reads: 'td.highTurnovers',
       unit: 'count',
-      unbanded:
-        "published figure not in the repo; fetch in a supervised session. Counted as MATCH-13 r18's Opta convention (a sequence from an open-play ball won within 40 m of the opponent's goal, read from MATCH-14's nearest edge, 35 m); the repo holds only Opta's about 15 a match for both sides (about 7.5 a team) without league or season",
+      band: [5.7, 7.5],
+      source: OPTA_SEQUENCES,
     },
     {
       id: 'ppda',
@@ -2252,8 +2255,8 @@ export const ADVANCED_COUNTER_TARGET = {
       label: 'PPDA',
       reads: 'ratio.ppda',
       unit: 'ratio',
-      unbanded:
-        "published figure not in the repo; fetch in a supervised session. Counted as MATCH-13 r18's published convention (the opponent's passes in its own 60% ÷ tackles, interceptions, challenges and fouls there, read on MATCH-14's two-thirds edge); the repo holds only press-style ranges (high 7–10, mid 11–14, low 15–20, ends estimated; StatsBomb, Hudl), no league-season means",
+      band: [12, 14],
+      source: OPTA_SEQUENCES,
     },
     {
       id: 'fieldTilt',
