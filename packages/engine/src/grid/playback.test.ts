@@ -496,13 +496,13 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
   });
 
-  it('a set-piece job displaced at its kick shows the urgent job from the kick on', () => {
+  it("an urgent job the kick's own update gives shows from the kick until the next play", () => {
     // T366: the update that reads the kick runs at the kick's own instant (`playGrid`, once the
     // restart resolves), so an urgent danger there (an attacker on the ball within 30 m of goal, a
-    // runner nobody marks) may displace a set-piece job as it starts. In `set-piece-1` the
-    // man-marker `p:10` leaves the runner his place names for the unmarked one: an urgent mark
-    // since the kick, which T365's widened check counted on the trace side and not in the samples.
-    // Playback shows him as the engine holds him: no stage drops a job.
+    // runner nobody marks) gives urgent jobs since the kick and may displace a set-piece job as it
+    // starts. In `set-piece-1` the man-marker `p:10` leaves the runner his place names for the
+    // unmarked one: an urgent mark since the kick, which T365's widened check counted on the trace
+    // side and not in the samples. Playback shows him as the engine holds him: no stage drops a job.
     const played = match('set-piece-1');
     const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
     let cases = 0,
@@ -513,7 +513,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       for (let k = def * 11; k < def * 11 + 11; k++) {
         const i = e.intentions?.[k];
         // An urgent job the kick's own update gave, held since the kick, to a man of the scene (on
-        // his restart place at the kick, so `defendSetPiece` gave him a job there first).
+        // his restart place at the kick).
         if (!i || 'end' in i || i.since !== since || i.priority !== 'danger') continue;
         const pid = ids(def)[e.slots[k]!]!;
         const place = e.kick!.intentions?.[slotFor(played, e.kick!, def, pid)];
@@ -526,8 +526,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
           if (m.elapsedSeconds >= next || (prepared && m.elapsedSeconds > e.elapsed)) break;
           const label = `${sceneOf(e)} at ${m.elapsedSeconds} ${pid}`;
           const p = m.players[def].find((x) => x.id === pid)!;
-          // The kick's own sample: the place he walked to. The set-piece job he was given there
-          // ended at that instant, so no sample can show it.
+          // The kick's own sample: the place he walked to. A set-piece job he was given there ended
+          // at that instant, so no sample can show it.
           if (m.elapsedSeconds === since) {
             expect(p.intention, label).toMatchObject({ kind: 'restart', priority: 'restart' });
             continue;
