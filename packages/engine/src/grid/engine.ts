@@ -646,7 +646,7 @@ export function playGrid(setup: GridSetup): GridResult {
           rs,
           r,
           ctx,
-          candidate && !transition ? prepareOnClock(rest, prepared) : undefined,
+          candidate && !transition ? prepareOnClock(rest, prepared, tracer.kick) : undefined,
         );
         const { knots } = prepared;
         if (candidate) {
