@@ -155,12 +155,21 @@ export function lineX(s: GridState, side: 0 | 1, line: Line): number {
 
 /** The x of the second-last defending player (goalkeeper counts), in the attacking side's frame. */
 export function offsideLine(s: GridState, defendingSide: 0 | 1): number {
-  const attacking = other(defendingSide);
-  const xs = s.players[defendingSide]
-    .filter(onPitch)
-    .map((gp) => attackFrame(attacking, gp.pos)[0])
-    .sort((a, b) => b - a);
-  return xs.length > 1 ? xs[1]! : (xs[0] ?? PITCH.length);
+  // The two largest x in one pass: the values a descending sort would put first and second.
+  const flip = defendingSide === 0;
+  let first = -Infinity,
+    second = -Infinity,
+    count = 0;
+  for (const gp of s.players[defendingSide]) {
+    if (!onPitch(gp)) continue;
+    const x = flip ? PITCH.length - gp.pos[0] : gp.pos[0];
+    if (x > first) {
+      second = first;
+      first = x;
+    } else if (x > second) second = x;
+    count++;
+  }
+  return count > 1 ? second : count ? first : PITCH.length;
 }
 
 /** Whether the side lost the ball within the counter-press window. */
@@ -194,6 +203,8 @@ export interface ShapeCache {
   offside: [number?, number?];
   pressers: [number[]?, number[]?];
   defence: [number?, number?];
+  /** Each side's on-pitch outfielders in roster order, the players a marker leans toward. */
+  outfield?: [GridPlayer[]?, GridPlayer[]?];
 }
 
 /** A player's target in the engine frame. */
@@ -224,16 +235,18 @@ export function shapePlace(
   const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
   const cfg = tacticShape(s, side);
-  const b = attackFrame(side, s.ball);
   const own = lineOfSlot(s, gp);
+  // The ball in the side's attack frame (`attackFrame`, without allocating).
+  const bx = side === 0 ? s.ball[0] : PITCH.length - s.ball[0];
+  const by = side === 0 ? s.ball[1] : PITCH.width - s.ball[1];
   if (own === 'GK') {
     const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
     const high = sweeper && df >= 40;
-    let x = 4 + (b[0] - MID) * SHAPE_CONFIG.keeperPull;
+    let x = 4 + (bx - MID) * SHAPE_CONFIG.keeperPull;
     if (high) x += SHAPE_CONFIG.sweeperStep * (df - 20);
     x = clamp(x, 2, high ? SHAPE_CONFIG.keeperMax.sweeperKeeper : SHAPE_CONFIG.keeperMax.other);
-    return toEngine(side, [x, CENTRE + (b[1] - CENTRE) * 0.15]);
+    return toEngine(side, [x, CENTRE + (by - CENTRE) * 0.15]);
   }
   const spot = SPOTS[tactic][gp.slot]!;
   const inPossession = s.possession === side;
@@ -247,8 +260,8 @@ export function shapePlace(
       y += spot[1] < CENTRE ? shift[1] : spot[1] > CENTRE ? -shift[1] : 0;
     }
   } else x += cfg.defend;
-  x += (b[0] - MID) * cfg.compact;
-  y += (b[1] - CENTRE) * SHAPE_CONFIG.lateral;
+  x += (bx - MID) * cfg.compact;
+  y += (by - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
     const foe = other(side);
     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
@@ -256,21 +269,33 @@ export function shapePlace(
   }
   // On the candidate model only a press intention presses; this is the pre-feature presser.
   if (s.setup.model === undefined && (cache.pressers[side] ??= pressers(s, side)).includes(idx))
-    return pressPoint(s, gp, b, false);
+    return pressPoint(s, gp, [bx, by], false);
   // Another outfielder leans toward the goal-side point of the nearest attacker around his spot.
-  let near: Point | undefined,
-    best: number = SHAPE_CONFIG.markRadius;
-  for (const opp of s.players[other(side)]) {
-    if (!onPitch(opp) || lineOfSlot(s, opp) === 'GK') continue;
-    const o = attackFrame(side, opp.pos);
-    const d = Math.hypot(o[0] - x, o[1] - y);
-    if (d <= best) [near, best] = [o, d];
+  let best: number = SHAPE_CONFIG.markRadius;
+  // `attackFrame` inlined, so the scan allocates nothing.
+  let found = false,
+    nx = 0,
+    ny = 0;
+  const foe = other(side);
+  const foes = ((cache.outfield ??= [])[foe] ??= s.players[foe].filter(
+    (opp) => onPitch(opp) && lineOfSlot(s, opp) !== 'GK',
+  ));
+  for (const opp of foes) {
+    const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
+    const oy = side === 0 ? opp.pos[1] : PITCH.width - opp.pos[1];
+    const d = Math.hypot(ox - x, oy - y);
+    if (d <= best) {
+      found = true;
+      nx = ox;
+      ny = oy;
+      best = d;
+    }
   }
-  if (near) {
-    x += (near[0] - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
-    y += (near[1] - y) * SHAPE_CONFIG.markBlend;
+  if (found) {
+    x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
+    y += (ny - y) * SHAPE_CONFIG.markBlend;
   }
-  if (own === 'DF') x = clamp(x, lineFloor(b[0], cfg.line[0]), cfg.line[1]);
+  if (own === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);
 }
 
