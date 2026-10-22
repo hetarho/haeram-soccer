@@ -226,7 +226,7 @@
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - k2r7 (autopilot, 261022): T327 integrated on work/k2r7-int; T328 integrated (exit: roles cannot fix counter v press); e2e CI fix on work/k2r7-ci. Order: implement-task T331 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
 - OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
-- known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
+- known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
