@@ -460,9 +460,16 @@ export function passOptions(
     const dx = p[0] - c[0],
       dy = p[1] - c[1];
     for (const o of opponents) {
-      // The distance is at least either offset: a man further off on one axis leaves `nearest` as it is.
-      if (Math.abs(o[0] - p[0]) <= nearest && Math.abs(o[1] - p[1]) <= nearest)
-        nearest = Math.min(nearest, Math.hypot(o[0] - p[0], o[1] - p[1]));
+      // The distance is at least either offset: a man further off on one axis leaves `nearest` as it
+      // is. An offset that is not a number still reaches Math.min, which makes `nearest` NaN as before.
+      const ox = o[0] - p[0],
+        oy = o[1] - p[1];
+      if (
+        (Math.abs(ox) <= nearest && Math.abs(oy) <= nearest) ||
+        Number.isNaN(ox) ||
+        Number.isNaN(oy)
+      )
+        nearest = Math.min(nearest, Math.hypot(ox, oy));
       const t = ((o[0] - c[0]) * dx + (o[1] - c[1]) * dy) / (dist * dist);
       if (t > 0 && t < 1)
         risk += Math.exp(-Math.hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
