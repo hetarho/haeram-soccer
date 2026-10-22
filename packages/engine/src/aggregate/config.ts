@@ -30,8 +30,11 @@ export const AGGREGATE_CONFIG = {
     /** Each side's own spread around its share. */
     sideSd: 0.05,
   },
-  /** How far a side that has more of the ball plays up the pitch, from its share above a half. */
-  territory: { dominance: 0.6 },
+  /**
+   * How far a side that has more of the ball plays up the pitch, from its share above a half.
+   * T369: 0.6 → 0.7 with the box flows below, which took the dominant side's deep arrivals.
+   */
+  territory: { dominance: 0.7 },
   completion: {
     min: 0.3,
     max: 0.97,
@@ -58,15 +61,18 @@ export const AGGREGATE_CONFIG = {
   /**
    * Completed forward passes skip a band this often, drift a lane this often. `outside`: a forward
    * short or long pass from a half-space or a wing aimed into the box is played wide of it, to the
-   * flank cell of the same band, this often (T369).
+   * flank cell of the same band, this often (T369: 0 → 0.85 with `lateral` and `shots.place.box`,
+   * so MATCH-30's box entries, 13–16 a team, hold with the box shots).
    */
-  forward: { long: 0.16, drift: 0.4, outside: 0 },
+  forward: { long: 0.16, drift: 0.4, outside: 0.85 },
   /**
    * Lateral passes (T369): from the flank cells beside the box (`flankIntoBox`) the share played
-   * inside into the box, the rest along the flank in the same cell; from the cut-back zones
-   * (`cutBackInward`) the share played inward across the goal area, the rest out to the flank.
+   * inside into the box, the rest along the flank in the same cell (1 → 0.15; the reference's 66%
+   * lateral passes there all went into the box); from the cut-back zones (`cutBackInward`) the
+   * share played inward across the goal area, the rest out to the flank (0.5 → 0.1: a pull-back
+   * from there is mostly the low cross the cross flow draws, MATCH-30's cut-backs 0.35–0.60).
    */
-  lateral: { flankIntoBox: 1, cutBackInward: 0.5 },
+  lateral: { flankIntoBox: 0.15, cutBackInward: 0.1 },
   /** T323: 0.05 / 0.38 → 0.033 / 0.33 for MATCH-30's through balls (2.0–2.2 a team, 0.6–0.85 completed). */
   through: {
     /** Share of forward attempts from the middle and front-of-box bands' inner lanes. */
@@ -133,9 +139,10 @@ export const AGGREGATE_CONFIG = {
     },
     /**
      * Scale on the open-play shot rate by where the arrival ends: outside the box, in it, in the
-     * goal area (T284: MATCH-23 shot place on calibration seeds).
+     * goal area (T284: MATCH-23 shot place on calibration seeds; T369: box 1 → 1.45, a higher shot
+     * rate for the fewer arrivals in the box).
      */
-    place: { outside: 2.1, box: 1, goalArea: 0.4 },
+    place: { outside: 2.1, box: 1.45, goalArea: 0.4 },
     /** Effective-skill points (attack against defence) per e-fold of shot rate. */
     skillScale: 190,
     /**
@@ -299,9 +306,12 @@ export const AGGREGATE_ATTRIBUTION_CONFIG = {
   /** Crosses and cut-backs go to flank slots this much more than to central ones. */
   wide: 4,
   through: { GK: 0, DF: 0.2, MF: 1.5, FW: 1 },
-  /** Shots with the foot and headers (→MATCH-23: goals by line 50–60 / 27–37 / 8–15%). */
-  shot: { GK: 0, DF: 0.25, MF: 1.1, FW: 2.2 },
-  header: { GK: 0, DF: 0.8, MF: 0.8, FW: 2.2 },
+  /**
+   * Shots with the foot and headers (→MATCH-23: goals by line 50–60 / 27–37 / 8–15%). T369: FW
+   * 2.2 → 2.0 for both, so a club's top scorer takes 20–30% of its league goals (0.301 before).
+   */
+  shot: { GK: 0, DF: 0.25, MF: 1.1, FW: 2 },
+  header: { GK: 0, DF: 0.8, MF: 0.8, FW: 2 },
   /** Outside the box midfielders shoot relatively more. */
   outsideShot: { GK: 0, DF: 0.3, MF: 1.6, FW: 1.1 },
   /** Offsides by the receiver's line. */
