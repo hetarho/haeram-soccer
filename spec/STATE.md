@@ -17,6 +17,7 @@
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
 
 ## inbox
+- 261022 decided ARCH-31 T325 T326 T286: ARCH-31's reference machine is the owner's MacBook Pro (M1 Max), where T285 measured the ~14 s candidate season the 15 s budget came from; this host (Xeon Silver 4214, 12 CPUs) runs about 2.5× slower (a season ~34–35 s after T325) and its timings are context only → the budget was set from that machine and players run on consumer hardware (alt: this host with a ~35 s budget | restate the budget per machine class)
 - 261022 decided T325: start the bit-identical detailed-engine speed task now beside T336/T345 instead of after T323 (dep T323 → T334) → it does not change football, and a faster engine shortens every later calibration run; timing stays last in a quiet window and identity is re-proved on the merged tree (alt: keep it after T323)
 - 261022 decided T336 T345: keep T336's combination (counter's settled pass weights only within 70 m of goal; counter's block stops following the ball upfield) although it moved one of four target rows, not two → on fresh seeds it beats T334's state (MATCH-29 12/1/12 v 9/2/14, high regains inside, curve 3.34 → 2.98, nothing inside → outside) and the possession rows do not move under any counter lever; MATCH-2's curve (T334 moved it 2.50 → 3.34 at gap −10) and possession's rows go to explore T345 before T323 (alt: keep T334 only | revert T334 to restore the curve)
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
@@ -212,8 +213,7 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T334 | doing@261022.k2r7 |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T336 | Tune counter's settled play so it stops overshooting against possession and gives back press's high-regain lead | MATCH ARCH | T334 | doing@261022.k2r7 |
-| T345 | Give possession back its tactic rows and the underdog back its share of results | MATCH ARCH | T336 | todo |
+| T345 | Give possession back its tactic rows and the underdog back its share of results | MATCH ARCH | T336 | doing@261022.k2r7 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -236,6 +236,8 @@
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T336 integrated (k2r7; explore exit, coordinator exception to its keep rule): counter's settled pass weights stop at 70 m and its block stops following a ball upfield; artifact round 11 MATCH-29 8/3/14 → 10/2/13, core 32/38, curve 3.43 → T345
+- 261022 T345 start (k2r7): on T336's kept setting, beside the T336 batch gate and T325's review
 - 261022 T325 start (k2r7): pulled ahead of T323, beside T336/T345
 - 261022 create-task T345 (explore 2h): possession's tactic rows and MATCH-2's underdog curve after T334/T336; T323 and T286 wait for it
 - 261022 update-ssot ARCH r19 (ARCH-31✎ absolute throughput budgets, owner decision) and create-task refresh: T325 T326 T286 restated against the budgets, T323 T325 T326 T286 base ARCH@19; r19 sits on the owner's unpushed ARCH r18 (ARCH-32, theme inventory)
@@ -254,5 +256,3 @@
 - 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
 - 261022 T334 integrated (k2r7; explore exit, review approved with record fixes): counter keeps going forward or long once its break has passed, line floor 24; artifact refreshed (fingerprint b1633820); create-task T336 for the overshoot, T323 and T286 wait for it
 - 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
-- 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T334
-- 261022 create-task T334 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T334
