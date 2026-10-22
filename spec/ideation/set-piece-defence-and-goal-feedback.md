@@ -1,5 +1,5 @@
 # IDEATION set-piece-defence-and-goal-feedback
-> st:ready@261022 | Make set-piece defending visibly responsive and make goals unmistakable during observation.
+> st:converted@261022 | Make set-piece defending visibly responsive and make goals unmistakable during observation.
 
 ## vision
 During corners the attacking side appears to move while the defence does not respond. Both sides should visibly play the scene, and a goal should have a short, readable moment before play continues, including at high observation speeds.
@@ -18,8 +18,8 @@ During corners the attacking side appears to move while the defence does not res
 - boundary: existing tactics, recorded historical detail and settlement remain authoritative; seeking does not queue celebrations for skipped goals.
 
 ## domains
-- MATCH: make defensive marking, cover, second-ball and keeper reactions explicit under MATCH-18; recognize the goal cue as a presentation transition under MATCH-12.
-- WEB: define the goal cue and scoreboard feedback, with speed, seek, pause, visibility and reduced-motion behavior; align WEB-32's running-speed policy.
+- MATCH →MATCH: r20 makes defensive marking, cover, second-ball and keeper reactions explicit under MATCH-18 and recognizes the goal cue as a presentation transition under MATCH-12; T348 implements the defensive response.
+- WEB →WEB: r124 defines WEB-94 goal feedback and aligns WEB-32's running-speed policy; T349 implements the cue, hold and scoreboard emphasis.
 
 ## open
-- The requested follow-up tasks are ready for SSOT conversion. Exact visual styling and the short hold duration can use the existing presentation conventions during implementation.
+- Requested scope is converted into T348/T349. Longer player celebrations, camera cuts, sound and additional observed issues remain unselected; they can be recorded when concrete examples are available.

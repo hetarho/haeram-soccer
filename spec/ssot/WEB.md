@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r123 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r124 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -104,7 +104,7 @@
 - WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
 
 - WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming); preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
-- WEB-32 [o] Match presentation defaults to 1x with exactly 4 real seconds per 60 match seconds of running playback, uniformly in and out of play (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole timeline, including added time and extra time. No situation-based acceleration or slowdown is applied. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar.
+- WEB-32 [o] Match presentation defaults to 1x with exactly 4 real seconds per 60 match seconds of running playback, uniformly in and out of play (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the goal-feedback hold is an explicit presentation transition (→WEB-94). Speed changes preserve the current match-time position and never change settled outcomes or the game calendar.
   - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
 
@@ -453,6 +453,13 @@
   - Initial loading, locale-only changes, reselecting the current theme, hidden documents and reduced-motion preferences switch immediately. Unsupported or failed animation falls back to an immediate change.
   - A newer selection supersedes pending work and any running visual transition. Bound total animation duration; offscreen content adopts the committed theme immediately. Preserve stacking order, clipping, modal backdrops and popover occlusion throughout the transition; individual controls never escape their original visual layer.
 
+- WEB-94 [o] A recorded goal reached during forward live observation or ordinary archived replay briefly holds the presented match clock, ball and players at the goal, shows a GOAL cue naming the scoring side and recorded scorer when available, and emphasizes the scoring side's updated scoreboard value before playback continues.
+  - The hold lasts about one real second at every speed. Resume from the same presented instant at the currently selected speed, without a catch-up jump. The cue never changes simulated match time, stoppage credit, scores, statistics, the seed or the game calendar (→MATCH-7/12).
+  - Each goal is presented in order, including multiple goals within one retained minute or one display update. A conceded goal identifies the opponent without an own-club celebration; a converted shootout kick does not change the ordinary match score or trigger this cue.
+  - Each goal cues once per forward traversal. Rerendering, speed changes and tab visibility changes do not replay it. Seeking clears transient feedback without celebrating skipped goals; a deliberate replay from before a goal may cue it again. Archived pause remains paused after a cue, and navigating away, finishing or replacing the playback clears its transient state.
+  - While the document is hidden, cue time does not run. On returning, an unfinished cue completes its remaining visible hold before running playback resumes under →WEB-32.
+  - The GOAL cue and restrained scoreboard pulse remain readable in every theme and at phone widths without covering match controls. Reduced motion uses a static label and score emphasis for the same hold, with no flashing or animated celebration (→WEB-46). Feedback uses only the retained event detail available under →WEB-23.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -461,6 +468,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r124 261022 WEB-32✎ uniform timeline without a goal transition→uniform running timeline with WEB-94 goal holds; WEB-94+ brief recorded-goal hold, GOAL cue and scoreboard emphasis with replay, visibility and reduced-motion rules
 - r123 261022 WEB-10/11/18/50/51/91✎ crowded controls, menu watching and buried preferences→compact home actions, inline menu preferences, grouped utilities, HUD news and distinct bottom navigation
 - r122 261022 WEB-91✎ flat floating feedback→restrained shadow and subtle edge in standard, preserving scroll bounds and pixel appearance
 - r121 261022 WEB-91✎ angular standard controls/surfaces→restrained modern semantic corner hierarchy and pressed feedback through shared root tokens, with preserved layout and pixel appearance
