@@ -62,6 +62,14 @@ export interface GridState {
   changes: [SideChanges, SideChanges];
   /** The match's level: the mean 실효 OVR of both starting XIs at kick-off. */
   level: number;
+  /** The duels' skill scale on this fixture's model (`STRENGTH_CONFIG`, T357). */
+  scale: number;
+  /**
+   * Per side, the rating points of its distance from the level (its XI's mean 실효 OVR plus the
+   * day's shift, minus the level) its players' skills leave out: `1 − STRENGTH_CONFIG.candidate.side`
+   * of it on the candidate model, 0 on the pre-feature one (T357, T360).
+   */
+  pull: [number, number];
   /**
    * The transcendental functions this match's positions, distances and odds read, bound once at
    * kick-off (→ARCH-5, ARCH-9, T358): the portable ones on the candidate model, so its facts are
@@ -200,19 +208,41 @@ export function createState(setup: GridSetup): GridState {
   );
   let level = 0,
     starters = 0;
+  const sideSum = [0, 0],
+    sideCount = [0, 0];
   for (const side of [0, 1] as const)
     for (const gp of players[side].slice(0, 11)) {
-      level += slotOvr(
+      const ovr = slotOvr(
         gp.player,
         FORMATIONS[setup.tactics[side]].slots[gp.slot]!,
         setup.multiplier[side](gp.player),
       );
+      level += ovr;
       starters++;
+      sideSum[side] += ovr;
+      sideCount[side]++;
     }
+  const matchLevel = starters ? level / starters : 60;
+  const C = STRENGTH_CONFIG;
+  const candidate = setup.model !== undefined;
+  // T357/T360: the share of each side's distance from the level (its XI's mean plus the day's
+  // shift) its skills leave out, on the candidate model only; basic arithmetic, so the same on
+  // every host (→ARCH-9).
+  const leave = candidate ? 1 - C.candidate.side : 0;
+  const pull = [0, 1].map((side) =>
+    leave === 0
+      ? 0
+      : leave *
+        ((sideCount[side]! ? sideSum[side]! / sideCount[side]! : matchLevel) +
+          setup.shift[side as 0 | 1] -
+          matchLevel),
+  ) as [number, number];
   return {
     setup,
     players,
-    level: starters ? level / starters : 60,
+    level: matchLevel,
+    scale: candidate ? C.candidate.skillScale : C.skillScale,
+    pull,
     ball: [PITCH.length / 2, PITCH.width / 2],
     owner: [0, taker],
     possession: 0,
@@ -236,11 +266,24 @@ export function minutesOn(s: GridState, gp: GridPlayer): number {
  * match's level, spread by `skillScale` around `anchor` — the level T215 set the distributions at — so a
  * strength gap plays the same at every tier.
  */
-export const STRENGTH_CONFIG = { skillScale: 1.8, anchor: 76 } as const;
+export const STRENGTH_CONFIG = {
+  skillScale: 1.8,
+  anchor: 76,
+  /**
+   * Candidate model only (T357, T360, →MATCH-2): its own `skillScale`, and the share of a side's
+   * distance from the match's level — its XI's mean 실효 OVR plus the day's shift (form, home,
+   * manager and morale points and the gap diminishing returns take away) — that reaches its
+   * players' skills (`side`). At 1, as on the pre-feature model, favourites won 4–7 points too
+   * often at every gap of 10 or more (curve error 3.09 on T357's rounds 21 and 22); 0.8 shrinks
+   * every source of a strength point alike, so a point still counts the same wherever it comes
+   * from, and leaves the spread inside a side as it was.
+   */
+  candidate: { skillScale: 1.8, side: 0.8 },
+} as const;
 
 /** A raw skill value on the duels' scale. */
 export const strengthScaled = (s: GridState, raw: number) =>
-  STRENGTH_CONFIG.anchor + (raw - s.level) * STRENGTH_CONFIG.skillScale;
+  STRENGTH_CONFIG.anchor + (raw - s.level) * s.scale;
 
 /** Each attribute's index in `ATTRIBUTES` (and so in `GridPlayer.base`). */
 const ATTRIBUTE_INDEX = Object.fromEntries(ATTRIBUTES.map((a, i) => [a, i])) as Record<
@@ -259,7 +302,7 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
     90;
   return strengthScaled(
     s,
-    gp.base[ATTRIBUTE_INDEX[a]]! + setup.shift[side] - rate * minutesOn(s, gp),
+    gp.base[ATTRIBUTE_INDEX[a]]! + setup.shift[side] - rate * minutesOn(s, gp) - s.pull[side],
   );
 }
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { createWorld } from '../index';
 import { levelFactor, FORMATIONS, lineOf } from '../player';
@@ -73,6 +74,44 @@ describe('grid state', () => {
     const i = ATTRIBUTES.indexOf('pace');
     gp.base[i] = s.level - su.shift[0];
     expect(skill(s, 0, 5, 'pace')).toBeCloseTo(STRENGTH_CONFIG.anchor, 9);
+  });
+
+  it("the candidate's side share pulls each side's skills toward the level and the pre-feature path keeps them", () => {
+    const su = setup();
+    const pre = createState(su);
+    const cand = createState({ ...su, model: MATCH_MODEL_REVISION });
+    const keep = STRENGTH_CONFIG.candidate.side;
+    expect(keep).toBeLessThan(1);
+    expect(pre.pull).toEqual([0, 0]);
+    expect(cand.level).toBe(pre.level);
+    const distance = ([0, 1] as const).map((side) => {
+      // The side's distance from the level: its XI's mean 실효 OVR plus the day's shift.
+      const xi = su.rosters[side].slice(0, 11);
+      const mean =
+        xi.reduce(
+          (a, p, i) =>
+            a + slotOvr(p, FORMATIONS[su.tactics[side]].slots[i]!, su.multiplier[side](p)),
+          0,
+        ) / xi.length;
+      return mean + su.shift[side] - pre.level;
+    });
+    for (const side of [0, 1] as const) {
+      expect(cand.pull[side]).toBeCloseTo((1 - keep) * distance[side]!, 9);
+      // Every skill keeps `keep` of its side's distance; the pre-feature one keeps all of it.
+      for (const a of ['passing', 'positioning', 'finishing'] as const)
+        expect(skill(cand, side, 5, a)).toBeCloseTo(
+          skill(pre, side, 5, a) -
+            (1 - keep) * distance[side]! * STRENGTH_CONFIG.candidate.skillScale,
+          9,
+        );
+    }
+    // So two players each at his side's mean differ by `keep` of the sides' gap on the candidate model.
+    for (const s of [pre, cand])
+      for (const side of [0, 1] as const)
+        s.players[side][5]!.base.fill(distance[side]! - su.shift[side] + pre.level);
+    const gapOf = (s: typeof pre) => skill(s, 0, 5, 'pace') - skill(s, 1, 5, 'pace');
+    expect(gapOf(pre)).toBeCloseTo((distance[0]! - distance[1]!) * STRENGTH_CONFIG.skillScale, 9);
+    expect(gapOf(cand)).toBeCloseTo(keep * gapOf(pre), 9);
   });
 
   it('drains skills with minutes and press', () => {
