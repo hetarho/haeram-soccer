@@ -5,7 +5,7 @@ import { advanceDays, createWorld, operate, prepareSeason } from '../../packages
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
-import { expectHomeBounds } from './layout';
+import { expectHomeBounds, settle } from './layout';
 
 /** Synthetic presentation fixture, not a claim to have simulated the intervening seasons. */
 function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility = 0) {
@@ -123,6 +123,9 @@ for (const scenario of [
       ['감독', 'manager', 0],
       ['스태프', 'staff', 0],
     ] as const) {
+      // A tab clicked while the page still slides in sits partly outside the view, and Firefox's
+      // scroll-into-view then nudges the column by its 2px padding; home bounds need it at rest.
+      await settle(page);
       await tabs.getByRole('tab', { name: tab, exact: true }).click();
       await expectArt(page, kind, scenario.era, stage);
       await expect(people.locator(':scope > :first-child')).toHaveAttribute(
@@ -132,7 +135,8 @@ for (const scenario of [
       const art = overview.locator('[data-facility-art]');
       const bounds = (await art.boundingBox())!;
       expect(bounds.height).toBeGreaterThanOrEqual(144);
-      expect(bounds.height).toBeLessThanOrEqual(240);
+      // Firefox lays out in 1/60px units, so the 240px clamp can measure 240.00002.
+      expect(Math.round(bounds.height)).toBeLessThanOrEqual(240);
       await expectHomeBounds(page);
     }
     await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
@@ -149,6 +153,7 @@ for (const scenario of [
       .boundingBox())!;
     expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
     const trainingTabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
+    await settle(page);
     await trainingTabs.getByRole('tab', { name: '유소년', exact: true }).click();
     await expectArt(page, 'academy', scenario.era, scenario.academy);
     await expect(overview).toHaveAccessibleName('유소년 아카데미');
