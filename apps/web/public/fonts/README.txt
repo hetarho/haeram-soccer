@@ -1,3 +1,9 @@
+Haeram self-hosted typography — no runtime font CDN requests.
+
+Pretendard v1.3.9 Regular and Bold: standard theme, unmodified WOFF2.
+Source: https://github.com/orioncactus/pretendard/tree/v1.3.9/packages/pretendard
+License: SIL Open Font License 1.1; see Pretendard-OFL.txt.
+
 Haeram pixel typography — self-hosted with no runtime font CDN requests.
 
 Galmuri14 Regular: reading copy at 15 CSS px.

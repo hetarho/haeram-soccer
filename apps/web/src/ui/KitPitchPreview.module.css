@@ -10,7 +10,7 @@
   width: 100%;
   aspect-ratio: 1.9;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: #253b31;
 }
 .caption {

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r112 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r121 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -26,7 +26,7 @@
   - Content never overflows the viewport or clips inside a panel; controls sharing a row share height and edges.
   - wider screens name the right tabs 선수단 (선수단·스태프), 훈련 (훈련·육성) and 구단 (구단 운영).
   - read-only ownership shows as a compact HUD badge that explains itself on tap, never a content banner.
-  - the page background and fixed bars follow the active theme; the default pixel theme uses flat charcoal surfaces with fine neutral dividers (→WEB-38/91).
+  - the page background and fixed bars follow the active theme; the pixel theme uses flat charcoal surfaces with fine neutral dividers (→WEB-38/91).
   - Management views omit repeated page titles and introductory prose that merely explains the tabs or obvious actions. Current game facts and primary actions lead; rules, formulas and hiring previews remain available in labelled disclosures. Panels use compact spacing and wider screens group related panels side by side. Preserve error/empty states, decision ownership and cost/risk/effect timing before commitment.
   - wording follows Korean football media: continental competitions are 클럽대항전 (never 대륙컵, which reads as a national-team tournament), morale is 분위기 (a bare 사기 also reads as fraud), money runway is 자금 여력 in weeks or months, and the squad-support policy is 선수단 투자. ← football fans read the game in the words of their own media
 
@@ -120,11 +120,11 @@
   - decisions made inside sheets are summarized together after every dialog closes, against the world each decision published.
   - reading inbox items never produces a card.
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
-- WEB-38 [o] The default pixel theme uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy; other theme packs use the common presentation boundary (→WEB-91).
+- WEB-38 [o] The pixel theme uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy; other theme packs use the common presentation boundary (→WEB-91).
   - Apply it to founding, game slots, the HUD and clock, home, match observation, league and cups, people and profiles, training, direction and finances, records, dialogs, dropdowns and notifications.
-  - The default theme's buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct in every theme.
+  - The pixel theme's buttons and panels have restrained corners and no decorative bevel, glow, fog or gradient; navigation stays recognizable as underlined text (→WEB-69). Status colours and club kits remain semantically distinct in every theme.
   - Match scores, time, team identity and the pitch lead the observation view. Home uses a compact season-progress strip, the stadium's actual stage (→WEB-11), season figures and the next fixture.
-  - The default theme uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Every theme keeps compact supporting text at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete fallback coverage for supported locale text and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
+  - The pixel theme uses Galmuri pixel faces throughout: Galmuri14 for reading text at 15 CSS px with at least 1.7 line height, Galmuri11 Regular/Bold for compact labels, controls, headings and aligned numbers. Every theme keeps compact supporting text at least 12 CSS px, with no negative tracking for Korean reading text. Primary and supporting copy meet 4.5:1 contrast on their own surfaces; inactive but readable options remain at full text opacity. Preserve complete fallback coverage for supported locale text and legible controls at supported viewport sizes. Bundle font terms and attribution with the self-hosted files.
   - The playable app replaces design-comparison galleries; retired mockups, generated exploration assets and their bundled fonts are not shipped.
 - WEB-39 [o] 구단 운영 holds the club's resources, applied policies and identity in page tabs 운영 방침, 시설, 재정, 후원 and 구단 디자인. Existing /direction?view= strategy/build/finance/sponsor identifiers retain their meaning; strategy is omitted. Older /business addresses and facility/marketing values still reach the corresponding view.
   - 운영 방침 is the department-first board (→WEB-60); a contextual policy entry opens the relevant department in a sheet over its task (→WEB-77), while direct board navigation remains available.
@@ -327,8 +327,8 @@
   | progression mode and background play | clock controls (→WEB-5/18) and background settings (→WEB-64) |
   - Event/remedy/player actions close their originating sheet and open the correct task or authoritative department sheet, optionally with a proposed value; only explicit commit changes facts. Training owner actions are never described as residing in the staff directory.
 
-- WEB-72 [o] The default pixel theme supplies cohesive, lived-in pixel-art football backgrounds for the home stadium scene, match-preparation locker room and training-ground overview; other themes supply the same semantic image slots (→WEB-91).
-  - All environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Default environment assets use the same 240×80 logical pixel grid as the existing stadium/locker/training drawings, with coarse readable shapes and pixelated scaling rather than dense high-resolution textures. Preserve believable perspective, material wear and period equipment.
+- WEB-72 [o] The pixel theme supplies cohesive, lived-in pixel-art football backgrounds for the home stadium scene, match-preparation locker room and training-ground overview; other themes supply the same semantic image slots (→WEB-91).
+  - Pixel environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Pixel environment assets use the same 240×80 logical pixel grid as the existing stadium/locker/training drawings, with coarse readable shapes and pixelated scaling rather than dense high-resolution textures. Preserve believable perspective, material wear and period equipment.
   - Backgrounds stay subordinate to the interface; the default theme uses a light charcoal dim and reduced saturation. Apply image treatments only to the image, preserving the clarity of HTML text and controls.
   - Stadium, locker-room, training-ground and academy scenes select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground and academy levels have their own image in each era. An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
@@ -340,7 +340,7 @@
   - Architecture, kit and equipment fit each era, from modest heritage facilities to larger professional grounds. Avoid real club brands, embedded interface text and fabricated data. The live pitch remains the engine-driven Canvas view.
   - Self-host optimized image assets, keep text and controls as accessible HTML, and preserve the fixed shell, touch targets and readable phone layouts (→WEB-10).
 
-- WEB-73 [o] The default theme's UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching its painted pixel environments; other themes replace resources behind the same semantic icon names (→WEB-91).
+- WEB-73 [o] The pixel theme's UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching its painted pixel environments; other themes replace resources behind the same semantic icon names (→WEB-91).
   - Apply the family to primary navigation, HUD menu and inbox, club news, dialog close controls, dropdown arrows/checks and trophy-cabinet symbols. Keep their established meanings distinct at small sizes.
   - Icons inherit the interface colour and remain decorative when an accessible label already names the control. Preserve focus, selection, target sizes and keyboard behaviour; club identity and analytical charts keep their own data-driven graphics.
 
@@ -425,7 +425,15 @@
   - Language and theme settings are accessible before founding, on game slots and in the HUD menu. Both controls derive their choices from their registry even when each has one option. Preferences apply to the browser across games, survive reload when storage is available, and remain usable in read-only game tabs without taking save ownership.
   - A preference change preserves game facts, navigation, pending drafts, progression and playback position. An unavailable preference uses its registered default, and failed resource loading preserves a usable selection with retry (→ARCH-32).
 - WEB-91 [o] A theme replaces the interface concept through a shared data contract for typography, palette, component surfaces/shape, icons, image treatment and background image sets; it does not require a theme-specific screen implementation (→ARCH-32).
-  - The foundation registers only `pixel` and reuses the current fonts, icons and image files. New themes and newly produced artwork are subsequent work. Adding a theme uses its registry entry, JSON resource, optional stylesheet and assets, without adding or editing TSX components.
+  - The registry offers `standard` (기본 · 스타디움 그린) as its default and `pixel` (픽셀아트) as an alternative. The pixel pack retains its bitmap faces, stepped icons and charcoal/grass palette. Existing valid browser preferences remain selected; availability and fallback always follow the registry.
+  - The standard theme uses Pretendard for body text, headings, controls and numbers, with a deep stadium-green foundation and a clear pale-green action accent. Its complete icon family uses smooth, non-pixel artwork distinct from the pixel pack, including trophy states. Background and surface tones stay visibly green, with primary and supporting text meeting →WEB-38 contrast requirements.
+  - All six standard facility illustration roles use richly painted Western sports-comic artwork: expressive brush inking, layered gouache colour, tactile material detail, convincing perspective and warm natural light. Match that treatment across every era and completed stage; simplified geometric/vector scenery and pixel art are not the standard illustration style. Preserve accessible HTML facts and the existing image-slot layout.
+  - Theme studies compare colour palettes on the existing home UI. Preserve its elements, labels, navigation, arrangement, dimensions, spacing, controls, icons and facility artwork. Typography is consistently Pretendard across every candidate; candidates do not replace the home with new marketing, match, editorial or tactical layouts.
+  - Structure the standard theme with distinct surface luminance and saturation, existing spacing and text hierarchy: subdued dark page/navigation backgrounds, quieter content surfaces and stronger green controls/selection. Keep the overall palette deep while preserving the visible green foundation and readable contrast.
+  - Fine static grain textures page and UI surface backgrounds through one reusable texture without filtering text or illustrations, introducing an overlay layer or affecting interaction. Retain page-only grain if extending it to surfaces causes a material rendering-performance regression.
+  - The standard theme has restrained modern corners: controls, content surfaces, small badges and dialogs use distinct semantic radii, with rounded illustration clipping and subtle pressed feedback. Preserve the existing arrangement, dimensions, typography, green hierarchy and texture. Pixel keeps its existing angular shape language.
+  - Omit decorative panel outlines, box dividers and section accent rules. Keep functional table row separation, selected navigation, semantic status text and keyboard focus clear; do not introduce raised cards, additional rounded containers or decorative dashboard components.
+  - Adding a theme uses its registry entry, JSON resource, optional stylesheet and assets, without adding or editing TSX components. Shared facility artwork can use pack-specific image treatment.
   - Themes resolve the same stadium, locker-room and training-ground image roles for the eras and completed facility stages in →WEB-72. Keep the actual year/stage selection common; the selected theme supplies the resource paths and visual treatment.
   - Theme changes leave the engine-driven live pitch, match trajectories, clock mapping, club colours, recorded shirts/crests and game data intact. They do not replace the playback renderer or introduce theme-dependent football rules.
   - Preserve semantic status meanings, readable data, accessible HTML labels, keyboard/touch behavior, reduced-motion support and the supported layout bounds in every theme (→WEB-10/17/38/46/73). Missing resources and loading failures follow the shared pack policy (→ARCH-32).
@@ -437,6 +445,11 @@
   - each completed accomplishment opens its corresponding club-season record; returning restores the manager-history tab, inspected tenure and list position (→WEB-74). Keep the selected game/world boundary and the existing season-to-league return path.
   - obtain the bounded summary on demand from the engine worker. Browsing or expanding a tenure never loads the whole career's match archives into regular UI updates, changes game facts or advances the clock. Preserve lazy records loading and the supported keyboard/touch/mobile layout (→ARCH-28, →WEB-17/38/73).
 
+- WEB-93 [o] An explicit successful change between different themes reveals the new appearance in a short top-to-bottom sequence across visible controls and content.
+  - Preserve the old appearance until resources are ready, then commit the new presentation atomically; animation never applies partial preferences or alters game facts, drafts, focus, scrolling or playback.
+  - Initial loading, locale-only changes, reselecting the current theme, hidden documents and reduced-motion preferences switch immediately. Unsupported or failed animation falls back to an immediate change.
+  - A newer selection supersedes pending work and any running visual transition. Bound total animation duration; offscreen content adopts the committed theme immediately. Preserve stacking order, clipping, modal backdrops and popover occlusion throughout the transition; individual controls never escape their original visual layer.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -445,6 +458,15 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r121 261022 WEB-91✎ angular standard controls/surfaces→restrained modern semantic corner hierarchy and pressed feedback through shared root tokens, with preserved layout and pixel appearance
+- r120 261022 WEB-91✎ deep greens with page-only grain→deeper overall surfaces and reusable static grain across UI fills, with page-only fallback for measured rendering cost
+- r119 261022 WEB-91✎ moderately dark uniform flat greens→deeper subdued background with fine static grain and distinct surface/control luminance and saturation
+- r118 261022 WEB-91✎ simple smooth vector facility scenes→selected richly painted Western sports-comic illustration set across all roles, eras and completed stages
+- r117 261022 WEB-72/91✎ shared pixel art in standard→complete smooth standard icons and facility illustrations; WEB-93✎ individually lifted controls→stacking/clipping-preserving top-to-bottom reveal
+- r116 261022 WEB-10/91✎ pixel-only default and palette study→selected slightly darker stadium-green standard default with Pretendard, unchanged home layout and no decorative border lines
+- r115 261022 WEB-91✎ alternate football layouts/general typography→palette-only studies on unchanged home UI with Pretendard in every role
+- r114 261022 WEB-91✎ standard default/pixel/midnight→pixel-only registry; light-neutral standard direction→moderately dark green football hierarchy without dashboard cards, visual selection before registration
+- r113 261022 WEB-38/72/73✎ default-pixel-specific styling→pixel-specific styling; WEB-91✎ pixel-only/default→standard default plus preserved pixel and midnight with shared artwork; WEB-93+ bounded accessible top-to-bottom theme transition
 - r112 261022 WEB-43✎ market expanded deadline/needs/policy/filters and candidate cards→thin deadline, complete compact candidate table, row details and on-demand filters/information/negotiations
 - r111 261022 WEB-72✎ one shared academy image→era/completed-level scenes; dense overview art→240×80 grid matching existing art; WEB-70✎ academy title only→completed-level caption
 - r110 261022 WEB-70✎ prospects-first youth tab→dedicated academy overview before prospects; WEB-72✎ no youth scene→original period-neutral academy image with one semantic stage

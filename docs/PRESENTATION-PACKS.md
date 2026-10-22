@@ -1,7 +1,38 @@
 # Presentation packs
 
 The application discovers presentation choices from JSON served with the static deployment.
-The current product inventory is one locale, `ko-KR` (한국어), and one theme, `pixel` (픽셀아트).
+The current product inventory is one locale, `ko-KR` (한국어), and two registered themes:
+`standard` (기본 · 스타디움 그린), the default, and `pixel` (픽셀아트). Existing valid browser
+preferences remain selected. The standard theme uses self-hosted Pretendard and a deep
+stadium-green palette: subdued page/navigation backgrounds, quieter content surfaces and stronger
+green controls/selection. A fine static monochrome grain tile paints page and UI backgrounds;
+it does not filter text/art, add an overlay layer or change layout. The active standard stylesheet
+supplies optional `--surface-grain`, which shared background declarations compose with semantic
+fill colours. Other themes fall back to `none`; the texture is not inherited from default JSON
+tokens. One 160×160 grayscale/alpha PNG is reused instead of live turbulence filters or animated
+noise. Retain page-only grain if surface texturing materially worsens rendering performance.
+Surface luminance and saturation provide hierarchy. Decorative outlines are transparent; table
+rows, selected navigation and keyboard focus remain clear.
+Standard corners are semantic: controls 8px, panels 12px, badges 4px and dialogs 18px;
+the home scene clips to the panel radius. Pixel retains its original angular values.
+Edge-aligned mobile sheets and underlined bottom navigation use square corners.
+Shared optional `table-line`, `section-accent-line`, `warning-line`, `critical-line`, `running-line` and `secondary-control-line` tokens
+fall back to existing styling in shared CSS; the pixel pack explicitly supplies its original
+values so the registered default's optional tokens cannot replace them.
+
+The standard pack owns 31 smooth SVG icon roles, including independent trophy states, and 92
+painted sports-comic facility illustrations. The selected art direction combines expressive brush
+inking, layered gouache colour, warm natural light and tactile material detail. Each completed
+stadium/locker, training and academy stage in each era has distinct generated artwork; manager
+and staff offices use separate period-neutral interiors. Images remain in the existing 3:1 HTML
+slots, with 1440×480 self-hosted WebP resources and automatic image rendering. The live pitch and
+club identity retain their existing game-driven rendering.
+
+`node scripts/generate-standard-icons.mjs` regenerates only icon resources. Facility artwork is
+created with the built-in image generation tool; `scripts/prepare-standard-art.mjs` validates and
+encodes original generated sources for deployment. Prompts, source provenance and checksums live
+in `apps/web/public/art/standard/generation.json`. Reviewed candidates and retired vector scenes
+are removed after the selected production set is integrated.
 These are the current contents, not a permanent limit or a supported-ID list in application code.
 `pnpm run validate:presentation` reports the actual deployed-source registry inventory and checks
 every registered resource before the build/deployment gates. Local `pnpm run verify` and the CI
@@ -73,6 +104,43 @@ Locale formatting never changes exact money arithmetic, historical units, K/M/B 
 toward-zero truncation or precision policy. The owning money/season helpers retain those rules.
 
 ## Theme packs
+
+### Styling flow
+
+`theme JSON → themeTokens.ts → ThemeResolver → root installation → CSS Modules`
+
+`apps/web/src/presentation/themeTokens.ts` owns optional role defaults and namespace flattening.
+The selected pack supplies values; common role defaults are resolved for each pack before any
+registered-default fallback, so standard-only badge, scene and state styling cannot leak into
+pixel or a resource-only third theme. Typography aliases still come from the font resolver.
+Existing optional roles retain their registered-default fallback contract.
+Browser installation stays in `adapters/themeResources.ts` and commits prepared resources and
+`:root` variables in one synchronous transaction. The committed controller snapshot also sets
+`html[data-theme]` for inspection.
+
+`apps/web/src/presentation/theme.css` owns shared page texture and font treatment; optional pack
+CSS only supplies concept-specific resources such as the grain URL. Existing CSS Modules own
+layout and consume semantic roles, rather than reading theme identity:
+
+```css
+.control {
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface-2);
+}
+```
+
+Use `--card-radius`, `--badge-radius`, `--dialog-radius` and `--scene-radius` for their respective
+roles. Shared controls read `--control-hover-filter` and `--control-active-filter`; shape/state
+values belong in the pack, not component literals. Preserve circular club/ball geometry and
+physical pitch markers. A class-composition helper may combine UI states, but must not take a
+theme ID or duplicate visual decisions. Adding a theme still requires resources/registry only.
+
+This follows the shared design-token and root-selection principles documented in
+[Tailwind theme variables](https://tailwindcss.com/docs/theme) and
+[root theme attributes](https://tailwindcss.com/docs/dark-mode#using-a-data-attribute), using
+the existing CSS Modules stack. It does not introduce Tailwind utilities or a build plugin.
+
+### Resource contract
 
 The baseline is `apps/web/public/presentation/themes/pixel.json` with optional `pixel.css`.
 The exact shared schema and required semantic roles live in
@@ -162,9 +230,27 @@ decoding those images in a browser.
 
 The selected theme supplies image treatment and paths, while common game-year/completed-stage
 logic chooses the scene. Facility alt text combines the locale's era/description with the theme
-registry label; the baseline therefore keeps the current Korean `픽셀아트` wording. Semantic status
+registry label, currently 픽셀아트. Semantic status
 meanings, accessibility, contrast, reduced motion and supported bounds must remain usable.
 Themes do not replace live-pitch trajectories, playback timing, recorded shirts/crests or rules.
+
+## Theme transitions
+
+`createBrowserThemeTransition` captures one composited root snapshot pair and reveals the new
+presentation from top to bottom over 620 ms. Individual controls never receive snapshot names:
+that would extract their pixels into transition-layer siblings, bypassing ancestor clipping and
+raising buttons over the dialog/backdrop captured by the root. A root pair retains the page's
+actual visual stacking. See the [View Transition painting model](https://www.w3.org/TR/css-view-transitions-1/#view-transition-painting-order).
+The optional `theme-reveal-timing` shape token gives pixel a stepped cadence and smooth packs a
+continuous easing. Previous fonts/icons remain in the old snapshot while resource installation
+and controller publication happen together in a guarded callback. Presentation becomes usable
+without waiting for the visual animation to finish.
+
+Initial boot, locale-only/same-theme selections, hidden pages, reduced motion and unsupported
+browsers update immediately. New selections cancel earlier visuals; stale update callbacks cannot
+install resources or persist preferences. Temporary transition styles are removed on finish or cancellation.
+A snapshot failure still applies the valid selection. Game workers and checkpoint storage do not
+participate. View Transitions are a progressive enhancement, not a requirement for theme availability.
 
 ## Add a pack
 

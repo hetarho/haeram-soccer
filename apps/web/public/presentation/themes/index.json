@@ -1,7 +1,12 @@
 {
   "schemaVersion": 1,
-  "defaultId": "pixel",
+  "defaultId": "standard",
   "entries": [
+    {
+      "id": "standard",
+      "label": "기본 · 스타디움 그린",
+      "resource": "standard.json"
+    },
     {
       "id": "pixel",
       "label": "픽셀아트",

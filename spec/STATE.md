@@ -14,11 +14,12 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
 
+## inbox
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
-- 261022 decided ARCH-31 T325 T326 T286 (owner): ARCH r19 restates the throughput gates as absolute budgets on a recorded reference machine (fixture ≤ 1 ms median, season engine time ≤ 15 s median for both century profiles; the paired ratio is context) → T285's option (b); figures from T285 (fixture 0.82–0.88 ms, candidate season ~14 s, own matches 3.5–4 s); T325/T326 keep improving speed (alt: keep the ratios and leave activation off | keep both)
+- 261022 decided ARCH-31 T325 T326 T286: owner's choice — ARCH r19 restates the throughput gates as absolute budgets on a recorded reference machine (fixture ≤ 1 ms median, season engine time ≤ 15 s median for both century profiles; the paired ratio is context) → T285's option (b); figures from T285 (fixture 0.82–0.88 ms, candidate season ~14 s, own matches 3.5–4 s); T325/T326 keep improving speed (alt: keep the ratios and leave activation off | keep both)
+- 261022 decided ARCH-30 T337 T338 T339 T340 T341 T342 T343 T344: the owner explicitly requested omitting long remaining tests and pushing now → stop the full Chromium batch, retain completed checks and recheck only the five failures after their two root causes are fixed; do not wait for the full CI suite (alt: finish the full batch and wait for every CI job). This is a one-push exception, not a change to ARCH-30.
 - 261022 decided T334 T336: keep T334's settled counter play (`DECISION_CONFIG.direct.settled.counter`, counter's candidate line floor 24) — counter − press −0.179 → +0.017 [−0.032, 0.065] and possession ordering inside on fresh seeds, no MATCH-23 core row inside → outside — and tune its overshoot (press's high-regain lead, possession v counter, possession's points, balanced's xG conceded) in explore T336 before T323; MATCH-29 unchanged (alt: keep it off until the overshoot is solved | relax counter-at-least-press)
 - 261022 decided T334 T335 T336: the owner's local checkout holds unpushed theme tasks T330–T333 (t4m9) → this session renumbered its own counter task T331 → T334 and its e2e fix T332 → T335 (already on main as T332 in 0ab6e42's STATE log) and took T336, so the local work merges without ID clashes (alt: leave the clash for the local session)
 - 261022 decided T328 T334: no PLAYER-5 role table lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058] counter − press, and it breaks possession − counter) → keep STAFF-22's counter row and try counter's MATCH-8 behaviour (stop recycling after the break, a deep block that concedes fewer box entries, press's fatigue cost) in explore T334 before T323; MATCH-29's counter rows go to the owner only if T334 also fails (alt: relax counter-at-least-press to a gap band now | keep the rows as a known miss)
@@ -184,7 +185,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 112 | 112 | - | 0 |
+| WEB | 121 | 121 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -225,6 +226,7 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
+- Stadium Green presentation tasks T337–T344 are integrated with main: painted art, deeper green/grain and shared semantic styling. Full units/contracts/resources/build passed; the full Chromium run was stopped at the owner's request, with 147 passes and five failures fixed and confirmed by a 5/5 scoped follow-up. Remaining browser journeys and CI are not claimed as passed.
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - k2r7 (autopilot, 261022): T327, T328, T335 (e2e CI fix) and T334 (counter's settled play) on main. Order: implement-task T336 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
@@ -232,6 +234,18 @@
 
 ## log
 - 261022 update-ssot ARCH r19 (ARCH-31✎ absolute throughput budgets, owner decision) and create-task refresh: T325 T326 T286 restated against the budgets, T323 T325 T326 T286 base ARCH@19; r19 sits on the owner's unpushed ARCH r18 (ARCH-32, theme inventory)
+- 261022 sync: main fast-forwarded to d8411fa1 and the local stash restored; preserve remote engine work and renumber UI tasks T337–T344. Owner authorized omitting remaining long checks; completed 1,812 unit cases (4 existing skips), 39 contract cases, static/resource checks and build. Chromium stopped after 147 passes with five failures in recovery-button reachability and grain request accounting; recovery export moved into its alert and grain excluded from facility-scene accounting, then all five regressions passed with typecheck, focused lint/format and a rebuilt preview. Full remaining journeys/CI wait omitted by owner authorization.
+- 261022 sync start: preserve the local presentation batch in stash, fast-forward main, merge upstream journey fixes and renumber local UI tasks T337–T344 to avoid remote task collisions.
+- 261022 fix presentation: square mobile bottom sheets and underlined bottom-navigation controls; desktop dialogs retain 18px and standard controls 8px. CSS format/build and actual 390/1380px inspection pass; no overflow/page errors. No commit/push.
+- 261022 T344 done: centralized root theme styling, 174 semantic corner replacements and restrained standard radii/pressed feedback; pixel/layout/green/grain retained. 62 unit cases and static/build checks pass; actual desktop/mobile UI inspected; no commit/push.
+- 261022 T344 start: WEB r121 adds restrained modern standard corners; centralize neutral token defaults and shared root styling instead of per-component theme class branches.
+- 261022 T343 done: deeper standard surfaces and shared static UI grain (160px PNG, 24KB); pixel untouched, texture contrast >=4.69:1. Local rendering comparison, mobile/desktop inspection, 24 unit cases and static/build/resource checks complete; no commit/push.
+- 261022 T343 start: WEB r120 deepens standard surfaces and extends static grain to UI fills if rendering measurements remain comparable to page-only grain.
+- 261022 T342 done: deeper standard greens, static background grain and distinct surface/control chroma; contrast >=4.71:1, 24 unit cases and static/build/resource checks pass. Actual 1380/390/360px home and theme switching inspected; no commit/push.
+- 261022 T342 start: WEB r119 defines darker textured standard background and distinct surface/control chroma; implement in pack resources without new UI layers.
+- 261022 T341 done: selected painted sports-comic set replaces all 92 standard facility images; optimized WebP, original source/prompt provenance, unchanged UI/icons/pixel pack. 24 focused cases and static/build/resource checks pass; all roles and three home sizes verified. Reviewed candidates removed; no commit/push.
+- 261022 T341 start: generate and integrate the complete painted standard set, with per-era/completed-stage distinctions and retained layout/icons; no push requested.
+- 261022 update-ssot WEB r118: apply selected painted sports-comic illustration style to the full standard facility set; preserve icons, UI layout and pixel resources.
 - 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
 - 261022 T334 integrated (k2r7; explore exit, review approved with record fixes): counter keeps going forward or long once its break has passed, line floor 24; artifact refreshed (fingerprint b1633820); create-task T336 for the overshoot, T323 and T286 wait for it
 - 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
@@ -239,15 +253,3 @@
 - 261022 create-task T334 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T334
 - 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
 - 261022 h3t6 stopped at 08:50 KST as the owner asked (moving machines): integrated T280 T281 T283 T278 T320 T284 T321 T285 T322 T324 and the local UI work (T309–T314) into main; T327 and T328 pushed as wip/h3t6-T327 and wip/h3t6-T328; report 261021-h3t6
-- 261022 merged the e2e fixes for the UI merge batch (10 Chromium failures, all stale specs; 59/59 in those files pass)
-- 261022 T324 integrated (h3t6; explore exit: MATCH-29 9 inside / 6 outside / 10 insufficient at shot scale 0.42, press edge +0.23; core goals back inside; FW, MF and penalty goals and goal kicks residual → T328, T323)
-- 261022 T322 integrated (h3t6; one review round: through-ball attempts band from StatsBomb only, FBref TB counts completions): MATCH-30 bands for 13 counters with sources, one counting rule on both paths, scoring concentration ratified in the target
-- 261022 merged local main's UI work (T309–T314: compact overviews, office and academy art, linked club colours and random crest, table-first market) with h3t6's main; refresh T286 T307 T308 T327 bases only: WEB r107–r112 and KIT r3 change nothing they cite
-- 261022 T314 done: table-first market, on-demand filters/information/negotiations and stable-ID detail; 15 focused tests, static checks and build passed. Browser journeys updated for the ARCH-30 batch.
-- 261022 T313 done (u6v1): 18 era/academy-level scenes plus two coarser offices, all native 240×80; actual-completion selection and captions; 36 focused cases and task checks pass, 99 assets validated. Commit this task only; T314 remains separately owned; browser batch pending.
-- 261022 T314 start (m7k2): update-ssot WEB r112 and create-task for the requested table-first market; preserve existing T313 artwork edits and other active work. WEB-43 is not cited by another active task.
-- 261022 T313 start (u6v1): WEB r111 gives academy actual completed-level/era artwork and matches all new art to the existing 240×80 grid; owner requested completion and a main commit.
-- 261022 T312 done (u6v1): original academy artwork applied above the youth tab; 35 focused cases, typecheck/lint/format/build and 82-asset validation pass. Browser journey updated for batch; local main commit, no push.
-- 261022 T312 start (u6v1): WEB r110 adds an original youth academy image and theme role above academy operations; existing identities and engine task owners are preserved.
-- 261022 create-task T328 (explore): counter role-table variants against press under MATCH-29, evidence for a STAFF-22/MATCH-8 update; T327 also counts possession by pass share; T323 and T286 wait for T328
-- 261022 update-ssot MATCH r19: MATCH-3 possession is the share of attempted passes (from T324's decision request)

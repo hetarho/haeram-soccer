@@ -2,8 +2,8 @@
 .disclosure {
   margin: 12px 0;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
   min-width: 0;
 }
 .disclosure summary {
@@ -45,8 +45,8 @@
 }
 .notice {
   padding: 8px 10px;
-  border-radius: 2px;
-  background: var(--warm-soft);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--warm-soft);
   color: var(--text);
 }
 .warning {
@@ -94,7 +94,7 @@
 }
 .roles button[aria-checked='true'] {
   border: 2px solid var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--accent-text);
 }
 .roles small {
@@ -114,7 +114,7 @@
   font-family: var(--display);
 }
 .confirm {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   border-color: var(--accent);
 }

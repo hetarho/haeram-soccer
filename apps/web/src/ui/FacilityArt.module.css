@@ -3,7 +3,7 @@
   display: block;
   overflow: hidden;
   isolation: isolate;
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .art::after {
   content: '';

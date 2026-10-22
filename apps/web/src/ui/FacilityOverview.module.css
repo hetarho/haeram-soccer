@@ -3,7 +3,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .overview > .art {
   width: 100%;

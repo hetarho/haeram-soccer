@@ -40,7 +40,13 @@
       "nav-active": "#e4e9d515",
       "overlay": "#080b0de0",
       "subtle-fill": "rgb(255 255 255 / 0.04)",
-      "warm-tint": "rgba(196, 175, 125, 0.08)"
+      "warm-tint": "rgba(196, 175, 125, 0.08)",
+      "table-line": "var(--line)",
+      "section-accent-line": "var(--accent)",
+      "warning-line": "#6f6346",
+      "critical-line": "#75433d",
+      "running-line": "var(--accent)",
+      "secondary-control-line": "var(--accent)"
     },
     "typography": {
       "body": "'Galmuri14', 'Galmuri11', sans-serif",
@@ -66,7 +72,8 @@
       "focus-width": "3px",
       "focus-offset": "3px",
       "trophy-gold-shadow": "drop-shadow(0 4px 10px rgba(196, 175, 125, 0.35))",
-      "trophy-silver-shadow": "drop-shadow(0 4px 10px rgba(207, 216, 220, 0.25))"
+      "trophy-silver-shadow": "drop-shadow(0 4px 10px rgba(207, 216, 220, 0.25))",
+      "theme-reveal-timing": "steps(10, end)"
     },
     "imageTreatment": {
       "objectFit": "cover",

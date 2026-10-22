@@ -29,8 +29,8 @@
   min-width: 0;
   padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .summary span {
   color: var(--text-muted);
@@ -51,9 +51,9 @@
 }
 .panel {
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   padding: 16px;
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
 }
 .panelHeading {
   display: flex;
@@ -95,7 +95,7 @@
   overflow-wrap: anywhere;
 }
 .primary {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent);
   color: var(--on-accent);
 }
@@ -113,8 +113,8 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .card h3 {
   font-size: 15px;
@@ -198,8 +198,8 @@
 }
 .recovery {
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .recovery summary {
   min-height: 44px;
@@ -219,8 +219,8 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 2px;
-  background: var(--warm-soft);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--warm-soft);
 }
 .contribution b {
   font-size: 13px;
@@ -243,14 +243,14 @@
   font-size: 12px;
   margin: 9px 0;
   padding: 9px 11px;
-  border-radius: 2px;
-  background: var(--warm-soft);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--warm-soft);
   color: var(--gold);
   font-family: var(--display);
 }
 .message {
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .result {
   display: grid;

@@ -24,8 +24,8 @@
 .flag {
   margin-left: 6px;
   padding: 1px 6px;
-  border-radius: 2px;
-  background: var(--warm-soft);
+  border-radius: var(--badge-radius);
+  background: var(--surface-grain, none) var(--warm-soft);
   color: var(--warm);
   font-style: normal;
   font-weight: 700;
@@ -104,7 +104,7 @@
 }
 .traits span {
   padding: 2px 8px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   border: 1px solid var(--line-strong);
   color: var(--text);
 }
@@ -133,7 +133,7 @@
   background: var(--text-faint);
 }
 .bar i[data-tone='mid'] {
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
 }
 .bar i[data-tone='high'] {
   background: var(--gold);

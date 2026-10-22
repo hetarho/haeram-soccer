@@ -34,9 +34,9 @@
   gap: 4px;
   width: min(420px, calc(100% - 48px));
   padding: 12px 16px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--gold-edge);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   transform-origin: 100% 100%;
   pointer-events: auto;
@@ -57,7 +57,7 @@
     gap: 8px;
     height: 44px;
     padding: 0 14px;
-    border-radius: 2px;
+    border-radius: var(--card-radius);
     transform-origin: 100% 50%;
     animation:
       drop 520ms cubic-bezier(0.2, 1.2, 0.3, 1) both,

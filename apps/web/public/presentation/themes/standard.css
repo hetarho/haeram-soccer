@@ -1,0 +1,5 @@
+/* One pre-rasterized tile is reused by semantic fills; no live filter or overlay. */
+html {
+  --page-grain: url('../../art/standard/grain.png');
+  --surface-grain: var(--page-grain);
+}

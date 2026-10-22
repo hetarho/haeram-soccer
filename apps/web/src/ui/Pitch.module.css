@@ -1,11 +1,11 @@
 .pitch {
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   overflow: hidden;
 }
 .scoreboard {
   padding: 12px 16px;
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   border-top: 2px solid var(--accent);
   border-bottom: 1px solid var(--line);
 }
@@ -78,7 +78,7 @@
   min-width: 44px;
   height: 44px;
   padding: 2px 6px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -87,7 +87,7 @@
 }
 .speeds .speedOn {
   color: var(--on-accent);
-  background: var(--gold-fill);
+  background: var(--surface-grain, none) var(--gold-fill);
   border-color: var(--gold-edge);
 }
 .stage {
@@ -122,7 +122,7 @@
   opacity: 1;
 }
 .playIdle {
-  background: var(--gold-fill);
+  background: var(--surface-grain, none) var(--gold-fill);
   border-color: var(--gold-edge);
 }
 .iconPlay {
@@ -156,7 +156,7 @@
   right: 8px;
   bottom: 8px;
   padding: 3px 8px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   color: var(--text-muted);
   background: rgba(16, 19, 20, 0.66);
@@ -169,7 +169,7 @@
   left: 8px;
   top: 8px;
   padding: 3px 8px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   color: var(--text);
   background: rgba(16, 19, 20, 0.78);
@@ -184,7 +184,7 @@
   padding: 7px 14px;
   color: var(--text);
   font-size: 13px;
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .latestEvent > span {
   flex-shrink: 0;
@@ -206,7 +206,7 @@
 /* Live charts: possession share, cumulative xG and shots, revealed up to the presented minute. */
 .charts {
   padding: 8px 10px 4px;
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   border-top: 1px solid var(--line);
 }
 .charts header {
@@ -222,7 +222,7 @@
 .charts [role='tab'] {
   min-width: 52px;
   padding: 2px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   font-size: 12px;
   font-weight: 700;
   box-shadow: none;
@@ -231,12 +231,12 @@
 .charts .chartOn {
   color: var(--text);
   border-color: var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .detailToggle {
   min-height: 32px;
   padding: 2px 12px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   font-weight: 700;
   box-shadow: none;

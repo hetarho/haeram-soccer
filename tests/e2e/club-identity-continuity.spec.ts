@@ -484,7 +484,7 @@ for (const [name, write] of Object.entries(FUTURE_CHECKPOINTS))
     expect(await checkpointStorage(page)).toEqual(stored);
     // Recovery exports the newer file exactly (→SAVE-11).
     const downloading = page.waitForEvent('download');
-    await page.getByRole('button', { name: '복구 기록 내보내기', exact: true }).click();
+    await refused.getByRole('button', { name: '복구 기록 내보내기', exact: true }).click();
     expect(await readFile((await (await downloading).path())!, 'utf8')).toBe(newer);
     // Another load protects it again instead of falling back to the valid predecessor.
     await page.reload();

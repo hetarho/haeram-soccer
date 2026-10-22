@@ -32,7 +32,7 @@
   padding: 8px 14px;
   border: 0;
   border-right: 1px solid var(--line);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .resources span {
   font-size: 12px;
@@ -74,7 +74,8 @@
   min-height: 280px;
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--surface-deep);
+  border-radius: var(--scene-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .scene > .sceneArt {
   position: absolute;
@@ -93,7 +94,7 @@
   line-height: 1.4;
   letter-spacing: 0.6px;
   color: var(--text-muted);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   font-family: var(--display);
 }
 .sceneCaption {
@@ -142,8 +143,8 @@
   gap: 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-top: 2px solid var(--accent);
-  background: var(--surface);
+  border-top: 2px solid var(--section-accent-line, var(--accent));
+  background: var(--surface-grain, none) var(--surface);
 }
 .fixtureInfo {
   min-width: 0;
@@ -209,7 +210,7 @@
   min-height: 56px;
   padding: 6px 12px;
   color: var(--on-accent);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent-edge);
   box-shadow: none;
 }
@@ -341,9 +342,9 @@
 .state {
   grid-area: state;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .state header {
   display: flex;
@@ -371,7 +372,7 @@
 .state li {
   display: grid;
   padding: 0;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.22);
   transition:
@@ -422,14 +423,14 @@
   color: var(--text-muted);
 }
 .warn {
-  border-color: #6f6346 !important;
+  border-color: var(--warning-line, #6f6346) !important;
 }
 .warn small,
 .warn b {
   color: var(--gold);
 }
 .bad {
-  border-color: #75433d !important;
+  border-color: var(--critical-line, #75433d) !important;
   background: rgba(120, 30, 20, 0.25) !important;
 }
 .bad small,
@@ -441,13 +442,13 @@
   gap: 6px;
   margin: 0;
   padding: 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   animation: rise 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .advice.bad {
-  background: var(--warm-soft) !important;
+  background: var(--surface-grain, none) var(--warm-soft) !important;
 }
 .advice p {
   margin: 0;
@@ -552,9 +553,9 @@ button.resources:active:not(:disabled) {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   animation: rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 .remedies li:nth-child(2) {
@@ -607,7 +608,7 @@ button.resources:active:not(:disabled) {
   color: var(--text-faint);
 }
 .play.returning {
-  background: var(--gold-fill);
+  background: var(--surface-grain, none) var(--gold-fill);
   border-color: var(--gold-edge);
   box-shadow: none;
 }
@@ -639,7 +640,7 @@ button.resources:active:not(:disabled) {
 }
 .stage > .resources > div {
   padding: 7px 14px;
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .stage > .resources .more {
   top: auto;
@@ -701,8 +702,8 @@ button.resources:active:not(:disabled) {
 .remedies b .remedyBy {
   margin-left: 6px;
   padding: 1px 6px;
-  border-radius: 2px;
-  background: var(--surface-3);
+  border-radius: var(--badge-radius);
+  background: var(--surface-grain, none) var(--surface-3);
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -768,17 +769,17 @@ button.resources:active:not(:disabled) {
   border: 0;
   border-radius: 2px;
   overflow: hidden;
-  background: var(--surface-3);
+  background: var(--surface-grain, none) var(--surface-3);
   accent-color: var(--accent);
 }
 .seasonMeter progress::-webkit-progress-bar {
-  background: var(--surface-3);
+  background: var(--surface-grain, none) var(--surface-3);
 }
 .seasonMeter progress::-webkit-progress-value {
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
 }
 .seasonMeter progress::-moz-progress-bar {
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
 }
 .seasonOverview > button {
   min-height: 44px;

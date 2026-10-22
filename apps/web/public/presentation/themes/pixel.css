@@ -1,5 +1,1 @@
-/* Optional concept styling; shared consumers own layout and interaction. */
-body {
-  font-synthesis: none;
-  -webkit-font-smoothing: antialiased;
-}
+/* Shared presentation mechanics live in src/presentation/theme.css. */

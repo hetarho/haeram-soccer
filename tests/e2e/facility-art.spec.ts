@@ -6,6 +6,13 @@ import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
 import { expectHomeBounds, settle } from './layout';
+import { readPresentationBaselines } from '../fixtures/presentation';
+import { createThemeResolver } from '../../apps/web/src/presentation/theme';
+import type { FacilityEra, FacilityKind } from '../../apps/web/src/presentation/contracts';
+
+const presentation = readPresentationBaselines();
+const defaultThemeLabel = presentation.themeEntry.label;
+const defaultTheme = createThemeResolver(presentation.theme, { url: presentation.themeUrl });
 
 /** Synthetic presentation fixture, not a claim to have simulated the intervening seasons. */
 function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility = 0) {
@@ -61,21 +68,21 @@ async function load(page: Page, world: World) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-async function expectArt(page: Page, kind: string, era: string, stage: number) {
+async function expectArt(page: Page, kind: FacilityKind, era: FacilityEra, stage: number) {
   const img = page.locator(`[data-facility-art="${kind}"] img`);
-  const office = kind === 'manager' || kind === 'staff';
-  const source = office
-    ? `/art/scenes/${kind}-office-v2.webp`
-    : `/art/scenes/${era}/${kind}-${stage}.webp`;
+  const source = defaultTheme.facility({ era, kind, stage }).src;
   await expect(img).toBeVisible();
   await expect(img).toHaveAttribute('src', source);
-  await expect(img).toHaveAttribute('alt', /픽셀아트$/);
+  expect(await img.getAttribute('alt')).toMatch(new RegExp(`${defaultThemeLabel}$`));
   // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
   await expect
     .poll(() =>
       img.evaluate(
-        (el: HTMLImageElement) => el.complete && el.naturalWidth === 240 && el.naturalHeight === 80,
+        (el: HTMLImageElement) =>
+          el.complete &&
+          el.naturalWidth >= 240 &&
+          Math.abs(el.naturalWidth / el.naturalHeight - 3) < 0.015,
       ),
     )
     .toBe(true);
@@ -93,13 +100,16 @@ for (const scenario of [
     width: 1440,
     height: 960,
   },
-]) {
+] as const) {
   test(`loads only current ${scenario.era} facility scenes at ${scenario.width}px`, async ({
     page,
   }) => {
     const requested = new Set<string>();
     page.on('request', (request) => {
-      if (request.url().includes('/art/scenes/')) requested.add(new URL(request.url()).pathname);
+      const pathname = new URL(request.url()).pathname;
+      // The shared background tile is not a facility scene or a preloaded future stage.
+      if (pathname.startsWith('/art/') && pathname !== '/art/standard/grain.png')
+        requested.add(pathname);
     });
     await page.setViewportSize({ width: scenario.width, height: scenario.height });
     await load(
@@ -169,14 +179,23 @@ for (const scenario of [
     await trainingTabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
     await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
-      [
-        `/art/scenes/${scenario.era}/locker-${scenario.stadium}.webp`,
-        `/art/scenes/${scenario.era}/stadium-${scenario.stadium}.webp`,
-        `/art/scenes/${scenario.era}/training-${scenario.training}.webp`,
-        '/art/scenes/manager-office-v2.webp',
-        '/art/scenes/staff-office-v2.webp',
-        `/art/scenes/${scenario.era}/academy-${scenario.academy}.webp`,
-      ].sort(),
+      (['stadium', 'locker', 'training', 'academy', 'manager', 'staff'] as const)
+        .map(
+          (kind) =>
+            defaultTheme.facility({
+              era: scenario.era,
+              kind,
+              stage:
+                kind === 'training'
+                  ? scenario.training
+                  : kind === 'academy'
+                    ? scenario.academy
+                    : kind === 'manager' || kind === 'staff'
+                      ? 0
+                      : scenario.stadium,
+            }).src,
+        )
+        .sort(),
     );
   });
 }

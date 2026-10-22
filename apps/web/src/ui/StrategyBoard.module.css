@@ -19,9 +19,9 @@
   display: grid;
   gap: 6px;
   padding: 12px 14px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   min-width: 0;
 }
@@ -128,8 +128,8 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: stretch;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
-  background: var(--surface-deep);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
   min-width: 0;
 }
 .savedPick {
@@ -166,9 +166,9 @@
 }
 .area {
   display: grid;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   min-width: 0;
   scroll-margin-top: 8px;
@@ -181,7 +181,7 @@
   min-height: 56px;
   padding: 12px;
   border: 0;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: transparent;
   box-shadow: none;
   color: var(--text);
@@ -225,7 +225,7 @@
 .areaDraft {
   margin-left: 6px;
   padding: 1px 6px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px dashed var(--gold);
   color: var(--gold);
   font-size: 12px;
@@ -258,8 +258,8 @@
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 2px;
-  background: var(--surface-deep);
+  border-radius: var(--badge-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
   border: 1px solid var(--line-strong);
   color: var(--gold);
   font-weight: 700;
@@ -337,9 +337,9 @@
   display: grid;
   gap: 4px;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   min-width: 0;
 }
 .synergies > ul > li.on,
@@ -444,9 +444,9 @@
   display: grid;
   gap: 8px;
   padding: 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--accent);
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   box-shadow: none;
   min-width: 0;
 }
@@ -471,7 +471,7 @@
   gap: 4px;
   min-height: 36px;
   padding: 4px 10px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   color: var(--gold);
   font-size: 12px;
   font-weight: 700;
@@ -525,7 +525,7 @@
 }
 .apply {
   border-color: var(--accent-edge) !important;
-  background: var(--accent-fill) !important;
+  background: var(--surface-grain, none) var(--accent-fill) !important;
   color: var(--on-accent) !important;
   font-weight: 700;
 }
@@ -566,9 +566,9 @@
   gap: 10px;
   margin: 0;
   padding: 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   min-width: 0;
 }
 .domainHead {

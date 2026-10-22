@@ -8,7 +8,7 @@
   height: 44px;
   min-height: 44px;
   padding: 0;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
 }
 .trigger svg {
   width: 20px;
@@ -25,8 +25,8 @@
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 2px;
-  background: var(--gold-fill);
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--gold-fill);
   color: var(--on-accent);
   font-size: 12px;
   font-style: normal;
@@ -55,14 +55,14 @@
 .chip.chip {
   min-height: 40px;
   padding: 0 12px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-size: 12.5px;
   font-weight: 700;
 }
 .chip[aria-checked='true'] {
   color: var(--on-accent);
   border-color: var(--accent-edge);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   box-shadow: none;
 }
 .footer {
@@ -85,8 +85,8 @@
   padding: 0;
   overflow: visible;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
   box-shadow: none;
   transform-origin: calc(100% - var(--caret, 20px)) top;
@@ -101,7 +101,7 @@
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line-strong);
   border-top-left-radius: 3px;
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   transform: rotate(45deg);
 }
 .popoverBody {

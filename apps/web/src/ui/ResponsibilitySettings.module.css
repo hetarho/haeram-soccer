@@ -71,8 +71,8 @@
   min-height: 64px;
   padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface-deep);
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -92,7 +92,7 @@
 }
 .observationToggle:has(input:checked) {
   border-color: var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
 }
 .observationToggle:has(input:focus-visible) {
@@ -109,7 +109,7 @@
   padding: 3px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   pointer-events: none;
 }
 .switchIndicator::after {
@@ -122,7 +122,7 @@
 }
 input:checked ~ .switchIndicator {
   border-color: var(--accent-edge);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
 }
 input:checked ~ .switchIndicator::after {
   transform: translateX(12px);

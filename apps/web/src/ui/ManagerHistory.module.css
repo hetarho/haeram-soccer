@@ -25,8 +25,8 @@
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
   overflow-wrap: anywhere;
 }
 .head {
@@ -48,7 +48,7 @@
   display: inline-block;
   padding: 2px 8px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   color: var(--text);
   font-family: var(--display);
   font-size: 12px;
@@ -70,7 +70,7 @@
   margin: 0;
   padding: 8px 10px;
   border-left: 3px solid var(--warm);
-  background: var(--warm-soft);
+  background: var(--surface-grain, none) var(--warm-soft);
   color: var(--text);
   font-family: var(--display);
   font-size: 12px;
@@ -78,7 +78,7 @@
 }
 .provisional {
   border-left-color: var(--cool);
-  background: var(--cool-soft);
+  background: var(--surface-grain, none) var(--cool-soft);
 }
 .summary {
   display: grid;
@@ -164,7 +164,7 @@
 }
 .legacy {
   gap: 4px;
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
 }
 .legacy small {
   color: var(--text-faint);

@@ -108,9 +108,9 @@
   font-size: 13px;
   line-height: 1.6;
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
 }
 .legend {
   display: flex;
@@ -141,7 +141,7 @@
   background: var(--text);
 }
 .otherKey {
-  background: var(--cool);
+  background: var(--surface-grain, none) var(--cool);
 }
 .picker {
   display: grid;

@@ -211,7 +211,8 @@
   - Browser adapters load the same-origin registries and requested resources at runtime from the static deployment; no runtime directory listing or executable pack code is required. A resource-only addition must also be deployed and is available on a fresh registry load without an application-code change. Assets keep the existing caching/deployment rules (→ARCH-23).
   - Validate IDs, unique entries, default membership, resource shapes, message parameters and required semantic slots. An unknown saved selection falls back to the registered default; a failed change retains the last usable pack. A failed initial default load offers retry without changing game data. Load only the selected packs and currently needed assets; stale asynchronous completions cannot replace a newer selection.
   - Locale/theme preferences are small namespaced browser settings, separate from world saves and worker commands; denied storage leaves session selection usable. Existing stored prose is returned unchanged. Rendering preferences cannot change seeded outcomes, canonical facts, progression or replay position (→ARCH-5/7/11/28).
-  - The foundation ships one `ko-KR` locale and one `pixel` theme using existing assets. Additional-language catalogs, new theme artwork, complete extraction of existing feature/engine copy, and historical-text conversion are subsequent work; unit/browser fixtures may simulate additional packs without registering them in the shipped product.
+  - The shipped locale/theme inventory follows the registries and →WEB-90/91; adding a pack does not change shared contracts or introduce a supported-ID list in code. Additional-language catalogs, new theme artwork, complete extraction of existing feature/engine copy, and historical-text conversion are subsequent work.
+  - Theme-transition snapshots and animation belong to a progressive browser adapter (→WEB-93). Resource preparation stays asynchronous; installation and presentation publication share one synchronous callback, with a freshness check inside it. Animation failure must not prevent a valid selection.
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
@@ -233,6 +234,7 @@
 
 ## chg
 - r19 261022 ARCH-31✎ throughput gates NPC fixture ≤50% and season engine time ≤80% of the same-machine pre-change baseline→absolute budgets on a recorded reference machine (fixture ≤1 ms median, season engine time ≤15 s median for both century profiles); the paired ratio becomes context
+- r18 261022 ARCH-32✎ fixed single-theme inventory→registry-owned inventory and progressive transition adapter with synchronous guarded commit
 - r17 261021 ARCH-32+ runtime JSON registries and presentation-only pack boundaries, resource-only extension, isolated preferences and one-pack foundation
 - r16 261020 ARCH-31+ paired complete-model accuracy and performance gates, NPC fixture time ≤50% and season engine time ≤80% of same-machine pre-change baseline, unchanged browser/storage budgets
 - r15 261020 ARCH-21✎ setup simulation in unit tests→shared simulated test worlds (`tests/fixtures/worlds.ts`), simulate only the verified step; ARCH-23✎ unit tests leave the checks job for three parallel shards with a cached world store

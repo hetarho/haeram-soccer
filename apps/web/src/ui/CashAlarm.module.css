@@ -7,7 +7,7 @@
   padding: 8px 10px;
   border: 1px solid color-mix(in srgb, var(--danger) 65%, transparent);
   border-left: 3px solid var(--danger);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: #180e10ed;
   color: #f4e9e9;
   font-size: 12px;

@@ -1,0 +1,34 @@
+/* Theme snapshots never capture pointer input or replace the accessible DOM. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(*) {
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation-name: theme-sweep-in;
+  animation-fill-mode: both;
+  animation-timing-function: var(--theme-reveal-timing, ease-out);
+}
+@keyframes theme-sweep-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -7,8 +7,8 @@
   min-width: 0;
   padding: 16px 20px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
   margin-bottom: 20px;
 }
 .panel p,
@@ -29,7 +29,7 @@
   margin: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .preparationArt {
   display: block;
@@ -70,7 +70,7 @@
   font-size: 13px;
 }
 .tabs button[aria-selected='true'] {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent);
   color: var(--on-accent);
 }
@@ -109,7 +109,7 @@
 .tactics button[aria-pressed='true'],
 .presets button[aria-pressed='true'] {
   border-color: var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
 }
 .tactics b {
@@ -175,8 +175,8 @@
 .pending {
   margin-top: 10px;
   padding: 10px 12px;
-  background: var(--warm-soft);
-  border-radius: 2px;
+  background: var(--surface-grain, none) var(--warm-soft);
+  border-radius: var(--card-radius);
 }
 .pending p {
   font-size: 12px;
@@ -203,9 +203,9 @@
 }
 .preview > div {
   padding: 10px 12px;
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
 }
 .preview span,
 .preview small {
@@ -225,8 +225,8 @@
   margin: 10px 0;
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .matchday h4 {
   margin: 0 0 4px;
@@ -260,7 +260,7 @@
 .slots {
   margin-top: 10px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
 }
 .slots summary {
   min-height: 44px;
@@ -295,7 +295,7 @@
   font-family: var(--display);
 }
 .primary {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   border-color: var(--accent);
 }
@@ -315,9 +315,9 @@
   max-height: 76px;
   overflow-y: auto;
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   font-size: 12px;
   line-height: 1.45;
   font-family: var(--display);
@@ -408,9 +408,9 @@
   gap: 1px;
   width: 100%;
   padding: 2px 3px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: var(--surface-grain, none) color-mix(in srgb, var(--surface) 88%, transparent);
   font-size: 12px;
   line-height: 1.2;
   text-align: center;
