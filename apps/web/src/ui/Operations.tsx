@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState, type ReactNode } from 'react';
+import type { ProgressionController } from '../runtime/progression';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
@@ -15,11 +16,17 @@ const StrategyBoard = lazy(() =>
   import('./StrategyBoard').then((module) => ({ default: module.StrategyBoard })),
 );
 
+const OwnerOffice = lazy(() =>
+  import('./OwnerOfficeView').then((module) => ({ default: module.OwnerOffice })),
+);
+
 export function OperationsView({
   state,
   client,
   legacy,
+  controller,
 }: {
+  controller: ProgressionController;
   state: ClientState;
   client: GameClient;
   legacy: ReactNode;
@@ -28,6 +35,19 @@ export function OperationsView({
   const [tab, setTab] = useState<BusinessView>(() =>
     businessTab(new URLSearchParams(location.search).get('view')),
   );
+  useEffect(() => {
+    if (tab !== 'office') return;
+    const reveal = () =>
+      document
+        .getElementById('operations-tab-office')
+        ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    const frame = requestAnimationFrame(reveal);
+    window.addEventListener('resize', reveal);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', reveal);
+    };
+  }, [tab]);
   return (
     <>
       <PageTabs
@@ -38,7 +58,11 @@ export function OperationsView({
         idPrefix="operations"
       />
       <TabPanel idPrefix="operations" value={tab}>
-        {tab === 'strategy' ? (
+        {tab === 'office' ? (
+          <Suspense fallback={null}>
+            <OwnerOffice key={w.id} client={client} controller={controller} />
+          </Suspense>
+        ) : tab === 'strategy' ? (
           <Suspense
             fallback={
               <div className={s.loading} role="status">

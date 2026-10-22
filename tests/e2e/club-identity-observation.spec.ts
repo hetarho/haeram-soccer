@@ -16,7 +16,8 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { ALL_DELEGATED } from './events';
 import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { openWatchAction, watchNext } from './watch';
+import { openWatchAction } from './watch';
+import { watchToWhistle } from './club-identity-helpers';
 
 /**
  * KIT-8/12, WEB-49/50, SAVE-22: the live pitch Canvas draws the shirts and keeper colours the match
@@ -220,14 +221,6 @@ const colourArea = (page: Page, colour: string, tol = 40) =>
     { selector: PITCH, colour, tol },
   );
 
-/** Watch the next match and stop at the final whistle; the presentation stays paused there. */
-async function watchToWhistle(page: Page) {
-  await watchNext(page);
-  await expect(page.getByTestId('match-theatre')).toBeVisible();
-  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(page.getByTestId('match-result-summary')).toBeVisible();
-}
-
 test('the live Canvas wears the recorded stripes, checks and keeper colours at phone scale', async ({
   page,
 }) => {
@@ -291,7 +284,7 @@ test('a design applied while the match is paused mid-match leaves its recorded s
     .click();
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);

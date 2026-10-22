@@ -38,8 +38,8 @@ const customised = (seed: string) =>
   CUSTOMISED.reduce<ClubIdentity>(reduceIdentityDraft, sessionDraft(seed));
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
@@ -164,9 +164,9 @@ test('the exact previewed design is the founded identity after reload and contin
   expect(ownClub(await exportWorld(page)).identity).toEqual(expected);
 
   // Continuing the slot from the slot screen keeps it as well.
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('dialog', { name: '설정' })
     .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
   await continueSlot(page, 1);

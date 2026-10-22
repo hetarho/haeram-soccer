@@ -43,29 +43,25 @@ describe('game-owned responsibility and time settings', () => {
     expect(isDelegated(w, 'sales')).toBe(false);
   });
   for (const authority of ['direct', 'delegated'] as const) {
-    it(`requires match eve for manual with every responsibility ${authority}`, () => {
+    it(`allows manual with match eve off and every responsibility ${authority}`, () => {
       const w = world(),
         s = defaultSettings();
       for (const k of RESPONSIBILITY_KEYS) s.responsibilities[k] = authority;
       s.mode = 'manual';
       s.observations = { matchEve: false, windowOpen: true };
-      const before = JSON.stringify(w);
-      expect(() => operate(w, { type: 'settings', settings: s })).toThrow(
-        '수동 모드에는 경기 이벤트가 필요해요',
-      );
-      expect(JSON.stringify(w)).toBe(before);
+      operate(w, { type: 'settings', settings: s });
+      expect(w.settings).toEqual(s);
     });
   }
-  it('rejects disabling match eve after manual activation without partial application', () => {
+  it('allows disabling match eve after manual activation', () => {
     const w = world(),
       s = defaultSettings();
     s.mode = 'manual';
     operate(w, { type: 'settings', settings: s });
-    const before = JSON.stringify(w);
     s.observations.matchEve = false;
     s.responsibilities.contracts = 'delegated';
-    expect(() => operate(w, { type: 'settings', settings: s })).toThrow();
-    expect(JSON.stringify(w)).toBe(before);
+    operate(w, { type: 'settings', settings: s });
+    expect(w.settings).toEqual(s);
   });
   it('allows automatic with no observation stops and rejects malformed/extra keys', () => {
     const w = world(),

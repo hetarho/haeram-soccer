@@ -31,14 +31,12 @@ function MenuRow({
 
 export function AppMenu({
   onClose,
-  onResponsibilities,
   onNews,
   onGuide,
   onGlossary,
   saveTools,
 }: {
   onClose: () => void;
-  onResponsibilities: () => void;
   onNews: () => void;
   onGuide: () => void;
   onGlossary: () => void;
@@ -75,12 +73,6 @@ export function AppMenu({
         </section>
         <section aria-labelledby={`${id}-game`}>
           <h3 id={`${id}-game`}>{t('shell.gameSettings')}</h3>
-          <MenuRow
-            icon="people"
-            title={t('shell.responsibilities')}
-            detail={t('shell.responsibilitiesHint')}
-            onClick={open(onResponsibilities)}
-          />
           <MenuRow icon="bell" title={t('shell.news')} onClick={open(onNews)} />
         </section>
         <section aria-labelledby={`${id}-help`}>

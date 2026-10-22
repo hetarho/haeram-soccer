@@ -82,6 +82,7 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
       ['?view=build', 'build', '/direction?view=build'],
       ['?view=finance', 'finance', '/direction?view=finance'],
       ['?view=sponsor', 'sponsor', '/direction?view=sponsor'],
+      ['?view=office', 'office', '/direction?view=office'],
       // Views from before 방향: 시설 is 증축 now, 마케팅 and its campaigns sit under 자금.
       ['?view=facility', 'build', '/direction?view=build'],
       ['?view=marketing', 'finance', '/direction?view=finance'],
@@ -89,13 +90,14 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
       expect(routeOf('/business', search)).toEqual({ page: 'business', view, address });
   });
 
-  it('구단 디자인 is the last 방향 tab at /direction?view=identity (→WEB-39)', () => {
+  it('구단 디자인 and 구단주 사무실 have stable 방향 tabs at /direction?view=identity (→WEB-39)', () => {
     expect(BUSINESS_TABS.map(([id, label]) => `${id}:${label}`)).toEqual([
       'strategy:운영 방침',
       'build:시설',
       'finance:재정',
       'sponsor:후원',
       'identity:구단 디자인',
+      'office:구단주 사무실',
     ]);
     expect(businessTab('identity')).toBe('identity');
     expect(routeOf('/direction', '?view=identity')).toEqual({ page: 'business', view: 'identity' });

@@ -49,7 +49,7 @@ describe('locale messages', () => {
         t(`navigation.short.${key}`),
       ),
     ).toEqual(['리그', '컵', '기록', '홈', '선수단', '훈련', '구단']);
-    expect(t('shell.menu')).toBe('전체 메뉴');
+    expect(t('shell.menu')).toBe('설정');
     expect(t('shell.readonlyNotice')).toBe('다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.');
     expect(t('shell.loadingView')).toBe('화면을 여는 중…');
     expect(t('shell.footer')).toBe('HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.');

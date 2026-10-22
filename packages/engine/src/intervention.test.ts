@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { canonical } from '../../contracts/src/index';
 import {
   createWorld,
   operate,
@@ -52,14 +51,13 @@ describe('seven independent business responsibilities', () => {
     operate(w, { type: 'release-staff', role: 'scout' });
     expect(w.settings).toEqual(settings);
   });
-  it('rejects manual mode without match observations atomically', () => {
+  it('accepts manual mode without match observations', () => {
     const w = world(),
       settings = structuredClone(w.settings!);
     settings.mode = 'manual';
     settings.observations.matchEve = false;
-    const before = canonical(w);
-    expect(() => operate(w, { type: 'settings', settings })).toThrow();
-    expect(canonical(w)).toBe(before);
+    operate(w, { type: 'settings', settings });
+    expect(w.settings).toEqual(settings);
   });
 });
 describe('recognized legacy authority compatibility only', () => {

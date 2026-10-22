@@ -23,8 +23,8 @@ import { horizontalOverflow, settle } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
@@ -49,7 +49,7 @@ async function openBusiness(page: Page, tab?: string) {
     .getByRole('button', { name: '구단 운영', exact: true })
     .click();
   await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
-  if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
+  await page.getByRole('tab', { name: tab ?? '운영 방침', exact: true }).click();
 }
 
 async function playNext(page: Page) {

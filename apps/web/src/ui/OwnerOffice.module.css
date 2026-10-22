@@ -1,0 +1,152 @@
+.office {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.hero {
+  display: block;
+  width: 100%;
+  height: clamp(100px, 15vw, 180px);
+  margin-bottom: 20px;
+}
+.section {
+  padding: 20px 0;
+}
+.section + .section {
+  border-top: 1px solid var(--popover-edge);
+}
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.section h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.section p,
+.row small,
+.sectionHead small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.section p {
+  margin: 12px 0 0;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 16px 0;
+}
+.row + .row {
+  border-top: 1px solid var(--popover-edge);
+}
+.row > span {
+  flex: 1;
+  min-width: 0;
+}
+.row b {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.row small {
+  display: block;
+  margin-top: 4px;
+}
+.choices {
+  composes: choices from './ChoiceGroup.module.css';
+  flex: none;
+}
+.bulkActions {
+  composes: choices from './ChoiceGroup.module.css';
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+.bulkActions button {
+  flex: none;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.confirmation > p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.confirmation > strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.confirmation ul {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.preview {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--popover-edge);
+}
+.preview h3 {
+  font-size: 14px;
+}
+.message {
+  color: var(--warm);
+  font-size: 13px;
+  line-height: 1.7;
+}
+@media (max-width: 760px) {
+  .row b {
+    font-size: 13px;
+  }
+  .sectionHead {
+    flex-wrap: wrap;
+  }
+  .hero {
+    height: 110px;
+    margin-bottom: 8px;
+  }
+}
+@media (max-width: 600px) {
+  .row {
+    flex-wrap: wrap;
+    gap: var(--control-gap);
+  }
+  .row > span,
+  .row > b {
+    flex-basis: 100%;
+  }
+  .choices {
+    width: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.actions button:last-child {
+  background: var(--accent-fill);
+  border-color: var(--accent-edge);
+  color: var(--on-accent);
+}

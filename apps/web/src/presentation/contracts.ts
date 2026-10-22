@@ -79,9 +79,14 @@ export const THEME_ICON_ROLES = [
   'trend',
   'history',
   'menu',
+  'more',
+  'switch',
   'bell',
   'news',
   'eye',
+  'play',
+  'pause',
+  'replay',
   'close',
   'chevronDown',
   'chevronRight',
@@ -130,6 +135,10 @@ export interface IconLayer {
   d: string;
   fill?: string;
   fillRule?: 'nonzero' | 'evenodd';
+  stroke?: string;
+  strokeWidth?: number;
+  strokeLinecap?: 'butt' | 'round' | 'square';
+  strokeLinejoin?: 'miter' | 'round' | 'bevel';
   opacity?: number;
 }
 export type IconResource =
@@ -361,6 +370,10 @@ const iconSchema = z.discriminatedUnion('type', [
           d: nonempty.regex(/^[Mm][0-9eE\s.,+\-MmZzLlHhVvCcSsQqTtAa]+$/, 'Invalid SVG path data'),
           fill: nonempty.optional(),
           fillRule: z.enum(['nonzero', 'evenodd']).optional(),
+          stroke: nonempty.optional(),
+          strokeWidth: z.number().finite().nonnegative().optional(),
+          strokeLinecap: z.enum(['butt', 'round', 'square']).optional(),
+          strokeLinejoin: z.enum(['miter', 'round', 'bevel']).optional(),
           opacity: z.number().min(0).max(1).optional(),
         }),
       )

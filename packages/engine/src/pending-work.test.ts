@@ -124,8 +124,7 @@ describe('explicit responsibility handover', () => {
     const settings = structuredClone(w.settings!);
     settings.responsibilities.recruitment = 'delegated';
     expect(pendingWorkPreview(w, settings)[0].refs).toEqual(['purchase:1']);
-    settings.mode = 'manual';
-    settings.observations.matchEve = false;
+    settings.mode = 'invalid' as never;
     const before = JSON.stringify(w);
     expect(() => operate(w, { type: 'settings', settings })).toThrow();
     expect(JSON.stringify(w)).toBe(before);

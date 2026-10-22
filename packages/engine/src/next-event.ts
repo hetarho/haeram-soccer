@@ -3,6 +3,7 @@ import { advanceDays } from './season';
 import { pendingDecisions, stoppingReasons } from './stopping';
 import { settingsOf } from './responsibilities';
 import { validateSettings } from './settings';
+import { nextOwnFixture } from './calendar';
 
 export function assertNextEvent(w: World) {
   const settings = validateSettings(settingsOf(w));
@@ -14,10 +15,17 @@ export function assertNextEvent(w: World) {
 /** Each yield is a fully settled day, for internal worker responsiveness only. */
 export function* nextEventDays(w: World): Generator<void> {
   assertNextEvent(w);
+  const throughResult = !settingsOf(w).observations.matchEve;
+  let fixture = throughResult ? nextOwnFixture(w) : undefined;
   // An explicit click consumes the current observation, never an outstanding business decision.
   do {
     advanceDays(w, 1, undefined, false);
     yield;
+    if (throughResult) {
+      if (fixture?.score) break;
+      // Empty summer schedules bind to the first generated fixture, not unlimited seasons.
+      fixture ||= nextOwnFixture(w);
+    }
   } while (!w.critical && !w.bankrupt && !stoppingReasons(w).length);
 }
 export function advanceToNextEvent(w: World) {

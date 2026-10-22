@@ -135,34 +135,37 @@
 
 .fixture {
   grid-area: fixture;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
   align-items: center;
   width: 100%;
   min-width: 0;
   gap: 12px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-top: 0;
-  background: transparent;
+  padding: var(--panel-padding);
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .fixtureActions {
+  flex: none;
+  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--control-gap);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 45%;
 }
 .fixtureActions > button {
-  flex: 1;
+  flex: none;
   min-width: 0;
 }
 .fixtureInfo {
+  flex: 1;
   min-width: 0;
 }
 .fixtureInfo small {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
   font-size: 12px;
   line-height: 1.4;
   font-weight: 700;
@@ -201,14 +204,13 @@
   font-size: 12px;
   line-height: 1.4;
   color: var(--text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   font-family: var(--display);
 }
 .hub .fixture .prepare {
   min-height: 44px;
-  padding: 8px 10px;
+  padding: var(--control-padding-block) var(--control-padding-inline);
   font-size: 12px;
   white-space: nowrap;
   background: var(--subtle-fill);
@@ -279,8 +281,8 @@
     min-height: 180px;
   }
   .fixture {
-    gap: 6px;
-    padding: 0;
+    gap: var(--control-gap);
+    padding: var(--row-padding);
   }
   .fixtureInfo h3 {
     margin: 2px 0;
@@ -380,7 +382,7 @@
   margin: 6px 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(108px, 1.2fr);
   gap: 5px;
 }
 .state li {
@@ -427,8 +429,14 @@
 }
 .state li small {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
   font-family: var(--display);
+  white-space: nowrap;
+}
+.state li small strong {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 .good small {
   color: var(--positive);
@@ -681,10 +689,6 @@ button.resources:active:not(:disabled) {
   .fixtureInfo h3 {
     margin: 2px 0;
     font-size: 16px;
-  }
-  .fixture {
-    gap: 8px;
-    padding: 0;
   }
   .play {
     min-height: 44px;

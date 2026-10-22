@@ -88,8 +88,8 @@ async function chooseClubColour(page: Page, colour: string) {
 }
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
@@ -281,9 +281,9 @@ test('starts with generous capital and shows a fact-aware guide without changing
   expect(before.level).toBe('easy');
   expect(BigInt(before.cash)).toBe(BigInt(operatingCost(before)) * 2n);
   const openGuide = async () => {
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page.getByRole('button', { name: '설정', exact: true }).click();
     await page
-      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('dialog', { name: '설정' })
       .getByRole('button', { name: '클럽 키우기 가이드', exact: true })
       .click();
   };
@@ -305,7 +305,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   const afterGuide = await exportWorld(page);
   expect(afterGuide).toEqual(before);
   await delegateSales(page);
-  await watchNext(page);
+  await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })

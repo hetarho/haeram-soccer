@@ -29,16 +29,13 @@ function world() {
   return w;
 }
 describe('ordered manual next-event settlement', () => {
-  it('rejects automatic, invalid manual and actual unresolved decisions before any mutation', () => {
+  it('rejects automatic and actual unresolved decisions before any mutation', () => {
     const w = world();
     w.settings!.mode = 'automatic';
     const before = canonical(w);
     expect(() => advanceToNextEvent(w)).toThrow('수동');
     expect(canonical(w)).toBe(before);
     w.settings!.mode = 'manual';
-    w.settings!.observations.matchEve = false;
-    expect(() => advanceToNextEvent(w)).toThrow('경기 이벤트');
-    w.settings!.observations.matchEve = true;
     w.settings!.responsibilities.manager = 'direct';
     w.manager.interim = true;
     const pending = canonical(w);

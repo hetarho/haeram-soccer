@@ -81,10 +81,7 @@ for (const viewport of [
       progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
       viewport,
     );
-    await expectTouchControl(
-      progress.getByRole('button', { name: '위임·진행 설정', exact: true }),
-      viewport,
-    );
+    await expectTouchControl(page.getByRole('button', { name: /진행 방식 변경/ }), viewport);
     await chooseOption(pace, 'x2');
     await expect(pace).toHaveAttribute('data-value', 'x2');
     // Pace selection only sets the pace (→WEB-18): play starts the run, which stops straight away.

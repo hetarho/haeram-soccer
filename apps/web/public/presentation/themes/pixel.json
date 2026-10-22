@@ -64,6 +64,7 @@
       "radius": "3px",
       "shadow": "0 12px 32px #0006",
       "control-radius": "2px",
+      "play-radius": "0px",
       "card-radius": "2px",
       "section-radius": "3px 3px 0 0",
       "dialog-radius": "2px",
@@ -305,6 +306,45 @@
             "d": "M5 3h6v2h2v2h2v2h-2v2h-2v2H5v-2H3V9H1V7h2V5h2Z M5 5v2H3v2h2v2h6V9h2V7h-2V5Z M7 6h2v4H7Z",
             "fill": "currentColor",
             "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "play": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 16 16",
+        "shapeRendering": "crispEdges",
+        "layers": [
+          {
+            "d": "M4 2H6V3H8V4H10V5H12V7H14V9H12V11H10V12H8V13H6V14H4Z",
+            "fill": "currentColor"
+          }
+        ]
+      }
+    },
+    "pause": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 16 16",
+        "shapeRendering": "crispEdges",
+        "layers": [
+          {
+            "d": "M3 2H6V14H3Z M10 2H13V14H10Z",
+            "fill": "currentColor"
+          }
+        ]
+      }
+    },
+    "replay": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 16 16",
+        "shapeRendering": "crispEdges",
+        "layers": [
+          {
+            "d": "M5 1H11V3H13V5H15V11H13V13H11V15H5V13H3V11H1V7H3V11H5V13H11V11H13V5H11V3H5V5H7V7H1V1H3V3H5Z",
+            "fill": "currentColor"
           }
         ]
       }
@@ -783,6 +823,28 @@
             "d": "M7 1h2v3h2v2h4v2h-2v2h-2v2h2v3H9v-2H7v2H3v-3h2v-2H3V8H1V6h4V4h2Z",
             "fill": "currentColor",
             "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "more": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 16 16",
+        "layers": [
+          {
+            "d": "M2 7h2v2H2zM7 7h2v2H7zM12 7h2v2h-2z"
+          }
+        ]
+      }
+    },
+    "switch": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 16 16",
+        "layers": [
+          {
+            "d": "M10 1h2v2h2v2h-2v2h-2V5H2V3h8zM4 9h2v2h8v2H6v2H4v-2H2v-2h2z"
           }
         ]
       }

@@ -1,12 +1,12 @@
 import { PixelIcon } from './PixelIcon';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import { decisionOwner } from './intervention';
-import { useInterventionDialog } from './state';
+import { openOwnerOffice } from './state';
 import s from './DecisionOwner.module.css';
 
 /**
  * Who takes a decision at the current intervention level (→WEB-45, STAFF-13), shown in its home:
- * one line naming the level that opens the intervention dialog, never a switch of its own
+ * one line opening the owner office, never a switch of its own
  * (→WEB-71).
  */
 export function DecisionOwner({
@@ -41,10 +41,10 @@ export function DecisionOwner({
         <button
           type="button"
           className={s.level}
-          aria-label={`${name} · ${on ? '위임' : '직접 결정'} · 위임·진행 설정 열기`}
-          onClick={useInterventionDialog.getState().show}
+          aria-label={`${name} · ${on ? '위임' : '직접 결정'} · 구단주 사무실 열기`}
+          onClick={openOwnerOffice}
         >
-          위임·진행 설정
+          구단주 사무실
           <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>

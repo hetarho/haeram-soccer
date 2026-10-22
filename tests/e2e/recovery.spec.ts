@@ -44,15 +44,16 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
     '읽기 전용',
   );
-  await expect(await openWatchAction(second)).toBeDisabled();
+  await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeDisabled();
   await page.bringToFront();
   const revision = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await second.bringToFront();
-  await expect(second.getByTestId('calendar')).toContainText('라운드 1', { timeout: 10000 });
+  await expect(second.getByTestId('game-round')).toHaveText('1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await expect(await openWatchAction(second)).toBeEnabled();
+  await second.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+  await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   await second.close();
 });
 test('recovers prior checkpoint after active corruption without clearing another application key', async ({
@@ -92,7 +93,7 @@ test('recovers prior checkpoint after active corruption without clearing another
   );
   await inbox.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toHaveCount(0);
-  await expect(page.getByTestId('calendar')).toContainText(`라운드 ${previous.round}`);
+  await expect(page.getByTestId('game-round')).toHaveText(`${previous.round}`);
   const downloading = page.waitForEvent('download');
   await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
@@ -115,7 +116,7 @@ test('recovers prior checkpoint after active corruption without clearing another
   const again = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${again} ·`);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toContainText(`라운드 ${previous.round + 1}`);
+  await expect(page.getByTestId('game-round')).toHaveText(`${previous.round + 1}`);
 });
 test('quota failure preserves disk save, exports actual memory progress and retries', async ({
   page,
@@ -175,7 +176,7 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   await page.getByRole('button', { name: '저장 재시도' }).click();
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
 });
 test('unsupported import leaves the current world and manifest intact', async ({ page }) => {
   await found(page);
@@ -198,7 +199,7 @@ test('unsupported import leaves the current world and manifest intact', async ({
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(
     data.manifest,
   );
-  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
 });
 test('a terminated real worker exposes recovery and retains the last committed checkpoint', async ({
   page,
@@ -230,7 +231,7 @@ test('a terminated real worker exposes recovery and retains the last committed c
   await expect(page.getByRole('alert')).toContainText('Worker가 종료');
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(manifest);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 0');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await expect(
     page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true }),
   ).toBeEnabled();
@@ -366,4 +367,3 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   await expect(alarm).toBeVisible();
   await expect(notice).toBeVisible();
 });
-import { openWatchAction } from './watch';

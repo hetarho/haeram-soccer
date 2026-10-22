@@ -1,5 +1,5 @@
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
-import { chooseOption } from './select';
+import { dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
   createWorld,
@@ -42,6 +42,7 @@ function ask(w: ReturnType<typeof createWorld>, line: 'MF' | 'GK') {
 }
 async function market(page: Page, w: ReturnType<typeof createWorld>) {
   await importResponsibilityCareer(page, w);
+  await dismissMatchReport(page);
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page
     .getByRole('tablist', { name: '선수단·스태프 보기' })
@@ -218,16 +219,19 @@ test('mediation-handover-on-apply discloses work and never replays its recorded 
   const { configureResponsibilities } = await import('./events');
   const w = fixture();
   await importResponsibilityCareer(page, w);
-  await page.getByTestId('intervention-trigger').click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await chooseOption(dialog.getByRole('combobox', { name: '선수 영입', exact: true }), 'delegated');
+  const office = await openOffice(page);
+  await office
+    .getByRole('group', { name: '선수 영입', exact: true })
+    .getByRole('button', { name: '위임', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
   await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );
-  await dialog.getByRole('button', { name: '적용', exact: true }).click();
+  await dialog.getByRole('button', { name: '위임하기', exact: true }).click();
   await page
     .getByTestId('action-outcome')
-    .getByRole('button', { name: '확인', exact: true })
+    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
     .click();
   const after = await exportedCareer(page);
   expect(after.mediations![0].status).toBe('resolved');
@@ -262,6 +266,8 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
     const promise = w.promises![0];
     w.cash = '999999999999';
+    // This journey advances to a promise deadline; pre-match reporting is covered separately.
+    w.settings!.observations.matchEve = false;
     const { advanceDays } = await import('../../packages/engine/src/index');
     w.settings!.responsibilities.contracts = 'delegated';
     w.settings!.responsibilities.sales = 'delegated';

@@ -11,7 +11,8 @@ async function closeFirstSeason(page: Page, seed: string) {
   await page.getByLabel('세계 생성 시드').fill(seed);
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/1951\/52 · 라운드 0$/);
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();

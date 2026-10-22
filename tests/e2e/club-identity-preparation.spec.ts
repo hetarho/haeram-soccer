@@ -79,7 +79,7 @@ async function closePreparation(page: Page, dialog: Locator, decided: boolean) {
   if (!decided) return;
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toBeVisible();
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect(outcome).toHaveCount(0);
 }
 async function watchToResult(page: Page) {

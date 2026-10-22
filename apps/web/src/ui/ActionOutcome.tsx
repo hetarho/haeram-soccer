@@ -4,6 +4,7 @@ type Entry = { command: Command; before: World; after: World };
 import { useGameState } from '../runtime/store';
 import { describeOutcome } from './outcome';
 import s from './ActionOutcome.module.css';
+import { PixelIcon } from './PixelIcon';
 import { fadeOutOnRemove } from './motion';
 
 const outcomeExit = fadeOutOnRemove([
@@ -12,6 +13,7 @@ const outcomeExit = fadeOutOnRemove([
 ]);
 
 const VISIBLE_MS = 8000;
+const SETTINGS_TOAST_MS = 3200;
 
 /**
  * Shows what the player's last decision changed. Decisions made inside a sheet are held until
@@ -58,33 +60,46 @@ export function ActionOutcome() {
   const earlier = (batch?.entries.slice(0, -1) || []).flatMap(
     (entry) => describeOutcome(entry.command, entry.before, entry.after) || [],
   );
+  const settingsToast =
+    !!latest && batch!.entries.every((entry) => entry.command.type === 'settings');
   const visible = !!outcome && dialogs === 0;
   // Opening another sheet means the player has moved on from a card already seen.
   if (dialogs > 0 && batch?.shown) setBatch(undefined);
   useEffect(() => {
     if (!visible) return;
     setBatch((current) => current && (current.shown ? current : { ...current, shown: true }));
-    timer.current = window.setTimeout(() => setBatch(undefined), VISIBLE_MS);
+    timer.current = window.setTimeout(
+      () => setBatch(undefined),
+      settingsToast ? SETTINGS_TOAST_MS : VISIBLE_MS,
+    );
     return () => window.clearTimeout(timer.current);
-  }, [visible, batch?.seen]);
+  }, [visible, batch?.seen, settingsToast]);
   if (!visible || !outcome) return null;
   return (
     <aside
       key={batch!.seen}
       ref={outcomeExit}
-      className={s.outcome}
+      className={`${s.outcome} ${settingsToast ? s.toast : ''}`}
       role="status"
       aria-live="polite"
       aria-label="방금 한 결정의 결과"
       data-testid="action-outcome"
-      onPointerEnter={() => window.clearTimeout(timer.current)}
+      data-settings-toast={settingsToast || undefined}
+      onPointerEnter={settingsToast ? undefined : () => window.clearTimeout(timer.current)}
     >
       <header>
-        <i aria-hidden="true">✓</i>
+        <i aria-hidden="true">
+          <PixelIcon name="check" size={16} />
+        </i>
         <b>{outcome.title}</b>
-        <button onClick={() => setBatch(undefined)}>확인</button>
+        <button
+          aria-label={settingsToast ? '알림 닫기' : undefined}
+          onClick={() => setBatch(undefined)}
+        >
+          {settingsToast ? <PixelIcon name="close" size={14} /> : '확인'}
+        </button>
       </header>
-      {outcome.changes.length > 0 && (
+      {!settingsToast && outcome.changes.length > 0 && (
         <ul>
           {outcome.changes.slice(0, 5).map((change) => (
             <li key={change.label}>
@@ -101,13 +116,14 @@ export function ActionOutcome() {
           ))}
         </ul>
       )}
-      {outcome.events.slice(0, 2).map((event, i) => (
-        <p key={i}>
-          <b>{event.title}</b> {event.detail}
-        </p>
-      ))}
-      {outcome.note && <small>{outcome.note}</small>}
-      {earlier.length > 0 && (
+      {!settingsToast &&
+        outcome.events.slice(0, 2).map((event, i) => (
+          <p key={i}>
+            <b>{event.title}</b> {event.detail}
+          </p>
+        ))}
+      {!settingsToast && outcome.note && <small>{outcome.note}</small>}
+      {!settingsToast && earlier.length > 0 && (
         <p className={s.earlier}>
           함께 반영한 결정 ·{' '}
           {earlier.map((entry) => entry.title.replace(/했어요$|바꿨어요$/, '')).join(', ')}

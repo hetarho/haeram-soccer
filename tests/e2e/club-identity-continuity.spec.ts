@@ -418,7 +418,7 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await failure.getByRole('button', { name: '다시 적용', exact: true }).click();
   await expect(designStatus(view)).toHaveText('적용된 디자인');
   const outcome = page.getByTestId('action-outcome');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect(page.getByRole('alert').filter({ hasText: '저장 실패' })).toBeVisible();
   const retried = reduceIdentityDraft(committed, {
     type: 'kit-colour',

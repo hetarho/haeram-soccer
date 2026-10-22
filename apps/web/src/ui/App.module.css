@@ -42,8 +42,8 @@
   background: var(--surface-grain, none) var(--control-fill);
   color: var(--text);
   border-radius: var(--control-radius);
-  min-height: 44px;
-  padding: 8px 14px;
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
   font-weight: var(--control-weight);
   box-shadow: var(--control-shadow);
   transition:
@@ -509,7 +509,7 @@
   position: fixed;
   z-index: 90;
   right: 16px;
-  bottom: 16px;
+  bottom: 80px;
   display: grid;
   gap: 10px;
   width: min(440px, calc(100vw - 32px));
@@ -521,6 +521,10 @@
 }
 .feedbackOverlay > * {
   box-shadow: var(--feedback-edge-shadow);
+}
+/* Required recovery actions clear routine event cards while staying below dialogs. */
+.urgentFeedback {
+  z-index: 950;
 }
 .feedbackOverlay > .error,
 .feedbackOverlay > .critical {
@@ -541,7 +545,7 @@
 @media (max-width: 760px) {
   .feedbackOverlay {
     right: 12px;
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    bottom: calc(150px + env(safe-area-inset-bottom));
     left: 12px;
     width: auto;
     max-height: calc(100dvh - 112px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
@@ -1186,7 +1190,7 @@
   flex: 0 0 auto;
   gap: 16px;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--popover-edge);
   background: var(--surface-grain, none) var(--surface);
 }
 .modalHead h2 {
@@ -1216,7 +1220,7 @@
 .modalActions {
   flex: 0 0 auto;
   padding: 16px 24px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--popover-edge);
   background: var(--surface-grain, none) var(--surface);
 }
 .modalActions .actions {
@@ -1404,35 +1408,48 @@
 }
 
 .rosterCards {
-  padding: 8px 16px;
+  padding: var(--row-padding) var(--panel-padding);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+  gap: var(--control-gap);
 }
 .rosterCards article {
   position: relative;
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--control-gap) var(--row-padding);
   align-items: center;
-  border-bottom: 1px solid var(--line);
-  padding: 9px 0;
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--card-radius);
+  padding: var(--row-padding);
+  background: var(--surface-grain, none) var(--subtle-fill);
   min-width: 0;
+  transition:
+    background 140ms,
+    border-color 140ms;
 }
 @media (hover: hover) {
   .rosterCards article:hover {
-    background: var(--surface-grain, none) color-mix(in srgb, var(--surface-2) 55%, transparent);
+    background: var(--surface-grain, none) var(--surface-2);
+    border-color: color-mix(in srgb, var(--text-muted) 30%, transparent);
   }
+}
+.rosterCards article:has(.cardLink:focus-visible) {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 /* The card body: the OVR chip beside the name, then the age line and any flags. */
 .rosterCards article > .rosterBody {
   display: grid;
   grid-template-columns: auto 1fr;
+  grid-row: span 2;
   align-items: center;
   gap: 4px 8px;
   text-align: left;
   flex: 1;
   min-width: 0;
-  padding: 4px;
+  padding: 0;
 }
 .rosterBody > span:first-child {
   grid-row: span 2;
@@ -1448,6 +1465,10 @@
 }
 .rosterCards .cardLink::after {
   inset: 0;
+  border-radius: var(--card-radius);
+}
+.rosterCards .cardLink:focus-visible {
+  outline: none;
 }
 /* A filter or transform would make the name the hit area's containing block mid-press. */
 .rosterCards .cardLink:hover,
@@ -1461,9 +1482,18 @@
   white-space: nowrap;
 }
 /* The stance badge stays its own control above the card's hit area. */
-.rosterCards article > button {
+.rosterActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--control-gap);
+}
+.rosterActions > button {
   position: relative;
   z-index: 1;
+}
+.rosterStats {
+  align-self: end;
 }
 /* Active roster view choices, under the search while the settings are closed. */
 .rosterViewSummary {
@@ -1485,17 +1515,12 @@
   display: block;
   color: var(--text-muted);
   white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   font-family: var(--display);
 }
 .rosterCards article > div {
-  flex-shrink: 0;
   text-align: right;
-}
-.rosterCards article > button:last-child:not(:first-child) {
-  padding: 5px 8px;
-  font-size: var(--label-size);
-  min-height: 44px;
-  font-family: var(--display);
 }
 .rosterDetails {
   padding: 12px 16px;
@@ -1511,7 +1536,17 @@
 @media (max-width: 760px) {
   .rosterCards {
     grid-template-columns: 1fr;
-    padding: 6px 12px;
+    padding: var(--row-padding);
+  }
+  .rosterCards article > .rosterBody {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .rosterCards .rosterStats {
+    text-align: left;
+  }
+  .rosterActions {
+    align-self: center;
   }
   .rosterCards b,
   .rosterCards .cardLink {
@@ -1858,19 +1893,19 @@
 }
 .segments {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 4px;
-  padding: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr));
+  gap: var(--control-gap);
+  padding: var(--control-gap);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-deep);
-  border: 1px solid var(--line);
+  border: 1px solid var(--popover-edge);
 }
 .segments button {
-  min-height: 42px;
-  padding: 6px 4px;
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
   font-size: 13px;
-  white-space: nowrap;
+  line-height: 1.5;
+  word-break: keep-all;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -1883,8 +1918,7 @@
   box-shadow: none;
 }
 .segmentsWrap {
-  grid-auto-flow: row;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 112px), 1fr));
 }
 /* The records room keeps its tabs pinned while a view scrolls, like the league page. */
 .recordsNav {
@@ -2216,9 +2250,13 @@
     display: none;
   }
 }
-/* Home uses the full content viewport; clock actions reserve no content space. */
+/* The scroller fills the space between the metadata and bottom transport. */
 .newsLayout.coreLayout .scroller {
   padding-bottom: 0;
+}
+/* Match content already clears the reserved navigation; a large bottom inset made it scroll. */
+.coreLayout:not(.newsLayout) .scroller {
+  padding-bottom: var(--control-gap);
 }
 /* Phones: tight gaps leave the club name room for up to two lines beside the cash. */
 @media (max-width: 760px) {
@@ -2246,8 +2284,6 @@
     height: 20px;
   }
 }
-
-/* One packed row: the date and status take what the buttons leave, the season bar rides the edge. */
 
 @media (max-width: 760px) {
   .mobileNav {
@@ -2443,9 +2479,9 @@
   align-items: center;
   gap: 5px;
   min-height: 44px;
-  padding: 0 8px 0 9px;
+  padding: var(--control-padding-block) var(--control-padding-inline);
   border: 1px solid color-mix(in srgb, var(--tone, var(--accent-text)) 45%, transparent);
-  border-radius: var(--card-radius);
+  border-radius: var(--control-radius);
   background: var(--surface-grain, none) var(--tone-soft, var(--surface-2));
   box-shadow: none;
   color: var(--tone, var(--accent-text));
@@ -3154,6 +3190,19 @@
   max-width: 360px !important;
   border-radius: var(--dialog-radius);
 }
+.picker .modalHead h2 {
+  font-size: 20px;
+  line-height: 1.4;
+}
 .picker .modalBody {
   padding: 20px;
+}
+
+@media (max-width: 760px) {
+  .hud {
+    gap: 4px;
+  }
+  .hudCash {
+    padding-right: 2px;
+  }
 }

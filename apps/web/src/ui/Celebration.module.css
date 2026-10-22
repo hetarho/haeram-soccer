@@ -1,12 +1,20 @@
 /* The layer never takes taps: the game keeps running and clickable underneath; only the banner
    itself answers a tap, which dismisses it. */
 .layer {
+  --toast-lift: 0px;
+  --event-lift: 0px;
   position: fixed;
   inset: 0;
   /* Above the HUD and tab bar, below dialogs: a sheet the owner opened stays readable. */
   z-index: 900;
   pointer-events: none;
   overflow: hidden;
+}
+:global(body:has([data-settings-toast])) .layer {
+  --toast-lift: var(--settings-toast-clearance);
+}
+:global(body:has([data-event-access])) .layer {
+  --event-lift: var(--event-access-clearance);
 }
 .confetti i {
   position: absolute;
@@ -29,7 +37,7 @@
   position: absolute;
   /* Lower play area, clear of the HUD, clock and phone navigation. */
   right: 24px;
-  bottom: 88px;
+  bottom: calc(88px + var(--toast-lift) + var(--event-lift));
   display: grid;
   gap: 4px;
   width: min(420px, calc(100% - 48px));
@@ -51,7 +59,7 @@
     left: 12px;
     right: 12px;
     width: auto;
-    bottom: calc(88px + env(safe-area-inset-bottom));
+    bottom: calc(156px + var(--toast-lift) + var(--event-lift) + env(safe-area-inset-bottom));
     display: flex;
     align-items: center;
     gap: 8px;

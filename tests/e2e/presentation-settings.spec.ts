@@ -25,8 +25,8 @@ async function openSettings(page: Page, field: Field = 'theme') {
   const trigger = page.getByTestId('presentation-settings-trigger');
   if (await trigger.isVisible()) await trigger.click();
   else {
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
     await menu.getByRole('button', { name: pickerRow[field] }).click();
     await expect(menu).toHaveCount(0);
   }
@@ -135,8 +135,8 @@ for (const width of [390, 1380])
     const date = await page.getByTestId('calendar').innerText();
     const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
     const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
     await expect(menu.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
     await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expectMenuRegistryChoices(page);
@@ -146,7 +146,7 @@ for (const width of [390, 1380])
     await expect.poll(() => background(page)).toBe(pixel.tokens.palette.bg);
     await closeSettings(page);
     await expectHomeBounds(page);
-    await expect(page.getByTestId('calendar')).toHaveText(date);
+    await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
     await expect(page.locator('[data-facility-art="stadium"] img')).not.toHaveAttribute(
       'src',
       artwork!,
@@ -165,6 +165,31 @@ for (const width of [390, 1380])
     expect(await committedRaw(page)).toBe(raw);
     await expectHomeBounds(page);
   });
+
+test('pending theme resources add no feedback row or picker layout shift', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('club-founding').waitFor();
+  await openSettings(page);
+  const content = page.getByTestId('presentation-settings');
+  await settle(page);
+  const before = await content.boundingBox();
+  let release!: () => void;
+  const ready = new Promise<void>((resolve) => (release = resolve));
+  await page.route('**/presentation/themes/pixel.json', async (route) => {
+    await ready;
+    await route.continue();
+  });
+  try {
+    await chooseOption(page.getByTestId('presentation-theme'), 'pixel');
+    await expect(content).toHaveAttribute('aria-busy', 'true');
+    await expect(content.getByTestId('presentation-pending')).toHaveCount(0);
+    expect(await content.boundingBox()).toEqual(before);
+  } finally {
+    release();
+  }
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
+  await expect(content).toHaveAttribute('aria-busy', 'false');
+});
 
 test('theme reveal keeps controls in the composited dialog and backdrop', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -191,14 +216,15 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
     'The browser uses the immediate fallback without native snapshots.',
   );
   const dialog = await openSettings(page);
-  const standardClose = await dialog.locator('[data-pixel-icon="close"] path').getAttribute('d');
+  const closePaths = () =>
+    dialog
+      .locator('[data-pixel-icon="close"] path')
+      .evaluateAll((paths) => paths.map((path) => path.getAttribute('d')).join('|'));
+  const standardClose = await closePaths();
   await chooseOption(page.getByTestId('presentation-theme'), 'pixel');
   await expect(page.locator('html')).toHaveAttribute('data-theme-snapshot-controls', '0');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
-  await expect(dialog.locator('[data-pixel-icon="close"] path')).not.toHaveAttribute(
-    'd',
-    standardClose!,
-  );
+  await expect.poll(closePaths).not.toBe(standardClose);
   await expect(dialog).toBeVisible();
   await closeSettings(page);
   await expectHomeBounds(page);
@@ -238,9 +264,9 @@ for (const viewport of [
     await founding.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expectMenuRegistryChoices(page);
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page.getByRole('button', { name: '설정', exact: true }).click();
     await page
-      .getByRole('dialog', { name: '전체 메뉴', exact: true })
+      .getByRole('dialog', { name: '설정', exact: true })
       .getByRole('button', { name: '게임 슬롯', exact: true })
       .click();
     await expect(page.getByTestId('game-slots')).toBeVisible();
@@ -360,7 +386,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
   expect(page.url()).toBe(address);
   await expect(colour).toHaveValue('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
-  await expect(page.getByTestId('calendar')).toHaveText(date);
+  await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
   await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
   expect(await commands(page)).toBe(sent);
   expect(await committedRaw(page)).toBe(raw);

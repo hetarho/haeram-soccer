@@ -1,3 +1,4 @@
+import { gameHud } from './layout';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -56,8 +57,8 @@ async function watchIdentityCommands(page: Page) {
 const commands = (page: Page) => page.evaluate(() => (window as ProbeWindow).identityProbe.sent);
 
 async function exportRaw(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
@@ -88,9 +89,9 @@ async function foundHere(page: Page, seed: string, name: string) {
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function openSlots(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
-    .getByRole('dialog', { name: '전체 메뉴' })
+    .getByRole('dialog', { name: '설정' })
     .getByRole('button', { name: '게임 슬롯', exact: true })
     .click();
   await expect(page.getByTestId('game-slots')).toBeVisible();
@@ -157,7 +158,7 @@ test('three named colours link shirts and crest, and each apply reaches every cr
   expect(reused.kits.away).toEqual(palette.kits.away);
 
   // KIT-12/WEB-49: the current crest follows at once wherever the club is named.
-  const hud = page.locator('header').filter({ has: page.getByTestId('calendar') });
+  const hud = gameHud(page);
   await expect(crestFill(hud, '#E0218A')).not.toHaveCount(0);
   await nav(page).getByRole('button', { name: '리그', exact: true }).click();
   const own = page
@@ -373,7 +374,7 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
     .getByRole('dialog', { name: '기록 가져오기 확인' })
     .getByRole('button', { name: '기록 교체하고 가져오기' })
     .click();
-  const hud = page.locator('header').filter({ has: page.getByTestId('calendar') });
+  const hud = gameHud(page);
   await expect(crestFill(hud, '#123456')).not.toHaveCount(0);
   await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
   const stale = await designView(page);

@@ -1,4 +1,14 @@
 /* Shared presentation mechanics; each pack supplies values and visual resources. */
+:root {
+  --control-min-height: 44px;
+  --control-padding-block: 10px;
+  --control-padding-inline: 16px;
+  --control-gap: 8px;
+  --panel-padding: 16px;
+  --row-padding: 12px;
+  --settings-toast-clearance: 80px;
+  --event-access-clearance: 56px;
+}
 body {
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;

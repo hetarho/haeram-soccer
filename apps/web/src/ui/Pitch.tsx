@@ -1,4 +1,5 @@
 import { Select } from './Select';
+import { PixelIcon } from './PixelIcon';
 import {
   lazy,
   Suspense,
@@ -748,10 +749,7 @@ export function Pitch({
             disabled={!p}
             onClick={toggle}
           >
-            <span
-              aria-hidden="true"
-              className={finished ? t.iconReplay : paused ? t.iconPlay : t.iconPause}
-            />
+            <PixelIcon name={finished ? 'replay' : paused ? 'play' : 'pause'} size={24} />
           </button>
         )}
         {p && !summary && (

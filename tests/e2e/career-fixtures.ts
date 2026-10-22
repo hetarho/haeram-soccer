@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { dismissMatchReport } from './events';
 /** Marked synthetic career uses the ordinary portable checkpoint/worker boundary. */
 export function secondCareerFixture() {
   const w = createWorld({
@@ -87,8 +88,9 @@ export async function qualifiedCoachFixture(kind: 'internal' | 'club') {
 export async function exportedCareer(page: Page) {
   const { readFile } = await import('node:fs/promises');
   const { decode } = await import('../../apps/web/src/adapters/persistence');
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+  await dismissMatchReport(page);
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정', exact: true });
   const event = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await event;

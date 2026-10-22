@@ -15,19 +15,14 @@ import {
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { activeMatchModel } from '../../../../packages/contracts/src/match-model';
-import {
-  daysUntilNextMatch,
-  nextOwnFixture,
-  seasonDate,
-} from '../../../../packages/engine/src/calendar';
+import { nextOwnFixture, seasonDate } from '../../../../packages/engine/src/calendar';
 import { clubOf, startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';
-import { useProgression, type ProgressionController } from '../runtime/progression';
+import { type ProgressionController } from '../runtime/progression';
 import { useLeagueSeason, useMatchView, useNavigation, type Page, type PastTab } from './state';
 import type { PitchControls } from './Pitch';
-import { watchNextMatch } from './watch';
 import { LeagueOverview, RankHistoryGraph, Standings, RoundResults } from './LeagueInsights';
 import { DisciplineTable, ScorerStandings, ScorerHistory } from './ScorerPanels';
 import { StrategyPanel } from './LazyStrategyPanel';
@@ -96,61 +91,25 @@ const pastOf = (tab: Tab): PastTab =>
         ? 'scorers'
         : 'table';
 
-/**
- * The primary match action: while the match plays it reveals the result; after the final whistle
- * it watches the next match (→WEB-50).
- */
-function NextMatchAction({
-  client,
-  controller,
-  controls,
-}: {
-  client: GameClient;
-  controller: ProgressionController;
-  controls: PitchControls;
-}) {
-  const busy = useGameState((state) => state.busy);
-  const [pending, setPending] = useState(false);
-  const readonly = useGameState((state) => state.readonly);
-  const error = useGameState((state) => state.error);
-  const critical = useGameState((state) => state.view?.world.critical);
+/** Reveal the running result, then return to management for the next match eve. */
+function NextMatchAction({ controls }: { controls: PitchControls }) {
   const live = useGameState((state) => !!state.playback);
-  const days = useGameState((state) => state.view && daysUntilNextMatch(state.view.world));
-  if (live && !controls.finished)
-    return (
-      <button
-        className={t.watch}
-        aria-label="결과 보기"
-        aria-describedby="match-next-hint"
-        data-testid="match-next-action"
-        onClick={controls.reveal}
-      >
-        <b>
-          결과 보기 <span aria-hidden="true">⏭</span>
-        </b>
-        <small id="match-next-hint">종료 휘슬까지 바로 넘어가요</small>
-      </button>
-    );
+  const setPage = useNavigation((state) => state.setPage);
+  const reveal = live && !controls.finished;
   return (
     <button
       className={t.watch}
-      aria-label="다음 경기 관전"
+      aria-label={reveal ? '결과 보기' : '홈으로'}
       aria-describedby="match-next-hint"
       data-testid="match-next-action"
-      disabled={pending || busy || readonly || !!error || !!critical}
-      onClick={() => {
-        if (pending) return;
-        setPending(true);
-        void watchNextMatch(client, controller, () => undefined, { background: true }).finally(() =>
-          setPending(false),
-        );
-      }}
+      onClick={reveal ? controls.reveal : () => setPage('dashboard')}
     >
       <b>
-        다음 경기 관전 <span aria-hidden="true">▶</span>
+        {reveal ? '결과 보기' : '홈으로'}{' '}
+        <PixelIcon name={reveal ? 'chevronRight' : 'home'} size={16} />
       </b>
       <small id="match-next-hint">
-        {days ? `${days}일 진행 후 킥오프` : days === 0 ? '지금 바로 킥오프' : '새 시즌 일정 시작'}
+        {reveal ? '종료 휘슬까지 바로 넘어가요' : '다음 일정과 구단 상태를 확인해요'}
       </small>
     </button>
   );
@@ -195,19 +154,14 @@ function MatchFeedback({ finished }: { finished: boolean }) {
 }
 
 const MatchPane = memo(function MatchPane({
-  client,
-  controller,
   onPrepare,
   showDate,
 }: {
-  client: GameClient;
-  controller: ProgressionController;
   onPrepare: () => void;
   showDate: boolean;
 }) {
   const w = useGameState(selectMatchWorld)!;
   const playback = useGameState((state) => state.playback);
-  const automatic = useProgression(controller, (state) => state.running && state.watching);
   const [finishedWorld, setFinishedWorld] = useState<World>();
   const completed = useRef<string | undefined>(undefined);
   const [presentation, setPresentation] = useState<{
@@ -229,17 +183,12 @@ const MatchPane = memo(function MatchPane({
   useEffect(() => {
     publish({ matchId: presentation.matchId, finished: presentation.finished });
   }, [presentation.matchId, presentation.finished, publish]);
-  const onFinish = useCallback(
-    (id: string) => {
-      if (completed.current !== id) {
-        completed.current = id;
-        setFinishedWorld(gameStore.getSnapshot().view?.world);
-      }
-      controller.finishMatch(id);
-    },
-    [controller],
-  );
-  const onPlaybackStart = useCallback((id: string) => controller.beginMatch(id), [controller]);
+  const onFinish = useCallback((id: string) => {
+    if (completed.current !== id) {
+      completed.current = id;
+      setFinishedWorld(gameStore.getSnapshot().view?.world);
+    }
+  }, []);
   return (
     <div className={t.matchPane} data-testid="match-theatre">
       <h2 className={t.srOnly}>매치데이</h2>
@@ -254,7 +203,6 @@ const MatchPane = memo(function MatchPane({
             playback={playback}
             world={w}
             onFinish={onFinish}
-            onPlaybackStart={onPlaybackStart}
             onPresentationChange={onPresentationChange}
             lead={
               <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
@@ -266,7 +214,7 @@ const MatchPane = memo(function MatchPane({
                 <MatchFeedback finished={finished} />
                 <div className={t.nextActions}>
                   <button onClick={onPrepare}>전술·선발 준비</button>
-                  <NextMatchAction client={client} controller={controller} controls={controls} />
+                  <NextMatchAction controls={controls} />
                 </div>
               </div>
             )}
@@ -275,7 +223,6 @@ const MatchPane = memo(function MatchPane({
       </section>
       {presentation.details &&
         finished &&
-        !automatic &&
         finishedWorld &&
         completed.current === playback?.record.id && (
           <div className={s.afterMatch}>
@@ -689,12 +636,7 @@ export const LiveSeason = memo(function LiveSeason({
           hidden={tab !== id || reviewing}
         >
           {id === 'match' ? (
-            <MatchPane
-              client={client}
-              controller={controller}
-              onPrepare={onPrepare}
-              showDate={page === 'match'}
-            />
+            <MatchPane onPrepare={onPrepare} showDate={page === 'match'} />
           ) : !opened.includes(id) ? null : id === 'table' ? (
             <TablePane client={client} league={league} />
           ) : id === 'teams' ? (
