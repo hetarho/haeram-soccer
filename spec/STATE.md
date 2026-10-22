@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
-| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T328 |
+| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T331 |
 
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
 ## inbox
@@ -207,7 +207,6 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T331 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | doing@261022.k2r7 |
 | T331 | Make counter beat press through its MATCH-8 behaviour, not its roles | MATCH STAFF ARCH | T328 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
@@ -225,13 +224,14 @@
 
 ## next
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
-- k2r7 (autopilot, 261022): T327 integrated on work/k2r7-int; T328 exit recorded (review pending) on work/k2r7-T328; e2e CI fix on work/k2r7-ci. Order: implement-task T331 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
+- k2r7 (autopilot, 261022): T327 integrated on work/k2r7-int; T328 integrated (exit: roles cannot fix counter v press); e2e CI fix on work/k2r7-ci. Order: implement-task T331 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
 - OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
 - known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 - FIRST (fix CI before feature work): CI 39690281623 on 5f80730 (the UI merge) failed e2e on Chromium — cups-and-club.spec.ts:43 (390x844, transfer stance from the roster; click timeout 30 s), recruitment.spec.ts:92 (filters and compares candidates; click timeout), staff.spec.ts:81 (360x740) — and on Firefox — the same cups-and-club and recruitment journeys plus facility-art.spec.ts:97 (current terraces/contemporary facility scenes at 390/1440). The same Chromium journeys passed in h3t6's local gate on 74cbb95 (230/230), so compare CI's traces with T314's market and T310–T313's art changes; CI for 3f45758 was still running at the stop.
 
 ## log
+- 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T331
 - 261022 create-task T331 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T331
 - 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
 - 261022 h3t6 stopped at 08:50 KST as the owner asked (moving machines): integrated T280 T281 T283 T278 T320 T284 T321 T285 T322 T324 and the local UI work (T309–T314) into main; T327 and T328 pushed as wip/h3t6-T327 and wip/h3t6-T328; report 261021-h3t6
@@ -251,4 +251,3 @@
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r18 changes MATCH-13's PPDA and high turnover, which T327 implements first
 - 261022 create-task MATCH r18: T327 (PPDA and high turnovers by the published conventions, both paths, sourced bands) after T322, before T323
 - 261022 update-ssot MATCH r18: MATCH-13 PPDA and high turnover follow the published conventions (from T322's decision requests)
-- 261022 create-task T325 T326 (explore): detailed own-match speed, bit-identical, and aggregate fixture cost with its accuracy trade-off, after T323 and before T286
