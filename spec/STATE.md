@@ -239,7 +239,6 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T373 | Stop the kick's update from pressing a set-piece taker who has already delivered | MATCH ARCH | T367 | doing@261023.q8m5 |
 | T368 | Judge grid offside at the pass and let runners hold the line until it is played | MATCH ARCH | T323 | doing@261023.q8m5 |
 | T369 | Bring the aggregate's box arrivals, xT, cut-backs and finishing spread inside their targets | MATCH ARCH | T323 | doing@261023.q8m5 |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 | todo |
@@ -262,6 +261,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T373 done (q8m5): the kick's update reads no carrier while a delivery that reached nobody is in the air, so nobody presses the taker (presses on the taker 311 → 1, markers drawn off a held runner 219 → 0 in 96 matches); facts unchanged, five positions digests re-recorded; round 46 MATCH-29 18/1/6 → 17/1/7 (press–press draws at the band edge), core and set-piece goals unchanged
 - 261023 T367 done (q8m5): the kick's urgent pairing skips committed set-piece marks, so markers keep their runners (urgent marks to man-markers 55/56 → 0/57 in 96 matches); facts digests unchanged, three positions digests re-recorded; round 44 MATCH-29 17/1/7 → 18/1/6, core 33 → 34, curve 1.87 → 1.91
 - 261023 create-task T373 (q8m5, from T367's question): the kick's update stops pressing a taker who has delivered; T370 and T286 wait for it
 - 261023 T323 done (q8m5; explore exit): aggregate MATCH-30 bands 6/13/2 → 18/3/0 (loose balls drawn per failed pass, passes, completion, through balls, carries, shot scale, xG), MATCH-23 core and MATCH-29 unchanged, curve 1.58 → 1.74; grid unchanged 5/15/1 (offside pardon found); parity at 8,000 a condition, no condition passes; both artifacts refreshed
@@ -281,4 +281,3 @@
 - 261023 T362 done (u4h2): publication repairs keep toast/event/celebration targets clear, recovery above routine events and match actions visibly blocked by owner decisions. Browser helpers follow report transitions, current HUD/home/transport and exact paused snapshots. Full units 1893 pass/4 skip, contract 39, fast/resource/build checks, Chromium 240 covered with seven successful repair reruns and 51 focused units; origin/main 174e1f5 integrated, ready to push.
 - 261023 T362 start (u4h2): publication batch exposed overlapping event/toast targets and a watch-helper date/report race; fix shared surfaces/helpers then resume the gate.
 - 261023 publish UI (u4h2) start: local UI T356/T358 renumbered T360/T361 to retain origin/main's engine T356/T358; integrate origin and run the ARCH-30 batch gate before push.
-- 261023 T361 done (u4h2): shared padded controls/choices, non-clipped transport status, distinct NEXT MATCH card and inset themed roster hover/focus with separate stance/profile actions. Policy/filter/segment/select/training controls aligned. 37 focused units, type/lint/format/build/spec and both-theme 320/360/390/760/1380px manual geometry/interaction checks pass; browser specs deferred.
