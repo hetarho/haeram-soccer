@@ -1,19 +1,26 @@
 /**
  * T325's speed work on the detailed engine keeps every football fact (→ARCH-5, ARCH-31, MATCH-27):
  * the own match plays exactly the records, traces and frames the source before it played, draw for
- * draw. The digests were recorded on e3aa9b9, before any optimisation, and re-recorded on 6f46b55
- * (main with T336's counter behaviour, before T325's commits) when T325 was merged over it: main's
- * own code gave every digest below on darwin-arm64 and the merged tree plays them unchanged. All
- * these fixtures are press against press, so T336 changed none of them. A change that alters
- * football outcomes refreshes them together with the calibration evidence, never alone. No
- * wall-clock assertion here; the timings live in scripts/match-model-baseline.ts and
- * docs/benchmarks/full-model-throughput.json.
+ * draw. Each fixture has a facts digest (record, elapsed time, diagnostics) and an observed one a
+ * positions digest (trace and frames). Both are exact per host (`${process.platform}-${process.arch}`):
+ * the host's float math differs in the last bit, and that can flip a recorded fact, not only a
+ * position (CI's linux-x64 run 39800627501 gave 2024's observed shoot-out other facts than
+ * darwin-arm64). A host with recorded values asserts them; another logs what it got, for a session
+ * on that host to paste in. A behaviour change records the running host's values and deletes the
+ * other hosts' (T345: darwin-arm64; T348's set-piece defence, whose defenders keep their jobs after
+ * the kick: darwin-arm64 again, every candidate value changed but the 1975 and 2024 league
+ * fixtures' facts, the pre-feature facts did not), together with the calibration evidence, never
+ * alone. On every
+ * host each fixture replays bit for bit, the observed league fixture's facts equal the unobserved
+ * one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. Portable outcome-critical
+ * math is a separate ARCH-9 task. No wall-clock assertion here; the timings live in
+ * scripts/match-model-baseline.ts and docs/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import type { Fixture, World } from '../../contracts/src/types';
-import { playGrid, type GridResult } from './grid/engine';
+import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, type DecideRule } from './grid/setup';
 import { founded } from './season.testkit';
@@ -21,6 +28,7 @@ import { founded } from './season.testkit';
 const digest = (value: unknown) =>
   createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 const LEVEL: DecideRule = { awayGoals: false };
+const HOST = `${process.platform}-${process.arch}`;
 
 /** The archive club's first own league fixture of a season founded in `year`. */
 function era(year: number): { w: World; f: Fixture } {
@@ -47,101 +55,135 @@ function play(
   const result = playGrid(setup);
   return { result, setup, frames: opts.observe ? buildFrames(result, setup, w.seed) : [] };
 }
+type Played = ReturnType<typeof play>;
 
-/** Everything a match leaves: record, elapsed time, diagnostics, and when observed its trace and frames. */
-const facts = (p: ReturnType<typeof play>) => {
-  const { record, elapsed, diagnostics, trace }: GridResult = p.result;
-  return digest({ record, elapsed, diagnostics, trace: trace ?? null, frames: p.frames });
-};
+/** What a match decides, the same on every host: record, elapsed time and diagnostics. */
+const factsOf = ({ result: { record, elapsed, diagnostics } }: Played) =>
+  digest({ record, elapsed, diagnostics });
+/** Where an observed match's players and ball were: its trace and frames, exact per host. */
+const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, frames });
 
 /**
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
- * decided on penalties (fixture IDs found by scanning `knockout-<year>-<i>` on e3aa9b9; they still
- * end that way on 6f46b55), and the pre-feature path for one league fixture.
+ * decided on penalties (observed), and the pre-feature path for one league fixture. The knockout
+ * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state and for
+ * T348's set-piece defence, the first tie of each kind; T345's were 20/4, 1/16 and 9/5).
  */
 const CASES = {
-  1975: { extraTime: 20, shootout: 7 },
-  1995: { extraTime: 7, shootout: 2 },
-  2024: { extraTime: 6, shootout: 0 },
+  1975: { extraTime: 7, shootout: 10 },
+  1995: { extraTime: 16, shootout: 3 },
+  2024: { extraTime: 9, shootout: 0 },
 } as const;
+type Year = keyof typeof CASES;
 
-type Facts = Record<'league' | 'observed' | 'extraTime' | 'shootout' | 'preFeature', string>;
+interface HostDigests {
+  /** Facts of every fixture (the observed league fixture's equal the unobserved one's). */
+  facts: Record<'league' | 'extraTime' | 'shootout' | 'preFeature', string>;
+  /** Positions of the observed fixtures. */
+  positions: Record<'observed' | 'shootout', string>;
+}
 
-/**
- * Three observed fixtures digest differently by host for the same source (observed traces and
- * frames keep every position to the last bit; the unobserved records agree): e3aa9b9 gave the
- * first value on linux-x64 under Node 24.22.1 (`.node-version`, as CI), and e3aa9b9 and 6f46b55
- * both give the second on darwin-arm64 under Node 25.2.1 and 26.8.1. T336 does not reach these
- * press-against-press fixtures, so 6f46b55 gives the first value on linux-x64 too. Either host's
- * value is accepted; a change of football gives neither.
- */
-const BEFORE: Record<keyof typeof CASES, Record<keyof Facts, string | readonly string[]>> = {
-  1975: {
-    league: '551e4f45e8542cbe',
-    observed: '8b553ee66fe786fe',
-    extraTime: '8224f58b3799e273',
-    shootout: '9429113be72e1633',
-    preFeature: '4bdd7062aee72859',
+/** Exact digests by host; a behaviour change records the running host's and deletes the others. */
+const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
+  'darwin-arm64': {
+    1975: {
+      facts: {
+        league: '0a392030070b2389',
+        extraTime: 'bb531ef4fe2b9601',
+        shootout: 'c16f0a0a7ed7b58a',
+        preFeature: 'a2e559aea64a91e7',
+      },
+      positions: { observed: '4d7573d60f7b864e', shootout: 'e4f41e13f37075d2' },
+    },
+    1995: {
+      facts: {
+        league: '915080a3feadc4f8',
+        extraTime: '5bd3095cb95f88cc',
+        shootout: 'fd24b6f51440b87c',
+        preFeature: '0c7e06efbc8fd981',
+      },
+      positions: { observed: 'dfb09059046d87b4', shootout: 'a4e627789a44199c' },
+    },
+    2024: {
+      facts: {
+        league: 'f46d1dbd025b49b0',
+        extraTime: '931d04258f444c80',
+        shootout: '12dbc52079c43f4f',
+        preFeature: 'a0e4479b22d2cfa6',
+      },
+      positions: { observed: 'c4a8a6a41c12516a', shootout: 'f9ca7911fa173494' },
+    },
   },
-  1995: {
-    league: 'eedeab011a97cebd',
-    observed: ['cf3a9a8e56aeef95', '4be8b10f70bbedde'],
-    extraTime: 'e2821dfdd835e112',
-    shootout: ['bdb3afe1f3832652', 'a74e72dc248bef35'],
-    preFeature: '4b65b95690811a83',
-  },
-  2024: {
-    league: 'a52e12ad7fd7dded',
-    observed: '5358a04f778da3ec',
-    extraTime: '0d45034944eeaf27',
-    shootout: ['459616582da16f2a', '0a9e068b0dfa528f'],
-    preFeature: 'dead4d8f2df6fcec',
-  },
-};
-
-/** The digests `got` must equal: each recorded one, or the host's own of two recorded ones. */
-const expected = (want: Record<keyof Facts, string | readonly string[]>, got: Facts): Facts => {
-  const out = {} as Facts;
-  for (const k of Object.keys(got) as (keyof Facts)[]) {
-    const w = want[k];
-    out[k] = typeof w === 'string' ? w : w.includes(got[k]) ? got[k] : w[0]!;
-  }
-  return out;
 };
 
 describe('detailed engine throughput (T325)', () => {
   for (const year of [1975, 1995, 2024] as const) {
-    it(`plays the ${year} candidate records of 6f46b55 draw for draw`, () => {
+    it(`plays the ${year} records draw for draw`, () => {
       const kit = era(year);
       const { extraTime, shootout } = CASES[year];
-      const league = play(kit, `league-${year}`);
-      const watched = play(kit, `league-${year}`, { observe: true });
-      // Observing adds the trace and frames only (→MATCH-7).
+      // Every fixture twice: within a host the same source plays the same match, bit for bit.
+      const twice = (id: string, opts: Parameters<typeof play>[2] = {}) => {
+        const [a, b] = [play(kit, id, opts), play(kit, id, opts)];
+        expect(factsOf(b), `${year} ${id} facts replayed`).toBe(factsOf(a));
+        if (opts.observe)
+          expect(positionsOf(b), `${year} ${id} positions replayed`).toBe(positionsOf(a));
+        return a;
+      };
+      const league = twice(`league-${year}`);
+      const watched = twice(`league-${year}`, { observe: true });
+      // Observing adds the trace and frames only (→MATCH-2, MATCH-7).
       expect(watched.result.record).toEqual(league.result.record);
+      expect(factsOf(watched)).toBe(factsOf(league));
       expect(watched.frames.length).toBeGreaterThan(0);
-      const et = play(kit, `knockout-${year}-${extraTime}`, { decide: LEVEL });
+      const et = twice(`knockout-${year}-${extraTime}`, { decide: LEVEL });
       expect(et.result.record.regulation).toBeDefined();
       expect(et.result.record.shootout).toBeUndefined();
-      const pens = play(kit, `knockout-${year}-${shootout}`, { decide: LEVEL, observe: true });
+      const pens = twice(`knockout-${year}-${shootout}`, { decide: LEVEL, observe: true });
       expect(pens.result.record.shootout).toBeDefined();
-      const old = play(kit, `league-${year}`, { preFeature: true });
-      const got: Facts = {
-        league: facts(league),
-        observed: facts(watched),
-        extraTime: facts(et),
-        shootout: facts(pens),
-        preFeature: facts(old),
+      const old = twice(`league-${year}`, { preFeature: true });
+      const got: HostDigests = {
+        facts: {
+          league: factsOf(league),
+          extraTime: factsOf(et),
+          shootout: factsOf(pens),
+          preFeature: factsOf(old),
+        },
+        positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
-      expect(got).toEqual(expected(BEFORE[year], got));
+      const want = DIGESTS[HOST]?.[year];
+      for (const kind of ['facts', 'positions'] as const)
+        for (const [fixture, value] of Object.entries(got[kind])) {
+          const recorded = (want?.[kind] as Record<string, string> | undefined)?.[fixture];
+          if (recorded === undefined)
+            console.log(
+              `no ${HOST} ${kind} digest for ${year} ${fixture}; this host gives ${value}`,
+            );
+          else expect(value, `${year} ${fixture} ${kind} on ${HOST}`).toBe(recorded);
+        }
     });
   }
 
-  it('tells a one-bit change apart', () => {
-    const x = 0.1 + 0.2;
-    const bit = new Float64Array([x]);
-    const bits = new BigUint64Array(bit.buffer);
-    bits[0] = bits[0]! ^ 1n;
-    expect(bit[0]).not.toBe(x);
-    expect(digest({ xg: bit[0] })).not.toBe(digest({ xg: x }));
+  it('tells a one-bit change apart in the facts and in the positions', () => {
+    const flip = (x: number) => {
+      const bit = new Float64Array([x]);
+      const bits = new BigUint64Array(bit.buffer);
+      bits[0] = bits[0]! ^ 1n;
+      return bit[0]!;
+    };
+    const p = play(era(2024), 'league-2024', { observe: true });
+    const { record } = p.result;
+    expect(flip(record.xg![0]!)).not.toBe(record.xg![0]);
+    const xg: [number, number] = [flip(record.xg![0]!), record.xg![1]!];
+    const factsChanged = { ...p, result: { ...p.result, record: { ...record, xg } } };
+    expect(factsOf(factsChanged)).not.toBe(factsOf(p));
+    expect(positionsOf(factsChanged)).toBe(positionsOf(p));
+    const trace = p.result.trace!;
+    const ball: [number, number] = [flip(trace[0]!.ball[0]), trace[0]!.ball[1]];
+    const moved = {
+      ...p,
+      result: { ...p.result, trace: [{ ...trace[0]!, ball }, ...trace.slice(1)] },
+    };
+    expect(positionsOf(moved)).not.toBe(positionsOf(p));
+    expect(factsOf(moved)).toBe(factsOf(p));
   });
 });

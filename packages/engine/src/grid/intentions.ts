@@ -24,8 +24,8 @@ import {
   rank,
   type CoordinationPlan,
 } from './coordination';
-import { attackFrame, PITCH } from './pitch';
-import { intentionTarget, offsideLine, speedOf } from './shape';
+import { attackFrame, PITCH, toEngine } from './pitch';
+import { intentionTarget, offsideLine, secondBallOver, speedOf, type SetPieceScene } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 
 export type IntentionKind = (typeof INTENTION_KINDS)[number];
@@ -75,6 +75,11 @@ export interface Intention {
   run?: 'behind' | 'overlap' | 'box';
   /** A support's job: showing to receive, or stepping out of the lane the ball would take. */
   support?: 'show' | 'open';
+  /**
+   * A set-piece guard's `cover` (T348, engine frame): the spot a zonal or edge defender guards, or
+   * the middle of the goal line his keeper guards; its target follows `guardPoint`.
+   */
+  zone?: [number, number];
   /** Elapsed match seconds it started and expires at. */
   since: number;
   until: number;
@@ -282,6 +287,46 @@ export function restartTaken(
 }
 
 /**
+ * The defending side of a delivery at its kick (→MATCH-18, T348): its scene keeps its jobs through
+ * the delivery, the aerial contest and the second ball until `until`, as the players who went up
+ * keep their box spots (`restartTaken`), instead of being released into the shape. Each
+ * man-marker marks the attacker his place names, goal-side; each zonal or edge defender guards his
+ * spot; the keeper guards his goal against the delivery (`guardPoint`). They are committed, so only
+ * an urgent danger, a turnover, a restart or leaving the pitch displaces them. A mark ends with
+ * its runner's hold, a guard once the second ball is over (`secondBallOver`). A player off the pitch
+ * takes no job, and nobody marks one.
+ */
+export function defendSetPiece(
+  s: GridState,
+  scene: Pick<SetPieceScene, 'marks' | 'keeper'>,
+  until: number,
+): void {
+  const track = (gp: GridPlayer) => (gp.intention!.target = inside(intentionTarget(s, gp)));
+  for (const { gp, to, opponent } of scene.marks) {
+    if (!onPitch(gp)) continue;
+    const spec =
+      opponent && onPitch(opponent)
+        ? { kind: 'mark' as const, opponent: opponent.idx }
+        : { kind: 'cover' as const, zone: [to[0], to[1]] as [number, number] };
+    if (setIntention(s, gp, { ...spec, priority: 'committed', target: [to[0], to[1]], until }))
+      track(gp);
+  }
+  const keeper = scene.keeper;
+  if (!keeper || !onPitch(keeper)) return;
+  const goal = toEngine(keeper.side, [0, PITCH.width / 2]);
+  if (
+    setIntention(s, keeper, {
+      kind: 'cover',
+      priority: 'committed',
+      target: goal,
+      zone: goal,
+      until,
+    })
+  )
+    track(keeper);
+}
+
+/**
  * Whether `side`, out of possession, faces an urgent danger: the carrier within `danger` m of its
  * goal, or a runner already beyond its second-last player.
  */
@@ -342,6 +387,8 @@ function verdict(
         return 'cleared';
       return gap(gp.pos, foe.pos) > C.markLose ? 'unreachable' : undefined;
     case 'cover':
+      // A set-piece guard holds until the second ball is over (T348).
+      if (i.zone) return secondBallOver(s, other(gp.side)) ? 'cleared' : undefined;
       return mate?.intention?.kind === 'press' ? undefined : 'cleared';
   }
   const d = gap(gp.pos, i.target);

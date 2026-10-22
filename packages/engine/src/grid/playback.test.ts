@@ -4,12 +4,14 @@ import {
   MATCH_MODEL_REVISION,
   NEUTRAL_FRAME_PACE,
 } from '../../../contracts/src/match-model';
+import type { MatchMotionSample } from '../../../contracts/src/types';
 import { createWorld } from '../index';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
-import { toUnits } from './pitch';
+import { PITCH, toUnits } from './pitch';
 import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
+import { SHAPE_CONFIG } from './shape';
 
 const w = createWorld({
   country: 'ENG',
@@ -264,10 +266,11 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-4` plays extra time (T321's tuning
-    // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-4']) {
-      const extraTime = id === 'candidate-et-4';
+    // A knockout tie level after 90 minutes: `candidate-et-7` plays extra time (T321's tuning
+    // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
+    // `candidate-et-4`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-7']) {
+      const extraTime = id === 'candidate-et-7';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -318,5 +321,137 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
         fastest * (t1 - t0) + 0.2,
       );
     }
+  });
+});
+
+describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () => {
+  /** The fastest any player runs: full pace, fresh, recovering after a turnover (m/s). */
+  const TOP = (SHAPE_CONFIG.speed.base + SHAPE_CONFIG.speed.pace) * SHAPE_CONFIG.recoverySpeed;
+  type Sample = MatchMotionSample & { period: number };
+  /**
+   * Every delivered set piece (a corner, or a free kick crossed) of an observed candidate match:
+   * its entry, when its jobs started (the end of its preparation) and the motion samples from the
+   * play before it to two plays after it.
+   */
+  function deliveries({ result, frames }: ReturnType<typeof watch>) {
+    const trace = result.trace!;
+    const samples: Sample[] = frames.flatMap((f) =>
+      (f.motion ?? []).map((m) => ({ ...m, period: f.period })),
+    );
+    return trace.flatMap((e, n) => {
+      if (!(e.action === 'corner' || (e.spot && e.kind === 'cross'))) return [];
+      const retrieve = e.knots?.[0];
+      if (retrieve?.kind !== 'retrieve') return [];
+      const plays = (list: typeof trace) =>
+        list.filter((x) => x.period === e.period && x.outcome !== 'incident');
+      const from = plays(trace.slice(0, n)).at(-1)?.elapsed ?? retrieve.at;
+      const later = plays(trace.slice(n + 1));
+      const to = later[1]?.elapsed ?? e.elapsed;
+      return [
+        {
+          e,
+          next: later[0]?.elapsed ?? Infinity,
+          since: retrieve.at + e.dead!,
+          window: samples.filter(
+            (m) => m.period === e.period && m.elapsedSeconds >= from && m.elapsedSeconds <= to,
+          ),
+        },
+      ];
+    });
+  }
+  const watched = watch('candidate-1', true);
+
+  it('both sides retain continuous recorded paths through a corner', () => {
+    const seen = new Set<string>();
+    let pairs = 0;
+    // Enough observed matches for both attacking directions, both corner touchlines and a
+    // delivered free kick by each side.
+    for (const id of ['candidate-1', 'set-piece-1', 'set-piece-2', 'set-piece-3']) {
+      const w = id === 'candidate-1' ? watched : watch(id, true);
+      for (const { e, window } of deliveries(w)) {
+        seen.add(
+          e.action === 'corner'
+            ? `corner by ${e.side} from ${e.spot![1] < PITCH.width / 2 ? 'left' : 'right'}`
+            : `free kick by ${e.side}`,
+        );
+        // Every player of both sides moves between consecutive samples no faster than he can run,
+        // from the play before the restart, through its preparation and delivery, to the second ball.
+        for (let k = 1; k < window.length; k++) {
+          const [a, b] = [window[k - 1]!, window[k]!];
+          const dt = b.elapsedSeconds - a.elapsedSeconds;
+          for (const side of [0, 1] as const)
+            for (const p of b.players[side]) {
+              const q = a.players[side].find((x) => x.id === p.id);
+              if (!q) continue;
+              const metres = Math.hypot(
+                ((p.position[0] - q.position[0]) * PITCH.length) / 100,
+                ((p.position[1] - q.position[1]) * PITCH.width) / 100,
+              );
+              expect(metres, `${p.id} at ${b.elapsedSeconds}`).toBeLessThanOrEqual(TOP * dt + 1e-3);
+              pairs++;
+            }
+        }
+      }
+      if (seen.size === 6) break;
+    }
+    expect([...seen].sort()).toEqual([
+      'corner by 0 from left',
+      'corner by 0 from right',
+      'corner by 1 from left',
+      'corner by 1 from right',
+      'free kick by 0',
+      'free kick by 1',
+    ]);
+    expect(pairs).toBeGreaterThan(1000);
+  });
+
+  it('defensive placement is not discarded before its job ends', () => {
+    const ids = (side: 0 | 1) => watched.setup.rosters[side].map((p) => p.id);
+    let shown = 0,
+      kept = 0;
+    for (const { e, next, since, window } of deliveries(watched)) {
+      const att = e.side;
+      const def = att === 0 ? 1 : 0;
+      // The engine's set-piece jobs of the defending side as the delivery lands.
+      const engine = new Set<string>();
+      for (let k = def * 11; k < def * 11 + 11; k++) {
+        const i = e.intentions?.[k];
+        if (i && !('end' in i) && i.since === since && (i.kind === 'mark' || i.kind === 'cover'))
+          engine.add(ids(def)[e.slots[k]!]!);
+      }
+      if (e.outcome === 'complete' && engine.size >= 6) kept++;
+      for (const m of window.filter((x) => x.elapsedSeconds >= e.elapsed)) {
+        const jobs = m.players[def].filter(
+          (p) =>
+            p.intention &&
+            !p.intention.ended &&
+            p.intention.since === since &&
+            p.intention.priority === 'committed' &&
+            (p.intention.kind === 'mark' || p.intention.kind === 'cover'),
+        );
+        // Until the next play the samples show exactly the engine's jobs, drawn as marking (the
+        // keeper as guarding his goal), each mark on a different attacker on the pitch.
+        if (m.elapsedSeconds < next) expect(new Set(jobs.map((p) => p.id))).toEqual(engine);
+        const attackers = new Set(m.players[att].map((p) => p.id));
+        const marked = jobs.flatMap((p) =>
+          p.intention!.kind === 'mark' ? [p.intention!.opponent!] : [],
+        );
+        expect(new Set(marked).size).toBe(marked.length);
+        for (const id of marked) expect(attackers.has(id)).toBe(true);
+        for (const p of jobs) expect(['mark', 'keeper']).toContain(p.state);
+        shown += jobs.length;
+      }
+    }
+    expect(kept).toBeGreaterThan(0);
+    expect(shown).toBeGreaterThan(50);
+    // Repeated same-seed runs reproduce exactly.
+    const again = watch('candidate-1', true);
+    expect(deliveries(again).map((d) => d.window)).toEqual(
+      deliveries(watched).map((d) => d.window),
+    );
+    // The pre-feature path keeps its own set pieces: no intentions are traced there (its settled
+    // facts are guarded by grid-throughput's pre-feature digests).
+    expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);
+    expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
   });
 });

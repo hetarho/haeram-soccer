@@ -215,7 +215,11 @@ export function placeAtOnce(s: GridState, rs: Restart, taker: number, scene?: Se
 const pickFrom = (options: ReturnType<typeof passOptions>, tau: number, r: () => number) =>
   draw(options, passProbabilities(options, tau), r);
 
-/** Nearest teammate within `reach` with no opponent within `free` metres; else the nearest at all. */
+/**
+ * Nearest teammate within `reach` with no opponent within `free` metres; else the nearest at all.
+ * A teammate standing on the taker's own spot cannot be passed to: a pass of no length has no
+ * direction (T356 found a keeper on a dropped ball's spot turning the ball and clock into NaN).
+ */
 function nearestFree(
   s: GridState,
   side: 0 | 1,
@@ -227,7 +231,7 @@ function nearestFree(
   const mates = s.players[side]
     .filter((gp) => gp.idx !== idx && onPitch(gp))
     .map((gp) => ({ gp, d: Math.hypot(gp.pos[0] - me.pos[0], gp.pos[1] - me.pos[1]) }))
-    .filter(({ d }) => d <= reach)
+    .filter(({ d }) => d > 0 && d <= reach)
     .sort((a, b) => a.d - b.d);
   const isFree = (gp: GridPlayer) =>
     s.players[other(side)].every(

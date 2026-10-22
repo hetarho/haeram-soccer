@@ -10,14 +10,17 @@ import {
 import { combination } from './decide';
 import {
   applyCoordination,
+  defendSetPiece,
+  depart,
   INTENTION_REASONS,
+  restartTaken,
   setIntention,
   updateIntentions,
   type Intention,
 } from './intentions';
 import { attackFrame, type Point } from './pitch';
-import { SHAPE_CONFIG, shapePlace } from './shape';
-import { createState, type GridPlayer, type GridState } from './state';
+import { setPieceTargets, SHAPE_CONFIG, shapePlace } from './shape';
+import { createState, onPitch, type GridPlayer, type GridState } from './state';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
@@ -446,5 +449,113 @@ describe('grid coordination', () => {
     }
     const plan = planCoordination(s, true);
     expect(plan.escalate).toEqual([1, 6]);
+  });
+
+  /** A delivery being played: side 0's carrier on the ball wide in the box, pressed beside him. */
+  const delivery = () => {
+    const s = scene(['possession', 'balanced'], 7, [100, 12]);
+    put(s, 1, 8, [100, 13.5]);
+    return s;
+  };
+  const until = (s: GridState) => s.elapsed + SHAPE_CONFIG.setPiece.stay;
+
+  it('cover follows a displaced runner', () => {
+    const s = delivery();
+    const runner = s.players[0][9]!;
+    const marker = s.players[1][2]!;
+    const cover = s.players[1][3]!;
+    // A six-yard zone (T348): the defender guarding it stands on it, the runner went up beside it.
+    const zone: [number, number] = [101.5, 37];
+    put(s, 0, 9, [95, 34]);
+    put(s, 1, 2, [95.8, 34]);
+    put(s, 1, 3, zone);
+    restartTaken(s, [{ gp: runner, to: [95, 34] }], until(s));
+    defendSetPiece(
+      s,
+      {
+        marks: [
+          { gp: marker, to: [95.8, 34], opponent: runner },
+          { gp: cover, to: zone },
+        ],
+      },
+      until(s),
+    );
+    updateIntentions(s);
+    // Nobody near his zone: he holds it.
+    expect(cover.intention).toMatchObject({ kind: 'cover', priority: 'committed', zone });
+    expect(cover.intention!.target).toEqual(zone);
+    /** The runner displaced to `p`: where the cover goes after the next update. */
+    const displaced = (p: Point) => {
+      put(s, 0, 9, p);
+      s.elapsed += 0.4;
+      updateIntentions(s);
+      expect(cover.intention?.kind).toBe('cover');
+      return cover.intention!.target;
+    };
+    // Into his zone: he meets the runner goal-side, and follows him across it.
+    const met = displaced([100, 35.5]);
+    expect(met[0]).toBeCloseTo(100 + SHAPE_CONFIG.markGoalSide, 9);
+    expect(met[1]).toBeCloseTo(35.5, 9);
+    expect(displaced([100.5, 38.5])[1]).toBeCloseTo(38.5, 9);
+    // Following him is no second marking job: his marker keeps him, alone.
+    expect(
+      s.players[1].filter(
+        (gp) => gp.intention?.kind === 'mark' && gp.intention.opponent === runner.idx,
+      ),
+    ).toEqual([marker]);
+    expect(planCoordination(s, true).jobs.filter((j) => j.intention.opponent === 9)).toEqual([]);
+    // Out of it again, the cover goes back to his zone.
+    expect(displaced([95, 30])).toEqual(zone);
+  });
+
+  it('dismissed players never receive a marking assignment', () => {
+    const s = delivery();
+    // Both sides around the box for the delivery.
+    s.players[0].forEach((gp, i) => i > 0 && i < 11 && i !== 7 && (gp.pos = [86 + i, 20 + 3 * i]));
+    s.players[1].forEach((gp, i) => i > 0 && i < 11 && (gp.pos = [92 + i, 18 + 3 * i]));
+    const taker = 7;
+    const before = setPieceTargets(s, 0, taker);
+    // The best header and the defender who would mark him are sent off before the delivery.
+    const best = before.up[0]!.gp;
+    const stopper = before.marks[0]!.gp;
+    best.sentOff = stopper.sentOff = true;
+    const sc = setPieceTargets(s, 0, taker);
+    expect(sc.up.some((u) => u.gp === best)).toBe(false);
+    expect(sc.marks.some((m) => m.gp === stopper || m.opponent === best)).toBe(false);
+    for (const m of sc.marks)
+      expect(onPitch(m.gp) && (!m.opponent || onPitch(m.opponent))).toBe(true);
+    // A marker and another marker's man sent off before the kick: the first takes no job, the
+    // second's marker guards his zone instead of marking a man who is gone.
+    const [, late, orphan] = sc.marks;
+    late!.gp.sentOff = true;
+    orphan!.opponent!.sentOff = true;
+    restartTaken(
+      s,
+      sc.up.filter((u) => onPitch(u.gp)),
+      until(s),
+    );
+    defendSetPiece(s, sc, until(s));
+    expect(late!.gp.intention).toBeUndefined();
+    expect(orphan!.gp.intention).toMatchObject({ kind: 'cover', zone: orphan!.to });
+    const marked = () =>
+      s.players[1].flatMap((gp) =>
+        gp.intention?.kind === 'mark' ? [s.players[0][gp.intention.opponent!]!] : [],
+      );
+    updateIntentions(s);
+    expect(marked().length).toBeGreaterThan(2);
+    expect(marked().every(onPitch)).toBe(true);
+    // In play: a marked runner sent off ends his marker's job as departed, and no job names him.
+    const pair = sc.marks.find((m) => m.opponent && m.gp.intention?.kind === 'mark')!;
+    const gone = pair.opponent!;
+    depart(s, gone, 'dismissal');
+    gone.sentOff = true;
+    expect(pair.gp.ended).toMatchObject({ kind: 'mark', reason: 'departed' });
+    s.elapsed += 0.4;
+    expect(
+      planCoordination(s, true).jobs.some((j) => j.side === 1 && j.intention.opponent === gone.idx),
+    ).toBe(false);
+    updateIntentions(s);
+    expect(marked()).not.toContain(gone);
+    expect(marked().every(onPitch)).toBe(true);
   });
 });

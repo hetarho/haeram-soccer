@@ -115,6 +115,24 @@ export const SHAPE_CONFIG = {
     stayUp: 1,
     /** Seconds after the delivery the players who went up hold their spots for the second ball. */
     stay: 8,
+    /**
+     * Candidate model only (T348): the defenders keep their jobs after the kick for as long. A
+     * zonal or edge defender guards his spot and meets goal-side a runner who comes within `zone`
+     * m of it.
+     */
+    zone: 3,
+    /**
+     * Candidate model only (T348): the keeper stands on the line from the middle of his goal to the
+     * ball, `share` of its distance out but at most `depth` m, at least `line` m off his line and no
+     * more than `wide` m either side of the goal's middle (a post is 3.66 m from it).
+     */
+    keeper: { share: 0.25, depth: 4, line: 1, wide: 4.66 },
+    /**
+     * Candidate model only (T348): the second ball is over once the ball is more than `area` m
+     * from the goal line it is delivered at, the defenders' danger distance
+     * (`INTENTION_CONFIG.danger`); the zone and goal guards are then released.
+     */
+    area: 30,
   },
 } as const;
 
@@ -351,8 +369,9 @@ export function coverPoint(side: 0 | 1, mate: GridPlayer): [number, number] {
 
 /**
  * Where `gp`'s intention takes him now (engine frame, →MATCH-17): a press or a mark goes goal-side of
- * the opponent it tracks, a cover behind the teammate who presses; every other kind holds the target
- * it was given. A reference that has left the pitch falls back to that target.
+ * the opponent it tracks, a cover behind the teammate who presses, a set-piece guard to its zone or
+ * goal (`guardPoint`); every other kind holds the target it was given. A reference that has left
+ * the pitch falls back to that target.
  */
 export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] {
   const i = gp.intention!;
@@ -361,13 +380,62 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
   const mate = i.teammate === undefined ? undefined : s.players[side][i.teammate];
   if (foe && onPitch(foe) && i.kind === 'press')
     return pressPoint(s, gp, attackFrame(side, foe.pos), i.priority === 'danger');
-  if (foe && onPitch(foe) && i.kind === 'mark') {
-    const o = attackFrame(side, foe.pos);
-    return toEngine(side, [Math.max(0, o[0] - SHAPE_CONFIG.markGoalSide), o[1]]);
-  }
+  if (foe && onPitch(foe) && i.kind === 'mark') return goalSideOf(side, foe);
+  if (i.kind === 'cover' && i.zone) return guardPoint(s, gp, i.zone);
   if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate);
   return [i.target[0], i.target[1]];
 }
+
+/** `markGoalSide` m goal-side of opponent `foe` for `side` (engine frame). */
+function goalSideOf(side: 0 | 1, foe: GridPlayer): [number, number] {
+  const o = attackFrame(side, foe.pos);
+  return toEngine(side, [Math.max(0, o[0] - SHAPE_CONFIG.markGoalSide), o[1]]);
+}
+
+/**
+ * Where a set-piece guard of `gp` stands now (engine frame, →MATCH-18, T348). The keeper guards
+ * his goal (`zone` is the middle of its line) against the ball as it is now — after a kick, where
+ * the delivery goes — on the line from the goal's middle to it. A zonal or edge defender guards
+ * `zone`: goal-side of the opponent nearest it within `setPiece.zone` m, else on it.
+ */
+export function guardPoint(
+  s: GridState,
+  gp: GridPlayer,
+  zone: readonly [number, number],
+): [number, number] {
+  const side = gp.side;
+  const P = SHAPE_CONFIG.setPiece;
+  const z = attackFrame(side, zone);
+  if (lineOfSlot(s, gp) === 'GK') {
+    const b = attackFrame(side, s.ball);
+    const dx = b[0] - z[0],
+      dy = b[1] - z[1];
+    const d = Math.hypot(dx, dy);
+    const out = Math.min(P.keeper.depth, d * P.keeper.share);
+    const [x, y] = d > 0 ? [z[0] + (dx / d) * out, z[1] + (dy / d) * out] : z;
+    return toEngine(side, [
+      Math.max(z[0] + P.keeper.line, x),
+      clamp(y, z[1] - P.keeper.wide, z[1] + P.keeper.wide),
+    ]);
+  }
+  let near: GridPlayer | undefined,
+    best: number = P.zone;
+  for (const opp of s.players[other(side)]) {
+    if (!onPitch(opp) || lineOfSlot(s, opp) === 'GK') continue;
+    const o = attackFrame(side, opp.pos);
+    const d = Math.hypot(o[0] - z[0], o[1] - z[1]);
+    // The nearest, the first in roster order among equals.
+    if (d < best || (!near && d === best)) [near, best] = [opp, d];
+  }
+  return near ? goalSideOf(side, near) : [zone[0], zone[1]];
+}
+
+/**
+ * Whether the second ball of `attacking`'s delivery is over: the ball more than `setPiece.area` m
+ * from the goal line it attacks (T348).
+ */
+export const secondBallOver = (s: GridState, attacking: 0 | 1) =>
+  attackFrame(attacking, s.ball)[0] < PITCH.length - SHAPE_CONFIG.setPiece.area;
 
 /** How fast a player can move now, in metres per second. */
 export function speedOf(s: GridState, gp: GridPlayer): number {
@@ -474,16 +542,23 @@ export function startRuns(s: GridState, side: 0 | 1, r: () => number): void {
 const aerialOf = (s: GridState, gp: GridPlayer) =>
   0.6 * skill(s, gp.side, gp.idx, 'heading') + 0.4 * skill(s, gp.side, gp.idx, 'strength');
 
-/** Where a delivery into the box puts its players (engine frame): the attackers who go up, and their markers. */
+/**
+ * Where a delivery into the box puts its players (engine frame): the attackers who go up, and the
+ * defenders' places. A man-marker's place names the attacker he marks (`opponent`); a zonal or edge
+ * place names nobody. `keeper` is the defending keeper, who guards his goal against the delivery
+ * on the candidate model (T348); the pre-feature placement reads only the places.
+ */
 export interface SetPieceScene {
   up: { gp: GridPlayer; to: [number, number] }[];
-  marks: { gp: GridPlayer; to: [number, number] }[];
+  marks: { gp: GridPlayer; to: [number, number]; opponent?: GridPlayer }[];
+  keeper?: GridPlayer;
 }
 
 /**
  * The scene for a delivery into the box by `side`'s `taker`: its best headers take the box spots and one the
  * edge, the rest hold the rest defence where they stand; the defenders mark them goal-side, fill the six-yard
- * line and the edge, and the most advanced stay upfield. Reads the state and moves nobody.
+ * line and the edge, and the most advanced stay upfield. Only players on the pitch take part, so a dismissed
+ * player neither goes up nor is marked. Reads the state and moves nobody.
  */
 export function setPieceTargets(s: GridState, side: 0 | 1, taker: number): SetPieceScene {
   const P = SHAPE_CONFIG.setPiece;
@@ -506,9 +581,21 @@ export function setPieceTargets(s: GridState, side: 0 | 1, taker: number): SetPi
     ...(P.zonal as readonly Point[]),
     [P.edge[0] + P.mark, P.edge[1]],
   ];
+  // Whom each place marks: the man on that box spot, nobody on the six-yard line, the man at the edge.
+  const marked: (GridPlayer | undefined)[] = [
+    ...up.slice(0, P.box.length),
+    ...P.zonal.map(() => undefined),
+    up[P.box.length],
+  ];
+  const keeper = s.players[foe].find((gp) => onPitch(gp) && lineOfSlot(s, gp) === 'GK');
   return {
     up: up.map((gp, i) => ({ gp, to: toEngine(side, spots[i]!) })),
-    marks: back.flatMap((gp, i) => (marks[i] ? [{ gp, to: toEngine(side, marks[i]) }] : [])),
+    marks: back.flatMap((gp, i) => {
+      if (!marks[i]) return [];
+      const opponent = marked[i];
+      return [{ gp, to: toEngine(side, marks[i]), ...(opponent ? { opponent } : {}) }];
+    }),
+    ...(keeper ? { keeper } : {}),
   };
 }
 
