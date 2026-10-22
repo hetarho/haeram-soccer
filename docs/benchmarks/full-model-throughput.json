@@ -1168,5 +1168,309 @@
       "node worker": 1
     },
     "seenNote": "distinct command prefixes that matched another session's grid-bands, match-parity or playwright processes while waiting, counted by kind"
+  },
+  "gridEngineT325": {
+    "task": "T325",
+    "note": "Exploration evidence for T286 on a shared machine: the own detailed match made faster with records bit-identical (packages/engine/src/grid-throughput.test.ts digests recorded on e3aa9b9 before any change). Not release evidence (→ARCH-31).",
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "logicalCpus": 12,
+      "memoryBytes": 33577496576,
+      "role": "the machine these numbers ran on; T286 names the ARCH-31 reference machine"
+    },
+    "toolchain": {
+      "node": "v24.22.1",
+      "pnpm": "pnpm@10.34.6",
+      "typescript": "5.9.3",
+      "tsx": "4.23.15"
+    },
+    "sources": {
+      "before": {
+        "commit": "e3aa9b9",
+        "role": "candidate model before T325"
+      },
+      "after": {
+        "commit": "d7939f8",
+        "role": "candidate model with T325 optimisations (engine code; later commits only add records)"
+      }
+    },
+    "method": "Own matches: scratch esbuild bundles of each tree (founded(1975) and founded(2024) worlds, the archive club's first own league fixtures under fixed IDs, buildGridSetup with the candidate revision, playGrid unobserved), 3 warm-up + 12 timed matches a run, trees alternated with the order flipped every repetition; every run hashes its records, and both trees gave the same hash. Seasons: scripts/season-throughput.ts --ab with the base tree exported from e3aa9b9. Stage costs: V8 CPU profiles of 33 matches (2024), self time attributed to the innermost stage file (movement.ts and motionOf; intentions.ts and coordination.ts; decide.ts and tags.ts; resolve.ts, restarts.ts, discipline.ts, changes.ts and shootout.ts; record.ts and trace.ts; the rest of engine.ts with the shape/state helpers it calls directly as engine control). Allocation: node --trace-gc growth between collections, 12 matches less a 0-match run.",
+    "stages": {
+      "profiledMatches": 33,
+      "selfMsBefore": {
+        "movement": 5359,
+        "intentionsCoordination": 3112,
+        "decision": 1947,
+        "engineControl": 781,
+        "resolution": 569,
+        "tally": 263
+      },
+      "selfMsAfter": {
+        "movement": 4098,
+        "intentionsCoordination": 2010,
+        "decision": 1599,
+        "engineControl": 677,
+        "resolution": 468,
+        "tally": 200
+      },
+      "shareOfPlayGridBefore": {
+        "movement": 0.445,
+        "intentionsCoordination": 0.259,
+        "decision": 0.162,
+        "engineControl": 0.065,
+        "resolution": 0.047,
+        "tally": 0.022
+      },
+      "afterOverBefore": {
+        "movement": 0.76,
+        "intentionsCoordination": 0.65,
+        "decision": 0.82,
+        "engineControl": 0.87,
+        "resolution": 0.82,
+        "tally": 0.76
+      },
+      "gcMs": {
+        "before": 351,
+        "after": 229
+      },
+      "hotspots": "Before: the movement step loop (stepToward, 1,019 bytes of bytecode so never inlined: its double arguments are boxed on every call; two Math.hypot calls each allocating a FixedDoubleArray), shapePlace (an attackFrame pair for each opponent, a filter/map/sort offside line), the coordination plan (an ID sort of the opponents and a named random stream per eligible runner every action), Map/flat()/spread temporaries."
+    },
+    "allocation": {
+      "mbPerMatch": {
+        "before": 249,
+        "after": 151
+      },
+      "scavengesPerMatch": {
+        "before": 15.6,
+        "after": 9.0
+      }
+    },
+    "deopts": {
+      "bailoutsIn15MatchesWithWorld": {
+        "before": 282,
+        "after": 288
+      },
+      "note": "unchanged in kind: playGrid 11, attack 9, defend 6, verdict 5, play 5, drawInjury 5 (wrong-map and insufficient-feedback bailouts while warming); none is a repeated loop"
+    },
+    "ownMatch": {
+      "quiet": {
+        "conditions": "quiet window 16:34-16:37 KST, load1 1.7-2.7, no corpus, test or browser runs",
+        "runsPerTree": 6,
+        "matchesPerRun": 24,
+        "warmupPerRun": 3,
+        "pooledMedianMs": {
+          "before": 318.5,
+          "after": 249.9
+        },
+        "pooledMedianCpuMs": {
+          "before": 387.9,
+          "after": 314.4
+        },
+        "pairedRunRatios": [
+          0.745,
+          0.842,
+          0.797,
+          0.77,
+          0.777,
+          0.77
+        ],
+        "pairedRunRatioMedian": 0.774,
+        "perFixtureMedianRatio": 0.787,
+        "perFixtureCpuRatio": 0.815,
+        "load1": {
+          "before": [
+            2.04,
+            1.74,
+            1.7,
+            1.88,
+            1.91,
+            2.63
+          ],
+          "after": [
+            1.81,
+            1.69,
+            1.83,
+            1.85,
+            1.99,
+            2.65
+          ]
+        },
+        "identical": true
+      },
+      "underLoad": {
+        "conditions": "under load (another session's grid-bands --jobs 4 corpus and other tests), load1 9-14; context only",
+        "runsPerTree": 6,
+        "matchesPerRun": 24,
+        "warmupPerRun": 3,
+        "pooledMedianMs": {
+          "before": 374.7,
+          "after": 277.7
+        },
+        "pooledMedianCpuMs": {
+          "before": 444.4,
+          "after": 346.6
+        },
+        "pairedRunRatios": [
+          0.792,
+          0.87,
+          0.776,
+          0.573,
+          0.693,
+          0.738
+        ],
+        "pairedRunRatioMedian": 0.757,
+        "perFixtureMedianRatio": 0.757,
+        "perFixtureCpuRatio": 0.788,
+        "load1": {
+          "before": [
+            14.4,
+            12.18,
+            11.25,
+            9.44,
+            10.07,
+            9.91
+          ],
+          "after": [
+            13.25,
+            12.39,
+            10.67,
+            10.25,
+            9.3,
+            8.95
+          ]
+        },
+        "identical": true
+      }
+    },
+    "season": {
+      "quiet": [
+        {
+          "conditions": "quiet window 16:37-16:45 KST, base tree first",
+          "reps": 3,
+          "seasonsPerRun": 1,
+          "medianSeasonS": {
+            "baseline": {
+              "before": 35.799,
+              "after": 34.952
+            },
+            "active-management": {
+              "before": 34.66,
+              "after": 35.431
+            }
+          },
+          "afterOverBefore": {
+            "baseline": 0.976,
+            "active-management": 1.022
+          },
+          "load1": [
+            2,
+            1.66,
+            1.68,
+            1.69,
+            2.81,
+            2.95,
+            2.42,
+            2.2,
+            1.74,
+            1.58,
+            1.57,
+            1.6
+          ]
+        },
+        {
+          "conditions": "quiet window 16:45-16:55 KST, after tree first",
+          "reps": 4,
+          "seasonsPerRun": 1,
+          "medianSeasonS": {
+            "baseline": {
+              "after": 34.013,
+              "before": 35.935
+            },
+            "active-management": {
+              "after": 33.724,
+              "before": 34.998
+            }
+          },
+          "afterOverBefore": {
+            "baseline": 0.947,
+            "active-management": 0.964
+          },
+          "load1": [
+            1.32,
+            1.36,
+            1.95,
+            2.25,
+            1.86,
+            1.55,
+            1.5,
+            1.56,
+            1.52,
+            1.35,
+            2.27,
+            2.57,
+            1.91,
+            1.56,
+            1.64,
+            1.67
+          ]
+        }
+      ],
+      "underLoad": {
+        "conditions": "16:25-16:34 KST under load (load1 3.5-10.3); context only",
+        "reps": 3,
+        "seasonsPerRun": 1,
+        "medianSeasonS": {
+          "baseline": {
+            "before": 44.079,
+            "after": 35.854
+          },
+          "active-management": {
+            "before": 38.641,
+            "after": 34.586
+          }
+        },
+        "afterOverBefore": {
+          "baseline": 0.813,
+          "active-management": 0.895
+        },
+        "load1": [
+          10.25,
+          9.03,
+          8.91,
+          7.69,
+          6.35,
+          5.92,
+          5.54,
+          5.36,
+          4.58,
+          4.33,
+          3.49,
+          3.62
+        ]
+      },
+      "ownFixturesPerSeason": "30 league fixtures (plus cup ties) of the century worlds' own club: about 10-11 s of a ~35 s season before (≈0.32 s each, ~30%), about 8-9 s after",
+      "reading": "Quiet paired seasons: 0.976 and 0.946 (baseline), 1.022 and 0.963 (active-management); the own-match saving (~70 ms × ~30-35 matches ≈ 2-2.5 s) is about the size of the season noise across 7 repetitions."
+    },
+    "budget": {
+      "seasonBudgetS": 15,
+      "seasonMedianAfterS": {
+        "baseline": [
+          34.952,
+          34.013
+        ],
+        "active-management": [
+          35.431,
+          33.724
+        ]
+      },
+      "distance": "about 34-35 s against 15 s on this machine: 2.3× over, ~19-20 s to cut. Own detailed matches are about 8-9 s of it after T325 (30-35 × ~0.25 s); the aggregate fixtures (~8,700 × ~2.0 ms in the quiet stage probe, unchanged by T325: 2.03/2.04 before, 1.99/1.97 after) are about half, so the season budget cannot be met from grid/* alone."
+    },
+    "quietWait": {
+      "quiet": true,
+      "waitedMinutes": 27,
+      "note": "blocking scratch script from 16:07; T336's grid-bands --jobs 4 validation corpus and other sessions' test runs kept load1 at 8-23 until about 16:33"
+    }
   }
 }
