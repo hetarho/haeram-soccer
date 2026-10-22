@@ -18,7 +18,7 @@
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
 
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
-## inbox
+- 261022 decided ARCH-31 T325 T326 T286 (owner): ARCH r19 restates the throughput gates as absolute budgets on a recorded reference machine (fixture ≤ 1 ms median, season engine time ≤ 15 s median for both century profiles; the paired ratio is context) → T285's option (b); figures from T285 (fixture 0.82–0.88 ms, candidate season ~14 s, own matches 3.5–4 s); T325/T326 keep improving speed (alt: keep the ratios and leave activation off | keep both)
 - 261022 decided T334 T336: keep T334's settled counter play (`DECISION_CONFIG.direct.settled.counter`, counter's candidate line floor 24) — counter − press −0.179 → +0.017 [−0.032, 0.065] and possession ordering inside on fresh seeds, no MATCH-23 core row inside → outside — and tune its overshoot (press's high-regain lead, possession v counter, possession's points, balanced's xG conceded) in explore T336 before T323; MATCH-29 unchanged (alt: keep it off until the overshoot is solved | relax counter-at-least-press)
 - 261022 decided T334 T335 T336: the owner's local checkout holds unpushed theme tasks T330–T333 (t4m9) → this session renumbered its own counter task T331 → T334 and its e2e fix T332 → T335 (already on main as T332 in 0ab6e42's STATE log) and took T336, so the local work merges without ID clashes (alt: leave the clash for the local session)
 - 261022 decided T328 T334: no PLAYER-5 role table lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058] counter − press, and it breaks possession − counter) → keep STAFF-22's counter row and try counter's MATCH-8 behaviour (stop recycling after the break, a deep block that concedes fewer box entries, press's fatigue cost) in explore T334 before T323; MATCH-29's counter rows go to the owner only if T334 also fails (alt: relax counter-at-least-press to a gap band now | keep the rows as a known miss)
@@ -183,7 +183,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 17 | 17 | - | 2 |
+| ARCH | 19 | 19 | - | 2 |
 | WEB | 112 | 112 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
@@ -227,11 +227,11 @@
 ## next
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - k2r7 (autopilot, 261022): T327, T328, T335 (e2e CI fix) and T334 (counter's settled play) on main. Order: implement-task T336 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
-- OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 update-ssot ARCH r19 (ARCH-31✎ absolute throughput budgets, owner decision) and create-task refresh: T325 T326 T286 restated against the budgets, T323 T325 T326 T286 base ARCH@19; r19 sits on the owner's unpushed ARCH r18 (ARCH-32, theme inventory)
 - 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
 - 261022 T334 integrated (k2r7; explore exit, review approved with record fixes): counter keeps going forward or long once its break has passed, line floor 24; artifact refreshed (fingerprint b1633820); create-task T336 for the overshoot, T323 and T286 wait for it
 - 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
@@ -251,4 +251,3 @@
 - 261022 T312 start (u6v1): WEB r110 adds an original youth academy image and theme role above academy operations; existing identities and engine task owners are preserved.
 - 261022 create-task T328 (explore): counter role-table variants against press under MATCH-29, evidence for a STAFF-22/MATCH-8 update; T327 also counts possession by pass share; T323 and T286 wait for T328
 - 261022 update-ssot MATCH r19: MATCH-3 possession is the share of attempted passes (from T324's decision request)
-- 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r19, which T327 implements first

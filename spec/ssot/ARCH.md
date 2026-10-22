@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r17 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r19 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -199,8 +199,8 @@
 
 - ARCH-31 [o] The continuous-match and full probabilistic-result release has paired accuracy, throughput and capacity gates (→MATCH-28 and →SAVE-23).
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
-  - fixtures without the own club target at most 50% of the baseline summary path's median processing time with full numerical records enabled. Complete-season engine time targets at most 80% of the baseline for both existing century workload profiles; do not skip clubs, competitions, calendar effects, player records or business actions to meet it.
-  - compare paired runs with the same world scenarios; absolute historical measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
+  - throughput budgets are absolute, on a recorded reference machine (its CPU model, cores, memory and runtime named in the benchmark artifact, timed in a quiet window): a fixture without the own club takes at most 1 ms median with full numerical records enabled, and complete-season engine time at most 15 s median for both existing century workload profiles; do not skip clubs, competitions, calendar effects, player records or business actions to meet them. ← the complete model records about 30 times the facts of the summary path, so a ratio to that path cannot hold
+  - compare paired runs with the same world scenarios and report the ratio to the baseline summary path as context, not as a gate; measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
   - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending does not make the model pass its release gate.
   - the final combined movement, intention and aggregate model must pass together. Reusing a reference measured before a relevant football change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
 
@@ -232,6 +232,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r19 261022 ARCH-31✎ throughput gates NPC fixture ≤50% and season engine time ≤80% of the same-machine pre-change baseline→absolute budgets on a recorded reference machine (fixture ≤1 ms median, season engine time ≤15 s median for both century profiles); the paired ratio becomes context
 - r17 261021 ARCH-32+ runtime JSON registries and presentation-only pack boundaries, resource-only extension, isolated preferences and one-pack foundation
 - r16 261020 ARCH-31+ paired complete-model accuracy and performance gates, NPC fixture time ≤50% and season engine time ≤80% of same-machine pre-change baseline, unchanged browser/storage budgets
 - r15 261020 ARCH-21✎ setup simulation in unit tests→shared simulated test worlds (`tests/fixtures/worlds.ts`), simulate only the verified step; ARCH-23✎ unit tests leave the checks job for three parallel shards with a cached world store
