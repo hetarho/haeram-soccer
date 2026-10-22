@@ -3,6 +3,7 @@ import { FORMATIONS } from '../player';
 import {
   draw,
   keeperDistribution,
+  offsideBy,
   passOptions,
   passProbabilities,
   temperature,
@@ -122,7 +123,12 @@ export function classifyOut(out: {
   };
 }
 
-/** Whether a pass to `target` is offside when played; one draw only when the position alone is offside. */
+/**
+ * Whether a pass to `target` is offside when played (→MATCH-18). The candidate model reads the
+ * position alone and draws nothing (T368): his 판단력 times his run, holding the line until the
+ * pass (`COORDINATION_CONFIG.hold`), never forgives where he stands. The pre-feature path keeps one
+ * draw when the position alone is offside: a timed run lets most through.
+ */
 export function isOffside(
   s: GridState,
   side: 0 | 1,
@@ -136,6 +142,7 @@ export function isOffside(
   const p = attackFrame(side, gp.pos);
   const ball = attackFrame(side, s.ball);
   const foe = other(side);
+  if (s.setup.model !== undefined) return offsideBy(p, ball[0], offsideLine(s, foe)) > 0;
   if (p[0] <= PITCH.length / 2 || p[0] <= offsideLine(s, foe) || p[0] <= ball[0]) return false;
   const chance =
     O.base -

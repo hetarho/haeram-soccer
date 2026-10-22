@@ -152,6 +152,13 @@ export const DECISION_CONFIG = {
      */
     through: { lead: 5, depth: 88, score: 0.4, space: 12 },
     /**
+     * How the passer reads the line (T368, →MATCH-18): a teammate standing more than `offsideSeen`
+     * m beyond the second-last opponent (`offsideBy`) is seen offside and not played to; one
+     * closer to it looks level, so a ball to him is flagged. Only a runner on his run in behind,
+     * holding the line, draws the through ball's pull and is played into his path.
+     */
+    offsideSeen: 1,
+    /**
      * Press's shot weight in the opponents' half just after a regain, in place of
      * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
      */
@@ -448,6 +455,9 @@ export function passOptions(
   const dfDeep = lineDepth(s, foe, side, 'DF');
   const mfDeep = lineDepth(s, foe, side, 'MF');
   const offside = offsideLine(s, foe);
+  const model = s.setup.model !== undefined;
+  const seen = DECISION_CONFIG.candidate.offsideSeen;
+  const ballX = attackFrame(side, s.ball)[0];
   const candidates: { gp: GridPlayer; p: Point; dist: number; dir: Direction }[] = [];
   for (const gp of s.players[side]) {
     if (gp.idx === idx || !onPitch(gp) || (opts.filter && !opts.filter(gp))) continue;
@@ -455,6 +465,8 @@ export function passOptions(
     const dist = hypot(p[0] - c[0], p[1] - c[1]);
     if (dist > reach || dist < 1e-9) continue;
     if (opts.crossOnly && !inBox(p)) continue;
+    // The candidate passer does not play to a man he sees standing offside (T368).
+    if (model && offsideBy(p, ballX, offside) > seen) continue;
     const angle = Math.abs(atan2(p[1] - c[1], p[0] - c[0])) / DEG;
     candidates.push({
       gp,
@@ -495,9 +507,10 @@ export function passOptions(
     }
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
+    // On the candidate model only a runner holding the line in behind is played through (T368).
     const through =
-      behindRun || p[0] > offside
-        ? (s.setup.model !== undefined ? DECISION_CONFIG.candidate.through.score : P.through) *
+      behindRun || (!model && p[0] > offside)
+        ? (model ? DECISION_CONFIG.candidate.through.score : P.through) *
           actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
@@ -533,12 +546,20 @@ export function passOptions(
 }
 
 /**
+ * How many metres a receiver at `p` (the passing side's attack frame) stands in an offside position
+ * when the pass is played (→MATCH-18): beyond the second-last opponent at `line`, in the opponent
+ * half and beyond the ball at `ballX`; 0 when he is onside.
+ */
+export const offsideBy = (p: Point, ballX: number, line: number): number =>
+  p[0] <= PITCH.length / 2 || p[0] <= ballX ? 0 : Math.max(0, p[0] - line);
+
+/**
  * Where `passer`'s through ball to `target` is played on the candidate model (engine frame,
  * →MATCH-16): into his path, `through.lead` metres ahead of him along his run (toward goal when he
  * stands or turns), never deeper than `through.depth`, when the opponents' line leaves at least
  * `through.space` metres behind it before that depth; to his feet otherwise or when that would not
- * take the ball further from the passer. A through ball goes to a runner in behind or to a man
- * past the line whose run the offside draw found timed (`isOffside`).
+ * take the ball further from the passer. A through ball goes to a runner in behind holding the
+ * line (T368: the man already past it is offside, `isOffside`).
  */
 export function throughPoint(
   s: GridState,
