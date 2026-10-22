@@ -109,6 +109,9 @@ const outfield = (gp: GridPlayer) => onPitch(gp) && gp.slot > 0;
 /** Whether a new intention of priority `p` may take his place: he is free or holds a lower one. */
 const free = (gp: GridPlayer, p: IntentionPriority) =>
   !gp.intention || rank(gp.intention.priority) > rank(p);
+/** Whether he marks the runner his set-piece place names (T348's committed mark). */
+const setPieceMark = (gp: GridPlayer) =>
+  gp.intention?.kind === 'mark' && gp.intention.priority === 'committed';
 /** Stable order of equal costs: the player's ID, never his roster index or the visiting order. */
 const byId = (a: GridPlayer, b: GridPlayer) =>
   a.player.id < b.player.id ? -1 : a.player.id > b.player.id ? 1 : 0;
@@ -310,12 +313,15 @@ function defend(
       opponent: runner.idx,
     });
   }
-  // The nearest pairs first, so no runner or marker depends on who was looked at first.
+  // The nearest pairs first, so no runner or marker depends on who was looked at first. A man on a
+  // set-piece mark (committed, `defendSetPiece`) is taken: an urgent pairing, as at a short
+  // corner's kick, never moves him off the runner his place names to another (T367).
   const pairs: { runner: GridPlayer; gp: GridPlayer; d: number }[] = [];
   for (const runner of runners) {
     if (marked.has(runner.idx)) continue;
     for (const gp of players) {
-      if (claimed.has(gp) || pressing.includes(gp) || !free(gp, priority)) continue;
+      if (claimed.has(gp) || pressing.includes(gp) || !free(gp, priority) || setPieceMark(gp))
+        continue;
       const d = gap(gp.pos, runner.pos);
       if (d <= CC.mark.pick) pairs.push({ runner, gp, d });
     }

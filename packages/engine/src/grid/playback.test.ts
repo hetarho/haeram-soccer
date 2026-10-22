@@ -8,7 +8,7 @@ import type { MatchMotionSample } from '../../../contracts/src/types';
 import { createWorld } from '../index';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
-import { PITCH, toUnits } from './pitch';
+import { attackFrame, PITCH, toUnits } from './pitch';
 import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
 import { SHAPE_CONFIG } from './shape';
@@ -500,27 +500,66 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     // T366: the update that reads the kick runs at the kick's own instant (`playGrid`, once the
     // restart resolves), so an urgent danger there (an attacker on the ball within 30 m of goal, a
     // runner nobody marks) gives urgent jobs since the kick and may displace a set-piece job as it
-    // starts. In `set-piece-1` the man-marker `p:10` leaves the runner his place names for the
-    // unmarked one: an urgent mark since the kick, which T365's widened check counted on the trace
-    // side and not in the samples. Playback shows him as the engine holds him: no stage drops a job.
+    // starts. Playback shows each as the engine holds it: no stage drops a job. In `set-piece-1`
+    // these are urgent presses and the central zone's guard `p:8` on runner 8 on the edge, whom
+    // nobody's place names (the side is a man short). Before T367 the man-marker `p:10` left
+    // runner 9 for him instead; a set-piece mark is now taken for the urgent pairing.
     const played = match('set-piece-1');
     const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
-    let cases = 0,
-      samples = 0;
-    const kinds = new Set<string>();
+    const { mark } = SHAPE_CONFIG.setPiece;
+    let samples = 0,
+      kept = 0;
+    const kinds: string[] = [];
     for (const { e, next, prepared, since, window } of deliveries(played)) {
-      const def = e.side === 0 ? 1 : 0;
+      const att = e.side;
+      const def = att === 0 ? 1 : 0;
+      const kick = e.kick!;
+      /** The intention an entry or the kick records for `side`'s roster index `idx`. */
+      const held = (snap: typeof e | typeof kick, side: 0 | 1, idx: number) =>
+        snap.intentions?.[slotFor(played, snap, side, ids(side)[idx]!)];
+      /** Each restart place of the kick in the attacking side's frame, by roster index. */
+      const places = (side: 0 | 1) =>
+        played.setup.rosters[side].flatMap((_, idx) => {
+          const i = held(kick, side, idx);
+          return i && !('end' in i) && i.kind === 'restart'
+            ? [[idx, attackFrame(att, i.target)] as const]
+            : [];
+        });
+      // A man-marker's place is `setPiece.mark` m goal-side of his runner's spot (`setPieceTargets`).
+      const runnerOf = new Map<number, number>();
+      for (const [d, p] of places(def))
+        for (const [a, q] of places(att))
+          if (Math.abs(p[0] - q[0] - mark) < 1e-9 && p[1] === q[1]) runnerOf.set(d, a);
+      const urgent = (i: ReturnType<typeof held>) =>
+        !!i && !('end' in i) && i.since === since && i.priority === 'danger';
+      // T367: at a kick whose update gives an urgent mark, every man-marker whose runner still holds
+      // his box spot keeps his set-piece mark on him; only an urgent press takes him off it.
+      const pairing = played.setup.rosters[def].some((_, idx) => {
+        const i = held(e, def, idx);
+        return urgent(i) && i!.kind === 'mark';
+      });
+      for (const [d, a] of pairing ? runnerOf : []) {
+        const run = held(e, att, a);
+        if (!run || 'end' in run || run.kind !== 'run' || run.priority !== 'committed') continue;
+        const i = held(e, def, d);
+        if (urgent(i) && i!.kind === 'press') continue;
+        const label = `${sceneOf(e)} at ${since} ${ids(def)[d]}`;
+        expect(isJob(i, since), label).toBe(true);
+        expect(i, label).toMatchObject({ kind: 'mark', opponent: a });
+        kept++;
+      }
       for (let k = def * 11; k < def * 11 + 11; k++) {
         const i = e.intentions?.[k];
         // An urgent job the kick's own update gave, held since the kick, to a man of the scene (on
         // his restart place at the kick).
-        if (!i || 'end' in i || i.since !== since || i.priority !== 'danger') continue;
+        if (!i || !urgent(i)) continue;
         const pid = ids(def)[e.slots[k]!]!;
-        const place = e.kick!.intentions?.[slotFor(played, e.kick!, def, pid)];
+        const place = kick.intentions?.[slotFor(played, kick, def, pid)];
         if (!place || 'end' in place || place.kind !== 'restart') continue;
         const opponent = i.opponent === undefined ? undefined : ids(e.side)[i.opponent];
-        cases++;
-        kinds.add(i.kind);
+        kinds.push(i.kind);
+        // An urgent mark goes to a man whose place marks nobody (a zone's guard here, T367).
+        if (i.kind === 'mark') expect(runnerOf.has(e.slots[k]!), `${since} ${pid}`).toBe(false);
         for (const m of window) {
           if (m.elapsedSeconds < since) continue;
           if (m.elapsedSeconds >= next || (prepared && m.elapsedSeconds > e.elapsed)) break;
@@ -553,8 +592,10 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       }
     }
     expect(kinds).toContain('mark');
-    expect(cases).toBeGreaterThan(0);
-    expect(samples).toBeGreaterThanOrEqual(cases);
+    expect(kinds).toContain('press');
+    // A kick whose next play follows within the sampling interval has no later sample to check.
+    expect(samples).toBeGreaterThan(0);
+    expect(kept).toBeGreaterThan(0);
   });
 
   /** Every on-pitch player of a snapshot in playback units of its period, by player ID. */
