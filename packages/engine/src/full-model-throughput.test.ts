@@ -56,11 +56,15 @@ const facts = (w: World) => ({
  * digests unchanged on darwin-arm64. T365's side share (a side's skills keep 0.8 of its distance
  * from the match's level) and possession's runs ×2.5 past halfway changed the candidate rounds
  * (aggregate records unchanged), re-recorded with its calibration artifact; c1b53321ff63cd81
- * before.
+ * before. T323's aggregate changes (who won each failed pass's loose ball, on a stream of its own;
+ * passes, completion, through balls, progressive carries, shot scale and place, xG kind and
+ * spread recalibrated toward MATCH-30) changed both, re-recorded with both calibration artifacts
+ * (the grid untouched, so the candidate rounds moved through their aggregate fixtures);
+ * a3c1c7230ca5bc28 and 3be456505f08231a before.
  */
 const BEFORE = {
-  aggregateRecords: 'a3c1c7230ca5bc28',
-  candidateRounds: '3be456505f08231a',
+  aggregateRecords: '4f190f1b1d803d86',
+  candidateRounds: '53d5f04e2624eb4e',
 };
 
 describe('complete-result throughput (T285)', () => {
