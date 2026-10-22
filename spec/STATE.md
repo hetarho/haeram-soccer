@@ -207,7 +207,7 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T331 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T331 | Make counter beat press through its MATCH-8 behaviour, not its roles | MATCH STAFF ARCH | T328 | todo |
+| T331 | Make counter beat press through its MATCH-8 behaviour, not its roles | MATCH STAFF ARCH | T328 | doing@261022.k2r7 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
