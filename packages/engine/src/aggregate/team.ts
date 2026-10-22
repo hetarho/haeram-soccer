@@ -192,6 +192,10 @@ export function generateTeamFacts(
       setPieceShots(m, p, side, setPieces);
       m.sides[side].held.push(p.share[side] * (to - from) * 60 * C.ballInPlay);
     }
+    // Who won each loose ball, on a stream of its own after every other draw of the period, so
+    // nothing else the period settled moves (T323).
+    const loose = streams.draw('loose', period);
+    for (const side of [0, 1] as const) looseBallsWon(m, p, side, loose);
   }
   return deriveTeamFacts({ length: participation.length, periods, sides: m.sides });
 }
@@ -369,6 +373,7 @@ function passGroup(
         outTouch,
         outByline,
         cornersWon,
+        recovered: 0,
       }
     : {
         period,
@@ -383,7 +388,31 @@ function passGroup(
         outTouch,
         outByline,
         cornersWon,
+        recovered: 0,
       };
+}
+
+/**
+ * Who won the loose balls of a side's failed passes in one period (T323, →MATCH-13 high
+ * turnovers): of a group's failed attempts neither offside, intercepted nor out of play, the
+ * opponent recovers `failed.loose.share` times its preset's press (at most `failed.loose.max`)
+ * and the passing side keeps the rest, as a second ball goes to either side on the grid. Only a
+ * ball the opponent won starts its sequence.
+ */
+function looseBallsWon(m: Match, p: Period, side: AggregateSide, r: Rng) {
+  const L = C.failed.loose;
+  const share = Math.min(L.max, L.share * tacticOf(m, other(side)).press);
+  for (const move of m.sides[side].moves) {
+    if (move.period !== p.period || move.kind === 'carry' || move.kind === 'takeOn') continue;
+    const free =
+      move.attempts -
+      move.completed -
+      move.offside -
+      move.intercepted -
+      move.outTouch -
+      move.outByline;
+    move.recovered = binomial(r, free, share);
+  }
 }
 
 /** Carries and take-ons from a cell, in proportion to the side's passes there (→MATCH-13). */
@@ -409,6 +438,7 @@ function carriesFrom(m: Match, p: Period, side: AggregateSide, r: Rng, c: number
         outTouch: 0,
         outByline: 0,
         cornersWon: 0,
+        recovered: 0,
       });
   };
   const carries = poisson(

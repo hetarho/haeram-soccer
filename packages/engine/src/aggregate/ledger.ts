@@ -41,14 +41,12 @@ export const xtGain = (from: number, to: number) =>
 /** Where the kernel's pull-back flow (the `cutBack` kind) starts: the byline areas off centre. */
 const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !== 2;
 /**
- * Of a pass group's failed attempts, the loose balls its opponent recovers in open play: neither
- * offside, intercepted nor out of play (MATCH-13 high turnovers; credited to no tackle or
- * interception). A carry or take-on is never loose: its failures are tackles.
+ * Of a pass group's failed attempts, the loose balls its opponent recovered in open play (MATCH-13
+ * high turnovers; credited to no tackle or interception): the generator draws who won each one
+ * that was neither offside, intercepted nor out of play (team.ts `looseBallsWon`, T323). A carry
+ * or take-on is never loose: its failures are tackles.
  */
-export const looseBalls = (m: AggregateMove) =>
-  isPassKind(m.kind)
-    ? m.attempts - m.completed - m.offside - m.intercepted - m.outTouch - m.outByline
-    : 0;
+export const looseBalls = (m: AggregateMove) => (isPassKind(m.kind) ? m.recovered : 0);
 /** Kinds that always go forward; a short pass may go any way. */
 const forwardKinds: ReadonlySet<AggregateMoveKind> = new Set(['long', 'through']);
 
@@ -168,7 +166,8 @@ function moveIssues(
     count(m.intercepted) &&
     count(m.outTouch) &&
     count(m.outByline) &&
-    count(m.cornersWon)
+    count(m.cornersWon) &&
+    count(m.recovered)
   )) {
     const counts = [
       m.attempts,
@@ -179,6 +178,7 @@ function moveIssues(
       m.outTouch,
       m.outByline,
       m.cornersWon,
+      m.recovered,
     ];
     return void issue(out, who, i, ` counts ${counts}`);
   }
@@ -186,8 +186,10 @@ function moveIssues(
   const failed = m.attempts - m.completed;
   const pass = isPassKind(m.kind);
   const fates = m.offside + m.intercepted + m.outTouch + m.outByline;
-  if (pass && fates > failed) issue(out, who, i, `: ${fates} failed outcomes of ${failed} failed`);
-  if (!pass && fates + m.lineBreaking + m.cornersWon > 0) issue(out, who, i, ': pass outcomes');
+  if (pass && fates + m.recovered > failed)
+    issue(out, who, i, `: ${fates + m.recovered} failed outcomes of ${failed} failed`);
+  if (!pass && fates + m.lineBreaking + m.cornersWon + m.recovered > 0)
+    issue(out, who, i, ': pass outcomes');
   if (m.cornersWon > m.outByline) issue(out, who, i, `: ${m.cornersWon} corners of ${m.outByline}`);
   const fromBand = cellBand(m.from),
     toBand = cellBand(m.to);
