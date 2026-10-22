@@ -173,12 +173,25 @@ export const DECISION_CONFIG = {
      * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
      * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
      * passes `pass` times as often against carrying on. Counter (T334): its pass share falls to
-     * the lowest of the four and it beats press through its play, not its roles.
+     * the lowest of the four and it beats press through its play, not its roles. The pass weights
+     * hold only while the carrier stands no further than `upTo` m up the pitch (T336: in the final
+     * third counter picks its passes as any side, the pass factor still applies), so fewer of its
+     * balls go loose high up.
      */
     settled: {
-      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75 },
+      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70 },
     } as Partial<
-      Record<Tactic, { forward: number; long: number; lateral: number; back: number; pass: number }>
+      Record<
+        Tactic,
+        {
+          forward: number;
+          long: number;
+          lateral: number;
+          back: number;
+          pass: number;
+          upTo: number;
+        }
+      >
     >,
   },
 } as const;
@@ -436,8 +449,10 @@ export function passOptions(
   // Straight after a regain a breaking side goes forward (candidate model, →MATCH-8).
   const D = DECISION_CONFIG.direct;
   const direct = breaking(s, side) ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
-  // Once the break has passed a listed side still goes forward or long (candidate, T334).
-  const settled = settledOf(s, side);
+  // Once the break has passed a listed side still goes forward or long (candidate, T334), up to
+  // `upTo` m up the pitch (T336).
+  const rule = settledOf(s, side);
+  const settled = rule && c[0] <= rule.upTo ? rule : undefined;
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,

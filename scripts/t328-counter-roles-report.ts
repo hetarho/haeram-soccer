@@ -10,6 +10,7 @@
 import { readFileSync } from 'node:fs';
 import { M } from '../packages/engine/src/grid/record';
 import {
+  buildOutcomeTargetReport,
   buildTargetReport,
   describeTacticPairings,
   tacticPairingVerdicts,
@@ -80,7 +81,7 @@ if (pairing.length) {
   console.log(args.includes('--rows') ? lines.join('\n') : lines[0]);
   if (!args.includes('--rows'))
     for (const r of report.rows)
-      if (r.status !== 'inside' || /counter|points|possession/.test(r.id)) {
+      if (r.status !== 'inside' || /counter|points|possession|highRegains|xgConceded/.test(r.id)) {
         const val =
           r.kind === 'band'
             ? `${r.value?.toFixed(3)} [${r.interval?.[0].toFixed(3)}, ${r.interval?.[1].toFixed(3)}]`
@@ -151,6 +152,19 @@ if (coreSamples.length) {
       console.log(
         `  ${t.status.padEnd(12)} ${t.id}: ${t.value?.toFixed(3)} [${t.interval?.[0].toFixed(3)}, ${t.interval?.[1].toFixed(3)}] band ${t.band.join('–')}`,
       );
+}
+
+// MATCH-2's outcome curve from the run's gap conditions (T336), when it played them.
+const gapSamples = v.chunks.filter((c) => c.condition.startsWith('gap:')).flatMap((c) => c.samples);
+if (gapSamples.length) {
+  const curve = buildOutcomeTargetReport(gapSamples);
+  console.log(
+    `outcome curve ${gapSamples.length}: mean absolute error (−10…+40) ${f3(curve.meanAbsoluteError ?? undefined, 100, 2)} points`,
+  );
+  for (const r of curve.rows)
+    console.log(
+      `  gap ${String(r.bucket).padStart(3)} (${r.matches}, mean ${r.meanGap.toFixed(1)}): W/D/L ${(100 * r.observed.homeWin).toFixed(1)}/${(100 * r.observed.draw).toFixed(1)}/${(100 * r.observed.awayWin).toFixed(1)} v ${(100 * r.target.homeWin).toFixed(1)}/${(100 * r.target.draw).toFixed(1)}/${(100 * r.target.awayWin).toFixed(1)}, error ${(100 * r.error).toFixed(1)}`,
+    );
 }
 
 // The counter side's readings in its pairing against press, and over every pairing.
