@@ -144,6 +144,24 @@ describe('grid shape and movement', () => {
     expect(Math.min(...defenders(false))).toBeLessThan(counter.line[0]);
   });
 
+  it("drops counter's candidate block instead of following a ball upfield (T336)", () => {
+    expect(SHAPE_CONFIG.candidate.tactic.counter!.upfield).toBe(0);
+    // Counter without the ball, the opponents on it in their own half (ball x from counter's goal).
+    const outfield = (candidate: boolean, bx: number) => {
+      const kit = gridKit(['counter', 'balanced']);
+      if (candidate) kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
+      kit.state.ball = [bx, 34];
+      kit.state.possession = 1;
+      kit.state.owner = [1, 9];
+      return outfieldMeanX(kit);
+    };
+    // On the candidate model its block holds its height wherever in their half the ball is, and
+    // still follows a ball in its own half; the pre-feature shape follows the ball up.
+    expect(outfield(true, 90)).toBeCloseTo(outfield(true, 60), 9);
+    expect(outfield(true, 30)).toBeLessThan(outfield(true, 52.5));
+    expect(outfield(false, 90)).toBeGreaterThan(outfield(false, 60) + 5);
+  });
+
   it('plays the candidate shape of a tactic on the candidate model only', () => {
     for (const tactic of TACTICS) {
       const kit = gridKit([tactic, 'balanced']);

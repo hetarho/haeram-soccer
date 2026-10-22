@@ -208,6 +208,44 @@ describe('grid decisions', () => {
     }
   });
 
+  it("stops counter's settled pass weights past its zone, not its pass factor (T336)", () => {
+    const R = DECISION_CONFIG.direct.settled.counter!;
+    const deep = centre(3, 2);
+    const high = centre(5, 2);
+    expect(deep[0]).toBeLessThanOrEqual(R.upTo);
+    expect(high[0]).toBeGreaterThan(R.upTo);
+    // A settled counter carrier in the final third against a balanced one at the same spot.
+    const options = (tactic: Tactic) => {
+      const sc = scene(CM, high, [tactic, 'balanced']);
+      (
+        [
+          [high[0] + 10, high[1] - 3],
+          [high[0], high[1] + 14],
+          [high[0] - 12, high[1]],
+          [high[0] - 30, high[1] + 4],
+        ] as Point[]
+      ).forEach((p, i) => place(sc.s, 1 + i, p));
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      return {
+        passes: passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4),
+        mix: actionMix(sc.s, 0, CM, sc.tags()),
+      };
+    };
+    const counter = options('counter');
+    const balanced = options('balanced');
+    expect(new Set(counter.passes.map((o) => o.direction))).toEqual(
+      new Set(['forward', 'lateral', 'back']),
+    );
+    counter.passes.forEach((o, i) => {
+      expect(o.score).toBeCloseTo(balanced.passes[i]!.score, 9);
+      expect(o.prior).toBeCloseTo(balanced.passes[i]!.prior, 9);
+    });
+    // He still passes less against carrying on.
+    expect(
+      counter.mix.pass / counter.mix.carry / (balanced.mix.pass / balanced.mix.carry),
+    ).toBeCloseTo(R.pass, 9);
+  });
+
   it("reproduces the cell's pass direction mix, back passes weighted, when every target scores the same", () => {
     const sc = scene(CM, centre(4, 2));
     sc.me.player.traits = [];
