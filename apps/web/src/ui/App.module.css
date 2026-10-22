@@ -3143,3 +3143,17 @@
 .newsLayout:has([data-testid='strategy-draft']) .scroller {
   padding-bottom: 0;
 }
+/* Appearance pickers stay small and centered over a light dim on every width, so the page
+   behind visibly takes each theme or language change. */
+.modalBackdrop.picker {
+  align-items: center;
+  padding: 24px 16px;
+  background: rgb(0 0 0 / 28%);
+}
+.picker > .modal {
+  max-width: 360px !important;
+  border-radius: var(--dialog-radius);
+}
+.picker .modalBody {
+  padding: 20px;
+}

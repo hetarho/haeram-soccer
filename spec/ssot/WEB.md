@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r125 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r126 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -20,7 +20,7 @@
 
 - WEB-10 [o] Play uses a game HUD (menu, club crest, division/date, cash pinned top right) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 선수단, 훈련 and 구단 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39).
   - The match view has no tab (→WEB-40).
-  - The HUD menu places directly editable theme/language preferences first, then groups gameplay settings, reference/help and save/slot tools by purpose. Observation and unfinished-match resumption belong to the home next-match area, not the menu (→WEB-11/50).
+  - The HUD menu places theme and language change entries first, each closing the menu and opening a small centered picker over a light dim so the page behind visibly takes the change; it then groups gameplay settings, reference/help and save/slot tools by purpose. Observation and unfinished-match resumption belong to the home next-match area, not the menu (→WEB-11/50).
   - Mobile bottom navigation has its own contrasting surface, a restrained edge and separation from scrolling content in every theme. Preserve seven destinations, centered home, selected underline, safe areas and touch targets; standard uses a softly elevated floating bar and pixel keeps angular styling.
   - Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates.
   - The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically.
@@ -473,6 +473,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r126 261022 WEB-10✎ inline menu preferences hidden behind an opaque sheet→separate theme/language entries opening a small centered picker over a light dim
 - r125 261022 WEB-95+ normal-view recorded possession team and carrier cues with neutral flight/contested/unknown handling
 - r124 261022 WEB-32✎ uniform timeline without a goal transition→uniform running timeline with WEB-94 goal holds; WEB-94+ brief recorded-goal hold, GOAL cue and scoreboard emphasis with replay, visibility and reduced-motion rules
 - r123 261022 WEB-10/11/18/50/51/91✎ crowded controls, menu watching and buried preferences→compact home actions, inline menu preferences, grouped utilities, HUD news and distinct bottom navigation

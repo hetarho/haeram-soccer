@@ -12,11 +12,6 @@
   font-size: 12px;
   font-weight: 600;
 }
-.appearance {
-  padding: 16px;
-  border-radius: var(--card-radius);
-  background: var(--subtle-fill);
-}
 .row {
   display: flex;
   align-items: center;

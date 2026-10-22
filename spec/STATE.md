@@ -188,7 +188,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 125 | 125 | - | 0 |
+| WEB | 126 | 126 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -238,6 +238,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T351 done: menu theme/language entries open a small centered picker over a light dim so the page visibly changes; WEB r126. 10 presentation journeys, 677 web units, typecheck/lint/format/presentation/build pass; business.spec:67 fails identically on main before this change.
 - 261022 measured planning verified (g8s2): retained full-match reproducer matches all 8 runs/89 corner readings exactly; retained stage reproducer matches coordinates/jobs exactly; spec lint passes with existing stale/status warnings; no product code or push.
 - 261022 ideation/create-task measured follow-up (g8s2): 8 matches/89 corners plus isolated placement→moveAll probe replace the unverified stationary-defence diagnosis in T348; WEB r125/WEB-95 adds T350 normal-view team/carrier cues after T349, required by T286. Evidence and runnable probes retained in docs/benchmarks/set-piece-motion-261022.*.
 - 261022 ideation set-piece-defence-and-goal-feedback resumed: measure actual team movement before correcting the task; update-ssot WEB/create-task for ball ownership.

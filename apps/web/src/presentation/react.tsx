@@ -10,7 +10,14 @@ import type { PresentationController } from './controller';
 import type { ThemeImageNeed } from './theme';
 
 const PresentationContext = createContext<PresentationController | null>(null);
-const SettingsContext = createContext<{ open: boolean; show(): void; close(): void } | null>(null);
+/** Which preference a picker edits; without one it offers both. */
+export type PresentationField = 'theme' | 'locale';
+const SettingsContext = createContext<{
+  open: boolean;
+  field?: PresentationField;
+  show(field?: PresentationField): void;
+  close(): void;
+} | null>(null);
 
 export function PresentationProvider({
   controller,
@@ -19,10 +26,17 @@ export function PresentationProvider({
   controller: PresentationController;
   children: ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
+  const [picker, setPicker] = useState<{ field?: PresentationField }>();
   return (
     <PresentationContext value={controller}>
-      <SettingsContext value={{ open, show: () => setOpen(true), close: () => setOpen(false) }}>
+      <SettingsContext
+        value={{
+          open: !!picker,
+          field: picker?.field,
+          show: (field) => setPicker({ field }),
+          close: () => setPicker(undefined),
+        }}
+      >
         {children}
       </SettingsContext>
     </PresentationContext>

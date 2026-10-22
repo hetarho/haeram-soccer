@@ -1,8 +1,7 @@
 import { useId, type ReactNode } from 'react';
-import { useLocale } from '../presentation/react';
+import { useLocale, usePresentation, usePresentationSettings } from '../presentation/react';
 import { Dialog } from './Dialog';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
-import { PresentationSettingsControls } from './PresentationSettings';
 import s from './AppMenu.module.css';
 
 function MenuRow({
@@ -46,7 +45,11 @@ export function AppMenu({
   saveTools: ReactNode;
 }) {
   const { t } = useLocale();
+  const snapshot = usePresentation();
+  const settings = usePresentationSettings();
   const id = useId();
+  const label = (entries: readonly { id: string; label: string }[], current: string) =>
+    entries.find((entry) => entry.id === current)?.label;
   const open = (action: () => void) => () => {
     onClose();
     action();
@@ -54,9 +57,21 @@ export function AppMenu({
   return (
     <Dialog label={t('shell.menu')} onClose={onClose}>
       <div className={s.menu} data-testid="app-menu">
-        <section className={s.appearance} aria-labelledby={`${id}-appearance`}>
+        {/* Each preference closes the menu and opens a small centered picker, so the change shows. */}
+        <section aria-labelledby={`${id}-appearance`}>
           <h3 id={`${id}-appearance`}>{t('shell.appearance')}</h3>
-          <PresentationSettingsControls inline />
+          <MenuRow
+            icon="eye"
+            title={t('presentation.changeTheme')}
+            detail={label(snapshot.themeRegistry!.entries, snapshot.theme!.id)}
+            onClick={open(() => settings.show('theme'))}
+          />
+          <MenuRow
+            icon="news"
+            title={t('presentation.changeLanguage')}
+            detail={label(snapshot.localeRegistry!.entries, snapshot.locale!.id)}
+            onClick={open(() => settings.show('locale'))}
+          />
         </section>
         <section aria-labelledby={`${id}-game`}>
           <h3 id={`${id}-game`}>{t('shell.gameSettings')}</h3>
