@@ -73,15 +73,6 @@ export const COORDINATION_CONFIG = {
    * `odds` times as often and from any band, so a counter side's runners go in behind at once.
    */
   transition: { seconds: 8, odds: { counter: 2.5 } as Partial<Record<Tactic, number>> },
-  /**
-   * T356 probe hook (neutral): outside a break a listed side starts its runs `odds` times as often,
-   * the extra odds only with the ball from band `from` on and only for players of the `lines` listed.
-   */
-  settledRuns: {
-    odds: { possession: 1 } as Partial<Record<Tactic, number>>,
-    from: 3,
-    lines: ['DF', 'MF', 'FW'] as readonly string[],
-  },
 } as const;
 
 /** Roles that cover a pressing teammate first: their distance counts divided by this. */
@@ -472,14 +463,9 @@ function attack(
       : 1;
   const ctx = runContext(s, side);
   if (ctx.band < 3 && breaking === 1) return;
-  const SR = CC.settledRuns;
-  const settled =
-    breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
   const plans = mates.flatMap((gp) => {
     if (!available(gp) || retrying(s, gp, 'run')) return [];
-    const timing =
-      (CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions')) *
-      (settled !== 1 && SR.lines.includes(lineOf(slotOf(s, gp).position)) ? settled : 1);
+    const timing = CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions');
     // The stream is named on its first draw: a role that makes no run here draws nothing.
     let r: (() => number) | undefined;
     const p = runPlan(
