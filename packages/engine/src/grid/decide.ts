@@ -179,7 +179,9 @@ export const DECISION_CONFIG = {
      * balls go loose high up.
      */
     settled: {
-      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70 },
+      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70, from: 0 },
+      // T345 probe hook: possession's settled play from `from` m up the pitch (neutral).
+      possession: { forward: 0, long: 0, lateral: 1, back: 1, pass: 1, upTo: 105, from: 0 },
     } as Partial<
       Record<
         Tactic,
@@ -190,6 +192,7 @@ export const DECISION_CONFIG = {
           back: number;
           pass: number;
           upTo: number;
+          from: number;
         }
       >
     >,
@@ -452,7 +455,7 @@ export function passOptions(
   // Once the break has passed a listed side still goes forward or long (candidate, T334), up to
   // `upTo` m up the pitch (T336).
   const rule = settledOf(s, side);
-  const settled = rule && c[0] <= rule.upTo ? rule : undefined;
+  const settled = rule && c[0] <= rule.upTo && c[0] >= rule.from ? rule : undefined;
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
