@@ -232,7 +232,6 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T358 | Make the candidate grid's outcome-critical math give the same bits on every host | ARCH MATCH | T348 T356 | doing@261023.q8m5 |
 | T360 | Adopt T357's side share and possession's guarded runs on the candidate model | MATCH ARCH | T357 T358 | doing@261023.q8m5 |
 
 ## work
@@ -251,6 +250,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T358 done (q8m5): the candidate engine computes exp, log, tanh, sin, cos, atan2, hypot and integer powers from basic IEEE ops (fdlibm, ≤ 2.5 ulp, 243 recorded bit patterns); linux-x64 CI gives every darwin-arm64 digest and Firefox/WebKit play the set-piece journey's Node reference, so candidate digests are host-free again; statistics unchanged on round 21, own match 0.97×; pre-feature path keeps `Math.*`
 - 261023 T357 done (q8m5; explore exit, nothing kept under its rule): the gradient sits in pass completion and reaches both grid paths through `shift` × skillScale; candidate 2.28 / pre-feature grid 1.90 / summary 2.16 on the same 9,600 gap fixtures; side share 0.8 + possession's guarded runs pooled curve 3.09 → 1.65 on rounds 21+22 → T360 adopts it
 - 261023 create-task T360 (q8m5): adopt T357's pair with tests and fresh validation (rounds 23+); T323 and T286 wait for it
 - 261023 T359 done (q8m5): observed candidate traces carry `TraceEntry.kick` at each restart's kick and playback walks players to it, showing the restart's places during the preparation; facts and pre-feature path unchanged (12 facts digests, candidateRounds), positions digests re-recorded; frames 4–6% larger
@@ -270,4 +270,3 @@
 - 261022 T349 done (v7c3): recorded goals hold 1 s at every speed with a GOAL cue (side, scorer) and a boxed scoring-side score; the scoreboard shows the presented running score; seek passes goals without a cue; 11 unit cases, live and archived journeys on Chromium and Firefox
 - 261022 fix e2e (v7c3): progression-settings:163 picks the menu's settings row by its title prefix, since the row's name now carries its hint line (main CI red since b4d1c7f); intervention, management and news pass locally on Chromium and Firefox
 - 261022 T336 integrated (k2r7; explore exit, coordinator exception to its keep rule): counter's settled pass weights stop at 70 m and its block stops following a ball upfield; artifact round 11 MATCH-29 8/3/14 → 10/2/13, core 32/38, curve 3.43 → T345
-- 261022 T345 start (k2r7): on T336's kept setting, beside the T336 batch gate and T325's review

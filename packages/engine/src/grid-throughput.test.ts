@@ -2,27 +2,19 @@
  * T325's speed work on the detailed engine keeps every football fact (→ARCH-5, ARCH-31, MATCH-27):
  * the own match plays exactly the records, traces and frames the source before it played, draw for
  * draw. Each fixture has a facts digest (record, elapsed time, diagnostics) and an observed one a
- * positions digest (trace and frames). Both are exact per host (`${process.platform}-${process.arch}`):
- * the host's float math differs in the last bit, and that can flip a recorded fact, not only a
- * position (CI's linux-x64 run 39800627501 gave 2024's observed shoot-out other facts than
- * darwin-arm64). A host with recorded values asserts them; another logs what it got, for a session
- * on that host to paste in. A behaviour change records the running host's values and deletes the
- * other hosts' (T345: darwin-arm64; T348's set-piece defence, whose defenders keep their jobs after
- * the kick: darwin-arm64 again, every candidate value changed but the 1975 and 2024 league
- * fixtures' facts, the pre-feature facts did not), together with the calibration evidence, never
- * alone. A presentation-only change re-records positions alone: T359's restart kick snapshot
- * (darwin-arm64; every facts digest unchanged, the trace's other fields and the frames of a trace
- * without kicks byte-identical to before). T358 gave the candidate path portable `exp`, `sin`,
- * `cos`, `atan2`, `hypot` and integer powers (`portable-math.ts`, bound once per match on the
- * state; the pre-feature path keeps `Math.*`): on darwin-arm64 every facts digest held and the 1975
- * positions and 2024's observed ones too, while three positions digests moved in the last bits (the
- * portable functions differ from this host's in about 1.5% of `sin` and `cos` calls, 0.2% of
- * `atan2`, 0.05% of `exp` and none of `hypot`). The candidate's grid geometry no longer reads the host's float
- * library, so linux-x64 should give these candidate facts; until a CI run shows it the split by host
- * stays. On every host each fixture replays bit for bit, the observed league fixture's facts equal
- * the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. No
- * wall-clock assertion here; the timings live in scripts/match-model-baseline.ts and
- * docs/benchmarks/full-model-throughput.json.
+ * positions digest (trace and frames).
+ *
+ * The candidate's digests are the same on every host and asserted everywhere: since T358 its grid
+ * reads only the portable math of `portable-math.ts`, and CI's linux-x64 run 39829693762 gave every
+ * one of darwin-arm64's values. Before that the host's float library flipped facts (run 39800627501,
+ * 2024's observed shoot-out). The pre-feature path keeps the host's `Math.*`, so its facts stay per
+ * host (`${process.platform}-${process.arch}`): a host with a value asserts it, another logs what it
+ * got for a session there to paste in. A candidate behaviour change re-records the candidate's
+ * digests with its calibration evidence, never alone; a presentation-only change (T359's kick
+ * snapshot) re-records positions alone. On every host each fixture replays bit for bit, the observed
+ * league fixture's facts equal the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in
+ * either digest. No wall-clock assertion here; the timings live in scripts/match-model-baseline.ts
+ * and docs/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
@@ -84,48 +76,52 @@ const CASES = {
 } as const;
 type Year = keyof typeof CASES;
 
-interface HostDigests {
-  /** Facts of every fixture (the observed league fixture's equal the unobserved one's). */
-  facts: Record<'league' | 'extraTime' | 'shootout' | 'preFeature', string>;
+interface CandidateDigests {
+  /** Facts of the candidate fixtures (the observed league fixture's equal the unobserved one's). */
+  facts: Record<'league' | 'extraTime' | 'shootout', string>;
   /** Positions of the observed fixtures. */
   positions: Record<'observed' | 'shootout', string>;
 }
 
-/** Exact digests by host; a behaviour change records the running host's and deletes the others. */
-const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
-  'darwin-arm64': {
-    1975: {
-      facts: {
-        league: '0a392030070b2389',
-        extraTime: 'bb531ef4fe2b9601',
-        shootout: 'c16f0a0a7ed7b58a',
-        preFeature: 'a2e559aea64a91e7',
-      },
-      // T359 (kick snapshot): 4d7573d60f7b864e and e4f41e13f37075d2 before.
-      positions: { observed: '70a75fe142ff2f7d', shootout: '22d751dd17b0fa0d' },
+/**
+ * The candidate's digests, the same on every host (T358). History of the values: T345's score
+ * state, T348's set-piece defence and T358's portable math moved facts or positions; T359's kick
+ * snapshot moved positions only (1975 4d7573d60f7b864e and e4f41e13f37075d2 before it, 2024
+ * c4a8a6a41c12516a and f9ca7911fa173494; T358 then moved 1995's 1c57051abec6e044 and
+ * e42847d0748465d3 and 2024's shoot-out ee0eb1581ac782b3).
+ */
+const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: '0a392030070b2389',
+      extraTime: 'bb531ef4fe2b9601',
+      shootout: 'c16f0a0a7ed7b58a',
     },
-    1995: {
-      facts: {
-        league: '915080a3feadc4f8',
-        extraTime: '5bd3095cb95f88cc',
-        shootout: 'fd24b6f51440b87c',
-        preFeature: '0c7e06efbc8fd981',
-      },
-      // T358 (portable math): 1c57051abec6e044 and e42847d0748465d3 before (T359's).
-      positions: { observed: '944e58ccbdef2d3f', shootout: '14ebd459da2c8968' },
-    },
-    2024: {
-      facts: {
-        league: 'f46d1dbd025b49b0',
-        extraTime: '931d04258f444c80',
-        shootout: '12dbc52079c43f4f',
-        preFeature: 'a0e4479b22d2cfa6',
-      },
-      // T359 (kick snapshot): c4a8a6a41c12516a and f9ca7911fa173494 before; T358 (portable
-      // math): the shoot-out's ee0eb1581ac782b3 before.
-      positions: { observed: '99c6c9e68e8ce31b', shootout: '2e1ee15e76eed100' },
-    },
+    positions: { observed: '70a75fe142ff2f7d', shootout: '22d751dd17b0fa0d' },
   },
+  1995: {
+    facts: {
+      league: '915080a3feadc4f8',
+      extraTime: '5bd3095cb95f88cc',
+      shootout: 'fd24b6f51440b87c',
+    },
+    positions: { observed: '944e58ccbdef2d3f', shootout: '14ebd459da2c8968' },
+  },
+  2024: {
+    facts: {
+      league: 'f46d1dbd025b49b0',
+      extraTime: '931d04258f444c80',
+      shootout: '12dbc52079c43f4f',
+    },
+    positions: { observed: '99c6c9e68e8ce31b', shootout: '2e1ee15e76eed100' },
+  },
+};
+
+/** The pre-feature league fixture's facts by host; it plays the host's `Math.*`. */
+const PRE_FEATURE: Partial<Record<string, Record<Year, string>>> = {
+  'darwin-arm64': { 1975: 'a2e559aea64a91e7', 1995: '0c7e06efbc8fd981', 2024: 'a0e4479b22d2cfa6' },
+  // CI run 39829693762 (Node 24.22.1).
+  'linux-x64': { 1975: 'a2e559aea64a91e7', 1995: '0c7e06efbc8fd981', 2024: 'a0e4479b22d2cfa6' },
 };
 
 describe('detailed engine throughput (T325)', () => {
@@ -153,25 +149,15 @@ describe('detailed engine throughput (T325)', () => {
       const pens = twice(`knockout-${year}-${shootout}`, { decide: LEVEL, observe: true });
       expect(pens.result.record.shootout).toBeDefined();
       const old = twice(`league-${year}`, { preFeature: true });
-      const got: HostDigests = {
-        facts: {
-          league: factsOf(league),
-          extraTime: factsOf(et),
-          shootout: factsOf(pens),
-          preFeature: factsOf(old),
-        },
+      const got: CandidateDigests = {
+        facts: { league: factsOf(league), extraTime: factsOf(et), shootout: factsOf(pens) },
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
-      const want = DIGESTS[HOST]?.[year];
-      for (const kind of ['facts', 'positions'] as const)
-        for (const [fixture, value] of Object.entries(got[kind])) {
-          const recorded = (want?.[kind] as Record<string, string> | undefined)?.[fixture];
-          if (recorded === undefined)
-            console.log(
-              `no ${HOST} ${kind} digest for ${year} ${fixture}; this host gives ${value}`,
-            );
-          else expect(value, `${year} ${fixture} ${kind} on ${HOST}`).toBe(recorded);
-        }
+      expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
+      const recorded = PRE_FEATURE[HOST]?.[year];
+      if (recorded === undefined)
+        console.log(`no ${HOST} pre-feature digest for ${year}; this host gives ${factsOf(old)}`);
+      else expect(factsOf(old), `${year} pre-feature facts on ${HOST}`).toBe(recorded);
     });
   }
 
