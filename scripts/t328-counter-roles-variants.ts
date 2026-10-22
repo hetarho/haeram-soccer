@@ -106,6 +106,12 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   noPress: counterShape({ press: 6 }),
   high: counterShape({ defend: -5, line: [26, 46] }),
   wide: counterShape({ press: 15 }),
+  // Within MATCH-8's shape order (counter below balanced's −6 and 24–45).
+  line26: counterShape({ line: [26, 42] }),
+  mid: counterShape({ defend: -7, line: [24, 44] }),
+  line28: counterShape({ line: [28, 42] }),
+  line24: counterShape({ line: [24, 42] }),
+  line25: counterShape({ line: [25, 42] }),
   // (c) Press's in-match drain factor (1.3 shared).
   drain2: pressDrain(2),
   drain3: pressDrain(3),
