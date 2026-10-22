@@ -13,6 +13,9 @@ import {
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { expectViewFits, settle } from './layout';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { openRecordedMatch } from './club-identity-helpers';
+import { importResponsibilityCareer } from './responsibility-fixtures';
 
 async function savedRaw(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -170,7 +173,8 @@ for (const viewport of [
     const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     expect(await minuteNow()).toBeGreaterThanOrEqual(before);
-    await page.waitForTimeout(1000);
+    // A goal's hold (→WEB-94) is real time outside running play, so it may sit inside the second.
+    await page.waitForTimeout(1000 + GOAL_FEEDBACK_CONFIG.holdMs);
     expect((await minuteNow()) - before).toBeGreaterThanOrEqual(2);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
@@ -316,3 +320,50 @@ for (const viewport of [
     await expectCompactMatch(page, viewport);
   });
 }
+
+test('an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes', async ({
+  page,
+}) => {
+  // Two goal crossings at 1x on the archived clock: about 8 s, then 4 s after a seek.
+  test.slow();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  // The first match of this founding scored 2′ (home), 46′ and 66′ (away).
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Goal Feedback',
+    color: '#224466',
+    seed: 'goal-feedback',
+    level: 'easy',
+  });
+  world.settings!.responsibilities.sales = 'delegated';
+  const played = advanceToNextMatch(world)!.record;
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 46, 66]);
+  await importResponsibilityCareer(page, world);
+  const replay = await openRecordedMatch(page);
+  const cue = replay.getByTestId('goal-cue');
+  const score = replay.getByTestId('match-score').locator('strong');
+  await expect(cue).toBeVisible({ timeout: 15_000 });
+  await expect(cue).toContainText(played.highlights[0]!.player);
+  await expect(score).toHaveText('1 : 0');
+  // A pause during the hold keeps the cue until playback resumes.
+  await replay.getByRole('button', { name: '일시정지', exact: true }).click();
+  await page.waitForTimeout(1500);
+  await expect(cue).toBeVisible();
+  await replay.getByRole('button', { name: '재생', exact: true }).click();
+  await expect(cue).toHaveCount(0, { timeout: 3000 });
+  // A seek past both later goals pauses there without celebrating them.
+  await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
+  const scrubber = replay.getByRole('slider', { name: '경기 시간', exact: true });
+  await scrubber.fill('80');
+  await expect(score).toHaveText('1 : 2');
+  await expect(cue).toHaveCount(0);
+  await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
+  // Going back before the 46′ goal lets playback cross it again.
+  await scrubber.fill('44');
+  await expect(score).toHaveText('1 : 0');
+  await replay.getByRole('button', { name: '재생', exact: true }).click();
+  await expect(cue).toBeVisible({ timeout: 10_000 });
+  await expect(score).toHaveText('1 : 1');
+  await expect(replay.getByTestId('goal-score')).toHaveText('1');
+});

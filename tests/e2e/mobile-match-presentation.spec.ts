@@ -1,5 +1,5 @@
 import { watchNext } from './watch';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
@@ -118,3 +118,79 @@ test('mobile result-only continuation preserves the exiting card position', asyn
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeEnabled();
   }
 });
+
+/** A founding whose first match has goals at 2′ (home), 46′ and 66′ (away). */
+function goalWorld() {
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Goal Feedback',
+    color: '#224466',
+    seed: 'goal-feedback',
+    level: 'easy',
+  });
+  world.settings!.responsibilities.sales = 'delegated';
+  return world;
+}
+
+/** Counts every GOAL cue the page mounts, so a rerender that repeated one would show. */
+async function countCues(page: Page) {
+  await page.evaluate(() => {
+    const cues: string[] = [];
+    new MutationObserver((records) => {
+      for (const record of records)
+        for (const added of record.addedNodes)
+          if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue')
+            cues.push(added.textContent ?? '');
+    }).observe(document.body, { childList: true, subtree: true });
+    Object.assign(window, { goalCues: cues });
+  });
+  return () => page.evaluate(() => (window as unknown as { goalCues: string[] }).goalCues);
+}
+
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+  { width: 1280, height: 800 },
+])
+  test(`goal cue holds the match at ${viewport.width}`, async ({ page }) => {
+    // The first goal lands about 7 s into the match at 1x; the 360 run then plays it out at 16x.
+    test.slow();
+    await page.emulateMedia({ reducedMotion: viewport.width === 390 ? 'reduce' : 'no-preference' });
+    await page.setViewportSize(viewport);
+    await importResponsibilityCareer(page, goalWorld());
+    const cues = await countCues(page);
+    await watchNext(page);
+    const cue = page.getByTestId('goal-cue');
+    await expect(cue).toBeVisible({ timeout: 15_000 });
+    await expect(cue).toContainText('GOAL');
+    await expect(cue).toContainText('득점');
+    const score = page.getByTestId('match-score').locator('strong');
+    await expect(score).toHaveText('1 : 0');
+    const emphasis = page.getByTestId('match-score').getByTestId('goal-score');
+    await expect(emphasis).toHaveText('1');
+    // Reduced motion keeps the same hold with a still emphasis.
+    const pulse = await emphasis.evaluate((node) => getComputedStyle(node).animationName);
+    if (viewport.width === 390) expect(pulse).toBe('none');
+    else expect(pulse).toMatch(/goal-pulse/);
+    // The presented minute stays put while the cue shows, and the cue clears the corner controls.
+    const minute = await page.getByTestId('match-latest-event').locator('span').innerText();
+    const cueBox = (await cue.boundingBox())!;
+    const canvasBox = (await page.getByLabel('22명의 선수와 공으로 표현하는 경기').boundingBox())!;
+    expect(cueBox.x).toBeGreaterThanOrEqual(canvasBox.x);
+    expect(cueBox.x + cueBox.width).toBeLessThanOrEqual(canvasBox.x + canvasBox.width);
+    expect(cueBox.y).toBeGreaterThanOrEqual(canvasBox.y);
+    expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+    await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(minute);
+    await expect(cue).toHaveCount(0, { timeout: 3000 });
+    await expect(score).toHaveText('1 : 0');
+    if (viewport.width !== 360) return;
+    // At 16x each later goal still holds once, and the last whistle follows the last cue.
+    await page.getByRole('radio', { name: '16×', exact: true }).click();
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: 40_000 });
+    await expect(score).toHaveText('1 : 2');
+    await expect(cue).toHaveCount(0);
+    const seen = await cues();
+    expect(seen).toHaveLength(3);
+    expect(seen.every((text) => text.startsWith('GOAL'))).toBe(true);
+  });

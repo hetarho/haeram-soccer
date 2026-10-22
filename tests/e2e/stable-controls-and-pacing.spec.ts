@@ -105,10 +105,27 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   }
   // At 16x every minute lasts 250 ms, restarts and chances alike: 2 s cover about 8 minutes,
   // never a slowed set piece nor a skipped spell.
+  // A goal's hold (→WEB-94) is real time outside running play: each one met takes its 1 s out.
+  await page.evaluate(() => {
+    const seen = { cues: 0 };
+    new MutationObserver((records) => {
+      for (const record of records)
+        for (const added of record.addedNodes)
+          if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue') seen.cues++;
+    }).observe(document.body, { childList: true, subtree: true });
+    Object.assign(window, {
+      goalSeen: seen,
+      goalHeld: !!document.querySelector('[data-testid="goal-cue"]'),
+    });
+  });
   const from = await minuteNow();
   await page.waitForTimeout(2000);
   const covered = (await minuteNow()) - from;
-  expect(covered).toBeGreaterThanOrEqual(5);
+  const holds = await page.evaluate(() => {
+    const state = window as unknown as { goalSeen: { cues: number }; goalHeld: boolean };
+    return state.goalSeen.cues + (state.goalHeld ? 1 : 0);
+  });
+  expect(covered).toBeGreaterThanOrEqual(5 - 4 * holds);
   expect(covered).toBeLessThanOrEqual(10);
   await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();

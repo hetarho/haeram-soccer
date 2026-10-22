@@ -135,6 +135,9 @@
     "facility.manager": "감독실",
     "facility.staff": "스태프 사무실",
     "facility.academy.base": "기본 유소년 시설",
-    "facility.academy.stage": "{stage}단계 유소년 시설"
+    "facility.academy.stage": "{stage}단계 유소년 시설",
+    "match.goal.cue": "GOAL",
+    "match.goal.side": "{team} 득점",
+    "match.goal.scorer": "{team} · {player} 득점"
   }
 }
