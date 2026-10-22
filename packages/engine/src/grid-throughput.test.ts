@@ -95,6 +95,11 @@ interface CandidateDigests {
  * 5bd3095cb95f88cc, fd24b6f51440b87c, 2024 f46d1dbd025b49b0, 931d04258f444c80, 12dbc52079c43f4f
  * and positions 1975 70a75fe142ff2f7d, 22d751dd17b0fa0d, 1995 944e58ccbdef2d3f,
  * 14ebd459da2c8968, 2024 99c6c9e68e8ce31b, 2e1ee15e76eed100. The pre-feature facts did not move.
+ * T367's urgent pairing, which no longer takes a set-piece marker off his runner, moved three
+ * positions digests and no facts: jobs and paths changed in two to four entries from a delivery's
+ * kick through its second ball, and no draw (1975 observed 19144d72ec0fa7d2, 1995 shoot-out
+ * 6aae41a27ad31695 and 2024 shoot-out a74c83504e618a0c before); the knockout ties still reach
+ * extra time and penalties.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
@@ -103,7 +108,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '3e3145221e46dcfb',
       shootout: 'a271a9f3a52a6427',
     },
-    positions: { observed: '19144d72ec0fa7d2', shootout: '0818c79f81f161a0' },
+    positions: { observed: 'a23abe6daaceace9', shootout: '0818c79f81f161a0' },
   },
   1995: {
     facts: {
@@ -111,7 +116,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '781d87e697e93dc9',
       shootout: 'fab640b81546a4ee',
     },
-    positions: { observed: '84033ff29b355614', shootout: '6aae41a27ad31695' },
+    positions: { observed: '84033ff29b355614', shootout: '630da178551d5a75' },
   },
   2024: {
     facts: {
@@ -119,7 +124,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '4dc91004081853d5',
       shootout: '586bb36d3e8eb92c',
     },
-    positions: { observed: '81c845a7261a92d7', shootout: 'a74c83504e618a0c' },
+    positions: { observed: '81c845a7261a92d7', shootout: '0323962fb6ef130c' },
   },
 };
 

@@ -16,6 +16,7 @@ import {
   INTENTION_REASONS,
   restartTaken,
   setIntention,
+  takeBall,
   updateIntentions,
   type Intention,
 } from './intentions';
@@ -558,6 +559,127 @@ describe('grid coordination', () => {
     updateIntentions(s);
     expect(marked()).not.toContain(gone);
     expect(marked().every(onPitch)).toBe(true);
+  });
+
+  /**
+   * T366's case: `set-piece-1`'s short corner at 1767.70 as the update that reads its kick sees it
+   * (here side 0 attacks toward x = 105). Five attackers hold the box spots (`setPiece.box`) and
+   * runner 8 the edge; attacker 5 has just received the short corner on his spot, 12 m from goal, an
+   * urgent danger. The defending scene marks the five box runners goal-side (`setPiece.mark`: 3 on 2,
+   * 2 on 3, 10 on 9, 7 on 6, 4 on 5), guards the three zones (5, 6, 8) and the goal; nobody's place
+   * names runner 8, and the two men outside the scene stand far from it.
+   */
+  function shortCorner(edge: Point = SHAPE_CONFIG.setPiece.edge) {
+    const SP = SHAPE_CONFIG.setPiece;
+    const s = scene(['possession', 'balanced'], 5, SP.box[4]);
+    const [att, def] = s.players;
+    const spots = [2, 3, 9, 6, 5].map((idx, k) => ({ gp: att[idx]!, to: SP.box[k]! }));
+    const up = [...spots, { gp: att[8]!, to: edge }];
+    for (const { gp, to } of up) gp.pos = [to[0], to[1]];
+    put(s, 0, 4, [105, 67.5]); // the taker, at the corner flag
+    const marks = [
+      ...spots.map(({ gp, to }, k) => {
+        const marker = def[[3, 2, 10, 7, 4][k]!]!;
+        marker.pos = [to[0] + SP.mark, to[1]];
+        return { gp: marker, to: [marker.pos[0], marker.pos[1]] as [number, number], opponent: gp };
+      }),
+      ...[5, 6, 8].map((idx, k) => {
+        const zone = def[idx]!;
+        zone.pos = [SP.zonal[k]![0], SP.zonal[k]![1]];
+        return { gp: zone, to: [zone.pos[0], zone.pos[1]] as [number, number] };
+      }),
+    ];
+    put(s, 1, 0, [103, 39]);
+    put(s, 1, 1, [45, 20]);
+    put(s, 1, 9, [45.5, 43.4]);
+    // The kick: the runners hold their spots, the scene takes its jobs and 5 has the ball.
+    restartTaken(s, up, until(s));
+    defendSetPiece(s, { marks, keeper: def[0]! }, until(s));
+    takeBall(s, att[5]!, SP.box[4], 4);
+    return s;
+  }
+  type Marker = { idx: number; priority: string; since: number };
+  /** Who marks whom on the defending side: runner → his markers, with their priority and start. */
+  const markersOf = (s: GridState) => {
+    const out: Record<number, Marker[]> = {};
+    for (const gp of s.players[1])
+      if (gp.intention?.kind === 'mark') {
+        const { opponent, priority, since } = gp.intention;
+        (out[opponent!] ??= []).push({ idx: gp.idx, priority, since });
+      }
+    return out;
+  };
+
+  it("a corner marker keeps his runner when the kick's urgent pairing runs", () => {
+    const s = shortCorner();
+    const kick = s.elapsed;
+    const runner = s.players[0][8]!;
+    const marker = s.players[1][10]!;
+    // Runner 8 is nearer the man marking 9 than any other defender who could take him.
+    expect(gap(marker.pos, runner.pos)).toBeCloseTo(9.3, 6);
+    // The update that reads the kick meets the danger: 4's man has the ball, so 4 presses him.
+    updateIntentions(s);
+    expect(s.players[1][4]!.intention).toMatchObject({ kind: 'press', priority: 'danger' });
+    // Before T367 that update paired 8 with 10, a committed mark counting as free for an urgent
+    // one, and left 9 to the central zone's guard 2.3 s later. Now every scene marker keeps the
+    // runner his place names, from the kick on, and 8 gets the central zone's guard at once.
+    const committed = (idx: number): Marker[] => [{ idx, priority: 'committed', since: kick }];
+    const expected = {
+      2: committed(3),
+      3: committed(2),
+      9: committed(10),
+      6: committed(7),
+      8: [{ idx: 8, priority: 'danger', since: kick }],
+    };
+    expect(markersOf(s)).toEqual(expected);
+    expect(s.players[1][8]!.ended).toMatchObject({ kind: 'cover', reason: 'danger' });
+    // 2.3 s later, nobody having moved, the same men mark the same runners.
+    s.elapsed += 2.3;
+    updateIntentions(s);
+    expect(markersOf(s)).toEqual(expected);
+  });
+
+  it('an unmarked runner at the kick gets the nearest defender with no mark', () => {
+    const SP = SHAPE_CONFIG.setPiece;
+    /** The urgent marks: [runner, marker]. */
+    const urgent = (s: GridState) =>
+      Object.entries(markersOf(s)).flatMap(([foe, ms]) =>
+        ms.filter((m) => m.priority === 'danger').map((m) => [Number(foe), m.idx]),
+      );
+    // The nearest defender without a mark: the central zone's guard, though four markers and the
+    // other two zones' guards are within reach and four of the markers nearer.
+    const s = shortCorner();
+    const runner = s.players[0][8]!;
+    const d = (idx: number) => gap(s.players[1][idx]!.pos, runner.pos);
+    for (const idx of [10, 7, 2, 3]) expect(d(idx)).toBeLessThan(d(8));
+    for (const idx of [5, 6]) expect(d(idx)).toBeGreaterThan(d(8));
+    updateIntentions(s);
+    expect(urgent(s)).toEqual([[8, 8]]);
+    // A man of the shape with no job nearer than that guard takes him, and every zone is kept.
+    const free = shortCorner();
+    put(free, 1, 9, [SP.edge[0], SP.edge[1] - 12]);
+    updateIntentions(free);
+    expect(urgent(free)).toEqual([[8, 9]]);
+    for (const idx of [5, 6, 8])
+      expect(free.players[1][idx]!.intention).toMatchObject({
+        kind: 'cover',
+        priority: 'committed',
+      });
+    // With only markers within reach (the zones more than `mark.pick` m away) he stays unmarked:
+    // no marker leaves his man for him.
+    const far = shortCorner([80, 34]);
+    const reach = (idx: number) => gap(far.players[1][idx]!.pos, far.players[0][8]!.pos);
+    for (const idx of [10, 7, 2, 3])
+      expect(reach(idx)).toBeLessThanOrEqual(COORDINATION_CONFIG.mark.pick);
+    for (const idx of [5, 6, 8]) expect(reach(idx)).toBeGreaterThan(COORDINATION_CONFIG.mark.pick);
+    updateIntentions(far);
+    expect(urgent(far)).toEqual([]);
+    expect(markersOf(far)).toEqual({
+      2: [expect.objectContaining({ idx: 3, priority: 'committed' })],
+      3: [expect.objectContaining({ idx: 2, priority: 'committed' })],
+      9: [expect.objectContaining({ idx: 10, priority: 'committed' })],
+      6: [expect.objectContaining({ idx: 7, priority: 'committed' })],
+    });
   });
 
   it('possession starts more runs outside a break only past halfway, on the candidate model only', () => {
