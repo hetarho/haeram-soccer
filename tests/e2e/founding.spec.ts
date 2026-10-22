@@ -305,7 +305,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   const afterGuide = await exportWorld(page);
   expect(afterGuide).toEqual(before);
   await delegateSales(page);
-  await watchNext(page);
+  await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
