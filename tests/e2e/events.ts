@@ -140,6 +140,17 @@ export async function acknowledgeEvents(page: Page) {
   throw new Error('Too many pending events to acknowledge');
 }
 
+/**
+ * Reads a decision's result card and closes it. The card stays up to 8 s over the top of the view
+ * (tab bars, the market's info trigger), so a journey that goes on there closes it as a player would.
+ */
+export async function closeOutcome(page: Page, text: string) {
+  const outcome = page.getByTestId('action-outcome');
+  await expect(outcome).toContainText(text);
+  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await expect(outcome).toHaveCount(0);
+}
+
 /** Keep unrelated match/navigation journeys from stopping on random incoming offers. */
 export async function setResponsibility(page: Page, label: string, value: 'direct' | 'delegated') {
   await page.getByTestId('intervention-trigger').click();

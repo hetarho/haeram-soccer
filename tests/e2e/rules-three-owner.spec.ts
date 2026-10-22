@@ -1,5 +1,6 @@
 import { marketInfo, closeMarketPanel } from './market';
 import { chooseOption } from './select';
+import { closeOutcome } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import { combinedCareerFixture, exportedCareer } from './career-fixtures';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -46,6 +47,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
     .click();
   await expect(sheet).toHaveCount(0);
   await closeMarketPanel(page, '영입 정보');
+  await closeOutcome(page, '방향을 정했어요');
   await page.getByTestId('intervention-trigger').click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
   await chooseOption(

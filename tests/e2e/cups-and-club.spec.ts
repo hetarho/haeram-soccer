@@ -1,6 +1,6 @@
 import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
-import { chooseLevel, setResponsibility } from './events';
+import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { horizontalOverflow } from './layout';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
@@ -66,6 +66,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByRole('button', { name: /이적 상태 · 이적 명단 · 바꾸기$/ })).toHaveCount(
       1,
     );
+    await closeOutcome(page, '선수의 이적 상태를 바꿨어요');
     await open.first().click();
     await page
       .getByRole('dialog', { name: '이적 상태' })
@@ -75,6 +76,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       1,
     );
     await expect(open).toHaveCount(total - 2);
+    await closeOutcome(page, '선수의 이적 상태를 바꿨어요');
     expect(await horizontalOverflow(page)).toBe(0);
 
     // Below level 3 the owner hires coaches himself; 코치진 names the 코치 기조 the staff would
@@ -115,6 +117,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByRole('dialog', { name: '스태프 운영 방침', exact: true })).toHaveCount(
       0,
     );
+    await closeOutcome(page, '방향을 바꿨어요');
     await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
     await tab('스태프').click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();

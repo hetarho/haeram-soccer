@@ -16,7 +16,7 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
-import { acknowledgeEvents, setResponsibility } from './events';
+import { acknowledgeEvents, closeOutcome, setResponsibility } from './events';
 import { continueSlot } from './slots';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 
@@ -333,6 +333,7 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await expect(academy.getByRole('listitem')).toHaveCount(1);
   await expect(academy).toContainText(prospect.name);
   await academy.getByRole('button', { name: `${prospect.name} 1군 승격`, exact: true }).click();
+  await closeOutcome(page, '유소년을 1군으로 올렸어요');
   await expect(academy.getByRole('listitem')).toHaveCount(0);
   await expect(academy).toContainText('아직 아카데미 선수가 없어요');
   await expect(page.getByRole('region', { name: '승격한 선수 관리' })).toContainText(prospect.name);

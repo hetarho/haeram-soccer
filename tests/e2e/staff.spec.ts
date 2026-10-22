@@ -8,7 +8,7 @@ import {
 import { legacySettings } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { chooseLevel, setResponsibility, acknowledgeEvents } from './events';
+import { chooseLevel, setResponsibility, acknowledgeEvents, closeOutcome } from './events';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 
@@ -27,14 +27,6 @@ const tab = (page: Page, name: string) =>
 /** 사람 from the tab bar or the sidebar; it opens on 선수. */
 const openPeople = (page: Page) =>
   page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-
-/** Reads a decision's result card and closes it, so it no longer covers the tab bar. */
-async function closeOutcome(page: Page, text: string) {
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toContainText(text);
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
-  await expect(outcome).toHaveCount(0);
-}
 
 /** The free agents' list inside the manager market. */
 const freeAgents = (market: Locator) =>
@@ -162,6 +154,7 @@ test.describe('사람 at 360x740', () => {
     expect(await horizontalOverflow(page)).toBe(0);
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
+    await closeOutcome(page, '방향을 바꿨어요');
     await openPeople(page);
     await tab(page, '감독').click();
     await expect(post.getByRole('button', { name: /^선호 학파 · 게겐프레싱/ })).toBeVisible();
