@@ -75,6 +75,12 @@ export const VARIANTS: Record<string, SlotSpec[]> = {
   mezzala: swap({ 7: ['CM', 'mezzala'] }),
   // Screen behind, a mezzala and the box-to-box ahead.
   screenMezzala: swap({ 6: ['DM', 'anchor'], 7: ['CM', 'mezzala'] }),
+  // screenMezzala with a second runner instead of the target man (twoRunners' change).
+  screenMezzalaRunners: swap({
+    6: ['DM', 'anchor'],
+    7: ['CM', 'mezzala'],
+    9: ['ST', 'completeForward'],
+  }),
   screenB2B: swap({ 6: ['CM', 'boxToBox'], 7: ['DM', 'anchor'] }),
   widePlaymakers: swap({ 5: ['LM', 'widePlaymaker'], 8: ['RM', 'widePlaymaker'] }),
   // A ball-winning screen, a wide playmaker cutting in on the right and two runners up front.
