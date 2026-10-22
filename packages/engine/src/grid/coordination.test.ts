@@ -8,6 +8,7 @@ import {
   type CoordinationPlan,
 } from './coordination';
 import { combination } from './decide';
+import { playGrid } from './engine';
 import {
   applyCoordination,
   defendSetPiece,
@@ -557,5 +558,44 @@ describe('grid coordination', () => {
     updateIntentions(s);
     expect(marked()).not.toContain(gone);
     expect(marked().every(onPitch)).toBe(true);
+  });
+
+  it('possession starts more runs outside a break only past halfway, on the candidate model only', () => {
+    const SR = COORDINATION_CONFIG.settledRuns as { odds: Partial<Record<Tactic, number>> };
+    const odds = SR.odds.possession!;
+    expect(odds).toBeGreaterThan(1);
+    expect(COORDINATION_CONFIG.settledRuns.from).toBe(4);
+    /** Runs `tactic`'s side starts over 300 planning moments with the ball at `x` (no regain). */
+    const runs = (tactic: Tactic, x: number, settled: number) => {
+      SR.odds[tactic] = settled;
+      try {
+        const s = scene([tactic, 'balanced'], 7, [x, 34]);
+        let n = 0;
+        for (let k = 0; k < 300; k++) {
+          s.elapsed = 600 + k * 0.7;
+          for (const gp of s.players[0]) gp.intention = gp.run = undefined;
+          n += jobsOf(planCoordination(s, false), 'run').length;
+        }
+        return n;
+      } finally {
+        if (tactic === 'possession') SR.odds.possession = odds;
+        else delete SR.odds[tactic];
+      }
+    };
+    // Past halfway (band 4) possession starts more runs at its odds than at 1; in its own half
+    // (band 3, 35–52.5 m) the same, draw for draw.
+    expect(runs('possession', 62, odds)).toBeGreaterThan(runs('possession', 62, 1) * 1.5);
+    expect(runs('possession', 45, odds)).toBe(runs('possession', 45, 1));
+    // Only possession is listed: the other tactics' settled runs are as they were.
+    expect(Object.keys(SR.odds)).toEqual(['possession']);
+    // The pre-feature model never plans coordination, so its matches do not read the odds.
+    const record = () => playGrid(gridKit(['possession', 'balanced'], 'settled-runs').setup).record;
+    const before = record();
+    SR.odds.possession = 1;
+    try {
+      expect(record()).toEqual(before);
+    } finally {
+      SR.odds.possession = odds;
+    }
   });
 });

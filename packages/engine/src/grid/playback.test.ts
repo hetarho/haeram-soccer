@@ -267,11 +267,11 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-7` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-2` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
-    // `candidate-et-4`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-7']) {
-      const extraTime = id === 'candidate-et-7';
+    // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-2']) {
+      const extraTime = id === 'candidate-et-2';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -422,10 +422,13 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
   });
 
   it('defensive placement is not discarded before its job ends', () => {
-    const ids = (side: 0 | 1) => watched.setup.rosters[side].map((p) => p.id);
+    // T365: `candidate-1` no longer completes a delivery against a full set of six jobs since the
+    // side share and possession's runs, so the check reads `set-piece-2`.
+    const played = match('set-piece-2');
+    const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
     let shown = 0,
       kept = 0;
-    for (const { e, next, prepared, since, window } of deliveries(watched)) {
+    for (const { e, next, prepared, since, window } of deliveries(played)) {
       const att = e.side;
       const def = att === 0 ? 1 : 0;
       // The engine's set-piece jobs of the defending side as the delivery lands.
@@ -463,10 +466,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     expect(kept).toBeGreaterThan(0);
     expect(shown).toBeGreaterThan(50);
     // Repeated same-seed runs reproduce exactly.
-    const again = watch('candidate-1', true);
-    expect(deliveries(again).map((d) => d.window)).toEqual(
-      deliveries(watched).map((d) => d.window),
-    );
+    const again = watch('set-piece-2', true);
+    expect(deliveries(again).map((d) => d.window)).toEqual(deliveries(played).map((d) => d.window));
     // The pre-feature path keeps its own set pieces: no intentions are traced there (its settled
     // facts are guarded by grid-throughput's pre-feature digests).
     expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);

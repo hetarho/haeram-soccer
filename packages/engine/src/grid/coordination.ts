@@ -74,6 +74,13 @@ export const COORDINATION_CONFIG = {
    * `odds` times as often and from any band, so a counter side's runners go in behind at once.
    */
   transition: { seconds: 8, odds: { counter: 2.5 } as Partial<Record<Tactic, number>> },
+  /**
+   * Outside a break, with the ball from band `from` on (past halfway), a listed side's outfielders
+   * start their runs `odds` times as often (T356, T357, T365, →MATCH-8): possession's patient
+   * build-up still sends runners in behind and into the box once it is in the other half, while
+   * its own half keeps the short options that hold press's high regains back.
+   */
+  settledRuns: { odds: { possession: 2.5 } as Partial<Record<Tactic, number>>, from: 4 },
 } as const;
 
 /** Roles that cover a pressing teammate first: their distance counts divided by this. */
@@ -465,9 +472,14 @@ function attack(
       : 1;
   const ctx = runContext(s, side);
   if (ctx.band < 3 && breaking === 1) return;
+  // Settled play past halfway: the side's listed odds for its outfielders' runs (T365).
+  const SR = CC.settledRuns;
+  const settled = breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
   const plans = mates.flatMap((gp) => {
     if (!available(gp) || retrying(s, gp, 'run')) return [];
-    const timing = CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions');
+    const timing =
+      (CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions')) *
+      (settled !== 1 && lineOf(slotOf(s, gp).position) !== 'GK' ? settled : 1);
     // The stream is named on its first draw: a role that makes no run here draws nothing.
     let r: (() => number) | undefined;
     const p = runPlan(

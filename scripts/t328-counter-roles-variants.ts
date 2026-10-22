@@ -213,6 +213,13 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // `{ shot: { candidate: { side: 0 | 0.5 } } }`, `scale16` = `{ strength: { candidate: {
   // skillScale: 1.6 } } }`, and `possRunsHalf25` as above, alone and joined with `+`. Removed
   // since: none was kept (docs/CALIBRATION.md, T357).
+  // T365 adopts T357's validated pair, side 0.8 with possession's runs ×2.5 from band 4, as the
+  // shared candidate config (`STRENGTH_CONFIG.candidate.side`, `COORDINATION_CONFIG.settledRuns`),
+  // so `side80+possRunsHalf25` is the base now and `t345` plays T345's setting again.
+  t345: {
+    strength: { candidate: { side: 1 } },
+    coordination: { settledRuns: { odds: { possession: 1 } } },
+  },
 };
 
 function possession(p: object): BehaviourPatch {
