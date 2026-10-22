@@ -373,7 +373,7 @@ A corner, or a free kick crossed into the box, keeps both sides' jobs through th
 
 The lifecycle now (`prepareOnClock` in `movement.ts`, `defendSetPiece` in `intentions.ts`, `guardPoint` in `shape.ts`):
 
-- **Preparation.** Unchanged: the taker and the scene walk to their places on the clock as `restart` intentions; the keeper keeps his shape place (§4.3).
+- **Preparation.** Unchanged: the taker and the scene walk to their places on the clock as `restart` intentions; the keeper keeps his shape place (§4.3). An observed match records every slot at the kick, as `restartTaken` is about to run (`TraceEntry.kick`, §10.1, T359). Playback draws the walk-in ending there and the delivery starting there, and the preparation's samples show the restart's places.
 - **The kick.** `restartTaken` ends every restart place (`arrival`) and holds `scene.up` on its box spots as committed runs until the kick + `setPiece.stay` (8 s). `defendSetPiece` gives the defending scene committed jobs to the same end:
   - each man-marker marks the attacker his place names, `markGoalSide` (1.5) m goal-side of him wherever he goes;
   - each zonal or edge defender guards his spot (a `cover` with a `zone`): on it, or goal-side of the opponent nearest it within `setPiece.zone` (3) m. Meeting a runner in his zone is no marking assignment: the runner keeps his one marker;
@@ -384,7 +384,6 @@ The lifecycle now (`prepareOnClock` in `movement.ts`, `defendSetPiece` in `inten
 Limits:
 
 - **Default path.** The pre-feature path is unchanged: grid-throughput's pre-feature facts digests are identical. Settled and queued matches, and every career until the full model activates prospectively (SAVE-23), keep the released defensive placement (`holdSetPiece`, then `moveAll(s, 8)`). No settled match is replayed.
-- **Playback sampling.** Candidate playback draws every player but the actor in straight lines between trace snapshots (T275's limit). A restart's preparation and delivery lie between the snapshot before the dead ball and the delivery's entry, so the scene's walk-in is drawn as one straight move that ends as the delivery lands. Samples during a restart's preparation also show the previous entry's intentions. A snapshot at the kick or traced interruptions need `trace.ts` and `playback.ts` work.
 
 Measured after the change (c2f5aa9 with T348):
 
@@ -846,10 +845,13 @@ When `observe` is set, `trace.ts` appends one `TraceEntry` per action and restar
   knots?: { kind, at /* elapsed s */, ball }[] /* candidate model: retrieve, place, kick, touch, receive, arrive, carry, tackle */,
   transition?: 'period' | 'entry' | 'exit' /* candidate model: start whistle, substitution (entry point in `to`), injury or sending-off */,
   intentions?: (Intention | EndedIntention | null)[] /* candidate model, by slot like `slots`: the intention held (its target is the slot's `targets`), else one that ended since the last entry (§4.5) */,
-  left?: EndedIntention /* candidate model, on an exit or entry: the leaver's ended intention and why he left (substitution, injury, dismissal) */ }
+  left?: EndedIntention /* candidate model, on an exit or entry: the leaver's ended intention and why he left (substitution, injury, dismissal) */,
+  kick?: { elapsed, positions, slots, targets, states, intentions? } /* candidate model, on a restart prepared on the clock: every slot at its kick (T359) */ }
 ```
 
 On the candidate model a slot's `targets` is its intention's target, the one its movement used, and its `states` come from the intention's kind: support and receive show as `support`, cover as `mark`, restart as `shape`, exit as `recover`; the others keep their own name. Only press intentions press there.
+
+A restart's entry comes after its delivery. On the candidate model `prepareOnClock` hands the observed match's `Tracer.kick` the state at the kick, after the walk-in and before `restartTaken` ends the places (T359), and that entry carries it as `kick`. Its intentions are the restart's places. An ended intention it shows does not count as traced there, so the entry still shows it. Recording it reads the state only: no draw, stream or play arithmetic changes, so every facts digest is unchanged. Period kick-offs and the pre-feature path record none. Playback (§10.2) moves every player but the actor from the snapshot before the dead ball to the kick, then on to the entry. It always draws a sample at the kick, and the taker stands on the spot by then. A sample during the preparation shows the kick's targets, states and intentions; one during the delivery shows the entry's, whose jobs start at the kick. A trace without `kick` (older traces) plays exactly as before: one straight move from the dead ball to the restart's entry, showing the previous entry's intentions.
 
 ### 10.2 Frames
 

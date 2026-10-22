@@ -10,7 +10,9 @@
  * other hosts' (T345: darwin-arm64; T348's set-piece defence, whose defenders keep their jobs after
  * the kick: darwin-arm64 again, every candidate value changed but the 1975 and 2024 league
  * fixtures' facts, the pre-feature facts did not), together with the calibration evidence, never
- * alone. On every
+ * alone. A presentation-only change re-records positions alone: T359's restart kick snapshot
+ * (darwin-arm64; every facts digest unchanged, the trace's other fields and the frames of a trace
+ * without kicks byte-identical to before). On every
  * host each fixture replays bit for bit, the observed league fixture's facts equal the unobserved
  * one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. Portable outcome-critical
  * math is a separate ARCH-9 task. No wall-clock assertion here; the timings live in
@@ -93,7 +95,8 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
         shootout: 'c16f0a0a7ed7b58a',
         preFeature: 'a2e559aea64a91e7',
       },
-      positions: { observed: '4d7573d60f7b864e', shootout: 'e4f41e13f37075d2' },
+      // T359 (kick snapshot): 4d7573d60f7b864e and e4f41e13f37075d2 before.
+      positions: { observed: '70a75fe142ff2f7d', shootout: '22d751dd17b0fa0d' },
     },
     1995: {
       facts: {
@@ -102,7 +105,8 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
         shootout: 'fd24b6f51440b87c',
         preFeature: '0c7e06efbc8fd981',
       },
-      positions: { observed: 'dfb09059046d87b4', shootout: 'a4e627789a44199c' },
+      // T359 (kick snapshot): dfb09059046d87b4 and a4e627789a44199c before.
+      positions: { observed: '1c57051abec6e044', shootout: 'e42847d0748465d3' },
     },
     2024: {
       facts: {
@@ -111,7 +115,8 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
         shootout: '12dbc52079c43f4f',
         preFeature: 'a0e4479b22d2cfa6',
       },
-      positions: { observed: 'c4a8a6a41c12516a', shootout: 'f9ca7911fa173494' },
+      // T359 (kick snapshot): c4a8a6a41c12516a and f9ca7911fa173494 before.
+      positions: { observed: '99c6c9e68e8ce31b', shootout: 'ee0eb1581ac782b3' },
     },
   },
 };
