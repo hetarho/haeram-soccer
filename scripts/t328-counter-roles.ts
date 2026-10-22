@@ -217,7 +217,8 @@ function playJob(job: Job) {
   const slim = samples.map((s) =>
     c.family === 'gap'
       ? {
-          record: { score: s.record.regulation ?? s.record.score },
+          // T345: the clubs' own tactics too, so the curve reads by underdog and favourite tactic.
+          record: { score: s.record.regulation ?? s.record.score, tactics: s.record.tactics },
           incidentsTracked: true,
           condition: s.condition,
           gap: s.gap,
@@ -287,9 +288,12 @@ if (args.includes('--child')) {
     }
   if (core > 0) conditions.push({ id: 'core:equal-top-tier', count: core, trace: 0 });
   const gap = Number(opt('gap', '0'));
+  // `--gaps -10,-5` narrows `--gap` to those buckets (T345).
+  const gaps = opt('gaps', '').split(',').filter(Boolean);
   if (gap > 0)
     for (const c of CORPUS_CONFIG.conditions)
-      if (c.family === 'gap') conditions.push({ id: c.id, count: gap, trace: 0 });
+      if (c.family === 'gap' && (!gaps.length || gaps.includes(c.id.slice('gap:'.length))))
+        conditions.push({ id: c.id, count: gap, trace: 0 });
   const queue: Job[] = conditions.flatMap((c) =>
     Array.from({ length: Math.ceil(c.count / chunk) }, (_, k) => ({
       condition: c.id,

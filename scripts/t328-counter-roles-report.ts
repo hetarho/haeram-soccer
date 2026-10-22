@@ -118,6 +118,33 @@ if (pairing.length) {
       .map(([k, [p, n]]) => `${k} ${(p / n).toFixed(2)}`)
       .join(', ')}`,
   );
+  // T345: each tactic's goals, xG and shots for and against a match, mirror pairings left out.
+  const forAgainst: Record<string, number[]> = {};
+  for (const s of pairing) {
+    const [h, a] = s.record.tactics;
+    if (h === a) continue;
+    const sc = s.record.regulation ?? s.record.score;
+    const goals = [sc.home, sc.away];
+    for (const sd of [0, 1] as const) {
+      const t = (forAgainst[s.record.tactics[sd]] ??= [0, 0, 0, 0, 0, 0, 0]);
+      const op = (1 - sd) as 0 | 1;
+      t[0] += goals[sd]!;
+      t[1] += goals[op]!;
+      t[2] += s.record.xg?.[sd] ?? 0;
+      t[3] += s.record.xg?.[op] ?? 0;
+      t[4] += s.record.metrics[sd]![M.shots]!;
+      t[5] += s.record.metrics[op]![M.shots]!;
+      t[6]++;
+    }
+  }
+  console.log(
+    `  for–against a match (goals, xG, shots): ${Object.entries(forAgainst)
+      .map(
+        ([t, x]) =>
+          `${t} ${(x[0]! / x[6]!).toFixed(2)}–${(x[1]! / x[6]!).toFixed(2)}, ${(x[2]! / x[6]!).toFixed(2)}–${(x[3]! / x[6]!).toFixed(2)}, ${(x[4]! / x[6]!).toFixed(1)}–${(x[5]! / x[6]!).toFixed(1)}`,
+      )
+      .join('; ')}`,
+  );
   // Possession by pass share (MATCH-3 r19): the same ordering over attempted passes.
   const byPasses = pairing.map((s) => {
     const metrics = s.record.metrics.map((m) => {
@@ -165,6 +192,27 @@ if (gapSamples.length) {
     console.log(
       `  gap ${String(r.bucket).padStart(3)} (${r.matches}, mean ${r.meanGap.toFixed(1)}): W/D/L ${(100 * r.observed.homeWin).toFixed(1)}/${(100 * r.observed.draw).toFixed(1)}/${(100 * r.observed.awayWin).toFixed(1)} v ${(100 * r.target.homeWin).toFixed(1)}/${(100 * r.target.draw).toFixed(1)}/${(100 * r.target.awayWin).toFixed(1)}, error ${(100 * r.error).toFixed(1)}`,
     );
+  // T345: the home side's W/D/L in the underdog buckets by its own and by the away side's tactic.
+  for (const bucket of ['-10', '-5', '0']) {
+    const inBucket = gapSamples.filter((s) => s.condition === `gap:${bucket}` && s.record.tactics);
+    if (!inBucket.length) continue;
+    const by = (sd: 0 | 1) => {
+      const t: Record<string, number[]> = {};
+      for (const s of inBucket) {
+        const x = (t[s.record.tactics[sd]] ??= [0, 0, 0]);
+        const sc = s.record.score;
+        x[sc.home > sc.away ? 0 : sc.home === sc.away ? 1 : 2]!++;
+      }
+      return Object.entries(t)
+        .sort()
+        .map(([k, x]) => {
+          const n = x[0]! + x[1]! + x[2]!;
+          return `${k} ${n}: ${((100 * x[0]!) / n).toFixed(0)}/${((100 * x[1]!) / n).toFixed(0)}/${((100 * x[2]!) / n).toFixed(0)}`;
+        })
+        .join(', ');
+    };
+    console.log(`  gap ${bucket} home W/D/L by home tactic: ${by(0)}; by away tactic: ${by(1)}`);
+  }
 }
 
 // The counter side's readings in its pairing against press, and over every pairing.

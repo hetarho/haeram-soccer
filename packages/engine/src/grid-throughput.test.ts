@@ -4,7 +4,9 @@
  * draw. The digests were recorded on e3aa9b9, before any optimisation, and re-recorded on 6f46b55
  * (main with T336's counter behaviour, before T325's commits) when T325 was merged over it: main's
  * own code gave every digest below on darwin-arm64 and the merged tree plays them unchanged. All
- * these fixtures are press against press, so T336 changed none of them. A change that alters
+ * these fixtures are press against press, so T336 changed none of them. T345's candidate score
+ * state (a lead protected, a deficit chased) changes every candidate match, so its merge over
+ * T325 re-recorded the candidate digests with its calibration artifact. A change that alters
  * football outcomes refreshes them together with the calibration evidence, never alone. No
  * wall-clock assertion here; the timings live in scripts/match-model-baseline.ts and
  * docs/benchmarks/full-model-throughput.json.
@@ -56,45 +58,52 @@ const facts = (p: ReturnType<typeof play>) => {
 
 /**
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
- * decided on penalties (fixture IDs found by scanning `knockout-<year>-<i>` on e3aa9b9; they still
- * end that way on 6f46b55), and the pre-feature path for one league fixture.
+ * decided on penalties (fixture IDs found by scanning `knockout-<year>-<i>` on e3aa9b9, they still
+ * ended that way on 6f46b55; rescanned for T345's score state, which settles the earlier ties
+ * otherwise: 1975 shoot-out 7 → 4, 1995 extra time 7 → 1 and shoot-out 2 → 16, 2024 extra time
+ * 6 → 9 and shoot-out 0 → 5, the first of each kind), and the pre-feature path for one league
+ * fixture.
  */
 const CASES = {
-  1975: { extraTime: 20, shootout: 7 },
-  1995: { extraTime: 7, shootout: 2 },
-  2024: { extraTime: 6, shootout: 0 },
+  1975: { extraTime: 20, shootout: 4 },
+  1995: { extraTime: 1, shootout: 16 },
+  2024: { extraTime: 9, shootout: 5 },
 } as const;
 
 type Facts = Record<'league' | 'observed' | 'extraTime' | 'shootout' | 'preFeature', string>;
 
 /**
- * Three observed fixtures digest differently by host for the same source (observed traces and
- * frames keep every position to the last bit; the unobserved records agree): e3aa9b9 gave the
- * first value on linux-x64 under Node 24.22.1 (`.node-version`, as CI), and e3aa9b9 and 6f46b55
- * both give the second on darwin-arm64 under Node 25.2.1 and 26.8.1. T336 does not reach these
- * press-against-press fixtures, so 6f46b55 gives the first value on linux-x64 too. Either host's
- * value is accepted; a change of football gives neither.
+ * Three observed fixtures digested differently by host for the same source (observed traces and
+ * frames keep every position to the last bit; the unobserved records agree): e3aa9b9 and 6f46b55
+ * gave the first value on linux-x64 under Node 24.22.1 (`.node-version`, as CI) and the second on
+ * darwin-arm64 under Node 25.2.1 and 26.8.1. The split follows the host (OS/CPU), not the Node
+ * major: b83c432 gives the darwin value for all three on darwin-arm64 under Node 24.18.0 too.
+ * T345's candidate score state changed every candidate digest (the pre-feature ones are
+ * unchanged); its values were recorded on darwin-arm64 (Node 26.8.1) only, so the three
+ * host-split slots hold `PENDING_LINUX_DIGEST` until CI's linux-x64 value (printed in the failure
+ * message) replaces it, and a host split on another observed fixture would show the same way.
+ * Either host's value is accepted; a change of football gives neither.
  */
 const BEFORE: Record<keyof typeof CASES, Record<keyof Facts, string | readonly string[]>> = {
   1975: {
-    league: '551e4f45e8542cbe',
-    observed: '8b553ee66fe786fe',
-    extraTime: '8224f58b3799e273',
-    shootout: '9429113be72e1633',
+    league: 'dc173dd75251a820',
+    observed: '0582021706815ebc',
+    extraTime: 'ef2ef22ffa9c9240',
+    shootout: 'e3b7532c3e6e6ed8',
     preFeature: '4bdd7062aee72859',
   },
   1995: {
-    league: 'eedeab011a97cebd',
-    observed: ['cf3a9a8e56aeef95', '4be8b10f70bbedde'],
-    extraTime: 'e2821dfdd835e112',
-    shootout: ['bdb3afe1f3832652', 'a74e72dc248bef35'],
+    league: 'fdda2f2b1a9e4d58',
+    observed: ['PENDING_LINUX_DIGEST', 'ce88af628923bd86'],
+    extraTime: '32ba863cca86aebd',
+    shootout: ['PENDING_LINUX_DIGEST', '3199a2424f744e11'],
     preFeature: '4b65b95690811a83',
   },
   2024: {
-    league: 'a52e12ad7fd7dded',
-    observed: '5358a04f778da3ec',
-    extraTime: '0d45034944eeaf27',
-    shootout: ['459616582da16f2a', '0a9e068b0dfa528f'],
+    league: 'fa2be45a00d596d8',
+    observed: 'ef53f2e9b1609b5d',
+    extraTime: '932e19a396c7bec7',
+    shootout: ['PENDING_LINUX_DIGEST', 'b8ebf58ac219eacc'],
     preFeature: 'dead4d8f2df6fcec',
   },
 };
@@ -132,7 +141,11 @@ describe('detailed engine throughput (T325)', () => {
         shootout: facts(pens),
         preFeature: facts(old),
       };
-      expect(got).toEqual(expected(BEFORE[year], got));
+      // The failure message names the host and every digest it got, so a CI log shows the values.
+      expect(
+        got,
+        `${year} digests on ${process.platform}-${process.arch} Node ${process.version}: ${JSON.stringify(got)}`,
+      ).toEqual(expected(BEFORE[year], got));
     });
   }
 

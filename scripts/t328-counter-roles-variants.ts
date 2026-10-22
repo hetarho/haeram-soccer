@@ -134,7 +134,41 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   pressHigh: { shape: { candidate: { tactic: { press: { defend: 7, line: [32, 60] } } } } },
   // (e) Balanced's block against counter's settled play: a lower line top and a deeper block.
   balLow: { shape: { candidate: { tactic: { balanced: { defend: -7, line: [24, 43] } } } } },
+  // T345 levers from T336's kept setting (every match these scripts play is on the candidate
+  // model, so a patch of a shared setting reads as a candidate-only change). (a) Possession's
+  // chance quality from settled play: shooting from the box edge like the others (`shotBand5`
+  // 0.8 → 1), fewer passes against carrying on and shooting. A final-third rule (forward balls
+  // into the box, fewer back and lateral passes past 65–70 m) and more runs outside a break were
+  // measured at d7ab8c8 through neutral hooks (`direct.settled.possession` with `from`,
+  // `COORDINATION_CONFIG.settledRuns`), since removed.
+  possEdge: possession({ shotBand5: 1 }),
+  possEdgeTake: possession({ shotBand5: 1, takeOn: 1 }),
+  possPass1: possession({ pass: 1 }),
+  // (b) Possession's rest defence after a loss: a longer counter-press reach, or a deeper block.
+  possCP24: possessionShape({ counterPress: 24 }),
+  possCP12: possessionShape({ counterPress: 12 }),
+  possDeep: possessionShape({ defend: -4 }),
+  // (c) T334's and T336's counter changes one at a time, for the gap −10 underdog.
+  noSettled: settled(0, 0, 1, 1, 1),
+  line22: counterShape({ line: [22, 42] }),
+  follow: counterShape({ upfield: 0.3 }),
+  // (c) The score state, every tactic: a leading side shoots less and a trailing one pushes more,
+  // so more matches come back to a draw and fewer favourites run away with them. Kept: the
+  // candidate's own `leadingShot` 0.5 and `trailingPush` 1.6 are the shared config since, so
+  // `scoreFx` is now a no-op and `t336` undoes it.
+  scoreFx: { decide: { candidate: { leadingShot: 0.5, trailingPush: 1.6 } } },
+  t336: { decide: { candidate: { leadingShot: 0.6, trailingPush: 1.4 } } },
+  // (d) Balanced's block for its xG conceded: the pre-T321 counter-press reach, a tighter block.
+  balCP8: { shape: { candidate: { tactic: { balanced: { counterPress: 8 } } } } },
+  balTight: { shape: { candidate: { tactic: { balanced: { compact: 0.41 } } } } },
 };
+
+function possession(p: object): BehaviourPatch {
+  return { decide: { tactic: { possession: p } } };
+}
+function possessionShape(p: object): BehaviourPatch {
+  return { shape: { candidate: { tactic: { possession: p } } } };
+}
 
 function merge(target: Record<string, unknown>, patch: Record<string, unknown>): void {
   for (const [k, v] of Object.entries(patch)) {
