@@ -34,6 +34,8 @@
 - 261023 decided T323 T368 MATCH-18: the grid's offside follows MATCH-18 at the pass with runners holding an onside line until it is played (T323's option a, task T368) → MATCH-18 already states that rule and a runner's 판단력 timing his run, while the grid pardons 97% of receivers beyond the line, which inflates through balls, entries and xT; no SSOT change (alt: count through balls by the decision's lead pass, which hides the defect | accept the miss via update-ssot on MATCH-30)
 - 261023 decided T323 T368 T369 T370 T371 T372: T323's residuals become T368 (offside and runs) and T369 (aggregate box arrivals and finishing) side by side with T367, then T370 (grid chances, carries, pressing) → T371 (restart and finishing rows, balanced's block), and T372 re-measures both references and parity at the pilot size before T286; T326 waits for T369 so it times the final aggregate (alt: one large grid task | parity before the follow-ups)
 - 261023 decided T323: its aggregate recalibration is kept though the MATCH-2 curve rose 1.58 → 1.74 at 8,000 a bucket without a paired interval → both stay under 2.5 and every band, core and MATCH-29 row held or improved; T369 measures the curve with a paired interval (alt: revert the shot and xG settings)
+- 261023 decided T367 T373: the kick's update pressing a set-piece taker who has delivered (311 of 445 urgent presses at a kick, 219 by man-markers leaving a held runner) becomes candidate-only task T373, beside T368 and before T370 → removing the false carrier fixes the cause, where widening T367's taken-mark rule to the press would still send someone after the taker (alt: the press also counts committed marks as taken | leave it)
+- 261023 decided T367: its paired check used validation round 44 and left `detailed-model-calibration.json` for T368 to refresh after merging → two rows moved inside → insufficient with paired intervals including zero, four came inside, none inside → outside (alt: refresh the artifact now)
 - 261022 decided T325 T345: session q8m5 runs T325's merge and T345 side by side with session subagents in their own worktrees, as k2r7 did for T327/T328 (both explore, so no work group); main pushed once at the end (alt: one after the other)
 - 261022 decided T345 T356 MATCH-29: possession's rows (still outside after T345: points −0.205, about 10 shots a match against 13) go to explore T356 — runs outside a break (T345's lever a′, the only one that moved them) with a guard on press's high-regain lead, then possession's 4-3-3 role table if that fails → it is the one lever with a clear effect, and the bands stay as they are (alt: role table first | accept a known miss, which needs update-ssot on MATCH-29)
 - 261022 decided T345 T357 MATCH-2: the curve above 2.5 (2.79 pooled) and the gap −10 underdog (wins 13–15% against 18% under every tactic) go to explore T357 on the strength gradient, after T356 → T345 found it is not a tactic effect; MATCH-2's form draw, gap formula and home points stay rules (alt: fold it into T323 | accept the curve error)
@@ -232,15 +234,15 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 T369 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T367 | Keep a set-piece marker on his runner when the kick's urgent pairing runs | MATCH ARCH | T323 T366 | doing@261023.q8m5 |
+| T373 | Stop the kick's update from pressing a set-piece taker who has already delivered | MATCH ARCH | T367 | doing@261023.q8m5 |
 | T368 | Judge grid offside at the pass and let runners hold the line until it is played | MATCH ARCH | T323 | doing@261023.q8m5 |
 | T369 | Bring the aggregate's box arrivals, xT, cut-backs and finishing spread inside their targets | MATCH ARCH | T323 | doing@261023.q8m5 |
-| T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 | todo |
+| T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 | todo |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
 
@@ -260,6 +262,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T367 done (q8m5): the kick's urgent pairing skips committed set-piece marks, so markers keep their runners (urgent marks to man-markers 55/56 → 0/57 in 96 matches); facts digests unchanged, three positions digests re-recorded; round 44 MATCH-29 17/1/7 → 18/1/6, core 33 → 34, curve 1.87 → 1.91
+- 261023 create-task T373 (q8m5, from T367's question): the kick's update stops pressing a taker who has delivered; T370 and T286 wait for it
 - 261023 T323 done (q8m5; explore exit): aggregate MATCH-30 bands 6/13/2 → 18/3/0 (loose balls drawn per failed pass, passes, completion, through balls, carries, shot scale, xG), MATCH-23 core and MATCH-29 unchanged, curve 1.58 → 1.74; grid unchanged 5/15/1 (offside pardon found); parity at 8,000 a condition, no condition passes; both artifacts refreshed
 - 261023 create-task T368–T372 (q8m5, from T323's residuals): grid offside and runs, aggregate box arrivals and finishing, grid chances/carries/pressing, restart and finishing rows, parity at pilot size; T286 waits for all
 - 261023 T366 done (q8m5): playback drops no set-piece job; the check now reads one job definition on both sides over all four scene matches (100 samples, 265 jobs) plus a case for the kick's urgent jobs; no engine change, digests unchanged
@@ -278,5 +282,3 @@
 - 261023 T362 start (u4h2): publication batch exposed overlapping event/toast targets and a watch-helper date/report race; fix shared surfaces/helpers then resume the gate.
 - 261023 publish UI (u4h2) start: local UI T356/T358 renumbered T360/T361 to retain origin/main's engine T356/T358; integrate origin and run the ARCH-30 batch gate before push.
 - 261023 T361 done (u4h2): shared padded controls/choices, non-clipped transport status, distinct NEXT MATCH card and inset themed roster hover/focus with separate stance/profile actions. Policy/filter/segment/select/training controls aligned. 37 focused units, type/lint/format/build/spec and both-theme 320/360/390/760/1380px manual geometry/interaction checks pass; browser specs deferred.
-- 261023 fix e2e (q8m5): set-piece-defence.spec runs on Chromium only until T358 — main CI 39815064804 failed it on Firefox and WebKit because the page's own candidate run drifts from the Node (V8) reference under their Math functions; recruitment.spec:284 was flaky on WebKit there
-- 261023 fix engine (q8m5): a throw-in or dropped ball no longer goes to a teammate on the taker's own spot (`nearestFree` skipped no zero distance, so a zero-length pass made the ball and clock NaN; found by T356, 1 in 21,600 matches); `restarts.test.ts` case; digests unchanged
