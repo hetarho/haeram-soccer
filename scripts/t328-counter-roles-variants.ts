@@ -119,14 +119,18 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   line25: counterShape({ line: [25, 42] }),
   // T336 levers from T334's kept setting (settled75 + line24 in the shared config).
   // (a) The settled directness only up to this far up the pitch (attack frame, metres).
-  zone70: { decide: { direct: { settled: { counter: { upTo: 70 } } } } },
-  zone52: { decide: { direct: { settled: { counter: { upTo: 52.5 } } } } },
+  zone70: { decide: { direct: { settled: { counter: { upTo: 70, passUpTo: 70 } } } } },
+  zone52: { decide: { direct: { settled: { counter: { upTo: 52.5, passUpTo: 52.5 } } } } },
+  // (a) Only the pass weights stop at 70 m; the pass factor holds everywhere.
+  zone70w: { decide: { direct: { settled: { counter: { upTo: 70 } } } } },
   // (b) The settled pass factor against the forward and long weights.
   fwd15p85: settled(1.5, 0.25, 0.5, 0.35, 0.85),
   fwd05p75: settled(0.5, 0.5, 0.5, 0.35, 0.75),
   // (c) Without the ball counter's block follows a ball in the opponents' half less (0.3 = compact).
   drop15: counterShape({ upfield: 0.15 }),
   drop0: counterShape({ upfield: 0 }),
+  // (c) Only in the seconds after it lost the ball.
+  drop0loss6: counterShape({ upfield: 0, upfieldSeconds: 6 }),
   // (d) Press's pressing height: its block and line higher without the ball.
   pressHigh: { shape: { candidate: { tactic: { press: { defend: 7, line: [32, 60] } } } } },
   pressReach: { shape: { candidate: { tactic: { press: { press: 19 } } } } },

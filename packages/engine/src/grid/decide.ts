@@ -172,12 +172,21 @@ export const DECISION_CONFIG = {
      * `seconds` of a regain, or with no regain) it still plays forward or long rather than
      * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
      * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
-     * passes `pass` times as often against carrying on, while the carrier stands no further than
-     * `upTo` m up the pitch (T336; beyond it he plays as any side). Counter (T334): its pass share
+     * passes `pass` times as often against carrying on; the pass weights hold while the carrier
+     * stands no further than `upTo` m up the pitch, the pass factor no further than `passUpTo`
+     * (T336; beyond them he plays as any side). Counter (T334): its pass share
      * falls to the lowest of the four and it beats press through its play, not its roles.
      */
     settled: {
-      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 105 },
+      counter: {
+        forward: 1,
+        long: 0.5,
+        lateral: 0.5,
+        back: 0.35,
+        pass: 0.75,
+        upTo: 105,
+        passUpTo: 105,
+      },
     } as Partial<
       Record<
         Tactic,
@@ -188,6 +197,7 @@ export const DECISION_CONFIG = {
           back: number;
           pass: number;
           upTo: number;
+          passUpTo: number;
         }
       >
     >,
@@ -206,10 +216,10 @@ const breaking = (s: GridState, side: 0 | 1) =>
  * The candidate's settled-play rule for `side`'s carrier at `x` m up the pitch (its attack frame)
  * once its break has passed (T334), if its tactic has one that reaches that far (T336).
  */
-const settledOf = (s: GridState, side: 0 | 1, x: number) => {
+const settledOf = (s: GridState, side: 0 | 1, x: number, reach: 'upTo' | 'passUpTo') => {
   if (s.setup.model === undefined || breaking(s, side)) return undefined;
   const rule = DECISION_CONFIG.direct.settled[s.setup.tactics[side]];
-  return rule && x <= rule.upTo ? rule : undefined;
+  return rule && x <= rule[reach] ? rule : undefined;
 };
 
 /** The normalised action mix of the carrier. */
@@ -285,7 +295,7 @@ export function actionMix(
     if (tags.band === 5) mix.shot *= C.tactic.possession.shotBand5;
   }
   if (tactic === 'counter' && tags.phase === 'counter') mix.shot *= C.tactic.counter.shotInCounter;
-  const settled = settledOf(s, side, c[0]);
+  const settled = settledOf(s, side, c[0], 'passUpTo');
   if (settled) mix.pass *= settled.pass;
   if (
     tactic === 'press' &&
@@ -452,7 +462,7 @@ export function passOptions(
   const D = DECISION_CONFIG.direct;
   const direct = breaking(s, side) ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
   // Once the break has passed a listed side still goes forward or long (candidate, T334).
-  const settled = settledOf(s, side, c[0]);
+  const settled = settledOf(s, side, c[0], 'upTo');
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
