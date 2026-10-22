@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
+| g8s2 | hq-dev1-pve2-vm2 | pair | 2026-10-22T08:42Z | 2026-10-22T08:42Z | - |
 
 ## inbox
 - 261022 decided T325: start the bit-identical detailed-engine speed task now beside T336/T345 instead of after T323 (dep T323 → T334) → it does not change football, and a faster engine shortens every later calibration run; timing stays last in a quiet window and identity is re-proved on the merged tree (alt: keep it after T323)
@@ -182,6 +183,7 @@
 | club-identity-and-kits | converted@261019 |
 | match-continuity-and-performance | converted@261021 |
 | manager-achievements | converted@261021 |
+| set-piece-defence-and-goal-feedback | ready@261022 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -236,6 +238,8 @@
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 ideation set-piece-defence-and-goal-feedback ready: remaining tasks lack explicit corner-defence movement and goal feedback; add SSOT-backed follow-ups as requested.
+- 261022 ideation set-piece-defence-and-goal-feedback start (g8s2): standalone checkout assigned by the owner; inspect remaining coverage before adding work.
 - 261022 T347 done (t6p4): home/settings/navigation cleanup with all seven management views inspected; 51 focused units and 33 Chromium journeys verified, including seven focused fixes/rechecks; final build and loaded cups/records inspection pass; no commit/push.
 - 261022 T347 start (t6p4): owner requests a broad UI cleanup focused on home/settings and contrasting bottom navigation; WEB r123 consumes those decisions into one cohesive presentation task, with all seven management views inspected.
 - 261022 T346 done (t6p4): standard feedback drop shadows and inset edges; 27 focused units, static/resource/build checks and 360/390/1380px browser inspection pass; owner accepted the visual result and requested a broader UI cleanup next; no commit/push.
@@ -254,5 +258,3 @@
 - 261022 T342 start: WEB r119 defines darker textured standard background and distinct surface/control chroma; implement in pack resources without new UI layers.
 - 261022 T341 done: selected painted sports-comic set replaces all 92 standard facility images; optimized WebP, original source/prompt provenance, unchanged UI/icons/pixel pack. 24 focused cases and static/build/resource checks pass; all roles and three home sizes verified. Reviewed candidates removed; no commit/push.
 - 261022 T341 start: generate and integrate the complete painted standard set, with per-era/completed-stage distinctions and retained layout/icons; no push requested.
-- 261022 update-ssot WEB r118: apply selected painted sports-comic illustration style to the full standard facility set; preserve icons, UI layout and pixel resources.
-- 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
