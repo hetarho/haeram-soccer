@@ -62,11 +62,12 @@ export function computeTags(
   const opponents = s.players[foe]
     .filter(onPitch)
     .map((gp) => ({ gp, p: attackFrame(side, gp.pos) }));
+  const { hypot } = s.math;
   let pressure = 0,
     nearest = Infinity,
     nearGoalSide = false;
   for (const { p } of opponents) {
-    const d = Math.hypot(p[0] - c[0], p[1] - c[1]);
+    const d = hypot(p[0] - c[0], p[1] - c[1]);
     nearest = Math.min(nearest, d);
     if (d <= TAG_CONFIG.pressureRadius) pressure += p[0] > c[0] ? 1 : 0.5;
     if (d <= TAG_CONFIG.backToGoalRadius && p[0] > c[0]) nearGoalSide = true;
@@ -93,13 +94,13 @@ export function computeTags(
   for (const gp of s.players[side])
     if (
       onPitch(gp) &&
-      Math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
+      hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
     )
       overload++;
   for (const gp of s.players[foe])
     if (
       onPitch(gp) &&
-      Math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
+      hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
     )
       overload--;
   const goalSide = opponents.filter(({ p }) => p[0] > ball[0]).length;

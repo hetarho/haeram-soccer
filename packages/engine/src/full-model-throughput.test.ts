@@ -51,7 +51,9 @@ const facts = (w: World) => ({
  * weights only up to 70 m, its block not following a ball upfield; fed163154634471c before),
  * T345's (the candidate's score state: a lead protected at 0.5 and a deficit chased at 1.6 a goal;
  * 554eb98852d175c8 before) and T348's (the defending scene keeps its marks, zones and goal after a
- * delivery's kick; 41061a91531de1d7 before).
+ * delivery's kick; 41061a91531de1d7 before). T358's portable grid math (the candidate's `exp`,
+ * `sin`, `cos`, `atan2`, `hypot` and integer powers built from IEEE basic operations) left both
+ * digests unchanged on darwin-arm64.
  */
 const BEFORE = {
   aggregateRecords: 'a3c1c7230ca5bc28',

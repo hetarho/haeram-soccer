@@ -146,17 +146,9 @@ for (const viewport of [
   { name: 'phone', width: 390, height: 844 },
   { name: 'desktop', width: 1280, height: 800 },
 ])
-  test(`shows both sides through a delivered set piece on ${viewport.name}`, async ({
-    page,
-    browserName,
-  }) => {
-    // The reference scene is played in Node (V8); Firefox's and WebKit's own Math functions drift the
-    // candidate engine's positions in the last bit until the page's recorded match differs from it.
-    // T358 makes that math portable and lifts this skip.
-    test.skip(
-      browserName !== 'chromium',
-      'Candidate grid math is not portable across engines yet (T358).',
-    );
+  test(`shows both sides through a delivered set piece on ${viewport.name}`, async ({ page }) => {
+    // The reference scene is played in Node (V8) and the page's in the browser's own engine: the
+    // candidate match reads only the portable math (T358), so every browser records the same match.
     test.slow();
     await page.setViewportSize(viewport);
     const scene = recordedScene();

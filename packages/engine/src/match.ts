@@ -27,6 +27,7 @@ import { managerStyleEffects, type StyleEffects } from './styles';
 import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { injuryChance } from './careers';
+import { HOST_MATH, type MatchMath } from './portable-math';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { simulateAggregate } from './aggregate/engine';
 import { playGrid } from './grid/engine';
@@ -310,13 +311,16 @@ function weighted(
 const OUTFIELD: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 
 // Shared chance model: the team-level summary and the grid engine's finishing use the same
-// functions, so both paths follow one calibrated strength curve (docs/CALIBRATION.md).
+// functions, so both paths follow one calibrated strength curve (docs/CALIBRATION.md). `math` is
+// the host's `Math.*` unless the candidate grid passes its portable table (→ARCH-9, T358), so the
+// summary and aggregate paths keep their bits.
 const C = MATCH_DUEL_CONFIG;
 /** Diminishing returns on a skill margin: about linear up to half the saturation, then flat. */
-export const bend = (margin: number) => C.saturation * Math.tanh(margin / C.saturation);
+export const bend = (margin: number, math: MatchMath = HOST_MATH) =>
+  C.saturation * math.tanh(margin / C.saturation);
 /** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
-export const effectiveGap = (gap: number) =>
-  gap / Math.sqrt(Math.sqrt(1 + (gap / C.gapSaturation) ** 4));
+export const effectiveGap = (gap: number, math: MatchMath = HOST_MATH) =>
+  gap / Math.sqrt(Math.sqrt(1 + math.powInt(gap / C.gapSaturation, 4)));
 /** The home side's chance to hold a minute once score effects shift the ball to the side behind. */
 const possessionAt = (chance: number, metrics: number[][]) =>
   chance - C.leadPossession * clamp(metrics[0][0] - metrics[1][0], -2, 2);
@@ -360,11 +364,15 @@ function chanceQuality(
   return { xg: band[0] + (band[1] - band[0]) * within, big: u < big, box: u < box };
 }
 /** How much better than a chance's quality this shooter finishes against this keeper. */
-export const finishing = (shooting: number, keeping: number) =>
-  Math.exp(bend(shooting - keeping) / C.finishing) * (1 + (shooting - 55) / C.sharpness);
+export const finishing = (shooting: number, keeping: number, math: MatchMath = HOST_MATH) =>
+  math.exp(bend(shooting - keeping, math) / C.finishing) * (1 + (shooting - 55) / C.sharpness);
 /** Goal probability of a chance of quality `xg` for this shooter against this keeper. */
-export const goalChance = (xg: number, shooting: number, keeping: number) =>
-  clamp(xg * finishing(shooting, keeping), 0.01, 0.8);
+export const goalChance = (
+  xg: number,
+  shooting: number,
+  keeping: number,
+  math: MatchMath = HOST_MATH,
+) => clamp(xg * finishing(shooting, keeping, math), 0.01, 0.8);
 export const targetChance = (goal: number, shooting: number) =>
   clamp(goal + C.onTarget + (shooting - 55) / 250, goal + 0.05, 0.95);
 
@@ -373,12 +381,12 @@ export const targetChance = (goal: number, shooting: number) =>
  * of a fixture share it. Form is fat-tailed (Laplace): most days sit near the usual level, a few
  * are far off it — the off days on which favourites drop points.
  */
-export function matchForm(w: World, f: Fixture): [number, number] {
+export function matchForm(w: World, f: Fixture, math: MatchMath = HOST_MATH): [number, number] {
   const r = random(`${w.seed}:form:${f.id}`);
   const draw = () => {
     const u = r() - 0.5;
     return clamp(
-      (-Math.sign(u) * Math.log(Math.max(1e-6, 1 - 2 * Math.abs(u))) * C.form) / Math.SQRT2,
+      (-Math.sign(u) * math.log(Math.max(1e-6, 1 - 2 * Math.abs(u))) * C.form) / Math.SQRT2,
       -3 * C.form,
       3 * C.form,
     );
@@ -417,7 +425,11 @@ export interface Prepared extends MatchSetup {
   synergy?: SynergyEffects;
 }
 
-export function prepareMatch(w: World, f: Fixture): Prepared {
+/**
+ * `math` is the match's table: the candidate grid passes the portable one, so its day's form and
+ * gap (every skill's shift) are the same on every host (→ARCH-9, T358).
+ */
+export function prepareMatch(w: World, f: Fixture, math: MatchMath = HOST_MATH): Prepared {
   const home = findClub(w, f.home),
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
@@ -436,12 +448,12 @@ export function prepareMatch(w: World, f: Fixture): Prepared {
     (side === 0 ? buildEffects(w).homeStrength : 0);
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
   const context = [3 + (ownSide === 0 ? ownStrength(0) : 4), ownSide === 1 ? ownStrength(1) : 4];
-  const form = matchForm(w, f);
+  const form = matchForm(w, f, math);
   const base = [rating(w, home, f) + context[0], rating(w, away, f) + context[1]];
   // The gap beyond what diminishing returns let count is taken off both sides evenly; the day's
   // form comes on top, so a far stronger side's bad day still shows.
   const gap = base[0] - base[1],
-    ease = (effectiveGap(gap) - gap) / 2;
+    ease = (effectiveGap(gap, math) - gap) / 2;
   const strength = [base[0] + ease + form[0], base[1] - ease + form[1]];
   const shift = [
     form[0] + (context[0] - context[1]) / 2 + ease,

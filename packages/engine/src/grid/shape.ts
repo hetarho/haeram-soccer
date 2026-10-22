@@ -5,6 +5,7 @@ import type { Point } from './pitch';
 import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
 import { lineOf } from '../player';
 import { actionWeight } from '../match';
+import type { MatchMath } from '../portable-math';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, skill, slotOf } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
@@ -223,7 +224,7 @@ export function pressers(s: GridState, side: 0 | 1): number[] {
         lineOfSlot(s, gp) !== 'GK' &&
         !(s.owner && s.owner[0] === side && s.owner[1] === gp.idx),
     )
-    .map((gp) => ({ idx: gp.idx, d: Math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) }))
+    .map((gp) => ({ idx: gp.idx, d: s.math.hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) }))
     .sort((a, b) => a.d - b.d || a.idx - b.idx);
   const out: number[] = [];
   if (near[0] && near[0].d <= reach) out.push(near[0].idx);
@@ -316,12 +317,13 @@ export function shapePlace(
   const foes = ((cache.outfield ??= [])[foe] ??= s.players[foe].filter(
     (opp) => onPitch(opp) && lineOfSlot(s, opp) !== 'GK',
   ));
+  const { hypot } = s.math;
   for (const opp of foes) {
     const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
     const oy = side === 0 ? opp.pos[1] : PITCH.width - opp.pos[1];
     // The distance is at least either offset, so a man further off on one axis cannot be nearer.
     if (Math.abs(ox - x) > best || Math.abs(oy - y) > best) continue;
-    const d = Math.hypot(ox - x, oy - y);
+    const d = hypot(ox - x, oy - y);
     if (d <= best) {
       found = true;
       nx = ox;
@@ -357,12 +359,15 @@ function pressPoint(s: GridState, gp: GridPlayer, at: Point, urgent: boolean): [
   ]);
 }
 
-/** Where a teammate covers `mate` of `side` (engine frame): `coverDepth` m behind him toward the own goal's centre. */
-export function coverPoint(side: 0 | 1, mate: GridPlayer): [number, number] {
+/**
+ * Where a teammate covers `mate` of `side` (engine frame): `coverDepth` m behind him toward the own
+ * goal's centre; `math` is the match's.
+ */
+export function coverPoint(side: 0 | 1, mate: GridPlayer, math: MatchMath): [number, number] {
   const p = attackFrame(side, mate.pos);
   const dx = -p[0],
     dy = CENTRE - p[1];
-  const d = Math.hypot(dx, dy);
+  const d = math.hypot(dx, dy);
   const depth = Math.min(SHAPE_CONFIG.coverDepth, d);
   return toEngine(side, d > 0 ? [p[0] + (dx / d) * depth, p[1] + (dy / d) * depth] : p);
 }
@@ -382,7 +387,7 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
     return pressPoint(s, gp, attackFrame(side, foe.pos), i.priority === 'danger');
   if (foe && onPitch(foe) && i.kind === 'mark') return goalSideOf(side, foe);
   if (i.kind === 'cover' && i.zone) return guardPoint(s, gp, i.zone);
-  if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate);
+  if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate, s.math);
   return [i.target[0], i.target[1]];
 }
 
@@ -405,12 +410,13 @@ export function guardPoint(
 ): [number, number] {
   const side = gp.side;
   const P = SHAPE_CONFIG.setPiece;
+  const { hypot } = s.math;
   const z = attackFrame(side, zone);
   if (lineOfSlot(s, gp) === 'GK') {
     const b = attackFrame(side, s.ball);
     const dx = b[0] - z[0],
       dy = b[1] - z[1];
-    const d = Math.hypot(dx, dy);
+    const d = hypot(dx, dy);
     const out = Math.min(P.keeper.depth, d * P.keeper.share);
     const [x, y] = d > 0 ? [z[0] + (dx / d) * out, z[1] + (dy / d) * out] : z;
     return toEngine(side, [
@@ -423,7 +429,7 @@ export function guardPoint(
   for (const opp of s.players[other(side)]) {
     if (!onPitch(opp) || lineOfSlot(s, opp) === 'GK') continue;
     const o = attackFrame(side, opp.pos);
-    const d = Math.hypot(o[0] - z[0], o[1] - z[1]);
+    const d = hypot(o[0] - z[0], o[1] - z[1]);
     // The nearest, the first in roster order among equals.
     if (d < best || (!near && d === best)) [near, best] = [opp, d];
   }
@@ -459,7 +465,7 @@ export function moveAll(s: GridState, dt: number): void {
   for (const [gp, target] of moves) {
     const dx = target[0] - gp.pos[0],
       dy = target[1] - gp.pos[1];
-    const d = Math.hypot(dx, dy);
+    const d = s.math.hypot(dx, dy);
     const step = Math.min(d, speedOf(s, gp) * dt);
     if (d > 0) {
       gp.pos[0] = clamp(gp.pos[0] + (dx / d) * step, 0, PITCH.length);
