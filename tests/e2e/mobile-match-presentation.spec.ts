@@ -152,14 +152,48 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ])
-  test(`goal cue holds the match at ${viewport.width}`, async ({ page }) => {
+  test(`goal cue and ball ownership in the normal view at ${viewport.width}`, async ({ page }) => {
     // The first goal lands about 7 s into the match at 1x; the 360 run then plays it out at 16x.
     test.slow();
     await page.emulateMedia({ reducedMotion: viewport.width === 390 ? 'reduce' : 'no-preference' });
     await page.setViewportSize(viewport);
+    // Desktop watches in the pixel theme, phones in the standard one.
+    if (viewport.width === 1280)
+      await page.addInitScript(() =>
+        localStorage.setItem(
+          'haeram-soccor:presentation',
+          JSON.stringify({ localeId: 'ko-KR', themeId: 'pixel' }),
+        ),
+      );
     await importResponsibilityCareer(page, goalWorld());
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme',
+      viewport.width === 1280 ? 'pixel' : 'standard',
+    );
     const cues = await countCues(page);
     await watchNext(page);
+    // Every ownership state the scoreboard passes through, to show both sides take their turn.
+    await page.getByTestId('match-score').evaluate((node) => {
+      const states = new Set<string>();
+      const read = () =>
+        states.add(
+          `${node.getAttribute('data-possession')}:${node.getAttribute('data-possession-side') ?? '-'}`,
+        );
+      read();
+      new MutationObserver(read).observe(node, { attributes: true });
+      Object.assign(window, { possessionStates: states });
+    });
+    // Ownership shows without match details or player inspection.
+    await expect(page.getByRole('button', { name: '경기 상세', exact: true })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    const badge = page.getByTestId('match-score').getByTestId('possession-cue');
+    await expect(badge).toHaveCount(1, { timeout: 10_000 });
+    await expect(badge).toHaveAccessibleName('볼 소유');
+    const badgeBox = (await badge.boundingBox())!;
+    expect(badgeBox.x).toBeGreaterThanOrEqual(0);
+    expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(viewport.width);
     const cue = page.getByTestId('goal-cue');
     await expect(cue).toBeVisible({ timeout: 15_000 });
     await expect(cue).toContainText('GOAL');
@@ -193,4 +227,8 @@ for (const viewport of [
     const seen = await cues();
     expect(seen).toHaveLength(3);
     expect(seen.every((text) => text.startsWith('GOAL'))).toBe(true);
+    const states = await page.evaluate(() => [
+      ...(window as unknown as { possessionStates: Set<string> }).possessionStates,
+    ]);
+    expect(states).toEqual(expect.arrayContaining(['carrier:0', 'carrier:1']));
   });

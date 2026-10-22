@@ -138,6 +138,8 @@
     "facility.academy.stage": "{stage}단계 유소년 시설",
     "match.goal.cue": "GOAL",
     "match.goal.side": "{team} 득점",
-    "match.goal.scorer": "{team} · {player} 득점"
+    "match.goal.scorer": "{team} · {player} 득점",
+    "match.possession.side": "볼 소유",
+    "match.possession.word": "소유"
   }
 }

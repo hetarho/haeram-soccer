@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T345 |
-| v7c3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T09:37Z | 2026-10-22T09:55Z | T350 |
+| v7c3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T09:37Z | 2026-10-22T10:12Z | - |
 
 ## inbox
 - 261022 decided ARCH-31 T325 T326 T286: ARCH-31's reference machine is the owner's MacBook Pro (M1 Max), where T285 measured the ~14 s candidate season the 15 s budget came from; this host (Xeon Silver 4214, 12 CPUs) runs about 2.5× slower (a season ~34–35 s after T325) and its timings are context only → the budget was set from that machine and players run on consumer hardware (alt: this host with a ~35 s budget | restate the budget per machine class)
@@ -220,7 +220,6 @@
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T348 | Correct the measured set-piece placement and release lifecycle | MATCH ARCH | T325 T345 | todo |
-| T350 | Show the controlling team and recorded ball carrier during normal observation | MATCH WEB ARCH | T349 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -233,11 +232,12 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- implement-task T350 for ball ownership (T349 done). k2r7: finish T325 and T336 → T345 → T348 (measured set-piece lifecycle) → T323 → T326 → T286 → T306–T308; T286 also requires T349/T350. T327/T328/T334/T335 are on main.
+- T349/T350 done (goal feedback, ball ownership). k2r7: finish T325 and T336 → T345 → T348 (measured set-piece lifecycle) → T323 → T326 → T286 → T306–T308; T286 also requires T349/T350. T327/T328/T334/T335 are on main.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T350 done (v7c3): normal view shows the controlling side beside the scoreboard and rings the recorded carrier on the pitch; the action under way (first event ending at or after the instant) leads, the sample owner falls back, sparse history stays neutral; 9 unit cases, phone/desktop/pixel/reduced-motion journeys on Chromium
 - 261022 T349 done (v7c3): recorded goals hold 1 s at every speed with a GOAL cue (side, scorer) and a boxed scoring-side score; the scoreboard shows the presented running score; seek passes goals without a cue; 11 unit cases, live and archived journeys on Chromium and Firefox
 - 261022 fix e2e (v7c3): progression-settings:163 picks the menu's settings row by its title prefix, since the row's name now carries its hint line (main CI red since b4d1c7f); intervention, management and news pass locally on Chromium and Firefox
 - 261022 T336 integrated (k2r7; explore exit, coordinator exception to its keep rule): counter's settled pass weights stop at 70 m and its block stops following a ball upfield; artifact round 11 MATCH-29 8/3/14 → 10/2/13, core 32/38, curve 3.43 → T345

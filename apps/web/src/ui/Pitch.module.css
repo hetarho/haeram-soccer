@@ -45,6 +45,33 @@
     transform: scale(1.12);
   }
 }
+/* The side controlling the ball: a ball glyph with a word, boxed against the scoreboard. */
+.possession {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px 1px 3px;
+  border: 1px solid var(--gold-edge);
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text);
+}
+.possessionBall {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px #21392a,
+    0 0 0 2px var(--gold);
+}
+.possessionWord {
+  font-style: normal;
+  font-family: var(--display);
+}
 /* The GOAL cue over the middle of the pitch, clear of the corner controls. */
 .goalCueSlot {
   position: absolute;
@@ -440,6 +467,12 @@
     white-space: nowrap;
   }
   .stage .tactics {
+    display: none;
+  }
+  .possession {
+    padding: 1px 3px;
+  }
+  .possessionWord {
     display: none;
   }
   .goalCue {
