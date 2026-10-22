@@ -62,7 +62,8 @@ const facts = (w: World) => ({
  * (the grid untouched, so the candidate rounds moved through their aggregate fixtures);
  * a3c1c7230ca5bc28 and 3be456505f08231a before. T367's urgent pairing (a set-piece marker is taken,
  * never moved to another runner) left both digests unchanged: the two rounds' own grid matches
- * settled the same facts.
+ * settled the same facts. So did T373's (a delivered taker is no carrier for the kick's update
+ * while the ball is in the air).
  */
 const BEFORE = {
   aggregateRecords: '4f190f1b1d803d86',
