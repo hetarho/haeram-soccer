@@ -21,7 +21,7 @@ import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-4';
+export const MATCH_PARITY_VERSION = 'match-parity-5';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
