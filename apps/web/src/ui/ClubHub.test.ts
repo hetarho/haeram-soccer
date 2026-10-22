@@ -40,13 +40,8 @@ const world = () =>
     ownMatches: [],
   }) as unknown as World;
 
-function matchAction(next = true, critical = false) {
-  return createElement(MatchAction, {
-    critical,
-    next,
-    onWatch: vi.fn(async () => {}),
-    onReturn: vi.fn(),
-  });
+function matchAction() {
+  return createElement(MatchAction, { onReturn: vi.fn() });
 }
 
 beforeEach(() => {
@@ -66,7 +61,7 @@ beforeEach(() => {
 afterEach(() => gameStore.setState(initialClientState, true));
 
 describe('contextual home match access', () => {
-  it('keeps opponent context, observation and preparation together', () => {
+  it('keeps opponent and preparation without a future observation shortcut', () => {
     const markup = renderToStaticMarkup(
       createElement(NextMatchCard, { w: world(), onPrepare: vi.fn(), matchAction: matchAction() }),
     );
@@ -74,7 +69,7 @@ describe('contextual home match access', () => {
     expect(markup).toContain('A Very Long Opponent Athletic Club');
     expect(markup).toContain('감독 자동 선발');
     expect(markup).toContain('전술·선발 준비</button>');
-    expect(markup).toContain('aria-label="다음 경기 관전"');
+    expect(markup).not.toContain('data-testid="home-watch"');
     expect(markup).not.toContain('경기로 돌아가기');
   });
 
@@ -86,35 +81,23 @@ describe('contextual home match access', () => {
       createElement(NextMatchCard, {
         w,
         onPrepare: vi.fn(),
-        matchAction: matchAction(false, true),
+        matchAction: matchAction(),
       }),
     );
     expect(markup).toContain('다음 시즌을 준비해요');
     expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>전술·선발 준비<\/button>/);
   });
 
-  it('keeps home observation and next-season labels with readonly protection', () => {
-    const props = { critical: false, onWatch: vi.fn(async () => {}), onReturn: vi.fn() };
+  it('does not offer a new match even when no live match or future schedule exists', () => {
+    expect(renderToStaticMarkup(matchAction())).toBe('');
     gameStore.setState({ readonly: true });
-    const markup = renderToStaticMarkup(createElement(MatchAction, { ...props, next: true }));
-    expect(markup).toContain('data-testid="home-watch"');
-    expect(markup).toMatch(/aria-label="다음 경기 관전"[^>]*disabled=""/);
-    expect(renderToStaticMarkup(createElement(MatchAction, { ...props, next: false }))).toContain(
-      'aria-label="다음 시즌 시작"',
-    );
+    expect(renderToStaticMarkup(matchAction())).toBe('');
   });
 
   it('returns to an unfinished playback instead of offering another match', () => {
     matchView.matchId = 'live';
     gameStore.setState({ playback: { record: { id: 'live' } } as ClientState['playback'] });
-    const markup = renderToStaticMarkup(
-      createElement(MatchAction, {
-        critical: false,
-        next: true,
-        onWatch: vi.fn(async () => {}),
-        onReturn: vi.fn(),
-      }),
-    );
+    const markup = renderToStaticMarkup(matchAction());
     expect(markup).toContain('aria-label="관전 이어보기"');
     expect(markup).not.toContain('다음 경기 관전');
   });

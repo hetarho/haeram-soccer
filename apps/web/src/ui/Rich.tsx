@@ -1,3 +1,4 @@
+import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
@@ -914,25 +915,27 @@ function Roster({ state, client }: Props) {
                 </small>
                 {p.status === 'active' && <PlayerFlags w={w} player={p} />}
               </div>
-              <div>
+              <div className={s.rosterStats}>
                 <b>피로 {Math.round(p.fatigue)}</b>
                 <small>성장 +{(p.developed || 0).toFixed(2)}</small>
               </div>
-              {p.status === 'active' && talkFor(w, p) && (
-                <button
-                  type="button"
-                  className={s.stanceBadge}
-                  data-stance="listed"
-                  disabled={disabled}
-                  aria-label={`${p.name} 계약 협상 열기`}
-                  onClick={() => openTalk(p.id)}
-                >
-                  협상
-                </button>
-              )}
-              {canSetStance(p) && (
-                <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
-              )}
+              <div className={s.rosterActions}>
+                {p.status === 'active' && talkFor(w, p) && (
+                  <button
+                    type="button"
+                    className={s.stanceBadge}
+                    data-stance="listed"
+                    disabled={disabled}
+                    aria-label={`${p.name} 계약 협상 열기`}
+                    onClick={() => openTalk(p.id)}
+                  >
+                    협상
+                  </button>
+                )}
+                {canSetStance(p) && (
+                  <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -1115,7 +1118,7 @@ function EconomicContext({ state }: { state: ClientState }) {
  * 방향 (→WEB-39). A tab asked for while it shows lands in the address and reopens the tab bar on
  * it; from elsewhere the address already carries it.
  */
-function Business({ state, client }: Props) {
+function Business({ state, client, controller }: Props & { controller: ProgressionController }) {
   const request = useBusinessView((view) => view.request);
   const [opened, setOpened] = useState(0);
   useEffect(() => {
@@ -1130,6 +1133,7 @@ function Business({ state, client }: Props) {
     <>
       <OperationsView
         key={opened}
+        controller={controller}
         state={state}
         client={client}
         legacy={<EconomicContext state={state} />}
@@ -1137,10 +1141,16 @@ function Business({ state, client }: Props) {
     </>
   );
 }
-export default function Rich({ state, client, page }: Props & { page: Page }) {
+export default function Rich({
+  state,
+  client,
+  page,
+  controller,
+}: Props & { page: Page; controller: ProgressionController }) {
   if (page === 'people') return <People state={state} client={client} />;
   if (page === 'training') return <TrainingView state={state} client={client} />;
-  if (page === 'business') return <Business state={state} client={client} />;
+  if (page === 'business')
+    return <Business state={state} client={client} controller={controller} />;
   return (
     <Suspense
       fallback={

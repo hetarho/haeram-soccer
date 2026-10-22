@@ -6,11 +6,11 @@
   width: 100%;
   min-width: 44px;
   max-width: 100%;
-  min-height: 44px;
-  padding: 9px 12px;
-  border: 1px solid var(--line);
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--control-padding-inline);
+  border: 1px solid var(--popover-edge);
   border-radius: var(--control-radius);
-  background: var(--surface-grain, none) var(--surface);
+  background: var(--surface-grain, none) var(--surface-deep);
   color: var(--text);
   box-shadow: none;
   text-align: left;
@@ -22,8 +22,11 @@
 }
 .trigger.trigger:hover:not(:disabled),
 .trigger[data-state='open'] {
-  background: var(--surface-grain, none) var(--surface);
-  border-color: var(--line-strong);
+  background: var(--surface-grain, none) var(--surface-deep);
+  border-color: var(--popover-edge);
+}
+.trigger.trigger[data-state='open'] {
+  box-shadow: var(--popover-shadow);
 }
 .trigger:focus-visible {
   outline: 2px solid var(--focus);
@@ -52,7 +55,7 @@
   max-height: 360px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--surface-grain, none) var(--surface);
+  background: var(--surface-grain, none) var(--surface-deep);
   color: var(--text);
   border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);

@@ -158,16 +158,17 @@ for (const viewport of [
     expect((await viewGeometry(page)).scroll).toBe(0);
     expect(await page.evaluate(() => scrollY)).toBe(0);
 
-    await watchNext(page);
+    await watchNext(page, { manual: true });
     await expect(
       page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
     ).toBeVisible();
-    await expect(page.getByTestId('calendar')).toContainText('라운드 1');
     await expect(page.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await expect(page.getByTestId('match-result-summary')).toBeVisible();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
+    await page.getByRole('button', { name: '홈으로', exact: true }).click();
+    await expect(page.getByTestId('game-round')).toHaveText('1');
   });
 }

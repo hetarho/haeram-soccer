@@ -48,9 +48,9 @@ test('keeps league views and nodes across silent progression from home and updat
       if (document.querySelector('[aria-label="세계 처리 진행"]')) state.liveProbe!.flashes++;
     }).observe(document.getElementById('root')!, { childList: true, subtree: true });
   });
-  // The full clock lives on home; elsewhere it is a buttons-only control.
-  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
-  const mini = page.getByTestId('mini-clock');
+  // The bottom transport stays available across management views.
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
+  const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
   await expect(mini.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
@@ -69,16 +69,13 @@ test('keeps league views and nodes across silent progression from home and updat
     .getByRole('group', { name: '선수 기록 보기' })
     .getByRole('button', { name: '득점왕 추이', exact: true })
     .click();
-  // It stops by itself on the eve of our match, whichever view is open; away from home the
-  // event waits as a small pill until it is opened.
-  const pill = page.getByTestId('event-pill');
-  await expect(pill).toHaveAccessibleName(/이벤트 1개 .* 열기/);
+  // A match eve opens its dialog automatically from every management view.
+  await expect(page.getByRole('dialog', { name: 'NEXT MATCH', exact: true })).toBeVisible();
   await expect(date).toHaveText('1950년 8월 7일');
-  await pill.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-  await expect(page.getByTestId('calendar')).toContainText('라운드 1');
+  await expect(page.getByTestId('game-round')).toHaveText('1');
   await mini.getByRole('button', { name: '자동 진행 정지' }).click();
   await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toHaveAttribute(
     'aria-selected',
@@ -161,7 +158,8 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre's back control leads home, where the full clock is.
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(await openWatchAction(page)).toHaveAccessibleName('다음 경기 관전');
+  await expect(page.getByTestId('home-watch')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '전술·선발 준비', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
 });
 
@@ -185,8 +183,8 @@ async function seed(page: Page, w: World) {
 }
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const raw = await readFile((await (await downloading).path())!, 'utf8');

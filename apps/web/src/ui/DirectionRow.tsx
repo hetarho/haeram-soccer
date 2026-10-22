@@ -40,12 +40,7 @@ export function DirectionRow({
         </div>
         <b className={s.inForce}>{inForce >= 0 ? options[inForce] : '사용자 지정'}</b>
       </div>
-      <div
-        className={s.options}
-        role="radiogroup"
-        aria-label={label}
-        style={{ gridTemplateColumns: `repeat(${Math.min(options.length, 5)}, minmax(0, 1fr))` }}
-      >
+      <div className={s.options} role="radiogroup" aria-label={label}>
         {options.map((name, index) => (
           <button
             key={name}

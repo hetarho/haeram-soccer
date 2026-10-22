@@ -6,6 +6,7 @@ import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../packages/contr
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
+import { configureResponsibilities } from './events';
 
 /**
  * Browser helpers shared by the club-identity journeys (→KIT, →SAVE-3/20/21/22). Evidence is what
@@ -27,14 +28,13 @@ const MANIFEST = 'haeram-soccor:manifest';
 export const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
 export const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 /** The HUD, whose crest follows the applied identity (→WEB-49). */
-export const hud = (page: Page) =>
-  page.locator('header').filter({ has: page.getByTestId('calendar') });
+export { gameHud as hud } from './layout';
 /** SVG crest parts painted in `fill`, exactly as stored. */
 export const crestFill = (scope: Locator, fill: string) => scope.locator(`[fill="${fill}"]`);
 
 async function openMenu(page: Page) {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  return page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  return page.getByRole('dialog', { name: '설정', exact: true });
 }
 const closeMenu = (menu: Locator) =>
   menu.getByRole('button', { name: '창 닫기', exact: true }).click();
@@ -313,7 +313,7 @@ export async function applyDesign(page: Page, view: Locator) {
   await expect(designStatus(view)).toHaveText('적용된 디자인');
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
 }
 
 export const hubPreparation = (page: Page) =>
@@ -337,12 +337,14 @@ export async function closePreparation(page: Page, dialog: Locator, decided: boo
   if (!decided) return;
   const outcome = page.getByTestId('action-outcome');
   await expect(outcome).toBeVisible();
-  await outcome.getByRole('button', { name: '확인', exact: true }).click();
+  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   await expect(outcome).toHaveCount(0);
 }
 
 /** Watches the next match and stops at the final whistle, where the presentation stays. */
 export async function watchToWhistle(page: Page) {
+  // Identity edits/reloads compare one settled fixture; keep the calendar stopped afterwards.
+  await configureResponsibilities(page, { mode: 'manual' });
   await watchNext(page);
   await expect(page.getByTestId('match-theatre')).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();

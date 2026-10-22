@@ -1,3 +1,4 @@
+import { gameHud } from './layout';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
@@ -52,14 +53,14 @@ async function found(page: Page) {
 }
 async function playRound(page: Page) {
   await advanceOneRound(page);
-  await expect(page.getByTestId('calendar')).toHaveText(/라운드 1$/);
+  await expect(page.getByTestId('game-round')).toHaveText('1');
 }
 const newsButton = (page: Page) => page.getByTestId('communications-button');
 
 test('keeps the club name and compact cash readable in a 360 px HUD', async ({ page }) => {
   await found(page);
   // The name sits next to the HUD calendar line.
-  const name = page.getByTestId('calendar').locator('..').getByText('Haeram Athletic', {
+  const name = gameHud(page).getByText('Haeram Athletic', {
     exact: true,
   });
   expect(
@@ -94,8 +95,8 @@ test('celebrates in one lower line, with headlines collected in the clock news b
   const clock = (await page.getByRole('region', { name: '시즌 진행' }).boundingBox())!;
   const card = (await status.boundingBox())!;
   const button = (await newsButton(page).boundingBox())!;
-  expect(card.y).toBeGreaterThan(clock.y + clock.height);
-  // A phone keeps the view readable: one 44 px line above navigation and below the clock button.
+  expect(card.y + card.height).toBeLessThanOrEqual(clock.y);
+  // A phone keeps the view readable: one 44 px line above transport and navigation.
   expect(card.height).toBeLessThanOrEqual(44);
   expect(card.y).toBeGreaterThanOrEqual(button.y + button.height);
   const navigation = (await page
@@ -149,7 +150,9 @@ for (const width of [390, 1280]) {
     await expect(page.locator('header').getByTestId('communications-button')).toBeVisible();
     await settle(page);
     const triggerBox = (await trigger.boundingBox())!;
-    const clockBox = (await page.getByTestId('intervention-trigger').boundingBox())!;
+    const clockBox = (await page
+      .getByRole('region', { name: '시즌 진행', exact: true })
+      .boundingBox())!;
     expect(triggerBox.y + triggerBox.height).toBeLessThanOrEqual(clockBox.y);
     expect(triggerBox.width).toBeGreaterThanOrEqual(44);
     expect(triggerBox.height).toBeGreaterThanOrEqual(44);
@@ -188,9 +191,9 @@ for (const width of [390, 1280]) {
     await expect(trigger).toHaveAccessibleName('알림·뉴스');
     await expect(trigger).toBeFocused();
     await expect(page).toHaveURL(address);
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    await page.getByRole('button', { name: '설정', exact: true }).click();
     await page
-      .getByRole('dialog', { name: '전체 메뉴' })
+      .getByRole('dialog', { name: '설정' })
       .getByRole('button', { name: '알림·뉴스', exact: true })
       .click();
     await expect(sheet).toHaveCount(1);

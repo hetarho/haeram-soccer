@@ -39,7 +39,11 @@ export function PresentationSettingsControls({ field }: { field?: PresentationFi
   const snapshot = usePresentation();
   const { t } = useLocale();
   return (
-    <div className={`${s.settings} ${field ? s.single : ''}`} data-testid="presentation-settings">
+    <div
+      className={`${s.settings} ${field ? s.single : ''}`}
+      data-testid="presentation-settings"
+      aria-busy={snapshot.pending}
+    >
       {field !== 'locale' && (
         <label>
           <span>{t('presentation.theme')}</span>
@@ -73,11 +77,6 @@ export function PresentationSettingsControls({ field }: { field?: PresentationFi
             ))}
           </Select>
         </label>
-      )}
-      {snapshot.pending && (
-        <p role="status" data-testid="presentation-pending">
-          {t('presentation.applying')}
-        </p>
       )}
       {snapshot.sessionOnly && (
         <p role="status" data-testid="presentation-session-only">

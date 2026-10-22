@@ -404,7 +404,7 @@ it('rejects dangling career/arrival/post references, overlapping jobs and change
       copy.promises![0].deadline.day++;
     },
     (copy: World) => {
-      copy.settings!.observations.matchEve = false;
+      copy.settings!.mode = 'invalid' as never;
     },
     (copy: World) => {
       Object.values(copy.people!)[0].qualities.teaching = 6 as never;

@@ -1,18 +1,19 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
-import {
-  currentDay,
-  daysUntilNextMatch,
-  nextOwnFixture,
-  seasonDate,
-  seasonLength,
-} from '../../../../packages/engine/src/calendar';
+import { PixelIcon } from './PixelIcon';
+import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
 import { memo, useEffect, useRef } from 'react';
 import { useGameState } from '../runtime/store';
-import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
-import { transferWindow } from '../../../../packages/engine/src/transfers';
-import { useInterventionDialog } from './state';
+import {
+  pendingMatchReport,
+  useProgression,
+  type Pace,
+  type ProgressionController,
+} from '../runtime/progression';
+import type { GameClient } from '../runtime/client';
+import { ProgressModeSwitch } from './ProgressModeSwitch';
+import { useLocale } from '../presentation/react';
 import p from './ProgressControls.module.css';
 
 const PACES: [Pace, string, string][] = [
@@ -22,17 +23,48 @@ const PACES: [Pace, string, string][] = [
   ['x10', 'x10', '0.1초에 하루'],
 ];
 
-/** Game-speed controls: play starts the shared clock; the dropdown only sets its pace (→WEB-18). */
-export const ProgressControls = memo(function ProgressControls({
+/** Calendar information stays near the HUD while transport stays below the scrolling view. */
+export const ProgressOverview = memo(function ProgressOverview({
+  client,
   controller,
   compact = false,
 }: {
+  client: GameClient;
   controller: ProgressionController;
-  /** Away from home the same one-row clock keeps running, labelled as a whole for the region. */
   compact?: boolean;
 }) {
+  const w = useGameState((state) => state.view!.world);
+  const { t } = useLocale();
+  const club = w.clubs.find((club) => club.id === w.playerClub)!;
+  return (
+    <section
+      className={p.overview}
+      aria-label="시즌 정보"
+      data-testid={compact ? 'mini-clock' : undefined}
+    >
+      <div className={p.calendarSummary} data-testid="calendar" data-season={w.year}>
+        <small>
+          {w.lower ? t('shell.amateurLeague') : t('shell.division', { division: club.tier + 1 })}
+        </small>
+        <span data-testid="game-date">{seasonDate(w)}</span>
+      </div>
+      <div className={p.round}>
+        <small>ROUND</small>
+        <strong data-testid="game-round">{w.round}</strong>
+      </div>
+      <ProgressModeSwitch client={client} controller={controller} />
+    </section>
+  );
+});
+
+/** Play starts the shared clock; the dropdown only sets its pace (→WEB-18). */
+export const ProgressControls = memo(function ProgressControls({
+  controller,
+}: {
+  controller: ProgressionController;
+}) {
   const state = useGameState((state) => state);
-  const { running, pace, watching, reason } = useProgression(controller, (state) => state);
+  const { running, pace, reason } = useProgression(controller, (state) => state);
   // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
   // click landing just after that was aimed at the old label, so it must not start the clock.
   const userStop = useRef(false);
@@ -49,22 +81,22 @@ export const ProgressControls = memo(function ProgressControls({
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
   const pending = pendingDecisions(w).length > 0;
-  const next = nextOwnFixture(w);
-  const days = daysUntilNextMatch(w);
   const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
   const detail = PACES.find(([value]) => value === pace)![2];
   const status = running
-    ? watching
-      ? '자동 관전 중 · 경기 후 다음 경기'
-      : `진행 중 · ${detail}`
-    : reason ||
-      (next
-        ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
-        : '시즌 정산을 기다려요');
+    ? `진행 중 · ${detail}`
+    : manual
+      ? '수동 진행 · 다음 이벤트를 선택하세요'
+      : reason || '재생하면 날짜가 흐릅니다';
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
-        disabled={blocked || state.processing || pending}
+        disabled={
+          blocked ||
+          state.processing ||
+          !!state.pendingActions ||
+          (pending && !pendingMatchReport(w))
+        }
         onClick={() => void controller.nextEvent()}
       >
         다음 이벤트
@@ -83,35 +115,28 @@ export const ProgressControls = memo(function ProgressControls({
           } else if (performance.now() - autoStoppedAt.current >= 500) controller.start();
         }}
       >
-        <span aria-hidden="true" />
+        <PixelIcon name={running ? 'pause' : 'play'} size={16} />
       </button>
-      {!watching && (
-        <Select
-          className={p.pace}
-          aria-label="자동 진행 배속"
-          value={pace}
-          disabled={blocked || (!running && state.processing)}
-          onValueChange={(value) => controller.setPace(value as Pace)}
-        >
-          {PACES.map(([value, label, description]) => (
-            <option key={value} value={value} data-hint={description}>
-              {label}
-            </option>
-          ))}
-        </Select>
-      )}
+      <Select
+        className={p.pace}
+        aria-label="자동 진행 배속"
+        value={pace}
+        disabled={blocked || (!running && state.processing)}
+        onValueChange={(value) => controller.setPace(value as Pace)}
+      >
+        {PACES.map(([value, label, description]) => (
+          <option key={value} value={value} data-hint={description}>
+            {label}
+          </option>
+        ))}
+      </Select>
     </div>
   );
   // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
-    <section
-      className={`${p.controls} ${running ? p.running : ''}`}
-      aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
-      data-testid={compact ? 'mini-clock' : undefined}
-    >
-      <div className={p.calendarSummary}>
-        <strong data-testid="game-date">{seasonDate(w)}</strong>
+    <section className={`${p.controls} ${running ? p.running : ''}`} aria-label="시즌 진행">
+      <div className={p.transportSummary}>
         <small className={p.status} aria-live="polite" aria-atomic="true">
           {status}
         </small>
@@ -126,19 +151,6 @@ export const ProgressControls = memo(function ProgressControls({
         style={{ width: `${progress}%` }}
       />
       {buttons}
-      <div className={p.settingsActions} role="group" aria-label="진행 설정">
-        <button
-          type="button"
-          className={p.trigger}
-          aria-label="위임·진행 설정"
-          aria-haspopup="dialog"
-          data-testid="intervention-trigger"
-          title="위임·진행 설정"
-          onClick={useInterventionDialog.getState().show}
-        >
-          <span aria-hidden="true">···</span>
-        </button>
-      </div>
     </section>
   );
 });

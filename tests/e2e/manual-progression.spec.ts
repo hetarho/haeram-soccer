@@ -9,7 +9,6 @@ import {
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
-import { chooseOption } from './select';
 import { configureResponsibilities } from './events';
 
 for (const width of [1280, 390]) {
@@ -34,10 +33,8 @@ for (const width of [1280, 390]) {
       0,
     );
     await expect(page.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-    await expect(page.getByRole('dialog', { name: '전체 메뉴' })).not.toContainText(
-      '한 라운드 진행',
-    );
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: '설정' })).not.toContainText('한 라운드 진행');
     await page.keyboard.press('Escape');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await configureResponsibilities(page, { mode: 'automatic' });
@@ -105,20 +102,25 @@ for (const width of [1280, 390]) {
     const reject = group.getByRole('button', { name: '거절', exact: true });
     await expect(reject).toHaveCount(2);
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
-    await expect(next).toBeDisabled();
+    const result = group.getByRole('button', { name: '결과만 보고 계속', exact: true });
+    // Next-event remains a report-reopen action; the unresolved decisions block settlement.
+    await expect(next).toBeEnabled();
+    await expect(result).toBeDisabled();
     await reject.first().click();
     await expect(reject).toHaveCount(1);
-    await expect(next).toBeDisabled();
+    await expect(next).toBeEnabled();
+    await expect(result).toBeDisabled();
     await reject.first().click();
     await expect(reject).toHaveCount(0);
     await expect(next).toBeEnabled();
+    await expect(result).toBeEnabled();
     await expect(group).toContainText('내일 경기');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   });
 }
 
 for (const authority of ['direct', 'delegated'] as const) {
-  test(`mandatory match event with all business ${authority}`, async ({ page }) => {
+  test(`manual entry enables match report with all business ${authority}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const w = createWorld({
       country: 'ENG',
@@ -134,17 +136,15 @@ for (const authority of ['direct', 'delegated'] as const) {
     w.settings!.observations.matchEve = false;
     await importResponsibilityCareer(page, w);
     const date = await page.getByTestId('game-date').innerText();
-    await page.getByTestId('intervention-trigger').click();
-    const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-    await chooseOption(dialog.getByRole('combobox', { name: '진행 모드', exact: true }), 'manual');
-    await expect(dialog).toContainText('수동 모드에는 경기 이벤트가 필요해요');
-    await expect(dialog.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+    await configureResponsibilities(page, { mode: 'manual' });
+    await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
+    const { openOffice } = await import('./events');
+    const office = await openOffice(page);
     await expect(
-      dialog.getByRole('checkbox', { name: '경기 전날 이벤트', exact: true }),
-    ).not.toBeChecked();
-    await expect(
-      dialog.getByRole('button', { name: '경기 전날 이벤트 켜기', exact: true }),
-    ).toBeVisible();
+      office
+        .getByRole('group', { name: '경기 전날 보고', exact: true })
+        .getByRole('button', { name: '받기', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });
 }

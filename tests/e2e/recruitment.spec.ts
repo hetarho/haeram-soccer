@@ -18,8 +18,8 @@ import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 
 async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '전체 메뉴' });
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
@@ -338,11 +338,11 @@ test('keeps the clock running while comparing candidates away from home until th
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 2일');
-  // Away from home the clock collapses to its buttons and keeps running.
+  // The reserved transport remains available and keeps running away from home.
   await openMarket(page);
-  const mini = page.getByTestId('mini-clock');
+  const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
   await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
-  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(1);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const filter = await marketFilters(page);
   await filter
@@ -393,18 +393,19 @@ test('the market ends with who answers offers and names the recruitment level, o
   await expect(owner).toContainText('위임');
 
   // The local ownership link opens the shared explicit-apply screen.
-  await owner.getByRole('button', { name: /위임·진행 설정 열기$/ }).click();
-  const dialog = page.getByRole('dialog', { name: '위임·진행 설정', exact: true });
-  await expect(dialog.getByRole('combobox', { name: '선수 매각', exact: true })).toHaveAttribute(
-    'data-value',
-    'delegated',
-  );
-  await expect(dialog.getByRole('combobox', { name: '선수 영입', exact: true })).toHaveAttribute(
-    'data-value',
-    'delegated',
-  );
-  await dialog.getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(dialog).toBeHidden();
+  await owner.getByRole('button', { name: /구단주 사무실 열기$/ }).click();
+  const office = page.getByTestId('owner-office');
+  for (const name of ['선수 매각', '선수 영입'])
+    await expect(
+      office
+        .getByRole('group', { name, exact: true })
+        .getByRole('button', { name: '위임', exact: true }),
+    ).toHaveAttribute('aria-pressed', 'true');
+  await page
+    .getByRole('navigation')
+    .getByRole('button', { name: '선수단·스태프', exact: true })
+    .click();
+  await marketInfo(page);
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();

@@ -13,7 +13,7 @@ test('opens an own match material from its report and from the fixture notebook'
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await watchNext(page);
+  await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });

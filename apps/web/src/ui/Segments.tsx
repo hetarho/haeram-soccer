@@ -1,8 +1,8 @@
 import s from './App.module.css';
 
 /**
- * A choice between views inside a tab (→WEB-69): one pressed segment in a track. `wrap` lets
- * many segments flow onto further rows on narrow screens instead of squeezing their labels.
+ * A choice between views inside a tab (→WEB-69): one pressed segment in a track. Choices reflow
+ * before their labels are squeezed; `wrap` reserves more width for longer segment names.
  */
 export function Segments<T extends string>({
   label,
