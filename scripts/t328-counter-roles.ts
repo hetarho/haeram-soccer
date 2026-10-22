@@ -8,13 +8,16 @@
  *
  *   pnpm exec tsx scripts/t328-counter-roles.ts --variant base --behaviour settled2
  *     --partition calibration --round 0 --per 300 --core 1200
- *     --set all|counter|press|counterpress|others|none --only counter-press,press-counter
+ *     --set all|counter|press|counterpress|<tactic+tactic>|others|none
+ *     --only counter-press,press-counter --gap 600
  *     --jobs 4 --trace 40 --chunk 150 --out <file.json>
  *
  * `--set counter` plays only the pairings with counter, `press` those with press, `counterpress`
- * either, `all` every pairing (the base run the report pools the rest from); `--only` narrows to
+ * either (`press+balanced` and the like name any tactics), `all` every pairing (the base run the report pools the rest from); `--only` narrows to
  * the named pairings; `--trace` observes that many matches a venue of counter v press for through
- * balls received in behind. Read the output with scripts/t328-counter-roles-report.ts.
+ * balls received in behind; `--gap N` also plays every gap condition N times (T336: MATCH-2's
+ * outcome curve under the same overrides, kept as gap and 90-minute score only). Read the output
+ * with scripts/t328-counter-roles-report.ts.
  */
 import { fork } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
@@ -39,6 +42,7 @@ import {
 import {
   buildInvariantReport,
   conditionOf,
+  CORPUS_CONFIG,
   type MatchSample,
   type Partition,
 } from './lib/match-parity';
@@ -211,7 +215,14 @@ function playJob(job: Job) {
   }
   const invariants = buildInvariantReport(samples).filter((x) => x.failed).length;
   const slim = samples.map((s) =>
-    c.family === 'tactics'
+    c.family === 'gap'
+      ? {
+          record: { score: s.record.regulation ?? s.record.score },
+          incidentsTracked: true,
+          condition: s.condition,
+          gap: s.gap,
+        }
+      : c.family === 'tactics'
       ? {
           record: {
             ...s.record,
@@ -254,18 +265,20 @@ if (args.includes('--child')) {
   const workers = Number(opt('jobs', '4'));
   const chunk = Number(opt('chunk', '150'));
   const out = opt('out', `t328-${variant}.json`);
+  // The tactics whose pairings a `--set` of tactic names (`counter`, `press+balanced`, …) plays.
+  const setTactics = (set === 'counterpress' ? 'counter+press' : set).split('+');
+  if (!['all', 'none', 'others'].includes(set))
+    for (const t of setTactics)
+      if (!TACTICS.includes(t as Tactic)) throw new Error(`unknown --set ${set}`);
   const conditions: { id: string; count: number; trace: number }[] = [];
   for (const h of TACTICS)
     for (const a of TACTICS) {
       const withCounter = h === 'counter' || a === 'counter';
-      const withPress = h === 'press' || a === 'press';
       const id = `tactics:${h}-${a}`;
       if (
         set === 'none' ||
-        (set === 'counter' && !withCounter) ||
-        (set === 'press' && !withPress) ||
-        (set === 'counterpress' && !withCounter && !withPress) ||
         (set === 'others' && withCounter) ||
+        (!['all', 'others'].includes(set) && !setTactics.some((t) => t === h || t === a)) ||
         (only.length > 0 && !only.includes(id))
       )
         continue;
@@ -273,6 +286,10 @@ if (args.includes('--child')) {
       conditions.push({ id, count: per, trace: pressCounter ? trace : 0 });
     }
   if (core > 0) conditions.push({ id: 'core:equal-top-tier', count: core, trace: 0 });
+  const gap = Number(opt('gap', '0'));
+  if (gap > 0)
+    for (const c of CORPUS_CONFIG.conditions)
+      if (c.family === 'gap') conditions.push({ id: c.id, count: gap, trace: 0 });
   const queue: Job[] = conditions.flatMap((c) =>
     Array.from({ length: Math.ceil(c.count / chunk) }, (_, k) => ({
       condition: c.id,
@@ -320,6 +337,7 @@ if (args.includes('--child')) {
       round,
       per,
       core,
+      gap,
       seconds: (performance.now() - started) / 1000,
       chunks: done,
     }),
