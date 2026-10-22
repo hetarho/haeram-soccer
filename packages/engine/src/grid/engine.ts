@@ -383,7 +383,7 @@ export function playGrid(setup: GridSetup): GridResult {
       case 'foul': {
         const [fouledSide, fouled] = o.on ?? [side, idx];
         const fouler = other(fouledSide);
-        tally.foul(fouler, o.by, fouled);
+        tally.foul(fouler, o.by, fouled, attackFrame(fouler, o.at));
         pending = foulRestart(s, fouledSide, o.at);
         if (candidate) s.ball = [o.at[0], o.at[1]];
         const verdict = cardForFoul(
@@ -574,7 +574,7 @@ export function playGrid(setup: GridSetup): GridResult {
         const o = resolveTakeOn(s, side, idx, tags, r);
         if (opposed) tally.takeOnAttempt(side, idx);
         if (o.kind === 'complete') {
-          if (opposed) tally.dribble(side, idx);
+          if (opposed) tally.dribble(side, idx, from);
           tally.carryEvent(side, idx, from, attackFrame(side, o.to));
           if (opposed) justBeat = [side, idx];
         }

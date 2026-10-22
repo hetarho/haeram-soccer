@@ -6,7 +6,7 @@ import { M } from '../grid/record';
 import { finishing, targetChance } from '../match';
 import { AGGREGATE_CONFIG } from './config';
 import { buildAggregateInput, fullParticipation } from './input';
-import { inBoxCell, isPassKind, teamFactsIssues, xtGain } from './ledger';
+import { inBoxCell, isPassKind, looseBalls, teamFactsIssues, xtGain } from './ledger';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
   AggregateInput,
@@ -150,19 +150,24 @@ describe('aggregate team facts', () => {
           total(own, (mv) => (inBoxCell(mv.to) && !inBoxCell(mv.from) ? mv.completed : 0)),
         );
         expect(t[TD.xtAdded]).toBe(total(own, (mv) => mv.completed * xtGain(mv.from, mv.to)));
-        // The ball this side wins is the ball the opponent loses, where it lost it.
-        const lost = (upTo: number) =>
+        // The ball this side wins is the ball the opponent loses, where it lost it: tackled and
+        // intercepted, then (high turnovers, MATCH-13) loose and (PPDA) a take-on that beat us.
+        const lost = (upTo: number, more: (mv: (typeof own)[number]) => number = () => 0) =>
           total(opp, (mv) =>
             isPassKind(mv.kind)
               ? band(mv.to) <= upTo
-                ? mv.intercepted
+                ? mv.intercepted + more(mv)
                 : 0
               : band(mv.from) <= upTo
-                ? mv.attempts - mv.completed
+                ? mv.attempts - mv.completed + more(mv)
                 : 0,
           );
-        expect(t[TD.highTurnovers]).toBe(lost(2));
-        expect(t[TD.pressActions]).toBe(lost(4));
+        expect(t[TD.highTurnovers]).toBe(lost(2, looseBalls));
+        const fouled = f.ledger.sides[1 - side]!.fouled;
+        const fouls = fouled.reduce((n, x) => n + (band(x.cell) <= 4 ? x.n : 0), 0);
+        expect(t[TD.pressActions]).toBe(
+          lost(4, (mv) => (mv.kind === 'takeOn' ? mv.completed : 0)) + fouls,
+        );
         expect(m[M.tackles]! + m[M.interceptions]!).toBe(lost(7));
         expect(t[TD.throwIns]).toBe(total(opp, (mv) => mv.outTouch));
       }

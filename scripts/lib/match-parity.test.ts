@@ -698,7 +698,7 @@ describe('MATCH-29 tactic pairings', () => {
   const TACTICS = TACTIC_PAIRING_TARGET.tactics;
   const z = normalQuantile(0.975);
   interface Readings {
-    /** Minutes in possession, home then away. */
+    /** Possession as a part of 90 (MATCH-3's pass share), home then away. */
     possession?: [number, number];
     freshness?: [number, number];
   }
@@ -1203,7 +1203,7 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       expect(kinds).toHaveLength(1);
       if ('band' in c) {
         expect(c.band[0]).toBeLessThan(c.band[1]);
-        expect(c.source).toMatch(/StatsBomb|FBref/);
+        expect(c.source).toMatch(/StatsBomb|FBref|Opta/);
       }
       if ('matchTarget' in c) expect(TARGET_BANDS.some((t) => t.id === c.matchTarget)).toBe(true);
       if ('unbanded' in c) expect(c.unbanded.length).toBeGreaterThan(40);
@@ -1211,9 +1211,22 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
   });
 
   it('gives MATCH-30 verdicts and lists the unbanded counters', () => {
-    // Synthetic levels: key passes and box shots inside, through balls far outside (T284's ~40).
+    // Synthetic levels: key passes and box shots inside, through balls far outside (T284's ~40);
+    // PPDA is the opponent's build-up passes over the side's press actions (320 / 25 = 12.8).
     const rows = advancedCounterVerdicts(
-      matches(60, { keyPasses: 9, boxShots: 7.2, throughBalls: 40, crosses: 16 }, 90),
+      matches(
+        60,
+        {
+          keyPasses: 9,
+          boxShots: 7.2,
+          throughBalls: 40,
+          crosses: 16,
+          highTurnovers: 6.5,
+          buildUpPasses: 320,
+          pressActions: 25,
+        },
+        90,
+      ),
     );
     const by = new Map(rows.map((r) => [r.id, r]));
     expect(rows).toHaveLength(ADVANCED_COUNTER_TARGET.counters.length);
@@ -1226,11 +1239,17 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     // A counter MATCH-23 bands reads that row.
     expect(by.get('crosses')).toMatchObject({ status: 'inside', matchTarget: 'crosses' });
     // Unbanded counters carry their reason and their measured level, never a verdict.
-    for (const id of ['lineBreakingPasses', 'ppda', 'highTurnovers', 'fieldTilt']) {
+    for (const id of ['lineBreakingPasses', 'fieldTilt']) {
       expect(by.get(id)!.status).toBe('unbanded');
       expect(by.get(id)!.reason).toBeDefined();
       expect(by.get(id)!.band).toBeUndefined();
     }
+    // T327 counts both under MATCH-13 r18's published conventions and bands them from Opta's
+    // league-season figures (docs/MATCH-BASELINES.md), never the engines' output.
+    expect(by.get('highTurnovers')).toMatchObject({ status: 'inside', band: [5.7, 7.5] });
+    expect(by.get('highTurnovers')!.value).toBeCloseTo(6.5, 9);
+    expect(by.get('ppda')).toMatchObject({ status: 'inside', band: [12, 14] });
+    expect(by.get('ppda')!.value).toBeCloseTo(12.8, 9);
     expect(by.get('lineBreakingPasses')!.value).toBe(0);
     // Too few matches are underpowered; a record without detail rows is missing.
     expect(advancedCounterVerdicts(matches(10, { keyPasses: 9 }))[0]!.status).toBe('underpowered');
@@ -1240,7 +1259,8 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     expect(lines[0]).toContain(
       `target v${ADVANCED_COUNTER_TARGET.version}, ${MATCH_PARITY_VERSION}`,
     );
-    expect(lines.some((l) => l.includes('ppda: unbanded'))).toBe(true);
+    expect(lines.some((l) => l.includes('fieldTilt: unbanded'))).toBe(true);
+    expect(lines.some((l) => l.includes('ppda: inside [12, 14]'))).toBe(true);
   });
 
   it("lists MATCH-23's trace-only rows as detailed-only on the aggregate path", () => {

@@ -21,7 +21,7 @@ import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-4';
+export const MATCH_PARITY_VERSION = 'match-parity-5';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
@@ -102,7 +102,8 @@ const TEAM_METRIC_META: Record<keyof typeof M, CounterMeta> = {
   dribbles: { label: 'successful take-ons', source: 'MATCH-3' },
   saves: { label: 'saves', source: 'MATCH-3' },
   minutes: { label: 'match length', stored: 'minutes', source: 'MATCH-3' },
-  possession: { label: 'minutes in possession', stored: 'minutes', source: 'MATCH-3' },
+  // MATCH-3 r19: the share of both sides' attempted passes, recorded as a part of 90.
+  possession: { label: 'possession (pass share of 90)', stored: 'minutes', source: 'MATCH-3' },
 };
 
 const TEAM_DETAIL_META: Record<keyof typeof TD, CounterMeta> = {
@@ -116,7 +117,10 @@ const TEAM_DETAIL_META: Record<keyof typeof TD, CounterMeta> = {
   takeOns: { label: 'take-ons attempted', source: 'MATCH-13' },
   highTurnovers: { label: 'high turnovers', source: 'MATCH-13' },
   buildUpPasses: { label: 'build-up pass attempts (opponent PPDA numerator)', source: 'MATCH-13' },
-  pressActions: { label: 'press tackles and interceptions (PPDA denominator)', source: 'MATCH-13' },
+  pressActions: {
+    label: 'press tackles, interceptions, challenges and fouls (PPDA denominator)',
+    source: 'MATCH-13',
+  },
   boxEntries: { label: 'box entries', source: 'MATCH-13' },
   frontOfBoxEntries: { label: 'front-of-box entries', source: 'MATCH-13' },
   lineBreakingPasses: { label: 'line-breaking passes', source: 'MATCH-13' },
@@ -2132,16 +2136,20 @@ export type AdvancedCounter = {
 
 const SB = 'StatsBomb open data 2015/16 (Premier League, La Liga, Serie A, Ligue 1), computed';
 const OPTA = 'FBref (Opta) squad tables 2017/18–2023/24, five leagues';
+const OPTA_SEQUENCES =
+  'Opta via The Analyst team sequence stats 2024/25–2025/26, five leagues (league totals: high turnovers per team-match, PPDA as opposition passes ÷ defensive actions)';
 /**
  * MATCH-30's real-football level of every MATCH-13 advanced counter for equal top-tier sides, per
  * team per match (docs/MATCH-BASELINES.md "MATCH-13 고급 지표 기준값", which holds each band's
  * sources, league-seasons and mapping): a band is the span of the cited league-season means
  * rounded outward, never an engine's output. Counters MATCH-23 already bands point at that row;
  * a counter without a comparable public source is listed as unbanded with its reason and held to
- * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's.
+ * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's. v2 (T327): high
+ * turnovers and PPDA count under MATCH-13 r18's published conventions and are banded from Opta's
+ * league-season figures under those conventions.
  */
 export const ADVANCED_COUNTER_TARGET = {
-  version: 1,
+  version: 2,
   source: 'MATCH-30',
   counters: [
     {
@@ -2238,8 +2246,8 @@ export const ADVANCED_COUNTER_TARGET = {
       label: 'high turnovers (team)',
       reads: 'td.highTurnovers',
       unit: 'count',
-      unbanded:
-        "sources disagree under MATCH-13's zone: StatsBomb 2015/16 open-play possessions won in the final third 1.0–1.2 a team against its ball-winning events there 12–13, and Opta publishes sequences from 40 m or less (about 7.5 a team); decision requested",
+      band: [5.7, 7.5],
+      source: OPTA_SEQUENCES,
     },
     {
       id: 'ppda',
@@ -2247,8 +2255,8 @@ export const ADVANCED_COUNTER_TARGET = {
       label: 'PPDA',
       reads: 'ratio.ppda',
       unit: 'ratio',
-      unbanded:
-        "published PPDA (Opta, StatsBomb, Understat) divides by defensive actions with fouls and challenges, not MATCH-13's tackles + interceptions; computed from StatsBomb 2015/16 under MATCH-13 it is 33–44, but StatsBomb's tackles run about a quarter below FBref's, which MATCH-23's tackle band reads; decision requested",
+      band: [12, 14],
+      source: OPTA_SEQUENCES,
     },
     {
       id: 'fieldTilt',
