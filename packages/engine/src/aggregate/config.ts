@@ -83,10 +83,14 @@ export const AGGREGATE_CONFIG = {
   crosses: { scale: 0.6, completion: 0.17, goalArea: 0.25 },
   /** Completed passes of each kind played beyond an opponent line. */
   lineBreaking: { short: 0.1, long: 0.45, through: 0.9 },
-  /** How a failed pass ends: offside (into the final third), touchline, byline, interception. */
+  /**
+   * How a failed pass ends: offside (into the final third), touchline, byline, interception.
+   * T369: touch 0.42 → 0.39, since passes played wide of the box now fail toward the touchline
+   * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them).
+   */
   failed: {
     offside: { forward: 0.06, through: 0.3 },
-    touch: 0.42,
+    touch: 0.39,
     byline: 0.7,
     intercepted: 0.16,
     /** Of the byline outs from a cross or a pass into the box, deflections giving a corner. */
