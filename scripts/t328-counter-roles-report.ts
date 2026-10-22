@@ -155,9 +155,7 @@ if (coreSamples.length) {
 }
 
 // MATCH-2's outcome curve from the run's gap conditions (T336), when it played them.
-const gapSamples = v.chunks
-  .filter((c) => c.condition.startsWith('gap:'))
-  .flatMap((c) => c.samples);
+const gapSamples = v.chunks.filter((c) => c.condition.startsWith('gap:')).flatMap((c) => c.samples);
 if (gapSamples.length) {
   const curve = buildOutcomeTargetReport(gapSamples);
   console.log(

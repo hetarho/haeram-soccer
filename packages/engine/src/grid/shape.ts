@@ -47,16 +47,7 @@ export const SHAPE_CONFIG = {
         compact: 0.35,
       },
       press: { advance: 4, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
-      counter: {
-        advance: 2,
-        defend: -8,
-        line: [24, 42],
-        press: 11,
-        counterPress: 0,
-        compact: 0.3,
-        upfield: 0.3,
-        upfieldSeconds: 0,
-      },
+      counter: { advance: 2, defend: -8, line: [24, 42], press: 11, counterPress: 0, compact: 0.3 },
       balanced: {
         advance: 4,
         defend: -6,
@@ -129,14 +120,6 @@ export interface TacticShape {
   press: number;
   counterPress: number;
   compact: number;
-  /**
-   * Without the ball, how far the block follows a ball in the opponents' half instead of
-   * `compact` (candidate shapes only, T336): below it the side drops to its block rather than
-   * standing up to contest the ball high; with `upfieldSeconds` above 0 only that many seconds
-   * after it lost the ball.
-   */
-  upfield?: number;
-  upfieldSeconds?: number;
 }
 
 /** The shape `side`'s tactic plays on this fixture's model. */
@@ -264,12 +247,7 @@ export function shapePlace(
       y += spot[1] < CENTRE ? shift[1] : spot[1] > CENTRE ? -shift[1] : 0;
     }
   } else x += cfg.defend;
-  const dropping =
-    !inPossession &&
-    b[0] > MID &&
-    cfg.upfield !== undefined &&
-    (!cfg.upfieldSeconds || lostRecently(s, side, cfg.upfieldSeconds));
-  x += (b[0] - MID) * (dropping ? cfg.upfield! : cfg.compact);
+  x += (b[0] - MID) * cfg.compact;
   y += (b[1] - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
     const foe = other(side);

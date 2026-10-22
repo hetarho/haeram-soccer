@@ -223,19 +223,19 @@ function playJob(job: Job) {
           gap: s.gap,
         }
       : c.family === 'tactics'
-      ? {
-          record: {
-            ...s.record,
-            players: [],
-            highlights: [],
-            lineCounts: undefined,
-            incidents: undefined,
-          },
-          incidentsTracked: false,
-          condition: s.condition,
-          freshness: s.freshness,
-        }
-      : s,
+        ? {
+            record: {
+              ...s.record,
+              players: [],
+              highlights: [],
+              lineCounts: undefined,
+              incidents: undefined,
+            },
+            incidentsTracked: false,
+            condition: s.condition,
+            freshness: s.freshness,
+          }
+        : s,
   );
   return {
     condition: job.condition,
