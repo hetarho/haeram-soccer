@@ -116,6 +116,8 @@ interface Latent {
   tempo: number;
   possession: number;
   attack: [number, number];
+  /** Each side's finishing on the day: a factor on its chances' goal probability (T369). */
+  finishing: [number, number];
 }
 interface Period {
   period: AggregatePeriod;
@@ -148,11 +150,17 @@ export function generateTeamFacts(
   const issues = participationIssues(input, participation);
   if (issues.length) throw new Error(`집계 출전 계획 불일치: ${issues.slice(0, 5).join('; ')}`);
   const r = streams.draw('latent');
-  const latent: Latent = {
-    tempo: Math.exp(C.latent.tempoSd * normal(r)),
-    possession: C.latent.possessionSd * normal(r),
-    attack: [Math.exp(C.latent.attackSd * normal(r)), Math.exp(C.latent.attackSd * normal(r))],
-  };
+  const tempo = Math.exp(C.latent.tempoSd * normal(r)),
+    possession = C.latent.possessionSd * normal(r);
+  const attack: [number, number] = [
+    Math.exp(C.latent.attackSd * normal(r)),
+    Math.exp(C.latent.attackSd * normal(r)),
+  ];
+  // Drawn after the others, and only when set, so a zero spread leaves every other draw as it was.
+  const sd = C.latent.finishingSd;
+  const day = () => (sd > 0 ? Math.exp(sd * normal(r) - (sd * sd) / 2) : 1);
+  const finishing: [number, number] = [day(), day()];
+  const latent: Latent = { tempo, possession, attack, finishing };
   const periods: AggregatePeriod[] =
     participation.length === 120 ? ['regulation', 'extra'] : ['regulation'];
   const emptySide = (side: AggregateSide): AggregateSideLedger => {
@@ -287,18 +295,39 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
         const straight = cell(to, lane),
           drifted = cell(to, inward(lane, r));
         const extra = kind === 'long' ? C.completion.long : 0;
-        group(c, straight, kind, k - drift, q(d.forward + extra, straight));
-        group(c, drifted, kind, drift, q(d.forward + extra, drifted));
+        for (const [to, n] of [
+          [straight, k - drift],
+          [drifted, drift],
+        ] as const) {
+          // From a half-space or a wing, a pass aimed into the box is played wide of it this often.
+          const wide =
+            C.forward.outside > 0 && lane !== 2 && inBoxCell(to) && !inBoxCell(c)
+              ? binomial(r, n, C.forward.outside)
+              : 0;
+          const flank = cell(cellBand(to), lane < 2 ? 0 : 4);
+          group(c, to, kind, n - wide, q(d.forward + extra, to));
+          group(c, flank, kind, wide, q(d.forward + extra, flank));
+        }
       }
     }
     if (lateral) {
+      const L = C.lateral;
       const lanes = lane === 0 ? [1] : lane === 4 ? [3] : [lane - 1, lane + 1];
-      const left = lanes.length === 1 ? lateral : binomial(r, lateral, 0.5);
+      // From a cut-back zone the first lane is outward on the left and inward on the right.
+      const cutBackZone = band === 7 && (lane === 1 || lane === 3);
+      const first = cutBackZone ? (lane === 1 ? 1 - L.cutBackInward : L.cutBackInward) : 0.5;
+      const left = lanes.length === 1 ? lateral : binomial(r, lateral, first);
+      // Beside the box, the share not played inside stays on the flank in the same cell.
+      const along =
+        lanes.length === 1 && band >= 6 && L.flankIntoBox < 1
+          ? lateral - binomial(r, lateral, L.flankIntoBox)
+          : 0;
       lanes.forEach((l, i) => {
         const to = cell(band, l);
-        const k = i === 0 ? left : lateral - left;
+        const k = i === 0 ? left - along : lateral - left;
         group(c, to, pullBack(c, to) ? 'cutBack' : 'short', k, q(d.lateral, to));
       });
+      group(c, c, 'short', along, q(d.lateral, c));
     }
     if (backward) {
       const to = cell(band - 1, lane);
@@ -446,7 +475,8 @@ function carriesFrom(m: Match, p: Period, side: AggregateSide, r: Rng, c: number
     ((passes * ref.carry) / ref.pass) * C.carries.scale * tacticOf(m, side).carries,
   );
   const lost = binomial(r, carries, C.carries.lost);
-  const progressive = band < 7 ? binomial(r, carries - lost, C.carries.progressive) : 0;
+  const intoBox = inBoxCell(ahead) && !inBoxCell(c) ? C.carries.intoBox : 1;
+  const progressive = band < 7 ? binomial(r, carries - lost, C.carries.progressive * intoBox) : 0;
   push('carry', c, carries - progressive, carries - lost - progressive);
   push('carry', ahead, progressive, progressive);
   const takeOns = poisson(r, ((passes * ref.takeOn) / ref.pass) * C.takeOns.scale);
@@ -514,6 +544,7 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
     quality: Math.exp(margin / C.xg.matchupScale),
     shooting: p.units[side].shooting,
     keeping: p.units[o].keeping,
+    finishing: m.latent.finishing[side],
   };
 }
 type Attack = ReturnType<typeof attackOf>;
@@ -549,7 +580,7 @@ function shoot(
         C.penalty.min,
         C.penalty.max,
       )
-    : clamp((xg / 100) * m.input.access.finishing(a.shooting, a.keeping), 0.01, 0.8);
+    : clamp((xg / 100) * m.input.access.finishing(a.shooting, a.keeping) * a.finishing, 0.01, 0.8);
   // A defender may block the shot first; the rest finish on the shared curves, scaled so the
   // chance still scores as often as its quality and the finisher say.
   const blocked = !penalty && r() < C.shots.blocked;

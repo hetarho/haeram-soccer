@@ -14,7 +14,7 @@ export const AGGREGATE_CONFIG = {
   /** Seconds of a period the ball is in play (MATCH-23: 54–58 of 90 minutes). */
   ballInPlay: 0.62,
   /** The match's shared latent state: its tempo and how the ball splits beyond the prepared chance. */
-  latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12 },
+  latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12, finishingSd: 0 },
   possession: {
     min: 0.22,
     max: 0.78,
@@ -55,8 +55,18 @@ export const AGGREGATE_CONFIG = {
     /** Completion lost in the own half per unit of the opponent preset's press above 1. */
     pressed: 0.12,
   },
-  /** Completed forward passes skip a band this often, drift a lane this often. */
-  forward: { long: 0.16, drift: 0.4 },
+  /**
+   * Completed forward passes skip a band this often, drift a lane this often. `outside`: a forward
+   * short or long pass from a half-space or a wing aimed into the box is played wide of it, to the
+   * flank cell of the same band, this often (T369).
+   */
+  forward: { long: 0.16, drift: 0.4, outside: 0 },
+  /**
+   * Lateral passes (T369): from the flank cells beside the box (`flankIntoBox`) the share played
+   * inside into the box, the rest along the flank in the same cell; from the cut-back zones
+   * (`cutBackInward`) the share played inward across the goal area, the rest out to the flank.
+   */
+  lateral: { flankIntoBox: 1, cutBackInward: 0.5 },
   /** T323: 0.05 / 0.38 → 0.033 / 0.33 for MATCH-30's through balls (2.0–2.2 a team, 0.6–0.85 completed). */
   through: {
     /** Share of forward attempts from the middle and front-of-box bands' inner lanes. */
@@ -88,6 +98,8 @@ export const AGGREGATE_CONFIG = {
     scale: 0.8,
     /** T323: 0.4 → 0.48 for MATCH-30's progressive carries (58.5–63 a team). */
     progressive: 0.48,
+    /** Scale on that share for a carry from outside the box whose next cell is in it (T369). */
+    intoBox: 1,
     lost: 0.05,
   },
   takeOns: {
