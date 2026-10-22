@@ -26,7 +26,7 @@ import { GRID_BALL_CONFIG } from './movement';
 import { M, RUNNING } from './record';
 import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
-import type { TraceEntry } from './trace';
+import type { TraceEntry, TraceKick } from './trace';
 
 /** Motion states by the index a trace entry stores them under. */
 export const MOTION_STATES = [
@@ -93,12 +93,14 @@ export const PLAYBACK_CONFIG = {
   takerWalk: 0.9,
   /**
    * Candidate traces (→MATCH-12): metres per match second at which a restart's taker is drawn
-   * walking to the spot. He arrives no earlier than the ball is set down and no later than his kick.
+   * walking to the spot. He arrives no earlier than the ball is set down and no later than the
+   * restart is taken (its recorded kick, T359; on older traces his kick).
    */
   takerSpeed: 6,
   /**
    * Candidate traces: match seconds at least between drawn player samples. Players move straight
-   * between snapshots and waypoints; breakpoints closer than this share a sample.
+   * between snapshots (a restart's kick among them, T359) and waypoints; breakpoints closer than
+   * this share a sample, but a restart's kick is always drawn.
    */
   sampleSpacing: 2,
   /** Metres: farther from his target a player recovers, nearer the ball an attacker supports, nearer an opponent a defender marks. */
@@ -392,17 +394,43 @@ function observed(
   };
 }
 
-function slotIn(e: TraceEntry, side: 0 | 1, idx: number): number {
+/** What a sample draws its players from: an entry's snapshot, or a restart's kick (T359). */
+type Snap = Omit<TraceKick, 'elapsed'>;
+
+function slotIn(e: Pick<Snap, 'slots'>, side: 0 | 1, idx: number): number {
   for (let k = 0; k < 11; k++) if (e.slots[side * 11 + k] === idx) return k;
   return -1;
 }
 
-/** A player's place in an entry's snapshot, in units of the first-half orientation. */
-function placeIn(e: TraceEntry, side: 0 | 1, idx: number): Units | undefined {
+/** A player's place in a snapshot, in units of the first-half orientation. */
+function placeIn(
+  e: Pick<Snap, 'positions' | 'slots'>,
+  side: 0 | 1,
+  idx: number,
+): Units | undefined {
   const k = slotIn(e, side, idx);
   if (k < 0) return undefined;
   const at = (side * 11 + k) * 2;
   return units([e.positions[at]!, e.positions[at + 1]!]);
+}
+
+/** The kick of the restart entry `b` that follows `a` (T359), when it lies between them. */
+const kickAfter = (a: TraceEntry, b: TraceEntry | undefined): TraceKick | undefined =>
+  b?.kick && b.kick.elapsed > a.elapsed && b.kick.elapsed < b.elapsed ? b.kick : undefined;
+
+/**
+ * The snapshot a sample at `time` shows the players' targets, states and intentions from: the
+ * last entry's at or before it, except during a restart recorded with its kick (T359,
+ * →MATCH-17). Its preparation shows the kick's snapshot, the restart's places that the walk-in
+ * heads for; from the kick it shows the restart's entry, whose jobs start at the kick.
+ */
+function shownAt(P: Period, time: number): Snap {
+  const j = Math.max(0, lastAt(P.times, time));
+  const a = P.entries[j]!;
+  const b = P.entries[j + 1];
+  const kick = kickAfter(a, b);
+  if (!kick || time <= a.elapsed) return a;
+  return time <= kick.elapsed ? kick : b!;
 }
 
 /** Where a player stands at match second `time`, or undefined when he is not on the pitch. */
@@ -415,6 +443,10 @@ function positionAt(P: Period, side: 0 | 1, idx: number, time: number): Units | 
   const b = P.entries[j + 1];
   if (!b) return here;
   const there = placeIn(b, side, idx) ?? here;
+  // A restart recorded with its kick (T359): the walk-in ends where the kick found him, the
+  // delivery starts there.
+  const kick = kickAfter(a, b);
+  const kicked = kick ? placeIn(kick, side, idx) : undefined;
   const path = P.paths[j + 1];
   if (path?.route && path.side === side && path.idx === idx) {
     let t0 = a.elapsed,
@@ -432,6 +464,10 @@ function positionAt(P: Period, side: 0 | 1, idx: number, time: number): Units | 
     }
     return lerp(path.at, there, (time - path.kick) / (b.elapsed - path.kick));
   }
+  if (kick && kicked)
+    return time <= kick.elapsed
+      ? lerp(here, kicked, (time - a.elapsed) / (kick.elapsed - a.elapsed))
+      : lerp(kicked, there, (time - kick.elapsed) / (b.elapsed - kick.elapsed));
   return lerp(here, there, (time - a.elapsed) / (b.elapsed - a.elapsed));
 }
 
@@ -626,15 +662,17 @@ function knotted(
       }
       case 'kick':
         if (spot) {
-          // The taker walks to the spot at a bounded pace, after the ball is set down, before his kick.
+          // The taker walks to the spot at a bounded pace, after the ball is set down, and stands
+          // on it when the restart is taken (its recorded kick, T359), else by his kick.
           const metres = Math.hypot(
             ((spot[0] - here[0]) * PITCH.length) / 100,
             ((spot[1] - here[1]) * PITCH.width) / 100,
           );
+          const ready = Math.min(t, e.kick?.elapsed ?? t);
           const arrive = clamp(
             start + metres / PLAYBACK_CONFIG.takerSpeed,
-            Math.min(placed ?? start, t),
-            t,
+            Math.min(placed ?? start, ready),
+            ready,
           );
           route.push([arrive, spot], [t, spot]);
           add(rest(cursor, t, spot));
@@ -810,17 +848,28 @@ export function stampAt(
 }
 
 /**
- * Sorted match seconds in (`from`, `to`], plus `from` itself when `open`, at least `spacing` apart
- * (`to` always kept, replacing a time too close before it): a candidate minute's sample or
- * ball-knot times.
+ * Sorted match seconds in (`from`, `to`], plus `from` itself when `open`, at least `spacing` apart:
+ * a candidate minute's sample or ball-knot times. `to` and the `keep` times (restarts' kicks,
+ * T359) are always kept, each replacing a time too close before it.
  */
-function instants(times: number[], from: number, to: number, open: boolean, spacing = 0) {
+function instants(
+  times: number[],
+  from: number,
+  to: number,
+  open: boolean,
+  spacing = 0,
+  keep: readonly number[] = [],
+) {
+  const kept = new Set([to, ...keep]);
   const out: number[] = [];
-  for (const t of [...times, to].sort((a, b) => a - b)) {
+  for (const t of [...times, ...keep, to].sort((a, b) => a - b)) {
     if (!(t > from || (open && t === from)) || t > to) continue;
     const last = out.at(-1);
     if (last === undefined || t - last > spacing) out.push(t);
-    else if (t === to && last !== to) out[out.length - 1] = to;
+    else if (kept.has(t) && last !== t) {
+      if (kept.has(last)) out.push(t);
+      else out[out.length - 1] = t;
+    }
   }
   return out;
 }
@@ -831,8 +880,9 @@ function instants(times: number[], from: number, to: number, open: boolean, spac
  *
  * Candidate traces (`setup.model`, →MATCH-12, WEB-32) carry explicit times instead of a pace: each
  * minute starts 60 s after the one before (`startSeconds`), players are sampled at their snapshots
- * and waypoints (at least `sampleSpacing` apart) and at the minute's end, the ball track adds each
- * knot at its own time (`ballTimes`), and `pace` is neutral. A period's last action running past its final minute is counted in that minute but not
+ * and waypoints (at least `sampleSpacing` apart, every restart's recorded kick kept, T359) and at
+ * the minute's end, the ball track adds each knot at its own time (`ballTimes`), and `pace` is
+ * neutral. A period's last action running past its final minute is counted in that minute but not
  * drawn, since a minute spans 60 s (`frameTimeIssues`).
  */
 export function buildFrames(result: GridResult, setup: GridSetup, seed: string): MatchFrame[] {
@@ -858,6 +908,13 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     // Candidate breakpoints: player snapshots and waypoints, and the ball's knots.
     const moves = candidate
       ? [...P.times, ...P.paths.flatMap((path) => path?.route?.map(([t]) => t) ?? [])]
+      : [];
+    // Every restart's recorded kick is drawn as its own sample, however close (T359).
+    const kicks = candidate
+      ? entries.flatMap((e, k) => {
+          const kick = k ? kickAfter(entries[k - 1]!, e) : undefined;
+          return kick ? [kick.elapsed] : [];
+        })
       : [];
     const knots = candidate ? entries.flatMap((e) => e.knots?.map((knot) => knot.at) ?? []) : [];
     let minuteStart = P.start;
@@ -889,7 +946,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
       // Candidate minutes draw exactly their 60 s; pre-feature ones spread their samples over the span.
       const drawn = candidate ? start + 60 : end;
       const sampleTimes = candidate
-        ? instants(moves, start, drawn, m === 0, PLAYBACK_CONFIG.sampleSpacing)
+        ? instants(moves, start, drawn, m === 0, PLAYBACK_CONFIG.sampleSpacing, kicks)
         : Array.from(
             { length: PLAYBACK_CONFIG.samplesPerMinute + 1 },
             (_, j) => start + (span * j) / PLAYBACK_CONFIG.samplesPerMinute,
@@ -929,7 +986,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
           : span / PLAYBACK_CONFIG.samplesPerMinute / SECONDS_PER_MOTION;
         previous = time;
         const ball = ballAt(P, time);
-        const snap = P.entries[Math.max(0, lastAt(P.times, time))]!;
+        const snap = shownAt(P, time);
         const now = new Map<number, Units>();
         const players = ([0, 1] as const).map((side) => {
           const list: PlayerMotion[] = [];
