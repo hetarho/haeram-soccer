@@ -228,8 +228,8 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T348 | Correct the measured set-piece placement and release lifecycle | MATCH ARCH | T325 T345 | todo |
-| T356 | Give possession its chances through runs outside a break | MATCH STAFF PLAYER ARCH | T345 | todo |
+| T348 | Correct the measured set-piece placement and release lifecycle | MATCH ARCH | T325 T345 | doing@261022.q8m5 |
+| T356 | Give possession its chances through runs outside a break | MATCH STAFF PLAYER ARCH | T345 | doing@261022.q8m5 |
 | T357 | Bring the candidate's strength curve back to MATCH-2's target | MATCH ARCH | T356 | todo |
 
 ## work
@@ -248,6 +248,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T348 T356 start (q8m5): side by side from a7719f0 (T325 and T345 integrated on `work/q8m5`)
 - 261022 create-task T356 T357 (q8m5, from T345's exit): possession's runs outside a break (explore 2h, beside T348) and the candidate strength curve (explore 3h); T323 and T286 wait for both
 - 261022 fix e2e (q8m5): business.spec:67 (founding plus eight cold reloads) runs as `test.slow()`; it timed out on Firefox CI 39791051931 at two different steps while every other job passed
 - 261022 T325 done (q8m5; explore exit, from k2r7's record): bit-identical grid speed-up merged over T336 (one conflict in `shapePlace`, T336's upfield factor kept); 15 digests re-recorded from main's own records and passing on the merged tree, 99 forced-tactic probe matches identical; own match 0.77 on the Xeon (context only), reference-machine timing left to T326/T286
@@ -267,4 +268,3 @@
 - 261022 update-ssot MATCH r20 WEB r124: explicit defensive set-piece responses and goal-presentation transitions; doing T325/T336 remain untouched. Todo T323/T286 need refreshed contracts and follow-up dependencies.
 - 261022 update-ssot MATCH WEB start: convert ideation/set-piece-defence-and-goal-feedback into the requested implementation backlog.
 - 261022 ideation set-piece-defence-and-goal-feedback ready: remaining tasks lack explicit corner-defence movement and goal feedback; add SSOT-backed follow-ups as requested.
-- 261022 ideation set-piece-defence-and-goal-feedback start (g8s2): standalone checkout assigned by the owner; inspect remaining coverage before adding work.
