@@ -14,7 +14,7 @@ export const AGGREGATE_CONFIG = {
   /** Seconds of a period the ball is in play (MATCH-23: 54–58 of 90 minutes). */
   ballInPlay: 0.62,
   /** The match's shared latent state: its tempo and how the ball splits beyond the prepared chance. */
-  latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12, finishingSd: 0 },
+  latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12 },
   possession: {
     min: 0.22,
     max: 0.78,
@@ -98,8 +98,6 @@ export const AGGREGATE_CONFIG = {
     scale: 0.8,
     /** T323: 0.4 → 0.48 for MATCH-30's progressive carries (58.5–63 a team). */
     progressive: 0.48,
-    /** Scale on that share for a carry from outside the box whose next cell is in it (T369). */
-    intoBox: 1,
     lost: 0.05,
   },
   takeOns: {

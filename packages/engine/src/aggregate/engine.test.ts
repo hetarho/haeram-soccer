@@ -20,6 +20,7 @@ import {
   settleParticipation,
   simulateAggregate,
 } from './engine';
+import { AGGREGATE_CONFIG } from './config';
 import { buildAggregateInput } from './input';
 import { deriveTeamFacts, ledgerIssues } from './ledger';
 import { rebalanceIssues, scoreBefore } from './participation';
@@ -296,6 +297,67 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     }
     expect(compared).toBeGreaterThan(200);
     expect(same / compared).toBeLessThan(0.05);
+  });
+
+  it('plays wide of the box, along the flank and out of the cut-back zones as configured (T369)', () => {
+    const { w, fixtures } = others(30);
+    const C = AGGREGATE_CONFIG as unknown as {
+      forward: { outside: number };
+      lateral: { flankIntoBox: number; cutBackInward: number };
+    };
+    const kept = { outside: C.forward.outside, lateral: { ...C.lateral } };
+    const band = (c: number) => Math.floor(c / 5),
+      lane = (c: number) => c % 5;
+    const inBox = (c: number) => band(c) >= 6 && lane(c) % 4 !== 0;
+    const tally = () => {
+      const n = { aimedIn: 0, wide: 0, flankIn: 0, along: 0, inward: 0 };
+      for (const f of fixtures) {
+        const prepared = prepareMatch(w, f);
+        const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+        const match = playAggregate(w, f, prepared, rosters);
+        expect(ledgerIssues(match.facts.ledger)).toEqual([]);
+        expect(validateFullMatchRecord(aggregateRecord(f, rosters, match))).toEqual([]);
+        for (const side of match.facts.ledger.sides)
+          for (const m of side.moves) {
+            if (m.setPiece) continue;
+            const ahead = band(m.to) > band(m.from);
+            const pass = m.kind === 'short' || m.kind === 'long';
+            if (pass && ahead && lane(m.from) !== 2 && !inBox(m.from)) {
+              if (inBox(m.to)) n.aimedIn += m.attempts;
+              else if (band(m.to) >= 6) n.wide += m.attempts;
+            }
+            const flank = band(m.from) >= 6 && lane(m.from) % 4 === 0;
+            if (flank && band(m.to) === band(m.from) && m.kind !== 'cross') {
+              if (inBox(m.to)) n.flankIn += m.attempts;
+              else if (m.to === m.from && pass) n.along += m.attempts;
+            }
+            const cutBackZone = band(m.from) === 7 && (lane(m.from) === 1 || lane(m.from) === 3);
+            if (cutBackZone && m.kind === 'cutBack') n.inward += m.attempts;
+          }
+      }
+      return n;
+    };
+    try {
+      // At one end every pass aimed into the box from wide goes wide of it, every lateral pass
+      // beside the box stays on the flank and none goes inward from a cut-back zone.
+      C.forward.outside = 1;
+      Object.assign(C.lateral, { flankIntoBox: 0, cutBackInward: 0 });
+      const none = tally();
+      expect(none).toMatchObject({ aimedIn: 0, flankIn: 0, inward: 0 });
+      expect(none.wide).toBeGreaterThan(0);
+      expect(none.along).toBeGreaterThan(0);
+      // At the other end nothing is played wide of the box or along the flank instead.
+      C.forward.outside = 0;
+      Object.assign(C.lateral, { flankIntoBox: 1, cutBackInward: 1 });
+      const all = tally();
+      expect(all.along).toBe(0);
+      expect(all.aimedIn).toBeGreaterThan(0);
+      expect(all.flankIn).toBeGreaterThan(0);
+      expect(all.inward).toBeGreaterThan(0);
+    } finally {
+      C.forward.outside = kept.outside;
+      Object.assign(C.lateral, kept.lateral);
+    }
   });
 
   it('produces valid man-short records in eras without substitutes', () => {
