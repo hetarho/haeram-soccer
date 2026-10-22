@@ -252,4 +252,3 @@
 - 261022 create-task MATCH r18: T327 (PPDA and high turnovers by the published conventions, both paths, sourced bands) after T322, before T323
 - 261022 update-ssot MATCH r18: MATCH-13 PPDA and high turnover follow the published conventions (from T322's decision requests)
 - 261022 create-task T325 T326 (explore): detailed own-match speed, bit-identical, and aggregate fixture cost with its accuracy trade-off, after T323 and before T286
-- 261022 T285 integrated (h3t6; explore exit: bit-identical optimisations, aggregate fixture ×0.53, candidate season ×0.69; every ARCH-31 throughput gate still fails; century checkpoint estimated 2.95–3.12 MiB)
