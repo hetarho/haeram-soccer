@@ -29,22 +29,12 @@ import {
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { moveAll, SHAPE_CONFIG, speedOf, startRuns } from './shape';
-import {
-  carryTo,
-  depart,
-  interruptAll,
-  losePass,
-  restartPlaces,
-  restartTaken,
-  takeBall,
-  updateIntentions,
-} from './intentions';
+import { moveAll, speedOf, startRuns } from './shape';
+import { carryTo, depart, interruptAll, losePass, takeBall, updateIntentions } from './intentions';
 import { attackFrame, PITCH } from './pitch';
 import {
   createState,
   kickOff,
-  kickOffPoint,
   onPitch,
   other,
   slotOf,
@@ -60,13 +50,12 @@ import {
   benchPoint,
   flightSeconds,
   heading,
-  prepareRestart,
+  prepareOnClock,
   readAt,
   reachSeconds,
   type BallSpeed,
   type MotionKnot,
   type Move,
-  type Placement,
 } from './movement';
 
 /** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
@@ -651,27 +640,15 @@ export function playGrid(setup: GridSetup): GridResult {
             ? s.elapsed + rs.dead
             : undefined;
         const nominal = rs.dead;
-        let knots: MotionKnot[] = [];
+        const prepared: { knots: MotionKnot[] } = { knots: [] };
         const res = playRestart(
           s,
           rs,
           r,
           ctx,
-          candidate && !transition
-            ? (_, restart, taker, scene) => {
-                const moves: Placement[] = scene ? [...scene.up, ...scene.marks] : [];
-                if (restart.kind === 'kickoff')
-                  for (const sd of [0, 1] as const)
-                    for (const gp of s.players[sd])
-                      if (onPitch(gp) && gp.slot >= 0)
-                        moves.push({ gp, to: kickOffPoint(setup, sd, gp.slot) });
-                const gp = s.players[restart.side][taker]!;
-                restartPlaces(s, [{ gp, to: restart.spot }, ...moves.filter((m) => m.gp !== gp)]);
-                knots = prepareRestart(s, restart, taker, rest, moves);
-                restartTaken(s, scene?.up ?? [], s.elapsed + SHAPE_CONFIG.setPiece.stay);
-              }
-            : undefined,
+          candidate && !transition ? prepareOnClock(rest, prepared) : undefined,
         );
+        const { knots } = prepared;
         if (candidate) {
           // A set piece is taken when the preparation ends; any wait past its nominal dead time is a delay.
           if (setPieceAt !== undefined) setPieceAt = s.elapsed;

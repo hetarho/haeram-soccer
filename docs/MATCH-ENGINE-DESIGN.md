@@ -39,8 +39,8 @@ Reference data:
 | `setup.ts`, `spots.ts` | `GridSetup`, `eraRules`, rosters, bench, takers, formation spots | T205 |
 | `state.ts` | `GridState`, `GridPlayer`, state creation, skill lookup | T205 |
 | `shape.ts` | tactic shapes, off-ball targets, movement, runs | T206 |
-| `movement.ts` | candidate model: bounded player motion, ball speeds, action timing, restart preparation | T274 |
-| `intentions.ts` | candidate model: individual intentions, their lifecycle, priorities and reasons | T276 |
+| `movement.ts` | candidate model: bounded player motion, ball speeds, action timing, restart preparation (`prepareOnClock`) | T274, T348 |
+| `intentions.ts` | candidate model: individual intentions, their lifecycle, priorities and reasons, set-piece jobs (`defendSetPiece`) | T276, T348 |
 | `coordination.ts` | candidate model: each side's support, press, cover, mark, recover and run jobs, planned from one snapshot | T277 |
 | `tags.ts` | per-touch tags | T207 |
 | `decide.ts` | action mix, target choice | T208 |
@@ -262,6 +262,7 @@ export const SHAPE_CONFIG = {
   setPiece: {                                          // T215, attack-frame metres of the attacking side
     box: [[98.5, 30.5], [98.5, 37.5], [95, 34], [93, 27], [93, 41]], edge: [86.5, 34],
     mark: 0.8, zonal: [[101.5, 31], [101.5, 37], [100.5, 34]], stayUp: 1, stay: 8,
+    zone: 3, keeper: { share: 0.25, depth: 4, line: 1, wide: 4.66 }, area: 30,   // T348, candidate model only
   },
 } as const;
 ```
@@ -295,8 +296,8 @@ export const SHAPE_CONFIG = {
   - Run draws come from the match stream and happen in roster order.
 - **Set pieces** (a corner, or a free kick crossed into the box; MATCH-18, T215):
   - The attacking side's five best headers (0.6 공중볼 + 0.4 몸싸움) take the `setPiece.box` spots and the sixth waits at `edge`; the rest hold where they stand.
-  - The defending side's most advanced `stayUp` (1) outfielder stays upfield. The others, best headers first, stand `mark` (0.8) m goal-side of each man in the box, then on the three six-yard `zonal` spots, then goal-side of the man at the edge.
-  - The players who went up hold their spots for `stay` (8) s after the delivery for the second ball.
+  - The defending side's most advanced `stayUp` (1) outfielder stays upfield. The others, best headers first, stand `mark` (0.8) m goal-side of each man in the box, then on the three six-yard `zonal` spots, then goal-side of the man at the edge. A man-marker's place names the attacker he marks (`opponent`), and the scene names the defending keeper; only players on the pitch take part.
+  - The players who went up hold their spots for `stay` (8) s after the delivery for the second ball. On the pre-feature path the defenders are then released into the shape (`moveAll(s, 8)` after the restart); on the candidate model they keep their jobs for as long (§4.7).
 
 ### 4.4 Movement
 
@@ -317,14 +318,14 @@ On the candidate model `intentions.ts` gives each player an individual intention
   - `exit`: leaving the pitch.
   - `restart`: the taker and the restart's scene walking to their places.
   - `danger`: an urgent defensive job.
-  - `committed`: receiving or carrying the ball, or holding a box spot for the second ball after a delivery.
+  - `committed`: receiving or carrying the ball, or holding a set-piece job for the second ball after a delivery: a box spot, a mark, a zone or the goal (§4.7).
   - `tactical`: support, run, press, mark, cover, recover.
   - A new intention never displaces a higher one, and tactical choices go only to free players, so one tactical job never replaces another at an ordinary update.
 - **Events** (`engine.ts`):
   - Every new owner commits to the ball (`receive`, with the passer as `teammate`). A carrier commits to his carry's end; the reception he reached first is achieved (`arrival`).
   - A pass, cut-back or offside that does not reach its receiver cancels his chance as `lost`. The intention he was played into (a run) ends with that reason. A receiver with none records a zero-length `receive` from the passer, ended `lost`.
   - A change of side interrupts every intention below `restart` on both sides (`turnover`).
-  - A dead ball interrupts every intention below `exit` (`restart`). Its taker and scene then take `restart` intentions, achieved as the kick is taken, and the players who went up hold their box spots for `setPiece.stay` (8) s as committed box runs.
+  - A dead ball interrupts every intention below `exit` (`restart`). Its taker and scene then take `restart` intentions, achieved as the kick is taken, and the players who went up hold their box spots for `setPiece.stay` (8) s as committed box runs; the defending scene keeps its marks, zones and goal for the same 8 s (§4.7).
   - A player who leaves ends his intention with his reason (`substitution`, `injury`, `dismissal`). Every intention that names him as teammate or opponent ends as `departed`, so a roster index never outlives a change.
 - **Update.** `updateIntentions` runs once per action, after the action has been applied and before anyone moves, so everyone reacts to the pass, carry or turnover as it happens. It first reviews every intention against the same state and only then ends the ones that are over; a cover whose presser stopped, or a mark whose runner stopped, ends in the same update. Then it gives out the jobs `planCoordination` planned for both sides (§4.6). The choices:
   - **Danger.** The defending side is in danger when the carrier is within `danger` (30) m of its goal, or a runner is already beyond its second-last player. In danger the first presser and the markers of runners take `danger` priority and displace tactical jobs. When the danger starts while the carrier is already pressed, the presser nearest him keeps his intention, raised to `danger`. An urgent presser leaves his line's bounds. A danger intention ends `cleared` once the danger passes.
@@ -362,6 +363,35 @@ On the candidate model `intentions.ts` gives each player an individual intention
   - Press against counter: home wins 92 → 81%; counter against press 24 → 13%.
   - Per observed match: about 335 shows, 5 lane clearances, 346 covers (124 cleared with their press), 0.2 handovers, 7 shows and 0.2 overlaps closed, 24 overlaps ended once the carrier played on.
   - T278 calibrates `COORDINATION_CONFIG`, `DECISION_CONFIG.combination` and the tactic balance; the bands stay.
+
+### 4.7 Set-piece defence (candidate model, T348)
+
+A corner, or a free kick crossed into the box, keeps both sides' jobs through the preparation, the delivery, the aerial contest and the second ball (MATCH-17/18). Measured with `docs/benchmarks/set-piece-motion-261022.md`'s probes, rerun on 261023 at c2f5aa9 (main with T325 and T345):
+
+- The pre-feature path is as recorded at 70eec53: 37 corners, mean largest 10 m group 6.43 attacking and 2.16 defending; the isolated placement goes 6/9 → 6/1. `placeAtOnce` places `scene.up` and `scene.marks`, `holdSetPiece` keeps runs for `scene.up` only, and after the delivery `playGrid` calls `moveAll(s, 8)`: the defenders, holding nothing, walk 8 s toward `shapePlace`.
+- The candidate before this change: 43 corners, 5.40 and 5.19 (the recorded 52 corners, 5.38 and 5.44, predate T345). The responsible stage was `restartTaken` at the kick. It ended every `restart` place on both sides as `arrival` and re-committed only `scene.up` as box runs. Once the delivery resolved, `planCoordination` re-paired runners nearest pair first, and only while the attackers kept the ball. The zonal and edge defenders and the keeper went back to the shape during the delivery's flight. The isolated stage: the defending group fell from 9 at the kick to 6 after the 3.2 s delivery; the scene stood 6.2 m from its places after 3.2 s and 12 m after 5.7 s. Neither side was stationary, and no corner snapshot had 7 teammates within 5 m: no whole-team collapse.
+
+The lifecycle now (`prepareOnClock` in `movement.ts`, `defendSetPiece` in `intentions.ts`, `guardPoint` in `shape.ts`):
+
+- **Preparation.** Unchanged: the taker and the scene walk to their places on the clock as `restart` intentions; the keeper keeps his shape place (§4.3).
+- **The kick.** `restartTaken` ends every restart place (`arrival`) and holds `scene.up` on its box spots as committed runs until the kick + `setPiece.stay` (8 s). `defendSetPiece` gives the defending scene committed jobs to the same end:
+  - each man-marker marks the attacker his place names, `markGoalSide` (1.5) m goal-side of him wherever he goes;
+  - each zonal or edge defender guards his spot (a `cover` with a `zone`): on it, or goal-side of the opponent nearest it within `setPiece.zone` (3) m. Meeting a runner in his zone is no marking assignment: the runner keeps his one marker;
+  - the keeper guards his goal (a `cover` whose `zone` is his goal line's middle) on the line from there to the ball: `keeper.share` (0.25) of its distance out, at most `keeper.depth` (4) m, at least `keeper.line` (1) m off his line and within `keeper.wide` (4.66) m of the middle. The update after the delivery resolves reads where it goes, so he answers the delivery.
+- **The delivery and the aerial contest.** Resolved from the positions at the kick as before (`resolveCross` is unchanged). A turnover (a claim, an interception, a loose ball to a defender) ends every set-piece job on both sides. A cross the attackers keep leaves both scenes in place; the urgent press on the man on the ball may displace one of the jobs (`danger`).
+- **The second ball.** A mark ends `cleared` with its runner's hold (he receives, or his 8 s run out). A zone or goal guard ends `cleared` once the ball is more than `setPiece.area` (30) m from the goal line it was delivered at (`secondBallOver`, the defenders' danger distance), so a ball played back out frees the zones and the goal while the markers stay with men still in the box. An urgent danger may send a guard to an unmarked runner. Every job also ends at expiry, at a turnover, at the next restart and when a player leaves (references end `departed`). Nobody holds a set-piece job once the defenders have the ball or another restart is taken, and nobody off the pitch marks or is marked.
+
+Limits:
+
+- **Default path.** The pre-feature path is unchanged: grid-throughput's pre-feature facts digests are identical. Settled and queued matches, and every career until the full model activates prospectively (SAVE-23), keep the released defensive placement (`holdSetPiece`, then `moveAll(s, 8)`). No settled match is replayed.
+- **Playback sampling.** Candidate playback draws every player but the actor in straight lines between trace snapshots (T275's limit). A restart's preparation and delivery lie between the snapshot before the dead ball and the delivery's entry, so the scene's walk-in is drawn as one straight move that ends as the delivery lands. Samples during a restart's preparation also show the previous entry's intentions. A snapshot at the kick or traced interruptions need `trace.ts` and `playback.ts` work.
+
+Measured after the change (c2f5aa9 with T348):
+
+- The recorded probes: the pre-feature path is unchanged (37 corners, 6.43 and 2.16; 6/9 → 6/1). The candidate gives 43 corners, 5.40 and 5.12 at the corner's entry. The aggregate barely moves because most deliveries end at once in a turnover, after which both sides leave their places as before: 184 of 268 delivered set pieces in 16 candidate matches of the probe's world and pairings.
+- Deliveries the attackers keep, in those 16 matches: after completed crosses the defending group is 8.50 at the delivery (8.30 before) and 7.50 an action later (6.20); after headers it is 7.70 (6.78). At a completed cross the defending outfielders now hold 5 scene marks, 3 zone guards and 1 urgent press, the stay-up man has no job, and the keeper guards his goal. Before, they held 5.6 re-paired danger marks, 0.7 covers behind the press and 1 press, and 2.7 had no job.
+- The isolated candidate stage (the recorded corner): the defending group stays 9 through the delivery and 2.5 s of the second ball; the scene stands 0.4 m and 1.4 m from its places. The keeper moves from (103.0, 29.0) to (103.4, 33.1), toward a delivery to the first box spot.
+- 600 equal-strength 2024 candidate fixtures (`scripts/grid-bands.ts --candidate`, the same fixtures before → after): goals 2.65 → 2.61, set-piece goals 23.2 → 22.6%, headed goals 18.7 → 17.7%, shots 12.13 → 12.28, corners 4.66 → 4.74, yellow cards 3.54 → 3.65, goals by FW/MF/DF 62.4/26.7/10.9 → 61.4/27.8/10.8%, ball in play 56.82 → 56.73 min. 35 of 37 rows are now in band (34 before): MF goals came back in, while goal kicks (9.13) and FW goals (61.4%) remain out. No band changed. T323 must refresh the detailed reference and the parity after this change.
 
 ---
 

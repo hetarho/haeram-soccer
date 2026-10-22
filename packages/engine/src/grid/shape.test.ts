@@ -3,7 +3,9 @@ import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
-import { attackFrame, inBox, toEngine, type Point } from './pitch';
+import { defendSetPiece, restartTaken, takeBall, updateIntentions } from './intentions';
+import { advance } from './movement';
+import { attackFrame, inBox, PITCH, toEngine, type Point } from './pitch';
 import {
   lineX,
   moveAll,
@@ -11,13 +13,14 @@ import {
   runContext,
   runPlan,
   setPieceShape,
+  setPieceTargets,
   SHAPE_CONFIG,
   speedOf,
   startRuns,
   tacticShape,
   targetOf,
 } from './shape';
-import { onPitch } from './state';
+import { createState, onPitch, type GridPlayer, type GridState } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
 import { gridKit } from './testkit';
 
@@ -31,6 +34,36 @@ const outfieldMeanX = (kit: ReturnType<typeof gridKit>) => {
   const xs = targets(kit).slice(1);
   return xs.reduce((sum, p) => sum + p[0], 0) / xs.length;
 };
+
+const gap = (a: readonly number[], b: readonly number[]) =>
+  Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
+const setPieceKit = gridKit(['balanced', 'possession'], 'set-piece-lab');
+/**
+ * A candidate corner kick by side 0 from [105, 0.5] (T348): everyone stands on his scene place, as
+ * the preparation leaves them, and the kick is taken.
+ */
+function cornerKick() {
+  const s = createState({ ...setPieceKit.setup, model: MATCH_MODEL_REVISION });
+  s.elapsed = s.t = 600;
+  const taker = s.setup.takers[0].corner;
+  const scene = setPieceTargets(s, 0, taker);
+  s.players[0][taker]!.pos = [105, 0.5];
+  for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
+  s.ball = [105, 0.5];
+  s.possession = 0;
+  s.owner = [0, taker];
+  const until = s.elapsed + SHAPE_CONFIG.setPiece.stay;
+  restartTaken(s, scene.up, until);
+  defendSetPiece(s, scene, until);
+  return { s, scene, taker, until };
+}
+/** The delivery reaches `gp` of side 0, as `playGrid` hands it to him, and everyone reacts. */
+function deliver(s: GridState, gp: GridPlayer, taker: number) {
+  takeBall(s, gp, gp.pos, taker);
+  s.owner = [0, gp.idx];
+  s.ball = [gp.pos[0], gp.pos[1]];
+  updateIntentions(s);
+}
 
 describe('grid shape and movement', () => {
   it("holds each tactic's defensive line inside its bounds, dropping goal-side of a ball played behind it", () => {
@@ -81,6 +114,96 @@ describe('grid shape and movement', () => {
     moveAll(s, 4);
     for (const gp of box(0)) expect(targetOf(s, 0, gp.idx)).toEqual(gp.run!.target);
     expect(box(0)[0]!.run!.target).toEqual(toEngine(0, P.box[0] as Point));
+  });
+
+  it('corner defenders retain and update their marks after the kick', () => {
+    const { s, scene, taker, until } = cornerKick();
+    const marks = scene.marks.filter((m) => m.opponent);
+    // Every man who went up, the one at the edge too, has exactly one marker; the six-yard places
+    // mark nobody and guard their zones.
+    const ids = (gps: GridPlayer[]) => gps.map((gp) => gp.idx).sort((a, b) => a - b);
+    expect(ids(marks.map((m) => m.opponent!))).toEqual(ids(scene.up.map((u) => u.gp)));
+    expect(scene.marks.length - marks.length).toBe(SHAPE_CONFIG.setPiece.zonal.length);
+    for (const { gp, opponent } of marks)
+      expect(gp.intention).toMatchObject({
+        kind: 'mark',
+        priority: 'committed',
+        opponent: opponent!.idx,
+        since: s.elapsed,
+        until,
+      });
+    for (const { gp } of scene.marks.filter((m) => !m.opponent))
+      expect(gp.intention).toMatchObject({ kind: 'cover', priority: 'committed', until });
+    // The cross reaches the first man up: one defender presses him on the ball, and every other
+    // marker keeps his man, goal-side of him (side 1 defends x = 105).
+    const receiver = scene.up[0]!.gp;
+    deliver(s, receiver, taker);
+    expect(
+      s.players[1].filter(
+        (gp) => gp.intention?.kind === 'press' && gp.intention.opponent === receiver.idx,
+      ),
+    ).toHaveLength(1);
+    const kept = marks.filter((m) => m.opponent !== receiver);
+    for (const { gp, opponent } of kept) {
+      expect(gp.intention).toMatchObject({ kind: 'mark', opponent: opponent!.idx, until });
+      expect(gp.intention!.target[0]).toBeCloseTo(
+        Math.min(PITCH.length, opponent!.pos[0] + SHAPE_CONFIG.markGoalSide),
+        9,
+      );
+      expect(gp.intention!.target[1]).toBeCloseTo(opponent!.pos[1], 9);
+    }
+    // A runner who moves takes his marker's target with him; nobody else's target changes.
+    const [moved, ...others] = kept;
+    const before = others.map(({ gp }) => [...gp.intention!.target]);
+    const runner = moved!.opponent!;
+    runner.pos = [runner.pos[0] - 2, runner.pos[1] + 3];
+    s.elapsed += 0.4;
+    updateIntentions(s);
+    const target = moved!.gp.intention!.target;
+    expect(target[1]).toBeCloseTo(runner.pos[1], 9);
+    expect(others.map(({ gp }) => gp.intention!.target)).toEqual(before);
+    // He runs toward it, no faster than he can.
+    const from = [...moved!.gp.pos];
+    advance(s, 1);
+    expect(gap(moved!.gp.pos, target)).toBeLessThan(gap(from, target));
+    expect(gap(moved!.gp.pos, from)).toBeLessThanOrEqual(speedOf(s, moved!.gp) + 1e-9);
+  });
+
+  it('keeper responds to the delivery', () => {
+    const { s, scene } = cornerKick();
+    const keeper = scene.keeper!;
+    expect(keeper.slot).toBe(0);
+    expect(keeper.intention).toMatchObject({ kind: 'cover', priority: 'committed' });
+    const K = SHAPE_CONFIG.setPiece.keeper;
+    /** Where he goes once the delivery heads for `to` (engine frame; his goal line is x = 105). */
+    const guard = (to: Point) => {
+      s.ball = [to[0], to[1]];
+      s.elapsed += 0.2;
+      updateIntentions(s);
+      expect(keeper.intention?.kind).toBe('cover');
+      return keeper.intention!.target;
+    };
+    const near = guard([102, 31]);
+    const far = guard([102, 38]);
+    const spot = guard([94, 34]);
+    // He shifts across to the delivery's side and steps out to one further from goal, between his
+    // posts and inside his goal area.
+    expect(near[1]).toBeLessThan(PITCH.width / 2);
+    expect(far[1]).toBeGreaterThan(PITCH.width / 2);
+    expect(PITCH.length - spot[0]).toBeGreaterThan(PITCH.length - near[0]);
+    for (const p of [near, far, spot]) {
+      expect(PITCH.length - p[0]).toBeGreaterThanOrEqual(K.line - 1e-9);
+      expect(PITCH.length - p[0]).toBeLessThanOrEqual(K.depth + 1e-9);
+      expect(Math.abs(p[1] - PITCH.width / 2)).toBeLessThanOrEqual(K.wide + 1e-9);
+    }
+    // He moves toward where the delivery takes him.
+    const from = [...keeper.pos];
+    advance(s, 1);
+    expect(gap(keeper.pos, spot)).toBeLessThan(gap(from, spot));
+    // A delivery that does not move the ball does not move his target.
+    s.elapsed += 0.2;
+    updateIntentions(s);
+    expect(keeper.intention!.target).toEqual(spot);
   });
 
   it('pushes the possession and press shapes higher than counter', () => {

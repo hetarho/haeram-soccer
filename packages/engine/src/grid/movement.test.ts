@@ -1,23 +1,35 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { random } from '../primitives';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
+import {
+  interruptAll,
+  takeBall,
+  updateIntentions,
+  type EndedIntention,
+  type Intention,
+} from './intentions';
 import {
   advance,
   flightSeconds,
   GRID_BALL_CONFIG,
   GRID_MOVEMENT_CONFIG,
   heading,
+  prepareOnClock,
   prepareRestart,
   reachSeconds,
   readAt,
   stepToward,
+  type MotionKnot,
   type Mover,
 } from './movement';
-import { RESTART_CONFIG, type Restart } from './restarts';
+import { attackFrame } from './pitch';
+import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
+import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';
-import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf } from './shape';
-import { onPitch, skill, type GridState } from './state';
+import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf, type SetPieceScene } from './shape';
+import { createState, onPitch, skill, type GridPlayer, type GridState } from './state';
 import type { TraceEntry } from './trace';
 import { gridKit } from './testkit';
 
@@ -315,5 +327,239 @@ describe('grid movement', () => {
       }
     }
     expect(crossings).toBeGreaterThan(300);
+  });
+
+  /** Delivered set pieces both ways (T348): corners from both touchlines and a crossed wide free kick. */
+  const DELIVERIES: Restart[] = [
+    { kind: 'corner', side: 0, spot: [105, 0.5], dead: RESTART_CONFIG.dead.corner },
+    { kind: 'corner', side: 0, spot: [105, 67.5], dead: RESTART_CONFIG.dead.corner },
+    { kind: 'corner', side: 1, spot: [0, 0.5], dead: RESTART_CONFIG.dead.corner },
+    { kind: 'corner', side: 1, spot: [0, 67.5], dead: RESTART_CONFIG.dead.corner },
+    { kind: 'freeKick', side: 0, spot: [92, 6], dead: RESTART_CONFIG.dead.freeKick },
+    { kind: 'freeKick', side: 1, spot: [13, 62], dead: RESTART_CONFIG.dead.freeKick },
+  ];
+  type Job = Pick<Intention, 'kind' | 'priority' | 'since' | 'opponent' | 'run'> | null;
+  /**
+   * A delivered set piece on the candidate model in stages, as `playGrid` plays it (T348): from
+   * where everyone stood when the ball went dead, through the candidate preparation to the kick,
+   * the delivery to the first man up, the second ball laid off to the man at the edge and the
+   * defenders winning it. Each stage records the clock, everyone's position and job, and the ball.
+   */
+  function deliveredSetPiece(rs: Restart) {
+    const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
+    s.elapsed = s.t = 900;
+    const corner = rs.kind === 'corner';
+    const rest: [number, number] = corner ? [rs.spot[0], rs.spot[1] < 34 ? 20 : 48] : rs.spot;
+    s.ball = [rest[0], rest[1]];
+    const all = s.players.flat();
+    const stages: { at: number; pos: [number, number][]; jobs: Job[]; ball: [number, number] }[] =
+      [];
+    const snap = () =>
+      stages.push({
+        at: s.elapsed,
+        pos: all.map((gp) => [gp.pos[0], gp.pos[1]]),
+        jobs: all.map((gp) => {
+          const i = gp.intention;
+          return i
+            ? {
+                kind: i.kind,
+                priority: i.priority,
+                since: i.since,
+                ...(i.opponent === undefined ? {} : { opponent: i.opponent }),
+                ...(i.run ? { run: i.run } : {}),
+              }
+            : null;
+        }),
+        ball: [s.ball[0], s.ball[1]],
+      });
+    snap();
+    let scene: SetPieceScene | undefined;
+    let taker = -1;
+    const prepare = prepareOnClock(rest, { knots: [] as MotionKnot[] });
+    const r = random(`delivered:${rs.side}:${rs.spot.join(',')}`);
+    playRestart(s, rs, r, shotContext(s), (st, restart, t, sc) => {
+      scene = sc;
+      taker = t;
+      prepare(st, restart, t, sc);
+    });
+    snap();
+    /** `gp` gets the ball where he stands from `from`, everyone reacts, and `seconds` pass. */
+    const hand = (gp: GridPlayer, from: number | undefined, seconds: number) => {
+      if (s.possession !== gp.side) interruptAll(s, 'turnover');
+      takeBall(s, gp, gp.pos, from);
+      s.owner = [gp.side, gp.idx];
+      s.possession = gp.side;
+      s.ball = [gp.pos[0], gp.pos[1]];
+      updateIntentions(s);
+      advance(s, seconds);
+      s.elapsed += seconds;
+      s.t += seconds;
+      snap();
+    };
+    const up = scene!.up.map((u) => u.gp);
+    // The cross's 3.2 s (`ACTION_SECONDS.cross`), a lay-off, then the clearance.
+    hand(up[0]!, taker, 3.2);
+    hand(up.at(-1)!, up[0]!.idx, 2.4);
+    hand(scene!.marks.find((m) => m.opponent === up.at(-1))!.gp, undefined, 2);
+    return { stages, scene: scene!, all };
+  }
+
+  it('both sides retain continuous recorded paths through a corner', () => {
+    const P = SHAPE_CONFIG.setPiece;
+    for (const rs of DELIVERIES) {
+      const label = `${rs.kind} by ${rs.side} from ${rs.spot.join(',')}`;
+      const { stages, scene, all } = deliveredSetPiece(rs);
+      // Repeated same-seed runs reproduce exactly.
+      expect(deliveredSetPiece(rs).stages, label).toEqual(stages);
+      const at = (gp: GridPlayer) => all.indexOf(gp);
+      // Bounded travel between stages for everyone on the pitch, preparation included.
+      for (let k = 1; k < stages.length; k++)
+        all.forEach((gp, i) => {
+          if (!onPitch(gp)) return;
+          const [a, b] = [stages[k - 1]!, stages[k]!];
+          expect(gap(b.pos[i]!, a.pos[i]!), `${label} stage ${k}`).toBeLessThanOrEqual(
+            TOP * (b.at - a.at) + EPS,
+          );
+        });
+      // The delivery boundary: at the kick everyone in the scene stands on his place, both sides.
+      const [, kick, delivered, second, cleared] = stages;
+      for (const { gp, to } of [...scene.up, ...scene.marks])
+        expect(kick!.pos[at(gp)], label).toEqual(to);
+      const since = kick!.at;
+      const job = (stage: (typeof stages)[number], gp: GridPlayer) => stage.jobs[at(gp)];
+      const owner = (stage: (typeof stages)[number]) =>
+        all.find((gp) => gap(gp.pos, stage.ball) === 0 && job(stage, gp)?.kind === 'receive');
+      for (const stage of [delivered!, second!]) {
+        const carrier = owner(stage);
+        // Each man still holding his spot keeps his marker, goal-side within reach of him.
+        for (const { gp, opponent } of scene.marks.filter((m) => m.opponent)) {
+          const theirs = job(stage, opponent!);
+          if (theirs?.kind !== 'run') continue;
+          expect(theirs, label).toMatchObject({ run: 'box', since });
+          expect(job(stage, gp), label).toMatchObject({
+            kind: 'mark',
+            opponent: opponent!.idx,
+            since,
+          });
+          expect(gap(stage.pos[at(gp)]!, stage.pos[at(opponent!)]!)).toBeLessThanOrEqual(
+            SHAPE_CONFIG.markGoalSide + EPS,
+          );
+        }
+        // Each zone and the goal stay guarded, unless a guard went out to press the ball.
+        for (const { gp, to } of scene.marks.filter((m) => !m.opponent)) {
+          const mine = job(stage, gp);
+          if (mine?.kind === 'press')
+            expect(mine).toMatchObject({ priority: 'danger', opponent: carrier?.idx });
+          else {
+            expect(mine, label).toMatchObject({ kind: 'cover', since });
+            expect(gap(stage.pos[at(gp)]!, to)).toBeLessThanOrEqual(
+              P.zone + SHAPE_CONFIG.markGoalSide,
+            );
+          }
+        }
+        expect(job(stage, scene.keeper!), label).toMatchObject({ kind: 'cover', since });
+      }
+      // The keeper answers the delivery: it moves his target, so he moves, inside his goal area.
+      const keeper = at(scene.keeper!);
+      expect(gap(delivered!.pos[keeper]!, kick!.pos[keeper]!), label).toBeGreaterThan(0.1);
+      for (const stage of [delivered!, second!]) {
+        const k = attackFrame(scene.keeper!.side, stage.pos[keeper]!);
+        expect(k[0], label).toBeLessThanOrEqual(5.5);
+        expect(Math.abs(k[1] - 34)).toBeLessThanOrEqual(P.keeper.wide + EPS);
+      }
+      // Once the defenders win the second ball, no set-piece job is left on either side.
+      expect(
+        cleared!.jobs.some((j) => j?.since === since && j.priority === 'committed'),
+        label,
+      ).toBe(false);
+    }
+  });
+
+  it('defensive placement is not discarded before its job ends', () => {
+    const stay = SHAPE_CONFIG.setPiece.stay;
+    const ENDS = new Set<string>([
+      'expiry',
+      'cleared',
+      'turnover',
+      'restart',
+      'danger',
+      'replaced',
+      'departed',
+      'unreachable',
+      'substitution',
+      'injury',
+      'dismissal',
+    ]);
+    let deliveries = 0,
+      kept = 0,
+      followed = 0,
+      ended = 0;
+    for (const { trace } of watched)
+      trace!.forEach((e, n) => {
+        if (!(e.action === 'corner' || (e.spot && e.kind === 'cross'))) return;
+        // The jobs start as the preparation ends: its retrieval knot plus its dead time.
+        const retrieve = e.knots?.[0];
+        if (retrieve?.kind !== 'retrieve') return;
+        const kick = { at: retrieve.at + e.dead! };
+        deliveries++;
+        const att = e.side;
+        const def = att === 0 ? 1 : 0;
+        const slotOf = (side: 0 | 1, idx: number) => {
+          for (let k = side * 11; k < side * 11 + 11; k++) if (e.slots[k] === idx) return k;
+          return -1;
+        };
+        // The defenders' jobs as the delivery lands: one end with the attackers' hold, every mark on
+        // a different man on the pitch, each marker still with him.
+        const jobs: { k: number; i: Intention }[] = [];
+        for (let k = def * 11; k < def * 11 + 11; k++) {
+          const i = e.intentions?.[k];
+          if (!i || 'end' in i || i.since !== kick.at || i.priority !== 'committed') continue;
+          // A defender who won the delivery commits to the ball instead.
+          if (i.kind !== 'mark' && i.kind !== 'cover') continue;
+          expect(i.until).toBeCloseTo(kick.at + stay, 6);
+          jobs.push({ k, i });
+        }
+        const marked = jobs.flatMap(({ i }) => (i.kind === 'mark' ? [i.opponent!] : []));
+        expect(new Set(marked).size).toBe(marked.length);
+        for (const { k, i } of jobs) {
+          if (i.kind !== 'mark') continue;
+          const o = slotOf(att, i.opponent!);
+          expect(o).toBeGreaterThanOrEqual(0);
+          const d = Math.hypot(
+            e.positions[k * 2]! - e.positions[o * 2]!,
+            e.positions[k * 2 + 1]! - e.positions[o * 2 + 1]!,
+          );
+          expect(d, `mark at ${e.elapsed}`).toBeLessThanOrEqual(SHAPE_CONFIG.markGoalSide + 1);
+        }
+        // A cross the attackers keep leaves the defending scene in place, the keeper on his goal.
+        if (e.outcome === 'complete') {
+          kept++;
+          expect(jobs.length).toBeGreaterThanOrEqual(6);
+          expect(jobs.some(({ k }) => k === def * 11)).toBe(true);
+        }
+        // Each job holds until it ends with a reason, never on arrival, and never once the
+        // defenders have the ball or another restart has been taken.
+        for (const { k, i } of jobs) {
+          followed++;
+          for (let m = n + 1; m < trace!.length; m++) {
+            const f = trace![m]!;
+            const j: Intention | EndedIntention | null | undefined = f.intentions?.[k];
+            if (f.period !== e.period || f.slots[k] !== e.slots[k]) break;
+            if (!j || j.since !== i.since || j.kind !== i.kind) break;
+            if ('end' in j) {
+              expect(ENDS.has(j.reason), j.reason).toBe(true);
+              ended++;
+              break;
+            }
+            if (f.outcome === 'incident') continue;
+            expect(f.side, `held at ${f.elapsed}`).toBe(att);
+            expect(f.spot, `held at ${f.elapsed}`).toBeUndefined();
+          }
+        }
+      });
+    expect(deliveries).toBeGreaterThan(20);
+    expect(kept).toBeGreaterThan(0);
+    expect(followed).toBeGreaterThan(100);
+    expect(ended).toBeGreaterThan(0);
   });
 });

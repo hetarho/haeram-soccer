@@ -7,7 +7,10 @@
  * position (CI's linux-x64 run 39800627501 gave 2024's observed shoot-out other facts than
  * darwin-arm64). A host with recorded values asserts them; another logs what it got, for a session
  * on that host to paste in. A behaviour change records the running host's values and deletes the
- * other hosts' (T345: darwin-arm64), together with the calibration evidence, never alone. On every
+ * other hosts' (T345: darwin-arm64; T348's set-piece defence, whose defenders keep their jobs after
+ * the kick: darwin-arm64 again, every candidate value changed but the 1975 and 2024 league
+ * fixtures' facts, the pre-feature facts did not), together with the calibration evidence, never
+ * alone. On every
  * host each fixture replays bit for bit, the observed league fixture's facts equal the unobserved
  * one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. Portable outcome-critical
  * math is a separate ARCH-9 task. No wall-clock assertion here; the timings live in
@@ -63,13 +66,13 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
 /**
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
  * decided on penalties (observed), and the pre-feature path for one league fixture. The knockout
- * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state, the
- * first tie of each kind).
+ * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state and for
+ * T348's set-piece defence, the first tie of each kind; T345's were 20/4, 1/16 and 9/5).
  */
 const CASES = {
-  1975: { extraTime: 20, shootout: 4 },
-  1995: { extraTime: 1, shootout: 16 },
-  2024: { extraTime: 9, shootout: 5 },
+  1975: { extraTime: 7, shootout: 10 },
+  1995: { extraTime: 16, shootout: 3 },
+  2024: { extraTime: 9, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -86,29 +89,29 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
     1975: {
       facts: {
         league: '0a392030070b2389',
-        extraTime: 'dc87c95830c84bf5',
-        shootout: 'e1cab36f1688c4b0',
+        extraTime: 'bb531ef4fe2b9601',
+        shootout: 'c16f0a0a7ed7b58a',
         preFeature: 'a2e559aea64a91e7',
       },
-      positions: { observed: 'aa52b3be1a991a5c', shootout: '6379b13fb64e17d5' },
+      positions: { observed: '4d7573d60f7b864e', shootout: 'e4f41e13f37075d2' },
     },
     1995: {
       facts: {
-        league: '0c20da47140fd633',
-        extraTime: '64523d7c8b8dbb3e',
-        shootout: '881c5eca68325fdd',
+        league: '915080a3feadc4f8',
+        extraTime: '5bd3095cb95f88cc',
+        shootout: 'fd24b6f51440b87c',
         preFeature: '0c7e06efbc8fd981',
       },
-      positions: { observed: '17ef4a731b8aa394', shootout: 'c6f576a7608d5f01' },
+      positions: { observed: 'dfb09059046d87b4', shootout: 'a4e627789a44199c' },
     },
     2024: {
       facts: {
         league: 'f46d1dbd025b49b0',
-        extraTime: '8ab0a06932af49f6',
-        shootout: '72680c05cec914a7',
+        extraTime: '931d04258f444c80',
+        shootout: '12dbc52079c43f4f',
         preFeature: 'a0e4479b22d2cfa6',
       },
-      positions: { observed: '9ba7c8ead77632d3', shootout: 'b469b47c61ab5029' },
+      positions: { observed: 'c4a8a6a41c12516a', shootout: 'f9ca7911fa173494' },
     },
   },
 };
