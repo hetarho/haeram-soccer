@@ -40,6 +40,13 @@ export const COORDINATION_CONFIG = {
    */
   pressers: { possession: 1, press: 1, counter: 1, balanced: 1 } satisfies Record<Tactic, number>,
   /**
+   * A listed side presses the carrier as a tactical job only while he stands within this many
+   * metres of its own goal (→MATCH-8, T331: counter drops off into its block rather than chasing
+   * the ball in the opponents' third); a danger still sends its nearest man. Empty: every side
+   * presses anywhere.
+   */
+  pressWithin: {} as Partial<Record<Tactic, number>>,
+  /**
    * A carrier under pressure (an opponent within `TAG_CONFIG.pressureRadius`): the teammate within
    * `near` m whose role and traits look most for the pass shows `distance` m from him with odds
    * `show` + `composure` × his 침착성; his 판단력 picks the side away from the presser.
@@ -217,6 +224,8 @@ function defend(
       return { gp, d, cost: d / (weight(s, gp, 'press') * fresh(s, gp)) };
     })
     .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp));
+  const within = CC.pressWithin[s.setup.tactics[side]];
+  const deep = within === undefined || attackFrame(side, carrier.pos)[0] <= within;
   const wanted = CC.pressers[s.setup.tactics[side]];
   const all = [...pressing];
   for (const c of candidates) {
@@ -224,7 +233,7 @@ function defend(
     const urgent = danger && all.length === 0;
     const priority = urgent ? 'danger' : 'tactical';
     if (!free(c.gp, priority)) continue;
-    if (!urgent && c.d > reach) continue;
+    if (!urgent && (c.d > reach || !deep)) continue;
     job(
       c.gp,
       { kind: 'press', priority, target: [carrier.pos[0], carrier.pos[1]], opponent: carrier.idx },

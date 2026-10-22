@@ -98,11 +98,17 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // (a) with fewer passes against carrying on once settled.
   settled2p8: settled(1, 0.5, 0.5, 0.35, 0.8),
   settled2p65: settled(1, 0.5, 0.5, 0.35, 0.65),
+  settled75: settled(1, 0.5, 0.5, 0.35, 0.75),
+  // Without the long-ball pull, so fewer balls land upfield as loose balls counter wins high.
+  settledShort75: settled(1, 0, 0.5, 0.35, 0.75),
   // (b) Counter's block: deeper line, tighter, more pressers near the ball.
   deep: counterShape({ defend: -10, line: [18, 38] }),
   tight: counterShape({ compact: 0.2 }),
   deepTight: counterShape({ defend: -10, line: [18, 38], compact: 0.2 }),
   twoPress: { coordination: { pressers: { counter: 2 } } },
+  // Counter presses only within this many metres of its own goal (drops off higher up).
+  hold70: { coordination: { pressWithin: { counter: 70 } } },
+  hold55: { coordination: { pressWithin: { counter: 55 } } },
   noPress: counterShape({ press: 6 }),
   high: counterShape({ defend: -5, line: [26, 46] }),
   wide: counterShape({ press: 15 }),
