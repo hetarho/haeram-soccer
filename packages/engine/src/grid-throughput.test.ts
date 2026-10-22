@@ -11,9 +11,11 @@
  *   (linux-x64 v darwin-arm64, under the same Node major too). A host without a recorded value only
  *   logs the digest it got, for a session on that host to paste in.
  * A behaviour change re-records the facts and the running host's positions (T345's score state on
- * darwin-arm64, over T325's e3aa9b9 and 6f46b55 values), together with the calibration evidence,
- * never alone. No wall-clock assertion here; the timings live in scripts/match-model-baseline.ts
- * and docs/benchmarks/full-model-throughput.json.
+ * darwin-arm64, over T325's e3aa9b9 and 6f46b55 values; then T348's set-piece defence, whose
+ * defenders keep their jobs after the kick: every candidate facts digest but the 1975 and 2024
+ * league fixtures' and every positions digest changed, the pre-feature facts did not), together
+ * with the calibration evidence, never alone. No wall-clock assertion here; the timings live in
+ * scripts/match-model-baseline.ts and docs/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
@@ -65,33 +67,33 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
 /**
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
  * decided on penalties (observed), and the pre-feature path for one league fixture. The knockout
- * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state, the
- * first tie of each kind).
+ * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state and for
+ * T348's set-piece defence, the first tie of each kind; T345's were 20/4, 1/16 and 9/5).
  */
 const CASES = {
-  1975: { extraTime: 20, shootout: 4 },
-  1995: { extraTime: 1, shootout: 16 },
-  2024: { extraTime: 9, shootout: 5 },
+  1975: { extraTime: 7, shootout: 10 },
+  1995: { extraTime: 16, shootout: 3 },
+  2024: { extraTime: 9, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
 const FACTS: Record<Year, Record<'league' | 'extraTime' | 'shootout' | 'preFeature', string>> = {
   1975: {
     league: '0a392030070b2389',
-    extraTime: 'dc87c95830c84bf5',
-    shootout: 'e1cab36f1688c4b0',
+    extraTime: 'bb531ef4fe2b9601',
+    shootout: 'c16f0a0a7ed7b58a',
     preFeature: 'a2e559aea64a91e7',
   },
   1995: {
-    league: '0c20da47140fd633',
-    extraTime: '64523d7c8b8dbb3e',
-    shootout: '881c5eca68325fdd',
+    league: '915080a3feadc4f8',
+    extraTime: '5bd3095cb95f88cc',
+    shootout: 'fd24b6f51440b87c',
     preFeature: '0c7e06efbc8fd981',
   },
   2024: {
     league: 'f46d1dbd025b49b0',
-    extraTime: '8ab0a06932af49f6',
-    shootout: '72680c05cec914a7',
+    extraTime: '931d04258f444c80',
+    shootout: '12dbc52079c43f4f',
     preFeature: 'a0e4479b22d2cfa6',
   },
 };
@@ -99,16 +101,16 @@ const FACTS: Record<Year, Record<'league' | 'extraTime' | 'shootout' | 'preFeatu
 /** Positions digests of the observed fixtures, by host. */
 const POSITIONS: Record<Year, Record<'observed' | 'shootout', Partial<Record<string, string>>>> = {
   1975: {
-    observed: { 'darwin-arm64': 'aa52b3be1a991a5c' },
-    shootout: { 'darwin-arm64': '6379b13fb64e17d5' },
+    observed: { 'darwin-arm64': '4d7573d60f7b864e' },
+    shootout: { 'darwin-arm64': 'e4f41e13f37075d2' },
   },
   1995: {
-    observed: { 'darwin-arm64': '17ef4a731b8aa394' },
-    shootout: { 'darwin-arm64': 'c6f576a7608d5f01' },
+    observed: { 'darwin-arm64': 'dfb09059046d87b4' },
+    shootout: { 'darwin-arm64': 'a4e627789a44199c' },
   },
   2024: {
-    observed: { 'darwin-arm64': '9ba7c8ead77632d3' },
-    shootout: { 'darwin-arm64': 'b469b47c61ab5029' },
+    observed: { 'darwin-arm64': 'c4a8a6a41c12516a' },
+    shootout: { 'darwin-arm64': 'f9ca7911fa173494' },
   },
 };
 
