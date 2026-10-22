@@ -5,7 +5,7 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
 }
 .staff header,
@@ -42,7 +42,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: rgba(0, 0, 0, 0.2);
 }
 .role {
@@ -61,7 +61,7 @@
   place-items: center;
   min-width: 44px;
   min-height: 46px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   border: 1px dashed var(--warm);
   color: var(--warm);
   font-size: 12px;
@@ -116,14 +116,14 @@
   display: block;
   height: 6px;
   border-radius: 3px;
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   overflow: hidden;
 }
 .meter i {
   display: block;
   height: 100%;
   border-radius: 3px;
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
 }
 .note {
   margin-top: 6px;
@@ -153,7 +153,7 @@
 }
 .candidates .picked {
   border-color: var(--gold);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .sheetActions {
   display: grid;
@@ -166,7 +166,7 @@
 }
 .primary {
   color: var(--on-accent);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent-edge);
   box-shadow: none;
 }
@@ -176,7 +176,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: rgba(0, 0, 0, 0.2);
 }
 .academy li > div:nth-child(2) {
@@ -321,7 +321,7 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
 }
 .plan header {
@@ -338,7 +338,7 @@
 }
 .planOn {
   border-color: var(--gold);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .planOn b {
   color: var(--gold);
@@ -450,13 +450,13 @@
 .chips button {
   min-height: 40px;
   padding: 6px 12px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   font-family: var(--display);
 }
 .chips button[aria-pressed='true'] {
   color: var(--on-accent);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent-edge);
 }
 .criteriaActions {
@@ -471,9 +471,9 @@
   display: grid;
   gap: 6px;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .preview > b {
   font-size: 12px;

@@ -1,0 +1,11 @@
+/* Shared presentation mechanics; each pack supplies values and visual resources. */
+body {
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+html body {
+  background-image: var(--page-grain, none);
+  background-repeat: repeat;
+  background-size: var(--grain-size, 160px 160px);
+}

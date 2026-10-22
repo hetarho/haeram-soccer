@@ -7,7 +7,7 @@
   margin: 0 auto 12px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   overflow: hidden;
 }
 .half {
@@ -49,9 +49,9 @@
   box-sizing: border-box;
   max-width: 100%;
   padding: 2px 3px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   border: 1px solid var(--line-strong);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: var(--surface-grain, none) color-mix(in srgb, var(--surface) 88%, transparent);
   color: var(--text);
   font-size: 12px;
   line-height: 1.2;
@@ -71,9 +71,9 @@
   transform: translate(-50%, -50%);
   min-width: 30px;
   padding: 3px 4px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   border: 1px solid var(--line-strong);
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -83,12 +83,12 @@
 }
 .dot[data-level='3'] {
   border-color: var(--gold-edge);
-  background: var(--gold-fill);
+  background: var(--surface-grain, none) var(--gold-fill);
   color: var(--on-accent);
 }
 .dot[data-level='2'] {
   border-color: var(--accent-edge);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
 }
 .dot[data-main] {

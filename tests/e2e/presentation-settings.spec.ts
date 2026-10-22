@@ -105,6 +105,80 @@ const commands = (page: Page) =>
         .presentationCommandProbe.count,
   );
 
+for (const width of [390, 1380])
+  test(`shipped standard and pixel themes replace art and reload while preserving facts at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await loadPausedGame(page);
+    const raw = await committedRaw(page);
+    const date = await page.getByTestId('calendar').innerText();
+    const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
+    const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
+    await openSettings(page);
+    await expectRegistryChoices(page);
+    await chooseOption(page.getByTestId('presentation-theme'), pixel.id);
+    await expect.poll(() => background(page)).toBe(pixel.tokens.palette.bg);
+    await closeSettings(page);
+    await expectHomeBounds(page);
+    await expect(page.getByTestId('calendar')).toHaveText(date);
+    await expect(page.locator('[data-facility-art="stadium"] img')).not.toHaveAttribute(
+      'src',
+      artwork!,
+    );
+    await openSettings(page);
+    await chooseOption(page.getByTestId('presentation-theme'), baseline.theme.id);
+    await expect.poll(() => background(page)).toBe(baseline.theme.tokens.palette.bg);
+    await closeSettings(page);
+    await expect(page.locator('[data-facility-art="stadium"] img')).toHaveAttribute(
+      'src',
+      artwork!,
+    );
+    await page.reload();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
+    expect(await committedRaw(page)).toBe(raw);
+    await expectHomeBounds(page);
+  });
+
+test('theme reveal keeps controls in the composited dialog and backdrop', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    const start = document.startViewTransition?.bind(document);
+    if (!start) return;
+    document.startViewTransition = (update) => {
+      const transition = start(update);
+      void transition.ready
+        .then(() => {
+          document.documentElement.dataset.themeSnapshotControls = String(
+            [...document.querySelectorAll('button,input,[data-select-trigger]')].filter(
+              (control) => getComputedStyle(control).viewTransitionName !== 'none',
+            ).length,
+          );
+        })
+        .catch(() => {});
+      return transition;
+    };
+  });
+  await loadPausedGame(page);
+  test.skip(
+    !(await page.evaluate(() => typeof document.startViewTransition === 'function')),
+    'The browser uses the immediate fallback without native snapshots.',
+  );
+  const dialog = await openSettings(page);
+  const standardClose = await dialog.locator('[data-pixel-icon="close"] path').getAttribute('d');
+  await chooseOption(page.getByTestId('presentation-theme'), 'pixel');
+  await expect(page.locator('html')).toHaveAttribute('data-theme-snapshot-controls', '0');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
+  await expect(dialog.locator('[data-pixel-icon="close"] path')).not.toHaveAttribute(
+    'd',
+    standardClose!,
+  );
+  await expect(dialog).toBeVisible();
+  await closeSettings(page);
+  await expectHomeBounds(page);
+});
+
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },

@@ -4,6 +4,7 @@ import type {
   PresentationPreferences,
 } from '../adapters/presentationPreferences';
 import type { InstalledTheme, prepareThemeResources } from '../adapters/themeResources';
+import type { ThemeTransitionPort } from '../adapters/themeTransition';
 import type { PackRegistry, ThemeRegistryEntry } from './contracts';
 import { createLoadedLocale, type LoadedLocale } from './locale';
 import { resolvePackEntry } from './registry';
@@ -29,6 +30,7 @@ export interface PresentationControllerOptions {
   preferences: PresentationPreferencesStore;
   prepareTheme: typeof prepareThemeResources;
   applyLocale?: (locale: LoadedLocale) => void;
+  transitionTheme?: ThemeTransitionPort;
 }
 
 /** T299 has checked the origin; retain deployment-root asset references in HTML. */
@@ -92,31 +94,43 @@ export function createPresentationController(options: PresentationControllerOpti
               : defaultTheme.token(key),
         };
       }
-      if (theme !== snapshot.theme) {
-        const prepared = await options.prepareTheme(theme, {
-          requiredImages: collectThemeImageResources(theme, [...needs.values()]),
-        });
+      const themeChanged = theme !== snapshot.theme;
+      const prepared = themeChanged
+        ? await options.prepareTheme(theme, {
+            requiredImages: collectThemeImageResources(theme, [...needs.values()]),
+          })
+        : undefined;
+      const commit = () => {
         if (!current()) {
-          prepared.dispose();
+          prepared?.dispose();
           return;
         }
         // Commit ownership and publish the corresponding services in one synchronous stack.
-        const next = prepared.commit({ previous: installed, isCurrent: current });
-        if (!next) return;
-        installed = next;
+        if (prepared) {
+          const next = prepared.commit({ previous: installed, isCurrent: current });
+          if (!next) return;
+          installed = next;
+        }
+        options.applyLocale?.(locale);
+        options.preferences.write({ localeId: locale.id, themeId: theme.id });
+        publish({
+          locale,
+          theme,
+          themeEntry,
+          localeRegistry,
+          themeRegistry,
+          pending: false,
+          error: undefined,
+          sessionOnly: options.preferences.sessionOnly,
+        });
+      };
+      if (!current()) {
+        prepared?.dispose();
+        return;
       }
-      options.applyLocale?.(locale);
-      options.preferences.write({ localeId: locale.id, themeId: theme.id });
-      publish({
-        locale,
-        theme,
-        themeEntry,
-        localeRegistry,
-        themeRegistry,
-        pending: false,
-        error: undefined,
-        sessionOnly: options.preferences.sessionOnly,
-      });
+      if (themeChanged && snapshot.theme && options.transitionTheme)
+        await options.transitionTheme.run(commit);
+      else commit();
     } catch (error) {
       if (current()) publish({ pending: false, error });
     }
@@ -146,6 +160,7 @@ export function createPresentationController(options: PresentationControllerOpti
         : requested;
     requested = { ...base, ...selection };
     const token = ++generation;
+    options.transitionTheme?.cancel();
     publish({ pending: true, error: undefined });
     return registries ? apply(token) : initialize();
   };
@@ -184,6 +199,7 @@ export function createPresentationController(options: PresentationControllerOpti
     dispose() {
       disposed = true;
       generation++;
+      options.transitionTheme?.dispose();
       installed?.dispose();
       needs.clear();
       listeners.clear();

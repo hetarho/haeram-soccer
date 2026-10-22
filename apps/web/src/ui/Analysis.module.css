@@ -1,8 +1,8 @@
 .disclosure {
   margin: 12px 0;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
   min-width: 0;
 }
 .disclosure summary {
@@ -54,8 +54,8 @@
   margin: 0 0 14px;
   padding: 12px 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .clubCareer h3 {
   margin: 0 0 4px;
@@ -84,8 +84,8 @@
 }
 .facts > div {
   padding: 10px;
-  background: var(--surface-2);
-  border-radius: 2px;
+  background: var(--surface-grain, none) var(--surface-2);
+  border-radius: var(--card-radius);
   min-width: 0;
 }
 .facts dt {
@@ -116,7 +116,7 @@
 .chips span {
   padding: 6px 9px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-size: 12px;
   font-family: var(--display);
 }
@@ -232,8 +232,8 @@
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .cards button {
   width: 100%;
@@ -245,7 +245,7 @@
   width: auto;
 }
 .cards button[aria-pressed='true'] {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   border-color: var(--accent);
 }
@@ -299,14 +299,14 @@
   grid-column: 1 / -1;
   display: block;
   height: 4px;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--warm) 55%, transparent);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) color-mix(in srgb, var(--warm) 55%, transparent);
   overflow: hidden;
 }
 .compare li > i > em {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
 }
 .advanced {
   margin: 12px 0;
@@ -365,7 +365,7 @@
   color: var(--text);
 }
 .split tbody tr:first-child {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .split td:last-child {
   font-weight: 700;

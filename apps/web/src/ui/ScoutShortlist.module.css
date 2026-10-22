@@ -6,7 +6,7 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   min-width: 0;
   animation: rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -27,7 +27,7 @@
   display: grid;
   gap: 6px;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--gold-edge);
   background: rgba(0, 0, 0, 0.2);
 }
@@ -54,9 +54,9 @@
   gap: 6px;
   min-width: 0;
   padding: 4px 10px 4px 4px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   font-size: 13px;
 }
 .requests li small {
@@ -66,7 +66,7 @@
 }
 .why {
   padding: 2px 8px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   font-size: 12px;
   font-weight: 700;
   color: var(--surface-deep);
@@ -74,7 +74,7 @@
   font-family: var(--display);
 }
 .requests li[data-kind='upgrade'] .why {
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
 }
 .stakes {
   margin: 0;
@@ -145,7 +145,7 @@
 }
 .pickTag {
   padding: 1px 6px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-style: normal;
   font-size: 12px;
   font-weight: 700;

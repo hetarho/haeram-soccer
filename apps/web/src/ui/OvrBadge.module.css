@@ -9,9 +9,9 @@
   min-width: 44px;
   min-height: 46px;
   padding: 4px 6px 3px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   line-height: 1;
 }

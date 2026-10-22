@@ -2,8 +2,8 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .head {
   display: flex;
@@ -23,7 +23,7 @@
 .tag {
   padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   color: var(--text-muted);
   font-size: 12px;
   white-space: nowrap;
@@ -54,7 +54,7 @@
   text-align: left;
 }
 .own {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
 }
 .standings .own .player {
@@ -80,7 +80,7 @@
   font-family: var(--display);
 }
 .ownSummary {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
 }
 .empty {
@@ -94,8 +94,8 @@
   display: flex;
   gap: 4px;
   padding: 3px;
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .metric button {
   min-height: 36px;
@@ -107,7 +107,7 @@
 }
 .metric button[aria-pressed='true'] {
   border-color: var(--line-strong);
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   color: var(--text);
 }
 .filters {
@@ -165,10 +165,10 @@
   border-radius: 50%;
 }
 .primaryDot {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
 }
 .comparisonDot {
-  background: var(--warm);
+  background: var(--surface-grain, none) var(--warm);
 }
 .details {
   border-top: 1px solid var(--line);

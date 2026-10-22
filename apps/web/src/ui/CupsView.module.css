@@ -15,7 +15,7 @@
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
   min-width: 0;
 }
@@ -42,7 +42,7 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-size: 12px;
   font-weight: 700;
   color: var(--gold);
@@ -53,7 +53,7 @@
 .status {
   margin: 0;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-size: 14px;
   font-weight: 700;
   background: rgba(0, 0, 0, 0.22);
@@ -149,7 +149,7 @@
 }
 .ownTie {
   background: rgba(155, 178, 161, 0.1);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   box-shadow: none;
 }
 .ownBadge {
@@ -160,9 +160,9 @@
   font-size: 12px;
   font-weight: 700;
   padding: 1px 6px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   color: var(--on-accent);
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
   font-family: var(--display);
 }
 .club > span {
@@ -240,7 +240,7 @@
   opacity: 0.8;
 }
 .legend .direct {
-  background: var(--accent);
+  background: var(--surface-grain, none) var(--accent);
   box-shadow: none;
 }
 .legend .playoff {
@@ -316,7 +316,7 @@
 .viewSwitch button[aria-pressed='true'] {
   color: var(--on-accent);
   border-color: var(--accent-edge);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
 }
 /* The knockout tree: rounds as columns, each tie centred between the two it came from. */
 .tree {
@@ -354,9 +354,9 @@
   display: grid;
   gap: 2px;
   padding: 6px 8px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   font-size: 12px;
   font-family: var(--display);
 }

@@ -9,9 +9,8 @@
   min-height: 44px;
   padding: 9px 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
-  background-image: none;
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface);
   color: var(--text);
   box-shadow: none;
   text-align: left;
@@ -23,7 +22,7 @@
 }
 .trigger.trigger:hover:not(:disabled),
 .trigger[data-state='open'] {
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   border-color: var(--line-strong);
 }
 .trigger:focus-visible {
@@ -53,10 +52,10 @@
   max-height: 360px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   box-shadow: none;
 }
 .item {
@@ -65,7 +64,7 @@
   align-items: center;
   min-height: 44px;
   padding: 10px 34px 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 14px;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -76,10 +75,10 @@
 .item[data-state='checked'] {
   color: var(--text);
   font-weight: 600;
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .item[data-highlighted] {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
 }
 .item[data-disabled] {

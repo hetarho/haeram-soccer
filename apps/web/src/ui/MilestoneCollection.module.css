@@ -25,8 +25,8 @@
 .intro > strong {
   flex-shrink: 0;
   padding: 12px;
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--badge-radius);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
   font-size: 27px;
   font-variant-numeric: tabular-nums;
@@ -43,8 +43,8 @@
   margin: 16px 0;
   padding: 12px;
   border-left: 3px solid var(--accent);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .next > span,
 .next > small {
@@ -66,12 +66,12 @@
 .collection > li {
   min-width: 0;
   padding: 14px;
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
   border: 1px solid var(--line);
-  border-radius: 2px;
+  border-radius: var(--card-radius);
 }
 .collection > .complete {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   border-color: var(--line-strong);
 }
 .goalHeading {
@@ -91,12 +91,12 @@
   height: 28px;
   border-radius: 50%;
   font-size: 12px;
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text-muted);
   font-family: var(--display);
 }
 .complete .symbol {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   font-size: 16px;
 }
@@ -104,13 +104,13 @@
   flex-shrink: 0;
   padding: 3px 6px;
   border: 1px solid var(--line-strong);
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   font-size: 12px;
   color: var(--text-muted);
   font-family: var(--display);
 }
 .complete .badge {
-  background: var(--surface-3);
+  background: var(--surface-grain, none) var(--surface-3);
   color: var(--text);
 }
 .collection p {
@@ -162,7 +162,7 @@
 .actions > button {
   width: 100%;
   min-height: 48px;
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent);
   color: var(--on-accent);
 }

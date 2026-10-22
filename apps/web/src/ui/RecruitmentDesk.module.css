@@ -14,8 +14,8 @@
 .summary {
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .summary b {
   margin-left: 6px;
@@ -35,7 +35,7 @@
 }
 .roles button[aria-pressed='true'],
 .filters button[aria-pressed='true'] {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   border-color: var(--accent);
   color: var(--text);
 }
@@ -62,7 +62,7 @@
   font-family: var(--display);
 }
 .recommendation {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .note {
   margin: 9px 0;
@@ -80,8 +80,8 @@
   min-width: 0;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 2px;
-  background: var(--surface);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
 .cardHead {
   display: flex;
@@ -111,7 +111,7 @@
 }
 .cardHead button[aria-pressed='true'] {
   border-color: var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .ability {
   display: flex;
@@ -136,8 +136,8 @@
   display: grid;
   gap: 3px;
   padding: 8px;
-  background: var(--surface-2);
-  border-radius: 2px;
+  background: var(--surface-grain, none) var(--surface-2);
+  border-radius: var(--card-radius);
 }
 .build span,
 .budget span,
@@ -226,7 +226,7 @@
   font-family: var(--display);
 }
 .primary {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent);
   color: var(--on-accent);
 }
@@ -250,14 +250,14 @@
 .message {
   margin: 10px 0;
   padding: 10px 12px;
-  border-radius: 2px;
-  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
   color: var(--text);
   font-size: 12px;
   font-family: var(--display);
 }
 .warning {
-  background: var(--warm-soft);
+  background: var(--surface-grain, none) var(--warm-soft);
   color: var(--danger);
 }
 .empty {
@@ -389,7 +389,7 @@
 .candidateTable th {
   height: 28px;
   color: var(--text-muted);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
   font-size: 11px;
   font-weight: 500;
 }
@@ -427,7 +427,7 @@
 .candidateTable tbody tr:hover,
 .candidateTable tbody tr:focus-within,
 .candidateTable tbody tr[data-selected] {
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .candidateTable td > span[data-tier] {
   min-width: 34px;
@@ -511,9 +511,9 @@
   gap: 6px;
   margin-bottom: 12px;
   padding: 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid var(--gold-edge);
-  background: var(--surface);
+  background: var(--surface-grain, none) var(--surface);
 }
 .negotiations h3 {
   font-size: 14px;
@@ -524,7 +524,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   background: rgba(0, 0, 0, 0.2);
 }
 .negotiation > span:first-child {
@@ -547,7 +547,7 @@
 .pending {
   margin-top: 10px;
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   font-size: 13px;
   color: var(--gold);
   border: 1px dashed var(--gold-edge);

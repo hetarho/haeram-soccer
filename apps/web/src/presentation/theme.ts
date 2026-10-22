@@ -11,6 +11,7 @@ import {
 } from './contracts';
 import { resolveFontResource } from './fonts';
 import { resolveResourceUrl } from './registry';
+import { resolveThemeTokens } from './themeTokens';
 
 /** These names remain valid in text renderers that cache a computed font stack. */
 export const THEME_FONT_ALIASES = {
@@ -91,12 +92,7 @@ export function validateThemeTypography(pack: ThemePack, url = '/') {
 export function createThemeResolver(input: ThemePack, options: { url: string }) {
   const pack = validateThemePack(input);
   const { fonts, tokens: typography } = validateThemeTypography(pack, options.url);
-  const tokens: Readonly<Record<string, string>> = Object.freeze({
-    ...pack.tokens.palette,
-    ...pack.tokens.surfaces,
-    ...pack.tokens.shape,
-    ...typography,
-  });
+  const tokens = resolveThemeTokens(pack.tokens, typography);
   const imageTreatment = Object.freeze({ ...pack.tokens.imageTreatment });
   const iconImages = Object.freeze([
     ...new Set(

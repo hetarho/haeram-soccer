@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "id": "standard",
+  "colorScheme": "dark",
+  "tokens": {
+    "palette": {
+      "bg": "#14271e",
+      "text": "#f2f4ee",
+      "text-muted": "#cbd8cc",
+      "text-faint": "#bdcdbf",
+      "accent": "#98e4a7",
+      "accent-fill": "#98e4a7",
+      "accent-edge": "transparent",
+      "accent-text": "#98e4a7",
+      "on-accent": "#163422",
+      "positive": "#b6dfb4",
+      "gold": "#e0d29d",
+      "gold-fill": "var(--accent-fill)",
+      "gold-edge": "transparent",
+      "warm": "#e2c99c",
+      "warm-soft": "#373221",
+      "cool": "#b4d3da",
+      "cool-soft": "#223338",
+      "danger": "#ffb9ad",
+      "focus": "#eef0bc",
+      "trophy-silver": "#dae4da",
+      "danger-edge": "#c98575",
+      "field-line": "rgba(255, 255, 255, 0.55)"
+    },
+    "surfaces": {
+      "surface-deep": "#121d17",
+      "surface": "#203127",
+      "surface-2": "#23432c",
+      "surface-3": "#294f31",
+      "line": "transparent",
+      "line-strong": "transparent",
+      "paper": "var(--surface)",
+      "hud": "#14271e",
+      "brand-line": "transparent",
+      "nav-active": "#25482e",
+      "overlay": "#0c1712ed",
+      "subtle-fill": "rgb(233 244 225 / 0.04)",
+      "warm-tint": "rgb(224 210 157 / 0.08)",
+      "table-line": "rgb(242 244 238 / 0.09)",
+      "section-accent-line": "transparent",
+      "warning-line": "transparent",
+      "critical-line": "transparent",
+      "running-line": "transparent",
+      "secondary-control-line": "transparent"
+    },
+    "typography": {
+      "body": "'Pretendard', sans-serif",
+      "display": "'Pretendard', sans-serif",
+      "score": "'Pretendard', sans-serif",
+      "body-size": "15px",
+      "body-line-height": "1.7",
+      "heading-size": "23px",
+      "subheading-size": "16px",
+      "label-size": "12px",
+      "heading-tracking": "0",
+      "numeric-variant": "tabular-nums"
+    },
+    "shape": {
+      "radius": "12px",
+      "shadow": "0 16px 48px #0005",
+      "control-radius": "8px",
+      "card-radius": "12px",
+      "badge-radius": "4px",
+      "scene-radius": "var(--card-radius)",
+      "section-radius": "12px 12px 0 0",
+      "dialog-radius": "18px",
+      "tab-radius": "0 8px 8px 0",
+      "control-hover-filter": "brightness(1.08)",
+      "control-active-filter": "brightness(0.98)",
+      "control-shadow": "none",
+      "focus-width": "3px",
+      "focus-offset": "3px",
+      "trophy-gold-shadow": "drop-shadow(0 4px 10px rgba(196, 175, 125, 0.35))",
+      "trophy-silver-shadow": "drop-shadow(0 4px 10px rgba(207, 216, 220, 0.25))",
+      "theme-reveal-timing": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+    },
+    "imageTreatment": {
+      "objectFit": "cover",
+      "objectPosition": "center",
+      "imageRendering": "auto",
+      "filter": "none",
+      "overlay": "rgb(12 32 21 / 8%)"
+    }
+  },
+  "fonts": [
+    {
+      "family": "Pretendard",
+      "resource": "/fonts/Pretendard-Regular.woff2",
+      "weight": "400 500",
+      "format": "woff2",
+      "style": "normal",
+      "display": "swap"
+    },
+    {
+      "family": "Pretendard",
+      "resource": "/fonts/Pretendard-Bold.woff2",
+      "weight": "600 900",
+      "format": "woff2",
+      "style": "normal",
+      "display": "swap"
+    }
+  ],
+  "images": {
+    "facility": {
+      "pattern": "/art/standard/{era}/{kind}-{stage}.webp",
+      "overrides": {
+        "heritage.manager.0": "/art/standard/manager.webp",
+        "heritage.staff.0": "/art/standard/staff.webp",
+        "terraces.manager.0": "/art/standard/manager.webp",
+        "terraces.staff.0": "/art/standard/staff.webp",
+        "contemporary.manager.0": "/art/standard/manager.webp",
+        "contemporary.staff.0": "/art/standard/staff.webp"
+      }
+    }
+  },
+  "icons": {
+    "home": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3 10L10.5 3.5Q12 2.2 13.5 3.5L21 10Q22 11 21 12L20 12V20Q20 21 19 21H14V14H10V21H5Q4 21 4 20V12H3Q2 11 3 10Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "ball": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M2.5 12a9.5 9.5 0 1 0 19 0a9.5 9.5 0 1 0 -19 0ZM4.3 12a7.7 7.7 0 1 0 15.4 0a7.7 7.7 0 1 0 -15.4 0ZM12 7L16.7 10.4L14.9 15.8H9.1L7.3 10.4ZM3.642 8.716L7.642 10.716A0.8 0.8 0 0 1 8.358 9.284L4.358 7.284A0.8 0.8 0 0 1 3.642 8.716ZM16.358 10.716L20.358 8.716A0.8 0.8 0 0 1 19.642 7.284L15.642 9.284A0.8 0.8 0 0 1 16.358 10.716ZM11.2 16L11.2 21A0.8 0.8 0 0 1 12.8 21L12.8 16A0.8 0.8 0 0 1 11.2 16Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "table": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M5 3H19Q21 3 21 5V19Q21 21 19 21H5Q3 21 3 19V5Q3 3 5 3ZM5.5 5H18.5Q19 5 19 5.5V18.5Q19 19 18.5 19H5.5Q5 19 5 18.5V5.5Q5 5 5.5 5ZM7 9L8 9A1 1 0 0 1 8 7L7 7A1 1 0 0 1 7 9ZM11 8.8L17 8.8A0.8 0.8 0 0 1 17 7.2L11 7.2A0.8 0.8 0 0 1 11 8.8ZM7 13L8 13A1 1 0 0 1 8 11L7 11A1 1 0 0 1 7 13ZM11 12.8L17 12.8A0.8 0.8 0 0 1 17 11.2L11 11.2A0.8 0.8 0 0 1 11 12.8ZM7 17L8 17A1 1 0 0 1 8 15L7 15A1 1 0 0 1 7 17ZM11 16.8L17 16.8A0.8 0.8 0 0 1 17 15.2L11 15.2A0.8 0.8 0 0 1 11 16.8Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "cup": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "people": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M5.5 7a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM2 20V18Q2 12 9 12Q16 12 16 18V20ZM16 4Q21 4 21 8Q21 11 17 11Q19 7 16 4ZM17 13Q22 14 22 19V20H18V18Q18 15 17 13Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "training": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3 7H4Q5 7 5 8V16Q5 17 4 17H3Q2 17 2 16V8Q2 7 3 7ZM7 4H8Q9 4 9 5V19Q9 20 8 20H7Q6 20 6 19V5Q6 4 7 4ZM9.5 10.5H14.5Q15 10.5 15 11V13Q15 13.5 14.5 13.5H9.5Q9 13.5 9 13V11Q9 10.5 9.5 10.5ZM16 4H17Q18 4 18 5V19Q18 20 17 20H16Q15 20 15 19V5Q15 4 16 4ZM20 7H21Q22 7 22 8V16Q22 17 21 17H20Q19 17 19 16V8Q19 7 20 7Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "trend": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3.707 18.707L9.707 12.707A1 1 0 0 1 8.293 11.293L2.293 17.293A1 1 0 0 1 3.707 18.707ZM8.4 12.8L12.4 15.8A1 1 0 0 1 13.6 14.2L9.6 11.2A1 1 0 0 1 8.4 12.8ZM13.947 15.737L20.947 6.737A1.2 1.2 0 0 1 19.053 5.263L12.053 14.263A1.2 1.2 0 0 1 13.947 15.737ZM14 7L20 7A1 1 0 0 1 20 5L14 5A1 1 0 0 1 14 7ZM19 6L19 12A1 1 0 0 1 21 12L21 6A1 1 0 0 1 19 6Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "history": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM4.9 12a7.1 7.1 0 1 0 14.2 0a7.1 7.1 0 1 0 -14.2 0ZM11 7L11 12A1 1 0 0 1 13 12L13 7A1 1 0 0 1 11 7ZM11.553 12.894L15.553 14.894A1 1 0 0 1 16.447 13.106L12.447 11.106A1 1 0 0 1 11.553 12.894ZM2 3L2 8A1 1 0 0 1 4 8L4 3A1 1 0 0 1 2 3ZM3 9L8 9A1 1 0 0 1 8 7L3 7A1 1 0 0 1 3 9Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "menu": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M4 6.6L20 6.6A1.1 1.1 0 0 1 20 4.4L4 4.4A1.1 1.1 0 0 1 4 6.6ZM4 13.1L20 13.1A1.1 1.1 0 0 1 20 10.9L4 10.9A1.1 1.1 0 0 1 4 13.1ZM4 19.6L20 19.6A1.1 1.1 0 0 1 20 17.4L4 17.4A1.1 1.1 0 0 1 4 19.6Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "bell": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M11 2H13V4Q19 5 19 11V15L21 18H3L5 15V11Q5 5 11 4ZM9 20H15Q15 23 12 23Q9 23 9 20Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "news": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M5 3H16Q18 3 18 5V19Q18 21 16 21H5Q3 21 3 19V5Q3 3 5 3ZM5.6 5H15.4Q16 5 16 5.6V18.4Q16 19 15.4 19H5.6Q5 19 5 18.4V5.6Q5 5 5.6 5ZM6.5 6H9.5Q10 6 10 6.5V10.5Q10 11 9.5 11H6.5Q6 11 6 10.5V6.5Q6 6 6.5 6ZM12 7.7L14 7.7A0.7 0.7 0 0 1 14 6.3L12 6.3A0.7 0.7 0 0 1 12 7.7ZM12 10.7L14 10.7A0.7 0.7 0 0 1 14 9.3L12 9.3A0.7 0.7 0 0 1 12 10.7ZM7 14.7L14 14.7A0.7 0.7 0 0 1 14 13.3L7 13.3A0.7 0.7 0 0 1 7 14.7ZM7 17.7L14 17.7A0.7 0.7 0 0 1 14 16.3L7 16.3A0.7 0.7 0 0 1 7 17.7ZM19 7H21V19Q21 21 19 21Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "eye": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M2 12Q6 5 12 5Q18 5 22 12Q18 19 12 19Q6 19 2 12ZM4.5 12Q7.5 17 12 17Q16.5 17 19.5 12Q16.5 7 12 7Q7.5 7 4.5 12ZM9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "close": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M4.687 6.313L17.687 19.313A1.15 1.15 0 0 1 19.313 17.687L6.313 4.687A1.15 1.15 0 0 1 4.687 6.313ZM17.687 4.687L4.687 17.687A1.15 1.15 0 0 1 6.313 19.313L19.313 6.313A1.15 1.15 0 0 1 17.687 4.687Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "chevronDown": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M4.293 9.707L11.293 16.707A1 1 0 0 1 12.707 15.293L5.707 8.293A1 1 0 0 1 4.293 9.707ZM12.707 16.707L19.707 9.707A1 1 0 0 1 18.293 8.293L11.293 15.293A1 1 0 0 1 12.707 16.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "chevronRight": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M8.293 5.707L15.293 12.707A1 1 0 0 1 16.707 11.293L9.707 4.293A1 1 0 0 1 8.293 5.707ZM15.293 11.293L8.293 18.293A1 1 0 0 1 9.707 19.707L16.707 12.707A1 1 0 0 1 15.293 11.293Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "chevronLeft": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M14.293 4.293L7.293 11.293A1 1 0 0 1 8.707 12.707L15.707 5.707A1 1 0 0 1 14.293 4.293ZM7.293 12.707L14.293 19.707A1 1 0 0 1 15.707 18.293L8.707 11.293A1 1 0 0 1 7.293 12.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "check": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3.293 12.707L8.293 17.707A1 1 0 0 1 9.707 16.293L4.707 11.293A1 1 0 0 1 3.293 12.707ZM9.707 17.707L20.707 6.707A1 1 0 0 1 19.293 5.293L8.293 16.293A1 1 0 0 1 9.707 17.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "filter": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M3 7.15L21 7.15A1.15 1.15 0 0 1 21 4.85L3 4.85A1.15 1.15 0 0 1 3 7.15ZM6 13.15L18 13.15A1.15 1.15 0 0 1 18 10.85L6 10.85A1.15 1.15 0 0 1 6 13.15ZM9 19.15L15 19.15A1.15 1.15 0 0 1 15 16.85L9 16.85A1.15 1.15 0 0 1 9 19.15Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "star": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M12 2.8Q12.5 2.8 12.8 3.5L15.1 8.2L20.3 9Q21.8 9.2 20.7 10.3L16.9 14L17.8 19.2Q18 20.7 16.6 20L12 17.5L7.4 20Q6 20.7 6.2 19.2L7.1 14L3.3 10.3Q2.2 9.2 3.7 9L8.9 8.2L11.2 3.5Q11.5 2.8 12 2.8Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "liddedCup": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7ZM6.7 0.5H17.3Q18 0.5 18 1.2V1.3Q18 2 17.3 2H6.7Q6 2 6 1.3V1.2Q6 0.5 6.7 0.5Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "continentalCup": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M8 3H16L15 13Q15 16 13 17V20H17V22H7V20H11V17Q9 16 9 13ZM3 2H7V4H5V8Q5 12 9 12V14Q3 14 3 8ZM17 2H21V8Q21 14 15 14V12Q19 12 19 8V4H17Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "medal": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M6 15a6 6 0 1 0 12 0a6 6 0 1 0 -12 0ZM8.2 15a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0ZM5 2H9L12 8L9 9ZM15 2H19L15 9L12 8Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      }
+    },
+    "promotion": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M13.4 20L13.4 6A1.4 1.4 0 0 1 10.6 6L10.6 20A1.4 1.4 0 0 1 13.4 20ZM6.707 11.707L12.707 5.707A1 1 0 0 1 11.293 4.293L5.293 10.293A1 1 0 0 1 6.707 11.707ZM11.293 5.707L17.293 11.707A1 1 0 0 1 18.707 10.293L12.707 4.293A1 1 0 0 1 11.293 5.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "relegation": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M10.6 4L10.6 18A1.4 1.4 0 0 1 13.4 18L13.4 4A1.4 1.4 0 0 1 10.6 4ZM5.293 13.707L11.293 19.707A1 1 0 0 1 12.707 18.293L6.707 12.293A1 1 0 0 1 5.293 13.707ZM12.707 19.707L18.707 13.707A1 1 0 0 1 17.293 12.293L11.293 18.293A1 1 0 0 1 12.707 19.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      }
+    },
+    "trophy.league": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7Z",
+            "fill": "#e1c583",
+            "fillRule": "evenodd"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7Z",
+              "fill": "currentColor",
+              "fillRule": "evenodd"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.cup": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M7 3Q7 2 8 2H16Q17 2 17 3V8Q17 13 13 14V18H16Q17 18 17 19V21H7V19Q7 18 8 18H11V14Q7 13 7 8ZM5 4H6Q8 4 8 6V9Q8 11 6 11H5Q3 11 3 9V6Q3 4 5 4ZM5.4 5.7H6Q6.7 5.7 6.7 6.4V8.600000000000001Q6.7 9.3 6 9.3H5.4Q4.7 9.3 4.7 8.600000000000001V6.4Q4.7 5.7 5.4 5.7ZM18 4H19Q21 4 21 6V9Q21 11 19 11H18Q16 11 16 9V6Q16 4 18 4ZM18 5.7H18.6Q19.3 5.7 19.3 6.4V8.600000000000001Q19.3 9.3 18.6 9.3H18Q17.3 9.3 17.3 8.600000000000001V6.4Q17.3 5.7 18 5.7Z",
+              "fill": "currentColor",
+              "fillRule": "evenodd"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.continental": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M8 3H16L15 13Q15 16 13 17V20H17V22H7V20H11V17Q9 16 9 13ZM3 2H7V4H5V8Q5 12 9 12V14Q3 14 3 8ZM17 2H21V8Q21 14 15 14V12Q19 12 19 8V4H17Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M8 3H16L15 13Q15 16 13 17V20H17V22H7V20H11V17Q9 16 9 13ZM3 2H7V4H5V8Q5 12 9 12V14Q3 14 3 8ZM17 2H21V8Q21 14 15 14V12Q19 12 19 8V4H17Z",
+              "fill": "currentColor",
+              "fillRule": "nonzero"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.final": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M6 15a6 6 0 1 0 12 0a6 6 0 1 0 -12 0ZM8.2 15a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0ZM5 2H9L12 8L9 9ZM15 2H19L15 9L12 8Z",
+            "fill": "currentColor",
+            "fillRule": "evenodd"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M6 15a6 6 0 1 0 12 0a6 6 0 1 0 -12 0ZM8.2 15a3.8 3.8 0 1 0 7.6 0a3.8 3.8 0 1 0 -7.6 0ZM5 2H9L12 8L9 9ZM15 2H19L15 9L12 8Z",
+              "fill": "currentColor",
+              "fillRule": "evenodd"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.promotion": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M13.4 20L13.4 6A1.4 1.4 0 0 1 10.6 6L10.6 20A1.4 1.4 0 0 1 13.4 20ZM6.707 11.707L12.707 5.707A1 1 0 0 1 11.293 4.293L5.293 10.293A1 1 0 0 1 6.707 11.707ZM11.293 5.707L17.293 11.707A1 1 0 0 1 18.707 10.293L12.707 4.293A1 1 0 0 1 11.293 5.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M13.4 20L13.4 6A1.4 1.4 0 0 1 10.6 6L10.6 20A1.4 1.4 0 0 1 13.4 20ZM6.707 11.707L12.707 5.707A1 1 0 0 1 11.293 4.293L5.293 10.293A1 1 0 0 1 6.707 11.707ZM11.293 5.707L17.293 11.707A1 1 0 0 1 18.707 10.293L12.707 4.293A1 1 0 0 1 11.293 5.707Z",
+              "fill": "currentColor",
+              "fillRule": "nonzero"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.relegation": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M10.6 4L10.6 18A1.4 1.4 0 0 1 13.4 18L13.4 4A1.4 1.4 0 0 1 10.6 4ZM5.293 13.707L11.293 19.707A1 1 0 0 1 12.707 18.293L6.707 12.293A1 1 0 0 1 5.293 13.707ZM12.707 19.707L18.707 13.707A1 1 0 0 1 17.293 12.293L11.293 18.293A1 1 0 0 1 12.707 19.707Z",
+            "fill": "currentColor",
+            "fillRule": "nonzero"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M10.6 4L10.6 18A1.4 1.4 0 0 1 13.4 18L13.4 4A1.4 1.4 0 0 1 10.6 4ZM5.293 13.707L11.293 19.707A1 1 0 0 1 12.707 18.293L6.707 12.293A1 1 0 0 1 5.293 13.707ZM12.707 19.707L18.707 13.707A1 1 0 0 1 17.293 12.293L11.293 18.293A1 1 0 0 1 12.707 19.707Z",
+              "fill": "currentColor",
+              "fillRule": "nonzero"
+            }
+          ]
+        }
+      }
+    },
+    "trophy.best": {
+      "default": {
+        "type": "svg",
+        "viewBox": "0 0 24 24",
+        "shapeRendering": "geometricPrecision",
+        "layers": [
+          {
+            "d": "M12 2.8Q12.5 2.8 12.8 3.5L15.1 8.2L20.3 9Q21.8 9.2 20.7 10.3L16.9 14L17.8 19.2Q18 20.7 16.6 20L12 17.5L7.4 20Q6 20.7 6.2 19.2L7.1 14L3.3 10.3Q2.2 9.2 3.7 9L8.9 8.2L11.2 3.5Q11.5 2.8 12 2.8Z",
+            "fill": "#e1c583",
+            "fillRule": "nonzero"
+          }
+        ]
+      },
+      "variants": {
+        "unearned": {
+          "type": "svg",
+          "viewBox": "0 0 24 24",
+          "shapeRendering": "geometricPrecision",
+          "layers": [
+            {
+              "d": "M12 2.8Q12.5 2.8 12.8 3.5L15.1 8.2L20.3 9Q21.8 9.2 20.7 10.3L16.9 14L17.8 19.2Q18 20.7 16.6 20L12 17.5L7.4 20Q6 20.7 6.2 19.2L7.1 14L3.3 10.3Q2.2 9.2 3.7 9L8.9 8.2L11.2 3.5Q11.5 2.8 12 2.8Z",
+              "fill": "currentColor",
+              "fillRule": "nonzero"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "stylesheet": "standard.css"
+}

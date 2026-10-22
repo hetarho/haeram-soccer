@@ -756,11 +756,13 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   client,
   localError,
   playing,
+  onDownload,
 }: {
   client: GameClient;
   localError: string;
   /** The club's bands belong to the game in play, never to founding beside a parked one. */
   playing: boolean;
+  onDownload: () => Promise<void>;
 }) {
   const { t } = useLocale();
   const state = useGameState((state) => state);
@@ -776,6 +778,11 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
             <div className={s.error} role="alert">
               {error}
               <button onClick={() => location.reload()}>{t('save.reload')}</button>
+              {state.error && !playing && (
+                <button disabled={state.busy} onClick={() => void onDownload()}>
+                  {t('save.exportRecovery')}
+                </button>
+              )}
             </div>
           )}
           {critical === MANAGER_GONE ? (
@@ -932,13 +939,7 @@ function SaveActions({
     </div>
   );
 }
-function StartTools({
-  onDownload,
-  onImport,
-}: {
-  onDownload: () => Promise<void>;
-  onImport: (file?: File) => Promise<void>;
-}) {
+function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) {
   const { t } = useLocale();
   const state = useGameState((state) => state);
   return (
@@ -956,11 +957,6 @@ function StartTools({
           }}
         />
       </label>
-      {state.error && (
-        <button disabled={state.busy} onClick={() => void onDownload()}>
-          {t('save.exportRecovery')}
-        </button>
-      )}
     </div>
   );
 }
@@ -1209,7 +1205,12 @@ export function App() {
           </FeedbackOverlay>
         )}
         {client && screen === 'game' && (
-          <RuntimeFeedback client={client} localError={localError} playing={playing} />
+          <RuntimeFeedback
+            client={client}
+            localError={localError}
+            playing={playing}
+            onDownload={download}
+          />
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
@@ -1286,9 +1287,7 @@ export function App() {
           ) : (
             <div className={s.loading}>{t('shell.loadingOffice')}</div>
           )}
-          {client && screen === 'game' && (!w || replacing) && (
-            <StartTools onDownload={download} onImport={importFile} />
-          )}
+          {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
           <LiveFooter playing={playing} />
           {/* Start screens carry their own import and recovery tools. */}
           {client && playing && (

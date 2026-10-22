@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PresentationPreferencesStore } from '../adapters/presentationPreferences';
 import { createPresentationResources } from '../adapters/presentationResources';
 import { prepareThemeResources, type ThemeInstallationPorts } from '../adapters/themeResources';
+import type { ThemeTransitionPort } from '../adapters/themeTransition';
 import type { LocalePack, ThemePack } from './contracts';
 import { createPresentationController } from './controller';
 
@@ -10,7 +11,12 @@ const json = (path: string) => JSON.parse(readFileSync(new URL(path, import.meta
 const baselineLocale = json('../../public/presentation/locales/ko-KR.json') as LocalePack;
 const baselineTheme = json('../../public/presentation/themes/pixel.json') as ThemePack;
 const localeRegistry = json('../../public/presentation/locales/index.json');
-const themeRegistry = json('../../public/presentation/themes/index.json');
+// The controller fixture owns its default and documents independently of shipped inventory.
+const themeRegistry = {
+  schemaVersion: 1,
+  defaultId: baselineTheme.id,
+  entries: [{ id: baselineTheme.id, label: 'Baseline theme', resource: 'pixel.json' }],
+};
 const syntheticTheme = (id: string): ThemePack => ({
   ...structuredClone(baselineTheme),
   id,
@@ -30,6 +36,7 @@ function setup(
   portsOverride?: Partial<ThemeInstallationPorts>,
   baseUrl?: string,
   observeResources?: (id: string, ready: Promise<unknown>) => void,
+  transitionTheme?: ThemeTransitionPort,
 ) {
   const documents = new Map<string, unknown>([
     [
@@ -125,11 +132,90 @@ function setup(
       return ready;
     },
     applyLocale,
+    transitionTheme,
   });
   return { controller, documents, storage, writes, applyLocale, activations, releases, fetch };
 }
 
 describe('one presentation controller', () => {
+  it('does not inherit optional shape and state effects from the registered default theme', async () => {
+    const { controller, documents } = setup({ themeId: 'synthetic-one' });
+    const defaultPack = structuredClone(baselineTheme);
+    Object.assign(defaultPack.tokens.shape, {
+      'badge-radius': '19px',
+      'scene-radius': '27px',
+      'control-active-filter': 'brightness(0.5)',
+    });
+    documents.set('/presentation/themes/pixel.json', defaultPack);
+    await controller.initialize();
+    const { theme } = controller.getSnapshot();
+    expect(theme?.id).toBe('synthetic-one');
+    expect(theme?.token('badge-radius')).toBe('2px');
+    expect(theme?.token('scene-radius')).toBe('0px');
+    expect(theme?.token('control-active-filter')).toBe('var(--control-hover-filter)');
+    controller.dispose();
+  });
+
+  it('restores a saved pixel preference without animating initial loading', async () => {
+    const transition = { run: vi.fn(), cancel: vi.fn(), dispose: vi.fn() };
+    const { controller } = setup({ themeId: 'pixel' }, undefined, undefined, undefined, transition);
+    await controller.initialize();
+    expect(controller.getSnapshot().theme?.id).toBe('pixel');
+    expect(transition.run).not.toHaveBeenCalled();
+  });
+
+  it('animates only a real theme change and publishes it inside the synchronous callback', async () => {
+    const run = vi.fn(async (update: () => void) => {
+      expect(controller.getSnapshot().theme?.id).toBe('pixel');
+      expect(controller.getSnapshot().pending).toBe(true);
+      update();
+      expect(controller.getSnapshot().theme?.id).toBe('synthetic-one');
+      expect(controller.getSnapshot().pending).toBe(false);
+    });
+    const transition = { run, cancel: vi.fn(), dispose: vi.fn() };
+    const { controller, storage } = setup({}, undefined, undefined, undefined, transition);
+    await controller.initialize();
+    await controller.select({ localeId: 'en-US' });
+    await controller.select({ themeId: 'pixel' });
+    expect(run).not.toHaveBeenCalled();
+    await controller.select({ themeId: 'synthetic-one' });
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(storage.get('haeram-soccor:presentation')!).themeId).toBe('synthetic-one');
+    controller.dispose();
+    expect(transition.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('disposes a stale prepared theme when its deferred transition callback runs late', async () => {
+    const pending = deferred<void>();
+    let delayed!: () => void;
+    const run = vi.fn(async (update: () => void) => {
+      if (run.mock.calls.length === 1) {
+        delayed = update;
+        await pending.promise;
+      } else update();
+    });
+    const transition = { run, cancel: vi.fn(), dispose: vi.fn() };
+    const { controller, activations, releases, storage } = setup(
+      {},
+      undefined,
+      undefined,
+      undefined,
+      transition,
+    );
+    await controller.initialize();
+    const first = controller.select({ themeId: 'synthetic-one' });
+    await vi.waitFor(() => expect(run).toHaveBeenCalledTimes(1));
+    await controller.select({ themeId: 'synthetic-two' });
+    delayed();
+    pending.resolve();
+    await first;
+    expect(controller.getSnapshot().theme?.id).toBe('synthetic-two');
+    expect(activations.some((resource) => resource.includes('theme=synthetic-one'))).toBe(false);
+    expect(releases.some((resource) => resource.includes('theme=synthetic-one'))).toBe(true);
+    expect(JSON.parse(storage.get('haeram-soccor:presentation')!).themeId).toBe('synthetic-two');
+    expect(transition.cancel).toHaveBeenCalledTimes(2);
+  });
+
   it('preserves deployment-root image URLs for absolute browser JSON requests', async () => {
     const { controller } = setup({}, undefined, 'https://club.example/game/');
     await controller.initialize();

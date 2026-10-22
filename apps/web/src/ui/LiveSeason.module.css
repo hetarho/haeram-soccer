@@ -11,7 +11,7 @@
   padding: 4px 0 6px;
   /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters
      the whole band on every league visit, about 20 times the cost of any other tab. */
-  background: var(--hud);
+  background: var(--surface-grain, none) var(--hud);
   box-shadow: none;
 }
 .tabs {
@@ -43,7 +43,7 @@
   height: 44px;
   min-height: 44px;
   padding: 0;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
 }
 .seasonStep svg {
   width: 20px;
@@ -97,8 +97,8 @@
   gap: 10px;
   margin: 10px 0;
   padding: 8px 12px;
-  background: var(--surface-2);
-  border-radius: 2px;
+  background: var(--surface-grain, none) var(--surface-2);
+  border-radius: var(--control-radius);
   font-size: 13px;
   color: var(--text);
   white-space: nowrap;
@@ -141,12 +141,12 @@
   min-height: 44px;
 }
 .watch {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   border-color: var(--accent);
 }
 .watch:hover:not(:disabled) {
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
 }
 @media (max-width: 760px) {
   .navigation {
@@ -219,7 +219,7 @@
   align-content: center;
   gap: 1px;
   color: var(--on-accent);
-  background: var(--accent-fill);
+  background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent-edge);
   box-shadow: none;
 }

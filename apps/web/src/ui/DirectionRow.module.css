@@ -31,9 +31,9 @@
   max-width: 50%;
   font-size: 12px;
   padding: 4px 10px;
-  border-radius: 2px;
+  border-radius: var(--badge-radius);
   color: var(--on-accent);
-  background: var(--gold-fill);
+  background: var(--surface-grain, none) var(--gold-fill);
   box-shadow: none;
   overflow-wrap: anywhere;
   font-family: var(--display);
@@ -46,14 +46,14 @@
   min-width: 0;
   min-height: 44px;
   padding: 4px 3px;
-  border-radius: 2px;
+  border-radius: var(--control-radius);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
   word-break: keep-all;
   overflow-wrap: anywhere;
   color: var(--text-muted);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
   border-color: var(--line);
   box-shadow: none;
   font-family: var(--display);
@@ -61,14 +61,14 @@
 .options button[aria-checked='true'] {
   color: var(--text);
   border-color: var(--accent);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 /* A drafted option reads gold and dashed until the board's 적용 sends it. */
 .options .drafted,
 .options .drafted[aria-checked='true'] {
   color: var(--gold);
   border: 1px dashed var(--gold);
-  background: var(--surface-2);
+  background: var(--surface-grain, none) var(--surface-2);
 }
 .options button:disabled {
   opacity: 0.55;
@@ -80,7 +80,7 @@
   display: grid;
   gap: 4px;
   padding: 8px 10px;
-  border-radius: 2px;
+  border-radius: var(--card-radius);
   border: 1px solid transparent;
   background: rgba(0, 0, 0, 0.22);
   font-size: 12px;
@@ -104,7 +104,7 @@
 }
 .previewing {
   border-color: var(--gold);
-  background: var(--surface-deep);
+  background: var(--surface-grain, none) var(--surface-deep);
 }
 .previewing p b {
   color: var(--gold);
