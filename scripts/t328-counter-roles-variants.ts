@@ -161,7 +161,26 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // (d) Balanced's block for its xG conceded: the pre-T321 counter-press reach, a tighter block.
   balCP8: { shape: { candidate: { tactic: { balanced: { counterPress: 8 } } } } },
   balTight: { shape: { candidate: { tactic: { balanced: { compact: 0.41 } } } } },
+  // T356 levers from T345's kept setting, through the neutral `COORDINATION_CONFIG.settledRuns`
+  // hook: (a) possession's runs outside a break (runs in behind, overlaps and box runs) at three
+  // strengths and more; (b) the same with a guard for press's high-regain lead: the extra odds only
+  // with the ball past halfway (band 4 on), or only for possession's forwards and wingers.
+  possRuns13: possessionRuns(1.3),
+  possRuns16: possessionRuns(1.6),
+  possRuns20: possessionRuns(2),
+  possRuns25: possessionRuns(2.5),
+  possRunsHalf16: possessionRuns(1.6, { from: 4 }),
+  possRunsHalf20: possessionRuns(2, { from: 4 }),
+  possRunsHalf25: possessionRuns(2.5, { from: 4 }),
+  possRunsFw16: possessionRuns(1.6, { lines: ['FW'] }),
+  possRunsFw20: possessionRuns(2, { lines: ['FW'] }),
+  possRunsFw25: possessionRuns(2.5, { lines: ['FW'] }),
+  possRunsFw30: possessionRuns(3, { lines: ['FW'] }),
 };
+
+function possessionRuns(odds: number, guard: object = {}): BehaviourPatch {
+  return { coordination: { settledRuns: { odds: { possession: odds }, ...guard } } };
+}
 
 function possession(p: object): BehaviourPatch {
   return { decide: { tactic: { possession: p } } };
