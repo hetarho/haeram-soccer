@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| q8m5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-22T13:18Z | 2026-10-22T18:23Z | T365 |
+| q8m5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-22T13:18Z | 2026-10-22T19:39Z | T323 |
 
 ## inbox
 - 261022 decided T349 WEB-94: the scoreboard shows the presented running score (goals reached on the clock) instead of the minute's settled `frame.score`, which already counts a goal later in that minute → otherwise the score changes before the held goal and leaks it (alt: keep frame.score and hold at the minute boundary, which freezes up to a minute away from the goal)
@@ -227,13 +227,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 | todo |
-| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 T356 T357 T358 T365 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 | todo |
+| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 T356 T357 T358 T365 | doing@261023.q8m5 |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T365 | Adopt T357's side share and possession's guarded runs on the candidate model | MATCH ARCH | T357 T358 | doing@261023.q8m5 |
+| T366 | Show every recorded set-piece job in playback until the next play | MATCH WEB ARCH | T365 | doing@261023.q8m5 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -251,6 +251,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T365 done (q8m5; kept under its recorded exception): candidate side share 0.8 and possession's runs ×2.5 past halfway; fresh rounds 23+24 pooled curve 2.81 → 1.76, MATCH-29 inside 14 → 19, possession's points inside, core 34 → 35, nothing inside → outside; penalty goals outside → T323
+- 261023 create-task T366 (q8m5, from T365's limit): playback drops a defending set-piece job in `set-piece-1`; T286 waits for it
 - 261023 merge origin/main (q8m5): u4h2's owner office UI (T355, T360–T362, WEB r128–r130) joins `work/q8m5`; this session's T360 renumbered T365
 - 261023 T358 done (q8m5): the candidate engine computes exp, log, tanh, sin, cos, atan2, hypot and integer powers from basic IEEE ops (fdlibm, ≤ 2.5 ulp, 243 recorded bit patterns); linux-x64 CI gives every darwin-arm64 digest and Firefox/WebKit play the set-piece journey's Node reference, so candidate digests are host-free again; statistics unchanged on round 21, own match 0.97×; pre-feature path keeps `Math.*`
 - 261023 T357 done (q8m5; explore exit, nothing kept under its rule): the gradient sits in pass completion and reaches both grid paths through `shift` × skillScale; candidate 2.28 / pre-feature grid 1.90 / summary 2.16 on the same 9,600 gap fixtures; side share 0.8 + possession's guarded runs pooled curve 3.09 → 1.65 on rounds 21+22 → T365 adopts it
@@ -269,5 +271,3 @@
 - 261023 create-task T359 (q8m5, from T348's limit): a recorded snapshot at each restart's kick for playback; T286 waits for it
 - 261023 create-task T358 (q8m5): host-portable outcome-critical math for the candidate grid, after T348/T356, before T323; T323 and T286 wait for it
 - 261022 T345 done (q8m5; explore exit, kept): candidate score state (DECISION_CONFIG.candidate.leadingShot 0.5, trailingPush 1.6); validation rounds 13+14 curve 3.23 → 2.79, MATCH-29 11/3/11 → 14/2/9, nothing inside → outside; possession still outside → T356, curve above 2.5 → T357; grid digests split into host-free facts and darwin-arm64 positions
-- 261022 T348 T356 start (q8m5): side by side from a7719f0 (T325 and T345 integrated on `work/q8m5`)
-- 261022 create-task T356 T357 (q8m5, from T345's exit): possession's runs outside a break (explore 2h, beside T348) and the candidate strength curve (explore 3h); T323 and T286 wait for both
