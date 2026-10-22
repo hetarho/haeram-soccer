@@ -236,6 +236,19 @@ describe('grid restarts', () => {
     expect(s.ball).toEqual([50, 0]);
   });
 
+  it('never plays a dropped ball to a teammate standing on its spot', () => {
+    const s = field();
+    const keeper = s.players[0].find((gp) => gp.slot === 0)!.idx;
+    put(s, 0, keeper, [103, 34]);
+    put(s, 0, 5, [100, 30]);
+    put(s, 0, 6, [95, 40]);
+    const rs: Restart = { kind: 'dropBall', side: 0, spot: [103, 34], dead: 0 };
+    const result = playRestart(s, rs, random('drop'), shotContext(s));
+    expect(result.taker).toBe(5);
+    expect(result.target).toBe(6);
+    expect(s.ball.every(Number.isFinite)).toBe(true);
+  });
+
   it('kicks off backwards from the centre spot', () => {
     for (let i = 0; i < 40; i++) {
       const s = field();

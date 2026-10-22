@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| q8m5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-22T13:18Z | 2026-10-22T16:02Z | T356 |
+| q8m5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-22T13:18Z | 2026-10-22T16:15Z | T357 |
 
 ## inbox
 - 261022 decided T349 WEB-94: the scoreboard shows the presented running score (goals reached on the clock) instead of the minute's settled `frame.score`, which already counts a goal later in that minute → otherwise the score changes before the held goal and leaks it (alt: keep frame.score and hold at the minute boundary, which freezes up to a minute away from the goal)
@@ -26,6 +26,7 @@
 - 261023 decided T358 ARCH-5 ARCH-9: the candidate grid gets host-portable transcendental math (JS from IEEE basic ops and `Math.sqrt`, fdlibm-style) in explore-free task T358 after T348/T356 and before T323 → CI 39800627501 (linux-x64) recorded a different facts digest for the observed 2024 shoot-out than this Mac for the same source, so the host's float library flips facts, as the 261020 T271 century drift suggested; the pre-feature path keeps `Math.*` so active careers do not change; the grid digest test keys every exact digest by host until T358 lands (alt: fixed-point coordinates | accept host-dependent candidate facts)
 - 261023 decided T348 T359: T348's playback limit (non-actors drawn straight between snapshots, so a restart's walk-in ends as the delivery lands and the kick is never shown) goes to task T359, which records a snapshot at each restart's kick without moving a draw, before T286 → T286's continuity evidence includes T348's correction (alt: accept it as a known limit)
 - 261023 decided T348: set-piece defensive jobs are committed (the attackers' box-hold priority); zone guards and the keeper reuse the cover intention with a zone field, since the intention kinds list lives in contracts; the second ball ends a guard at the defenders' existing 30 m danger distance (alt: new intention kinds | a separate release distance)
+- 261023 decided T356 T357 MATCH-29: possession's halfway-guarded runs (×2.5, points inside on rounds 15 and 16 but goals 2.78 → 2.96 and the curve 2.65 → 3.37) are trialled again inside T357 together with its curve levers, kept only if possession's rows and the curve hold together → the extra goals are what cost the draws, which is T357's curve problem (alt: T323 as the worker suggested | accept a known miss via update-ssot on MATCH-29 | possession's role table, a STAFF-22 change)
 - 261022 decided T325 T345: session q8m5 runs T325's merge and T345 side by side with session subagents in their own worktrees, as k2r7 did for T327/T328 (both explore, so no work group); main pushed once at the end (alt: one after the other)
 - 261022 decided T345 T356 MATCH-29: possession's rows (still outside after T345: points −0.205, about 10 shots a match against 13) go to explore T356 — runs outside a break (T345's lever a′, the only one that moved them) with a guard on press's high-regain lead, then possession's 4-3-3 role table if that fails → it is the one lever with a clear effect, and the bands stay as they are (alt: role table first | accept a known miss, which needs update-ssot on MATCH-29)
 - 261022 decided T345 T357 MATCH-2: the curve above 2.5 (2.79 pooled) and the gap −10 underdog (wins 13–15% against 18% under every tactic) go to explore T357 on the strength gradient, after T356 → T345 found it is not a tactic effect; MATCH-2's form draw, gap formula and home points stay rules (alt: fold it into T323 | accept the curve error)
@@ -230,10 +231,9 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T356 | Give possession its chances through runs outside a break | MATCH STAFF PLAYER ARCH | T345 | doing@261022.q8m5 |
-| T357 | Bring the candidate's strength curve back to MATCH-2's target | MATCH ARCH | T356 | todo |
-| T358 | Make the candidate grid's outcome-critical math give the same bits on every host | ARCH MATCH | T348 T356 | todo |
-| T359 | Record each restart's kick so playback shows the set-piece walk-in as played | MATCH WEB ARCH | T348 | todo |
+| T357 | Bring the candidate's strength curve back to MATCH-2's target | MATCH ARCH | T356 | doing@261023.q8m5 |
+| T358 | Make the candidate grid's outcome-critical math give the same bits on every host | ARCH MATCH | T348 T356 | doing@261023.q8m5 |
+| T359 | Record each restart's kick so playback shows the set-piece walk-in as played | MATCH WEB ARCH | T348 | doing@261023.q8m5 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -251,6 +251,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 fix engine (q8m5): a throw-in or dropped ball no longer goes to a teammate on the taker's own spot (`nearestFree` skipped no zero distance, so a zero-length pass made the ball and clock NaN; found by T356, 1 in 21,600 matches); `restarts.test.ts` case; digests unchanged
+- 261023 T356 done (q8m5; explore exit, nothing kept): possession's runs reach its rows only with more goals (halfway-guarded ×2.5: points inside on rounds 15+16, curve 2.65 → 3.37, draw rows inside → insufficient); scripts keep the probes → T357 trials it with the curve
 - 261023 T348 done (q8m5): candidate defenders keep set-piece jobs after the kick (markers on their men, zone guards goal-side, keeper toward the delivery) until a turnover, the next restart or the ball 30 m out; the cause was `restartTaken` ending every defensive place at the kick; 600-fixture bands 34 → 35 of 37 (MF goals inside), set-piece goals 23.2 → 22.6%; default path unchanged; `set-piece-defence.spec.ts` left to the batch run
 - 261023 create-task T359 (q8m5, from T348's limit): a recorded snapshot at each restart's kick for playback; T286 waits for it
 - 261023 create-task T358 (q8m5): host-portable outcome-critical math for the candidate grid, after T348/T356, before T323; T323 and T286 wait for it
@@ -269,5 +271,3 @@
 - 261022 measured planning verified (g8s2): retained full-match reproducer matches all 8 runs/89 corner readings exactly; retained stage reproducer matches coordinates/jobs exactly; spec lint passes with existing stale/status warnings; no product code or push.
 - 261022 ideation/create-task measured follow-up (g8s2): 8 matches/89 corners plus isolated placement→moveAll probe replace the unverified stationary-defence diagnosis in T348; WEB r125/WEB-95 adds T350 normal-view team/carrier cues after T349, required by T286. Evidence and runnable probes retained in docs/benchmarks/set-piece-motion-261022.*.
 - 261022 ideation set-piece-defence-and-goal-feedback resumed: measure actual team movement before correcting the task; update-ssot WEB/create-task for ball ownership.
-- 261022 planning verified (g8s2): spec lint passes (11 remaining tasks; stale-base/status warnings retained), git diff --check clean; documentation only, no game implementation or push.
-- 261022 create-task MATCH WEB: T348 defensive set-piece response after T325/T345, T349 independent goal feedback; todo T323/T286 refreshed to MATCH r20 WEB r124 with follow-up dependencies; ideation converted.
