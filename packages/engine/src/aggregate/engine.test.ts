@@ -234,11 +234,12 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
   it('settles an exhausted cup tie at 120 minutes on the earliest of tied plans', () => {
     // A cup tie level after 90 minutes whose 120-minute stretch has two searched plans that each
     // leave one red-card answer against the score. With two searches and no retry the fallback
-    // settles the earlier of the tied plans. The fixture was found by searching 3,000 replays of
-    // this world under the kernel's T284 settings (1 in about 3,000); retuning AGGREGATE_CONFIG moves
-    // the draws, and the tie check below then fails until a tied fixture is found again.
-    const { w, fixtures } = others(1210, 2024);
-    const f: Fixture = { ...fixtures[1209]!, kind: 'cup' };
+    // settles the earlier of the tied plans. The fixture was found by searching replays of this
+    // world under the kernel's settings (T284: index 1209 of 3,000; T323's retune: 296, the first
+    // of three in 12,000); retuning AGGREGATE_CONFIG moves the draws, and the tie check below then
+    // fails until a tied fixture is found again.
+    const { w, fixtures } = others(297, 2024);
+    const f: Fixture = { ...fixtures[296]!, kind: 'cup' };
     const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
     const prepared = prepareMatch(w, f);
     const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
@@ -553,6 +554,7 @@ describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
     outTouch: 0,
     outByline: 0,
     cornersWon: 0,
+    recovered: 0,
     ...m,
   });
   /** A one-period ledger with only these moves of each side. */
@@ -660,7 +662,7 @@ describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
       { from: cell(2, 2), to: cell(2, 2), kind: 'carry', completed: 0 },
       { from: cell(1, 2), to: cell(1, 1), completed: 0, intercepted: 1 },
       // Of two passes into its band 2 one is lost loose (we recover it), and one goes out.
-      { from: cell(2, 2), to: cell(2, 1), attempts: 2, completed: 1 },
+      { from: cell(2, 2), to: cell(2, 1), attempts: 2, completed: 1, recovered: 1 },
       { from: cell(2, 1), to: cell(2, 0), completed: 0, outTouch: 1 },
       // A take-on beats us in its band 4 (our 3); one is tackled in its band 5 (our 2).
       { from: cell(4, 2), to: cell(4, 2), kind: 'takeOn' },
@@ -707,6 +709,42 @@ describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
     // Tackle, interception, the challenge lost and two fouls from our band 3 on.
     expect(own.detail[TD.pressActions]).toBe(5);
     expect(other.detail[TD.buildUpPasses]).toBe(4);
+  });
+
+  it('counts a loose ball as a high turnover only when the opponent won it (T323)', () => {
+    // Three of the opponent's passes into its band 2 (our 5) go loose; we won one of them.
+    const loose: Partial<AggregateMove> = {
+      from: cell(2, 2),
+      to: cell(2, 1),
+      attempts: 4,
+      completed: 1,
+      recovered: 1,
+    };
+    expect(aggregate(ledger([], [loose]))[TD.highTurnovers]).toBe(1);
+    expect(aggregate(ledger([], [{ ...loose, recovered: 0 }]))[TD.highTurnovers]).toBe(0);
+    // More won than went loose, or a carry won loose, does not hold together.
+    expect(ledgerIssues(ledger([], [{ ...loose, recovered: 4 }])).join()).toMatch(/failed/);
+    const carry = { ...loose, kind: 'carry' as const, completed: 3, recovered: 1 };
+    expect(ledgerIssues(ledger([], [carry])).join()).toMatch(/pass outcomes/);
+    // Generated matches: the opponent wins about `failed.loose.share` (times its press) of them.
+    const { w, fixtures } = others(40);
+    let won = 0,
+      free = 0;
+    for (const f of fixtures) {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      const match = playAggregate(w, f, prepared, rosters);
+      for (const side of match.facts.ledger.sides)
+        for (const m of side.moves) {
+          const rest = m.attempts - m.completed - m.offside - m.intercepted;
+          const left = rest - m.outTouch - m.outByline;
+          expect(m.recovered).toBeLessThanOrEqual(left);
+          won += m.recovered;
+          free += left;
+        }
+    }
+    expect(won / free).toBeGreaterThan(0.15);
+    expect(won / free).toBeLessThan(0.3);
   });
 
   it('reads possession as the share of attempted passes', () => {

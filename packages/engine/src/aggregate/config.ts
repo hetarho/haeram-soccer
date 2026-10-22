@@ -22,8 +22,11 @@ export const AGGREGATE_CONFIG = {
     manShort: 0.035,
   },
   passes: {
-    /** Pass attempts of both sides in 90 minutes (MATCH-23: 430–520 a side). */
-    perMatch: 960,
+    /**
+     * Pass attempts of both sides in 90 minutes (MATCH-23: 430–520 a side). T323: 960 → 910 with
+     * the completion bias, so final-third, progressive and front-of-box counts reach MATCH-30.
+     */
+    perMatch: 910,
     /** Each side's own spread around its share. */
     sideSd: 0.05,
   },
@@ -34,8 +37,8 @@ export const AGGREGATE_CONFIG = {
     max: 0.97,
     /** Effective-skill points (passing against pressing) per unit of completion. */
     skillScale: 450,
-    /** Lifts the reference rates to the band once direction, length and the box take theirs. */
-    bias: 0.05,
+    /** Lifts the reference rates to the band once direction, length and the box take theirs (T323: 0.05 → 0.035). */
+    bias: 0.035,
     /** Completion per point of prepared match strength gap. */
     strength: 0.002,
     /**
@@ -54,10 +57,11 @@ export const AGGREGATE_CONFIG = {
   },
   /** Completed forward passes skip a band this often, drift a lane this often. */
   forward: { long: 0.16, drift: 0.4 },
+  /** T323: 0.05 / 0.38 → 0.033 / 0.33 for MATCH-30's through balls (2.0–2.2 a team, 0.6–0.85 completed). */
   through: {
     /** Share of forward attempts from the middle and front-of-box bands' inner lanes. */
-    share: 0.05,
-    completion: 0.38,
+    share: 0.033,
+    completion: 0.33,
   },
   /** Scale on the reference cross share of a cell's passes. */
   crosses: { scale: 0.6, completion: 0.17, goalArea: 0.25 },
@@ -71,11 +75,19 @@ export const AGGREGATE_CONFIG = {
     intercepted: 0.16,
     /** Of the byline outs from a cross or a pass into the box, deflections giving a corner. */
     corner: 0.32,
+    /**
+     * Of the rest, the loose balls the opponent wins (T323, →MATCH-13 high turnovers): `share`
+     * times the opponent preset's `press`, at most `max`; the passing side keeps the others. T327
+     * credited every one to the opponent, so high turnovers ran at 13.3 a team against the
+     * grid's 5.5 and MATCH-30's 5.7–7.5.
+     */
+    loose: { share: 0.2, max: 0.8 },
   },
   carries: {
     /** Scale on the reference carries per pass of each cell. */
     scale: 0.8,
-    progressive: 0.4,
+    /** T323: 0.4 → 0.48 for MATCH-30's progressive carries (58.5–63 a team). */
+    progressive: 0.48,
     lost: 0.05,
   },
   takeOns: {
@@ -94,8 +106,12 @@ export const AGGREGATE_CONFIG = {
     band: [0.3, 0.3, 0.8, 1, 1.1, 1.2, 0.4, 0.3],
   },
   shots: {
-    /** Scale on the reference shot share of a cell, per completed arrival of each kind. */
-    scale: 0.565,
+    /**
+     * Scale on the reference shot share of a cell, per completed arrival of each kind. T323: 0.565 →
+     * 0.5 and the outside place 1.7 → 2.1, so box shots reach MATCH-30 (6.8–7.7 a team) with the
+     * shots and shot-place rows of MATCH-23 inside.
+     */
+    scale: 0.5,
     kind: {
       short: 1,
       long: 0.9,
@@ -109,7 +125,7 @@ export const AGGREGATE_CONFIG = {
      * Scale on the open-play shot rate by where the arrival ends: outside the box, in it, in the
      * goal area (T284: MATCH-23 shot place on calibration seeds).
      */
-    place: { outside: 1.7, box: 1, goalArea: 0.4 },
+    place: { outside: 2.1, box: 1, goalArea: 0.4 },
     /** Effective-skill points (attack against defence) per e-fold of shot rate. */
     skillScale: 190,
     /**
@@ -128,19 +144,23 @@ export const AGGREGATE_CONFIG = {
     header: 0.7,
   },
   xg: {
-    /** Reference xG per shot of the cell, scaled by the kind of chance. */
+    /**
+     * Reference xG per shot of the cell, scaled by the kind of chance. T323: every kind × 1.2 with
+     * the spread 0.55 → 0.75, so fewer, better chances keep MATCH-23's goals and xG a shot and big
+     * chances reach MATCH-30 (0.80–1.05 a team).
+     */
     kind: {
-      short: 1,
-      long: 1,
-      through: 1.9,
-      cross: 0.85,
-      cutBack: 1.7,
-      carry: 0.9,
-      takeOn: 1.2,
+      short: 1.2,
+      long: 1.2,
+      through: 2.28,
+      cross: 1.02,
+      cutBack: 2.04,
+      carry: 1.08,
+      takeOn: 1.44,
     },
     header: 0.75,
     /** Log-normal spread of one chance's quality. */
-    spread: 0.55,
+    spread: 0.75,
     /** Effective-skill points (attack against defence) per e-fold of chance quality. */
     matchupScale: 300,
     fallback: 0.03,
@@ -165,11 +185,11 @@ export const AGGREGATE_CONFIG = {
   /**
    * How each preset plays the ball beyond its profile points (→MATCH-8): `shot` scales its own
    * open-play shots per completed arrival (possession: fewer direct shots), `guard` the opponent's
-   * chance rate against it (balanced: defensive stability). PROVISIONAL: T284 calibrated `shot`
-   * and `guard` on MATCH-29's bands with forced pairings that seat each club's XI in the forced
-   * formation's slots, so out-of-position players (levelFactor down to 0.6) weaken some tactics
-   * and these values may compensate that artefact; T323 re-measures and re-tunes them once forced
-   * pairings field squads built for the forced formation at equal strength.
+   * chance rate against it (balanced: defensive stability). T284 calibrated `shot` and `guard` on
+   * MATCH-29's bands with forced pairings that seated each club's XI in the forced formation's
+   * slots; T323 re-measured them with squads built for the forced formation at equal strength
+   * (T321's conditioning) and kept them: MATCH-29 20 inside, 0 outside, 5 insufficient of 25 on
+   * calibration seeds (docs/CALIBRATION.md, T323).
    */
   tactics: {
     balanced: {

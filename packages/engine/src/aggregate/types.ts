@@ -141,6 +141,7 @@ export const AGGREGATE_STREAM_FAMILIES = [
   'changes',
   'attribution',
   'shootout',
+  'loose',
 ] as const;
 export type AggregateStreamFamily = (typeof AGGREGATE_STREAM_FAMILIES)[number];
 /**
@@ -166,7 +167,8 @@ export type AggregateMoveKind = (typeof AGGREGATE_MOVE_KINDS)[number];
  * A group of one side's same-kind actions between two of the 40 grid cells (`band * 5 + lane`,
  * in that side's attack frame) in one period. Failed passes end in an offside, an interception,
  * the touchline (a throw-in to the opponent), the byline (a goal kick, or a corner this side won)
- * or a loose ball nobody is credited with; a failed carry or take-on is an opponent's tackle.
+ * or a loose ball, which the opponent recovers (`recovered`, a ball won without a tackle or an
+ * interception) or this side keeps; a failed carry or take-on is an opponent's tackle.
  */
 export interface AggregateMove {
   period: AggregatePeriod;
@@ -188,6 +190,12 @@ export interface AggregateMove {
   outByline: number;
   /** Of `outByline`, the deflections that gave this side a corner. */
   cornersWon: number;
+  /**
+   * Of the failed passes neither offside, intercepted nor out of play, the loose balls the
+   * opponent won (T323, →MATCH-13 high turnovers); the rest stayed with this side. Always 0 for a
+   * carry or take-on.
+   */
+  recovered: number;
 }
 export type AggregateShotOutcome = 'goal' | 'save' | 'block' | 'miss';
 /**
