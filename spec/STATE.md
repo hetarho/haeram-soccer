@@ -228,9 +228,9 @@
 - OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
 - known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
-- FIRST (fix CI before feature work): CI 39690281623 on 5f80730 (the UI merge) failed e2e on Chromium — cups-and-club.spec.ts:43 (390x844, transfer stance from the roster; click timeout 30 s), recruitment.spec.ts:92 (filters and compares candidates; click timeout), staff.spec.ts:81 (360x740) — and on Firefox — the same cups-and-club and recruitment journeys plus facility-art.spec.ts:97 (current terraces/contemporary facility scenes at 390/1440). The same Chromium journeys passed in h3t6's local gate on 74cbb95 (230/230), so compare CI's traces with T314's market and T310–T313's art changes; CI for 3f45758 was still running at the stop.
 
 ## log
+- 261022 T332 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
 - 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T331
 - 261022 create-task T331 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T331
 - 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
@@ -250,4 +250,3 @@
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r19, which T327 implements first
 - 261022 refresh T286 T306 T323 T325 T326 bases only: MATCH r18 changes MATCH-13's PPDA and high turnover, which T327 implements first
 - 261022 create-task MATCH r18: T327 (PPDA and high turnovers by the published conventions, both paths, sourced bands) after T322, before T323
-- 261022 update-ssot MATCH r18: MATCH-13 PPDA and high turnover follow the published conventions (from T322's decision requests)
