@@ -4,7 +4,7 @@
  * within limits up to their pace/fatigue speed, the ball flies at bounded speeds, and an action or a
  * restart lasts until its route is physically done. The pre-feature path keeps `moveAll`.
  */
-import { restartPlaces, restartTaken } from './intentions';
+import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
 import { clamp, PITCH } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
 import { SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
@@ -306,8 +306,9 @@ export function prepareRestart(
  * The candidate model's `RestartPreparer` for a ball that went dead at `rest` (→MATCH-12,
  * MATCH-17, MATCH-18): the taker and the restart's scene (a delivery's, or every player's kick-off
  * spot after a goal) commit to their places and walk there on the clock (`prepareRestart`), whose
- * retrieval and placement knots go to `out.knots`. At the kick the places are reached and the
- * players who went up hold their box spots for the second ball.
+ * retrieval and placement knots go to `out.knots`. At the kick the places are reached; for the
+ * second ball the players who went up hold their box spots and the defenders keep their marks,
+ * zones and goal for as long (`defendSetPiece`, T348).
  */
 export function prepareOnClock(
   rest: readonly [number, number],
@@ -318,10 +319,13 @@ export function prepareOnClock(
     if (restart.kind === 'kickoff')
       for (const sd of [0, 1] as const)
         for (const gp of s.players[sd])
-          if (onPitch(gp) && gp.slot >= 0) moves.push({ gp, to: kickOffPoint(s.setup, sd, gp.slot) });
+          if (onPitch(gp) && gp.slot >= 0)
+            moves.push({ gp, to: kickOffPoint(s.setup, sd, gp.slot) });
     const gp = s.players[restart.side][taker]!;
     restartPlaces(s, [{ gp, to: restart.spot }, ...moves.filter((m) => m.gp !== gp)]);
     out.knots = prepareRestart(s, restart, taker, rest, moves);
-    restartTaken(s, scene?.up ?? [], s.elapsed + SHAPE_CONFIG.setPiece.stay);
+    const until = s.elapsed + SHAPE_CONFIG.setPiece.stay;
+    restartTaken(s, scene?.up ?? [], until);
+    if (scene) defendSetPiece(s, scene, until);
   };
 }

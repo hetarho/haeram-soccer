@@ -30,14 +30,7 @@ import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns } from './shape';
-import {
-  carryTo,
-  depart,
-  interruptAll,
-  losePass,
-  takeBall,
-  updateIntentions,
-} from './intentions';
+import { carryTo, depart, interruptAll, losePass, takeBall, updateIntentions } from './intentions';
 import { attackFrame, PITCH } from './pitch';
 import {
   createState,
