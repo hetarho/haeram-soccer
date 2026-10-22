@@ -95,7 +95,20 @@ export interface TraceEntry {
   intentions?: (Intention | EndedIntention | null)[];
   /** `Tally.running()` after the entry. */
   totals: Float64Array;
+  /**
+   * Candidate model only (T359, →MATCH-12/17): on a restart prepared on the clock, every slot at
+   * its kick, the instant `restartTaken` runs — where the walk-in ended and the restart's
+   * intentions (the places walked to) still held. The entry itself is after the delivery. Absent
+   * on older traces, at a period's kick-off and on the pre-feature path.
+   */
+  kick?: TraceKick;
 }
+
+/** A restart's kick (`TraceEntry.kick`): the clock and every slot, laid out as an entry's. */
+export type TraceKick = Pick<
+  TraceEntry,
+  'elapsed' | 'positions' | 'slots' | 'targets' | 'states' | 'intentions'
+>;
 
 /** What the engine resolved for an action, read by `Tracer.act`. */
 export interface TraceAction {
@@ -248,13 +261,12 @@ function stateOf(
 
 /**
  * The positions, targets, states and (candidate model) intentions of every slot now; `fresh` says
- * whether an ended intention has not been traced yet, and marks it traced.
+ * whether an ended intention has not been traced yet (an entry's also marks it traced).
  */
-function snapshot(
+function slotsNow(
   s: GridState,
-  totals: Float64Array,
   fresh: (ended: EndedIntention) => boolean,
-): Snapshot {
+): Omit<TraceKick, 'elapsed'> {
   const positions = new Float32Array(44).fill(NaN);
   const targets = new Float32Array(44).fill(NaN);
   const slots = new Int8Array(22).fill(-1);
@@ -284,12 +296,19 @@ function snapshot(
       if (i) intentions[k] = { ...i, target: [i.target[0], i.target[1]] };
     });
   }
+  return { positions, slots, targets, states, ...(intentions ? { intentions } : {}) };
+}
+
+/** An entry's snapshot: the ball, every slot (`slotsNow`) and the running totals. */
+function snapshot(
+  s: GridState,
+  totals: Float64Array,
+  fresh: (ended: EndedIntention) => boolean,
+): Snapshot {
+  const { intentions, ...arrays } = slotsNow(s, fresh);
   return {
     ball: [s.ball[0], s.ball[1]],
-    positions,
-    slots,
-    targets,
-    states,
+    ...arrays,
     totals,
     ...(intentions ? { intentions } : {}),
   };
@@ -307,6 +326,8 @@ export class Tracer {
     this.traced.add(ended);
     return true;
   };
+  /** The kick of the restart under way, for its entry. */
+  private kicked?: TraceKick;
 
   constructor(
     private readonly on: boolean,
@@ -323,6 +344,20 @@ export class Tracer {
     if (this.on) this.detail = detailOf(s, side, idx, a);
   }
 
+  /**
+   * A restart prepared on the clock is taken (`prepareOnClock`, T359): every slot as
+   * `restartTaken` is about to run, the walk-in done and the restart's places still held, goes
+   * with the restart's entry. It only reads the state; an ended intention it shows still shows at
+   * the entry, which is when it counts as traced.
+   */
+  readonly kick = (s: GridState): void => {
+    if (!this.on) return;
+    this.kicked = {
+      elapsed: s.elapsed,
+      ...slotsNow(s, (ended) => !this.traced.has(ended)),
+    };
+  };
+
   push(
     s: GridState,
     side: 0 | 1,
@@ -334,6 +369,7 @@ export class Tracer {
     if (!this.on) return;
     const shot = snapshot(s, this.totals(), this.fresh);
     const at = { elapsed: s.elapsed, period: s.period, t: s.t };
+    const kick = this.kicked;
     this.entries.push({
       ...at,
       side,
@@ -343,8 +379,10 @@ export class Tracer {
       ...(from ? { from } : {}),
       ...this.detail,
       ...shot,
+      ...(kick ? { kick } : {}),
     });
     this.detail = {};
+    this.kicked = undefined;
     const held = this.held ?? [];
     this.held = undefined;
     for (const n of held)

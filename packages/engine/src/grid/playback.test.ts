@@ -12,6 +12,7 @@ import { PITCH, toUnits } from './pitch';
 import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
 import { SHAPE_CONFIG } from './shape';
+import type { TraceEntry } from './trace';
 
 const w = createWorld({
   country: 'ENG',
@@ -350,7 +351,11 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       return [
         {
           e,
+          // The entry just before: the dead ball, or an incident at its time.
+          last: trace[n - 1],
           next: later[0]?.elapsed ?? Infinity,
+          // A restart next: its preparation shows its own places from the delivery's end (T359).
+          prepared: later[0]?.kick !== undefined,
           since: retrieve.at + e.dead!,
           window: samples.filter(
             (m) => m.period === e.period && m.elapsedSeconds >= from && m.elapsedSeconds <= to,
@@ -360,20 +365,38 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     });
   }
   const watched = watch('candidate-1', true);
+  /** Observed candidate matches by ID, each played once for the tests below. */
+  const matches = new Map([['candidate-1', watched]]);
+  const match = (id: string) => {
+    let m = matches.get(id);
+    if (!m) matches.set(id, (m = watch(id, true)));
+    return m;
+  };
+  /**
+   * Enough observed matches for both attacking directions, both corner touchlines and a
+   * delivered free kick by each side.
+   */
+  const SCENES = ['candidate-1', 'set-piece-1', 'set-piece-2', 'set-piece-3'];
+  const sceneOf = (e: TraceEntry) =>
+    e.action === 'corner'
+      ? `corner by ${e.side} from ${e.spot![1] < PITCH.width / 2 ? 'left' : 'right'}`
+      : `free kick by ${e.side}`;
+  const ALL_SCENES = [
+    'corner by 0 from left',
+    'corner by 0 from right',
+    'corner by 1 from left',
+    'corner by 1 from right',
+    'free kick by 0',
+    'free kick by 1',
+  ];
 
   it('both sides retain continuous recorded paths through a corner', () => {
     const seen = new Set<string>();
     let pairs = 0;
-    // Enough observed matches for both attacking directions, both corner touchlines and a
-    // delivered free kick by each side.
-    for (const id of ['candidate-1', 'set-piece-1', 'set-piece-2', 'set-piece-3']) {
-      const w = id === 'candidate-1' ? watched : watch(id, true);
+    for (const id of SCENES) {
+      const w = match(id);
       for (const { e, window } of deliveries(w)) {
-        seen.add(
-          e.action === 'corner'
-            ? `corner by ${e.side} from ${e.spot![1] < PITCH.width / 2 ? 'left' : 'right'}`
-            : `free kick by ${e.side}`,
-        );
+        seen.add(sceneOf(e));
         // Every player of both sides moves between consecutive samples no faster than he can run,
         // from the play before the restart, through its preparation and delivery, to the second ball.
         for (let k = 1; k < window.length; k++) {
@@ -392,16 +415,9 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
             }
         }
       }
-      if (seen.size === 6) break;
+      if (seen.size === ALL_SCENES.length) break;
     }
-    expect([...seen].sort()).toEqual([
-      'corner by 0 from left',
-      'corner by 0 from right',
-      'corner by 1 from left',
-      'corner by 1 from right',
-      'free kick by 0',
-      'free kick by 1',
-    ]);
+    expect([...seen].sort()).toEqual(ALL_SCENES);
     expect(pairs).toBeGreaterThan(1000);
   });
 
@@ -409,7 +425,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     const ids = (side: 0 | 1) => watched.setup.rosters[side].map((p) => p.id);
     let shown = 0,
       kept = 0;
-    for (const { e, next, since, window } of deliveries(watched)) {
+    for (const { e, next, prepared, since, window } of deliveries(watched)) {
       const att = e.side;
       const def = att === 0 ? 1 : 0;
       // The engine's set-piece jobs of the defending side as the delivery lands.
@@ -430,8 +446,10 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
             (p.intention.kind === 'mark' || p.intention.kind === 'cover'),
         );
         // Until the next play the samples show exactly the engine's jobs, drawn as marking (the
-        // keeper as guarding his goal), each mark on a different attacker on the pitch.
-        if (m.elapsedSeconds < next) expect(new Set(jobs.map((p) => p.id))).toEqual(engine);
+        // keeper as guarding his goal), each mark on a different attacker on the pitch; when the
+        // next play is a restart, its preparation shows its own places instead (T359).
+        if (m.elapsedSeconds < next && (!prepared || m.elapsedSeconds === e.elapsed))
+          expect(new Set(jobs.map((p) => p.id))).toEqual(engine);
         const attackers = new Set(m.players[att].map((p) => p.id));
         const marked = jobs.flatMap((p) =>
           p.intention!.kind === 'mark' ? [p.intention!.opponent!] : [],
@@ -453,5 +471,204 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     // facts are guarded by grid-throughput's pre-feature digests).
     expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);
     expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
+  });
+
+  /** Every on-pitch player of a snapshot in playback units of its period, by player ID. */
+  function placesIn(
+    snap: Pick<TraceEntry, 'positions' | 'slots'>,
+    period: 1 | 2 | 3 | 4,
+    { setup }: ReturnType<typeof watch>,
+  ) {
+    const out = new Map<string, [number, number]>();
+    for (let k = 0; k < 22; k++) {
+      const idx = snap.slots[k]!;
+      if (idx < 0) continue;
+      const id = setup.rosters[k < 11 ? 0 : 1][idx]!.id;
+      out.set(id, toUnits([snap.positions[k * 2]!, snap.positions[k * 2 + 1]!], period));
+    }
+    return out;
+  }
+  /** Where player `pid` of `side` is in a snapshot: its index in `slots` (side × 11 + slot), or -1. */
+  function slotFor(
+    { setup }: ReturnType<typeof watch>,
+    snap: Pick<TraceEntry, 'slots'>,
+    side: 0 | 1,
+    pid: string,
+  ) {
+    const idx = setup.rosters[side].findIndex((p) => p.id === pid);
+    for (let k = side * 11; k < side * 11 + 11; k++) if (snap.slots[k] === idx) return k;
+    return -1;
+  }
+  const near = (a: readonly number[], b: readonly number[], label: string) => {
+    expect(a[0], label).toBeCloseTo(b[0]!, 3);
+    expect(a[1], label).toBeCloseTo(b[1]!, 3);
+  };
+
+  it('playback passes through the recorded kick of a corner', () => {
+    const seen = new Set<string>();
+    let bent = 0,
+      scenes = 0;
+    for (const id of SCENES) {
+      const w = match(id);
+      for (const { e, last, since, window } of deliveries(w)) {
+        const label = `${id} ${sceneOf(e)} at ${e.elapsed}`;
+        seen.add(sceneOf(e));
+        scenes++;
+        // Recorded as `restartTaken` runs: when the preparation ends and the jobs start, before
+        // the delivery's entry.
+        const kick = e.kick!;
+        expect(kick, label).toBeDefined();
+        expect(kick.elapsed, label).toBe(since);
+        expect(kick.elapsed, label).toBeLessThan(e.elapsed);
+        // The walk-in ends on the places: the taker on the spot, the scene on its restart places.
+        let placed = 0;
+        for (let k = 0; k < 22; k++) {
+          const i = kick.intentions?.[k];
+          if (!i || 'end' in i || i.kind !== 'restart') continue;
+          near([kick.positions[k * 2]!, kick.positions[k * 2 + 1]!], i.target, label);
+          placed++;
+        }
+        expect(placed, label).toBeGreaterThan(6);
+        const taker = slotFor(w, kick, e.side, w.setup.rosters[e.side][e.idx]!.id);
+        near([kick.positions[taker * 2]!, kick.positions[taker * 2 + 1]!], e.spot!, label);
+        // Playback draws that instant: a sample at the kick, everyone where the kick has him and
+        // the ball on the spot.
+        const at = window.find((m) => m.elapsedSeconds === kick.elapsed);
+        expect(at, label).toBeDefined();
+        const recorded = placesIn(kick, e.period, w);
+        const drawn = at!.players.flat();
+        expect(drawn.map((p) => p.id).sort(), label).toEqual([...recorded.keys()].sort());
+        for (const p of drawn) near(p.position, recorded.get(p.id)!, `${label} ${p.id}`);
+        near(at!.ball, toUnits(e.spot!, e.period), label);
+        // Not one straight move from the dead ball to the delivery's end: the kick puts someone
+        // more than a metre off that line.
+        const [a, b] = [placesIn(last!, e.period, w), placesIn(e, e.period, w)];
+        const f = (kick.elapsed - last!.elapsed) / (e.elapsed - last!.elapsed);
+        const off = [...recorded].map(([pid, p]) => {
+          const [q, r] = [a.get(pid)!, b.get(pid)!];
+          const line = [q[0] + (r[0] - q[0]) * f, q[1] + (r[1] - q[1]) * f];
+          return Math.hypot(
+            ((p[0] - line[0]!) * PITCH.length) / 100,
+            ((p[1] - line[1]!) * PITCH.width) / 100,
+          );
+        });
+        if (Math.max(...off) > 1) bent++;
+      }
+      if (seen.size === ALL_SCENES.length) break;
+    }
+    expect([...seen].sort()).toEqual(ALL_SCENES);
+    expect(bent).toBe(scenes);
+    // Same-seed reruns reproduce exactly, kicks and samples.
+    const again = watch('set-piece-1', true);
+    const kicks = (w: ReturnType<typeof watch>) =>
+      deliveries(w).map((d) => ({ kick: d.e.kick, window: d.window }));
+    expect(kicks(again)).toEqual(kicks(match('set-piece-1')));
+  });
+
+  it("restart preparation samples show the restart's intentions", () => {
+    let restarts = 0,
+      prepared = 0,
+      places = 0,
+      displaced = 0,
+      delivered = 0;
+    const kinds = new Set<string>();
+    for (const id of SCENES) {
+      const w = match(id);
+      const trace = w.result.trace!;
+      const samples = w.frames.flatMap((f) =>
+        (f.motion ?? []).map((m) => ({ ...m, period: f.period })),
+      );
+      trace.forEach((e, n) => {
+        const kick = e.kick;
+        if (!kick) return;
+        // The entry before: the dead ball, or an incident at its time; then the preparation.
+        const a = trace[n - 1]!;
+        expect(a.period).toBe(e.period);
+        expect(a.elapsed).toBeLessThan(kick.elapsed);
+        restarts++;
+        kinds.add(e.action);
+        for (const m of samples) {
+          if (m.period !== e.period || m.elapsedSeconds <= a.elapsed) continue;
+          if (m.elapsedSeconds >= e.elapsed) break;
+          // The preparation shows the kick's snapshot; the delivery, from the kick, its entry.
+          const snap: Pick<TraceEntry, 'slots' | 'intentions'> =
+            m.elapsedSeconds <= kick.elapsed ? kick : e;
+          if (snap === kick) prepared++;
+          else delivered++;
+          for (const side of [0, 1] as const)
+            for (const p of m.players[side]) {
+              const i = snap.intentions?.[slotFor(w, snap, side, p.id)];
+              const label = `${id} ${e.action} at ${m.elapsedSeconds} ${p.id}`;
+              if (!i) {
+                expect(p.intention, label).toBeUndefined();
+                continue;
+              }
+              expect(p.intention, label).toMatchObject({
+                kind: i.kind,
+                priority: i.priority,
+                since: i.since,
+                until: i.until,
+              });
+              expect(p.intention!.ended, label).toBe('end' in i ? i.end : undefined);
+              if (snap !== kick) continue;
+              // Nothing the play before held is still held: only the restart's places are, taken
+              // since the ball went dead, and the walk-in heads for them.
+              const held = p.intention && !p.intention.ended;
+              if (held) {
+                expect(p.intention!.kind, label).toBe('restart');
+                expect(p.intention!.since, label).toBeGreaterThanOrEqual(a.elapsed);
+                near(p.intent, toUnits(i.target, e.period), label);
+                places++;
+              }
+              const was = a.intentions?.[slotFor(w, a, side, p.id)];
+              if (was && !('end' in was) && was.kind !== 'restart') {
+                displaced++;
+                if (held) expect(p.intention!.since, label).not.toBe(was.since);
+              }
+            }
+        }
+      });
+    }
+    expect([...kinds]).toEqual(
+      expect.arrayContaining(['corner', 'throwIn', 'goalKick', 'freeKick', 'kickoff']),
+    );
+    expect(restarts).toBeGreaterThan(300);
+    expect(prepared).toBeGreaterThan(600);
+    expect(places).toBeGreaterThan(2000);
+    expect(displaced).toBeGreaterThan(2000);
+    expect(delivered).toBeGreaterThan(0);
+    // An older trace without kicks stays readable: its preparation shows the play before, drawn
+    // as one move to the restart's entry, as before the kick was recorded.
+    const old = {
+      ...watched.result,
+      trace: watched.result.trace!.map((e) => {
+        const copy = { ...e };
+        delete copy.kick;
+        return copy;
+      }),
+    };
+    const frames = buildFrames(old, watched.setup, w.seed);
+    expect(frameTimeIssues(frames)).toEqual([]);
+    const corner = old.trace.findIndex((e, n) => n > 0 && e.action === 'corner');
+    const [a, e] = [old.trace[corner - 1]!, old.trace[corner]!];
+    const during = frames
+      .filter((f) => f.period === e.period)
+      .flatMap((f) => f.motion!)
+      .filter((m) => m.elapsedSeconds > a.elapsed && m.elapsedSeconds < e.elapsed);
+    expect(during.length).toBeGreaterThan(0);
+    const before = placesIn(a, e.period, watched);
+    const after = placesIn(e, e.period, watched);
+    for (const m of during)
+      for (const side of [0, 1] as const)
+        for (const p of m.players[side]) {
+          const f = (m.elapsedSeconds - a.elapsed) / (e.elapsed - a.elapsed);
+          const [q, r] = [before.get(p.id)!, after.get(p.id)!];
+          if (p.id === watched.setup.rosters[e.side][e.idx]!.id) continue;
+          near(p.position, [q[0] + (r[0] - q[0]) * f, q[1] + (r[1] - q[1]) * f], p.id);
+          const was = a.intentions![slotFor(watched, a, side, p.id)];
+          expect(p.intention?.since).toBe(was?.since);
+        }
+    // The pre-feature path records no kick.
+    expect(result.trace!.every((x) => x.kick === undefined)).toBe(true);
   });
 });

@@ -308,11 +308,13 @@ export function prepareRestart(
  * spot after a goal) commit to their places and walk there on the clock (`prepareRestart`), whose
  * retrieval and placement knots go to `out.knots`. At the kick the places are reached; for the
  * second ball the players who went up hold their box spots and the defenders keep their marks,
- * zones and goal for as long (`defendSetPiece`, T348).
+ * zones and goal for as long (`defendSetPiece`, T348). `kick` sees the state at the kick, before
+ * the places end (an observed match's `Tracer.kick`, T359); it only reads, so it changes no play.
  */
 export function prepareOnClock(
   rest: readonly [number, number],
   out: { knots: MotionKnot[] },
+  kick?: (s: GridState) => void,
 ): RestartPreparer {
   return (s, restart, taker, scene) => {
     const moves: Placement[] = scene ? [...scene.up, ...scene.marks] : [];
@@ -324,6 +326,7 @@ export function prepareOnClock(
     const gp = s.players[restart.side][taker]!;
     restartPlaces(s, [{ gp, to: restart.spot }, ...moves.filter((m) => m.gp !== gp)]);
     out.knots = prepareRestart(s, restart, taker, rest, moves);
+    kick?.(s);
     const until = s.elapsed + SHAPE_CONFIG.setPiece.stay;
     restartTaken(s, scene?.up ?? [], until);
     if (scene) defendSetPiece(s, scene, until);
