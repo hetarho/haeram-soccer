@@ -69,7 +69,7 @@ export const COORDINATION_CONFIG = {
    * defenders' movement ahead, so a better reader starts closer to the line without being caught
    * by it stepping up. A run in behind waits on that line and the through ball sends him.
    */
-  hold: { far: 2, near: 0.5, early: 0 },
+  hold: { far: 2, near: 0.5, early: 0.5 },
   /**
    * A combination closes when an opponent stands within `closed` m of the space a shower or an
    * overlapper goes to; he does not take that kind of job again for `retry` s.

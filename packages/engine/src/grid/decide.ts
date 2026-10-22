@@ -118,7 +118,7 @@ export const DECISION_CONFIG = {
    */
   candidate: {
     crossScale: 6.3,
-    shotBox: 0.56,
+    shotBox: 0.9,
     shotLine: { GK: 0, DF: 3.2, MF: 20, FW: 0.36 },
     /**
      * Positions that shoot with another line's weight (T321, →MATCH-16): a 4-2-3-1 shadow striker
@@ -138,26 +138,26 @@ export const DECISION_CONFIG = {
      * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
      * at 2.50 once defenders read the pass early).
      */
-    shotScale: 0.42,
+    shotScale: 0.6,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      */
-    longShotScale: 4,
+    longShotScale: 2.5,
     /**
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
      * ball now really puts him through.
      */
-    through: { lead: 5, depth: 88, score: 0.4, space: 12 },
+    through: { lead: 5, depth: 99, score: 0.25, space: 6 },
     /**
      * How the passer reads the line (T368, →MATCH-18): a teammate standing more than `offsideSeen`
      * m beyond the second-last opponent (`offsideBy`) is seen offside and not played to; one
      * closer to it looks level, so a ball to him is flagged. Only a runner on his run in behind,
      * holding the line, draws the through ball's pull and is played into his path.
      */
-    offsideSeen: 1,
+    offsideSeen: 0.75,
     /**
      * Press's shot weight in the opponents' half just after a regain, in place of
      * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
