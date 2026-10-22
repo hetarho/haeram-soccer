@@ -68,8 +68,14 @@ export interface BehaviourPatch {
   changes?: object;
 }
 
-const settled = (forward: number, long: number, lateral: number, back: number): BehaviourPatch => ({
-  decide: { direct: { settled: { counter: { forward, long, lateral, back } } } },
+const settled = (
+  forward: number,
+  long: number,
+  lateral: number,
+  back: number,
+  pass = 1,
+): BehaviourPatch => ({
+  decide: { direct: { settled: { counter: { forward, long, lateral, back, pass } } } },
 });
 const counterShape = (shape: object): BehaviourPatch => ({
   shape: { candidate: { tactic: { counter: shape } } },
@@ -89,12 +95,17 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   settled1: settled(0.5, 0.3, 0.7, 0.5),
   settled2: settled(1, 0.5, 0.5, 0.35),
   settled3: settled(2, 1, 0.35, 0.25),
+  // (a) with fewer passes against carrying on once settled.
+  settled2p8: settled(1, 0.5, 0.5, 0.35, 0.8),
+  settled2p65: settled(1, 0.5, 0.5, 0.35, 0.65),
   // (b) Counter's block: deeper line, tighter, more pressers near the ball.
   deep: counterShape({ defend: -10, line: [18, 38] }),
   tight: counterShape({ compact: 0.2 }),
   deepTight: counterShape({ defend: -10, line: [18, 38], compact: 0.2 }),
   twoPress: { coordination: { pressers: { counter: 2 } } },
   noPress: counterShape({ press: 6 }),
+  high: counterShape({ defend: -5, line: [26, 46] }),
+  wide: counterShape({ press: 15 }),
   // (c) Press's in-match drain factor (1.3 shared).
   drain2: pressDrain(2),
   drain3: pressDrain(3),

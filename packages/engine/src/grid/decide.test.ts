@@ -134,7 +134,7 @@ describe('grid decisions', () => {
     const D = DECISION_CONFIG.direct;
     const kept = D.settled.counter;
     // The rule's own values, or probe values while the shared config lists no side (T331).
-    const R = kept ?? { forward: 1, long: 0.5, lateral: 0.5, back: 0.35 };
+    const R = kept ?? { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.8 };
     const settled = D.settled as Record<string, typeof R | undefined>;
     settled.counter = R;
     try {
@@ -153,10 +153,26 @@ describe('grid decisions', () => {
         if (regainAgo !== undefined) sc.s.lastRegain = { side: 0, at: sc.s.elapsed - regainAgo };
         return passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4);
       };
+      // The carrier's passes against carries, counter's over a balanced side's.
+      const passing = (candidate: boolean, regainAgo?: number) => {
+        const ratio = (tactic: Tactic) => {
+          const sc = scene(CM, centre(3, 2), [tactic, 'balanced']);
+          if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+          if (regainAgo !== undefined) sc.s.lastRegain = { side: 0, at: sc.s.elapsed - regainAgo };
+          const mix = actionMix(sc.s, 0, CM, sc.tags());
+          return mix.pass / mix.carry;
+        };
+        return ratio('counter') / ratio('balanced');
+      };
+      expect(passing(true)).toBeCloseTo(R.pass, 9);
+      expect(passing(true, D.seconds + 1)).toBeCloseTo(R.pass, 9);
+      expect(passing(true, 1)).toBeCloseTo(1, 9);
+      expect(passing(false)).toBeCloseTo(1, 9);
       const compare = (a: ReturnType<typeof options>, b: ReturnType<typeof options>) =>
         a.map((o, i) => ({ o, flat: b[i]! }));
-      // Settled (no regain, or past the window): forward scores more, a long ball more again,
-      // lateral and back passes are chosen less often than a balanced side's.
+      // Settled (no regain, or past the window): he passes less against carrying on, forward
+      // scores more, a long ball more again, lateral and back passes are chosen less often than a
+      // balanced side's.
       for (const regainAgo of [undefined, D.seconds + 1]) {
         const pairs = compare(
           options('counter', true, regainAgo),

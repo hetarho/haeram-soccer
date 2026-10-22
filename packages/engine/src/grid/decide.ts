@@ -171,15 +171,28 @@ export const DECISION_CONFIG = {
      * Candidate model only (→MATCH-8, T331): once a listed side's break has passed (outside
      * `seconds` of a regain, or with no regain) it still plays forward or long rather than
      * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
-     * lateral pass is chosen `lateral` and a back pass `back` times as often. Empty: no side.
+     * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
+     * passes `pass` times as often against carrying on. Empty: no side.
      */
     settled: {} as Partial<
-      Record<Tactic, { forward: number; long: number; lateral: number; back: number }>
+      Record<Tactic, { forward: number; long: number; lateral: number; back: number; pass: number }>
     >,
   },
 } as const;
 
 const DEG = Math.PI / 180;
+
+/** Whether `side` is breaking: within `direct.seconds` of its regain on the candidate model. */
+const breaking = (s: GridState, side: 0 | 1) =>
+  s.setup.model !== undefined &&
+  s.lastRegain?.side === side &&
+  s.elapsed - s.lastRegain.at <= DECISION_CONFIG.direct.seconds;
+
+/** The candidate's settled-play rule for `side` once its break has passed (T331), if its tactic has one. */
+const settledOf = (s: GridState, side: 0 | 1) =>
+  s.setup.model !== undefined && !breaking(s, side)
+    ? DECISION_CONFIG.direct.settled[s.setup.tactics[side]]
+    : undefined;
 
 /** The normalised action mix of the carrier. */
 export function actionMix(
@@ -254,6 +267,8 @@ export function actionMix(
     if (tags.band === 5) mix.shot *= C.tactic.possession.shotBand5;
   }
   if (tactic === 'counter' && tags.phase === 'counter') mix.shot *= C.tactic.counter.shotInCounter;
+  const settled = settledOf(s, side);
+  if (settled) mix.pass *= settled.pass;
   if (
     tactic === 'press' &&
     s.lastRegain?.side === side &&
@@ -417,14 +432,9 @@ export function passOptions(
   for (const cand of candidates) count[cand.dir]++;
   // Straight after a regain a breaking side goes forward (candidate model, →MATCH-8).
   const D = DECISION_CONFIG.direct;
-  const breaking =
-    s.setup.model !== undefined &&
-    s.lastRegain?.side === side &&
-    s.elapsed - s.lastRegain.at <= D.seconds;
-  const direct = breaking ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
+  const direct = breaking(s, side) ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
   // Once the break has passed a listed side still goes forward or long (candidate, T331).
-  const settled =
-    s.setup.model !== undefined && !breaking ? D.settled[s.setup.tactics[side]] : undefined;
+  const settled = settledOf(s, side);
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
