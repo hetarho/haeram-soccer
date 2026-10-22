@@ -73,6 +73,8 @@ export const COORDINATION_CONFIG = {
    * `odds` times as often and from any band, so a counter side's runners go in behind at once.
    */
   transition: { seconds: 8, odds: { counter: 2.5 } as Partial<Record<Tactic, number>> },
+  /** T345 probe hook: outside a break a listed side starts its runs this many times as often (neutral). */
+  settledRuns: { possession: 1 } as Partial<Record<Tactic, number>>,
 } as const;
 
 /** Roles that cover a pressing teammate first: their distance counts divided by this. */
@@ -460,7 +462,10 @@ function attack(
       gp,
       ctx,
       stream(s, gp, 'run', s.elapsed),
-      timing * fresh(s, gp) * breaking,
+      timing *
+        fresh(s, gp) *
+        breaking *
+        (breaking === 1 ? (CC.settledRuns[s.setup.tactics[side]] ?? 1) : 1),
       breaking > 1,
     );
     return p ? [{ gp, p }] : [];

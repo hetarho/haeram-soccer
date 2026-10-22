@@ -143,6 +143,8 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   possPass1: possession({ pass: 1 }),
   possFinal: possessionSettled({ forward: 1, lateral: 0.7, back: 0.5, from: 70 }),
   possFinalStrong: possessionSettled({ forward: 1.5, lateral: 0.6, back: 0.35, from: 65 }),
+  // (a′) Possession's runners outside a break: runs in behind, overlaps and box runs more often.
+  possRuns: { coordination: { settledRuns: { possession: 1.6 } } },
   // (b) Possession's rest defence after a loss: a longer counter-press reach, or a deeper block.
   possCP24: possessionShape({ counterPress: 24 }),
   possCP12: possessionShape({ counterPress: 12 }),
@@ -154,6 +156,7 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // (c) The score state, every tactic: a leading side shoots less and a trailing one pushes more,
   // so more matches come back to a draw and fewer favourites run away with them.
   scoreFx: { decide: { leading: { shot: 0.5 }, trailing: { push: 1.6 } } },
+  scoreFxTrail: { decide: { trailing: { push: 1.7 } } },
   // (d) Balanced's block for its xG conceded: the pre-T321 counter-press reach, a tighter block.
   balCP8: { shape: { candidate: { tactic: { balanced: { counterPress: 8 } } } } },
   balTight: { shape: { candidate: { tactic: { balanced: { compact: 0.41 } } } } },
