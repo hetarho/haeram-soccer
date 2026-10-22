@@ -15,7 +15,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight } from '../match';
 import { lineOf } from '../player';
 import { random } from '../primitives';
-import { pressDrainOf } from './changes';
+import { CHANGES_CONFIG } from './changes';
 import { attackFrame, clamp, PITCH, toEngine } from './pitch';
 import {
   coverPoint,
@@ -39,13 +39,6 @@ export const COORDINATION_CONFIG = {
    * won it too easily (T324 dropped the second presser's shorter reach, which nothing read).
    */
   pressers: { possession: 1, press: 1, counter: 1, balanced: 1 } satisfies Record<Tactic, number>,
-  /**
-   * A listed side presses the carrier as a tactical job only while he stands within this many
-   * metres of its own goal (→MATCH-8, T331: counter drops off into its block rather than chasing
-   * the ball in the opponents' third); a danger still sends its nearest man. Empty: every side
-   * presses anywhere.
-   */
-  pressWithin: {} as Partial<Record<Tactic, number>>,
   /**
    * A carrier under pressure (an opponent within `TAG_CONFIG.pressureRadius`): the teammate within
    * `near` m whose role and traits look most for the pass shows `distance` m from him with odds
@@ -121,7 +114,10 @@ const share = (s: GridState, gp: GridPlayer, a: Attribute) =>
 const fresh = (s: GridState, gp: GridPlayer) =>
   1 -
   CC.tired *
-    Math.min(1, (minutesOn(s, gp) / 90) * (s.setup.pressing[gp.side] ? pressDrainOf(s.setup) : 1)) *
+    Math.min(
+      1,
+      (minutesOn(s, gp) / 90) * (s.setup.pressing[gp.side] ? CHANGES_CONFIG.pressDrain : 1),
+    ) *
     ((100 - gp.player.attrs.stamina) / 100);
 const weight = (s: GridState, gp: GridPlayer, action: 'run' | 'press' | 'key') =>
   actionWeight(slotOf(s, gp).role, gp.player.traits, action);
@@ -224,8 +220,6 @@ function defend(
       return { gp, d, cost: d / (weight(s, gp, 'press') * fresh(s, gp)) };
     })
     .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp));
-  const within = CC.pressWithin[s.setup.tactics[side]];
-  const deep = within === undefined || attackFrame(side, carrier.pos)[0] <= within;
   const wanted = CC.pressers[s.setup.tactics[side]];
   const all = [...pressing];
   for (const c of candidates) {
@@ -233,7 +227,7 @@ function defend(
     const urgent = danger && all.length === 0;
     const priority = urgent ? 'danger' : 'tactical';
     if (!free(c.gp, priority)) continue;
-    if (!urgent && (c.d > reach || !deep)) continue;
+    if (!urgent && c.d > reach) continue;
     job(
       c.gp,
       { kind: 'press', priority, target: [carrier.pos[0], carrier.pos[1]], opponent: carrier.idx },

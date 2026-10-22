@@ -106,7 +106,8 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   tight: counterShape({ compact: 0.2 }),
   deepTight: counterShape({ defend: -10, line: [18, 38], compact: 0.2 }),
   twoPress: { coordination: { pressers: { counter: 2 } } },
-  // Counter presses only within this many metres of its own goal (drops off higher up).
+  // Counter presses only within this many metres of its own goal (drops off higher up); the
+  // probe hook (`COORDINATION_CONFIG.pressWithin`) was measured at 10f6892 and removed once not kept.
   hold70: { coordination: { pressWithin: { counter: 70 } } },
   hold55: { coordination: { pressWithin: { counter: 55 } } },
   noPress: counterShape({ press: 6 }),
@@ -118,7 +119,8 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   line28: counterShape({ line: [28, 42] }),
   line24: counterShape({ line: [24, 42] }),
   line25: counterShape({ line: [25, 42] }),
-  // (c) Press's in-match drain factor (1.3 shared).
+  // (c) Press's in-match drain factor (1.3 shared); the candidate hook
+  // (`CHANGES_CONFIG.candidate.pressDrain`) was measured at 10f6892 and removed once not kept.
   drain2: pressDrain(2),
   drain3: pressDrain(3),
   drain4: pressDrain(4),

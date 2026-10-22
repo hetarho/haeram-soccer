@@ -365,29 +365,6 @@ describe('grid coordination', () => {
     }
   });
 
-  it('lets counter drop off rather than press high up the pitch (T331)', () => {
-    const within = COORDINATION_CONFIG.pressWithin as Partial<Record<Tactic, number>>;
-    const kept = within.counter;
-    // The rule's own reach, or a probe while the shared config lists no side.
-    const reach = kept ?? 55;
-    within.counter = reach;
-    try {
-      /** Whether side 1 presses a carrier `x` m from its own goal with two men 7 m away. */
-      const presses = (tactic: Tactic, x: number) => {
-        const s = scene(['balanced', tactic], 7, [105 - x, 34]);
-        put(s, 1, 6, [105 - x + 7, 34]);
-        put(s, 1, 7, [105 - x + 7, 36]);
-        return jobsOf(planCoordination(s, false), 'press').length;
-      };
-      expect(presses('counter', reach - 2)).toBe(1);
-      expect(presses('counter', reach + 2)).toBe(0);
-      expect(presses('balanced', reach + 2)).toBe(1);
-    } finally {
-      if (kept === undefined) delete within.counter;
-      else within.counter = kept;
-    }
-  });
-
   it('does not change the world when only inspected', () => {
     const s = scene(['possession', 'press']);
     put(s, 1, 5, [65, 33]);

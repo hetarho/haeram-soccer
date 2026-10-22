@@ -172,9 +172,12 @@ export const DECISION_CONFIG = {
      * `seconds` of a regain, or with no regain) it still plays forward or long rather than
      * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
      * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
-     * passes `pass` times as often against carrying on. Empty: no side.
+     * passes `pass` times as often against carrying on. Counter (T331): its pass share falls to
+     * the lowest of the four and it beats press through its play, not its roles.
      */
-    settled: {} as Partial<
+    settled: {
+      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75 },
+    } as Partial<
       Record<Tactic, { forward: number; long: number; lateral: number; back: number; pass: number }>
     >,
   },

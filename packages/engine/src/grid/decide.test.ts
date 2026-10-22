@@ -132,12 +132,12 @@ describe('grid decisions', () => {
 
   it('counter stops recycling once its break has passed', () => {
     const D = DECISION_CONFIG.direct;
-    const kept = D.settled.counter;
-    // The rule's own values, or probe values while the shared config lists no side (T331).
-    const R = kept ?? { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.8 };
-    const settled = D.settled as Record<string, typeof R | undefined>;
-    settled.counter = R;
-    try {
+    // Counter's settled play on the candidate (T331): fewer passes, forward and long ones first.
+    const R = D.settled.counter!;
+    expect(R.pass).toBeLessThan(1);
+    expect(R.back).toBeLessThan(R.lateral);
+    expect(R.lateral).toBeLessThan(1);
+    {
       const options = (tactic: Tactic, candidate: boolean, regainAgo?: number) => {
         const sc = scene(CM, centre(3, 2), [tactic, 'balanced']);
         const c = centre(3, 2);
@@ -205,9 +205,6 @@ describe('grid decisions', () => {
       }
       for (const { o, flat } of compare(options('counter', false), options('balanced', false)))
         expect([o.score, o.prior]).toEqual([flat.score, flat.prior]);
-    } finally {
-      if (kept) settled.counter = kept;
-      else delete settled.counter;
     }
   });
 

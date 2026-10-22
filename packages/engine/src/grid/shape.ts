@@ -31,7 +31,10 @@ export const SHAPE_CONFIG = {
    * balanced keeps its stability with a deeper, more compact mid block that counter-presses 12 m
    * instead of 8. T324 restored MATCH-8's order of the shapes wherever the ball is: counter's
    * block stands 8 m deep (−5 under T321, −10 before), below balanced's, and possession, patient
-   * on the ball, steps up 7 m instead of 8, below press's vertical side.
+   * on the ball, steps up 7 m instead of 8, below press's vertical side. T331: counter's back line
+   * stands no deeper than balanced's floor (24 m, 22 before), so a high-line press finds less room
+   * between it and the box (box entries conceded 40.6 → 34.9 a match); its block stays below
+   * balanced's wherever the ball is.
    */
   candidate: {
     tactic: {
@@ -44,7 +47,7 @@ export const SHAPE_CONFIG = {
         compact: 0.35,
       },
       press: { advance: 4, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
-      counter: { advance: 2, defend: -8, line: [22, 42], press: 11, counterPress: 0, compact: 0.3 },
+      counter: { advance: 2, defend: -8, line: [24, 42], press: 11, counterPress: 0, compact: 0.3 },
       balanced: {
         advance: 4,
         defend: -6,

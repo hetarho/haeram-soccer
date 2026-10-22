@@ -15,11 +15,6 @@ export const CHANGES_CONFIG = {
   /** In-match fatigue per missing stamina point over 90 minutes, and under press. */
   drain: 0.35,
   pressDrain: 1.3,
-  /**
-   * Candidate model only (→MATCH-8 "higher fatigue cost", T331): the press factor of the in-match
-   * drain in place of `pressDrain` (attributes, intentions' fresh legs, substitutions, freshness).
-   */
-  candidate: { pressDrain: 1.3 },
   earlyPressFrom: 55,
   protectFrom: 75,
   chaseFrom: 60,
@@ -100,17 +95,15 @@ export function inMatchFatigue(
   minutes: number,
   pressing: boolean,
   drain: number,
-  pressDrain: number = CHANGES_CONFIG.pressDrain,
 ): number {
   return (
     fatigue +
-    (((100 - stamina) * minutes) / 90) * CHANGES_CONFIG.drain * (pressing ? pressDrain : 1) * drain
+    (((100 - stamina) * minutes) / 90) *
+      CHANGES_CONFIG.drain *
+      (pressing ? CHANGES_CONFIG.pressDrain : 1) *
+      drain
   );
 }
-
-/** The press factor of the in-match drain on this fixture's model (T331). */
-export const pressDrainOf = (setup: { model?: unknown }): number =>
-  setup.model !== undefined ? CHANGES_CONFIG.candidate.pressDrain : CHANGES_CONFIG.pressDrain;
 
 /** A player's fatigue now: his pre-match fatigue plus what his minutes have drained (design §8.1). */
 export function matchFatigue(s: GridState, gp: GridPlayer): number {
@@ -121,7 +114,6 @@ export function matchFatigue(s: GridState, gp: GridPlayer): number {
     regMinute(s) - gp.onMin,
     setup.pressing[gp.side],
     setup.drain[gp.side],
-    pressDrainOf(setup),
   );
 }
 

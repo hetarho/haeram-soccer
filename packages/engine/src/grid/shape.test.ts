@@ -123,6 +123,27 @@ describe('grid shape and movement', () => {
     }
   });
 
+  it("holds counter's candidate back line no deeper than balanced's floor (T331)", () => {
+    const counter = SHAPE_CONFIG.candidate.tactic.counter!;
+    const balanced = SHAPE_CONFIG.candidate.tactic.balanced!;
+    expect(counter.line[0]).toBe(balanced.line[0]);
+    expect(counter.line[1]).toBeLessThan(balanced.line[1]);
+    // The opponents on the ball 30 m from counter's goal: its back four stand at the floor or
+    // higher on the candidate model, deeper on the pre-feature one.
+    const defenders = (candidate: boolean) => {
+      const kit = gridKit(['counter', 'balanced']);
+      if (candidate) kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
+      kit.state.ball = [30, 34];
+      kit.state.possession = 1;
+      kit.state.owner = [1, 9];
+      return targets(kit)
+        .slice(1, 5)
+        .map((p) => p[0]);
+    };
+    for (const x of defenders(true)) expect(x).toBeGreaterThanOrEqual(counter.line[0]);
+    expect(Math.min(...defenders(false))).toBeLessThan(counter.line[0]);
+  });
+
   it('plays the candidate shape of a tactic on the candidate model only', () => {
     for (const tactic of TACTICS) {
       const kit = gridKit([tactic, 'balanced']);

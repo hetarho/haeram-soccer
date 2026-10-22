@@ -3,7 +3,6 @@ import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
-import { pressDrainOf } from './changes';
 import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, PITCH, type Point } from './pitch';
 import type { GridSetup } from './setup';
@@ -239,7 +238,7 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
   const { setup } = s;
   const rate =
     (((100 - gp.player.attrs.stamina) / 12) *
-      (setup.pressing[side] ? pressDrainOf(setup) : 1) *
+      (setup.pressing[side] ? 1.3 : 1) *
       setup.drain[side]) /
     90;
   return strengthScaled(
