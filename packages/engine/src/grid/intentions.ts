@@ -403,10 +403,13 @@ function verdict(
  * planned from that one snapshot (`planCoordination`): the defending side presses, covers, marks
  * runners and recovers (an urgent danger displaces lower jobs), the side with the ball shows for a
  * pressured carrier, clears his lane and runs. An ordinary update keeps every feasible intention.
+ * `inFlight` (T373): the update that reads a delivery's kick when its taker has played the ball
+ * and nobody has it yet. It reads no carrier: no urgent danger and no jobs to give, so nobody
+ * presses the taker while the ball is in the air and the scene keeps its set-piece jobs.
  */
-export function updateIntentions(s: GridState): void {
+export function updateIntentions(s: GridState, inFlight = false): void {
   const def = other(s.possession);
-  const danger = inDanger(s, def);
+  const danger = !inFlight && inDanger(s, def);
   const review = (gp: GridPlayer) => {
     const i = gp.intention;
     if (!i || rank(i.priority) <= rank('restart')) return undefined;
@@ -435,7 +438,8 @@ export function updateIntentions(s: GridState): void {
     for (const gp of roster)
       if (gp.intention && TRACKING.has(gp.intention.kind))
         gp.intention.target = inside(intentionTarget(s, gp));
-  applyCoordination(s, planCoordination(s, danger));
+  // With no carrier `planCoordination` plans nothing (its empty plan), so it is not asked.
+  if (!inFlight) applyCoordination(s, planCoordination(s, danger));
 }
 
 /**

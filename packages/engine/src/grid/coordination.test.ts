@@ -5,6 +5,7 @@ import {
   closedAt,
   COORDINATION_CONFIG,
   planCoordination,
+  pressReach,
   type CoordinationPlan,
 } from './coordination';
 import { combination } from './decide';
@@ -680,6 +681,79 @@ describe('grid coordination', () => {
       9: [expect.objectContaining({ idx: 10, priority: 'committed' })],
       6: [expect.objectContaining({ idx: 7, priority: 'committed' })],
     });
+  });
+
+  /**
+   * T373: a corner from side 0's left flag as the engine leaves it for the update that reads the
+   * kick. Both sides stand around the box, the scene on its places (`setPieceTargets`: six runners,
+   * five box marks, three zones, the edge mark, the keeper; the most advanced defender stays up),
+   * the runners hold their spots and the defenders their set-piece jobs; the taker is still
+   * recorded on the ball at the flag.
+   */
+  function corner() {
+    const flag: Point = [105, 0.5];
+    const taker = 7;
+    const s = scene(['possession', 'balanced'], taker, flag);
+    s.players[0].forEach((gp, i) => i > 0 && i !== taker && (gp.pos = [84 + 2 * i, 14 + 4 * i]));
+    s.players[1].forEach((gp, i) => i > 0 && (gp.pos = [86 + 1.5 * i, 14 + 4 * i]));
+    put(s, 1, 0, [104, 34]);
+    put(s, 1, 1, [60, 30]); // upfield: he stays up for the counter
+    const sc = setPieceTargets(s, 0, taker);
+    for (const { gp, to } of [...sc.up, ...sc.marks]) gp.pos = [to[0], to[1]];
+    restartTaken(s, sc.up, until(s));
+    defendSetPiece(s, sc, until(s));
+    return { s, sc, flag, taker };
+  }
+  /** The defending side's intentions, for comparing before and after an update. */
+  const defending = (s: GridState) =>
+    JSON.stringify(s.players[1].map((gp) => gp.intention ?? null));
+
+  it('nobody presses a corner taker once the ball is in the air', () => {
+    const { s, sc, flag, taker } = corner();
+    expect(sc.marks.filter((m) => m.opponent)).toHaveLength(sc.up.length);
+    const jobs = defending(s);
+    // The delivery was headed out for a goal kick at the kick: nobody has the ball, so the taker is
+    // no carrier for the update that reads the kick (`playGrid` passes `inFlight`). Nobody presses
+    // him and the whole scene keeps its set-piece jobs through the flight.
+    updateIntentions(s, true);
+    expect(s.players[1].some((gp) => gp.intention?.kind === 'press')).toBe(false);
+    expect(defending(s)).toBe(jobs);
+    // Read as the carrier, as before T373, he is an urgent danger at the flag (within
+    // `INTENTION_CONFIG.danger` m of the goal line): the nearest defender, beyond any press reach,
+    // leaves his set-piece job to press him there.
+    const old = corner().s;
+    updateIntentions(old);
+    const pressers = old.players[1].filter((gp) => gp.intention?.kind === 'press');
+    expect(pressers).toHaveLength(1);
+    const [presser] = pressers;
+    expect(presser!.intention).toMatchObject({ priority: 'danger', opponent: taker });
+    expect(presser!.ended).toMatchObject({ priority: 'committed', reason: 'danger' });
+    expect(gap(presser!.pos, flag)).toBeGreaterThan(pressReach(old, 1));
+  });
+
+  it("the second ball's winner is pressed as usual", () => {
+    const { s, sc } = corner();
+    // The header comes back off the keeper and the attacker on the central box spot wins it 5 m
+    // out: the engine hands him the ball (`setOwner`), so the update reads him as the carrier and
+    // he is an urgent danger.
+    const winner = sc.up[2]!.gp;
+    const loose: Point = [100, winner.pos[1]];
+    takeBall(s, winner, loose);
+    s.owner = [0, winner.idx];
+    s.ball = [loose[0], loose[1]];
+    updateIntentions(s);
+    // His own marker, whose mark ends with his run, presses him; nobody else leaves a job.
+    const marker = sc.marks.find((m) => m.opponent === winner)!.gp;
+    const pressers = s.players[1].filter((gp) => gp.intention?.kind === 'press');
+    expect(pressers).toEqual([marker]);
+    expect(marker.intention).toMatchObject({ priority: 'danger', opponent: winner.idx });
+    for (const { gp, opponent } of sc.marks)
+      if (gp !== marker && opponent)
+        expect(gp.intention).toMatchObject({
+          kind: 'mark',
+          priority: 'committed',
+          opponent: opponent.idx,
+        });
   });
 
   it('possession starts more runs outside a break only past halfway, on the candidate model only', () => {

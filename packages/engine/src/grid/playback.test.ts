@@ -504,6 +504,31 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     // these are urgent presses and the central zone's guard `p:8` on runner 8 on the edge, whom
     // nobody's place names (the side is a man short). Before T367 the man-marker `p:10` left
     // runner 9 for him instead; a set-piece mark is now taken for the urgent pairing.
+    // T373: a taker whose delivery handed the ball to nobody (headed out, a goal kick, a foul) is
+    // no carrier for that update, so in every scene match no urgent press at a kick goes to him
+    // unless the outcome gave him the ball again (he takes it: a receive since the kick). Before,
+    // the nearest defender, however far, left his job to press him at the flag or the spot.
+    let toReceivers = 0;
+    for (const id of SCENES) {
+      const w = match(id);
+      for (const { e, since } of deliveries(w)) {
+        const att = e.side;
+        const def = att === 0 ? 1 : 0;
+        const slot = (side: 0 | 1, idx: number) =>
+          slotFor(w, e, side, w.setup.rosters[side][idx]!.id);
+        const own = e.intentions?.[slot(att, e.idx)];
+        const handed = own?.kind === 'receive' && own.since === since;
+        for (let k = def * 11; k < def * 11 + 11; k++) {
+          const i = e.intentions?.[k];
+          if (!i || 'end' in i || i.since !== since || i.priority !== 'danger') continue;
+          if (i.kind !== 'press') continue;
+          if (i.opponent === e.idx)
+            expect(handed, `${id} ${sceneOf(e)} at ${since}: the taker pressed`).toBe(true);
+          else toReceivers++;
+        }
+      }
+    }
+    expect(toReceivers).toBeGreaterThan(0);
     const played = match('set-piece-1');
     const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
     const { mark } = SHAPE_CONFIG.setPiece;
@@ -533,7 +558,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       const urgent = (i: ReturnType<typeof held>) =>
         !!i && !('end' in i) && i.since === since && i.priority === 'danger';
       // T367: at a kick whose update gives an urgent mark, every man-marker whose runner still holds
-      // his box spot keeps his set-piece mark on him; only an urgent press takes him off it.
+      // his box spot keeps his set-piece mark on him; only an urgent press on the man the delivery
+      // reached takes him off it (T373: never one on the taker).
       const pairing = played.setup.rosters[def].some((_, idx) => {
         const i = held(e, def, idx);
         return urgent(i) && i!.kind === 'mark';
