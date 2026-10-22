@@ -104,6 +104,17 @@ const free = (gp: GridPlayer, p: IntentionPriority) =>
 const byId = (a: GridPlayer, b: GridPlayer) =>
   a.player.id < b.player.id ? -1 : a.player.id > b.player.id ? 1 : 0;
 
+/**
+ * A roster in ID order. A match never reorders or replaces its rosters (a substitute is already on
+ * the bench), so the order is sorted once per roster and kept.
+ */
+const BY_ID = new WeakMap<readonly GridPlayer[], readonly GridPlayer[]>();
+function sortedById(roster: readonly GridPlayer[]): readonly GridPlayer[] {
+  let sorted = BY_ID.get(roster);
+  if (!sorted) BY_ID.set(roster, (sorted = [...roster].sort(byId)));
+  return sorted;
+}
+
 /** An attribute now (his slot, the day, his drain; →MATCH-11) as a 0–1 share, for odds. */
 const share = (s: GridState, gp: GridPlayer, a: Attribute) =>
   clamp(skill(s, gp.side, gp.idx, a), 1, 99) / 99;
@@ -378,7 +389,7 @@ function attack(
   // Support: the nearest presser makes the carrier look for a teammate to show (→MATCH-16).
   let presser: GridPlayer | undefined,
     closest: number = TAG_CONFIG.pressureRadius;
-  for (const o of [...s.players[other(side)]].sort(byId)) {
+  for (const o of sortedById(s.players[other(side)])) {
     if (!onPitch(o)) continue;
     const d = gap(o.pos, carrier.pos);
     if (d < closest || (d === closest && !presser)) [presser, closest] = [o, d];
@@ -455,11 +466,13 @@ function attack(
   const plans = mates.flatMap((gp) => {
     if (!available(gp) || retrying(s, gp, 'run')) return [];
     const timing = CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions');
+    // The stream is named on its first draw: a role that makes no run here draws nothing.
+    let r: (() => number) | undefined;
     const p = runPlan(
       s,
       gp,
       ctx,
-      stream(s, gp, 'run', s.elapsed),
+      () => (r ??= stream(s, gp, 'run', s.elapsed))(),
       timing * fresh(s, gp) * breaking,
       breaking > 1,
     );

@@ -232,6 +232,12 @@ export const STRENGTH_CONFIG = { skillScale: 1.8, anchor: 76 } as const;
 export const strengthScaled = (s: GridState, raw: number) =>
   STRENGTH_CONFIG.anchor + (raw - s.level) * STRENGTH_CONFIG.skillScale;
 
+/** Each attribute's index in `ATTRIBUTES` (and so in `GridPlayer.base`). */
+const ATTRIBUTE_INDEX = Object.fromEntries(ATTRIBUTES.map((a, i) => [a, i])) as Record<
+  Attribute,
+  number
+>;
+
 /** A player's attribute now: his base at the slot, the day's shift, minus what his minutes have drained. */
 export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): number {
   const gp = s.players[side][idx]!;
@@ -243,7 +249,7 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
     90;
   return strengthScaled(
     s,
-    gp.base[ATTRIBUTES.indexOf(a)]! + setup.shift[side] - rate * minutesOn(s, gp),
+    gp.base[ATTRIBUTE_INDEX[a]]! + setup.shift[side] - rate * minutesOn(s, gp),
   );
 }
 

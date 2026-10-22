@@ -65,6 +65,8 @@ async function playNext(page: Page) {
 }
 
 test('older operations addresses open their tab', async ({ page }) => {
+  // Founds a club, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
+  test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'direction-addresses');
   await openBusiness(page);

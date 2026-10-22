@@ -475,7 +475,16 @@ export function passOptions(
     const dx = p[0] - c[0],
       dy = p[1] - c[1];
     for (const o of opponents) {
-      nearest = Math.min(nearest, Math.hypot(o[0] - p[0], o[1] - p[1]));
+      // The distance is at least either offset: a man further off on one axis leaves `nearest` as it
+      // is. An offset that is not a number still reaches Math.min, which makes `nearest` NaN as before.
+      const ox = o[0] - p[0],
+        oy = o[1] - p[1];
+      if (
+        (Math.abs(ox) <= nearest && Math.abs(oy) <= nearest) ||
+        Number.isNaN(ox) ||
+        Number.isNaN(oy)
+      )
+        nearest = Math.min(nearest, Math.hypot(ox, oy));
       const t = ((o[0] - c[0]) * dx + (o[1] - c[1]) * dy) / (dist * dist);
       if (t > 0 && t < 1)
         risk += Math.exp(-Math.hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
@@ -512,9 +521,9 @@ export function passOptions(
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
-    const lineBreaking = [dfDeep, mfDeep].some(
-      (deep) => deep !== undefined && c[0] <= deep && p[0] > deep,
-    );
+    const lineBreaking =
+      (dfDeep !== undefined && c[0] <= dfDeep && p[0] > dfDeep) ||
+      (mfDeep !== undefined && c[0] <= mfDeep && p[0] > mfDeep);
     return { target: gp.idx, score, prior, direction: dir, kind, lineBreaking };
   });
 }
@@ -569,7 +578,9 @@ function lineDepth(
 /** The probabilities `choosePass` draws from, aligned with the options. */
 export function passProbabilities(options: readonly PassOption[], tau: number): number[] {
   if (!options.length) return [];
-  const top = Math.max(...options.map((o) => o.score));
+  // Math.max folded over the scores: the same value as spreading them, without the copies.
+  let top = -Infinity;
+  for (const o of options) top = Math.max(top, o.score);
   const weights = options.map((o) => o.prior * Math.exp((o.score - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   return total > 0 ? weights.map((w) => w / total) : options.map(() => 1 / options.length);
@@ -625,7 +636,8 @@ export function chooseCarry(
     (p) => (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 - K.pressure * pressureAt(s, side, p),
   );
   const tau = temperature(s, side, idx, tags);
-  const top = Math.max(...scores);
+  let top = -Infinity;
+  for (const v of scores) top = Math.max(top, v);
   const weights = scores.map((v) => Math.exp((v - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   const end = draw(

@@ -197,7 +197,9 @@ const inside = (p: readonly [number, number]): [number, number] => [
 export function advance(s: GridState, dt: number, plan: readonly Move[] = []): void {
   const C = GRID_MOVEMENT_CONFIG;
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
-  const planned = new Map(plan.map((m) => [m.gp, m]));
+  // Each side's planned moves by roster index; a player planned twice takes his last move.
+  const planned: [(Move | undefined)[], (Move | undefined)[]] = [[], []];
+  for (const m of plan) planned[m.gp.side][m.gp.idx] = m;
   const movers: {
     gp: GridPlayer;
     to: readonly [number, number];
@@ -208,7 +210,7 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       if (!onPitch(gp)) continue;
-      const p = planned.get(gp);
+      const p = planned[side][gp.idx];
       const before = p?.before && (p.readAt ?? 0) > 0;
       movers.push({
         gp,
@@ -224,7 +226,10 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     const h = i < whole ? C.step : rest;
     if (h <= 1e-9) break;
     const t = i * C.step;
-    for (const m of movers) stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
+    for (let k = 0; k < movers.length; k++) {
+      const m = movers[k]!;
+      stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
+    }
   }
 }
 

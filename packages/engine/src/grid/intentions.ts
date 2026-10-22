@@ -366,20 +366,28 @@ export function updateIntentions(s: GridState): void {
     return onPitch(gp) ? verdict(s, gp, i, gp.side === def && danger) : 'departed';
   };
   // Every verdict reads the same state, then they all take effect: no player sees another's first.
-  const ends = s.players.flat().flatMap((gp) => {
-    const why = review(gp);
-    return why ? [[gp, why] as const] : [];
-  });
-  for (const [gp, why] of ends) endIntention(s, gp, why);
+  const ended: GridPlayer[] = [];
+  const why: IntentionReason[] = [];
+  for (const roster of s.players)
+    for (const gp of roster) {
+      const reason = review(gp);
+      if (reason) {
+        ended.push(gp);
+        why.push(reason);
+      }
+    }
+  for (let k = 0; k < ended.length; k++) endIntention(s, ended[k]!, why[k]!);
   // A cover whose presser stopped, or a mark whose runner stopped, ends with it.
-  for (const gp of s.players.flat()) {
-    const why =
-      gp.intention?.kind === 'cover' || gp.intention?.kind === 'mark' ? review(gp) : undefined;
-    if (why) endIntention(s, gp, why);
-  }
-  for (const gp of s.players.flat())
-    if (gp.intention && TRACKING.has(gp.intention.kind))
-      gp.intention.target = inside(intentionTarget(s, gp));
+  for (const roster of s.players)
+    for (const gp of roster) {
+      const reason =
+        gp.intention?.kind === 'cover' || gp.intention?.kind === 'mark' ? review(gp) : undefined;
+      if (reason) endIntention(s, gp, reason);
+    }
+  for (const roster of s.players)
+    for (const gp of roster)
+      if (gp.intention && TRACKING.has(gp.intention.kind))
+        gp.intention.target = inside(intentionTarget(s, gp));
   applyCoordination(s, planCoordination(s, danger));
 }
 
