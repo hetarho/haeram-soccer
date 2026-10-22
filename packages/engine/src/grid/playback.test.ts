@@ -421,57 +421,140 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     expect(pairs).toBeGreaterThan(1000);
   });
 
+  /**
+   * A defending set-piece job (T348): a committed mark or cover since the kick (`defendSetPiece`),
+   * not ended, read alike from a trace entry's intentions (`end`) and a sample's (`ended`), so both
+   * sides of a check count the same jobs. An urgent job the kick's own update gave instead
+   * (priority `danger`, also since the kick) is ordinary coordination, not a set-piece job (T366).
+   */
+  const isJob = (
+    i:
+      | { kind: string; priority: string; since: number; end?: unknown; ended?: unknown }
+      | null
+      | undefined,
+    since: number,
+  ): boolean =>
+    !!i &&
+    i.end === undefined &&
+    i.ended === undefined &&
+    i.since === since &&
+    i.priority === 'committed' &&
+    (i.kind === 'mark' || i.kind === 'cover');
+
   it('defensive placement is not discarded before its job ends', () => {
-    // T365: `candidate-1` no longer completes a delivery against a full set of six jobs since the
-    // side share and possession's runs, so the check reads `set-piece-2`.
-    const played = match('set-piece-2');
-    const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
+    // Every scene match (T366). T365 read `set-piece-2` alone, since `candidate-1` no longer
+    // completes a delivery against six jobs; `set-piece-1` failed then only because the engine side
+    // also counted an urgent mark given at the kick, which the samples side did not (see below).
     let shown = 0,
-      kept = 0;
-    for (const { e, next, prepared, since, window } of deliveries(played)) {
-      const att = e.side;
-      const def = att === 0 ? 1 : 0;
-      // The engine's set-piece jobs of the defending side as the delivery lands.
-      const engine = new Set<string>();
-      for (let k = def * 11; k < def * 11 + 11; k++) {
-        const i = e.intentions?.[k];
-        if (i && !('end' in i) && i.since === since && (i.kind === 'mark' || i.kind === 'cover'))
-          engine.add(ids(def)[e.slots[k]!]!);
-      }
-      if (e.outcome === 'complete' && engine.size >= 6) kept++;
-      for (const m of window.filter((x) => x.elapsedSeconds >= e.elapsed)) {
-        const jobs = m.players[def].filter(
-          (p) =>
-            p.intention &&
-            !p.intention.ended &&
-            p.intention.since === since &&
-            p.intention.priority === 'committed' &&
-            (p.intention.kind === 'mark' || p.intention.kind === 'cover'),
-        );
-        // Until the next play the samples show exactly the engine's jobs, drawn as marking (the
-        // keeper as guarding his goal), each mark on a different attacker on the pitch; when the
-        // next play is a restart, its preparation shows its own places instead (T359).
-        if (m.elapsedSeconds < next && (!prepared || m.elapsedSeconds === e.elapsed))
-          expect(new Set(jobs.map((p) => p.id))).toEqual(engine);
-        const attackers = new Set(m.players[att].map((p) => p.id));
-        const marked = jobs.flatMap((p) =>
-          p.intention!.kind === 'mark' ? [p.intention!.opponent!] : [],
-        );
-        expect(new Set(marked).size).toBe(marked.length);
-        for (const id of marked) expect(attackers.has(id)).toBe(true);
-        for (const p of jobs) expect(['mark', 'keeper']).toContain(p.state);
-        shown += jobs.length;
+      kept = 0,
+      checked = 0;
+    for (const id of SCENES) {
+      const played = match(id);
+      const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
+      for (const { e, next, prepared, since, window } of deliveries(played)) {
+        const att = e.side;
+        const def = att === 0 ? 1 : 0;
+        // The engine's set-piece jobs of the defending side as the delivery lands.
+        const engine = new Set<string>();
+        for (let k = def * 11; k < def * 11 + 11; k++)
+          if (isJob(e.intentions?.[k], since)) engine.add(ids(def)[e.slots[k]!]!);
+        if (e.outcome === 'complete' && engine.size >= 6) kept++;
+        for (const m of window.filter((x) => x.elapsedSeconds >= since)) {
+          const label = `${id} ${sceneOf(e)} at ${m.elapsedSeconds}`;
+          const jobs = m.players[def].filter((p) => isJob(p.intention, since));
+          // The kick's own sample still shows the places walked to: the jobs start there (T359).
+          if (m.elapsedSeconds === since) expect(jobs, label).toEqual([]);
+          // From the kick until the next play the samples show exactly the engine's jobs, drawn as
+          // marking (the keeper as guarding his goal), each mark on a different attacker on the
+          // pitch; when the next play is a restart, its preparation shows its own places (T359).
+          else if (m.elapsedSeconds < next && (!prepared || m.elapsedSeconds <= e.elapsed)) {
+            expect(new Set(jobs.map((p) => p.id)), label).toEqual(engine);
+            checked++;
+          }
+          const attackers = new Set(m.players[att].map((p) => p.id));
+          const marked = jobs.flatMap((p) =>
+            p.intention!.kind === 'mark' ? [p.intention!.opponent!] : [],
+          );
+          expect(new Set(marked).size, label).toBe(marked.length);
+          for (const runner of marked) expect(attackers.has(runner), label).toBe(true);
+          for (const p of jobs) expect(['mark', 'keeper'], label).toContain(p.state);
+          shown += jobs.length;
+        }
       }
     }
     expect(kept).toBeGreaterThan(0);
-    expect(shown).toBeGreaterThan(50);
+    expect(checked).toBeGreaterThan(50);
+    expect(shown).toBeGreaterThan(200);
     // Repeated same-seed runs reproduce exactly.
     const again = watch('set-piece-2', true);
-    expect(deliveries(again).map((d) => d.window)).toEqual(deliveries(played).map((d) => d.window));
+    expect(deliveries(again).map((d) => d.window)).toEqual(
+      deliveries(match('set-piece-2')).map((d) => d.window),
+    );
     // The pre-feature path keeps its own set pieces: no intentions are traced there (its settled
     // facts are guarded by grid-throughput's pre-feature digests).
     expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);
     expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
+  });
+
+  it("an urgent job the kick's own update gives shows from the kick until the next play", () => {
+    // T366: the update that reads the kick runs at the kick's own instant (`playGrid`, once the
+    // restart resolves), so an urgent danger there (an attacker on the ball within 30 m of goal, a
+    // runner nobody marks) gives urgent jobs since the kick and may displace a set-piece job as it
+    // starts. In `set-piece-1` the man-marker `p:10` leaves the runner his place names for the
+    // unmarked one: an urgent mark since the kick, which T365's widened check counted on the trace
+    // side and not in the samples. Playback shows him as the engine holds him: no stage drops a job.
+    const played = match('set-piece-1');
+    const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
+    let cases = 0,
+      samples = 0;
+    const kinds = new Set<string>();
+    for (const { e, next, prepared, since, window } of deliveries(played)) {
+      const def = e.side === 0 ? 1 : 0;
+      for (let k = def * 11; k < def * 11 + 11; k++) {
+        const i = e.intentions?.[k];
+        // An urgent job the kick's own update gave, held since the kick, to a man of the scene (on
+        // his restart place at the kick).
+        if (!i || 'end' in i || i.since !== since || i.priority !== 'danger') continue;
+        const pid = ids(def)[e.slots[k]!]!;
+        const place = e.kick!.intentions?.[slotFor(played, e.kick!, def, pid)];
+        if (!place || 'end' in place || place.kind !== 'restart') continue;
+        const opponent = i.opponent === undefined ? undefined : ids(e.side)[i.opponent];
+        cases++;
+        kinds.add(i.kind);
+        for (const m of window) {
+          if (m.elapsedSeconds < since) continue;
+          if (m.elapsedSeconds >= next || (prepared && m.elapsedSeconds > e.elapsed)) break;
+          const label = `${sceneOf(e)} at ${m.elapsedSeconds} ${pid}`;
+          const p = m.players[def].find((x) => x.id === pid)!;
+          // The kick's own sample: the place he walked to. A set-piece job he was given there ended
+          // at that instant, so no sample can show it.
+          if (m.elapsedSeconds === since) {
+            expect(p.intention, label).toMatchObject({ kind: 'restart', priority: 'restart' });
+            continue;
+          }
+          // Every later sample until the next play: the urgent job exactly as the entry records it.
+          expect(p.intention, label).toMatchObject({
+            kind: i.kind,
+            priority: i.priority,
+            since,
+            until: i.until,
+          });
+          expect(p.intention!.ended, label).toBeUndefined();
+          expect(p.intention!.opponent, label).toBe(opponent);
+          expect(p.state, label).toBe(i.kind === 'press' ? 'press' : 'mark');
+          expect(isJob(p.intention, since), label).toBe(false);
+          // An urgent mark takes a runner no set-piece job marks.
+          if (i.kind === 'mark')
+            for (const q of m.players[def])
+              if (isJob(q.intention, since) && q.intention!.kind === 'mark')
+                expect(q.intention!.opponent, label).not.toBe(opponent);
+          samples++;
+        }
+      }
+    }
+    expect(kinds).toContain('mark');
+    expect(cases).toBeGreaterThan(0);
+    expect(samples).toBeGreaterThanOrEqual(cases);
   });
 
   /** Every on-pitch player of a snapshot in playback units of its period, by player ID. */
