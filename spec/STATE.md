@@ -233,7 +233,6 @@
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T357 | Bring the candidate's strength curve back to MATCH-2's target | MATCH ARCH | T356 | doing@261023.q8m5 |
 | T358 | Make the candidate grid's outcome-critical math give the same bits on every host | ARCH MATCH | T348 T356 | doing@261023.q8m5 |
-| T359 | Record each restart's kick so playback shows the set-piece walk-in as played | MATCH WEB ARCH | T348 | doing@261023.q8m5 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -251,6 +250,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T359 done (q8m5): observed candidate traces carry `TraceEntry.kick` at each restart's kick and playback walks players to it, showing the restart's places during the preparation; facts and pre-feature path unchanged (12 facts digests, candidateRounds), positions digests re-recorded; frames 4–6% larger
 - 261023 fix engine (q8m5): a throw-in or dropped ball no longer goes to a teammate on the taker's own spot (`nearestFree` skipped no zero distance, so a zero-length pass made the ball and clock NaN; found by T356, 1 in 21,600 matches); `restarts.test.ts` case; digests unchanged
 - 261023 T356 done (q8m5; explore exit, nothing kept): possession's runs reach its rows only with more goals (halfway-guarded ×2.5: points inside on rounds 15+16, curve 2.65 → 3.37, draw rows inside → insufficient); scripts keep the probes → T357 trials it with the curve
 - 261023 T348 done (q8m5): candidate defenders keep set-piece jobs after the kick (markers on their men, zone guards goal-side, keeper toward the delivery) until a turnover, the next restart or the ball 30 m out; the cause was `restartTaken` ending every defensive place at the kick; 600-fixture bands 34 → 35 of 37 (MF goals inside), set-piece goals 23.2 → 22.6%; default path unchanged; `set-piece-defence.spec.ts` left to the batch run
@@ -270,4 +270,3 @@
 - 261022 T351 done: menu theme/language entries open a small centered picker over a light dim so the page visibly changes; WEB r126. 10 presentation journeys, 677 web units, typecheck/lint/format/presentation/build pass; business.spec:67 fails identically on main before this change.
 - 261022 measured planning verified (g8s2): retained full-match reproducer matches all 8 runs/89 corner readings exactly; retained stage reproducer matches coordinates/jobs exactly; spec lint passes with existing stale/status warnings; no product code or push.
 - 261022 ideation/create-task measured follow-up (g8s2): 8 matches/89 corners plus isolated placement→moveAll probe replace the unverified stationary-defence diagnosis in T348; WEB r125/WEB-95 adds T350 normal-view team/carrier cues after T349, required by T286. Evidence and runnable probes retained in docs/benchmarks/set-piece-motion-261022.*.
-- 261022 ideation set-piece-defence-and-goal-feedback resumed: measure actual team movement before correcting the task; update-ssot WEB/create-task for ball ownership.
