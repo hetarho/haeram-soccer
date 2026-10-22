@@ -226,7 +226,10 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     const h = i < whole ? C.step : rest;
     if (h <= 1e-9) break;
     const t = i * C.step;
-    for (const m of movers) stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
+    for (let k = 0; k < movers.length; k++) {
+      const m = movers[k]!;
+      stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
+    }
   }
 }
 

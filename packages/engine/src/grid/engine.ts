@@ -456,10 +456,12 @@ export function playGrid(setup: GridSetup): GridResult {
     const plan: Move[] = [];
     if (owner) plan.push({ gp: owner, to: ball });
     if (owner !== gp) plan.push({ gp, holdUntil: dt - flight });
+    // `forEach` walks the map in the same insertion order without an entry array per player.
     if (before && flight > 0)
-      for (const [p, to] of before)
+      before.forEach((to, p) => {
         if (p !== owner && p !== gp && onPitch(p))
           plan.push({ gp: p, before: to, readAt: readAt(s, p, actor[0], dt - flight) });
+      });
     const knots: MotionKnot[] = [];
     if (carry)
       knots.push(

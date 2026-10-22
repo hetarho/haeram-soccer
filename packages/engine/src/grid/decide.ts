@@ -484,9 +484,9 @@ export function passOptions(
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
-    const lineBreaking = [dfDeep, mfDeep].some(
-      (deep) => deep !== undefined && c[0] <= deep && p[0] > deep,
-    );
+    const lineBreaking =
+      (dfDeep !== undefined && c[0] <= dfDeep && p[0] > dfDeep) ||
+      (mfDeep !== undefined && c[0] <= mfDeep && p[0] > mfDeep);
     return { target: gp.idx, score, prior, direction: dir, kind, lineBreaking };
   });
 }
