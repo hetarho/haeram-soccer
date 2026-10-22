@@ -63,14 +63,6 @@ export const COORDINATION_CONFIG = {
   /** 판단력 times a run: the run odds scale from `min` to `max` across the attribute. */
   timing: { min: 0.8, max: 1.2 },
   /**
-   * T368 (→MATCH-18): the side in possession holds an onside line until the pass is played
-   * (`movement.ts` `advance`). Each outfielder off the ball waits `far` m behind the second-last
-   * opponent at 판단력 1 and `near` m at 99, and reads `early` × his 판단력 share seconds of the
-   * defenders' movement ahead, so a better reader starts closer to the line without being caught
-   * by it stepping up. A run in behind waits on that line and the through ball sends him.
-   */
-  hold: { far: 2, near: 0.5, early: 0.5 },
-  /**
    * A combination closes when an opponent stands within `closed` m of the space a shower or an
    * overlapper goes to; he does not take that kind of job again for `retry` s.
    */

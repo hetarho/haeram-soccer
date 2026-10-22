@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import {
   closedAt,
@@ -20,7 +19,6 @@ import {
   updateIntentions,
   type Intention,
 } from './intentions';
-import { advance, holdOf } from './movement';
 import { attackFrame, type Point } from './pitch';
 import { setPieceTargets, SHAPE_CONFIG, shapePlace } from './shape';
 import { createState, onPitch, type GridPlayer, type GridState } from './state';
@@ -599,54 +597,5 @@ describe('grid coordination', () => {
     } finally {
       SR.odds.possession = odds;
     }
-  });
-
-  it('a runner holds an onside line until the pass and a better 판단력 starts closer to it', () => {
-    const H = COORDINATION_CONFIG.hold;
-    expect(H.far).toBeGreaterThan(H.near);
-    /**
-     * Side 0's striker (9) runs in behind from 70 m while side 1's line stands still at 80 m (its
-     * keeper deeper); returns where he stands after `seconds` of play with `decisions` 판단력.
-     */
-    const run = (decisions: number, seconds = 4, model = true) => {
-      const s = scene();
-      if (!model) s.setup = kitOf(['possession', 'balanced']).setup;
-      const still = s.players[1].map((gp, i) => {
-        gp.pos = i === 0 ? [104, 34] : [80, 4 + 6 * i];
-        return { gp, to: [gp.pos[0], gp.pos[1]] as const };
-      });
-      const gp = s.players[0][9]!;
-      gp.pos = [70, 30];
-      gp.base[ATTRIBUTES.indexOf('decisions')] = decisions;
-      setIntention(s, gp, {
-        kind: 'run',
-        run: 'behind',
-        priority: 'tactical',
-        target: [86, 30],
-        until: s.elapsed + 6,
-      });
-      advance(s, seconds, still);
-      return { s, gp, margin: holdOf(s, gp).margin };
-    };
-    // Held 판단력's margin behind the line, not at his run's target beyond it.
-    const sharp = run(90);
-    const dull = run(30);
-    for (const { gp, margin } of [sharp, dull]) {
-      expect(gp.pos[0]).toBeLessThanOrEqual(80 - margin + 1e-9);
-      expect(gp.pos[0]).toBeGreaterThan(80 - margin - 0.2);
-      expect(gp.intention).toMatchObject({ kind: 'run', run: 'behind' });
-    }
-    expect(sharp.margin).toBeLessThan(dull.margin);
-    expect(sharp.gp.pos[0]).toBeGreaterThan(dull.gp.pos[0]);
-    expect(sharp.margin).toBeGreaterThanOrEqual(H.near);
-    expect(dull.margin).toBeLessThanOrEqual(H.far);
-    // The pass sends him: played into his path beyond the line, he runs onto it.
-    const { s, gp } = sharp;
-    s.owner = [0, 9];
-    s.ball = [85, 30];
-    advance(s, 2, [{ gp, to: [85, 30] }]);
-    expect(gp.pos[0]).toBeGreaterThan(80);
-    // The pre-feature model holds no line: the same run goes on past it.
-    expect(run(90, 4, false).gp.pos[0]).toBeGreaterThan(80);
   });
 });

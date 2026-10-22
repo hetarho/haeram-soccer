@@ -7,12 +7,11 @@
  * (→ARCH-9, T358): the same paths on every host.
  */
 import { cos, hypot, sin } from '../portable-math';
-import { COORDINATION_CONFIG } from './coordination';
 import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
 import { clamp, PITCH } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
 import { SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
-import { kickOffPoint, onPitch, other, skill, type GridPlayer, type GridState } from './state';
+import { kickOffPoint, onPitch, skill, type GridPlayer, type GridState } from './state';
 
 /**
  * Player motion. Top speed is `speedOf` (pace and fatigue); these bound how it changes. Initial
@@ -195,126 +194,45 @@ const inside = (p: readonly [number, number]): [number, number] => [
 ];
 
 /**
- * How far behind the line `gp` waits and how many seconds of the defenders' movement he reads
- * ahead, from his 판단력 (`COORDINATION_CONFIG.hold`, T368): a better reader holds closer to it.
- */
-export function holdOf(s: GridState, gp: GridPlayer): { margin: number; ahead: number } {
-  const H = COORDINATION_CONFIG.hold;
-  const read = clamp(skill(s, gp.side, gp.idx, 'decisions'), 1, 99) / 99;
-  return { margin: H.far - (H.far - H.near) * read, ahead: H.early * read };
-}
-
-/**
- * The furthest upfield (`side`'s attack frame) a player of the side in possession who waits
- * `margin` m behind the line and reads `ahead` seconds of the defenders' movement may stand now
- * (→MATCH-18, T368): `margin` behind the second-last opponent where it will be, but never short of
- * the ball or halfway, where nobody is offside.
- */
-export function holdLimit(
-  s: GridState,
-  side: 0 | 1,
-  margin: number,
-  ahead: number,
-  ballX: number,
-): number {
-  // The second-last opponent `ahead` seconds on, in one pass like `offsideLine`.
-  const flip = side === 1;
-  let first = -Infinity,
-    second = -Infinity,
-    count = 0;
-  for (const gp of s.players[other(side)]) {
-    if (!onPitch(gp)) continue;
-    const vx = gp.vel?.[0] ?? 0;
-    const x = flip ? PITCH.length - gp.pos[0] - vx * ahead : gp.pos[0] + vx * ahead;
-    if (x > first) {
-      second = first;
-      first = x;
-    } else if (x > second) second = x;
-    count++;
-  }
-  const line = count > 1 ? second : count ? first : PITCH.length;
-  return Math.max(line - margin, ballX, PITCH.length / 2);
-}
-
-/**
  * Moves every player on the pitch for `dt` match seconds in whole steps: the planned ones toward
  * their points, everyone else toward his shape target (→MATCH-17). Targets and top speeds are read
- * once at the start, before anyone moves. On the candidate model the side in possession holds an
- * onside line step by step until the pass is played (`hold`, T368, →MATCH-18): every outfielder
- * but the man on the ball or running onto it stays his `holdOf` margin behind the second-last
- * opponent (or level with the ball), so a run in behind waits on the line and the pass sends him.
+ * once at the start, before anyone moves.
  */
-export function advance(
-  s: GridState,
-  dt: number,
-  plan: readonly Move[] = [],
-  hold = s.setup.model !== undefined,
-): void {
+export function advance(s: GridState, dt: number, plan: readonly Move[] = []): void {
   const C = GRID_MOVEMENT_CONFIG;
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
   // Each side's planned moves by roster index; a player planned twice takes his last move.
   const planned: [(Move | undefined)[], (Move | undefined)[]] = [[], []];
   for (const m of plan) planned[m.gp.side][m.gp.idx] = m;
-  const att = s.possession;
-  const owner = s.owner && s.owner[0] === att ? s.players[att][s.owner[1]] : undefined;
-  // The ball where it ends (`attackFrame(att, s.ball)[0]`): nobody level with it or behind is offside.
-  const ballX = att === 0 ? s.ball[0] : PITCH.length - s.ball[0];
   const movers: {
     gp: GridPlayer;
     to: readonly [number, number];
     vmax: number;
     holdUntil: number;
     hold: readonly [number, number];
-    /** Whether he holds the line, and his margin and read (`holdOf`). */
-    line?: { margin: number; ahead: number; before: boolean };
   }[] = [];
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       if (!onPitch(gp)) continue;
       const p = planned[side][gp.idx];
       const before = p?.before && (p.readAt ?? 0) > 0;
-      const holds = hold && side === att && gp !== owner && gp.slot > 0;
       movers.push({
         gp,
         to: inside(p?.to ?? targetOf(s, side, gp.idx, cache)),
         vmax: speedOf(s, gp),
         holdUntil: before ? p.readAt! : (p?.holdUntil ?? 0),
         hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
-        ...(holds ? { line: { ...holdOf(s, gp), before: !!before } } : {}),
       });
     }
   const whole = Math.floor(dt / C.step + 1e-9);
   const rest = dt - whole * C.step;
-  const limits = new Float64Array(movers.length);
-  // Without a read ahead every holder shares one line a step (`holdLimit` with `ahead` 0).
-  const shared = movers.every((m) => !m.line || m.line.ahead === 0);
   for (let i = 0; i <= whole; i++) {
     const h = i < whole ? C.step : rest;
     if (h <= 1e-9) break;
     const t = i * C.step;
-    // Every limit reads the line as it stands at the step's start, before anyone moves in it.
-    const line = hold && shared ? holdLimit(s, att, 0, 0, -Infinity) : 0;
     for (let k = 0; k < movers.length; k++) {
       const m = movers[k]!;
-      limits[k] = !m.line
-        ? Infinity
-        : shared
-          ? Math.max(line - m.line.margin, ballX, PITCH.length / 2)
-          : holdLimit(s, att, m.line.margin, m.line.ahead, ballX);
-    }
-    for (let k = 0; k < movers.length; k++) {
-      const m = movers[k]!;
-      const waiting = t + 1e-9 < m.holdUntil;
-      const point = waiting ? m.hold : m.to;
-      // A player keeping the ball until his kick stays on it; everyone else holds the line.
-      const limit = waiting && !m.line?.before ? Infinity : limits[k]!;
-      const x = att === 0 ? point[0] : PITCH.length - point[0];
-      stepToward(
-        m.gp,
-        x > limit ? [att === 0 ? limit : PITCH.length - limit, point[1]] : point,
-        m.vmax,
-        h,
-      );
+      stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
     }
   }
 }
@@ -375,8 +293,7 @@ export function prepareRestart(
   s.ball = spot;
   s.possession = rs.side;
   s.owner = [rs.side, taker];
-  // The walk to the places is no running play: the line is held again from the kick (T368).
-  advance(s, seconds, plan, false);
+  advance(s, seconds, plan);
   s.t += seconds;
   s.elapsed += seconds;
   gp.pos = [spot[0], spot[1]];
