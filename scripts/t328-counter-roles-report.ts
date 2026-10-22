@@ -81,7 +81,7 @@ if (pairing.length) {
   console.log(args.includes('--rows') ? lines.join('\n') : lines[0]);
   if (!args.includes('--rows'))
     for (const r of report.rows)
-      if (r.status !== 'inside' || /counter|points|possession/.test(r.id)) {
+      if (r.status !== 'inside' || /counter|points|possession|highRegains|xgConceded/.test(r.id)) {
         const val =
           r.kind === 'band'
             ? `${r.value?.toFixed(3)} [${r.interval?.[0].toFixed(3)}, ${r.interval?.[1].toFixed(3)}]`
