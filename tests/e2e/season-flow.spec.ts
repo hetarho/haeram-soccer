@@ -1,5 +1,5 @@
 import { watchNext } from './watch';
-import { configureResponsibilities } from './events';
+import { configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow } from './layout';
@@ -74,6 +74,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(eve).toContainText('내일 경기');
   await expect(date).not.toHaveText('1950년 8월 7일');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
+  await dismissMatchReport(page);
   await page.getByRole('button', { name: '리그', exact: true }).click();
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toBeVisible();

@@ -9,10 +9,13 @@ const LABELS: Record<ResponsibilityKey, string> = {
   academy: '유소년 승격·방출',
   sponsors: '스폰서 계약',
 };
-export async function openOffice(page: Page) {
+export async function dismissMatchReport(page: Page) {
   const eve = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
   if (await eve.isVisible())
     await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
+}
+export async function openOffice(page: Page) {
+  await dismissMatchReport(page);
   if (!(await page.getByTestId('owner-office').isVisible())) {
     await page
       .getByRole('navigation')
@@ -62,7 +65,7 @@ export async function configureResponsibilities(
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
   const returnLabel = (await nav.count())
-    ? await nav.first().getAttribute('aria-label')
+    ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
     : undefined;
   const businessTab =
     returnLabel === '구단 운영'
@@ -129,6 +132,7 @@ export async function configureResponsibilities(
           })
           .click();
       await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await dismissMatchReport(page);
       await dismissSettingsToast(page);
     }
   }
@@ -143,6 +147,7 @@ export async function configureResponsibilities(
     if ((await choice.getAttribute('aria-pressed')) !== 'true') {
       await choice.click();
       await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await dismissMatchReport(page);
       await dismissSettingsToast(page);
     }
   }

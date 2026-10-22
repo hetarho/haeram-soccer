@@ -9,6 +9,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
+import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { talkFor } from '../../../../packages/engine/src/contracts';
 import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
@@ -116,6 +117,7 @@ export const EventCenter = memo(function EventCenter({
       <button
         className={s.pill}
         data-testid="event-pill"
+        data-event-access
         aria-label={
           eve ? `경기 준비 보고 · ${date} · 열기` : `이벤트 ${events.length}개 · ${date} · 열기`
         }
@@ -171,6 +173,7 @@ const EventCard = memo(function EventCard({
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
+    const blocked = acting || pendingDecisions(w).length > 0;
     const home = eve.home === w.playerClub;
     const opponent = w.clubs.find((c) => c.id === (home ? eve.away : eve.home));
     const watch = () => {
@@ -199,10 +202,10 @@ const EventCard = memo(function EventCard({
           구단주 사무실
         </button>
         <div className={s.actions}>
-          <button className={s.primary} disabled={acting} onClick={() => void watch()}>
+          <button className={s.primary} disabled={blocked} onClick={() => void watch()}>
             관전하기 ▶
           </button>
-          <button disabled={acting} onClick={() => controller.playThrough()}>
+          <button disabled={blocked} onClick={() => controller.playThrough()}>
             결과만 보고 계속
           </button>
         </div>

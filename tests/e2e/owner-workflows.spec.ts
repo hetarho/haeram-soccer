@@ -1,3 +1,4 @@
+import { gameHud } from './layout';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
@@ -155,7 +156,7 @@ test('a different game never inherits the first career policy draft', async ({ p
     .click();
   await page.getByLabel('클럽 이름').fill('Second Workflow Club');
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('calendar').locator('..')).toContainText('Second Workflow Club', {
+  await expect(gameHud(page)).toContainText('Second Workflow Club', {
     timeout: 30000,
   });
   await openOperations(page);

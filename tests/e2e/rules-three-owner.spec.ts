@@ -10,6 +10,7 @@ import { lineOf } from '../../packages/engine/src/player';
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function operations(page: Page) {
   await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
+  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
   await expect(page.getByTestId('strategy-board')).toBeVisible();
 }
 

@@ -1,4 +1,9 @@
-import { ALL_DELEGATED, configureResponsibilities, acknowledgeEvents } from './events';
+import {
+  ALL_DELEGATED,
+  configureResponsibilities,
+  acknowledgeEvents,
+  dismissMatchReport,
+} from './events';
 import { expect, test, type Page } from '@playwright/test';
 
 async function identity(page: Page) {
@@ -8,6 +13,7 @@ async function identity(page: Page) {
   return { year: Number(year), round: Number(round) };
 }
 async function manual(page: Page, all = false) {
+  await dismissMatchReport(page);
   await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
   await configureResponsibilities(page, {
     responsibilities: all ? ALL_DELEGATED : { recruitment: 'delegated', sales: 'delegated' },
@@ -17,12 +23,18 @@ async function manual(page: Page, all = false) {
 }
 /** Resolve real observation cards and advance only through the public next-event/match actions. */
 async function step(page: Page) {
+  const pill = page.getByTestId('event-pill');
+  if (await pill.isVisible()) await pill.click();
   await acknowledgeEvents(page);
   const match = page.getByTestId('event-card').filter({ hasText: '내일 경기' });
   const before = await page.getByTestId('game-date').innerText();
-  if (await match.count())
+  if (await match.count()) {
     await match.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-  else await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+    await expect(match).toHaveCount(0);
+  } else {
+    await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+    await expect(page.getByTestId('event-card').first()).toBeVisible();
+  }
   await expect(page.getByTestId('game-date')).not.toHaveText(before);
 }
 /** One domestic round, allowing cup fixtures and real event stops between league fixtures. */

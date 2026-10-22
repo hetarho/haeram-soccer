@@ -163,10 +163,17 @@
   color: var(--on-accent);
   background: var(--surface-grain, none) var(--gold-fill);
 }
+/* Temporary settings feedback and pending events remain independently reachable. */
+:global(body:has([data-settings-toast])) .pill {
+  bottom: calc(80px + var(--settings-toast-clearance));
+}
 @media (max-width: 760px) {
   .pill {
     right: 12px;
     bottom: calc(156px + env(safe-area-inset-bottom));
+  }
+  :global(body:has([data-settings-toast])) .pill {
+    bottom: calc(156px + var(--settings-toast-clearance) + env(safe-area-inset-bottom));
   }
   .card {
     left: 12px;

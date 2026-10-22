@@ -6,6 +6,8 @@
   --control-gap: 8px;
   --panel-padding: 16px;
   --row-padding: 12px;
+  --settings-toast-clearance: 80px;
+  --event-access-clearance: 56px;
 }
 body {
   font-synthesis: none;

@@ -105,7 +105,9 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await page.getByTestId('event-pill').click();
   await expect(eveDialog).toBeVisible();
   for (const name of ['관전하기 ▶', '결과만 보고 계속']) {
-    const rect = await eve.getByRole('button', { name, exact: true }).boundingBox();
+    const action = eve.getByRole('button', { name, exact: true });
+    await action.scrollIntoViewIfNeeded();
+    const rect = await action.boundingBox();
     expect(rect!.height, name).toBeGreaterThanOrEqual(44);
     expect(rect!.x, name).toBeGreaterThanOrEqual(0);
     expect(rect!.x + rect!.width, name).toBeLessThanOrEqual(360);

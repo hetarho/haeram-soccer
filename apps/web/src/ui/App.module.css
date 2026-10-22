@@ -522,6 +522,10 @@
 .feedbackOverlay > * {
   box-shadow: var(--feedback-edge-shadow);
 }
+/* Required recovery actions clear routine event cards while staying below dialogs. */
+.urgentFeedback {
+  z-index: 950;
+}
 .feedbackOverlay > .error,
 .feedbackOverlay > .critical {
   display: grid;
@@ -2249,6 +2253,10 @@
 /* The scroller fills the space between the metadata and bottom transport. */
 .newsLayout.coreLayout .scroller {
   padding-bottom: 0;
+}
+/* Match content already clears the reserved navigation; a large bottom inset made it scroll. */
+.coreLayout:not(.newsLayout) .scroller {
+  padding-bottom: var(--control-gap);
 }
 /* Phones: tight gaps leave the club name room for up to two lines beside the cash. */
 @media (max-width: 760px) {

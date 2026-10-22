@@ -735,7 +735,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   return (
     <>
       {(error || critical) && (
-        <FeedbackOverlay>
+        <FeedbackOverlay urgent>
           {error && (
             <div className={s.error} role="alert">
               {error}

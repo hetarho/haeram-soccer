@@ -49,7 +49,7 @@ async function openBusiness(page: Page, tab?: string) {
     .getByRole('button', { name: '구단 운영', exact: true })
     .click();
   await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
-  if (tab) await page.getByRole('tab', { name: tab, exact: true }).click();
+  await page.getByRole('tab', { name: tab ?? '운영 방침', exact: true }).click();
 }
 
 async function playNext(page: Page) {

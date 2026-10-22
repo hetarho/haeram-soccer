@@ -338,11 +338,11 @@ test('keeps the clock running while comparing candidates away from home until th
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).toHaveText('1950년 8월 2일');
-  // Away from home the clock collapses to its buttons and keeps running.
+  // The reserved transport remains available and keeps running away from home.
   await openMarket(page);
   const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
   await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
-  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(1);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const filter = await marketFilters(page);
   await filter

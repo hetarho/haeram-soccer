@@ -1,5 +1,5 @@
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
-import { openOffice } from './events';
+import { dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
   createWorld,
@@ -42,6 +42,7 @@ function ask(w: ReturnType<typeof createWorld>, line: 'MF' | 'GK') {
 }
 async function market(page: Page, w: ReturnType<typeof createWorld>) {
   await importResponsibilityCareer(page, w);
+  await dismissMatchReport(page);
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page
     .getByRole('tablist', { name: '선수단·스태프 보기' })
@@ -265,6 +266,8 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
     const promise = w.promises![0];
     w.cash = '999999999999';
+    // This journey advances to a promise deadline; pre-match reporting is covered separately.
+    w.settings!.observations.matchEve = false;
     const { advanceDays } = await import('../../packages/engine/src/index');
     w.settings!.responsibilities.contracts = 'delegated';
     w.settings!.responsibilities.sales = 'delegated';

@@ -6,6 +6,7 @@ import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../packages/contr
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
+import { configureResponsibilities } from './events';
 
 /**
  * Browser helpers shared by the club-identity journeys (→KIT, →SAVE-3/20/21/22). Evidence is what
@@ -27,8 +28,7 @@ const MANIFEST = 'haeram-soccor:manifest';
 export const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
 export const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 /** The HUD, whose crest follows the applied identity (→WEB-49). */
-export const hud = (page: Page) =>
-  page.locator('header').filter({ has: page.getByTestId('calendar') });
+export { gameHud as hud } from './layout';
 /** SVG crest parts painted in `fill`, exactly as stored. */
 export const crestFill = (scope: Locator, fill: string) => scope.locator(`[fill="${fill}"]`);
 
@@ -343,6 +343,8 @@ export async function closePreparation(page: Page, dialog: Locator, decided: boo
 
 /** Watches the next match and stops at the final whistle, where the presentation stays. */
 export async function watchToWhistle(page: Page) {
+  // Identity edits/reloads compare one settled fixture; keep the calendar stopped afterwards.
+  await configureResponsibilities(page, { mode: 'manual' });
   await watchNext(page);
   await expect(page.getByTestId('match-theatre')).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();

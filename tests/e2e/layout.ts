@@ -1,5 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 
+/** The club/cash HUD stays separate from the season information row below it. */
+export const gameHud = (page: Page) =>
+  page.locator('header').filter({ has: page.getByTestId('hud-cash') });
+
 /**
  * Page switches, sheets and cards animate in. Wait for every finite animation to land before
  * measuring geometry, so a sliding panel is not mistaken for a layout overflow.

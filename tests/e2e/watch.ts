@@ -23,7 +23,6 @@ export async function openWatchAction(page: Page) {
     if (await watch.isVisible()) return watch;
     await acknowledgeEvents(page);
     if (await watch.isVisible()) return watch;
-    const before = await page.getByTestId('game-date').innerText();
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
     if (await next.isVisible()) await next.click();
     else {
@@ -32,10 +31,7 @@ export async function openWatchAction(page: Page) {
     }
     await expect
       .poll(
-        async () =>
-          (await watch.isVisible()) ||
-          (await page.getByTestId('event-card').count()) > 0 ||
-          (await page.getByTestId('game-date').innerText()) !== before,
+        async () => (await watch.isVisible()) || (await page.getByTestId('event-card').count()) > 0,
         { timeout: 20000 },
       )
       .toBe(true);
@@ -43,7 +39,8 @@ export async function openWatchAction(page: Page) {
   throw new Error('No match eve after eighty public progression events');
 }
 
-export async function watchNext(page: Page) {
+export async function watchNext(page: Page, { manual = false } = {}) {
+  if (manual) await configureResponsibilities(page, { mode: 'manual' });
   await (await openWatchAction(page)).click();
   await page.getByTestId('match-theatre').waitFor({ state: 'visible' });
 }

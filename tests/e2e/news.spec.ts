@@ -1,3 +1,4 @@
+import { gameHud } from './layout';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
@@ -59,7 +60,7 @@ const newsButton = (page: Page) => page.getByTestId('communications-button');
 test('keeps the club name and compact cash readable in a 360 px HUD', async ({ page }) => {
   await found(page);
   // The name sits next to the HUD calendar line.
-  const name = page.getByTestId('calendar').locator('..').getByText('Haeram Athletic', {
+  const name = gameHud(page).getByText('Haeram Athletic', {
     exact: true,
   });
   expect(
@@ -94,8 +95,8 @@ test('celebrates in one lower line, with headlines collected in the clock news b
   const clock = (await page.getByRole('region', { name: '시즌 진행' }).boundingBox())!;
   const card = (await status.boundingBox())!;
   const button = (await newsButton(page).boundingBox())!;
-  expect(card.y).toBeGreaterThan(clock.y + clock.height);
-  // A phone keeps the view readable: one 44 px line above navigation and below the clock button.
+  expect(card.y + card.height).toBeLessThanOrEqual(clock.y);
+  // A phone keeps the view readable: one 44 px line above transport and navigation.
   expect(card.height).toBeLessThanOrEqual(44);
   expect(card.y).toBeGreaterThanOrEqual(button.y + button.height);
   const navigation = (await page

@@ -1,5 +1,5 @@
 import { watchNext } from './watch';
-import { delegateSales } from './events';
+import { delegateSales, dismissMatchReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -9,6 +9,7 @@ import { expectHomeBounds, settle } from './layout';
 import { currentDay, seasonLength } from '../../packages/engine/src/calendar';
 
 async function exportWorld(page: Page): Promise<World> {
+  await dismissMatchReport(page);
   await page.getByRole('button', { name: '설정', exact: true }).click();
   const menu = page.getByRole('dialog', { name: '설정' });
   const downloading = page.waitForEvent('download');
@@ -61,7 +62,9 @@ for (const viewport of [
     expect(
       await nextCard.evaluate((element) => element === element.parentElement?.firstElementChild),
     ).toBe(true);
-    expect(prepareBox.y).toBeGreaterThanOrEqual(titleBox.y + titleBox.height);
+    expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width);
+    expect(prepareBox.y).toBeLessThan(titleBox.y + titleBox.height);
+    expect(prepareBox.y + prepareBox.height).toBeGreaterThan(titleBox.y);
     expect(prepareBox.height).toBeGreaterThanOrEqual(44);
     // Notifications sit in the HUD; preparation stays usable across the full home content.
     const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
@@ -114,7 +117,7 @@ for (const viewport of [
     expect(afterBrowsing.cash).toBe(before.cash);
     expect(afterBrowsing).toEqual(before);
 
-    await watchNext(page);
+    await watchNext(page, { manual: true });
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await page

@@ -24,7 +24,8 @@ for (const width of [360, 390]) {
     expect(date!.width).toBeGreaterThan(0);
     expect(date!.x + date!.width).toBeLessThanOrEqual(pace!.x);
     expect(date!.y).toBeLessThan(pace!.y + pace!.height);
-    expect(date!.y + date!.height).toBeGreaterThan(pace!.y);
+    // Calendar metadata sits above the content; transport has its own bottom row.
+    expect(date!.y + date!.height).toBeLessThanOrEqual(pace!.y);
     await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
     await expect(canvas).toBeVisible();

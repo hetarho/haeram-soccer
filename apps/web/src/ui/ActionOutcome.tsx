@@ -84,6 +84,7 @@ export function ActionOutcome() {
       aria-live="polite"
       aria-label="방금 한 결정의 결과"
       data-testid="action-outcome"
+      data-settings-toast={settingsToast || undefined}
       onPointerEnter={settingsToast ? undefined : () => window.clearTimeout(timer.current)}
     >
       <header>

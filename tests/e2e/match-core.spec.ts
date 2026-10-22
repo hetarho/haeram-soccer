@@ -132,7 +132,7 @@ for (const viewport of [
     await page.goto('/matches');
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page).toHaveURL(/\/journal$/);
-    await watchNext(page);
+    await watchNext(page, { manual: true });
     await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
     expect(
@@ -305,6 +305,9 @@ for (const viewport of [
     advanceToNextMatch(reference);
     const beforeNext = await page.getByTestId('game-date').innerText();
     await page.getByTestId('match-next-action').click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page.getByTestId('game-date')).toHaveText(beforeNext);
+    await watchNext(page);
     await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
     await expect(page.getByTestId('match-next-action')).toBeEnabled();
     await expectCompactMatch(page, viewport);

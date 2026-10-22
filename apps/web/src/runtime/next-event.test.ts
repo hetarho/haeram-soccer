@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { Host } from './host';
 import type { Body, Reply } from './protocol';
 import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
-import { currentDay, daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
+import {
+  currentDay,
+  daysUntilNextMatch,
+  nextOwnFixture,
+} from '../../../../packages/engine/src/calendar';
 import { transferOffers } from '../../../../packages/engine/src/ops-squad';
 import { ratio, random } from '../../../../packages/engine/src/primitives';
 import { stoppingReasons } from '../../../../packages/engine/src/stopping';
@@ -59,12 +63,12 @@ describe('manual next-event sole-writer protocol', () => {
     ).toBe(false);
     expect(JSON.stringify(h.world)).toBe(after);
   });
-  it('rejects automatic/invalid-manual and critical/bankrupt states without moving a date', async () => {
+  it('rejects automatic and critical/bankrupt states without moving a date', async () => {
     const { h } = await host();
     const w = h.world!;
-    for (const blocker of ['automatic', 'invalid', 'critical', 'bankrupt'] as const) {
+    for (const blocker of ['automatic', 'critical', 'bankrupt'] as const) {
       w.settings!.mode = blocker === 'automatic' ? 'automatic' : 'manual';
-      w.settings!.observations.matchEve = blocker !== 'invalid';
+      w.settings!.observations.matchEve = true;
       w.critical = blocker === 'critical' ? 'critical' : undefined;
       if (blocker === 'bankrupt') w.bankrupt = { year: w.year, round: w.round, day: currentDay(w) };
       const before = JSON.stringify(w);
@@ -74,6 +78,22 @@ describe('manual next-event sole-writer protocol', () => {
       expect(reply.ok).toBe(false);
       expect(JSON.stringify(w)).toBe(before);
     }
+  });
+  it('accepts manual without reports and commits only the next fixture result once', async () => {
+    const { h } = await host();
+    const w = h.world!;
+    w.settings!.observations = { matchEve: false, windowOpen: false };
+    const fixture = nextOwnFixture(w)!;
+    const request = req('without-reports', w.revision, {
+      type: 'command',
+      command: { type: 'next-event' },
+    });
+    const reply = await h.handle(request);
+    expect(reply.ok).toBe(true);
+    expect(w.ownMatches.map((match) => match.id)).toEqual([fixture.id]);
+    const settled = JSON.stringify(w);
+    expect(await h.handle(request)).toBe(reply);
+    expect(JSON.stringify(w)).toBe(settled);
   });
   it('groups two real counteroffers and the coincident match eve, and reading cannot bypass them', async () => {
     const { h } = await host(),

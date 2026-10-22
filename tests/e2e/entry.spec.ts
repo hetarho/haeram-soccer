@@ -34,7 +34,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  await watchNext(page);
+  await watchNext(page, { manual: true });
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
