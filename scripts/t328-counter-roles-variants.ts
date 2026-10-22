@@ -1,5 +1,5 @@
 /**
- * The counter measurement's inputs, side-effect free (T328, T331): counter 4-4-2 role tables
+ * The counter measurement's inputs, side-effect free (T328, T334): counter 4-4-2 role tables
  * (`VARIANTS`) and candidate-model behaviour overrides (`BEHAVIOURS`). Importing this module changes
  * nothing; `scripts/t328-counter-roles.ts` applies the chosen table and overrides in its own process
  * before any squad, world or match is built.
@@ -82,7 +82,7 @@ const counterShape = (shape: object): BehaviourPatch => ({
 });
 
 /**
- * T331's behaviour levers on the candidate model: (a) counter keeps going forward or long once its
+ * T334's behaviour levers on the candidate model: (a) counter keeps going forward or long once its
  * break has passed, (b) counter's deep block, (c) press's in-match fatigue cost. Names join with
  * `+` on the command line; later patches win.
  */

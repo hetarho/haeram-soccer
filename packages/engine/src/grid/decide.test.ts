@@ -132,7 +132,7 @@ describe('grid decisions', () => {
 
   it('counter stops recycling once its break has passed', () => {
     const D = DECISION_CONFIG.direct;
-    // Counter's settled play on the candidate (T331): fewer passes, forward and long ones first.
+    // Counter's settled play on the candidate (T334): fewer passes, forward and long ones first.
     const R = D.settled.counter!;
     expect(R.pass).toBeLessThan(1);
     expect(R.back).toBeLessThan(R.lateral);

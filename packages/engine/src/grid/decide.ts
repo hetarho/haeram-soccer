@@ -168,11 +168,11 @@ export const DECISION_CONFIG = {
     forward: { counter: 3 } as Partial<Record<Tactic, number>>,
     back: 0.5,
     /**
-     * Candidate model only (→MATCH-8, T331): once a listed side's break has passed (outside
+     * Candidate model only (→MATCH-8, T334): once a listed side's break has passed (outside
      * `seconds` of a regain, or with no regain) it still plays forward or long rather than
      * recycling: a forward pass scores `forward` more and a long ball or a switch `long` more, a
      * lateral pass is chosen `lateral` and a back pass `back` times as often, and its carrier
-     * passes `pass` times as often against carrying on. Counter (T331): its pass share falls to
+     * passes `pass` times as often against carrying on. Counter (T334): its pass share falls to
      * the lowest of the four and it beats press through its play, not its roles.
      */
     settled: {
@@ -191,7 +191,7 @@ const breaking = (s: GridState, side: 0 | 1) =>
   s.lastRegain?.side === side &&
   s.elapsed - s.lastRegain.at <= DECISION_CONFIG.direct.seconds;
 
-/** The candidate's settled-play rule for `side` once its break has passed (T331), if its tactic has one. */
+/** The candidate's settled-play rule for `side` once its break has passed (T334), if its tactic has one. */
 const settledOf = (s: GridState, side: 0 | 1) =>
   s.setup.model !== undefined && !breaking(s, side)
     ? DECISION_CONFIG.direct.settled[s.setup.tactics[side]]
@@ -436,7 +436,7 @@ export function passOptions(
   // Straight after a regain a breaking side goes forward (candidate model, →MATCH-8).
   const D = DECISION_CONFIG.direct;
   const direct = breaking(s, side) ? (D.forward[s.setup.tactics[side]] ?? 0) : 0;
-  // Once the break has passed a listed side still goes forward or long (candidate, T331).
+  // Once the break has passed a listed side still goes forward or long (candidate, T334).
   const settled = settledOf(s, side);
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;

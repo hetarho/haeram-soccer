@@ -1,5 +1,5 @@
 /**
- * T328/T331 scratch report: reads scripts/t328-counter-roles.ts outputs, pools a run's pairings with
+ * T328/T334 scratch report: reads scripts/t328-counter-roles.ts outputs, pools a run's pairings with
  * the base run's pairings the run did not play (`--others`, so no pairing counts twice), and prints
  * MATCH-29 (possession by time and by pass share, each tactic's points against each other), the
  * MATCH-23 core and the counter side's readings.

@@ -1,5 +1,5 @@
 /**
- * T328/T331 scratch measurement: counter's 4-4-2 role tables and candidate-model behaviour overrides,
+ * T328/T334 scratch measurement: counter's 4-4-2 role tables and candidate-model behaviour overrides,
  * driven through grid-bands' exported condition fixtures and forced-formation conditioning. A
  * variant is a role map this process passes in for the counter formation (FORMATIONS.counter.slots
  * swapped in memory before any squad, world or match is built); `--behaviour a+b` and `--patch
@@ -58,7 +58,7 @@ if (!spec) throw new Error(`unknown variant ${variant}`);
   position,
   role,
 }));
-// The measurement's behaviour overrides (T331): candidate configs patched in this process only.
+// The measurement's behaviour overrides (T334): candidate configs patched in this process only.
 const behaviour = opt('behaviour', '');
 const patch = opt('patch', '');
 for (const p of behaviourOf(behaviour, patch || undefined)) applyBehaviour(p);

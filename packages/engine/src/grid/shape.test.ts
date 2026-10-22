@@ -123,7 +123,7 @@ describe('grid shape and movement', () => {
     }
   });
 
-  it("holds counter's candidate back line no deeper than balanced's floor (T331)", () => {
+  it("holds counter's candidate back line no deeper than balanced's floor (T334)", () => {
     const counter = SHAPE_CONFIG.candidate.tactic.counter!;
     const balanced = SHAPE_CONFIG.candidate.tactic.balanced!;
     expect(counter.line[0]).toBe(balanced.line[0]);
