@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| q8m5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-22T13:18Z | 2026-10-22T21:40Z | T368 |
 
 ## inbox
 - 261022 decided T349 WEB-94: the scoreboard shows the presented running score (goals reached on the clock) instead of the minute's settled `frame.score`, which already counts a goal later in that minute → otherwise the score changes before the held goal and leaks it (alt: keep frame.score and hold at the minute boundary, which freezes up to a minute away from the goal)
@@ -36,6 +35,9 @@
 - 261023 decided T323: its aggregate recalibration is kept though the MATCH-2 curve rose 1.58 → 1.74 at 8,000 a bucket without a paired interval → both stay under 2.5 and every band, core and MATCH-29 row held or improved; T369 measures the curve with a paired interval (alt: revert the shot and xG settings)
 - 261023 decided T367 T373: the kick's update pressing a set-piece taker who has delivered (311 of 445 urgent presses at a kick, 219 by man-markers leaving a held runner) becomes candidate-only task T373, beside T368 and before T370 → removing the false carrier fixes the cause, where widening T367's taken-mark rule to the press would still send someone after the taker (alt: the press also counts committed marks as taken | leave it)
 - 261023 decided T367: its paired check used validation round 44 and left `detailed-model-calibration.json` for T368 to refresh after merging → two rows moved inside → insufficient with paired intervals including zero, four came inside, none inside → outside (alt: refresh the artifact now)
+- 261023 decided T368 T374 MATCH-18: honest offside stays the target; T368 closes as an explore exit (not kept, engine reverted) and T374 adds a candidate-only deeper back line near the box, restores T368's rule (`git revert f19a7fe`) and recalibrates shots → T368 showed the line drops only 4 m behind the ball, so with honest offside nobody but the carrier reaches the box and shot rows left their bands (T368's option a) (alt: widen T368 itself | keep the 97% pardon for now)
+- 261023 decided T369 T372 MATCH-22: the aggregate's shots~goals and xG~goals gap to the detailed engine (0.49/0.61 v 0.22/0.45) waits for T372's parity on the refreshed grid; a coarse score-state coupling on the aggregate (an update-ssot on MATCH-22) only if parity is still blocked (T369's option a) (alt: allow the coupling now | accept a known aggregate limit)
+- 261023 decided T369 T374: session q8m5 hands off at 09:20 KST for the owner's other machine; `main` carries every task through T373 behind a batch gate plus T368's exit record; T369 is finished and kept on `origin/work/q8m5-T369` but stays todo on main until the next session merges it through the batch gate (Chromium), since its gate could not finish before the hand-off
 - 261022 decided T325 T345: session q8m5 runs T325's merge and T345 side by side with session subagents in their own worktrees, as k2r7 did for T327/T328 (both explore, so no work group); main pushed once at the end (alt: one after the other)
 - 261022 decided T345 T356 MATCH-29: possession's rows (still outside after T345: points −0.205, about 10 shots a match against 13) go to explore T356 — runs outside a break (T345's lever a′, the only one that moved them) with a guard on press's high-regain lead, then possession's 4-3-3 role table if that fails → it is the one lever with a clear effect, and the bands stay as they are (alt: role table first | accept a known miss, which needs update-ssot on MATCH-29)
 - 261022 decided T345 T357 MATCH-2: the curve above 2.5 (2.79 pooled) and the gap −10 underdog (wins 13–15% against 18% under every tactic) go to explore T357 on the strength gradient, after T356 → T345 found it is not a tactic effect; MATCH-2's form draw, gap formula and home points stay rules (alt: fold it into T323 | accept the curve error)
@@ -234,14 +236,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 T369 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T368 | Judge grid offside at the pass and let runners hold the line until it is played | MATCH ARCH | T323 | doing@261023.q8m5 |
-| T369 | Bring the aggregate's box arrivals, xT, cut-backs and finishing spread inside their targets | MATCH ARCH | T323 | doing@261023.q8m5 |
-| T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 | todo |
+| T369 | Bring the aggregate's box arrivals, xT, cut-backs and finishing spread inside their targets | MATCH ARCH | T323 | todo |
+| T374 | Give the candidate a deeper back line near its box and restore T368's honest offside | MATCH ARCH | T368 T367 T373 | todo |
+| T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 | todo |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
 
@@ -256,11 +258,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- q8m5: T325 done; T345 kept (candidate score state), merging; then T348 ∥ T356 → T357 → T323 → T326 → T286 → T306–T308. T353 (Lucide icons) belongs to u4h2.
+- resume (q8m5 hand-off 261023 09:20): merge `origin/work/q8m5-T369` (finished and kept; its record is complete), run the batch gate, close T369 and push main; then T374 (deeper back line + honest offside, explore 4h) and T326 (aggregate cost, after T369) side by side → T370 → T371 → T372 (parity at pilot size) → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 hand-off (q8m5): session closes for the owner's other machine; T369 finished and kept on `origin/work/q8m5-T369` (aggregate box entries 26.96 → 15.22, cut-backs 0.82 → 0.49 inside, MATCH-30 18/3/0 → 20/1/0, pooled curve 1.65 → 1.67), awaiting the batch gate
+- 261023 T368 done (q8m5; explore exit at the hand-off, not kept): honest offside cut completions beyond the line 23.4 → 0.05 a team, but shots left their core bands because the back line drops only 4 m behind the ball → T374
 - 261023 T373 done (q8m5): the kick's update reads no carrier while a delivery that reached nobody is in the air, so nobody presses the taker (presses on the taker 311 → 1, markers drawn off a held runner 219 → 0 in 96 matches); facts unchanged, five positions digests re-recorded; round 46 MATCH-29 18/1/6 → 17/1/7 (press–press draws at the band edge), core and set-piece goals unchanged
 - 261023 T367 done (q8m5): the kick's urgent pairing skips committed set-piece marks, so markers keep their runners (urgent marks to man-markers 55/56 → 0/57 in 96 matches); facts digests unchanged, three positions digests re-recorded; round 44 MATCH-29 17/1/7 → 18/1/6, core 33 → 34, curve 1.87 → 1.91
 - 261023 create-task T373 (q8m5, from T367's question): the kick's update stops pressing a taker who has delivered; T370 and T286 wait for it
@@ -279,5 +283,3 @@
 - 261023 fix e2e (q8m5): main CI 39830858461 (3c21866) failed business.spec:266 on Firefox (30 s over real rounds → `test.slow()`) and season-flow.spec:135 on WebKit (`configureResponsibilities` pressed pause under a NEXT MATCH backdrop → it closes the report first); club-identity-observation's resume check reads the club hub's 관전 이어보기 instead of a match-eve card the event centre may show (1 in 3 local Chromium runs)
 - 261023 fix e2e (u4h2): CI 39827344774 Chromium passed 238/240; guide export and match-material reading now request manual observation so the next automatic report cannot race their exact recorded snapshot. Both journeys pass Chromium/Firefox/WebKit (6 cases), typecheck/lint/format pass; application source is unchanged and the earlier complete application gate is reused.
 - 261023 T362 done (u4h2): publication repairs keep toast/event/celebration targets clear, recovery above routine events and match actions visibly blocked by owner decisions. Browser helpers follow report transitions, current HUD/home/transport and exact paused snapshots. Full units 1893 pass/4 skip, contract 39, fast/resource/build checks, Chromium 240 covered with seven successful repair reruns and 51 focused units; origin/main 174e1f5 integrated, ready to push.
-- 261023 T362 start (u4h2): publication batch exposed overlapping event/toast targets and a watch-helper date/report race; fix shared surfaces/helpers then resume the gate.
-- 261023 publish UI (u4h2) start: local UI T356/T358 renumbered T360/T361 to retain origin/main's engine T356/T358; integrate origin and run the ARCH-30 batch gate before push.
