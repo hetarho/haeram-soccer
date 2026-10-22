@@ -24,6 +24,10 @@
 - 261022 decided T325 T345: session q8m5 takes over k2r7's T325 and T345 on the owner's M1 Max → k2r7 is stale (row at 00:42Z, last push 18:27 KST, nothing for T345 since its 17:36 start against a 2 h timebox) and every remaining task waits on these two; T325 resumes from `work/k2r7-T325` (record done, review and merge left), T345 starts over (alt: wait for k2r7 | close with nothing runnable)
 - 261022 decided T325 ARCH-5: `grid-throughput.test.ts` accepts either host's digest for three observed records (1995 observed, 1995 and 2024 shoot-outs) → their trace and frames differ in the last bit between linux-x64/Node 24.22.1 (CI, k2r7's recording) and darwin-arm64/Node 25–26 (this Mac) for the same code, while unobserved records agree; one value only would turn either CI or local runs red. A value matching neither still fails. Cross-host drift of observed positions fits the 261020 ARCH-5/ARCH-9 century-world note and is not settled here; this Mac runs Node 26.8.1, not the pinned 24.22.1 (alt: record this host only | drop observed trace from the digest)
 - 261022 decided T325 T345: session q8m5 runs T325's merge and T345 side by side with session subagents in their own worktrees, as k2r7 did for T327/T328 (both explore, so no work group); main pushed once at the end (alt: one after the other)
+- 261022 decided T345 T356 MATCH-29: possession's rows (still outside after T345: points −0.205, about 10 shots a match against 13) go to explore T356 — runs outside a break (T345's lever a′, the only one that moved them) with a guard on press's high-regain lead, then possession's 4-3-3 role table if that fails → it is the one lever with a clear effect, and the bands stay as they are (alt: role table first | accept a known miss, which needs update-ssot on MATCH-29)
+- 261022 decided T345 T357 MATCH-2: the curve above 2.5 (2.79 pooled) and the gap −10 underdog (wins 13–15% against 18% under every tactic) go to explore T357 on the strength gradient, after T356 → T345 found it is not a tactic effect; MATCH-2's form draw, gap formula and home points stay rules (alt: fold it into T323 | accept the curve error)
+- 261022 decided T348 T356: T356 runs beside T348 (both after T345); T323 re-measures every row after T348, T356 and T357 → the owner asked for parallel work; T348 is a lifecycle correction, not a calibration, and T323 is the recalibration point MATCH-28 needs (alt: T356 after T348)
+- 261022 decided T356 T357: numbered T356/T357, leaving T354–T355 to session u4h2, which holds uncommitted theme work and T353 in the owner's checkout → avoids a clash when its tasks reach main (alt: T354/T355)
 - 261022 decided ARCH-31 T325 T326 T286: ARCH-31's reference machine is the owner's MacBook Pro (M1 Max), where T285 measured the ~14 s candidate season the 15 s budget came from; this host (Xeon Silver 4214, 12 CPUs) runs about 2.5× slower (a season ~34–35 s after T325) and its timings are context only → the budget was set from that machine and players run on consumer hardware (alt: this host with a ~35 s budget | restate the budget per machine class)
 - 261022 decided T325: start the bit-identical detailed-engine speed task now beside T336/T345 instead of after T323 (dep T323 → T334) → it does not change football, and a faster engine shortens every later calibration run; timing stays last in a quiet window and identity is re-proved on the merged tree (alt: keep it after T323)
 - 261022 decided T336 T345: keep T336's combination (counter's settled pass weights only within 70 m of goal; counter's block stops following the ball upfield) although it moved one of four target rows, not two → on fresh seeds it beats T334's state (MATCH-29 12/1/12 v 9/2/14, high regains inside, curve 3.34 → 2.98, nothing inside → outside) and the possession rows do not move under any counter lever; MATCH-2's curve (T334 moved it 2.50 → 3.34 at gap −10) and possession's rows go to explore T345 before T323 (alt: keep T334 only | revert T334 to restore the curve)
@@ -217,14 +221,16 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 | todo |
-| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 | todo |
+| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T334 T336 T345 T348 T356 T357 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T345 | Give possession back its tactic rows and the underdog back its share of results | MATCH ARCH | T336 | doing@261022.q8m5 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T348 | Correct the measured set-piece placement and release lifecycle | MATCH ARCH | T325 T345 | todo |
+| T356 | Give possession its chances through runs outside a break | MATCH STAFF PLAYER ARCH | T345 | todo |
+| T357 | Bring the candidate's strength curve back to MATCH-2's target | MATCH ARCH | T356 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -237,11 +243,12 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- T349/T350 done (goal feedback, ball ownership). k2r7: finish T325 and T336 → T345 → T348 (measured set-piece lifecycle) → T323 → T326 → T286 → T306–T308; T286 also requires T349/T350. T327/T328/T334/T335 are on main.
+- q8m5: T325 done; T345 kept (candidate score state), merging; then T348 ∥ T356 → T357 → T323 → T326 → T286 → T306–T308. T353 (Lucide icons) belongs to u4h2.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 create-task T356 T357 (q8m5, from T345's exit): possession's runs outside a break (explore 2h, beside T348) and the candidate strength curve (explore 3h); T323 and T286 wait for both
 - 261022 fix e2e (q8m5): business.spec:67 (founding plus eight cold reloads) runs as `test.slow()`; it timed out on Firefox CI 39791051931 at two different steps while every other job passed
 - 261022 T325 done (q8m5; explore exit, from k2r7's record): bit-identical grid speed-up merged over T336 (one conflict in `shapePlace`, T336's upfield factor kept); 15 digests re-recorded from main's own records and passing on the merged tree, 99 forced-tactic probe matches identical; own match 0.77 on the Xeon (context only), reference-machine timing left to T326/T286
 - 261022 T325 T345 taken over (q8m5, owner's M1 Max): k2r7 stale; T325 from `work/k2r7-T325`, T345 from T336's kept setting
@@ -261,4 +268,3 @@
 - 261022 update-ssot MATCH WEB start: convert ideation/set-piece-defence-and-goal-feedback into the requested implementation backlog.
 - 261022 ideation set-piece-defence-and-goal-feedback ready: remaining tasks lack explicit corner-defence movement and goal feedback; add SSOT-backed follow-ups as requested.
 - 261022 ideation set-piece-defence-and-goal-feedback start (g8s2): standalone checkout assigned by the owner; inspect remaining coverage before adding work.
-- 261022 T347 done (t6p4): home/settings/navigation cleanup with all seven management views inspected; 51 focused units and 33 Chromium journeys verified, including seven focused fixes/rechecks; final build and loaded cups/records inspection pass; no commit/push.
