@@ -17,6 +17,7 @@
 | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T327 |
 
+- 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
 ## inbox
 - 261022 decided T327: MATCH-13 r18's 40 m and 60% fall between MATCH-14's band edges → both paths use the nearest band edge (35 m from goal; the two-thirds edge), one rule with exact parity, stating the offset beside the bands when they are sourced (alt: exact metres on the grid and the nearest band on the aggregate, a built-in parity gap)
 - 261022 decided T324: shot scale 0.42 keeps core goals inside (2.755) at the cost of MATCH-29 (9/6/10 against 15/4/6 at 0.35, where goals fell to 2.50) → keep 0.42, since goals is a hard MATCH-23 row and counter-at-least-press fails at both; T328's counter roles and more midfield and defender goals are the named fixes (alt: 0.35 with goals outside)
