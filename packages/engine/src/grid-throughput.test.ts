@@ -12,11 +12,17 @@
  * fixtures' facts, the pre-feature facts did not), together with the calibration evidence, never
  * alone. A presentation-only change re-records positions alone: T359's restart kick snapshot
  * (darwin-arm64; every facts digest unchanged, the trace's other fields and the frames of a trace
- * without kicks byte-identical to before). On every
- * host each fixture replays bit for bit, the observed league fixture's facts equal the unobserved
- * one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. Portable outcome-critical
- * math is a separate ARCH-9 task. No wall-clock assertion here; the timings live in
- * scripts/match-model-baseline.ts and docs/benchmarks/full-model-throughput.json.
+ * without kicks byte-identical to before). T358 gave the candidate path portable `exp`, `sin`,
+ * `cos`, `atan2`, `hypot` and integer powers (`portable-math.ts`, bound once per match on the
+ * state; the pre-feature path keeps `Math.*`): on darwin-arm64 every facts digest held and the 1975
+ * positions and 2024's observed ones too, while three positions digests moved in the last bits (the
+ * portable functions differ from this host's in about 1.5% of `sin` and `cos` calls, 0.2% of
+ * `atan2`, 0.05% of `exp` and none of `hypot`). The candidate's grid geometry no longer reads the host's float
+ * library, so linux-x64 should give these candidate facts; until a CI run shows it the split by host
+ * stays. On every host each fixture replays bit for bit, the observed league fixture's facts equal
+ * the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in either digest. No
+ * wall-clock assertion here; the timings live in scripts/match-model-baseline.ts and
+ * docs/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
@@ -105,8 +111,8 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
         shootout: 'fd24b6f51440b87c',
         preFeature: '0c7e06efbc8fd981',
       },
-      // T359 (kick snapshot): dfb09059046d87b4 and a4e627789a44199c before.
-      positions: { observed: '1c57051abec6e044', shootout: 'e42847d0748465d3' },
+      // T358 (portable math): 1c57051abec6e044 and e42847d0748465d3 before (T359's).
+      positions: { observed: '944e58ccbdef2d3f', shootout: '14ebd459da2c8968' },
     },
     2024: {
       facts: {
@@ -115,8 +121,9 @@ const DIGESTS: Partial<Record<string, Record<Year, HostDigests>>> = {
         shootout: '12dbc52079c43f4f',
         preFeature: 'a0e4479b22d2cfa6',
       },
-      // T359 (kick snapshot): c4a8a6a41c12516a and f9ca7911fa173494 before.
-      positions: { observed: '99c6c9e68e8ce31b', shootout: 'ee0eb1581ac782b3' },
+      // T359 (kick snapshot): c4a8a6a41c12516a and f9ca7911fa173494 before; T358 (portable
+      // math): the shoot-out's ee0eb1581ac782b3 before.
+      positions: { observed: '99c6c9e68e8ce31b', shootout: '2e1ee15e76eed100' },
     },
   },
 };

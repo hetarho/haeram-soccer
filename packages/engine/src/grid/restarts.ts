@@ -212,8 +212,12 @@ export function placeAtOnce(s: GridState, rs: Restart, taker: number, scene?: Se
   holdSetPiece(scene, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
 }
 
-const pickFrom = (options: ReturnType<typeof passOptions>, tau: number, r: () => number) =>
-  draw(options, passProbabilities(options, tau), r);
+const pickFrom = (
+  s: GridState,
+  options: ReturnType<typeof passOptions>,
+  tau: number,
+  r: () => number,
+) => draw(options, passProbabilities(options, tau, s.math), r);
 
 /**
  * Nearest teammate within `reach` with no opponent within `free` metres; else the nearest at all.
@@ -228,14 +232,15 @@ function nearestFree(
   free: number,
 ): number | undefined {
   const me = s.players[side][idx]!;
+  const { hypot } = s.math;
   const mates = s.players[side]
     .filter((gp) => gp.idx !== idx && onPitch(gp))
-    .map((gp) => ({ gp, d: Math.hypot(gp.pos[0] - me.pos[0], gp.pos[1] - me.pos[1]) }))
+    .map((gp) => ({ gp, d: hypot(gp.pos[0] - me.pos[0], gp.pos[1] - me.pos[1]) }))
     .filter(({ d }) => d > 0 && d <= reach)
     .sort((a, b) => a.d - b.d);
   const isFree = (gp: GridPlayer) =>
     s.players[other(side)].every(
-      (o) => !onPitch(o) || Math.hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]) > free,
+      (o) => !onPitch(o) || hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]) > free,
     );
   return (mates.find(({ gp }) => isFree(gp)) ?? mates[0])?.gp.idx;
 }
@@ -287,7 +292,7 @@ export function playRestart(
     });
     if (!options.length) options = passOptions(s, side, taker, tags);
     if (!options.length) return { taker, kind: 'short', outcome: { kind: 'held' } };
-    const chosen = pickFrom(options, temperature(s, side, taker, tags), r);
+    const chosen = pickFrom(s, options, temperature(s, side, taker, tags), r);
     const outcome = resolvePass(
       s,
       side,
@@ -306,7 +311,7 @@ export function playRestart(
       nearest = Infinity;
     for (const gp of s.players[side]) {
       if (!onPitch(gp) || gp.slot === 0) continue;
-      const d = Math.hypot(gp.pos[0] - rs.spot[0], gp.pos[1] - rs.spot[1]);
+      const d = s.math.hypot(gp.pos[0] - rs.spot[0], gp.pos[1] - rs.spot[1]);
       if (d < nearest) [thrower, nearest] = [gp.idx, d];
     }
     place(thrower);
@@ -366,7 +371,7 @@ export function playRestart(
     band >= 5 &&
     lane >= 1 &&
     lane <= 3 &&
-    goalDistance(spotInFrame) <= K.directRange;
+    goalDistance(spotInFrame, s.math) <= K.directRange;
   if (direct && r() < K.directChance) {
     const taker = takerFor(s, side, 'directFreeKick');
     place(taker);
@@ -388,7 +393,7 @@ export function playRestart(
   const tags = computeTags(s, side, taker, { setPiece: true });
   const options = passOptions(s, side, taker, tags);
   if (!options.length) return { taker, kind: 'short', outcome: { kind: 'held' } };
-  const chosen = pickFrom(options, temperature(s, side, taker, tags), r);
+  const chosen = pickFrom(s, options, temperature(s, side, taker, tags), r);
   return {
     taker,
     kind: chosen.kind,

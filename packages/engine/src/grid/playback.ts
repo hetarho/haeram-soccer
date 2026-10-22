@@ -17,6 +17,7 @@ import type {
   Tactic,
 } from '../../../contracts/src/types';
 import { FORMATIONS } from '../player';
+import { hypot } from '../portable-math';
 import { clamp, random } from '../primitives';
 import { describe } from './commentary';
 import type { GridResult } from './engine';
@@ -215,7 +216,11 @@ const lerp = (a: Units, b: Units, f: number): Units => [
   a[0] + (b[0] - a[0]) * f,
   a[1] + (b[1] - a[1]) * f,
 ];
-const gap = (a: Units, b: Units) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+/**
+ * Distances in the drawn frames use the portable hypot (V8's `Math.hypot` bit for bit), so a page
+ * in any browser draws the samples Node computes for the same match (T358).
+ */
+const gap = (a: Units, b: Units) => hypot(a[0] - b[0], a[1] - b[1]);
 const tenth = (n: number) => Math.round(n * 10) / 10;
 const hundredth = (n: number) => Math.round(n * 100) / 100;
 const unit = (n: number) => clamp(n, 0, 1);
@@ -664,7 +669,7 @@ function knotted(
         if (spot) {
           // The taker walks to the spot at a bounded pace, after the ball is set down, and stands
           // on it when the restart is taken (its recorded kick, T359), else by his kick.
-          const metres = Math.hypot(
+          const metres = hypot(
             ((spot[0] - here[0]) * PITCH.length) / 100,
             ((spot[1] - here[1]) * PITCH.width) / 100,
           );

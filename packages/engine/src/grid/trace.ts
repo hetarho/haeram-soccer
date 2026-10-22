@@ -242,8 +242,9 @@ function stateOf(
 ): number {
   const c = PLAYBACK_CONFIG.states;
   const attacking = s.possession === gp.side;
+  // The match's hypot: the observed states replay alike on every host and engine (T358).
   const near = (p: readonly [number, number], d: number) =>
-    Math.hypot(p[0] - gp.pos[0], p[1] - gp.pos[1]) <= d;
+    s.math.hypot(p[0] - gp.pos[0], p[1] - gp.pos[1]) <= d;
   if (s.owner && s.owner[0] === gp.side && s.owner[1] === gp.idx) return STATE_INDEX.carry;
   if (gp.slot === 0) return STATE_INDEX.keeper;
   if (gp.intention) return STATE_INDEX[INTENTION_STATE[gp.intention.kind]];

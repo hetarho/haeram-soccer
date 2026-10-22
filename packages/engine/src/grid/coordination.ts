@@ -14,6 +14,7 @@ import type { Attribute, Position, RoleId } from '../../../contracts/src/player'
 import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight } from '../match';
 import { lineOf } from '../player';
+import { hypot } from '../portable-math';
 import { random } from '../primitives';
 import { CHANGES_CONFIG } from './changes';
 import { attackFrame, clamp, PITCH, toEngine } from './pitch';
@@ -87,8 +88,9 @@ const CC = COORDINATION_CONFIG;
 const CENTRE = PITCH.width / 2;
 
 export const rank = (p: IntentionPriority) => INTENTION_PRIORITIES.indexOf(p);
+/** The distance between two points; candidate-only, so always the portable hypot (→ARCH-9, T358). */
 export const gap = (a: readonly number[], b: readonly number[]) =>
-  Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
+  hypot(a[0]! - b[0]!, a[1]! - b[1]!);
 export const inside = (p: readonly number[]): [number, number] => [
   clamp(p[0]!, 0, PITCH.length),
   clamp(p[1]!, 0, PITCH.width),
@@ -252,7 +254,7 @@ function defend(
     (gp) => gp.intention?.kind === 'cover' && all.some((p) => p.idx === gp.intention!.teammate),
   );
   if (presser && !covered) {
-    const point = coverPoint(side, presser);
+    const point = coverPoint(side, presser, s.math);
     // Only a man whose own place in the shape is near the cover point leaves it to cover.
     const cover = players
       .filter((gp) => {
@@ -360,7 +362,7 @@ function fromLane(p: readonly number[], a: readonly number[], b: readonly number
   if (len === 0) return Infinity;
   const t = ((p[0]! - a[0]!) * dx + (p[1]! - a[1]!) * dy) / len;
   if (t <= 0 || t >= 1) return Infinity;
-  return Math.hypot(p[0]! - (a[0]! + t * dx), p[1]! - (a[1]! + t * dy));
+  return hypot(p[0]! - (a[0]! + t * dx), p[1]! - (a[1]! + t * dy));
 }
 
 /** The side with the ball: one teammate shows for a pressured carrier, another clears his lane, runners go. */
@@ -436,7 +438,7 @@ function attack(
       if (lane) {
         const dx = target[0] - carrier.pos[0],
           dy = target[1] - carrier.pos[1];
-        const len = Math.hypot(dx, dy);
+        const len = hypot(dx, dy);
         // The lane's normal, toward the side he already stands on (toward the centre when on it).
         const cross =
           dx * (lane.gp.pos[1] - carrier.pos[1]) - dy * (lane.gp.pos[0] - carrier.pos[0]);
