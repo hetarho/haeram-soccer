@@ -9,8 +9,17 @@ const LABELS: Record<ResponsibilityKey, string> = {
   academy: '유소년 승격·방출',
   sponsors: '스폰서 계약',
 };
+/**
+ * The match-eve report, found by its heading: CI's Chromium has caught it open with no accessible
+ * name (run 39844474812), so a lookup by name missed it while its backdrop held the controls.
+ */
+export function matchReport(page: Page) {
+  return page
+    .getByRole('dialog')
+    .filter({ has: page.getByRole('heading', { name: 'NEXT MATCH', exact: true }) });
+}
 export async function dismissMatchReport(page: Page) {
-  const eve = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
+  const eve = matchReport(page);
   if (await eve.isVisible())
     await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
@@ -71,10 +80,19 @@ export async function configureResponsibilities(
     returnLabel === '구단 운영'
       ? await page.getByRole('tab', { selected: true }).first().innerText()
       : undefined;
-  // A match report the progression opened covers the controls behind its backdrop.
-  await dismissMatchReport(page);
+  // The running progression can open its match report over the controls at any moment, even
+  // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
-  if (await pause.isVisible()) await pause.click();
+  for (let attempt = 0; ; attempt++) {
+    await dismissMatchReport(page);
+    if (!(await pause.isVisible())) break;
+    try {
+      await pause.click({ timeout: 3000 });
+      break;
+    } catch (error) {
+      if (attempt >= 3) throw error;
+    }
+  }
   const office = await openOffice(page);
   const entries = Object.entries(options.responsibilities ?? {});
   if (

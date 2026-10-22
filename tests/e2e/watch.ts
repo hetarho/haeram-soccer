@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { acknowledgeEvents, configureResponsibilities } from './events';
+import { acknowledgeEvents, configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
 
 /** Resume a live match, or progress through real public events to the match-eve dialog. */
@@ -8,9 +8,7 @@ export async function openWatchAction(page: Page) {
     .getByTestId('event-card')
     .getByRole('button', { name: '관전하기 ▶', exact: true });
   if (await watch.isVisible()) return watch;
-  const eve = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
-  if (await eve.isVisible())
-    await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await dismissMatchReport(page);
   await page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true }).click();
   const resume = page.getByTestId('home-watch');
   if (await resume.isVisible()) return resume;
