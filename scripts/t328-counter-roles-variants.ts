@@ -80,9 +80,6 @@ const settled = (
 const counterShape = (shape: object): BehaviourPatch => ({
   shape: { candidate: { tactic: { counter: shape } } },
 });
-const pressDrain = (pressDrain: number): BehaviourPatch => ({
-  changes: { candidate: { pressDrain } },
-});
 
 /**
  * T331's behaviour levers on the candidate model: (a) counter keeps going forward or long once its
@@ -106,10 +103,6 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   tight: counterShape({ compact: 0.2 }),
   deepTight: counterShape({ defend: -10, line: [18, 38], compact: 0.2 }),
   twoPress: { coordination: { pressers: { counter: 2 } } },
-  // Counter presses only within this many metres of its own goal (drops off higher up); the
-  // probe hook (`COORDINATION_CONFIG.pressWithin`) was measured at 10f6892 and removed once not kept.
-  hold70: { coordination: { pressWithin: { counter: 70 } } },
-  hold55: { coordination: { pressWithin: { counter: 55 } } },
   noPress: counterShape({ press: 6 }),
   high: counterShape({ defend: -5, line: [26, 46] }),
   wide: counterShape({ press: 15 }),
@@ -119,15 +112,11 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   line28: counterShape({ line: [28, 42] }),
   line24: counterShape({ line: [24, 42] }),
   line25: counterShape({ line: [25, 42] }),
-  // (c) Press's in-match drain factor (1.3 shared); the candidate hook
-  // (`CHANGES_CONFIG.candidate.pressDrain`) was measured at 10f6892 and removed once not kept.
-  drain2: pressDrain(2),
-  drain3: pressDrain(3),
-  drain4: pressDrain(4),
 };
 
 function merge(target: Record<string, unknown>, patch: Record<string, unknown>): void {
   for (const [k, v] of Object.entries(patch)) {
+    if (!(k in target)) throw new Error(`behaviour patch names a missing setting: ${k}`);
     const t = target[k];
     if (v && typeof v === 'object' && !Array.isArray(v) && t && typeof t === 'object')
       merge(t as Record<string, unknown>, v as Record<string, unknown>);
