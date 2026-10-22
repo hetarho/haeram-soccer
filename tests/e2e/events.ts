@@ -71,6 +71,8 @@ export async function configureResponsibilities(
     returnLabel === '구단 운영'
       ? await page.getByRole('tab', { selected: true }).first().innerText()
       : undefined;
+  // A match report the progression opened covers the controls behind its backdrop.
+  await dismissMatchReport(page);
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   if (await pause.isVisible()) await pause.click();
   const office = await openOffice(page);
