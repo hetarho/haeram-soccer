@@ -60,11 +60,15 @@ const facts = (w: World) => ({
  * passes, completion, through balls, progressive carries, shot scale and place, xG kind and
  * spread recalibrated toward MATCH-30) changed both, re-recorded with both calibration artifacts
  * (the grid untouched, so the candidate rounds moved through their aggregate fixtures);
- * a3c1c7230ca5bc28 and 3be456505f08231a before.
+ * a3c1c7230ca5bc28 and 3be456505f08231a before. T369's aggregate box flows (passes aimed into the
+ * box from wide played wide of it, lateral passes beside the box kept on the flank, the cut-back
+ * zones played inward less, the box shot rate and territory recalibrated, forwards' shot share
+ * 2.2 → 2.0) changed both again, re-recorded with the aggregate calibration artifact (the grid
+ * untouched); 4f190f1b1d803d86 and 53d5f04e2624eb4e before.
  */
 const BEFORE = {
-  aggregateRecords: '4f190f1b1d803d86',
-  candidateRounds: '53d5f04e2624eb4e',
+  aggregateRecords: 'b61073d9b0e6ff46',
+  candidateRounds: '8946dee343db823a',
 };
 
 describe('complete-result throughput (T285)', () => {
