@@ -8,7 +8,9 @@ import type { Position, RoleId } from '../packages/contracts/src/player';
 import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
+import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
+import { STRENGTH_CONFIG } from '../packages/engine/src/grid/state';
 
 export type SlotSpec = readonly [Position, RoleId];
 const BASE: SlotSpec[] = [
@@ -97,6 +99,9 @@ export interface BehaviourPatch {
   shape?: object;
   coordination?: object;
   changes?: object;
+  strength?: object;
+  duel?: object;
+  shot?: object;
 }
 
 const settled = (
@@ -198,6 +203,16 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // `COORDINATION_CONFIG.settledRuns` hook (`possRuns16` = `{ coordination: { settledRuns: { odds:
   // { possession: 1.6 } } } }`, `possRunsHalf25` adds `from: 4`, `possRunsFw25` `lines: ['FW']`),
   // since removed: none was kept.
+  // T357 strength-gradient levers on the candidate model, measured at f5b8ddb through neutral
+  // hooks (`STRENGTH_CONFIG.candidate` with `skillScale` 1.8 and `side` 1, the share of a side's
+  // distance from the match's level — XI, form, home, manager, morale and diminishing returns —
+  // that reaches its players' skills; `DUEL_CONFIG.candidate.passSide` and
+  // `SHOT_CONFIG.candidate.side`, the same share only in pass completion or shot conversion; and
+  // T356's `settledRuns` again): `side80` = `{ strength: { candidate: { side: 0.8 } } }`,
+  // `passSide0` = `{ duel: { candidate: { passSide: 0 } } }`, `shotSide0` / `shotSide50` =
+  // `{ shot: { candidate: { side: 0 | 0.5 } } }`, `scale16` = `{ strength: { candidate: {
+  // skillScale: 1.6 } } }`, and `possRunsHalf25` as above, alone and joined with `+`. Removed
+  // since: none was kept (docs/CALIBRATION.md, T357).
 };
 
 function possession(p: object): BehaviourPatch {
@@ -224,6 +239,9 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     shape: SHAPE_CONFIG,
     coordination: COORDINATION_CONFIG,
     changes: CHANGES_CONFIG,
+    strength: STRENGTH_CONFIG,
+    duel: DUEL_CONFIG,
+    shot: SHOT_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(
