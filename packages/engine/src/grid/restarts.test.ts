@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { random } from '../primitives';
+import { interruptAll, takeBall, updateIntentions, type IntentionReason } from './intentions';
+import { prepareOnClock, type MotionKnot } from './movement';
 import type { Point } from './pitch';
 import {
   classifyOut,
@@ -13,7 +16,7 @@ import {
 } from './restarts';
 import { shotContext } from './resolve';
 import { SHAPE_CONFIG, type SetPieceScene } from './shape';
-import type { GridState } from './state';
+import { createState, type GridPlayer, type GridState } from './state';
 import { gridKit } from './testkit';
 
 /** One world for the whole file (building it is slow); every call resets it: all players at 60, no shift, parked in the far corners. */
@@ -294,6 +297,108 @@ describe('grid restarts', () => {
     );
     expect(calls).toHaveLength(1);
     expect(calls[0]!.scene).toBeUndefined();
+  });
+
+  /**
+   * A candidate corner by side 0 taken through the candidate preparation (T348): both sides walk
+   * from their kick-off places to the scene, whose jobs start at the kick.
+   */
+  const candidateCorner = () => {
+    const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
+    s.elapsed = s.t = 1200;
+    s.ball = [105, 20];
+    const rs: Restart = {
+      kind: 'corner',
+      side: 0,
+      spot: [105, 0.5],
+      dead: RESTART_CONFIG.dead.corner,
+    };
+    let scene: SetPieceScene | undefined;
+    const prepare = prepareOnClock([105, 20], { knots: [] as MotionKnot[] });
+    playRestart(s, rs, random('second-ball'), shotContext(s), (st, r, taker, sc) => {
+      scene = sc;
+      prepare(st, r, taker, sc);
+    });
+    return { s, scene: scene!, kick: s.elapsed };
+  };
+  /** The set-piece jobs held now: everything committed at `kick`. */
+  const jobs = (s: GridState, kick: number) =>
+    s.players
+      .flat()
+      .filter((gp) => gp.intention?.since === kick && gp.intention.priority === 'committed');
+  /** `gp` wins the second ball at `at` a second later, as `playGrid` hands it over, and everyone reacts. */
+  const win = (s: GridState, gp: GridPlayer, at: Point) => {
+    s.elapsed += 1;
+    if (s.possession !== gp.side) interruptAll(s, 'turnover');
+    takeBall(s, gp, at);
+    s.owner = [gp.side, gp.idx];
+    s.possession = gp.side;
+    s.ball = [at[0], at[1]];
+    updateIntentions(s);
+  };
+  const endedAs = (gps: GridPlayer[], reason: IntentionReason) => {
+    for (const gp of gps) expect(gp.ended?.reason, `${gp.side}:${gp.idx}`).toBe(reason);
+  };
+
+  it('second ball releases obsolete restart jobs', () => {
+    const { s, scene, kick } = candidateCorner();
+    const until = kick + SHAPE_CONFIG.setPiece.stay;
+    const runners = scene.up.map((u) => u.gp);
+    const pairs = scene.marks.filter((m) => m.opponent);
+    const guards = [...scene.marks.filter((m) => !m.opponent).map((m) => m.gp), scene.keeper!];
+    // At the kick every restart place is reached and no restart job is left; the men who went up,
+    // their markers, the zone guards and the keeper hold their jobs to one end.
+    expect(s.players.flat().some((gp) => gp.intention?.priority === 'restart')).toBe(false);
+    for (const { gp } of [...scene.up, ...scene.marks]) {
+      expect(gp.ended).toMatchObject({ kind: 'restart', reason: 'arrival' });
+      expect(gp.intention).toMatchObject({ priority: 'committed', since: kick, until });
+    }
+    expect(scene.keeper!.intention).toMatchObject({ kind: 'cover', since: kick, until });
+    expect(jobs(s, kick)).toHaveLength(runners.length + scene.marks.length + 1);
+
+    // The attackers win the second ball at the edge of the box: every other job still serves it.
+    const edge = runners.at(-1)!;
+    win(s, edge, [88, 40]);
+    for (const gp of guards) expect(gp.intention).toMatchObject({ kind: 'cover', since: kick });
+    for (const { gp, opponent } of pairs.filter((m) => m.opponent !== edge))
+      expect(gp.intention).toMatchObject({ kind: 'mark', opponent: opponent!.idx, since: kick });
+    // They play it back out of the area: the zones and the goal need no guard, while the markers
+    // stay with the men still holding the box.
+    const back = s.players[0].find(
+      (gp) => gp.slot > 0 && gp.slot < 11 && !runners.includes(gp) && !gp.intention,
+    )!;
+    win(s, back, [70, 34]);
+    endedAs(guards, 'cleared');
+    const holding = pairs.filter((m) => m.opponent!.intention?.run === 'box');
+    expect(holding.length).toBeGreaterThan(2);
+    for (const { gp, opponent } of holding)
+      expect(gp.intention).toMatchObject({ kind: 'mark', opponent: opponent!.idx, since: kick });
+    // Their hold ends: the men and their markers are released together, and nothing is left.
+    s.elapsed = until;
+    updateIntentions(s);
+    endedAs(
+      holding.map((m) => m.opponent!),
+      'expiry',
+    );
+    expect(jobs(s, kick)).toEqual([]);
+
+    // The defenders win the second ball instead: a turnover ends every set-piece job on both sides.
+    const won = candidateCorner();
+    const clearer = won.scene.marks[0]!.gp;
+    win(won.s, clearer, [100, 33]);
+    endedAs(
+      [...won.scene.up, ...won.scene.marks].map((p) => p.gp),
+      'turnover',
+    );
+    endedAs([won.scene.keeper!], 'turnover');
+    expect(jobs(won.s, won.kick)).toEqual([]);
+    // Or the ball goes out: the next restart ends them all.
+    const out = candidateCorner();
+    interruptAll(out.s, 'restart');
+    endedAs(
+      [...out.scene.up, ...out.scene.marks, { gp: out.scene.keeper! }].map((p) => p.gp),
+      'restart',
+    );
   });
 
   it('takes penalties and goal kicks and re-picks a taker who has left', () => {

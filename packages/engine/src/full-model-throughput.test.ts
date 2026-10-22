@@ -48,13 +48,14 @@ const facts = (w: World) => ({
  * and discipline gave the same digests before and after it. T334's candidate counter behaviour
  * (settled directness, a higher back-line floor) changed the candidate rounds (aggregate records
  * unchanged), re-recorded with its calibration artifact; so did T336's (counter's settled pass
- * weights only up to 70 m, its block not following a ball upfield; fed163154634471c before) and
+ * weights only up to 70 m, its block not following a ball upfield; fed163154634471c before),
  * T345's (the candidate's score state: a lead protected at 0.5 and a deficit chased at 1.6 a goal;
- * 554eb98852d175c8 before).
+ * 554eb98852d175c8 before) and T348's (the defending scene keeps its marks, zones and goal after a
+ * delivery's kick; 41061a91531de1d7 before).
  */
 const BEFORE = {
   aggregateRecords: 'a3c1c7230ca5bc28',
-  candidateRounds: '41061a91531de1d7',
+  candidateRounds: 'c1b53321ff63cd81',
 };
 
 describe('complete-result throughput (T285)', () => {
