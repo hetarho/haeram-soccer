@@ -406,6 +406,8 @@ Measured after the change (c2f5aa9 with T348):
 
 Measured after T367's urgent pairing (fresh validation round 44, `scripts/t328-counter-roles.ts --set all --per 600 --core 2400 --gap 600`, the same 21,600 matches on 885d336 and on the change): 1,147 of the 12,000 tactic and core records differ (602 scores) and 406 of the 9,600 gap samples. MATCH-29 17/1/7 → 18/1/6 inside/outside/insufficient, MATCH-23 core 33 → 34 of 38 inside, the MATCH-2 curve 1.87 → 1.91 points; no row moved from inside to outside. Set-piece goals 21.59 → 21.85% (paired change +0.26 pp, 95% interval −0.01 to +0.52), headed goals 17.94 → 18.10% (+0.16 pp, −0.11 to +0.43), goals 2.762 → 2.748 a match. Every status that moved sits at a band's edge: possession–press draws, the possession–press and press–balanced win-share gaps and red cards came inside, and the possession–counter win-share gap (paired change −0.003, −0.012 to +0.005) and press's high-regain lead over counter (−0.011, −0.040 to +0.018) became insufficient. T286's registry judges the combined source.
 
+Measured after T373's delivered taker (fresh validation round 46, the same script and sizes, 217a861 against the change): 998 of the 12,000 tactic and core records differ (713 scores). MATCH-29 18/1/6 → 17/1/7, the only move being press–press draws going from inside to insufficient (0.258 → 0.267, paired change +0.008, −0.002 to +0.018). The MATCH-23 core holds 33 of 38 inside with every status unchanged, and the MATCH-2 curve goes 1.77 → 1.86 points. Set-piece goals 20.58 → 20.55% (paired −0.02 pp, −0.29 to +0.25), headed goals 17.05 → 17.04% (−0.01 pp, −0.27 to +0.25), goals 2.813 → 2.810 a match; in the 96-match census the defenders win 88.5 → 88.3% of second balls.
+
 ---
 
 ## 5. Tags (T207)
