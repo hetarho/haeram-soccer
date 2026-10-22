@@ -19,6 +19,7 @@
 
 - 261022 decided T327 T328: run the red e2e CI fix, T327 (bands) and T328 (explore exit) side by side as session subagents in sibling worktrees, with a separate reviewer per task and one batch gate before each main push → two single tasks (one an explore) do not meet the work-group bar (alt: `work start` group; or serial)
 ## inbox
+- 261022 decided T328 T331: no PLAYER-5 role table lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058] counter − press, and it breaks possession − counter) → keep STAFF-22's counter row and try counter's MATCH-8 behaviour (stop recycling after the break, a deep block that concedes fewer box entries, press's fatigue cost) in explore T331 before T323; MATCH-29's counter rows go to the owner only if T331 also fails (alt: relax counter-at-least-press to a gap band now | keep the rows as a known miss)
 - 261022 decided T327: PPDA band from Opta/The Analyst league-season pooled ratios only (12–14); Understat listed as reference, not banded → its tooltip counts the opposition half, its pass count is 54–59% of Opta's and its defensive actions are unstated (alt: include it, 11–14)
 - 261022 decided T327: engine zone offsets (35 m for high turnovers, the two-thirds edge for PPDA) are written beside the bands, the bands are not shifted (alt: adjust the bands for the offsets)
 - 261022 decided T327 T323: review P2 — the aggregate's high-turnover excess (13.6 v the grid's 5.8) is a loose-ball counting assumption; T323 draws who won each loose ball instead of T327 reopening the generator (alt: fix in T327)
@@ -202,11 +203,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 | todo |
-| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T331 | todo |
+| T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 T331 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
 | T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | doing@261022.k2r7 |
+| T331 | Make counter beat press through its MATCH-8 behaviour, not its roles | MATCH STAFF ARCH | T328 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
@@ -223,16 +225,14 @@
 
 ## next
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
-- h3t6 stopped at 08:50 KST on 261022 (owner moving machines). Resume standalone (implementer and separate reviewer per task; batch gate before each code push):
-  - T327 (counting done, outcomes unchanged; bands open): branch wip/h3t6-T327 (602bb34) on 74cbb95 — merge main, review, gate, integrate. Its PPDA and high-turnover bands need published league-season figures (Opta high turnovers; Opta/StatsBomb/Understat PPDA), fetched in a session that can reach the web; zones use the nearest band edge (decided).
-  - T328 (explore, counter role variants): branch wip/h3t6-T328 (432ae29) — resume from its `## result` progress record (calibration readings for the base and eight PLAYER-5 role tables: none reaches counter ≥ press, best screenMezzala −0.137 against −0.215; held-out check and exit left, resume commands in its limits), then exit, review, integrate; a recommended counter row goes through update-ssot.
-  - then T323 (needs T322 T324 T327 T328), T325 and T326 side by side, T286, T306–T308.
+- k2r7 (autopilot, 261022): T327 integrated on work/k2r7-int; T328 exit recorded (review pending) on work/k2r7-T328; e2e CI fix on work/k2r7-ci. Order: implement-task T331 (explore 3h) → T323 → T325 and T326 side by side → T286 → T306–T308.
 - OWNER decision pending: ARCH-31's throughput budgets (ratio to the old summary path) fail by far (T285); keep them (activation stays off) or restate as absolute budgets — T325/T326 bring the evidence.
 - known flaky checks: Chromium on a loaded host — club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 - FIRST (fix CI before feature work): CI 39690281623 on 5f80730 (the UI merge) failed e2e on Chromium — cups-and-club.spec.ts:43 (390x844, transfer stance from the roster; click timeout 30 s), recruitment.spec.ts:92 (filters and compares candidates; click timeout), staff.spec.ts:81 (360x740) — and on Firefox — the same cups-and-club and recruitment journeys plus facility-art.spec.ts:97 (current terraces/contemporary facility scenes at 390/1440). The same Chromium journeys passed in h3t6's local gate on 74cbb95 (230/230), so compare CI's traces with T314's market and T310–T313's art changes; CI for 3f45758 was still running at the stop.
 
 ## log
+- 261022 create-task T331 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T331
 - 261022 T327 integrated (k2r7; one review round: parity version 5, loose-ball counting gap routed to T323): published conventions on both paths, possession by pass share, MATCH-30 bands high turnovers 5.7–7.5 and PPDA 12–14 from Opta top-5 league-seasons 24/25–25/26
 - 261022 h3t6 stopped at 08:50 KST as the owner asked (moving machines): integrated T280 T281 T283 T278 T320 T284 T321 T285 T322 T324 and the local UI work (T309–T314) into main; T327 and T328 pushed as wip/h3t6-T327 and wip/h3t6-T328; report 261021-h3t6
 - 261022 merged the e2e fixes for the UI merge batch (10 Chromium failures, all stale specs; 59/59 in those files pass)
