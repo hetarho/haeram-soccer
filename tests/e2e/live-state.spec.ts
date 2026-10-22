@@ -1,4 +1,4 @@
-import { openWatchMenu, watchNext } from './watch';
+import { openWatchAction, watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -121,11 +121,11 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre has no season clock; the calendar waits while we watch.
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('mini-clock')).toHaveCount(0);
-  // The menu leads back to the unfinished match instead of starting another.
+  // Home resumes the unfinished observation without starting another match.
   const theatre = page.getByTestId('match-theatre');
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
-  const returning = await openWatchMenu(page);
-  await expect(returning).toHaveAccessibleName('경기로 돌아가기');
+  const returning = await openWatchAction(page);
+  await expect(returning).toHaveAccessibleName('관전 이어보기');
   await returning.click();
   await expect(theatre.getByRole('heading', { name: '매치데이' })).toBeVisible();
   await expect(date).toHaveText(matchDay!);
@@ -161,11 +161,7 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre's back control leads home, where the full clock is.
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(await openWatchMenu(page)).toHaveAccessibleName('다음 경기 관전');
-  await page
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '창 닫기' })
-    .click();
+  await expect(await openWatchAction(page)).toHaveAccessibleName('다음 경기 관전');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
 });
 

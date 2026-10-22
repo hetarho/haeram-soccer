@@ -460,7 +460,7 @@ const unreadItems = (items: readonly { read?: boolean }[]) =>
   items.filter((item) => !item.read).length;
 
 /** The clock entry shares the global dialog and its notification/news counts. */
-export function CommunicationsButton() {
+export function CommunicationsButton({ className = '' }: { className?: string }) {
   const w = useGameState((state) => state.view?.world);
   const notices = useNotifications((items) => items);
   const fresh = useUnreadNewsCount();
@@ -470,7 +470,7 @@ export function CommunicationsButton() {
   return (
     <button
       type="button"
-      className={newsStyle.launcher}
+      className={`${newsStyle.launcher} ${className}`}
       data-testid="communications-button"
       aria-haspopup="dialog"
       aria-label={`알림·뉴스${total ? ` · 새 소식 ${total}개` : ''}`}

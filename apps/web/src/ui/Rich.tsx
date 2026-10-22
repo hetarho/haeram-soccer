@@ -865,7 +865,20 @@ function Roster({ state, client }: Props) {
             <small>{registered.detail}</small>
           </>
         }
-        action={
+      >
+        <div className={s.rosterTools}>
+          <label className={s.rosterSearch}>
+            <span className={s.srOnly}>선수 찾기</span>
+            <input
+              aria-label="선수 찾기"
+              value={playerQuery}
+              onChange={(event) => {
+                setPlayerQuery(event.target.value);
+                setPlayerPage(0);
+              }}
+              placeholder="선수 이름으로 찾기"
+            />
+          </label>
           <RosterFilters
             view={view}
             onChange={(next) => {
@@ -873,20 +886,7 @@ function Roster({ state, client }: Props) {
               setPlayerPage(0);
             }}
           />
-        }
-      >
-        <label className={s.rosterSearch}>
-          선수 찾기{' '}
-          <input
-            aria-label="선수 찾기"
-            value={playerQuery}
-            onChange={(event) => {
-              setPlayerQuery(event.target.value);
-              setPlayerPage(0);
-            }}
-            placeholder="이름으로 찾기"
-          />
-        </label>
+        </div>
         {summary.length > 0 && (
           <p className={s.rosterViewSummary} data-testid="roster-view-summary">
             {summary.join(' · ')}

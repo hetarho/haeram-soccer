@@ -146,18 +146,11 @@ for (const width of [390, 1280]) {
     await playRound(page);
     const trigger = newsButton(page);
     await expect(trigger).toHaveCount(1);
-    await expect(
-      page
-        .getByRole('group', { name: '설정과 알림', exact: true })
-        .getByTestId('communications-button'),
-    ).toBeVisible();
+    await expect(page.locator('header').getByTestId('communications-button')).toBeVisible();
     await settle(page);
-    const settingsBox = (await page.getByTestId('intervention-trigger').boundingBox())!;
     const triggerBox = (await trigger.boundingBox())!;
-    expect(triggerBox.x).toBeGreaterThanOrEqual(settingsBox.x + settingsBox.width + 4);
-    expect(
-      Math.abs(triggerBox.y + triggerBox.height / 2 - settingsBox.y - settingsBox.height / 2),
-    ).toBeLessThanOrEqual(1);
+    const clockBox = (await page.getByTestId('intervention-trigger').boundingBox())!;
+    expect(triggerBox.y + triggerBox.height).toBeLessThanOrEqual(clockBox.y);
     expect(triggerBox.width).toBeGreaterThanOrEqual(44);
     expect(triggerBox.height).toBeGreaterThanOrEqual(44);
     await expect(trigger).toBeInViewport();

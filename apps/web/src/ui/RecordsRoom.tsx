@@ -150,13 +150,7 @@ export function RecordsRoom({ state, client }: Props) {
   };
   return (
     <>
-      <div className={s.pageHead}>
-        <div>
-          <div className={s.eyebrow}>ARCHIVE</div>
-          <h2>클럽 기록실</h2>
-          <p>우리 클럽의 시즌과 선수, 경기와 결정. 그때의 숫자를 그대로 펼쳐봐요.</p>
-        </div>
-      </div>
+      <h2 className={s.srOnly}>클럽 기록실</h2>
       <div className={s.recordsNav}>
         <TabList
           tabs={RECORD_TABS}

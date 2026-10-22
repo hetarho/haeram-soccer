@@ -187,7 +187,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 121 | 121 | - | 0 |
+| WEB | 123 | 123 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -229,13 +229,17 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- Stadium Green presentation tasks T337–T344 are integrated with main: painted art, deeper green/grain and shared semantic styling. Full units/contracts/resources/build passed; the full Chromium run was stopped at the owner's request, with 147 passes and five failures fixed and confirmed by a 5/5 scoped follow-up. Remaining browser journeys and CI are not claimed as passed.
+- T346/T347 are complete and approved by the owner for publication on main: separated floating feedback, calmer home/clock, inline menu preferences, grouped utilities and distinct bottom navigation. All seven management views inspected; 51 focused units, static/resource/build checks and 33 scoped Chromium journeys verified. Full engine/browser-family suites and CI are unclaimed.
 - FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - k2r7 (autopilot, 261022): T327, T328, T335 (e2e CI fix) and T334 (counter's settled play) on main. Order: T336 (adopting its combination) → implement-task T345 (explore 2h) → T323 → T325 and T326 side by side → T286 → T306–T308.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner.
 - test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 T347 done (t6p4): home/settings/navigation cleanup with all seven management views inspected; 51 focused units and 33 Chromium journeys verified, including seven focused fixes/rechecks; final build and loaded cups/records inspection pass; no commit/push.
+- 261022 T347 start (t6p4): owner requests a broad UI cleanup focused on home/settings and contrasting bottom navigation; WEB r123 consumes those decisions into one cohesive presentation task, with all seven management views inspected.
+- 261022 T346 done (t6p4): standard feedback drop shadows and inset edges; 27 focused units, static/resource/build checks and 360/390/1380px browser inspection pass; owner accepted the visual result and requested a broader UI cleanup next; no commit/push.
+- 261022 T346 start (t6p4): update-ssot WEB r122 and create-task for the requested standard-theme floating-feedback separation; current checkout is standalone and assigned by the owner.
 - 261022 T325 start (k2r7): pulled ahead of T323, beside T336/T345
 - 261022 create-task T345 (explore 2h): possession's tactic rows and MATCH-2's underdog curve after T334/T336; T323 and T286 wait for it
 - 261022 update-ssot ARCH r19 (ARCH-31✎ absolute throughput budgets, owner decision) and create-task refresh: T325 T326 T286 restated against the budgets, T323 T325 T326 T286 base ARCH@19; r19 sits on the owner's unpushed ARCH r18 (ARCH-32, theme inventory)
@@ -252,7 +256,3 @@
 - 261022 T341 start: generate and integrate the complete painted standard set, with per-era/completed-stage distinctions and retained layout/icons; no push requested.
 - 261022 update-ssot WEB r118: apply selected painted sports-comic illustration style to the full standard facility set; preserve icons, UI layout and pixel resources.
 - 261022 fix e2e: split staff.spec's 360x740 사람 journey (old addresses in their own test) after it exceeded 30 s on a loaded host
-- 261022 T334 integrated (k2r7; explore exit, review approved with record fixes): counter keeps going forward or long once its break has passed, line floor 24; artifact refreshed (fingerprint b1633820); create-task T336 for the overshoot, T323 and T286 wait for it
-- 261022 T335 done (k2r7): journeys close the decision result card before clicking under it, facility-art measures at rest; Chromium 230/230 — fixes CI 39690697137/39690281623 (stale specs after the UI merge)
-- 261022 T328 integrated (k2r7; explore exit, review approved with wording fixes): none of ten midfield/forward role tables lets counter meet MATCH-29 (validated best −0.106 [−0.154, −0.058]); STAFF-22 unchanged → T334
-- 261022 create-task T334 (explore 3h): counter behaviour against press after T328; T323 and T286 wait for T334

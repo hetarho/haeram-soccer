@@ -20,9 +20,8 @@ const baseline = readPresentationBaselines();
 
 async function openSettings(page: Page) {
   const trigger = page.getByTestId('presentation-settings-trigger');
-  if (!(await trigger.isVisible()))
-    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await trigger.click();
+  if (await trigger.isVisible()) await trigger.click();
+  else await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   const content = page.getByTestId('presentation-settings');
   await expect(content).toBeVisible();
   return page.getByRole('dialog').filter({ has: content });
@@ -116,6 +115,9 @@ for (const width of [390, 1380])
     const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
     const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
     await openSettings(page);
+    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await expect(menu.getByTestId('presentation-settings')).toBeVisible();
+    await expect(menu.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
     await expectRegistryChoices(page);
     await chooseOption(page.getByTestId('presentation-theme'), pixel.id);
     await expect.poll(() => background(page)).toBe(pixel.tokens.palette.bg);

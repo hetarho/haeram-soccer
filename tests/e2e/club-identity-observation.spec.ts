@@ -16,7 +16,7 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { ALL_DELEGATED } from './events';
 import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { openWatchMenu, watchNext } from './watch';
+import { openWatchAction, watchNext } from './watch';
 
 /**
  * KIT-8/12, WEB-49/50, SAVE-22: the live pitch Canvas draws the shirts and keeper colours the match
@@ -296,8 +296,8 @@ test('a design applied while the match is paused mid-match leaves its recorded s
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);
   // The menu leads back to the unfinished match (→WEB-50); it still wears what it recorded.
-  const back = await openWatchMenu(page);
-  await expect(back).toHaveAccessibleName('경기로 돌아가기');
+  const back = await openWatchAction(page);
+  await expect(back).toHaveAccessibleName('관전 이어보기');
   await back.click();
   await expect(page.getByTestId('match-theatre')).toBeVisible();
   expect(await markers(page, STRIPES)).toBeGreaterThanOrEqual(3);

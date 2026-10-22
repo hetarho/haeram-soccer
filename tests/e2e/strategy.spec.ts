@@ -231,7 +231,7 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ]) {
-  test(`keeps draft review compact with notifications beside settings at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps draft review compact with notifications in the HUD at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);

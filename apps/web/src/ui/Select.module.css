@@ -54,9 +54,9 @@
   overscroll-behavior: contain;
   background: var(--surface-grain, none) var(--surface);
   color: var(--text);
-  border: 1px solid var(--line);
+  border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);
-  box-shadow: none;
+  box-shadow: var(--popover-shadow);
 }
 .item {
   position: relative;
