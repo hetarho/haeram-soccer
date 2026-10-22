@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | - |
+| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T327 |
 
 ## inbox
 - 261022 decided T327: MATCH-13 r18's 40 m and 60% fall between MATCH-14's band edges → both paths use the nearest band edge (35 m from goal; the two-thirds edge), one rule with exact parity, stating the offset beside the bands when they are sourced (alt: exact metres on the grid and the nearest band on the aggregate, a built-in parity gap)
@@ -201,8 +202,8 @@
 | T323 | Calibrate both engines' advanced counters and close their parity | MATCH ARCH | T322 T324 T327 T328 | todo |
 | T325 | Speed up the candidate detailed engine's own match without changing it | MATCH ARCH | T323 | todo |
 | T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 | todo |
-| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | todo |
-| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | todo |
+| T327 | Count PPDA, high turnovers and possession by the published conventions | MATCH WEB ARCH | T322 | doing@261022.k2r7 |
+| T328 | Find the counter formation roles that let counter meet its tactic-pairing bands | MATCH STAFF PLAYER ARCH | T324 | doing@261022.k2r7 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
