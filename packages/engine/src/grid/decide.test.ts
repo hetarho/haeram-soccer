@@ -534,6 +534,32 @@ describe('grid decisions', () => {
     expect(shot(-most - 1)).toBeCloseTo(shot(-most), 9);
   });
 
+  it('protects a lead and chases a deficit harder on the candidate model only (T345)', () => {
+    const K = DECISION_CONFIG;
+    const at = centre(6, 2);
+    // Shots against passes for a forward in the box, the score state alone changing (minute 20,
+    // so the late game-management weights stay off).
+    const ratio = (lead: number, candidate: boolean) => {
+      const sc = scene(ST, at);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), lead, minute: 20 });
+      return mix.shot / mix.pass;
+    };
+    const most = K.leading.maxLead;
+    for (const [candidate, ahead, behind] of [
+      [true, K.candidate.leadingShot, K.candidate.trailingPush],
+      [false, K.leading.shot, K.trailing.push],
+    ] as const) {
+      expect(ratio(1, candidate) / ratio(0, candidate)).toBeCloseTo(ahead, 9);
+      expect(ratio(-1, candidate) / ratio(0, candidate)).toBeCloseTo(behind, 9);
+      expect(ratio(most + 1, candidate) / ratio(0, candidate)).toBeCloseTo(ahead ** most, 9);
+      expect(ratio(-most - 1, candidate) / ratio(0, candidate)).toBeCloseTo(behind ** most, 9);
+    }
+    // The candidate leans harder both ways than the pre-feature model.
+    expect(K.candidate.leadingShot).toBeLessThan(K.leading.shot);
+    expect(K.candidate.trailingPush).toBeGreaterThan(K.trailing.push);
+  });
+
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
     const share = (tactic: Tactic) => {
       const kit = gridKit([tactic, 'balanced']);

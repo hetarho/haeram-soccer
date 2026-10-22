@@ -157,6 +157,15 @@ export const DECISION_CONFIG = {
     shotAfterRegain: 1,
     /** Take-on volume outside the box against the position profiles' rate (T324). */
     takeOnScale: 1.35,
+    /**
+     * The score state (T345, →MATCH-2, MATCH-16), in place of `leading.shot` and `trailing.push`:
+     * a leading side's shot weight per goal ahead and a trailing side's per goal behind, up to
+     * `leading.maxLead` goals, all match long. A lead is protected and a deficit chased harder,
+     * so more matches come back level and fewer favourites run away with them (MATCH-2's
+     * outcome curve: favourites won too often and draws were short at every gap).
+     */
+    leadingShot: 0.5,
+    trailingPush: 1.6,
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -179,9 +188,7 @@ export const DECISION_CONFIG = {
      * balls go loose high up.
      */
     settled: {
-      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70, from: 0 },
-      // T345 probe hook: possession's settled play from `from` m up the pitch (neutral).
-      possession: { forward: 0, long: 0, lateral: 1, back: 1, pass: 1, upTo: 105, from: 0 },
+      counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70 },
     } as Partial<
       Record<
         Tactic,
@@ -192,7 +199,6 @@ export const DECISION_CONFIG = {
           back: number;
           pass: number;
           upTo: number;
-          from: number;
         }
       >
     >,
@@ -320,8 +326,14 @@ export function actionMix(
     mix.takeOn *= C.pocket.takeOn;
     if (tags.band === 5) mix.shot *= C.pocket.shotBand5;
   }
-  if (tags.lead > 0) mix.shot *= C.leading.shot ** Math.min(C.leading.maxLead, tags.lead);
-  if (tags.lead < 0) mix.shot *= C.trailing.push ** Math.min(C.leading.maxLead, -tags.lead);
+  if (tags.lead > 0)
+    mix.shot *=
+      (candidate ? C.candidate.leadingShot : C.leading.shot) **
+      Math.min(C.leading.maxLead, tags.lead);
+  if (tags.lead < 0)
+    mix.shot *=
+      (candidate ? C.candidate.trailingPush : C.trailing.push) **
+      Math.min(C.leading.maxLead, -tags.lead);
   if (tags.lead > 0 && tags.minute >= C.leading.minute) {
     mix.takeOn *= C.leading.takeOn;
     if (tags.band <= 2) mix.clearance *= C.leading.clearance;
@@ -455,7 +467,7 @@ export function passOptions(
   // Once the break has passed a listed side still goes forward or long (candidate, T334), up to
   // `upTo` m up the pitch (T336).
   const rule = settledOf(s, side);
-  const settled = rule && c[0] <= rule.upTo && c[0] >= rule.from ? rule : undefined;
+  const settled = rule && c[0] <= rule.upTo ? rule : undefined;
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
     let nearest = Infinity,
