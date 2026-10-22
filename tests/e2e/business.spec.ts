@@ -266,6 +266,8 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
 test('drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds', async ({
   page,
 }) => {
+  // Founds a club and plays real rounds through the owner's event cards; slow CI browsers need longer.
+  test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'local-base-ui');
   await openBusiness(page);

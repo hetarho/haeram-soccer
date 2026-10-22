@@ -16,7 +16,6 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { ALL_DELEGATED } from './events';
 import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { openWatchAction } from './watch';
 import { watchToWhistle } from './club-identity-helpers';
 
 /**
@@ -288,8 +287,13 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   await expect
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);
-  // The menu leads back to the unfinished match (→WEB-50); it still wears what it recorded.
-  const back = await openWatchAction(page);
+  // The menu leads back to the unfinished match (→WEB-50); it still wears what it recorded. The
+  // club hub's resume action, not a match-eve card the event centre may also show for the next one.
+  await page
+    .getByRole('navigation', { name: '모바일 게임 메뉴' })
+    .getByRole('button', { name: '클럽 홈', exact: true })
+    .click();
+  const back = page.getByTestId('club-hub').getByTestId('home-watch');
   await expect(back).toHaveAccessibleName('관전 이어보기');
   await back.click();
   await expect(page.getByTestId('match-theatre')).toBeVisible();
