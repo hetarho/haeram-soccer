@@ -1,9 +1,10 @@
 /**
- * T328 scratch report: reads t328.mts outputs, pools a variant's counter pairings with the base
- * run's other pairings, and prints MATCH-29 (possession by time and by pass share), MATCH-23 core
- * and the counter side's role readings.
+ * T328/T331 scratch report: reads scripts/t328-counter-roles.ts outputs, pools a run's pairings with
+ * the base run's pairings the run did not play (`--others`, so no pairing counts twice), and prints
+ * MATCH-29 (possession by time and by pass share, each tactic's points against each other), the
+ * MATCH-23 core and the counter side's readings.
  *
- *   pnpm exec tsx scripts/t328-counter-roles-report.ts --variant <variant.json> --others <base.json>
+ *   pnpm exec tsx scripts/t328-counter-roles-report.ts --variant <run.json> --others <base.json>
  *     [--rows]
  */
 import { readFileSync } from 'node:fs';
@@ -24,7 +25,7 @@ const opt = (name: string) => {
 interface Chunk {
   condition: string;
   samples: MatchSample[];
-  roles: { shots: number; goals: number; xg: number; entries: number; minutes: number }[];
+  roles: { shots: number; goals: number; xg: number; entries: number }[];
   counterSides: number;
   side: Record<string, number>;
   traced: {
@@ -40,6 +41,8 @@ interface Chunk {
 }
 interface Run {
   variant: string;
+  behaviour?: string;
+  patch?: string;
   slots: [string, string][];
   chunks: Chunk[];
   seconds: number;
@@ -51,10 +54,12 @@ const load = (f: string) => JSON.parse(readFileSync(f, 'utf8')) as Run;
 const v = load(opt('variant')!);
 const others = opt('others') ? load(opt('others')!) : undefined;
 const withCounter = (id: string) => id.startsWith('tactics:') && id.includes('counter');
+// The run's own pairings, and from `--others` only the pairings the run did not play.
+const played = new Set(v.chunks.map((c) => c.condition));
 const pairingChunks = [
   ...v.chunks.filter((c) => c.condition.startsWith('tactics:')),
   ...(others?.chunks.filter(
-    (c) => c.condition.startsWith('tactics:') && !withCounter(c.condition),
+    (c) => c.condition.startsWith('tactics:') && !played.has(c.condition),
   ) ?? []),
 ];
 const pairing = pairingChunks.flatMap((c) => c.samples);
@@ -63,7 +68,7 @@ const coreSamples = v.chunks
   .flatMap((c) => c.samples);
 const all = v.chunks;
 console.log(
-  `variant ${v.variant}: ${v.slots.map((s) => s[1]).join(', ')} (${v.seconds.toFixed(0)} s)`,
+  `variant ${v.variant}${v.behaviour ? ` behaviour ${v.behaviour}` : ''}${v.patch ? ` patch ${v.patch}` : ''}: ${v.slots.map((s) => s[1]).join(', ')} (${v.seconds.toFixed(0)} s)`,
 );
 console.log(
   `matches: pairings ${pairing.length} (counter ${v.chunks.filter((c) => withCounter(c.condition)).reduce((a, c) => a + c.samples.length, 0)}), core ${coreSamples.length}; invalid records ${all.reduce((a, c) => a + c.invalid, 0)}, invariant failures ${all.reduce((a, c) => a + c.invariants, 0)}`,
@@ -89,6 +94,29 @@ if (pairing.length) {
       }
   const pts = Object.entries(report.tactics).map(([t, x]) => `${t} ${f3(valueOf(x.points))}`);
   console.log(`  points a match: ${pts.join(', ')}`);
+  // Each tactic's points a match against each other tactic, venues pooled.
+  const tally: Record<string, [number, number]> = {};
+  for (const s of pairing) {
+    const [h, a] = s.record.tactics;
+    const sc = s.record.regulation ?? s.record.score;
+    const ph = sc.home > sc.away ? 3 : sc.home === sc.away ? 1 : 0;
+    const pa = sc.away > sc.home ? 3 : sc.home === sc.away ? 1 : 0;
+    for (const [me, foe, p] of [
+      [h, a, ph],
+      [a, h, pa],
+    ] as const) {
+      if (me === foe) continue;
+      const t = (tally[`${me} v ${foe}`] ??= [0, 0]);
+      t[0] += p;
+      t[1]++;
+    }
+  }
+  console.log(
+    `  points v each: ${Object.entries(tally)
+      .sort()
+      .map(([k, [p, n]]) => `${k} ${(p / n).toFixed(2)}`)
+      .join(', ')}`,
+  );
   // Possession by pass share (MATCH-3 r19): the same ordering over attempted passes.
   const byPasses = pairing.map((s) => {
     const metrics = s.record.metrics.map((m) => {

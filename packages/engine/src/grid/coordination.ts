@@ -15,7 +15,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight } from '../match';
 import { lineOf } from '../player';
 import { random } from '../primitives';
-import { CHANGES_CONFIG } from './changes';
+import { pressDrainOf } from './changes';
 import { attackFrame, clamp, PITCH, toEngine } from './pitch';
 import {
   coverPoint,
@@ -114,10 +114,7 @@ const share = (s: GridState, gp: GridPlayer, a: Attribute) =>
 const fresh = (s: GridState, gp: GridPlayer) =>
   1 -
   CC.tired *
-    Math.min(
-      1,
-      (minutesOn(s, gp) / 90) * (s.setup.pressing[gp.side] ? CHANGES_CONFIG.pressDrain : 1),
-    ) *
+    Math.min(1, (minutesOn(s, gp) / 90) * (s.setup.pressing[gp.side] ? pressDrainOf(s.setup) : 1)) *
     ((100 - gp.player.attrs.stamina) / 100);
 const weight = (s: GridState, gp: GridPlayer, action: 'run' | 'press' | 'key') =>
   actionWeight(slotOf(s, gp).role, gp.player.traits, action);

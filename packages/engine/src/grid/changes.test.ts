@@ -4,11 +4,19 @@ import { injuryChance } from '../careers';
 import { createWorld } from '../index';
 import { lineOf } from '../player';
 import { random } from '../primitives';
-import { injuryHazard, planChanges, subPolicyFor, type Change } from './changes';
+import {
+  CHANGES_CONFIG,
+  injuryHazard,
+  matchFatigue,
+  planChanges,
+  subPolicyFor,
+  type Change,
+} from './changes';
 import { playGrid } from './engine';
 import { M } from './record';
 import { buildGridSetup, type GridSetup } from './setup';
-import { createState, slotOf, type GridState } from './state';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { createState, skill, slotOf, type GridState } from './state';
 
 const w = createWorld({
   country: 'ENG',
@@ -58,6 +66,39 @@ const lineIn = (s: GridState, c: Change) => lineOf(s.players[0][c.in]!.player.po
 const lineOut = (s: GridState, c: Change) => lineOf(slotOf(s, s.players[0][c.out]!).position);
 
 describe('grid substitutions and injuries', () => {
+  it("drains a pressing side by the candidate's own press factor on the candidate model only", () => {
+    const C = CHANGES_CONFIG as { candidate: { pressDrain: number } };
+    const kept = C.candidate.pressDrain;
+    // A probe factor apart from the shared one, so the two models can be told apart (T331).
+    C.candidate.pressDrain = kept === CHANGES_CONFIG.pressDrain ? 2.6 : kept;
+    try {
+      const drained = (tactic: Tactic, candidate: boolean) => {
+        const setup = setupAt(`drain-${tactic}`, 2010, [tactic, 'balanced']);
+        if (candidate) setup.model = MATCH_MODEL_REVISION;
+        const s = createState(setup);
+        const gp = s.players[0][6]!;
+        gp.player = { ...gp.player, fatigue: 10 };
+        const fresh = { fatigue: matchFatigue(s, gp), skill: skill(s, 0, 6, 'passing') };
+        s.period = 2;
+        s.t = 45 * 60;
+        s.elapsed = 90 * 60;
+        return {
+          fatigue: matchFatigue(s, gp) - fresh.fatigue,
+          skill: fresh.skill - skill(s, 0, 6, 'passing'),
+        };
+      };
+      for (const candidate of [false, true]) {
+        const press = drained('press', candidate);
+        const flat = drained('balanced', candidate);
+        const factor = candidate ? C.candidate.pressDrain : CHANGES_CONFIG.pressDrain;
+        expect(press.fatigue / flat.fatigue).toBeCloseTo(factor, 6);
+        if (flat.skill > 0) expect(press.skill / flat.skill).toBeCloseTo(factor, 1);
+      }
+    } finally {
+      C.candidate.pressDrain = kept;
+    }
+  });
+
   it('injures about 1.8% of players a match and more late and under press', () => {
     const s = stateAt(0);
     const gp = s.players[0][5]!;

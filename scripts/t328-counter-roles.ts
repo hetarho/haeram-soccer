@@ -1,30 +1,33 @@
 /**
- * T328 scratch measurement: counter's 4-4-2 role-table variants on the candidate model, driven
- * through grid-bands' exported condition fixtures and forced-formation conditioning. A variant is a
- * role map this process passes in for the counter formation (FORMATIONS.counter.slots swapped in
- * memory before any squad, world or match is built); the source table is never edited.
+ * T328/T331 scratch measurement: counter's 4-4-2 role tables and candidate-model behaviour overrides,
+ * driven through grid-bands' exported condition fixtures and forced-formation conditioning. A
+ * variant is a role map this process passes in for the counter formation (FORMATIONS.counter.slots
+ * swapped in memory before any squad, world or match is built); `--behaviour a+b` and `--patch
+ * <json>` patch the candidate configs in this process the same way (scripts/
+ * t328-counter-roles-variants.ts). The source tables and configs are never edited.
  *
- *   pnpm exec tsx scripts/t328-counter-roles.ts --variant base --partition calibration --round 0
- *     --per 300 --core 1200 --set all|counter|others|none --jobs 4 --trace 40 --chunk 150
- *     --out <file.json>
+ *   pnpm exec tsx scripts/t328-counter-roles.ts --variant base --behaviour settled2
+ *     --partition calibration --round 0 --per 300 --core 1200
+ *     --set all|counter|press|counterpress|others|none --only counter-press,press-counter
+ *     --jobs 4 --trace 40 --chunk 150 --out <file.json>
  *
- * `--set counter` plays only the pairings with counter (a variant's), `all` every pairing (the base
- * run the report pools the others from); `--trace` observes that many matches a venue of counter v
- * press for through balls received in behind. T328 ran each variant at 300 a venue and 1,200 core
- * matches; read the output with scripts/t328-counter-roles-report.ts.
+ * `--set counter` plays only the pairings with counter, `press` those with press, `counterpress`
+ * either, `all` every pairing (the base run the report pools the rest from); `--only` narrows to
+ * the named pairings; `--trace` observes that many matches a venue of counter v press for through
+ * balls received in behind. Read the output with scripts/t328-counter-roles-report.ts.
  */
 import { fork } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PD, TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
-import type { RoleId, Position } from '../packages/contracts/src/player';
 import type { Tactic } from '../packages/contracts/src/types';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { rating } from '../packages/engine/src/index';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { M } from '../packages/engine/src/grid/record';
+import { attackFrame, inBox } from '../packages/engine/src/grid/pitch';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import {
   conditionClubs,
@@ -39,63 +42,12 @@ import {
   type MatchSample,
   type Partition,
 } from './lib/match-parity';
+import { applyBehaviour, behaviourOf, VARIANTS } from './t328-counter-roles-variants';
 
 const args = process.argv.slice(2);
 const opt = (name: string, fallback: string) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? args[i + 1]! : fallback;
-};
-
-type SlotSpec = readonly [Position, RoleId];
-const BASE: SlotSpec[] = [
-  ['GK', 'shotStopper'],
-  ['LB', 'defensiveFullBack'],
-  ['CB', 'stopper'],
-  ['CB', 'coverDefender'],
-  ['RB', 'defensiveFullBack'],
-  ['LM', 'wideMidfielder'],
-  ['CM', 'boxToBox'],
-  ['CM', 'deepLyingPlaymaker'],
-  ['RM', 'wideMidfielder'],
-  ['ST', 'targetMan'],
-  ['ST', 'poacher'],
-];
-const swap = (changes: Record<number, SlotSpec>): SlotSpec[] => BASE.map((s, i) => changes[i] ?? s);
-/** Counter 4-4-2 role tables from PLAYER-5's roles; slot order as STAFF-22 (GK, DF, MF, FW, left to right). */
-export const VARIANTS: Record<string, SlotSpec[]> = {
-  base: BASE,
-  // A second runner instead of the target man.
-  twoRunners: swap({ 9: ['ST', 'completeForward'] }),
-  // A defensive-midfield screen instead of the box-to-box.
-  screen: swap({ 6: ['DM', 'anchor'] }),
-  ballWinner: swap({ 6: ['DM', 'ballWinner'] }),
-  // Wide midfielders as inside forwards who run in behind.
-  insideForwards: swap({ 5: ['LW', 'invertedWinger'], 8: ['RW', 'invertedWinger'] }),
-  // A box-arriving midfielder instead of the deep-lying playmaker.
-  mezzala: swap({ 7: ['CM', 'mezzala'] }),
-  // Screen behind, a mezzala and the box-to-box ahead.
-  screenMezzala: swap({ 6: ['DM', 'anchor'], 7: ['CM', 'mezzala'] }),
-  // screenMezzala with a second runner instead of the target man (twoRunners' change).
-  screenMezzalaRunners: swap({
-    6: ['DM', 'anchor'],
-    7: ['CM', 'mezzala'],
-    9: ['ST', 'completeForward'],
-  }),
-  screenB2B: swap({ 6: ['CM', 'boxToBox'], 7: ['DM', 'anchor'] }),
-  widePlaymakers: swap({ 5: ['LM', 'widePlaymaker'], 8: ['RM', 'widePlaymaker'] }),
-  // A ball-winning screen, a wide playmaker cutting in on the right and two runners up front.
-  leicester: swap({
-    6: ['DM', 'ballWinner'],
-    8: ['RM', 'widePlaymaker'],
-    9: ['ST', 'completeForward'],
-  }),
-  // Screen, two runners and inside forwards: the most direct 4-4-2 PLAYER-5 allows.
-  direct: swap({
-    5: ['LW', 'invertedWinger'],
-    6: ['DM', 'anchor'],
-    8: ['RW', 'invertedWinger'],
-    9: ['ST', 'completeForward'],
-  }),
 };
 
 const variant = opt('variant', 'base');
@@ -106,6 +58,10 @@ if (!spec) throw new Error(`unknown variant ${variant}`);
   position,
   role,
 }));
+// The measurement's behaviour overrides (T331): candidate configs patched in this process only.
+const behaviour = opt('behaviour', '');
+const patch = opt('patch', '');
+for (const p of behaviourOf(behaviour, patch || undefined)) applyBehaviour(p);
 
 const TACTICS: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
 interface Job {
@@ -117,9 +73,9 @@ interface Job {
   trace: number;
 }
 
-/** Per counter slot: shots, goals, xG (hundredths), box entries, through balls received. */
+/** Per counter slot: shots, goals, xG (hundredths), box entries. */
 function roleTally() {
-  return Array.from({ length: 12 }, () => ({ shots: 0, goals: 0, xg: 0, entries: 0, minutes: 0 }));
+  return Array.from({ length: 12 }, () => ({ shots: 0, goals: 0, xg: 0, entries: 0 }));
 }
 
 function playJob(job: Job) {
@@ -196,7 +152,6 @@ function playJob(job: Job) {
         const slot = slotById.get(line.id) ?? 11;
         roles[slot]!.shots += line.metrics[M.shots]!;
         roles[slot]!.goals += line.metrics[M.goals]!;
-        roles[slot]!.minutes += line.metrics[M.minutes]!;
         roles[slot]!.xg += line.detail?.[PD.xg] ?? 0;
         roles[slot]!.entries += line.detail?.[PD.boxEntries] ?? 0;
       }
@@ -227,14 +182,9 @@ function playJob(job: Job) {
                 traced.behindByRole[roleName] = (traced.behindByRole[roleName] ?? 0) + 1;
               }
             }
-            const at = n.from;
-            if (at) {
-              const x = sd === 0 ? at[0] : 105 - at[0];
-              const y = at[1];
-              if (x >= 88.5 && Math.abs(y - 34) <= 20.16) {
-                traced.box++;
-                break;
-              }
+            if (n.from && inBox(attackFrame(sd, n.from))) {
+              traced.box++;
+              break;
             }
             if (n.action === 'shot') {
               traced.shot++;
@@ -296,6 +246,10 @@ if (args.includes('--child')) {
   const per = Number(opt('per', '150'));
   const core = Number(opt('core', '600'));
   const set = opt('set', 'counter');
+  const only = opt('only', '')
+    .split(',')
+    .filter(Boolean)
+    .map((x) => `tactics:${x}`);
   const trace = Number(opt('trace', '0'));
   const workers = Number(opt('jobs', '4'));
   const chunk = Number(opt('chunk', '150'));
@@ -304,14 +258,19 @@ if (args.includes('--child')) {
   for (const h of TACTICS)
     for (const a of TACTICS) {
       const withCounter = h === 'counter' || a === 'counter';
+      const withPress = h === 'press' || a === 'press';
+      const id = `tactics:${h}-${a}`;
       if (
         set === 'none' ||
         (set === 'counter' && !withCounter) ||
-        (set === 'others' && withCounter)
+        (set === 'press' && !withPress) ||
+        (set === 'counterpress' && !withCounter && !withPress) ||
+        (set === 'others' && withCounter) ||
+        (only.length > 0 && !only.includes(id))
       )
         continue;
       const pressCounter = (h === 'counter' && a === 'press') || (h === 'press' && a === 'counter');
-      conditions.push({ id: `tactics:${h}-${a}`, count: per, trace: pressCounter ? trace : 0 });
+      conditions.push({ id, count: per, trace: pressCounter ? trace : 0 });
     }
   if (core > 0) conditions.push({ id: 'core:equal-top-tier', count: core, trace: 0 });
   const queue: Job[] = conditions.flatMap((c) =>
@@ -354,6 +313,9 @@ if (args.includes('--child')) {
     JSON.stringify({
       variant,
       slots: spec,
+      behaviour,
+      patch,
+      set,
       partition,
       round,
       per,

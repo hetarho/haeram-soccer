@@ -130,6 +130,71 @@ describe('grid decisions', () => {
     expect(cut).toBe(2);
   });
 
+  it('counter stops recycling once its break has passed', () => {
+    const D = DECISION_CONFIG.direct;
+    const kept = D.settled.counter;
+    // The rule's own values, or probe values while the shared config lists no side (T331).
+    const R = kept ?? { forward: 1, long: 0.5, lateral: 0.5, back: 0.35 };
+    const settled = D.settled as Record<string, typeof R | undefined>;
+    settled.counter = R;
+    try {
+      const options = (tactic: Tactic, candidate: boolean, regainAgo?: number) => {
+        const sc = scene(CM, centre(3, 2), [tactic, 'balanced']);
+        const c = centre(3, 2);
+        (
+          [
+            [c[0] + 12, c[1] - 3],
+            [c[0] + 34, c[1] + 4],
+            [c[0], c[1] + 14],
+            [c[0] - 12, c[1]],
+          ] as Point[]
+        ).forEach((p, i) => place(sc.s, 1 + i, p));
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (regainAgo !== undefined) sc.s.lastRegain = { side: 0, at: sc.s.elapsed - regainAgo };
+        return passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4);
+      };
+      const compare = (a: ReturnType<typeof options>, b: ReturnType<typeof options>) =>
+        a.map((o, i) => ({ o, flat: b[i]! }));
+      // Settled (no regain, or past the window): forward scores more, a long ball more again,
+      // lateral and back passes are chosen less often than a balanced side's.
+      for (const regainAgo of [undefined, D.seconds + 1]) {
+        const pairs = compare(
+          options('counter', true, regainAgo),
+          options('balanced', true, regainAgo),
+        );
+        expect(new Set(pairs.map((p) => p.o.direction))).toEqual(
+          new Set(['forward', 'lateral', 'back']),
+        );
+        expect(pairs.some((p) => p.o.kind === 'long' && p.o.direction === 'forward')).toBe(true);
+        for (const { o, flat } of pairs) {
+          const long = o.kind === 'long' || o.kind === 'switch' ? R.long : 0;
+          expect(o.score - flat.score).toBeCloseTo(
+            (o.direction === 'forward' ? R.forward : 0) + long,
+            9,
+          );
+          const prior = o.direction === 'back' ? R.back : o.direction === 'lateral' ? R.lateral : 1;
+          expect(o.prior / flat.prior).toBeCloseTo(prior, 9);
+        }
+      }
+      // Inside the break the break rule alone holds; the pre-feature model ignores both.
+      for (const { o, flat } of compare(
+        options('counter', true, 1),
+        options('balanced', true, 1),
+      )) {
+        expect(o.score - flat.score).toBeCloseTo(
+          o.direction === 'forward' ? D.forward.counter! : 0,
+          9,
+        );
+        expect(o.prior / flat.prior).toBeCloseTo(o.direction === 'back' ? D.back : 1, 9);
+      }
+      for (const { o, flat } of compare(options('counter', false), options('balanced', false)))
+        expect([o.score, o.prior]).toEqual([flat.score, flat.prior]);
+    } finally {
+      if (kept) settled.counter = kept;
+      else delete settled.counter;
+    }
+  });
+
   it("reproduces the cell's pass direction mix, back passes weighted, when every target scores the same", () => {
     const sc = scene(CM, centre(4, 2));
     sc.me.player.traits = [];
