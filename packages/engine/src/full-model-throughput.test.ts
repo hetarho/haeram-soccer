@@ -60,7 +60,9 @@ const facts = (w: World) => ({
  * passes, completion, through balls, progressive carries, shot scale and place, xG kind and
  * spread recalibrated toward MATCH-30) changed both, re-recorded with both calibration artifacts
  * (the grid untouched, so the candidate rounds moved through their aggregate fixtures);
- * a3c1c7230ca5bc28 and 3be456505f08231a before.
+ * a3c1c7230ca5bc28 and 3be456505f08231a before. T367's urgent pairing (a set-piece marker is taken,
+ * never moved to another runner) left both digests unchanged: the two rounds' own grid matches
+ * settled the same facts.
  */
 const BEFORE = {
   aggregateRecords: '4f190f1b1d803d86',
