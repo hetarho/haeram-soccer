@@ -1171,7 +1171,7 @@
   },
   "gridEngineT325": {
     "task": "T325",
-    "note": "Exploration evidence for T286 on a shared machine: the own detailed match made faster with records bit-identical (packages/engine/src/grid-throughput.test.ts digests recorded on e3aa9b9 before any change). Not release evidence (→ARCH-31).",
+    "note": "Exploration evidence for T286 on a shared machine: the own detailed match made faster with records bit-identical (packages/engine/src/grid-throughput.test.ts digests recorded on e3aa9b9 before any change; after the merge over main 6f46b55 with T336 they were re-proved against main's own records, and the timings below, e3aa9b9 against d7939f8, were not re-run). Not release evidence (→ARCH-31).",
     "machine": {
       "platform": "linux",
       "arch": "x64",
