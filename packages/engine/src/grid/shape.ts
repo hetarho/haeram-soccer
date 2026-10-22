@@ -34,7 +34,8 @@ export const SHAPE_CONFIG = {
    * on the ball, steps up 7 m instead of 8, below press's vertical side. T334: counter's back line
    * stands no deeper than balanced's floor (24 m, 22 before), so a high-line press finds less room
    * between it and the box (box entries conceded 40.6 → 34.9 a match); its block stays below
-   * balanced's wherever the ball is.
+   * balanced's wherever the ball is. T336: without the ball counter's block does not follow a ball
+   * in the opponents' half (`upfield` 0), so press, not counter, wins the most balls high up.
    */
   candidate: {
     tactic: {
@@ -47,7 +48,15 @@ export const SHAPE_CONFIG = {
         compact: 0.35,
       },
       press: { advance: 4, defend: 4, line: [30, 58], press: 16, counterPress: 18, compact: 0.4 },
-      counter: { advance: 2, defend: -8, line: [24, 42], press: 11, counterPress: 0, compact: 0.3 },
+      counter: {
+        advance: 2,
+        defend: -8,
+        line: [24, 42],
+        press: 11,
+        counterPress: 0,
+        compact: 0.3,
+        upfield: 0,
+      },
       balanced: {
         advance: 4,
         defend: -6,
@@ -120,6 +129,12 @@ export interface TacticShape {
   press: number;
   counterPress: number;
   compact: number;
+  /**
+   * Without the ball, how far the block follows a ball in the opponents' half instead of
+   * `compact` (candidate shapes only, T336): below it the side drops to its block rather than
+   * standing up to contest the ball high.
+   */
+  upfield?: number;
 }
 
 /** The shape `side`'s tactic plays on this fixture's model. */
@@ -261,7 +276,9 @@ export function shapePlace(
       y += spot[1] < CENTRE ? shift[1] : spot[1] > CENTRE ? -shift[1] : 0;
     }
   } else x += cfg.defend;
-  x += (bx - MID) * cfg.compact;
+  x +=
+    (bx - MID) *
+    (!inPossession && bx > MID && cfg.upfield !== undefined ? cfg.upfield : cfg.compact);
   y += (by - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
     const foe = other(side);

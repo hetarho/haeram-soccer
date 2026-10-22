@@ -18,11 +18,18 @@ import { expectHomeBounds, settle } from './layout';
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
 
-async function openSettings(page: Page) {
+type Field = 'theme' | 'locale';
+const pickerRow = { theme: /^테마 변경/, locale: /^언어 변경/ };
+/** Founding and slots open both preferences; the HUD menu hands one to a centered picker. */
+async function openSettings(page: Page, field: Field = 'theme') {
   const trigger = page.getByTestId('presentation-settings-trigger');
-  if (!(await trigger.isVisible()))
+  if (await trigger.isVisible()) await trigger.click();
+  else {
     await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
-  await trigger.click();
+    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await menu.getByRole('button', { name: pickerRow[field] }).click();
+    await expect(menu).toHaveCount(0);
+  }
   const content = page.getByTestId('presentation-settings');
   await expect(content).toBeVisible();
   return page.getByRole('dialog').filter({ has: content });
@@ -39,17 +46,30 @@ async function closeSettings(page: Page) {
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 
-async function expectRegistryChoices(page: Page) {
-  const locale = page.getByTestId('presentation-locale');
-  const theme = page.getByTestId('presentation-theme');
-  expect((await selectOptions(locale)).map(({ value, label }) => ({ value, label }))).toEqual(
-    baseline.localeRegistry.entries.map(({ id, label }) => ({ value: id, label })),
-  );
-  expect((await selectOptions(theme)).map(({ value, label }) => ({ value, label }))).toEqual(
-    baseline.themeRegistry.entries.map(({ id, label }) => ({ value: id, label })),
-  );
-  await expect(locale).toContainText(baseline.localeEntry.label);
-  await expect(theme).toContainText(baseline.themeEntry.label);
+async function expectRegistryChoices(page: Page, fields: Field[] = ['locale', 'theme']) {
+  if (fields.includes('locale')) {
+    const locale = page.getByTestId('presentation-locale');
+    expect((await selectOptions(locale)).map(({ value, label }) => ({ value, label }))).toEqual(
+      baseline.localeRegistry.entries.map(({ id, label }) => ({ value: id, label })),
+    );
+    await expect(locale).toContainText(baseline.localeEntry.label);
+  }
+  if (fields.includes('theme')) {
+    const theme = page.getByTestId('presentation-theme');
+    expect((await selectOptions(theme)).map(({ value, label }) => ({ value, label }))).toEqual(
+      baseline.themeRegistry.entries.map(({ id, label }) => ({ value: id, label })),
+    );
+    await expect(theme).toContainText(baseline.themeEntry.label);
+  }
+}
+async function expectMenuRegistryChoices(page: Page) {
+  for (const field of ['locale', 'theme'] as const) {
+    await openSettings(page, field);
+    const other = field === 'theme' ? 'locale' : 'theme';
+    await expect(page.getByTestId(`presentation-${other}`)).toHaveCount(0);
+    await expectRegistryChoices(page, [field]);
+    await closeSettings(page);
+  }
 }
 
 function pausedPresentationWorld() {
@@ -115,8 +135,13 @@ for (const width of [390, 1380])
     const date = await page.getByTestId('calendar').innerText();
     const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
     const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
+    await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '전체 메뉴', exact: true });
+    await expect(menu.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
+    await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await expectMenuRegistryChoices(page);
     await openSettings(page);
-    await expectRegistryChoices(page);
+    await expect(page.getByRole('dialog', { name: '테마 변경', exact: true })).toBeVisible();
     await chooseOption(page.getByTestId('presentation-theme'), pixel.id);
     await expect.poll(() => background(page)).toBe(pixel.tokens.palette.bg);
     await closeSettings(page);
@@ -212,9 +237,7 @@ for (const viewport of [
     expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
     await founding.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await openSettings(page);
-    await expectRegistryChoices(page);
-    await closeSettings(page);
+    await expectMenuRegistryChoices(page);
     await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
     await page
       .getByRole('dialog', { name: '전체 메뉴', exact: true })
@@ -227,8 +250,7 @@ for (const viewport of [
     // Slots keep /journal; reloading resumes the game already played in this tab (WEB-62).
     await page.reload();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await openSettings(page);
-    await expectRegistryChoices(page);
+    await expectMenuRegistryChoices(page);
   });
 
 test('a failed initial default resource offers retry without creating game data', async ({
@@ -327,9 +349,11 @@ test('unseen routed locale and theme change actual resources while game facts, d
   await colour.fill('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
   const address = page.url();
-  await openSettings(page);
+  await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);
   await expect(page.locator('html')).toHaveAttribute('lang', fixture.locale.id);
+  await closeSettings(page);
+  await openSettings(page);
   await chooseOption(page.getByTestId('presentation-theme'), fixture.theme.id);
   await expect.poll(() => background(page)).toBe(FIXTURE_BACKGROUND);
   await closeSettings(page);
@@ -410,8 +434,11 @@ test('a read-only game tab changes presentation without claiming ownership or is
   if (await viewer.getByTestId('game-slots').isVisible()) await continueSlot(viewer);
   await expect(viewer.getByRole('button', { name: '읽기 전용', exact: true })).toBeVisible();
   const sent = await commands(viewer);
-  await openSettings(viewer);
+  await openSettings(viewer, 'locale');
   await chooseOption(viewer.getByTestId('presentation-locale'), FIXTURE_LOCALE);
+  await expect(viewer.locator('html')).toHaveAttribute('lang', FIXTURE_LOCALE);
+  await closeSettings(viewer);
+  await openSettings(viewer);
   await chooseOption(viewer.getByTestId('presentation-theme'), FIXTURE_THEME);
   await expect(viewer.locator('html')).toHaveAttribute('lang', FIXTURE_LOCALE);
   await expect.poll(() => background(viewer)).toBe(FIXTURE_BACKGROUND);

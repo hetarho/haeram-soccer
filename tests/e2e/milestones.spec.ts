@@ -42,7 +42,7 @@ for (const viewport of [
     await delegateSales(page);
     await expectCompactHome(page);
     const nextCard = hub.getByRole('region', { name: '다음 경기', exact: true });
-    await expect(nextCard.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
+    await expect(nextCard.getByTestId('home-watch')).toBeVisible();
     await settle(page);
     const cardBox = (await nextCard.boundingBox())!;
     const hubBox = (await hub.boundingBox())!;
@@ -52,7 +52,7 @@ for (const viewport of [
     const prepareBox = (await nextCard
       .getByRole('button', { name: '전술·선발 준비' })
       .boundingBox())!;
-    expect(cardBox.height).toBeLessThanOrEqual(112);
+    expect(cardBox.height).toBeLessThanOrEqual(152);
     const progressBox = (await hub
       .getByRole('progressbar', { name: '시즌 진행률', exact: true })
       .boundingBox())!;
@@ -60,9 +60,9 @@ for (const viewport of [
     expect(
       await nextCard.evaluate((element) => element === element.parentElement?.firstElementChild),
     ).toBe(true);
-    expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width + 6);
+    expect(prepareBox.y).toBeGreaterThanOrEqual(titleBox.y + titleBox.height);
     expect(prepareBox.height).toBeGreaterThanOrEqual(44);
-    // Notifications sit in the clock; preparation stays usable across the full home content.
+    // Notifications sit in the HUD; preparation stays usable across the full home content.
     const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
     await prepare.scrollIntoViewIfNeeded();
     await settle(page);

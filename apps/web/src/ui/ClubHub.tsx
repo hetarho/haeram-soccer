@@ -46,24 +46,24 @@ export function MatchAction({
   if (returning)
     return (
       <button
-        data-testid="menu-watch"
+        data-testid="home-watch"
         className={`${s.play} ${s.returning}`}
-        aria-label="경기로 돌아가기"
-        aria-describedby="menu-watch-hint"
+        aria-label="관전 이어보기"
+        aria-describedby="home-watch-hint"
         onClick={onReturn}
       >
         <b>
-          경기로 돌아가기 <span aria-hidden="true">▶</span>
+          관전 이어보기 <span aria-hidden="true">▶</span>
         </b>
-        <small id="menu-watch-hint">관전 중인 경기가 이어지고 있어요</small>
+        <small id="home-watch-hint">관전 중인 경기가 이어지고 있어요</small>
       </button>
     );
   return (
     <button
-      data-testid="menu-watch"
+      data-testid="home-watch"
       className={s.play}
       aria-label={next ? '다음 경기 관전' : '다음 시즌 시작'}
-      aria-describedby="menu-watch-hint"
+      aria-describedby="home-watch-hint"
       disabled={pending || busy || readonly || !!error || critical}
       onClick={() => {
         if (pending) return;
@@ -72,9 +72,10 @@ export function MatchAction({
       }}
     >
       <b>
-        {next ? '다음 경기 관전' : '다음 시즌 시작'} <span aria-hidden="true">▶</span>
+        {next ? (days ? `${days}일 후 관전` : '경기 관전') : '다음 시즌 시작'}{' '}
+        <span aria-hidden="true">▶</span>
       </b>
-      <small id="menu-watch-hint">
+      <small id="home-watch-hint">
         {next
           ? days
             ? `${days}일 진행 후 바로 킥오프`
@@ -85,7 +86,15 @@ export function MatchAction({
   );
 }
 
-export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
+export function NextMatchCard({
+  w,
+  onPrepare,
+  matchAction,
+}: {
+  w: World;
+  onPrepare: () => void;
+  matchAction: ReactNode;
+}) {
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
@@ -117,16 +126,19 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
           {lastScore && ` · 최근 ${lastScore[0]}–${lastScore[1]}`}
         </p>
       </div>
-      <button
-        className={s.prepare}
-        disabled={!!w.critical}
-        onClick={(event) => {
-          event.currentTarget.focus();
-          onPrepare();
-        }}
-      >
-        전술·선발 준비
-      </button>
+      <div className={s.fixtureActions}>
+        {matchAction}
+        <button
+          className={s.prepare}
+          disabled={!!w.critical}
+          onClick={(event) => {
+            event.currentTarget.focus();
+            onPrepare();
+          }}
+        >
+          전술·선발 준비
+        </button>
+      </div>
     </section>
   );
 }
@@ -239,10 +251,12 @@ export function ClubHub({
   w,
   client,
   journal,
+  matchAction,
 }: {
   w: World;
   client: GameClient;
   journal: ReactNode;
+  matchAction: ReactNode;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
@@ -265,7 +279,7 @@ export function ClubHub({
   );
   return (
     <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
-      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
+      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} matchAction={matchAction} />
       <div className={s.seasonOverview}>
         <div className={s.seasonMeter}>
           <span>

@@ -109,16 +109,14 @@ export function ResponsibilitySettings({
         </div>
       }
     >
-      <p className={s.intro}>
-        업무마다 직접 결정하거나 맡길 수 있어요. 변경은 적용을 눌러야 반영됩니다. 훈련은 코치가
-        맡아요. 닫으면 적용하지 않은 변경은 버려져요.
-      </p>
+      <p className={s.intro}>진행 방식과 맡길 업무를 선택하세요. 변경은 적용을 눌러야 반영돼요.</p>
       {guidance && !matchGuidance && (
         <p id={statusId} role="status" className={s.message}>
           {guidance}
         </p>
       )}
       <section className={s.section} aria-label="시간 진행 방식">
+        <h3>시간 진행</h3>
         <label className={s.row}>
           <b>진행 모드</b>
           <Select
@@ -164,10 +162,7 @@ export function ResponsibilitySettings({
             <span>이적시장 개장에 멈추기</span>
             <span className={s.switchIndicator} aria-hidden="true" />
           </label>
-          <p>
-            수동 모드에는 경기 이벤트가 반드시 필요해요. 다른 일을 모두 맡겨도 다음 경기 전날에
-            도착합니다.
-          </p>
+          {!automatic && <p>수동 모드는 업무를 모두 맡겨도 다음 경기 전날에 멈춰요.</p>}
         </div>
         {matchGuidance && (
           <p id={statusId} role="status" className={s.message}>
@@ -188,7 +183,16 @@ export function ResponsibilitySettings({
         )}
       </section>
       <section className={s.section} aria-label="업무 위임">
-        <h3>업무 위임</h3>
+        <div className={s.sectionHead}>
+          <h3>업무 위임</h3>
+          <small>
+            {
+              RESPONSIBILITY_KEYS.filter((key) => draft.game.responsibilities[key] === 'delegated')
+                .length
+            }{' '}
+            / {RESPONSIBILITY_KEYS.length}개 위임
+          </small>
+        </div>
         <div className={s.bulkActions} role="group" aria-label="전체 업무 위임 설정">
           {(['delegated', 'direct'] as const).map((value) => (
             <button

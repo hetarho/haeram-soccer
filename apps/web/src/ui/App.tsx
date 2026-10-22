@@ -5,6 +5,7 @@ import { PixelIcon, type PixelIconName } from './PixelIcon';
 import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
 import { PresentationSettingsTrigger } from './PresentationSettings';
+import { AppMenu } from './AppMenu';
 import {
   lazy,
   memo,
@@ -55,7 +56,7 @@ import { Dialog } from './Dialog';
 import { ActionOutcome } from './ActionOutcome';
 import { AnimatedMoney } from './AnimatedMoney';
 import { play } from './motion';
-import { EventCenter, CommunicationsCenter } from './EventCenter';
+import { EventCenter, CommunicationsCenter, CommunicationsButton } from './EventCenter';
 import { RemedySheet } from './RemedySheet';
 import { GlossaryHost } from './Glossary';
 import { useGlossary } from './metricGlossary';
@@ -380,8 +381,6 @@ const TABS: [Page, string, string, Page[]][] = [
   ['training', 'navigation.short.training', 'navigation.training', ['training']],
   ['business', 'navigation.short.business', 'navigation.business', ['business']],
 ];
-/** The HUD menu lists only destinations the tab bar does not already show. */
-const MENU_PAGES = NAV.filter(([id]) => !TABS.some(([tab]) => tab === id));
 const selectContentWorld = worldSelector([
   'year',
   'round',
@@ -502,11 +501,21 @@ const ConnectedDashboard = memo(function ConnectedDashboard({
   controller: ProgressionController;
 }) {
   const state = useContentState();
+  const setPage = useNavigation((state) => state.setPage);
+  const w = state.view!.world;
   return (
     <ClubHub
-      w={state.view!.world}
+      w={w}
       client={client}
       journal={<ClubJournal client={client} state={state} controller={controller} />}
+      matchAction={
+        <MatchAction
+          critical={!!w.critical}
+          next={!!nextOwnFixture(w)}
+          onWatch={() => watchNextMatch(client, controller, () => setPage('match'))}
+          onReturn={() => setPage('match')}
+        />
+      }
     />
   );
 });
@@ -647,6 +656,7 @@ const GameHud = memo(function GameHud({
       <ReadonlyBadge />
       {!playing && <PresentationSettingsTrigger />}
       {playing && <HudCash client={client} />}
+      {playing && <CommunicationsButton className={s.hudNotifications} />}
     </header>
   );
 });
@@ -852,7 +862,7 @@ function savedAgo(savedAt: number, now: number, t: Translator) {
  * between its background saves reads steadily instead of flipping on every step (→SAVE-8). Start
  * screens say nothing of a game kept beside them.
  */
-function useSaveText(playing = true) {
+function useSaveText(playing = true, detail: 'full' | 'brief' = 'full') {
   const { t } = useLocale();
   const w = useGameState((state) => (playing ? state.view?.world : undefined));
   const savedRevision = useGameState((state) => state.savedRevision);
@@ -873,7 +883,9 @@ function useSaveText(playing = true) {
       : savedAt !== undefined
         ? savedAgo(savedAt, now, t)
         : t('save.waiting');
-  return t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
+  return detail === 'brief'
+    ? saved
+    : t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
 }
 const LiveFooter = memo(function LiveFooter({ playing }: { playing: boolean }) {
   const { t } = useLocale();
@@ -886,8 +898,7 @@ const LiveFooter = memo(function LiveFooter({ playing }: { playing: boolean }) {
   );
 });
 function SaveStatus() {
-  const { t } = useLocale();
-  return <p className={s.menuSave}>{t('save.menuStatus', { status: useSaveText() })}</p>;
+  return <p className={s.menuSave}>{useSaveText(true, 'brief')}</p>;
 }
 function SaveActions({
   client,
@@ -1322,83 +1333,26 @@ export function App() {
         <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
       )}
       {moreOpen && (
-        <Dialog label={t('shell.menu')} onClose={() => setMoreOpen(false)}>
-          {client && controller && playing && (
-            <MatchAction
-              critical={!!w.critical}
-              next={!!nextOwnFixture(w)}
-              onWatch={() => {
-                setMoreOpen(false);
-                return watchNextMatch(client, controller, () => setPage('match'));
-              }}
-              onReturn={() => {
-                setMoreOpen(false);
-                setPage('match');
-              }}
-            />
-          )}
-          <button
-            className={s.guideOpen}
-            onClick={() => {
-              setMoreOpen(false);
-              setGuideOpen(true);
-            }}
-          >
-            {t('shell.guide')}
-          </button>
-          <button
-            className={s.guideOpen}
-            onClick={() => {
-              setMoreOpen(false);
-              useInterventionDialog.getState().show();
-            }}
-          >
-            {t('shell.responsibilities')}
-          </button>
-          <button
-            className={s.guideOpen}
-            onClick={() => {
-              setMoreOpen(false);
-              showNews('notifications');
-            }}
-          >
-            {t('shell.news')}
-          </button>
-          <button
-            className={s.guideOpen}
-            onClick={() => {
-              setMoreOpen(false);
-              showGlossary();
-            }}
-          >
-            {t('shell.glossary')}
-          </button>
-          <div className={s.moreMenu}>
-            {MENU_PAGES.map(([id, label]) => (
-              <button
-                key={id}
-                aria-current={page === id ? 'page' : undefined}
-                onClick={() => {
-                  setPage(id);
-                  setMoreOpen(false);
-                }}
-              >
-                <NavIcon page={id} />
-                {t(label)}
-              </button>
-            ))}
-          </div>
-          <PresentationSettingsTrigger className={s.guideOpen} onOpen={() => setMoreOpen(false)} />
-          <SaveStatus />
-          {client && (
-            <SaveActions
-              client={client}
-              onDownload={download}
-              onImport={importFile}
-              onSlots={openSlots}
-            />
-          )}
-        </Dialog>
+        <AppMenu
+          onClose={() => setMoreOpen(false)}
+          onResponsibilities={useInterventionDialog.getState().show}
+          onNews={() => showNews('notifications')}
+          onGuide={() => setGuideOpen(true)}
+          onGlossary={showGlossary}
+          saveTools={
+            <>
+              <SaveStatus />
+              {client && (
+                <SaveActions
+                  client={client}
+                  onDownload={download}
+                  onImport={importFile}
+                  onSlots={openSlots}
+                />
+              )}
+            </>
+          }
+        />
       )}
       {stopSettings && controller && client && (
         <Suspense fallback={null}>

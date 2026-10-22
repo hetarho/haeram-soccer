@@ -17,6 +17,11 @@
     "navigation.short.training": "훈련",
     "navigation.short.business": "구단",
     "shell.menu": "전체 메뉴",
+    "shell.appearance": "화면과 언어",
+    "shell.gameSettings": "게임 설정",
+    "shell.responsibilitiesHint": "진행 방식 · 멈춤 조건 · 업무 위임",
+    "shell.help": "도움말과 참고",
+    "shell.savedGames": "저장과 게임 관리",
     "shell.navigation": "게임 메뉴",
     "shell.mobileNavigation": "모바일 게임 메뉴",
     "shell.cash": "운영 자금",
@@ -107,6 +112,8 @@
     "founding.backToSlots": "← 게임 슬롯",
     "presentation.open": "언어·테마",
     "presentation.title": "언어·테마 설정",
+    "presentation.changeTheme": "테마 변경",
+    "presentation.changeLanguage": "언어 변경",
     "presentation.language": "언어",
     "presentation.theme": "테마",
     "presentation.loading": "화면 설정을 불러오는 중…",
@@ -128,6 +135,11 @@
     "facility.manager": "감독실",
     "facility.staff": "스태프 사무실",
     "facility.academy.base": "기본 유소년 시설",
-    "facility.academy.stage": "{stage}단계 유소년 시설"
+    "facility.academy.stage": "{stage}단계 유소년 시설",
+    "match.goal.cue": "GOAL",
+    "match.goal.side": "{team} 득점",
+    "match.goal.scorer": "{team} · {player} 득점",
+    "match.possession.side": "볼 소유",
+    "match.possession.word": "소유"
   }
 }

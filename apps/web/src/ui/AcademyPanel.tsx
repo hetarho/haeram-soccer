@@ -258,11 +258,7 @@ function YouthTraining({ w }: { w: World }) {
         </span>
       </header>
       <p className={s.advice}>{call.reason}</p>
-      <button
-        type="button"
-        className={`${s.homeLine} ${s.primary}`}
-        onClick={() => openCoachSheet('youth')}
-      >
+      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('youth')}>
         <span>
           <b>유스 디렉터에게 훈련 제안·강행</b>
           <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>

@@ -91,12 +91,15 @@ export function Dialog({
   children,
   onClose,
   wide = false,
+  picker = false,
   actions: footerActions,
 }: {
   label: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  /** A small centered panel over a light dim that keeps the page behind it visible. */
+  picker?: boolean;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
@@ -120,7 +123,7 @@ export function Dialog({
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
     const layer = backdrop.current!;
     const unlock = lockLayer(layer);
-    const mobile = sheet();
+    const mobile = !picker && sheet();
     play(layer, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
     play(
       element.current,
@@ -210,7 +213,7 @@ export function Dialog({
   return createPortal(
     <div
       ref={backdrop}
-      className={s.modalBackdrop}
+      className={`${s.modalBackdrop} ${picker ? s.picker : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}

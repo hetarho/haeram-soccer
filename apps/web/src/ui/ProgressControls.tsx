@@ -1,7 +1,6 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
-import { CommunicationsButton } from './EventCenter';
 import {
   currentDay,
   daysUntilNextMatch,
@@ -14,7 +13,6 @@ import { useGameState } from '../runtime/store';
 import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
 import { transferWindow } from '../../../../packages/engine/src/transfers';
 import { useInterventionDialog } from './state';
-import s from './App.module.css';
 import p from './ProgressControls.module.css';
 
 const PACES: [Pace, string, string][] = [
@@ -64,7 +62,7 @@ export const ProgressControls = memo(function ProgressControls({
         ? `${days ? `다음 경기 D-${days}` : '오늘 경기'} · ${transferWindow(w).label}`
         : '시즌 정산을 기다려요');
   const buttons = manual ? (
-    <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="수동 진행">
+    <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
         disabled={blocked || state.processing || pending}
         onClick={() => void controller.nextEvent()}
@@ -73,9 +71,9 @@ export const ProgressControls = memo(function ProgressControls({
       </button>
     </div>
   ) : (
-    <div className={`${s.clockButtons} ${p.buttons}`} role="group" aria-label="자동 진행 속도">
+    <div className={p.buttons} role="group" aria-label="자동 진행 속도">
       <button
-        className={`${s.clockToggle} ${running ? s.clockPause : ''}`}
+        className={`${p.toggle} ${running ? p.pause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
         disabled={!running && (blocked || state.processing)}
         onClick={() => {
@@ -104,22 +102,22 @@ export const ProgressControls = memo(function ProgressControls({
       )}
     </div>
   );
-  // One packed row on every view: where the season stands on the left, the speed buttons right.
+  // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
     <section
-      className={`${s.seasonControls} ${p.controls} ${running ? s.clockRunning : ''}`}
+      className={`${p.controls} ${running ? p.running : ''}`}
       aria-label={compact ? `시즌 진행 · ${seasonDate(w)} · ${status}` : '시즌 진행'}
       data-testid={compact ? 'mini-clock' : undefined}
     >
-      <div className={s.calendarSummary}>
+      <div className={p.calendarSummary}>
         <strong data-testid="game-date">{seasonDate(w)}</strong>
-        <small className={s.autoStatus} aria-live="polite" aria-atomic="true">
+        <small className={p.status} aria-live="polite" aria-atomic="true">
           {status}
         </small>
       </div>
       <i
-        className={s.seasonProgress}
+        className={p.progress}
         role="progressbar"
         aria-label="시즌 경과 일수"
         aria-valuenow={currentDay(w)}
@@ -128,18 +126,18 @@ export const ProgressControls = memo(function ProgressControls({
         style={{ width: `${progress}%` }}
       />
       {buttons}
-      <div className={p.settingsActions} role="group" aria-label="설정과 알림">
+      <div className={p.settingsActions} role="group" aria-label="진행 설정">
         <button
           type="button"
           className={p.trigger}
           aria-label="위임·진행 설정"
           aria-haspopup="dialog"
           data-testid="intervention-trigger"
+          title="위임·진행 설정"
           onClick={useInterventionDialog.getState().show}
         >
-          <b>설정</b>
+          <span aria-hidden="true">···</span>
         </button>
-        <CommunicationsButton />
       </div>
     </section>
   );

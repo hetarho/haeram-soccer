@@ -40,6 +40,15 @@ const world = () =>
     ownMatches: [],
   }) as unknown as World;
 
+function matchAction(next = true, critical = false) {
+  return createElement(MatchAction, {
+    critical,
+    next,
+    onWatch: vi.fn(async () => {}),
+    onReturn: vi.fn(),
+  });
+}
+
 beforeEach(() => {
   matchView.matchId = undefined;
   matchView.finished = false;
@@ -56,16 +65,16 @@ beforeEach(() => {
 });
 afterEach(() => gameStore.setState(initialClientState, true));
 
-describe('compact next-match card and menu access', () => {
-  it('keeps opponent context and preparation without a watch or return control', () => {
+describe('contextual home match access', () => {
+  it('keeps opponent context, observation and preparation together', () => {
     const markup = renderToStaticMarkup(
-      createElement(NextMatchCard, { w: world(), onPrepare: vi.fn() }),
+      createElement(NextMatchCard, { w: world(), onPrepare: vi.fn(), matchAction: matchAction() }),
     );
     expect(markup).toContain('NEXT MATCH');
     expect(markup).toContain('A Very Long Opponent Athletic Club');
     expect(markup).toContain('감독 자동 선발');
     expect(markup).toContain('전술·선발 준비</button>');
-    expect(markup).not.toContain('관전');
+    expect(markup).toContain('aria-label="다음 경기 관전"');
     expect(markup).not.toContain('경기로 돌아가기');
   });
 
@@ -73,16 +82,22 @@ describe('compact next-match card and menu access', () => {
     const w = world();
     w.fixtures = [];
     w.critical = '결정을 먼저 처리해 주세요';
-    const markup = renderToStaticMarkup(createElement(NextMatchCard, { w, onPrepare: vi.fn() }));
+    const markup = renderToStaticMarkup(
+      createElement(NextMatchCard, {
+        w,
+        onPrepare: vi.fn(),
+        matchAction: matchAction(false, true),
+      }),
+    );
     expect(markup).toContain('다음 시즌을 준비해요');
     expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>전술·선발 준비<\/button>/);
   });
 
-  it('keeps menu watching and next-season labels with readonly protection', () => {
+  it('keeps home observation and next-season labels with readonly protection', () => {
     const props = { critical: false, onWatch: vi.fn(async () => {}), onReturn: vi.fn() };
     gameStore.setState({ readonly: true });
     const markup = renderToStaticMarkup(createElement(MatchAction, { ...props, next: true }));
-    expect(markup).toContain('data-testid="menu-watch"');
+    expect(markup).toContain('data-testid="home-watch"');
     expect(markup).toMatch(/aria-label="다음 경기 관전"[^>]*disabled=""/);
     expect(renderToStaticMarkup(createElement(MatchAction, { ...props, next: false }))).toContain(
       'aria-label="다음 시즌 시작"',
@@ -100,7 +115,7 @@ describe('compact next-match card and menu access', () => {
         onReturn: vi.fn(),
       }),
     );
-    expect(markup).toContain('aria-label="경기로 돌아가기"');
+    expect(markup).toContain('aria-label="관전 이어보기"');
     expect(markup).not.toContain('다음 경기 관전');
   });
 });

@@ -44,11 +44,7 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
     '읽기 전용',
   );
-  await expect(await openWatchMenu(second)).toBeDisabled();
-  await second
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '창 닫기' })
-    .click();
+  await expect(await openWatchAction(second)).toBeDisabled();
   await page.bringToFront();
   const revision = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
@@ -56,11 +52,7 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByTestId('calendar')).toContainText('라운드 1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await expect(await openWatchMenu(second)).toBeEnabled();
-  await second
-    .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '창 닫기' })
-    .click();
+  await expect(await openWatchAction(second)).toBeEnabled();
   await second.close();
 });
 test('recovers prior checkpoint after active corruption without clearing another application key', async ({
@@ -374,4 +366,4 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   await expect(alarm).toBeVisible();
   await expect(notice).toBeVisible();
 });
-import { openWatchMenu } from './watch';
+import { openWatchAction } from './watch';

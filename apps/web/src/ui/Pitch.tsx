@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from 'react';
 import type {
@@ -32,9 +33,18 @@ import { markerRadius } from './KitPitchPreview';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
 import {
+  advanceGoalFeedback,
+  GOAL_FEEDBACK_CONFIG,
+  goalInstants,
+  goalsShown,
+  seekGoalFeedback,
+  type GoalFeedbackState,
+} from './goalFeedback';
+import { useLocale } from '../presentation/react';
+import { possessionKey, resolvePossessionCue, type PossessionCue } from './possessionCue';
+import {
   clockAt,
   locate,
-  presentationAdvance,
   presentationLength,
   presentationSamples,
   runningSeconds,
@@ -130,13 +140,23 @@ export function Pitch({
   lead?: ReactNode;
 }) {
   const detailsId = useId();
+  const { t: tr } = useLocale();
   const canvas = useRef<HTMLCanvasElement>(null);
-  /** Presentation time in ms at 1x: every match minute lasts 4000 ms (→WEB-32). */
-  const clock = useRef(0);
+  /**
+   * Presentation time in ms at 1x, every match minute lasting 4000 ms (→WEB-32), with the recorded
+   * goal it holds at (→WEB-94).
+   */
+  const clock = useRef<GoalFeedbackState>({ clockMs: 0, next: 0 });
   const last = useRef(0);
   const lastUi = useRef(0);
   const [sampleIndex, setSampleIndex] = useState(0);
   const [sampleMatchId, setSampleMatchId] = useState(p?.record.id);
+  // The held goal's cue and the goals shown so far, mirrored from the clock for rendering.
+  const [cue, setCue] = useState<number>();
+  const [shownGoals, setShownGoals] = useState(0);
+  // Who has the ball at the presented instant, shared by the scoreboard and the pitch (→WEB-95).
+  const [possession, setPossession] = useState<PossessionCue>({ state: 'unknown' });
+  const possessionShown = useRef('');
   const [speed, setSpeed] = useState(1);
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
@@ -147,6 +167,12 @@ export function Pitch({
   const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
   const { samples, track } = timed;
   const length = presentationLength(p?.frames.length ?? 0);
+  const goals = useMemo(() => {
+    if (!p) return [];
+    const starts: number[] = [];
+    for (const sample of samples) starts[sample.frame] ??= sample.time;
+    return goalInstants(p.record, p.frames, starts);
+  }, [p, samples]);
   // Each player's place in his matchday roster (starters, then the bench) numbers his dot.
   const numbers = useMemo(
     () => new Map(p?.squads.flatMap((squad) => squad.map((player, i) => [player.id, i] as const))),
@@ -167,7 +193,16 @@ export function Pitch({
   const visibleIndex = sampleMatchId === p?.record.id ? sampleIndex : 0;
   const sample = samples[Math.min(visibleIndex, samples.length - 1)];
   const frame: MatchFrame | undefined = p?.frames[sample?.frame ?? 0];
-  const finished = !!p && sampleMatchId === p.record.id && sampleIndex >= samples.length - 1;
+  const onRecord = sampleMatchId === p?.record.id;
+  // The final recorded goal finishes its cue before the match does.
+  const finished =
+    !!p &&
+    onRecord &&
+    sampleIndex >= samples.length - 1 &&
+    cue === undefined &&
+    shownGoals >= goals.length;
+  const heldGoal = onRecord && cue !== undefined ? goals[cue] : undefined;
+  const presentedScore = onRecord ? goals[shownGoals - 1] : undefined;
   const home = world.clubs.find((c) => c.id === p?.record.home);
   const away = world.clubs.find((c) => c.id === p?.record.away);
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
@@ -215,9 +250,13 @@ export function Pitch({
   }, [finished, p?.record.id, samples.length, onFinish]);
 
   useLayoutEffect(() => {
-    clock.current = 0;
+    clock.current = { clockMs: 0, next: 0 };
     lastUi.current = 0;
     setSampleIndex(0);
+    setCue(undefined);
+    setShownGoals(0);
+    possessionShown.current = '';
+    setPossession({ state: 'unknown' });
     setSampleMatchId(p?.record.id);
     setSelection('0:8');
     setDetails(false);
@@ -265,14 +304,41 @@ export function Pitch({
     const pitchFont = canvas.current
       ? getComputedStyle(canvas.current).fontFamily
       : 'Galmuri11, sans-serif';
+    const carrierMark =
+      (canvas.current && getComputedStyle(canvas.current).getPropertyValue('--gold').trim()) ||
+      '#e8c15a';
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
       const end = Math.max(0, samples.length - 1);
-      if (p && !paused) clock.current = presentationAdvance(clock.current, elapsed, speed, length);
-      const now = runningSeconds(clock.current);
+      if (p) {
+        clock.current = advanceGoalFeedback(clock.current, goals, {
+          elapsedMs: elapsed,
+          speed,
+          lengthMs: length,
+          running: !paused && !document.hidden,
+        });
+        // Only a new cue or goal re-renders; a held goal keeps one cue however often this runs.
+        setCue(clock.current.cue?.goal);
+        setShownGoals(goalsShown(clock.current));
+      }
+      const now = runningSeconds(clock.current.clockMs);
       const position = Math.min(end, locate(timed.times, now, timed.sampleBreak));
       const index = Math.min(end, Math.floor(position + 1e-6));
+      const shown = samples[index];
+      // The minute being played: the shown sample's, or the next one before its first sample.
+      const minute =
+        shown && now - shown.frame * 60 > 60
+          ? Math.min((p?.frames.length ?? 1) - 1, Math.floor(now / 60))
+          : (shown?.frame ?? 0);
+      const ownership: PossessionCue = p
+        ? resolvePossessionCue(shown, p.frames[minute], now - minute * 60)
+        : { state: 'unknown' };
+      const ownershipKey = possessionKey(ownership);
+      if (ownershipKey !== possessionShown.current) {
+        possessionShown.current = ownershipKey;
+        setPossession(ownership);
+      }
       const element = canvas.current;
       // Keep replay time, but leave hidden/inert views out of layout and painting work. The final
       // whistle still lands, so home knows an unwatched match has ended.
@@ -335,6 +401,7 @@ export function Pitch({
         }
         if (p && current && look) {
           const radius = markerRadius(width);
+          let carrierAt: [number, number] | undefined;
           const marker = {
             dpr,
             outline: MARKER_OUTLINE,
@@ -393,7 +460,34 @@ export function Pitch({
                 ...marker,
                 number,
               });
+              if (motion && motion.id === ownership.carrierId) carrierAt = [x(px), y(py)];
             }
+          }
+          // The recorded carrier, drawn over every shirt: a ring outside his and a pointer above,
+          // so his number and the ball stay clear.
+          if (carrierAt) {
+            const [cx, cy] = carrierAt;
+            const top = cy - radius - 6;
+            // A dark edge under the theme's mark keeps it clear on any shirt or stripe.
+            for (const [colour, width] of [
+              ['#101314', 4.5],
+              [carrierMark, 2.5],
+            ] as const) {
+              ctx.strokeStyle = colour;
+              ctx.lineWidth = width;
+              ctx.beginPath();
+              ctx.arc(cx, cy, radius + 3, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.beginPath();
+              ctx.moveTo(cx - 5, top - 6);
+              ctx.lineTo(cx + 5, top - 6);
+              ctx.lineTo(cx, top);
+              ctx.closePath();
+              ctx.lineJoin = 'round';
+              ctx.stroke();
+            }
+            ctx.fillStyle = carrierMark;
+            ctx.fill();
           }
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
           let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
@@ -439,6 +533,7 @@ export function Pitch({
     samples,
     timed,
     length,
+    goals,
     track,
     numbers,
     paused,
@@ -452,7 +547,10 @@ export function Pitch({
 
   const seek = (index: number) => {
     const target = Math.max(0, Math.min(samples.length - 1, index));
-    clock.current = clockAt(samples[Math.floor(target)]?.time ?? 0);
+    // A seek ends any cue and passes the goals up to its place without celebrating them.
+    clock.current = seekGoalFeedback(goals, clockAt(samples[Math.floor(target)]?.time ?? 0));
+    setCue(undefined);
+    setShownGoals(goalsShown(clock.current));
     setSampleIndex(Math.floor(target));
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };
@@ -465,6 +563,31 @@ export function Pitch({
     if (finished) seek(0);
     setPaused(finished ? false : !paused);
   };
+  // The scoring side's value during a goal hold is boxed and bold as well as coloured (→WEB-94).
+  const scoreValue = (side: 0 | 1, value: number) => (
+    <i
+      className={heldGoal?.side === side ? t.goalScore : undefined}
+      data-testid={heldGoal?.side === side ? 'goal-score' : undefined}
+    >
+      {value}
+    </i>
+  );
+  // The side controlling the ball: a ball glyph and a word beside its name, not colour alone.
+  const possessionBadge = (side: 0 | 1) =>
+    possession.side === side && (
+      <i
+        className={t.possession}
+        role="img"
+        aria-label={tr('match.possession.side')}
+        data-testid="possession-cue"
+        data-state={possession.state}
+      >
+        <i aria-hidden="true" className={t.possessionBall} />
+        <i aria-hidden="true" className={t.possessionWord}>
+          {tr('match.possession.word')}
+        </i>
+      </i>
+    );
   const playLabel = finished ? '다시 보기' : paused ? '재생' : '일시정지';
   // One red mark per player sent off up to the presented minute (→WEB-50).
   const redMarks = (side: 0 | 1) =>
@@ -481,8 +604,22 @@ export function Pitch({
       </i>
     );
   return (
-    <div className={`${s.pitch} ${t.pitch}`} data-testid="pitch-theatre">
-      <div className={`${s.scoreboard} ${t.scoreboard}`} data-testid="match-score">
+    <div
+      className={`${s.pitch} ${t.pitch}`}
+      data-testid="pitch-theatre"
+      style={
+        {
+          '--goal-hold': `${GOAL_FEEDBACK_CONFIG.holdMs}ms`,
+          '--goal-pulses': GOAL_FEEDBACK_CONFIG.pulses,
+        } as CSSProperties
+      }
+    >
+      <div
+        className={`${s.scoreboard} ${t.scoreboard}`}
+        data-testid="match-score"
+        data-possession={possession.state}
+        data-possession-side={possession.side}
+      >
         {lead}
         <span className={t.team}>
           {home && look && (
@@ -497,9 +634,22 @@ export function Pitch({
             {home?.short || 'HOME'}
           </b>
           {redMarks(0)}
+          {possessionBadge(0)}
         </span>
-        <strong>{frame ? `${frame.score.home} : ${frame.score.away}` : '— : —'}</strong>
+        {frame ? (
+          // The score as presented so far: a goal later in this minute is not shown before it lands.
+          <strong>
+            <i className={t.score}>
+              {scoreValue(0, presentedScore?.home ?? 0)}
+              <i className={t.scoreColon}> : </i>
+              {scoreValue(1, presentedScore?.away ?? 0)}
+            </i>
+          </strong>
+        ) : (
+          <strong>— : —</strong>
+        )}
         <span className={`${t.team} ${t.awayTeam}`}>
+          {possessionBadge(1)}
           {redMarks(1)}
           <b className={t.fullName}>{away?.name || 'AWAY'}</b>
           <b className={t.shortName} aria-hidden="true">
@@ -562,6 +712,29 @@ export function Pitch({
           className={`${s.canvas} ${t.canvas} ${summary ? t.replayCanvas : ''}`}
           onClick={summary ? toggle : undefined}
         />
+        {/* One polite region; its text changes once per goal, never on a rerender (→WEB-94). */}
+        <div className={t.goalCueSlot} aria-live="polite">
+          {heldGoal && (
+            <div
+              key={heldGoal.id}
+              className={t.goalCue}
+              data-testid="goal-cue"
+              data-side={heldGoal.side}
+            >
+              <strong>{tr('match.goal.cue')}</strong>
+              <span>
+                {heldGoal.scorer
+                  ? tr('match.goal.scorer', {
+                      team: (heldGoal.side === 0 ? home : away)?.name ?? '',
+                      player: heldGoal.scorer,
+                    })
+                  : tr('match.goal.side', {
+                      team: (heldGoal.side === 0 ? home : away)?.name ?? '',
+                    })}
+              </span>
+            </div>
+          )}
+        </div>
         {look && !look.recorded && (
           // Older playback: neutral markers, never today's designs presented as this match's.
           <span className={t.unrecorded} data-testid="match-kit-unrecorded">

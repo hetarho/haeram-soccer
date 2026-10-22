@@ -47,11 +47,12 @@ const facts = (w: World) => ({
  * fouls) changed both digests' counters, not their outcomes: scores, xG, incidents, passes, shots
  * and discipline gave the same digests before and after it. T334's candidate counter behaviour
  * (settled directness, a higher back-line floor) changed the candidate rounds (aggregate records
- * unchanged), re-recorded with its calibration artifact.
+ * unchanged), re-recorded with its calibration artifact; so did T336's (counter's settled pass
+ * weights only up to 70 m, its block not following a ball upfield; fed163154634471c before).
  */
 const BEFORE = {
   aggregateRecords: 'a3c1c7230ca5bc28',
-  candidateRounds: 'fed163154634471c',
+  candidateRounds: '554eb98852d175c8',
 };
 
 describe('complete-result throughput (T285)', () => {

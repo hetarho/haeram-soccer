@@ -39,10 +39,10 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   const toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = controls.getByRole('button', { name: '자동 진행 정지', exact: true }),
     settings = controls.getByRole('button', { name: '위임·진행 설정', exact: true }),
-    notifications = controls.getByTestId('communications-button');
+    notifications = page.getByTestId('communications-button');
   await settle(page);
   const toggleBox = (await toggle.boundingBox())!;
-  for (const control of [toggle, pace, settings, notifications]) {
+  for (const control of [toggle, pace, settings]) {
     const rect = (await control.boundingBox())!;
     expect(rect.width).toBeGreaterThanOrEqual(44);
     expect(rect.height).toBeGreaterThanOrEqual(44);
@@ -52,6 +52,8 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
     expect(rect.y).toBeCloseTo(toggleBox.y, 0);
     expect(rect.height).toBeCloseTo(toggleBox.height, 0);
   }
+  await expect(notifications).toBeVisible();
+  expect(await notifications.evaluate((element) => !!element.closest('header'))).toBe(true);
   const dateBox = (await date.boundingBox())!;
   expect(dateBox.x + dateBox.width).toBeLessThanOrEqual(toggleBox.x);
   expect(dateBox.y).toBeLessThan(toggleBox.y + toggleBox.height);
@@ -188,7 +190,8 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '위임·진행 설정', exact: true })
+    // The menu row's name also carries its hint line.
+    .getByRole('button', { name: /^위임·진행 설정/ })
     .click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정' });
   const background = settings.getByRole('region', { name: '자동 모드의 백그라운드 진행' });
@@ -321,9 +324,9 @@ for (const viewport of [
       }),
     );
     expect(stopBounds).toHaveLength(2);
-    expect(stopBounds[0].y).toBeCloseTo(stopBounds[1].y, 0);
+    expect(stopBounds[1].y).toBeGreaterThanOrEqual(stopBounds[0].y + stopBounds[0].height);
     expect(stopBounds[0].width).toBeCloseTo(stopBounds[1].width, 0);
-    expect(stopBounds[0].x + stopBounds[0].width).toBeLessThan(stopBounds[1].x);
+    expect(stopBounds[0].x).toBeCloseTo(stopBounds[1].x, 0);
     for (const rect of stopBounds) {
       expect(rect.width).toBeGreaterThanOrEqual(44);
       expect(rect.height).toBeGreaterThanOrEqual(44);

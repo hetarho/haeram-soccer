@@ -83,11 +83,22 @@ const counterShape = (shape: object): BehaviourPatch => ({
 
 /**
  * T334's behaviour levers on the candidate model: (a) counter keeps going forward or long once its
- * break has passed, (b) counter's deep block, (c) press's in-match fatigue cost. Names join with
- * `+` on the command line; later patches win.
+ * break has passed, (b) counter's deep block, (c) press's in-match fatigue cost; T336's from T334's
+ * kept setting (T336's kept combination is in the shared config since; `t334` undoes it). Names
+ * join with `+` on the command line; later patches win.
  */
 export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   none: {},
+  // T336: the settings before T334 kept counter's settled play (no settled rule, line 22–42).
+  preT334: {
+    ...settled(0, 0, 1, 1, 1),
+    ...counterShape({ line: [22, 42], upfield: 0.3 }),
+  },
+  // T336: T334's kept settings (the settled weights everywhere, the block following the ball).
+  t334: {
+    decide: { direct: { settled: { counter: { upTo: 105 } } } },
+    ...counterShape({ upfield: 0.3 }),
+  },
   // (a) Off-regain directness, mild to strong.
   settled1: settled(0.5, 0.3, 0.7, 0.5),
   settled2: settled(1, 0.5, 0.5, 0.35),
@@ -112,6 +123,17 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   line28: counterShape({ line: [28, 42] }),
   line24: counterShape({ line: [24, 42] }),
   line25: counterShape({ line: [25, 42] }),
+  // T336 levers from T334's kept setting (settled75 + line24 in the shared config).
+  // (a) where the settled rule applies and (c) counter's drop upfield were measured at 4f9d737b
+  // through candidate hooks (`settled.counter.upTo`/`passUpTo`, `upfield`/`upfieldSeconds` on
+  // counter's candidate shape); their combination (pass weights up to 70 m, `upfield` 0) is now
+  // the shared candidate config (the coordinator's exception to T336's keep rule).
+  // (b) The settled pass factor against the forward and long weights.
+  fwd15p85: settled(1.5, 0.25, 0.5, 0.35, 0.85),
+  // (d) Press's pressing height: its block and line higher without the ball.
+  pressHigh: { shape: { candidate: { tactic: { press: { defend: 7, line: [32, 60] } } } } },
+  // (e) Balanced's block against counter's settled play: a lower line top and a deeper block.
+  balLow: { shape: { candidate: { tactic: { balanced: { defend: -7, line: [24, 43] } } } } },
 };
 
 function merge(target: Record<string, unknown>, patch: Record<string, unknown>): void {

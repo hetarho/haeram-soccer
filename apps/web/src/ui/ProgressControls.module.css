@@ -1,53 +1,145 @@
-/* Date, progression and settings share one row on every management view. */
+/* One quiet progression toolbar; global communication belongs to the HUD. */
 .controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-}
-
-.buttons {
+  position: relative;
+  display: flex;
   align-items: center;
-}
-
-.buttons .pace.pace {
   flex: none;
-  width: 64px;
-  height: 44px;
-  min-height: 44px;
-  padding: 0 6px;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: var(--display);
+  gap: 12px;
+  min-height: 62px;
+  margin: 0 0 18px;
+  padding: 6px 0 10px;
 }
-
+.calendarSummary {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.calendarSummary strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.status {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.running .status {
+  color: var(--accent-text);
+}
+.buttons,
 .settingsActions {
   display: flex;
-  align-items: center;
-  gap: 6px;
   flex: none;
+  align-items: center;
+  gap: 4px;
 }
-
-/* Settings opens the central delegation and progression dialog. */
-.trigger {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 45px;
+.buttons > button {
   min-height: 44px;
-  padding: 0 5px;
-  border-radius: var(--control-radius);
+  padding: 8px 12px;
+  font-size: 13px;
 }
-
-@media (min-width: 761px) {
-  .trigger {
-    padding: 0 10px 0 12px;
-  }
+.buttons .toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
-
+.toggle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--accent-fill);
+}
+.toggle > span {
+  position: relative;
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border-left: 10px solid var(--on-accent);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+.pause::before {
+  background: var(--subtle-fill);
+}
+.pause > span {
+  width: 10px;
+  height: 12px;
+  margin: 0;
+  border: 0;
+  border-left: 3px solid var(--text);
+  border-right: 3px solid var(--text);
+}
+.buttons .pace.pace {
+  width: 60px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 8px 6px;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+}
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 0 8px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  opacity: 0.45;
+  transition: width 600ms ease;
+}
 @media (max-width: 760px) {
+  .controls {
+    gap: 6px;
+    min-height: 58px;
+    margin-bottom: 16px;
+    padding: 4px 0 10px;
+  }
+  .calendarSummary strong {
+    font-size: 13px;
+  }
   .buttons .pace.pace {
     height: 48px;
     min-height: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress {
+    transition: none;
   }
 }

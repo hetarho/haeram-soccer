@@ -16,6 +16,16 @@ rows, selected navigation and keyboard focus remain clear.
 Standard corners are semantic: controls 8px, panels 12px, badges 4px and dialogs 18px;
 the home scene clips to the panel radius. Pixel retains its original angular values.
 Edge-aligned mobile sheets and underlined bottom navigation use square corners.
+Floating feedback uses optional `--feedback-shadow-filter` on its scrolling container and
+`--feedback-edge-shadow` inside its existing surfaces. Standard supplies a soft drop shadow
+and fine inset edge; neutral per-pack defaults keep pixel flat. Applying the filter outside
+the scroll clip preserves the shadow without changing feedback dimensions or action reachability.
+Secondary controls consume `--control-fill` and `--control-weight`. Floating mobile navigation
+uses `--nav-surface`, `--nav-edge`, `--nav-shadow` and `--nav-radius`, keeping a separate dark
+surface and persistent selected underline. Popovers use `--popover-edge` and `--popover-shadow`.
+Neutral defaults preserve flat pixel effects and angular radii; shared layouts do not branch on theme IDs.
+The viewport shell reserves `--mobile-nav-clearance` so scrolling content and sticky draft actions
+end above the floating navigation, including its safe-area inset.
 Shared optional `table-line`, `section-accent-line`, `warning-line`, `critical-line`, `running-line` and `secondary-control-line` tokens
 fall back to existing styling in shared CSS; the pixel pack explicitly supplies its original
 values so the registered default's optional tokens cannot replace them.

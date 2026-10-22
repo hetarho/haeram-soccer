@@ -4,6 +4,16 @@ import type { ThemePack } from './contracts';
 const STYLE_DEFAULTS = {
   'badge-radius': '2px',
   'scene-radius': '0px',
+  'feedback-shadow-filter': 'none',
+  'feedback-edge-shadow': 'none',
+  'control-fill': 'var(--surface-2)',
+  'control-weight': '700',
+  'nav-surface': 'var(--surface-deep)',
+  'nav-edge': 'var(--line)',
+  'nav-shadow': 'none',
+  'nav-radius': 'var(--card-radius)',
+  'popover-shadow': 'none',
+  'popover-edge': 'var(--line)',
   'control-hover-filter': 'brightness(1.12)',
   'control-active-filter': 'var(--control-hover-filter)',
 } as const;
