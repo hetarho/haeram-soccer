@@ -1,0 +1,1190 @@
+## screen-r0-base.log
+core:equal-top-tier calibration r41: 600 matches (25 s), patch none
+  a team a match: open-play passes 382.89, completed 307.97, completed to a receiver beyond the line 23.38 (of them on a run 7.53), offside calls 1.62 (calls ÷ (calls + beyond completions) 0.065)
+  decision kind through 37.44, completed 28.57, completed beyond 22.80; per decision: attackers offside 0.319, behind runners 0.140 (offside 0.072)
+MATCH-30 advanced counters (target v2, match-parity-5): 2 unresolved, 5 inside, 14 outside, 2 unbanded
+  keyPasses: unresolved [8.2, 10.7] 10.8 (10.6–11.0)
+  xa: inside [0.75, 1.15] 1.08 (1.05–1.11)
+  bigChances: outside [0.8, 1.05] 0.69 (0.64–0.74)
+  bigChancesScored: outside [0.4, 0.55] 0.35 (0.32–0.38)
+  boxShots: outside [6.8, 7.7] 7.92 (7.76–8.08)
+  finalThirdPasses: outside [100, 121] 160.2 (158.7–161.7)
+  finalThirdCompleted: outside [65, 85] 110.0 (108.6–111.5)
+  progressivePasses: outside [116, 124] 125.7 (124.8–126.6)
+  takeOns: inside [14, 20] 18.1 (17.7–18.5) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 57.9 (57.3–58.5) (MATCH-23 takeOnSuccess)
+  highTurnovers: unresolved [5.7, 7.5] 5.65 (5.48–5.82)
+  ppda: outside [12, 14] 17.2 (16.9–17.5)
+  fieldTilt: unbanded 53.6 (52.3–54.8)
+  boxEntries: outside [13, 16] 25.1 (24.8–25.5)
+  frontOfBoxEntries: outside [42.5, 45.5] 64.6 (63.8–65.4)
+  lineBreakingPasses: unbanded 96.9 (96.0–97.8)
+  xtAdded: outside [2, 2.3] 4.37 (4.32–4.42)
+  cutBacks: outside [0.35, 0.6] 0.16 (0.14–0.19)
+  crosses: inside [13, 20] 17.8 (17.5–18.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.1 (24.5–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 33.0 (31.9–34.0)
+  throughBallsCompleted: outside [0.6, 0.85] 24.7 (23.9–25.5)
+  progressiveCarries: outside [58.5, 63] 40.3 (39.9–40.7)
+core 31/38 inside
+  inside       possessionShots: 13.314 [13.073, 13.555] band 10–15
+  inside       shots: 12.988 [12.762, 13.214] band 11–14
+  inside       shotsGoalArea: 7.802 [7.372, 8.232] band 6–9
+  inside       shotsBox: 53.182 [52.294, 54.071] band 48–58
+  inside       shotsOutside: 39.016 [38.130, 39.901] band 32–42
+  inside       shotsFar: 9.239 [8.754, 9.724] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.465 [9.296, 9.634] band 7–9
+  inside       offsides: 1.616 [1.516, 1.716] band 1.5–2.5
+  unresolved   redCards: 0.105 [0.079, 0.131] band 0.08–0.15
+  unresolved   goals: 2.853 [2.720, 2.987] band 2.6–2.9
+  unresolved   setPieceGoals: 20.444 [18.608, 22.280] band 20–28
+  unresolved   penaltyGoals: 5.199 [4.127, 6.271] band 6–9
+  unresolved   headedGoals: 18.341 [16.629, 20.053] band 14–20
+  unresolved   goalsFW: 61.157 [58.666, 63.647] band 50–60
+  inside       goalsMF: 29.381 [27.103, 31.659] band 27–37
+  inside       goalsDF: 9.463 [8.084, 10.841] band 8–15
+
+## screen-r1-a0.log
+core:equal-top-tier calibration r41: 600 matches (74 s), patch none
+  a team a match: open-play passes 395.69, completed 319.81, completed to a receiver beyond the line 0.06 (of them on a run 0.05), offside calls 2.80 (calls ÷ (calls + beyond completions) 0.981)
+  decision kind through 13.12, completed 10.48, completed beyond 0.02; per decision: attackers offside 0.071, behind runners 0.166 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.51 (9.29–9.72)
+  xa: inside [0.75, 1.15] 0.80 (0.77–0.82)
+  bigChances: outside [0.8, 1.05] 0.48 (0.44–0.52)
+  bigChancesScored: outside [0.4, 0.55] 0.26 (0.23–0.29)
+  boxShots: outside [6.8, 7.7] 6.17 (6.01–6.33)
+  finalThirdPasses: outside [100, 121] 161.4 (159.9–162.9)
+  finalThirdCompleted: outside [65, 85] 113.2 (111.7–114.7)
+  progressivePasses: unresolved [116, 124] 123.5 (122.6–124.4)
+  takeOns: inside [14, 20] 18.8 (18.4–19.1) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.3 (57.7–59.0) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.41 (5.26–5.56)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 53.2 (51.9–54.5)
+  boxEntries: outside [13, 16] 18.2 (17.9–18.4)
+  frontOfBoxEntries: outside [42.5, 45.5] 67.9 (67.1–68.7)
+  lineBreakingPasses: unbanded 90.7 (89.8–91.6)
+  xtAdded: outside [2, 2.3] 3.52 (3.48–3.56)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 15.0 (14.7–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.2 (24.6–25.9) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.95 (4.63–5.26)
+  throughBallsCompleted: outside [0.6, 0.85] 1.74 (1.57–1.91)
+  progressiveCarries: outside [58.5, 63] 39.5 (39.1–39.9)
+core 25/38 inside
+  inside       possessionShots: 12.127 [11.868, 12.387] band 10–15
+  inside       shots: 11.600 [11.355, 11.845] band 11–14
+  unresolved   shotsGoalArea: 6.020 [5.617, 6.423] band 6–9
+  unresolved   shotsBox: 47.162 [46.247, 48.078] band 48–58
+  outside      shotsOutside: 46.818 [45.905, 47.730] band 32–42
+  outside      shotDistance: 18.736 [18.575, 18.897] band 15–18
+  outside      shotsFar: 12.457 [11.904, 13.009] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      offsides: 2.800 [2.662, 2.938] band 1.5–2.5
+  unresolved   redCards: 0.090 [0.067, 0.113] band 0.08–0.15
+  outside      goals: 2.098 [1.979, 2.218] band 2.6–2.9
+  unresolved   setPieceGoals: 26.052 [23.542, 28.563] band 20–28
+  unresolved   penaltyGoals: 5.401 [4.170, 6.633] band 6–9
+  unresolved   headedGoals: 20.969 [18.774, 23.164] band 14–20
+  outside      goalsFW: 63.860 [61.224, 66.496] band 50–60
+  unresolved   goalsMF: 24.702 [22.379, 27.026] band 27–37
+  inside       goalsDF: 11.438 [9.618, 13.258] band 8–15
+
+## screen-r1-s1a.log
+core:equal-top-tier calibration r41: 600 matches (64 s), patch {"coordination":{"hold":{"far":1,"near":0.2}}}
+  a team a match: open-play passes 394.70, completed 319.08, completed to a receiver beyond the line 0.06 (of them on a run 0.04), offside calls 3.65 (calls ÷ (calls + beyond completions) 0.985)
+  decision kind through 12.79, completed 10.12, completed beyond 0.02; per decision: attackers offside 0.096, behind runners 0.167 (offside 0.007)
+MATCH-30 advanced counters (target v2, match-parity-5): 5 inside, 2 unresolved, 14 outside, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.34 (9.13–9.54)
+  xa: unresolved [0.75, 1.15] 0.76 (0.74–0.79)
+  bigChances: outside [0.8, 1.05] 0.45 (0.41–0.49)
+  bigChancesScored: outside [0.4, 0.55] 0.23 (0.20–0.25)
+  boxShots: outside [6.8, 7.7] 5.99 (5.84–6.14)
+  finalThirdPasses: outside [100, 121] 158.6 (157.1–160.1)
+  finalThirdCompleted: outside [65, 85] 111.3 (109.8–112.8)
+  progressivePasses: unresolved [116, 124] 123.3 (122.4–124.2)
+  takeOns: inside [14, 20] 18.3 (18.0–18.7) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.1 (57.5–58.8) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.42 (5.27–5.57)
+  ppda: outside [12, 14] 17.6 (17.3–17.9)
+  fieldTilt: unbanded 53.2 (51.9–54.5)
+  boxEntries: outside [13, 16] 18.1 (17.8–18.4)
+  frontOfBoxEntries: outside [42.5, 45.5] 67.4 (66.5–68.2)
+  lineBreakingPasses: unbanded 89.7 (88.8–90.7)
+  xtAdded: outside [2, 2.3] 3.51 (3.46–3.56)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.09–0.12)
+  crosses: inside [13, 20] 14.7 (14.4–15.0) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.0 (24.3–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 5.72 (5.36–6.08)
+  throughBallsCompleted: outside [0.6, 0.85] 1.70 (1.53–1.87)
+  progressiveCarries: outside [58.5, 63] 39.2 (38.7–39.6)
+core 25/38 inside
+  inside       possessionShots: 11.863 [11.626, 12.100] band 10–15
+  inside       shots: 11.370 [11.140, 11.600] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.245 [5.820, 6.669] band 6–9
+  outside      shotsBox: 46.438 [45.528, 47.348] band 48–58
+  outside      shotsOutside: 47.318 [46.423, 48.212] band 32–42
+  outside      shotDistance: 18.800 [18.642, 18.959] band 15–18
+  outside      shotsFar: 12.350 [11.770, 12.929] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      offsides: 3.647 [3.460, 3.835] band 1.5–2.5
+  unresolved   redCards: 0.095 [0.072, 0.118] band 0.08–0.15
+  outside      goals: 2.087 [1.971, 2.203] band 2.6–2.9
+  inside       setPieceGoals: 25.240 [22.968, 27.512] band 20–28
+  outside      penaltyGoals: 3.994 [2.866, 5.121] band 6–9
+  unresolved   headedGoals: 20.288 [18.022, 22.553] band 14–20
+  outside      goalsFW: 64.217 [61.412, 67.022] band 50–60
+  outside      goalsMF: 23.802 [21.270, 26.334] band 27–37
+  inside       goalsDF: 11.981 [10.030, 13.931] band 8–15
+
+## screen-r1-s1b.log
+core:equal-top-tier calibration r41: 600 matches (36 s), patch {"coordination":{"hold":{"far":3,"near":1}}}
+  a team a match: open-play passes 401.06, completed 325.37, completed to a receiver beyond the line 0.07 (of them on a run 0.04), offside calls 2.19 (calls ÷ (calls + beyond completions) 0.971)
+  decision kind through 13.38, completed 10.71, completed beyond 0.01; per decision: attackers offside 0.052, behind runners 0.166 (offside 0.004)
+MATCH-30 advanced counters (target v2, match-parity-5): 5 inside, 2 unresolved, 14 outside, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.26 (9.06–9.47)
+  xa: unresolved [0.75, 1.15] 0.77 (0.75–0.80)
+  bigChances: outside [0.8, 1.05] 0.44 (0.40–0.48)
+  bigChancesScored: outside [0.4, 0.55] 0.22 (0.19–0.24)
+  boxShots: outside [6.8, 7.7] 6.00 (5.85–6.15)
+  finalThirdPasses: outside [100, 121] 165.2 (163.7–166.7)
+  finalThirdCompleted: outside [65, 85] 117.0 (115.5–118.4)
+  progressivePasses: unresolved [116, 124] 124.6 (123.7–125.5)
+  takeOns: inside [14, 20] 19.2 (18.9–19.6) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.3 (57.7–58.9) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.30 (5.15–5.46)
+  ppda: outside [12, 14] 17.1 (16.9–17.4)
+  fieldTilt: unbanded 53.4 (52.1–54.7)
+  boxEntries: outside [13, 16] 17.9 (17.6–18.2)
+  frontOfBoxEntries: outside [42.5, 45.5] 69.4 (68.6–70.3)
+  lineBreakingPasses: unbanded 93.2 (92.3–94.1)
+  xtAdded: outside [2, 2.3] 3.52 (3.48–3.57)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.13)
+  crosses: inside [13, 20] 14.7 (14.4–15.0) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.0 (24.3–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.34 (4.05–4.63)
+  throughBallsCompleted: outside [0.6, 0.85] 1.78 (1.60–1.96)
+  progressiveCarries: outside [58.5, 63] 39.8 (39.3–40.2)
+core 25/38 inside
+  inside       possessionShots: 11.993 [11.746, 12.240] band 10–15
+  inside       shots: 11.385 [11.153, 11.617] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.412 [5.988, 6.836] band 6–9
+  outside      shotsBox: 46.252 [45.333, 47.172] band 48–58
+  outside      shotsOutside: 47.336 [46.406, 48.266] band 32–42
+  outside      shotDistance: 18.828 [18.656, 18.999] band 15–18
+  outside      shotsFar: 13.270 [12.682, 13.859] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 2.194 [2.081, 2.307] band 1.5–2.5
+  unresolved   redCards: 0.095 [0.070, 0.120] band 0.08–0.15
+  outside      goals: 1.978 [1.868, 2.089] band 2.6–2.9
+  unresolved   setPieceGoals: 27.801 [25.208, 30.394] band 20–28
+  outside      penaltyGoals: 4.212 [3.117, 5.307] band 6–9
+  unresolved   headedGoals: 21.567 [19.202, 23.932] band 14–20
+  outside      goalsFW: 62.932 [60.101, 65.763] band 50–60
+  unresolved   goalsMF: 25.190 [22.653, 27.726] band 27–37
+  inside       goalsDF: 11.879 [9.965, 13.792] band 8–15
+
+## screen-r1-s2a.log
+core:equal-top-tier calibration r41: 600 matches (33 s), patch {"coordination":{"hold":{"early":0.5}}}
+  a team a match: open-play passes 398.71, completed 323.10, completed to a receiver beyond the line 0.07 (of them on a run 0.05), offside calls 2.32 (calls ÷ (calls + beyond completions) 0.972)
+  decision kind through 13.41, completed 10.81, completed beyond 0.02; per decision: attackers offside 0.055, behind runners 0.165 (offside 0.004)
+MATCH-30 advanced counters (target v2, match-parity-5): 5 inside, 2 unresolved, 14 outside, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.37 (9.16–9.57)
+  xa: unresolved [0.75, 1.15] 0.76 (0.74–0.78)
+  bigChances: outside [0.8, 1.05] 0.41 (0.38–0.45)
+  bigChancesScored: outside [0.4, 0.55] 0.21 (0.19–0.23)
+  boxShots: outside [6.8, 7.7] 6.08 (5.93–6.23)
+  finalThirdPasses: outside [100, 121] 163.0 (161.5–164.5)
+  finalThirdCompleted: outside [65, 85] 114.8 (113.4–116.3)
+  progressivePasses: unresolved [116, 124] 124.4 (123.5–125.3)
+  takeOns: inside [14, 20] 18.9 (18.6–19.3) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 57.9 (57.3–58.6) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.30 (5.14–5.45)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 53.6 (52.3–54.9)
+  boxEntries: outside [13, 16] 18.4 (18.1–18.7)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.5 (67.7–69.3)
+  lineBreakingPasses: unbanded 92.2 (91.2–93.1)
+  xtAdded: outside [2, 2.3] 3.57 (3.53–3.61)
+  cutBacks: outside [0.35, 0.6] 0.09 (0.07–0.11)
+  crosses: inside [13, 20] 14.9 (14.6–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.1 (24.4–25.9) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.54 (4.24–4.85)
+  throughBallsCompleted: outside [0.6, 0.85] 1.80 (1.62–1.99)
+  progressiveCarries: outside [58.5, 63] 40.0 (39.5–40.4)
+core 24/38 inside
+  inside       possessionShots: 12.002 [11.766, 12.238] band 10–15
+  inside       shots: 11.517 [11.284, 11.750] band 11–14
+  unresolved   xgPerShot: 0.089 [0.087, 0.091] band 0.09–0.12
+  unresolved   shotsGoalArea: 5.883 [5.476, 6.290] band 6–9
+  outside      shotsBox: 46.910 [46.005, 47.816] band 48–58
+  outside      shotsOutside: 47.207 [46.277, 48.137] band 32–42
+  outside      shotDistance: 18.872 [18.707, 19.037] band 15–18
+  outside      shotsFar: 12.648 [12.093, 13.204] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 2.323 [2.204, 2.443] band 1.5–2.5
+  unresolved   redCards: 0.087 [0.064, 0.110] band 0.08–0.15
+  outside      goals: 2.038 [1.926, 2.151] band 2.6–2.9
+  outside      setPieceGoals: 30.581 [28.033, 33.128] band 20–28
+  outside      penaltyGoals: 3.679 [2.633, 4.726] band 6–9
+  outside      headedGoals: 24.285 [21.959, 26.610] band 14–20
+  unresolved   goalsFW: 61.733 [58.898, 64.569] band 50–60
+  outside      goalsMF: 23.058 [20.666, 25.450] band 27–37
+  unresolved   goalsDF: 15.209 [13.093, 17.324] band 8–15
+
+## screen-r1-s2b.log
+core:equal-top-tier calibration r41: 600 matches (48 s), patch {"coordination":{"hold":{"early":1}}}
+  a team a match: open-play passes 397.01, completed 321.37, completed to a receiver beyond the line 0.06 (of them on a run 0.04), offside calls 2.82 (calls ÷ (calls + beyond completions) 0.980)
+  decision kind through 13.26, completed 10.36, completed beyond 0.02; per decision: attackers offside 0.054, behind runners 0.165 (offside 0.008)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.33 (9.12–9.55)
+  xa: inside [0.75, 1.15] 0.78 (0.76–0.81)
+  bigChances: outside [0.8, 1.05] 0.45 (0.41–0.48)
+  bigChancesScored: outside [0.4, 0.55] 0.23 (0.20–0.26)
+  boxShots: outside [6.8, 7.7] 6.00 (5.84–6.17)
+  finalThirdPasses: outside [100, 121] 162.0 (160.5–163.5)
+  finalThirdCompleted: outside [65, 85] 113.6 (112.2–115.0)
+  progressivePasses: unresolved [116, 124] 124.2 (123.3–125.1)
+  takeOns: inside [14, 20] 18.7 (18.3–19.0) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.0 (57.4–58.7) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.42 (5.27–5.57)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 52.9 (51.6–54.1)
+  boxEntries: outside [13, 16] 18.1 (17.8–18.4)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.6 (67.7–69.4)
+  lineBreakingPasses: unbanded 91.6 (90.7–92.5)
+  xtAdded: outside [2, 2.3] 3.52 (3.48–3.57)
+  cutBacks: outside [0.35, 0.6] 0.08 (0.06–0.10)
+  crosses: inside [13, 20] 14.8 (14.6–15.1) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.6 (23.9–25.3) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.97 (4.67–5.27)
+  throughBallsCompleted: outside [0.6, 0.85] 1.77 (1.59–1.95)
+  progressiveCarries: outside [58.5, 63] 39.6 (39.2–40.0)
+core 25/38 inside
+  inside       possessionShots: 11.945 [11.688, 12.202] band 10–15
+  inside       shots: 11.371 [11.128, 11.614] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.178 [5.772, 6.585] band 6–9
+  outside      shotsBox: 46.618 [45.717, 47.519] band 48–58
+  outside      shotsOutside: 47.204 [46.303, 48.105] band 32–42
+  outside      shotDistance: 18.879 [18.715, 19.044] band 15–18
+  outside      shotsFar: 12.920 [12.317, 13.524] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      offsides: 2.822 [2.691, 2.952] band 1.5–2.5
+  outside      goals: 2.140 [2.018, 2.262] band 2.6–2.9
+  unresolved   setPieceGoals: 28.972 [26.458, 31.486] band 20–28
+  outside      penaltyGoals: 4.128 [3.035, 5.220] band 6–9
+  outside      headedGoals: 24.221 [21.864, 26.578] band 14–20
+  outside      goalsFW: 64.252 [61.595, 66.909] band 50–60
+  outside      goalsMF: 23.910 [21.574, 26.246] band 27–37
+  inside       goalsDF: 11.838 [10.078, 13.598] band 8–15
+
+## screen-r1-s3a.log
+core:equal-top-tier calibration r41: 600 matches (40 s), patch {"decide":{"candidate":{"offsideSeen":0.5}}}
+  a team a match: open-play passes 399.12, completed 324.15, completed to a receiver beyond the line 0.07 (of them on a run 0.06), offside calls 1.61 (calls ÷ (calls + beyond completions) 0.958)
+  decision kind through 13.21, completed 10.62, completed beyond 0.02; per decision: attackers offside 0.071, behind runners 0.167 (offside 0.006)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.55 (9.34–9.76)
+  xa: inside [0.75, 1.15] 0.78 (0.75–0.80)
+  bigChances: outside [0.8, 1.05] 0.45 (0.41–0.48)
+  bigChancesScored: outside [0.4, 0.55] 0.23 (0.20–0.26)
+  boxShots: outside [6.8, 7.7] 6.08 (5.93–6.23)
+  finalThirdPasses: outside [100, 121] 163.8 (162.3–165.3)
+  finalThirdCompleted: outside [65, 85] 115.6 (114.2–117.1)
+  progressivePasses: unresolved [116, 124] 124.3 (123.4–125.2)
+  takeOns: inside [14, 20] 19.0 (18.7–19.4) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.6 (57.9–59.2) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.38 (5.23–5.53)
+  ppda: outside [12, 14] 17.2 (16.9–17.5)
+  fieldTilt: unbanded 53.2 (52.0–54.5)
+  boxEntries: outside [13, 16] 18.2 (17.9–18.5)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.9 (68.1–69.8)
+  lineBreakingPasses: unbanded 91.8 (90.9–92.7)
+  xtAdded: outside [2, 2.3] 3.55 (3.50–3.59)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 14.9 (14.6–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.6 (24.0–25.3) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.53 (3.28–3.77)
+  throughBallsCompleted: outside [0.6, 0.85] 1.59 (1.44–1.74)
+  progressiveCarries: outside [58.5, 63] 39.7 (39.3–40.2)
+core 26/38 inside
+  inside       possessionShots: 12.455 [12.207, 12.703] band 10–15
+  inside       shots: 11.748 [11.515, 11.980] band 11–14
+  unresolved   xgPerShot: 0.090 [0.088, 0.092] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.150 [5.746, 6.554] band 6–9
+  outside      shotsBox: 45.570 [44.721, 46.419] band 48–58
+  outside      shotsOutside: 48.280 [47.434, 49.125] band 32–42
+  outside      shotDistance: 18.959 [18.802, 19.115] band 15–18
+  outside      shotsFar: 12.499 [11.922, 13.076] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 1.612 [1.519, 1.704] band 1.5–2.5
+  unresolved   redCards: 0.093 [0.070, 0.117] band 0.08–0.15
+  outside      goals: 2.095 [1.980, 2.210] band 2.6–2.9
+  inside       setPieceGoals: 25.139 [22.680, 27.599] band 20–28
+  unresolved   penaltyGoals: 4.932 [3.741, 6.124] band 6–9
+  unresolved   headedGoals: 21.559 [19.287, 23.831] band 14–20
+  outside      goalsFW: 63.325 [60.563, 66.088] band 50–60
+  outside      goalsMF: 24.582 [22.212, 26.953] band 27–37
+  inside       goalsDF: 12.092 [10.234, 13.951] band 8–15
+
+## screen-r1-s3b.log
+core:equal-top-tier calibration r41: 600 matches (40 s), patch {"decide":{"candidate":{"through":{"score":0.8}}}}
+  a team a match: open-play passes 394.85, completed 319.49, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 2.82 (calls ÷ (calls + beyond completions) 0.974)
+  decision kind through 15.49, completed 12.48, completed beyond 0.02; per decision: attackers offside 0.071, behind runners 0.161 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.59 (9.39–9.79)
+  xa: inside [0.75, 1.15] 0.79 (0.77–0.81)
+  bigChances: outside [0.8, 1.05] 0.45 (0.41–0.49)
+  bigChancesScored: outside [0.4, 0.55] 0.22 (0.20–0.25)
+  boxShots: outside [6.8, 7.7] 6.18 (6.03–6.33)
+  finalThirdPasses: outside [100, 121] 161.7 (160.1–163.2)
+  finalThirdCompleted: outside [65, 85] 113.5 (112.0–115.0)
+  progressivePasses: unresolved [116, 124] 123.7 (122.7–124.6)
+  takeOns: inside [14, 20] 18.7 (18.3–19.1) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 57.3 (56.7–57.9) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.53 (5.37–5.68)
+  ppda: outside [12, 14] 17.3 (17.1–17.6)
+  fieldTilt: unbanded 53.2 (51.9–54.4)
+  boxEntries: outside [13, 16] 18.3 (18.0–18.6)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.0 (67.2–68.9)
+  lineBreakingPasses: unbanded 91.3 (90.4–92.2)
+  xtAdded: outside [2, 2.3] 3.53 (3.49–3.58)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.11)
+  crosses: inside [13, 20] 15.0 (14.8–15.3) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.1 (24.5–25.8) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 5.23 (4.89–5.57)
+  throughBallsCompleted: outside [0.6, 0.85] 1.99 (1.79–2.18)
+  progressiveCarries: outside [58.5, 63] 39.5 (39.1–39.9)
+core 24/38 inside
+  inside       possessionShots: 12.195 [11.963, 12.428] band 10–15
+  inside       shots: 11.718 [11.497, 11.940] band 11–14
+  unresolved   xgPerShot: 0.090 [0.088, 0.092] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.066 [5.666, 6.466] band 6–9
+  outside      shotsBox: 46.679 [45.796, 47.562] band 48–58
+  outside      shotsOutside: 47.255 [46.376, 48.134] band 32–42
+  outside      shotDistance: 18.828 [18.667, 18.989] band 15–18
+  outside      shotsFar: 12.431 [11.882, 12.980] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      offsides: 2.822 [2.686, 2.959] band 1.5–2.5
+  unresolved   redCards: 0.085 [0.061, 0.109] band 0.08–0.15
+  outside      goals: 2.108 [1.993, 2.223] band 2.6–2.9
+  unresolved   setPieceGoals: 29.565 [27.085, 32.046] band 20–28
+  outside      penaltyGoals: 4.269 [3.224, 5.314] band 6–9
+  outside      headedGoals: 24.980 [22.623, 27.337] band 14–20
+  outside      goalsFW: 63.478 [60.688, 66.268] band 50–60
+  outside      goalsMF: 24.427 [22.026, 26.828] band 27–37
+  inside       goalsDF: 12.095 [10.270, 13.920] band 8–15
+
+## screen-r1-s3c.log
+core:equal-top-tier calibration r41: 600 matches (28 s), patch {"decide":{"candidate":{"through":{"score":0}}}}
+  a team a match: open-play passes 398.67, completed 323.19, completed to a receiver beyond the line 0.06 (of them on a run 0.04), offside calls 2.71 (calls ÷ (calls + beyond completions) 0.979)
+  decision kind through 0.00, completed 0.00, completed beyond 0.00; per decision: attackers offside 0.070, behind runners 0.170 (offside 0.006)
+MATCH-30 advanced counters (target v2, match-parity-5): 5 inside, 2 unresolved, 14 outside, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.33 (9.12–9.53)
+  xa: unresolved [0.75, 1.15] 0.76 (0.73–0.78)
+  bigChances: outside [0.8, 1.05] 0.47 (0.43–0.51)
+  bigChancesScored: outside [0.4, 0.55] 0.24 (0.21–0.27)
+  boxShots: outside [6.8, 7.7] 5.99 (5.85–6.13)
+  finalThirdPasses: outside [100, 121] 160.9 (159.4–162.4)
+  finalThirdCompleted: outside [65, 85] 113.2 (111.7–114.7)
+  progressivePasses: unresolved [116, 124] 124.3 (123.4–125.2)
+  takeOns: inside [14, 20] 19.0 (18.6–19.4) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.6 (58.0–59.3) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.39 (5.22–5.56)
+  ppda: outside [12, 14] 17.2 (16.9–17.4)
+  fieldTilt: unbanded 53.2 (51.9–54.5)
+  boxEntries: outside [13, 16] 17.8 (17.5–18.1)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.3 (67.4–69.1)
+  lineBreakingPasses: unbanded 90.8 (89.8–91.7)
+  xtAdded: outside [2, 2.3] 3.50 (3.45–3.54)
+  cutBacks: outside [0.35, 0.6] 0.09 (0.08–0.11)
+  crosses: inside [13, 20] 14.6 (14.4–14.9) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.3 (24.5–26.0) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.19 (3.01–3.37)
+  throughBallsCompleted: outside [0.6, 0.85] 0.38 (0.32–0.43)
+  progressiveCarries: outside [58.5, 63] 39.4 (39.0–39.9)
+core 24/38 inside
+  inside       possessionShots: 12.102 [11.860, 12.343] band 10–15
+  inside       shots: 11.476 [11.255, 11.697] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.194 [5.792, 6.596] band 6–9
+  outside      shotsBox: 46.039 [45.097, 46.981] band 48–58
+  outside      shotsOutside: 47.767 [46.835, 48.699] band 32–42
+  outside      shotDistance: 18.925 [18.755, 19.095] band 15–18
+  outside      shotsFar: 12.846 [12.232, 13.460] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      offsides: 2.708 [2.572, 2.843] band 1.5–2.5
+  outside      goals: 2.062 [1.946, 2.178] band 2.6–2.9
+  unresolved   setPieceGoals: 29.669 [27.223, 32.114] band 20–28
+  outside      penaltyGoals: 4.608 [3.407, 5.809] band 6–9
+  outside      headedGoals: 24.980 [22.648, 27.311] band 14–20
+  outside      goalsFW: 63.541 [60.674, 66.408] band 50–60
+  outside      goalsMF: 22.312 [20.046, 24.578] band 27–37
+  unresolved   goalsDF: 14.147 [12.087, 16.207] band 8–15
+
+## screen-r2-g1.log
+core:equal-top-tier calibration r41: 600 matches (34 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25},"shotScale":0.5}}}
+  a team a match: open-play passes 397.05, completed 322.58, completed to a receiver beyond the line 0.06 (of them on a run 0.04), offside calls 2.01 (calls ÷ (calls + beyond completions) 0.969)
+  decision kind through 12.22, completed 9.83, completed beyond 0.01; per decision: attackers offside 0.055, behind runners 0.167 (offside 0.004)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 10.2 (10.00–10.4)
+  xa: inside [0.75, 1.15] 0.82 (0.80–0.85)
+  bigChances: outside [0.8, 1.05] 0.46 (0.42–0.50)
+  bigChancesScored: outside [0.4, 0.55] 0.22 (0.20–0.25)
+  boxShots: outside [6.8, 7.7] 6.40 (6.25–6.55)
+  finalThirdPasses: outside [100, 121] 161.5 (159.9–163.0)
+  finalThirdCompleted: outside [65, 85] 114.1 (112.6–115.6)
+  progressivePasses: unresolved [116, 124] 124.2 (123.2–125.1)
+  takeOns: inside [14, 20] 18.7 (18.4–19.1) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.1 (57.4–58.7) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.37 (5.21–5.53)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 53.2 (52.0–54.5)
+  boxEntries: outside [13, 16] 17.9 (17.6–18.2)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.6 (67.7–69.5)
+  lineBreakingPasses: unbanded 91.2 (90.2–92.1)
+  xtAdded: outside [2, 2.3] 3.50 (3.46–3.55)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 14.8 (14.5–15.0) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.0 (24.3–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.07 (3.79–4.35)
+  throughBallsCompleted: outside [0.6, 0.85] 1.69 (1.52–1.86)
+  progressiveCarries: outside [58.5, 63] 39.2 (38.8–39.6)
+core 25/38 inside
+  inside       possessionShots: 13.083 [12.829, 13.338] band 10–15
+  inside       shots: 12.418 [12.175, 12.660] band 11–14
+  unresolved   xgPerShot: 0.089 [0.087, 0.091] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.308 [5.913, 6.704] band 6–9
+  outside      shotsBox: 45.225 [44.288, 46.163] band 48–58
+  outside      shotsOutside: 48.467 [47.542, 49.391] band 32–42
+  outside      shotDistance: 19.141 [18.978, 19.304] band 15–18
+  outside      shotsFar: 13.153 [12.579, 13.728] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 8.836 [8.665, 9.006] band 7–9
+  inside       offsides: 2.013 [1.903, 2.124] band 1.5–2.5
+  outside      goals: 2.207 [2.093, 2.320] band 2.6–2.9
+  unresolved   setPieceGoals: 25.906 [23.538, 28.275] band 20–28
+  outside      penaltyGoals: 2.946 [2.027, 3.864] band 6–9
+  unresolved   headedGoals: 19.713 [17.580, 21.846] band 14–20
+  unresolved   goalsFW: 61.631 [58.838, 64.424] band 50–60
+  unresolved   goalsMF: 25.453 [23.083, 27.823] band 27–37
+  inside       goalsDF: 12.915 [11.012, 14.819] band 8–15
+
+## screen-r2-g2.log
+core:equal-top-tier calibration r41: 600 matches (33 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25},"shotScale":0.5,"longShotScale":3}}}
+  a team a match: open-play passes 398.49, completed 323.62, completed to a receiver beyond the line 0.07 (of them on a run 0.05), offside calls 1.98 (calls ÷ (calls + beyond completions) 0.967)
+  decision kind through 12.28, completed 9.81, completed beyond 0.02; per decision: attackers offside 0.055, behind runners 0.168 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.83 (9.61–10.1)
+  xa: inside [0.75, 1.15] 0.83 (0.80–0.85)
+  bigChances: outside [0.8, 1.05] 0.47 (0.43–0.51)
+  bigChancesScored: outside [0.4, 0.55] 0.23 (0.20–0.26)
+  boxShots: outside [6.8, 7.7] 6.45 (6.29–6.61)
+  finalThirdPasses: outside [100, 121] 162.2 (160.7–163.7)
+  finalThirdCompleted: outside [65, 85] 114.8 (113.3–116.2)
+  progressivePasses: unresolved [116, 124] 124.2 (123.3–125.2)
+  takeOns: inside [14, 20] 18.9 (18.5–19.2) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.0 (57.3–58.6) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.29 (5.13–5.46)
+  ppda: outside [12, 14] 17.5 (17.2–17.7)
+  fieldTilt: unbanded 53.5 (52.2–54.8)
+  boxEntries: outside [13, 16] 18.2 (17.9–18.5)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.6 (67.7–69.5)
+  lineBreakingPasses: unbanded 91.5 (90.5–92.4)
+  xtAdded: outside [2, 2.3] 3.54 (3.49–3.58)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.13)
+  crosses: inside [13, 20] 14.9 (14.6–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.4 (24.6–26.1) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.98 (3.70–4.26)
+  throughBallsCompleted: outside [0.6, 0.85] 1.62 (1.45–1.80)
+  progressiveCarries: outside [58.5, 63] 39.5 (39.1–39.9)
+core 27/38 inside
+  inside       possessionShots: 12.630 [12.375, 12.885] band 10–15
+  inside       shots: 12.013 [11.766, 12.261] band 11–14
+  inside       shotsGoalArea: 6.527 [6.103, 6.952] band 6–9
+  unresolved   shotsBox: 47.163 [46.260, 48.066] band 48–58
+  outside      shotsOutside: 46.310 [45.398, 47.222] band 32–42
+  outside      shotDistance: 18.544 [18.386, 18.702] band 15–18
+  unresolved   shotsFar: 9.739 [9.263, 10.215] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 1.978 [1.868, 2.087] band 1.5–2.5
+  unresolved   redCards: 0.132 [0.103, 0.160] band 0.08–0.15
+  outside      goals: 2.205 [2.087, 2.323] band 2.6–2.9
+  unresolved   setPieceGoals: 27.589 [25.094, 30.084] band 20–28
+  outside      penaltyGoals: 3.855 [2.806, 4.904] band 6–9
+  outside      headedGoals: 22.827 [20.465, 25.188] band 14–20
+  outside      goalsFW: 64.626 [61.708, 67.543] band 50–60
+  outside      goalsMF: 22.600 [20.200, 25.000] band 27–37
+  inside       goalsDF: 12.774 [10.822, 14.726] band 8–15
+
+## screen-r2-g3.log
+core:equal-top-tier calibration r41: 600 matches (46 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25},"shotScale":0.55,"longShotScale":3,"shotBox":0.75}}}
+  a team a match: open-play passes 395.88, completed 321.92, completed to a receiver beyond the line 0.06 (of them on a run 0.05), offside calls 1.97 (calls ÷ (calls + beyond completions) 0.968)
+  decision kind through 12.21, completed 9.80, completed beyond 0.02; per decision: attackers offside 0.055, behind runners 0.166 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 2 unresolved, 6 inside, 13 outside, 2 unbanded
+  keyPasses: unresolved [8.2, 10.7] 10.7 (10.4–10.9)
+  xa: inside [0.75, 1.15] 0.91 (0.88–0.93)
+  bigChances: outside [0.8, 1.05] 0.48 (0.44–0.52)
+  bigChancesScored: outside [0.4, 0.55] 0.25 (0.22–0.28)
+  boxShots: inside [6.8, 7.7] 7.07 (6.90–7.23)
+  finalThirdPasses: outside [100, 121] 159.7 (158.3–161.2)
+  finalThirdCompleted: outside [65, 85] 112.9 (111.5–114.3)
+  progressivePasses: unresolved [116, 124] 124.1 (123.2–125.0)
+  takeOns: inside [14, 20] 18.6 (18.2–19.0) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.3 (57.7–58.9) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.42 (5.26–5.58)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 53.2 (51.9–54.4)
+  boxEntries: outside [13, 16] 17.8 (17.5–18.1)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.6 (67.8–69.5)
+  lineBreakingPasses: unbanded 91.5 (90.6–92.4)
+  xtAdded: outside [2, 2.3] 3.47 (3.43–3.51)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.11)
+  crosses: inside [13, 20] 14.5 (14.2–14.7) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.4 (23.7–25.1) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 4.00 (3.72–4.27)
+  throughBallsCompleted: outside [0.6, 0.85] 1.65 (1.48–1.82)
+  progressiveCarries: outside [58.5, 63] 39.2 (38.7–39.6)
+core 26/38 inside
+  inside       possessionShots: 13.657 [13.400, 13.913] band 10–15
+  inside       shots: 12.978 [12.733, 13.223] band 11–14
+  unresolved   shotsGoalArea: 5.862 [5.496, 6.228] band 6–9
+  unresolved   shotsBox: 48.587 [47.746, 49.429] band 48–58
+  outside      shotsOutside: 45.550 [44.716, 46.385] band 32–42
+  outside      shotDistance: 18.602 [18.459, 18.745] band 15–18
+  unresolved   shotsFar: 10.010 [9.514, 10.507] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 9.055 [8.889, 9.221] band 7–9
+  inside       offsides: 1.967 [1.858, 2.076] band 1.5–2.5
+  outside      goals: 2.413 [2.293, 2.533] band 2.6–2.9
+  unresolved   setPieceGoals: 21.754 [19.617, 23.891] band 20–28
+  outside      penaltyGoals: 2.901 [2.063, 3.738] band 6–9
+  unresolved   headedGoals: 18.025 [15.993, 20.057] band 14–20
+  outside      goalsFW: 67.610 [65.051, 70.170] band 50–60
+  outside      goalsMF: 22.652 [20.454, 24.850] band 27–37
+  inside       goalsDF: 9.738 [8.230, 11.245] band 8–15
+
+## screen-r2-g4.log
+core:equal-top-tier calibration r41: 600 matches (38 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25},"shotScale":0.6,"longShotScale":2.5,"shotBox":0.9}}}
+  a team a match: open-play passes 393.03, completed 319.57, completed to a receiver beyond the line 0.05 (of them on a run 0.04), offside calls 1.90 (calls ÷ (calls + beyond completions) 0.973)
+  decision kind through 12.16, completed 9.70, completed beyond 0.02; per decision: attackers offside 0.054, behind runners 0.167 (offside 0.004)
+MATCH-30 advanced counters (target v2, match-parity-5): 14 outside, 5 inside, 2 unresolved, 2 unbanded
+  keyPasses: outside [8.2, 10.7] 11.1 (10.9–11.3)
+  xa: inside [0.75, 1.15] 0.96 (0.94–0.99)
+  bigChances: outside [0.8, 1.05] 0.53 (0.49–0.58)
+  bigChancesScored: outside [0.4, 0.55] 0.26 (0.23–0.28)
+  boxShots: unresolved [6.8, 7.7] 7.77 (7.60–7.93)
+  finalThirdPasses: outside [100, 121] 158.3 (156.8–159.8)
+  finalThirdCompleted: outside [65, 85] 112.1 (110.7–113.5)
+  progressivePasses: unresolved [116, 124] 123.6 (122.7–124.6)
+  takeOns: inside [14, 20] 18.5 (18.1–18.8) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.6 (58.0–59.3) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.34 (5.19–5.49)
+  ppda: outside [12, 14] 17.5 (17.2–17.8)
+  fieldTilt: unbanded 53.0 (51.8–54.3)
+  boxEntries: outside [13, 16] 17.9 (17.6–18.2)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.3 (67.5–69.1)
+  lineBreakingPasses: unbanded 91.2 (90.3–92.2)
+  xtAdded: outside [2, 2.3] 3.45 (3.41–3.49)
+  cutBacks: outside [0.35, 0.6] 0.09 (0.07–0.10)
+  crosses: inside [13, 20] 14.3 (14.0–14.6) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.0 (24.3–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.87 (3.61–4.14)
+  throughBallsCompleted: outside [0.6, 0.85] 1.59 (1.43–1.75)
+  progressiveCarries: outside [58.5, 63] 38.8 (38.4–39.2)
+core 28/38 inside
+  inside       possessionShots: 14.411 [14.149, 14.672] band 10–15
+  inside       shots: 13.672 [13.422, 13.923] band 11–14
+  outside      shotsGoalArea: 5.473 [5.133, 5.813] band 6–9
+  inside       shotsBox: 51.338 [50.513, 52.163] band 48–58
+  outside      shotsOutside: 43.189 [42.398, 43.980] band 32–42
+  outside      shotDistance: 18.227 [18.097, 18.356] band 15–18
+  inside       shotsFar: 8.106 [7.671, 8.542] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.433 [9.258, 9.609] band 7–9
+  inside       offsides: 1.901 [1.798, 2.004] band 1.5–2.5
+  unresolved   redCards: 0.083 [0.061, 0.106] band 0.08–0.15
+  unresolved   goals: 2.565 [2.444, 2.686] band 2.6–2.9
+  inside       setPieceGoals: 24.301 [22.203, 26.400] band 20–28
+  outside      penaltyGoals: 2.664 [1.863, 3.465] band 6–9
+  unresolved   headedGoals: 19.038 [17.089, 20.987] band 14–20
+  outside      goalsFW: 66.212 [63.714, 68.709] band 50–60
+  outside      goalsMF: 22.482 [20.334, 24.630] band 27–37
+  inside       goalsDF: 11.306 [9.714, 12.898] band 8–15
+
+## screen-r2-tb.log
+core:equal-top-tier calibration r41: 600 matches (44 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25}}}}
+  a team a match: open-play passes 400.50, completed 324.95, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 1.98 (calls ÷ (calls + beyond completions) 0.960)
+  decision kind through 12.46, completed 9.99, completed beyond 0.02; per decision: attackers offside 0.055, behind runners 0.169 (offside 0.004)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.48 (9.27–9.69)
+  xa: inside [0.75, 1.15] 0.78 (0.76–0.81)
+  bigChances: outside [0.8, 1.05] 0.46 (0.42–0.50)
+  bigChancesScored: outside [0.4, 0.55] 0.24 (0.21–0.26)
+  boxShots: outside [6.8, 7.7] 6.09 (5.93–6.24)
+  finalThirdPasses: outside [100, 121] 163.9 (162.4–165.5)
+  finalThirdCompleted: outside [65, 85] 115.9 (114.4–117.4)
+  progressivePasses: unresolved [116, 124] 124.3 (123.3–125.2)
+  takeOns: inside [14, 20] 19.0 (18.6–19.4) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.9 (58.2–59.5) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.43 (5.27–5.58)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 53.5 (52.2–54.8)
+  boxEntries: outside [13, 16] 18.3 (18.0–18.6)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.8 (67.9–69.6)
+  lineBreakingPasses: unbanded 92.1 (91.1–93.0)
+  xtAdded: outside [2, 2.3] 3.57 (3.52–3.62)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.13)
+  crosses: inside [13, 20] 14.7 (14.5–15.0) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.1 (24.3–25.8) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.99 (3.72–4.26)
+  throughBallsCompleted: outside [0.6, 0.85] 1.64 (1.47–1.81)
+  progressiveCarries: outside [58.5, 63] 39.9 (39.5–40.4)
+core 26/38 inside
+  inside       possessionShots: 12.169 [11.922, 12.416] band 10–15
+  inside       shots: 11.537 [11.307, 11.768] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.248 [5.823, 6.672] band 6–9
+  outside      shotsBox: 46.515 [45.613, 47.417] band 48–58
+  outside      shotsOutside: 47.237 [46.308, 48.167] band 32–42
+  outside      shotDistance: 18.845 [18.675, 19.016] band 15–18
+  outside      shotsFar: 12.387 [11.796, 12.978] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 1.982 [1.876, 2.088] band 1.5–2.5
+  outside      goals: 2.113 [1.999, 2.228] band 2.6–2.9
+  unresolved   setPieceGoals: 26.577 [24.122, 29.032] band 20–28
+  outside      penaltyGoals: 4.180 [3.123, 5.237] band 6–9
+  unresolved   headedGoals: 21.215 [18.938, 23.491] band 14–20
+  unresolved   goalsFW: 62.539 [59.697, 65.382] band 50–60
+  unresolved   goalsMF: 25.710 [23.197, 28.223] band 27–37
+  inside       goalsDF: 11.751 [9.866, 13.635] band 8–15
+
+## screen-r3-d1.log
+core:equal-top-tier calibration r41: 600 matches (33 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6}}}}
+  a team a match: open-play passes 396.97, completed 321.83, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 1.98 (calls ÷ (calls + beyond completions) 0.960)
+  decision kind through 12.44, completed 9.82, completed beyond 0.02; per decision: attackers offside 0.057, behind runners 0.166 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.66 (9.46–9.86)
+  xa: inside [0.75, 1.15] 0.82 (0.79–0.84)
+  bigChances: outside [0.8, 1.05] 0.41 (0.38–0.45)
+  bigChancesScored: outside [0.4, 0.55] 0.19 (0.17–0.21)
+  boxShots: outside [6.8, 7.7] 6.34 (6.19–6.49)
+  finalThirdPasses: outside [100, 121] 162.4 (160.9–163.9)
+  finalThirdCompleted: outside [65, 85] 114.1 (112.7–115.6)
+  progressivePasses: unresolved [116, 124] 124.7 (123.8–125.6)
+  takeOns: inside [14, 20] 18.4 (18.0–18.8) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.5 (57.8–59.2) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.50 (5.34–5.66)
+  ppda: outside [12, 14] 17.2 (16.9–17.5)
+  fieldTilt: unbanded 53.4 (52.1–54.7)
+  boxEntries: outside [13, 16] 19.5 (19.2–19.9)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.4 (67.5–69.2)
+  lineBreakingPasses: unbanded 92.8 (91.8–93.7)
+  xtAdded: outside [2, 2.3] 3.71 (3.66–3.75)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 15.3 (15.0–15.6) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.2 (24.6–25.9) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 10.1 (9.81–10.4)
+  throughBallsCompleted: outside [0.6, 0.85] 6.57 (6.36–6.79)
+  progressiveCarries: outside [58.5, 63] 40.5 (40.1–40.9)
+core 25/38 inside
+  inside       possessionShots: 12.394 [12.154, 12.634] band 10–15
+  inside       shots: 11.809 [11.580, 12.038] band 11–14
+  unresolved   xgPerShot: 0.091 [0.089, 0.093] band 0.09–0.12
+  unresolved   shotsGoalArea: 6.055 [5.658, 6.452] band 6–9
+  unresolved   shotsBox: 47.632 [46.755, 48.510] band 48–58
+  outside      shotsOutside: 46.313 [45.426, 47.199] band 32–42
+  outside      shotDistance: 18.702 [18.545, 18.860] band 15–18
+  outside      shotsFar: 12.321 [11.743, 12.899] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  inside       offsides: 1.975 [1.868, 2.082] band 1.5–2.5
+  unresolved   redCards: 0.083 [0.061, 0.106] band 0.08–0.15
+  outside      goals: 2.143 [2.028, 2.259] band 2.6–2.9
+  unresolved   setPieceGoals: 26.594 [24.004, 29.184] band 20–28
+  outside      penaltyGoals: 3.499 [2.492, 4.507] band 6–9
+  outside      headedGoals: 22.706 [20.254, 25.159] band 14–20
+  unresolved   goalsFW: 62.208 [59.360, 65.057] band 50–60
+  unresolved   goalsMF: 26.128 [23.545, 28.710] band 27–37
+  inside       goalsDF: 11.664 [9.754, 13.575] band 8–15
+
+## screen-r3-d2.log
+core:equal-top-tier calibration r41: 600 matches (44 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.4,"depth":99,"space":6}}}}
+  a team a match: open-play passes 396.24, completed 320.93, completed to a receiver beyond the line 0.07 (of them on a run 0.06), offside calls 1.98 (calls ÷ (calls + beyond completions) 0.965)
+  decision kind through 13.20, completed 10.50, completed beyond 0.02; per decision: attackers offside 0.057, behind runners 0.165 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 15 outside, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.71 (9.50–9.91)
+  xa: inside [0.75, 1.15] 0.84 (0.82–0.87)
+  bigChances: outside [0.8, 1.05] 0.46 (0.42–0.50)
+  bigChancesScored: outside [0.4, 0.55] 0.22 (0.20–0.25)
+  boxShots: outside [6.8, 7.7] 6.41 (6.26–6.56)
+  finalThirdPasses: outside [100, 121] 162.2 (160.7–163.7)
+  finalThirdCompleted: outside [65, 85] 113.6 (112.2–115.0)
+  progressivePasses: outside [116, 124] 125.1 (124.2–126.0)
+  takeOns: inside [14, 20] 18.3 (17.9–18.6) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.1 (57.4–58.8) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.52 (5.36–5.68)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 52.7 (51.4–54.0)
+  boxEntries: outside [13, 16] 19.6 (19.3–19.9)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.6 (67.8–69.4)
+  lineBreakingPasses: unbanded 93.4 (92.5–94.3)
+  xtAdded: outside [2, 2.3] 3.71 (3.66–3.75)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.11)
+  crosses: inside [13, 20] 15.4 (15.1–15.7) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.8 (24.1–25.4) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 10.5 (10.2–10.8)
+  throughBallsCompleted: outside [0.6, 0.85] 6.90 (6.68–7.12)
+  progressiveCarries: outside [58.5, 63] 40.6 (40.2–41.0)
+core 25/38 inside
+  inside       possessionShots: 12.285 [12.050, 12.521] band 10–15
+  inside       shots: 11.807 [11.578, 12.035] band 11–14
+  unresolved   shotsGoalArea: 6.374 [5.986, 6.761] band 6–9
+  unresolved   shotsBox: 47.918 [47.038, 48.798] band 48–58
+  outside      shotsOutside: 45.709 [44.834, 46.583] band 32–42
+  outside      shotDistance: 18.564 [18.407, 18.721] band 15–18
+  outside      shotsFar: 11.752 [11.180, 12.324] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 8.885 [8.713, 9.057] band 7–9
+  inside       offsides: 1.981 [1.879, 2.083] band 1.5–2.5
+  unresolved   redCards: 0.103 [0.077, 0.129] band 0.08–0.15
+  outside      goals: 2.202 [2.084, 2.320] band 2.6–2.9
+  unresolved   setPieceGoals: 27.782 [25.376, 30.188] band 20–28
+  outside      penaltyGoals: 3.936 [2.901, 4.972] band 6–9
+  outside      headedGoals: 22.559 [20.258, 24.859] band 14–20
+  unresolved   goalsFW: 60.863 [58.093, 63.633] band 50–60
+  unresolved   goalsMF: 26.495 [23.947, 29.044] band 27–37
+  inside       goalsDF: 12.642 [10.861, 14.422] band 8–15
+
+## screen-r3-d3.log
+core:equal-top-tier calibration r41: 600 matches (50 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.5,"longShotScale":3}}}
+  a team a match: open-play passes 394.78, completed 320.19, completed to a receiver beyond the line 0.08 (of them on a run 0.05), offside calls 2.00 (calls ÷ (calls + beyond completions) 0.962)
+  decision kind through 12.22, completed 9.69, completed beyond 0.02; per decision: attackers offside 0.057, behind runners 0.167 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 13 outside, 2 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 10.1 (9.88–10.3)
+  xa: inside [0.75, 1.15] 0.86 (0.84–0.89)
+  bigChances: outside [0.8, 1.05] 0.47 (0.43–0.51)
+  bigChancesScored: outside [0.4, 0.55] 0.23 (0.21–0.26)
+  boxShots: unresolved [6.8, 7.7] 6.79 (6.64–6.95)
+  finalThirdPasses: outside [100, 121] 160.4 (158.9–162.0)
+  finalThirdCompleted: outside [65, 85] 112.7 (111.2–114.3)
+  progressivePasses: unresolved [116, 124] 124.3 (123.4–125.3)
+  takeOns: inside [14, 20] 18.2 (17.8–18.6) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.4 (57.7–59.1) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.35 (5.20–5.51)
+  ppda: outside [12, 14] 17.2 (16.9–17.5)
+  fieldTilt: unbanded 53.4 (52.2–54.7)
+  boxEntries: outside [13, 16] 19.3 (19.0–19.6)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.2 (67.4–69.0)
+  lineBreakingPasses: unbanded 92.3 (91.4–93.3)
+  xtAdded: outside [2, 2.3] 3.65 (3.61–3.69)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.09–0.12)
+  crosses: inside [13, 20] 15.4 (15.1–15.6) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.4 (24.7–26.1) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 9.98 (9.70–10.3)
+  throughBallsCompleted: outside [0.6, 0.85] 6.47 (6.26–6.67)
+  progressiveCarries: outside [58.5, 63] 40.1 (39.6–40.5)
+core 28/38 inside
+  inside       possessionShots: 13.015 [12.768, 13.261] band 10–15
+  inside       shots: 12.344 [12.111, 12.577] band 11–14
+  inside       shotsGoalArea: 6.494 [6.068, 6.920] band 6–9
+  unresolved   shotsBox: 48.532 [47.660, 49.403] band 48–58
+  outside      shotsOutside: 44.974 [44.099, 45.849] band 32–42
+  outside      shotDistance: 18.347 [18.197, 18.497] band 15–18
+  unresolved   shotsFar: 9.633 [9.130, 10.137] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 8.905 [8.740, 9.070] band 7–9
+  inside       offsides: 1.996 [1.891, 2.100] band 1.5–2.5
+  outside      goals: 2.308 [2.190, 2.427] band 2.6–2.9
+  inside       setPieceGoals: 24.910 [22.597, 27.223] band 20–28
+  outside      penaltyGoals: 3.394 [2.437, 4.350] band 6–9
+  unresolved   headedGoals: 20.505 [18.334, 22.676] band 14–20
+  outside      goalsFW: 63.321 [60.604, 66.038] band 50–60
+  unresolved   goalsMF: 25.921 [23.437, 28.404] band 27–37
+  inside       goalsDF: 10.758 [9.083, 12.433] band 8–15
+
+## screen-r3-d4.log
+core:equal-top-tier calibration r41: 600 matches (48 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.4,"depth":99,"space":4,"lead":7},"shotScale":0.5,"longShotScale":3}}}
+  a team a match: open-play passes 394.91, completed 320.01, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 2.05 (calls ÷ (calls + beyond completions) 0.963)
+  decision kind through 13.28, completed 10.56, completed beyond 0.02; per decision: attackers offside 0.058, behind runners 0.165 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 13 outside, 2 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 10.1 (9.91–10.4)
+  xa: inside [0.75, 1.15] 0.89 (0.87–0.92)
+  bigChances: outside [0.8, 1.05] 0.56 (0.52–0.61)
+  bigChancesScored: outside [0.4, 0.55] 0.28 (0.25–0.31)
+  boxShots: unresolved [6.8, 7.7] 6.80 (6.63–6.96)
+  finalThirdPasses: outside [100, 121] 161.1 (159.7–162.5)
+  finalThirdCompleted: outside [65, 85] 112.9 (111.6–114.2)
+  progressivePasses: outside [116, 124] 125.3 (124.4–126.2)
+  takeOns: inside [14, 20] 18.0 (17.6–18.3) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 57.8 (57.1–58.4) (MATCH-23 takeOnSuccess)
+  highTurnovers: unresolved [5.7, 7.5] 5.55 (5.39–5.72)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 53.5 (52.3–54.8)
+  boxEntries: outside [13, 16] 20.2 (19.9–20.5)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.4 (67.6–69.2)
+  lineBreakingPasses: unbanded 93.6 (92.7–94.5)
+  xtAdded: outside [2, 2.3] 3.78 (3.74–3.82)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.13)
+  crosses: inside [13, 20] 15.4 (15.1–15.7) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.2 (24.6–25.9) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 11.8 (11.5–12.1)
+  throughBallsCompleted: outside [0.6, 0.85] 7.93 (7.70–8.16)
+  progressiveCarries: outside [58.5, 63] 40.6 (40.2–41.0)
+core 26/38 inside
+  inside       possessionShots: 12.827 [12.575, 13.079] band 10–15
+  inside       shots: 12.363 [12.118, 12.607] band 11–14
+  inside       shotsGoalArea: 7.037 [6.618, 7.457] band 6–9
+  unresolved   shotsBox: 47.947 [47.109, 48.786] band 48–58
+  outside      shotsOutside: 45.015 [44.170, 45.861] band 32–42
+  outside      shotDistance: 18.285 [18.133, 18.437] band 15–18
+  unresolved   shotsFar: 9.949 [9.448, 10.450] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 8.969 [8.792, 9.146] band 7–9
+  inside       offsides: 2.048 [1.943, 2.154] band 1.5–2.5
+  unresolved   redCards: 0.100 [0.075, 0.125] band 0.08–0.15
+  outside      goals: 2.390 [2.269, 2.511] band 2.6–2.9
+  unresolved   setPieceGoals: 25.941 [23.618, 28.265] band 20–28
+  outside      penaltyGoals: 3.417 [2.521, 4.313] band 6–9
+  unresolved   headedGoals: 20.711 [18.573, 22.850] band 14–20
+  outside      goalsFW: 65.830 [63.169, 68.491] band 50–60
+  outside      goalsMF: 22.734 [20.508, 24.959] band 27–37
+  inside       goalsDF: 11.437 [9.654, 13.219] band 8–15
+
+## screen-r3-d5.log
+core:equal-top-tier calibration r41: 600 matches (38 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.55,"longShotScale":2.5,"shotBox":0.75}}}
+  a team a match: open-play passes 392.69, completed 318.74, completed to a receiver beyond the line 0.06 (of them on a run 0.04), offside calls 1.97 (calls ÷ (calls + beyond completions) 0.970)
+  decision kind through 12.35, completed 9.77, completed beyond 0.02; per decision: attackers offside 0.057, behind runners 0.168 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 2 unresolved, 6 inside, 13 outside, 2 unbanded
+  keyPasses: unresolved [8.2, 10.7] 10.7 (10.5–10.9)
+  xa: inside [0.75, 1.15] 0.95 (0.92–0.97)
+  bigChances: outside [0.8, 1.05] 0.51 (0.47–0.55)
+  bigChancesScored: outside [0.4, 0.55] 0.26 (0.23–0.29)
+  boxShots: inside [6.8, 7.7] 7.49 (7.32–7.65)
+  finalThirdPasses: outside [100, 121] 158.9 (157.4–160.4)
+  finalThirdCompleted: outside [65, 85] 111.8 (110.4–113.3)
+  progressivePasses: unresolved [116, 124] 124.1 (123.2–125.1)
+  takeOns: inside [14, 20] 18.0 (17.7–18.4) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.2 (57.6–58.9) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.38 (5.23–5.54)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 53.9 (52.6–55.2)
+  boxEntries: outside [13, 16] 19.1 (18.8–19.4)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.1 (67.2–68.9)
+  lineBreakingPasses: unbanded 92.3 (91.4–93.2)
+  xtAdded: outside [2, 2.3] 3.61 (3.56–3.65)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.14)
+  crosses: inside [13, 20] 15.0 (14.8–15.3) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.8 (24.1–25.5) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 10.1 (9.80–10.4)
+  throughBallsCompleted: outside [0.6, 0.85] 6.54 (6.34–6.75)
+  progressiveCarries: outside [58.5, 63] 39.9 (39.4–40.3)
+core 29/38 inside
+  inside       possessionShots: 13.773 [13.511, 14.035] band 10–15
+  inside       shots: 13.063 [12.819, 13.306] band 11–14
+  unresolved   shotsGoalArea: 5.939 [5.568, 6.311] band 6–9
+  inside       shotsBox: 51.388 [50.523, 52.252] band 48–58
+  unresolved   shotsOutside: 42.673 [41.822, 43.524] band 32–42
+  unresolved   shotDistance: 18.084 [17.942, 18.227] band 15–18
+  inside       shotsFar: 8.070 [7.622, 8.518] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.247 [9.073, 9.420] band 7–9
+  inside       offsides: 1.973 [1.868, 2.079] band 1.5–2.5
+  outside      goals: 2.388 [2.265, 2.512] band 2.6–2.9
+  inside       setPieceGoals: 24.703 [22.270, 27.137] band 20–28
+  outside      penaltyGoals: 3.210 [2.295, 4.126] band 6–9
+  unresolved   headedGoals: 19.958 [17.826, 22.090] band 14–20
+  outside      goalsFW: 67.062 [64.572, 69.552] band 50–60
+  outside      goalsMF: 22.680 [20.361, 24.999] band 27–37
+  inside       goalsDF: 10.258 [8.626, 11.891] band 8–15
+
+## screen-r4-e1.log
+core:equal-top-tier calibration r41: 600 matches (44 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.55,"longShotScale":2.5,"shotBox":0.75}},"shape":{"deepLine":{"behindBall":10}}}
+  a team a match: open-play passes 386.93, completed 313.24, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 1.55 (calls ÷ (calls + beyond completions) 0.953)
+  decision kind through 12.18, completed 9.60, completed beyond 0.03; per decision: attackers offside 0.052, behind runners 0.162 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 15 outside, 5 inside, 1 unresolved, 2 unbanded
+  keyPasses: outside [8.2, 10.7] 11.2 (11.0–11.4)
+  xa: inside [0.75, 1.15] 1.06 (1.03–1.09)
+  bigChances: outside [0.8, 1.05] 0.59 (0.55–0.63)
+  bigChancesScored: outside [0.4, 0.55] 0.29 (0.26–0.32)
+  boxShots: outside [6.8, 7.7] 8.44 (8.26–8.63)
+  finalThirdPasses: outside [100, 121] 157.2 (155.8–158.7)
+  finalThirdCompleted: outside [65, 85] 109.3 (107.8–110.7)
+  progressivePasses: outside [116, 124] 125.0 (124.1–125.8)
+  takeOns: inside [14, 20] 17.5 (17.2–17.8) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 57.9 (57.2–58.6) (MATCH-23 takeOnSuccess)
+  highTurnovers: unresolved [5.7, 7.5] 5.66 (5.50–5.82)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 53.0 (51.8–54.3)
+  boxEntries: outside [13, 16] 22.1 (21.8–22.4)
+  frontOfBoxEntries: outside [42.5, 45.5] 65.4 (64.6–66.2)
+  lineBreakingPasses: unbanded 91.5 (90.6–92.4)
+  xtAdded: outside [2, 2.3] 3.94 (3.89–3.99)
+  cutBacks: outside [0.35, 0.6] 0.12 (0.10–0.14)
+  crosses: inside [13, 20] 16.9 (16.6–17.3) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.5 (23.9–25.2) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 8.40 (8.14–8.66)
+  throughBallsCompleted: outside [0.6, 0.85] 5.58 (5.39–5.77)
+  progressiveCarries: outside [58.5, 63] 39.7 (39.3–40.2)
+core 29/38 inside
+  inside       possessionShots: 14.291 [14.022, 14.559] band 10–15
+  unresolved   shots: 13.828 [13.573, 14.084] band 11–14
+  inside       shotsGoalArea: 6.496 [6.111, 6.882] band 6–9
+  inside       shotsBox: 54.562 [53.706, 55.418] band 48–58
+  inside       shotsOutside: 38.942 [38.113, 39.771] band 32–42
+  inside       shotsFar: 6.774 [6.389, 7.158] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.809 [9.638, 9.980] band 7–9
+  unresolved   offsides: 1.548 [1.449, 1.647] band 1.5–2.5
+  unresolved   redCards: 0.087 [0.063, 0.110] band 0.08–0.15
+  unresolved   goals: 2.808 [2.668, 2.949] band 2.6–2.9
+  inside       setPieceGoals: 22.730 [20.766, 24.694] band 20–28
+  outside      penaltyGoals: 4.570 [3.556, 5.583] band 6–9
+  unresolved   headedGoals: 18.872 [17.043, 20.702] band 14–20
+  outside      goalsFW: 67.122 [64.634, 69.609] band 50–60
+  outside      goalsMF: 22.967 [20.863, 25.072] band 27–37
+  inside       goalsDF: 9.911 [8.454, 11.368] band 8–15
+
+## screen-r4-e2.log
+core:equal-top-tier calibration r41: 600 matches (32 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25}}},"shape":{"deepLine":{"behindBall":10}}}
+  a team a match: open-play passes 393.15, completed 317.98, completed to a receiver beyond the line 0.08 (of them on a run 0.06), offside calls 1.53 (calls ÷ (calls + beyond completions) 0.951)
+  decision kind through 12.56, completed 10.01, completed beyond 0.03; per decision: attackers offside 0.052, behind runners 0.163 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 6 inside, 14 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 9.80 (9.60–10.0)
+  xa: inside [0.75, 1.15] 0.87 (0.84–0.90)
+  bigChances: outside [0.8, 1.05] 0.53 (0.48–0.57)
+  bigChancesScored: outside [0.4, 0.55] 0.27 (0.24–0.30)
+  boxShots: unresolved [6.8, 7.7] 6.75 (6.59–6.91)
+  finalThirdPasses: outside [100, 121] 162.3 (160.8–163.8)
+  finalThirdCompleted: outside [65, 85] 112.8 (111.4–114.3)
+  progressivePasses: outside [116, 124] 125.0 (124.1–125.9)
+  takeOns: inside [14, 20] 19.1 (18.7–19.4) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.4 (57.8–59.1) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.49 (5.33–5.64)
+  ppda: outside [12, 14] 17.3 (17.0–17.5)
+  fieldTilt: unbanded 53.6 (52.3–54.9)
+  boxEntries: outside [13, 16] 21.3 (21.0–21.6)
+  frontOfBoxEntries: outside [42.5, 45.5] 66.3 (65.4–67.1)
+  lineBreakingPasses: unbanded 92.0 (91.1–92.9)
+  xtAdded: outside [2, 2.3] 3.90 (3.85–3.95)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 17.1 (16.8–17.4) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.2 (23.5–24.8) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 3.16 (2.93–3.38)
+  throughBallsCompleted: outside [0.6, 0.85] 1.34 (1.20–1.48)
+  progressiveCarries: outside [58.5, 63] 39.9 (39.4–40.3)
+core 26/38 inside
+  inside       possessionShots: 12.478 [12.237, 12.719] band 10–15
+  inside       shots: 12.046 [11.817, 12.274] band 11–14
+  unresolved   shotsGoalArea: 6.247 [5.850, 6.644] band 6–9
+  inside       shotsBox: 49.810 [48.855, 50.764] band 48–58
+  outside      shotsOutside: 43.943 [43.000, 44.886] band 32–42
+  outside      shotDistance: 18.292 [18.126, 18.458] band 15–18
+  outside      shotsFar: 11.394 [10.804, 11.984] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 9.093 [8.924, 9.263] band 7–9
+  unresolved   offsides: 1.531 [1.436, 1.626] band 1.5–2.5
+  unresolved   redCards: 0.103 [0.079, 0.128] band 0.08–0.15
+  outside      goals: 2.297 [2.177, 2.416] band 2.6–2.9
+  inside       setPieceGoals: 25.399 [23.009, 27.789] band 20–28
+  unresolved   penaltyGoals: 6.168 [4.879, 7.458] band 6–9
+  unresolved   headedGoals: 21.118 [18.827, 23.408] band 14–20
+  outside      goalsFW: 65.965 [63.310, 68.620] band 50–60
+  outside      goalsMF: 23.657 [21.296, 26.019] band 27–37
+  inside       goalsDF: 10.377 [8.694, 12.061] band 8–15
+
+## screen-r4-e3.log
+core:equal-top-tier calibration r41: 600 matches (40 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.55,"longShotScale":2.5,"shotBox":0.75,"shotScale":0.65,"shotLine":{"MF":26}}}}
+  a team a match: open-play passes 388.30, completed 315.18, completed to a receiver beyond the line 0.05 (of them on a run 0.04), offside calls 1.92 (calls ÷ (calls + beyond completions) 0.974)
+  decision kind through 12.03, completed 9.51, completed beyond 0.01; per decision: attackers offside 0.055, behind runners 0.166 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 14 outside, 5 inside, 2 unresolved, 2 unbanded
+  keyPasses: outside [8.2, 10.7] 11.5 (11.3–11.8)
+  xa: inside [0.75, 1.15] 1.00 (0.97–1.02)
+  bigChances: outside [0.8, 1.05] 0.56 (0.51–0.60)
+  bigChancesScored: outside [0.4, 0.55] 0.28 (0.25–0.31)
+  boxShots: unresolved [6.8, 7.7] 7.77 (7.60–7.94)
+  finalThirdPasses: outside [100, 121] 155.6 (154.1–157.0)
+  finalThirdCompleted: outside [65, 85] 109.5 (108.1–110.9)
+  progressivePasses: unresolved [116, 124] 123.2 (122.4–124.1)
+  takeOns: inside [14, 20] 17.8 (17.4–18.1) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.1 (57.4–58.8) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.38 (5.23–5.53)
+  ppda: outside [12, 14] 17.3 (17.0–17.6)
+  fieldTilt: unbanded 53.4 (52.1–54.7)
+  boxEntries: outside [13, 16] 18.7 (18.4–19.0)
+  frontOfBoxEntries: outside [42.5, 45.5] 67.4 (66.6–68.2)
+  lineBreakingPasses: unbanded 91.6 (90.7–92.5)
+  xtAdded: outside [2, 2.3] 3.54 (3.50–3.58)
+  cutBacks: outside [0.35, 0.6] 0.10 (0.08–0.12)
+  crosses: inside [13, 20] 14.8 (14.5–15.1) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 25.1 (24.4–25.7) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 9.84 (9.56–10.1)
+  throughBallsCompleted: outside [0.6, 0.85] 6.37 (6.18–6.57)
+  progressiveCarries: outside [58.5, 63] 39.3 (38.9–39.7)
+core 25/38 inside
+  unresolved   possessionShots: 14.786 [14.509, 15.063] band 10–15
+  unresolved   shots: 14.188 [13.921, 14.455] band 11–14
+  unresolved   shotsGoalArea: 6.091 [5.743, 6.439] band 6–9
+  unresolved   shotsBox: 48.690 [47.867, 49.514] band 48–58
+  outside      shotsOutside: 45.219 [44.425, 46.013] band 32–42
+  outside      shotDistance: 18.492 [18.357, 18.627] band 15–18
+  inside       shotsFar: 9.392 [8.911, 9.872] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.765 [9.581, 9.949] band 7–9
+  inside       offsides: 1.921 [1.811, 2.030] band 1.5–2.5
+  unresolved   redCards: 0.078 [0.055, 0.102] band 0.08–0.15
+  unresolved   goals: 2.660 [2.535, 2.785] band 2.6–2.9
+  inside       setPieceGoals: 24.248 [22.126, 26.370] band 20–28
+  outside      penaltyGoals: 3.383 [2.505, 4.262] band 6–9
+  unresolved   headedGoals: 18.609 [16.606, 20.612] band 14–20
+  outside      goalsFW: 67.857 [65.455, 70.259] band 50–60
+  outside      goalsMF: 21.679 [19.541, 23.818] band 27–37
+  inside       goalsDF: 10.464 [8.918, 12.009] band 8–15
+
+## screen-r4-e4.log
+core:equal-top-tier calibration r41: 600 matches (38 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25}}},"shape":{"deepLine":{"behindBall":14}}}
+  a team a match: open-play passes 390.36, completed 315.26, completed to a receiver beyond the line 0.07 (of them on a run 0.06), offside calls 1.42 (calls ÷ (calls + beyond completions) 0.950)
+  decision kind through 12.47, completed 9.91, completed beyond 0.02; per decision: attackers offside 0.050, behind runners 0.160 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 7 inside, 13 outside, 1 unresolved, 2 unbanded
+  keyPasses: inside [8.2, 10.7] 10.4 (10.1–10.6)
+  xa: inside [0.75, 1.15] 0.97 (0.94–1.00)
+  bigChances: outside [0.8, 1.05] 0.59 (0.54–0.63)
+  bigChancesScored: outside [0.4, 0.55] 0.31 (0.28–0.34)
+  boxShots: inside [6.8, 7.7] 7.50 (7.32–7.68)
+  finalThirdPasses: outside [100, 121] 161.5 (159.9–163.0)
+  finalThirdCompleted: outside [65, 85] 111.0 (109.5–112.5)
+  progressivePasses: outside [116, 124] 127.3 (126.3–128.2)
+  takeOns: inside [14, 20] 18.9 (18.5–19.3) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.1 (57.4–58.8) (MATCH-23 takeOnSuccess)
+  highTurnovers: unresolved [5.7, 7.5] 5.70 (5.53–5.86)
+  ppda: outside [12, 14] 17.4 (17.1–17.7)
+  fieldTilt: unbanded 53.3 (52.0–54.5)
+  boxEntries: outside [13, 16] 23.6 (23.3–24.0)
+  frontOfBoxEntries: outside [42.5, 45.5] 64.9 (64.1–65.7)
+  lineBreakingPasses: unbanded 91.8 (90.9–92.7)
+  xtAdded: outside [2, 2.3] 4.18 (4.13–4.24)
+  cutBacks: outside [0.35, 0.6] 0.12 (0.10–0.14)
+  crosses: inside [13, 20] 18.3 (17.9–18.6) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.6 (23.9–25.2) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 2.93 (2.71–3.15)
+  throughBallsCompleted: outside [0.6, 0.85] 1.23 (1.10–1.35)
+  progressiveCarries: outside [58.5, 63] 39.5 (39.1–39.9)
+core 28/38 inside
+  inside       possessionShots: 12.883 [12.634, 13.132] band 10–15
+  inside       shots: 12.620 [12.383, 12.857] band 11–14
+  inside       shotsGoalArea: 7.204 [6.786, 7.622] band 6–9
+  inside       shotsBox: 52.205 [51.351, 53.059] band 48–58
+  inside       shotsOutside: 40.590 [39.729, 41.452] band 32–42
+  unresolved   shotsFar: 10.037 [9.546, 10.528] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   goalKicks: 9.130 [8.968, 9.292] band 7–9
+  unresolved   offsides: 1.422 [1.328, 1.516] band 1.5–2.5
+  unresolved   redCards: 0.082 [0.059, 0.105] band 0.08–0.15
+  unresolved   goals: 2.630 [2.506, 2.754] band 2.6–2.9
+  inside       setPieceGoals: 23.574 [21.537, 25.612] band 20–28
+  unresolved   penaltyGoals: 5.133 [3.996, 6.270] band 6–9
+  unresolved   headedGoals: 19.772 [17.894, 21.650] band 14–20
+  outside      goalsFW: 67.110 [64.694, 69.526] band 50–60
+  outside      goalsMF: 23.638 [21.567, 25.708] band 27–37
+  unresolved   goalsDF: 9.252 [7.773, 10.731] band 8–15
+
+## screen-r5-b1.log
+core:equal-top-tier calibration r41: 600 matches (45 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.6,"longShotScale":2.5,"shotBox":0.9}}}
+  a team a match: open-play passes 389.93, completed 316.94, completed to a receiver beyond the line 0.07 (of them on a run 0.06), offside calls 2.02 (calls ÷ (calls + beyond completions) 0.965)
+  decision kind through 12.11, completed 9.65, completed beyond 0.02; per decision: attackers offside 0.056, behind runners 0.167 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 15 outside, 5 inside, 1 unresolved, 2 unbanded
+  keyPasses: outside [8.2, 10.7] 11.4 (11.2–11.6)
+  xa: inside [0.75, 1.15] 1.03 (1.00–1.06)
+  bigChances: outside [0.8, 1.05] 0.57 (0.53–0.61)
+  bigChancesScored: outside [0.4, 0.55] 0.28 (0.25–0.30)
+  boxShots: outside [6.8, 7.7] 8.00 (7.82–8.17)
+  finalThirdPasses: outside [100, 121] 156.8 (155.3–158.2)
+  finalThirdCompleted: outside [65, 85] 110.6 (109.2–111.9)
+  progressivePasses: unresolved [116, 124] 123.8 (122.9–124.7)
+  takeOns: inside [14, 20] 17.5 (17.2–17.9) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.3 (57.6–59.0) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.39 (5.23–5.54)
+  ppda: outside [12, 14] 17.6 (17.3–17.9)
+  fieldTilt: unbanded 53.3 (52.0–54.6)
+  boxEntries: outside [13, 16] 19.0 (18.7–19.3)
+  frontOfBoxEntries: outside [42.5, 45.5] 67.6 (66.8–68.4)
+  lineBreakingPasses: unbanded 92.2 (91.3–93.1)
+  xtAdded: outside [2, 2.3] 3.57 (3.53–3.61)
+  cutBacks: outside [0.35, 0.6] 0.09 (0.07–0.11)
+  crosses: inside [13, 20] 14.9 (14.6–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.6 (23.9–25.3) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 9.96 (9.67–10.3)
+  throughBallsCompleted: outside [0.6, 0.85] 6.47 (6.26–6.69)
+  progressiveCarries: outside [58.5, 63] 39.2 (38.8–39.6)
+core 26/38 inside
+  inside       possessionShots: 14.642 [14.375, 14.910] band 10–15
+  unresolved   shots: 13.906 [13.652, 14.160] band 11–14
+  unresolved   shotsGoalArea: 6.023 [5.687, 6.358] band 6–9
+  inside       shotsBox: 51.471 [50.712, 52.231] band 48–58
+  unresolved   shotsOutside: 42.506 [41.754, 43.258] band 32–42
+  unresolved   shotDistance: 18.073 [17.943, 18.204] band 15–18
+  inside       shotsFar: 7.785 [7.367, 8.202] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  unresolved   throwIns: 17.233 [16.983, 17.484] band 17–23
+  outside      goalKicks: 9.713 [9.536, 9.889] band 7–9
+  inside       offsides: 2.016 [1.907, 2.124] band 1.5–2.5
+  unresolved   redCards: 0.090 [0.067, 0.113] band 0.08–0.15
+  unresolved   goals: 2.670 [2.537, 2.803] band 2.6–2.9
+  inside       setPieceGoals: 22.722 [20.604, 24.840] band 20–28
+  outside      penaltyGoals: 3.558 [2.673, 4.443] band 6–9
+  inside       headedGoals: 16.916 [15.071, 18.762] band 14–20
+  outside      goalsFW: 69.975 [67.516, 72.434] band 50–60
+  outside      goalsMF: 21.036 [18.877, 23.195] band 27–37
+  unresolved   goalsDF: 8.989 [7.533, 10.444] band 8–15
+
+## screen-r5-b2.log
+core:equal-top-tier calibration r41: 600 matches (38 s), patch {"coordination":{"hold":{"early":0.5}},"decide":{"candidate":{"offsideSeen":0.75,"through":{"score":0.25,"depth":99,"space":6},"shotScale":0.6,"longShotScale":2.5,"shotBox":0.9,"shotLine":{"FW":0.28,"MF":22}}}}
+  a team a match: open-play passes 392.62, completed 318.31, completed to a receiver beyond the line 0.07 (of them on a run 0.05), offside calls 1.97 (calls ÷ (calls + beyond completions) 0.967)
+  decision kind through 12.23, completed 9.66, completed beyond 0.02; per decision: attackers offside 0.056, behind runners 0.167 (offside 0.005)
+MATCH-30 advanced counters (target v2, match-parity-5): 3 unresolved, 5 inside, 13 outside, 2 unbanded
+  keyPasses: unresolved [8.2, 10.7] 10.7 (10.5–11.0)
+  xa: inside [0.75, 1.15] 0.96 (0.93–0.99)
+  bigChances: outside [0.8, 1.05] 0.51 (0.47–0.55)
+  bigChancesScored: outside [0.4, 0.55] 0.25 (0.22–0.27)
+  boxShots: unresolved [6.8, 7.7] 7.64 (7.46–7.81)
+  finalThirdPasses: outside [100, 121] 159.5 (158.1–161.0)
+  finalThirdCompleted: outside [65, 85] 112.1 (110.7–113.5)
+  progressivePasses: unresolved [116, 124] 123.9 (123.0–124.8)
+  takeOns: inside [14, 20] 17.9 (17.6–18.3) (MATCH-23 takeOns)
+  takeOnSuccess: inside [40, 60] 58.4 (57.7–59.1) (MATCH-23 takeOnSuccess)
+  highTurnovers: outside [5.7, 7.5] 5.53 (5.38–5.68)
+  ppda: outside [12, 14] 17.3 (17.0–17.5)
+  fieldTilt: unbanded 53.1 (51.8–54.4)
+  boxEntries: outside [13, 16] 19.5 (19.2–19.8)
+  frontOfBoxEntries: outside [42.5, 45.5] 68.0 (67.2–68.8)
+  lineBreakingPasses: unbanded 92.5 (91.6–93.4)
+  xtAdded: outside [2, 2.3] 3.64 (3.60–3.69)
+  cutBacks: outside [0.35, 0.6] 0.11 (0.09–0.13)
+  crosses: inside [13, 20] 14.9 (14.6–15.2) (MATCH-23 crosses)
+  crossCompletion: inside [20, 30] 24.6 (23.9–25.2) (MATCH-23 crossCompletion)
+  throughBalls: outside [2, 2.2] 9.96 (9.68–10.2)
+  throughBallsCompleted: outside [0.6, 0.85] 6.44 (6.24–6.64)
+  progressiveCarries: outside [58.5, 63] 39.9 (39.4–40.3)
+core 29/38 inside
+  inside       possessionShots: 13.719 [13.455, 13.983] band 10–15
+  inside       shots: 13.101 [12.849, 13.353] band 11–14
+  outside      shotsGoalArea: 5.579 [5.194, 5.963] band 6–9
+  inside       shotsBox: 52.732 [51.911, 53.553] band 48–58
+  unresolved   shotsOutside: 41.689 [40.882, 42.497] band 32–42
+  unresolved   shotDistance: 18.048 [17.914, 18.183] band 15–18
+  inside       shotsFar: 8.269 [7.809, 8.730] band 0–10
+  inside       shotsOwnHalf: 0.000 [0.000, 0.000] band 0–0.5
+  outside      goalKicks: 9.374 [9.202, 9.547] band 7–9
+  inside       offsides: 1.972 [1.871, 2.072] band 1.5–2.5
+  unresolved   redCards: 0.090 [0.067, 0.113] band 0.08–0.15
+  unresolved   goals: 2.480 [2.354, 2.606] band 2.6–2.9
+  inside       setPieceGoals: 22.446 [20.380, 24.513] band 20–28
+  outside      penaltyGoals: 3.495 [2.534, 4.455] band 6–9
+  inside       headedGoals: 17.070 [15.222, 18.918] band 14–20
+  outside      goalsFW: 67.406 [64.810, 70.002] band 50–60
+  outside      goalsMF: 22.849 [20.610, 25.089] band 27–37
+  inside       goalsDF: 9.745 [8.163, 11.326] band 8–15
+

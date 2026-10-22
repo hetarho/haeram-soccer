@@ -1,0 +1,96 @@
+base: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: unresolved 1, inside 5, outside 15, unbanded 2
+  MATCH-23: inside 35, outside 2, unresolved 1
+  MATCH-29: insufficient 9, inside 15, outside 1
+  curve 1.56 (-35 3.9, -30 4.3, -25 1.7, -20 9.5, -15 6.6, -10 1.7, -5 1.3, 0 1.8, 5 5.2, 10 11.8, 15 5.2, 20 5.9, 25 7.0, 30 3.7, 35 2.8, 40 5.1); points possession 1.280, press 1.465, counter 1.471, balanced 1.281
+cand: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: outside 15, inside 5, unresolved 1, unbanded 2
+  MATCH-23: inside 30, unresolved 2, outside 6
+  MATCH-29: insufficient 6, inside 13, outside 6
+  curve 1.56 (-35 2.7, -30 2.8, -25 4.4, -20 3.9, -15 6.3, -10 1.7, -5 9.5, 0 3.0, 5 6.5, 10 9.4, 15 4.0, 20 6.1, 25 6.6, 30 2.3, 35 1.5, 40 0.7); points possession 1.218, press 1.721, counter 1.382, balanced 1.174
+* 30:keyPasses                     10.634 [10.532, 10.736] unresolved           → 11.511 [11.395, 11.626] outside
+  30:xa                            1.063 [1.049, 1.078] inside                  → 1.028 [1.014, 1.041] inside
+  30:bigChances                    0.652 [0.628, 0.675] outside                 → 0.541 [0.521, 0.562] outside
+  30:bigChancesScored              0.330 [0.314, 0.347] outside                 → 0.265 [0.251, 0.280] outside
+  30:boxShots                      7.912 [7.827, 7.996] outside                 → 8.103 [8.016, 8.190] outside
+  30:finalThirdPasses              160.325 [159.577, 161.072] outside           → 155.875 [155.157, 156.592] outside
+  30:finalThirdCompleted           109.889 [109.166, 110.611] outside           → 109.505 [108.809, 110.201] outside
+* 30:progressivePasses             126.380 [125.919, 126.841] outside           → 123.724 [123.263, 124.184] unresolved
+  30:takeOns                       18.370 [18.184, 18.555] inside               → 17.656 [17.481, 17.832] inside
+  30:takeOnSuccess                 58.244 [57.911, 58.576] inside               → 58.499 [58.166, 58.833] inside
+  30:highTurnovers                 5.474 [5.396, 5.551] outside                 → 5.372 [5.292, 5.451] outside
+  30:ppda                          17.186 [17.043, 17.329] outside              → 17.235 [17.098, 17.371] outside
+  30:fieldTilt                     54.311 [53.729, 54.894] unbanded             → 54.175 [53.584, 54.766] unbanded
+  30:boxEntries                    24.880 [24.701, 25.059] outside              → 18.855 [18.711, 18.999] outside
+  30:frontOfBoxEntries             64.894 [64.494, 65.295] outside              → 67.840 [67.429, 68.251] outside
+  30:lineBreakingPasses            97.320 [96.883, 97.757] unbanded             → 91.915 [91.466, 92.365] unbanded
+  30:xtAdded                       4.360 [4.334, 4.387] outside                 → 3.554 [3.533, 3.575] outside
+  30:cutBacks                      0.156 [0.144, 0.168] outside                 → 0.095 [0.086, 0.104] outside
+  30:crosses                       17.477 [17.311, 17.642] inside               → 14.672 [14.536, 14.809] inside
+  30:crossCompletion               24.280 [23.964, 24.596] inside               → 24.820 [24.485, 25.155] inside
+  30:throughBalls                  32.793 [32.268, 33.318] outside              → 9.831 [9.692, 9.970] outside
+  30:throughBallsCompleted         24.585 [24.194, 24.976] outside              → 6.406 [6.306, 6.507] outside
+  30:progressiveCarries            40.458 [40.252, 40.664] outside              → 39.278 [39.072, 39.484] outside
+  23:passes                        441.199 [440.264, 442.135] inside            → 442.838 [441.815, 443.862] inside
+  23:passCompletion                78.301 [78.220, 78.381] inside               → 79.287 [79.211, 79.363] inside
+  23:passForward                   35.484 [35.372, 35.596] inside               → 33.611 [33.482, 33.741] inside
+  23:passLateral                   50.034 [49.924, 50.143] inside               → 51.625 [51.505, 51.746] inside
+  23:passBack                      14.482 [14.410, 14.554] inside               → 14.763 [14.686, 14.840] inside
+  23:possessions                   88.724 [88.495, 88.952] inside               → 86.311 [86.089, 86.532] inside
+  23:passesPerPossession           4.000 [4.000, 4.000] inside                  → 4.000 [4.000, 4.000] inside
+  23:possessionShots               13.219 [13.099, 13.340] inside               → 14.699 [14.562, 14.836] inside
+* 23:shots                         12.929 [12.813, 13.044] inside               → 14.053 [13.923, 14.183] unresolved
+  23:onTarget                      33.661 [33.285, 34.037] inside               → 32.728 [32.356, 33.100] inside
+  23:xgPerShot                     0.107 [0.106, 0.108] inside                  → 0.097 [0.096, 0.098] inside
+* 23:shotsGoalArea                 7.997 [7.781, 8.214] inside                  → 5.813 [5.636, 5.989] outside
+  23:shotsBox                      53.199 [52.756, 53.643] inside               → 51.846 [51.438, 52.253] inside
+* 23:shotsOutside                  38.803 [38.374, 39.232] inside               → 42.342 [41.936, 42.747] unresolved
+* 23:shotDistance                  17.306 [17.232, 17.380] inside               → 18.073 [18.007, 18.139] outside
+  23:shotsFar                      9.416 [9.173, 9.658] inside                  → 7.934 [7.725, 8.143] inside
+  23:shotsOwnHalf                  0.000 [0.000, 0.000] inside                  → 0.000 [0.000, 0.000] inside
+  23:crosses                       17.477 [17.311, 17.642] inside               → 14.672 [14.536, 14.809] inside
+  23:crossCompletion               24.280 [23.964, 24.596] inside               → 24.820 [24.485, 25.155] inside
+  23:takeOns                       18.370 [18.184, 18.555] inside               → 17.656 [17.481, 17.832] inside
+  23:takeOnSuccess                 58.244 [57.911, 58.576] inside               → 58.499 [58.166, 58.833] inside
+  23:tacklesInterceptions          24.413 [24.259, 24.567] inside               → 22.940 [22.793, 23.087] inside
+  23:throwIns                      17.844 [17.721, 17.966] inside               → 17.359 [17.236, 17.482] inside
+  23:corners                       4.647 [4.580, 4.714] inside                  → 4.870 [4.803, 4.938] inside
+  23:goalKicks                     9.494 [9.410, 9.578] outside                 → 9.784 [9.694, 9.873] outside
+  23:fouls                         10.953 [10.869, 11.036] inside               → 11.033 [10.950, 11.117] inside
+  23:offsides                      1.616 [1.564, 1.668] inside                  → 1.907 [1.854, 1.960] inside
+  23:yellowCards                   3.622 [3.551, 3.692] inside                  → 3.631 [3.562, 3.700] inside
+  23:redCards                      0.120 [0.106, 0.134] inside                  → 0.095 [0.083, 0.107] inside
+  23:goals                         2.731 [2.665, 2.797] inside                  → 2.678 [2.611, 2.745] inside
+  23:setPieceGoals                 21.269 [20.296, 22.243] inside               → 24.241 [23.181, 25.302] inside
+* 23:penaltyGoals                  5.630 [5.082, 6.178] unresolved              → 3.205 [2.775, 3.636] outside
+  23:headedGoals                   17.730 [16.806, 18.653] inside               → 17.956 [16.996, 18.915] inside
+  23:goalsFW                       61.977 [60.705, 63.250] outside              → 67.917 [66.736, 69.098] outside
+* 23:goalsMF                       28.364 [27.232, 29.497] inside               → 21.254 [20.222, 22.286] outside
+  23:goalsDF                       9.658 [8.937, 10.379] inside                 → 10.829 [10.047, 11.612] inside
+  23:ballInPlay                    56.635 [56.528, 56.741] inside               → 56.211 [56.103, 56.320] inside
+  23:addedTime                     10.957 [10.884, 11.031] inside               → 10.916 [10.844, 10.988] inside
+  29:draws:possession-possession   0.308 [0.271, 0.345] insufficient            → 0.275 [0.239, 0.311] insufficient
+  29:draws:possession-press        0.263 [0.238, 0.288] inside                  → 0.245 [0.221, 0.269] inside
+  29:draws:possession-counter      0.241 [0.217, 0.265] inside                  → 0.268 [0.243, 0.293] inside
+  29:draws:possession-balanced     0.266 [0.241, 0.291] inside                  → 0.266 [0.241, 0.291] inside
+* 29:draws:press-press             0.210 [0.177, 0.243] insufficient            → 0.258 [0.223, 0.293] inside
+  29:draws:press-counter           0.238 [0.214, 0.262] inside                  → 0.254 [0.230, 0.279] inside
+  29:draws:press-balanced          0.263 [0.238, 0.288] inside                  → 0.235 [0.211, 0.259] inside
+* 29:draws:counter-counter         0.255 [0.220, 0.290] inside                  → 0.215 [0.182, 0.248] insufficient
+  29:draws:counter-balanced        0.237 [0.213, 0.261] inside                  → 0.245 [0.221, 0.269] inside
+* 29:draws:balanced-balanced       0.225 [0.192, 0.258] insufficient            → 0.253 [0.219, 0.288] inside
+* 29:winShareGap:possession-press  -0.082 [-0.129, -0.034] insufficient         → -0.238 [-0.285, -0.192] outside
+  29:winShareGap:possession-counter -0.101 [-0.149, -0.053] insufficient         → -0.092 [-0.139, -0.045] insufficient
+  29:winShareGap:possession-balanced -0.001 [-0.049, 0.047] inside                → 0.026 [-0.022, 0.074] inside
+* 29:winShareGap:press-counter     0.025 [-0.024, 0.074] inside                 → 0.159 [0.112, 0.207] insufficient
+* 29:winShareGap:press-balanced    0.078 [0.030, 0.126] insufficient            → 0.290 [0.244, 0.336] outside
+  29:winShareGap:counter-balanced  0.105 [0.057, 0.153] insufficient            → 0.087 [0.038, 0.135] insufficient
+* 29:atLeast:counter-press         -0.025 [-0.074, 0.024] insufficient          → -0.159 [-0.207, -0.112] outside
+* 29:points:possession             -0.094 [-0.136, -0.053] inside               → -0.156 [-0.197, -0.115] insufficient
+* 29:points:press                  0.091 [0.049, 0.133] inside                  → 0.347 [0.306, 0.389] outside
+  29:points:counter                0.097 [0.055, 0.139] inside                  → 0.008 [-0.034, 0.049] inside
+* 29:points:balanced               -0.093 [-0.135, -0.051] inside               → -0.199 [-0.241, -0.158] outside
+  29:ordering:possession           3.289 [2.973, 3.605] inside                  → 5.244 [4.921, 5.567] inside
+  29:ordering:xgConceded           -0.114 [-0.141, -0.088] outside              → -0.270 [-0.295, -0.245] outside
+* 29:ordering:highRegains          0.478 [0.334, 0.623] insufficient            → 1.428 [1.283, 1.573] inside
+  29:ordering:freshness            1.959 [1.914, 2.004] inside                  → 1.944 [1.899, 1.989] inside
