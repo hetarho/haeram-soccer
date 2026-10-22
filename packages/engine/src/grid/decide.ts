@@ -445,7 +445,9 @@ export function passOptions(
     const dx = p[0] - c[0],
       dy = p[1] - c[1];
     for (const o of opponents) {
-      nearest = Math.min(nearest, Math.hypot(o[0] - p[0], o[1] - p[1]));
+      // The distance is at least either offset: a man further off on one axis leaves `nearest` as it is.
+      if (Math.abs(o[0] - p[0]) <= nearest && Math.abs(o[1] - p[1]) <= nearest)
+        nearest = Math.min(nearest, Math.hypot(o[0] - p[0], o[1] - p[1]));
       const t = ((o[0] - c[0]) * dx + (o[1] - c[1]) * dy) / (dist * dist);
       if (t > 0 && t < 1)
         risk += Math.exp(-Math.hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
@@ -539,7 +541,9 @@ function lineDepth(
 /** The probabilities `choosePass` draws from, aligned with the options. */
 export function passProbabilities(options: readonly PassOption[], tau: number): number[] {
   if (!options.length) return [];
-  const top = Math.max(...options.map((o) => o.score));
+  // Math.max folded over the scores: the same value as spreading them, without the copies.
+  let top = -Infinity;
+  for (const o of options) top = Math.max(top, o.score);
   const weights = options.map((o) => o.prior * Math.exp((o.score - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   return total > 0 ? weights.map((w) => w / total) : options.map(() => 1 / options.length);
@@ -595,7 +599,8 @@ export function chooseCarry(
     (p) => (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 - K.pressure * pressureAt(s, side, p),
   );
   const tau = temperature(s, side, idx, tags);
-  const top = Math.max(...scores);
+  let top = -Infinity;
+  for (const v of scores) top = Math.max(top, v);
   const weights = scores.map((v) => Math.exp((v - top) / tau));
   const total = weights.reduce((a, b) => a + b, 0);
   const end = draw(

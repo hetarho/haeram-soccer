@@ -461,7 +461,8 @@ function headerTarget(
         actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial'),
     }));
   if (!pool.length) return undefined;
-  const top = Math.max(...pool.map((p) => p.v));
+  let top = -Infinity;
+  for (const p of pool) top = Math.max(top, p.v);
   const weights = pool.map((p) => Math.exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
   const total = weights.reduce((a, b) => a + b, 0);
   let u = r() * total;

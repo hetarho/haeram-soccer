@@ -147,7 +147,8 @@ export function lineX(s: GridState, side: 0 | 1, line: Line): number {
     count = 0;
   for (const gp of s.players[side])
     if (onPitch(gp) && lineOfSlot(s, gp) === line) {
-      sum += attackFrame(side, gp.pos)[0];
+      // `attackFrame(side, gp.pos)[0]` without allocating.
+      sum += side === 0 ? gp.pos[0] : PITCH.length - gp.pos[0];
       count++;
     }
   return count ? sum / count : MID;
@@ -283,6 +284,8 @@ export function shapePlace(
   for (const opp of foes) {
     const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
     const oy = side === 0 ? opp.pos[1] : PITCH.width - opp.pos[1];
+    // The distance is at least either offset, so a man further off on one axis cannot be nearer.
+    if (Math.abs(ox - x) > best || Math.abs(oy - y) > best) continue;
     const d = Math.hypot(ox - x, oy - y);
     if (d <= best) {
       found = true;
