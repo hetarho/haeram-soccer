@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T345 |
+| v7c3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T09:37Z | 2026-10-22T09:37Z | - |
 
 ## inbox
 - 261022 decided ARCH-31 T325 T326 T286: ARCH-31's reference machine is the owner's MacBook Pro (M1 Max), where T285 measured the ~14 s candidate season the 15 s budget came from; this host (Xeon Silver 4214, 12 CPUs) runs about 2.5× slower (a season ~34–35 s after T325) and its timings are context only → the budget was set from that machine and players run on consumer hardware (alt: this host with a ~35 s budget | restate the budget per machine class)
@@ -238,6 +239,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261022 fix e2e (v7c3): progression-settings:163 picks the menu's settings row by its title prefix, since the row's name now carries its hint line (main CI red since b4d1c7f); intervention, management and news pass locally on Chromium and Firefox
 - 261022 T336 integrated (k2r7; explore exit, coordinator exception to its keep rule): counter's settled pass weights stop at 70 m and its block stops following a ball upfield; artifact round 11 MATCH-29 8/3/14 → 10/2/13, core 32/38, curve 3.43 → T345
 - 261022 T345 start (k2r7): on T336's kept setting, beside the T336 batch gate and T325's review
 - 261022 T351 done: menu theme/language entries open a small centered picker over a light dim so the page visibly changes; WEB r126. 10 presentation journeys, 677 web units, typecheck/lint/format/presentation/build pass; business.spec:67 fails identically on main before this change.

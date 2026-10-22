@@ -190,7 +190,8 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   await page.getByRole('button', { name: '전체 메뉴', exact: true }).click();
   await page
     .getByRole('dialog', { name: '전체 메뉴' })
-    .getByRole('button', { name: '위임·진행 설정', exact: true })
+    // The menu row's name also carries its hint line.
+    .getByRole('button', { name: /^위임·진행 설정/ })
     .click();
   const settings = page.getByRole('dialog', { name: '위임·진행 설정' });
   const background = settings.getByRole('region', { name: '자동 모드의 백그라운드 진행' });
