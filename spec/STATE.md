@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T336 |
+| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | T345 |
 
 ## inbox
 - 261022 decided ARCH-31 T325 T326 T286: ARCH-31's reference machine is the owner's MacBook Pro (M1 Max), where T285 measured the ~14 s candidate season the 15 s budget came from; this host (Xeon Silver 4214, 12 CPUs) runs about 2.5× slower (a season ~34–35 s after T325) and its timings are context only → the budget was set from that machine and players run on consumer hardware (alt: this host with a ~35 s budget | restate the budget per machine class)
