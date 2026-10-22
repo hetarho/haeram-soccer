@@ -202,28 +202,17 @@ export const BEHAVIOURS: Record<string, BehaviourPatch> = {
   // forwards and wingers. They were measured at 35e0f9e–d68e955 through a neutral
   // `COORDINATION_CONFIG.settledRuns` hook (`possRuns16` = `{ coordination: { settledRuns: { odds:
   // { possession: 1.6 } } } }`, `possRunsHalf25` adds `from: 4`, `possRunsFw25` `lines: ['FW']`),
-  // since removed: none was kept. T357 re-adds the hook to pair the guarded runs with its curve
-  // levers.
-  possRunsHalf25: {
-    coordination: { settledRuns: { odds: { possession: 2.5 }, from: 4 } },
-  },
-  // T357 strength-gradient levers on the candidate model (neutral values in the shared configs):
-  // (a) the share of a side's distance from the match's level (XI, form, home, manager, morale,
-  // diminishing returns) that reaches its players' skills at every stage; (b) the same only where
-  // a pass is completed (passer against marker) or (c) only where a shot is converted (shooter
-  // against keeper); (d) the candidate's own skill scale, which also narrows the spread within a
-  // side; (e) a stronger score state for draws at small gaps.
-  side85: { strength: { candidate: { side: 0.85 } } },
-  side80: { strength: { candidate: { side: 0.8 } } },
-  side75: { strength: { candidate: { side: 0.75 } } },
-  side70: { strength: { candidate: { side: 0.7 } } },
-  passSide50: { duel: { candidate: { passSide: 0.5 } } },
-  passSide0: { duel: { candidate: { passSide: 0 } } },
-  shotSide50: { shot: { candidate: { side: 0.5 } } },
-  shotSide0: { shot: { candidate: { side: 0 } } },
-  scale16: { strength: { candidate: { skillScale: 1.6 } } },
-  scale15: { strength: { candidate: { skillScale: 1.5 } } },
-  scoreFx2: { decide: { candidate: { leadingShot: 0.45, trailingPush: 1.8 } } },
+  // since removed: none was kept.
+  // T357 strength-gradient levers on the candidate model, measured at f5b8ddb through neutral
+  // hooks (`STRENGTH_CONFIG.candidate` with `skillScale` 1.8 and `side` 1, the share of a side's
+  // distance from the match's level — XI, form, home, manager, morale and diminishing returns —
+  // that reaches its players' skills; `DUEL_CONFIG.candidate.passSide` and
+  // `SHOT_CONFIG.candidate.side`, the same share only in pass completion or shot conversion; and
+  // T356's `settledRuns` again): `side80` = `{ strength: { candidate: { side: 0.8 } } }`,
+  // `passSide0` = `{ duel: { candidate: { passSide: 0 } } }`, `shotSide0` / `shotSide50` =
+  // `{ shot: { candidate: { side: 0 | 0.5 } } }`, `scale16` = `{ strength: { candidate: {
+  // skillScale: 1.6 } } }`, and `possRunsHalf25` as above, alone and joined with `+`. Removed
+  // since: none was kept (docs/CALIBRATION.md, T357).
 };
 
 function possession(p: object): BehaviourPatch {
