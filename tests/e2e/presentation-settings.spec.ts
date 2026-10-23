@@ -46,6 +46,70 @@ async function closeSettings(page: Page) {
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 
+for (const width of [390, 1380])
+  test(`image-built themes cover home, pinned table cells and detail sheets without advancing play ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
+    await observeCommands(page);
+    await loadPausedGame(page);
+    const date = await page.getByTestId('game-date').innerText();
+    const sent = await commands(page);
+    for (const theme of ['matchday-print', 'sticker-club']) {
+      await openSettings(page);
+      await chooseOption(page.getByTestId('presentation-theme'), theme);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await closeSettings(page);
+      const assetPath = `/art/${theme}/${theme === 'sticker-club' ? 'ui' : 'home'}/`;
+      const homeSkin = await page.getByTestId('club-hub').evaluate((hub) => {
+        const fixture = hub.querySelector('[data-home-part="fixture"]')!;
+        const style = getComputedStyle(fixture);
+        return { frame: style.borderImageSource, fill: style.backgroundImage };
+      });
+      expect(homeSkin.frame).toContain(assetPath);
+      expect(homeSkin.fill).toContain(assetPath);
+
+      await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
+      const table = page.getByRole('table', { name: '리그 순위표', exact: true });
+      await expect(table).toBeVisible();
+      for (const selector of ['thead th', 'tbody th']) {
+        const fill = await table
+          .locator(selector)
+          .first()
+          .evaluate((cell) => getComputedStyle(cell).backgroundImage);
+        expect(fill).toContain(assetPath);
+      }
+      await table.locator('tbody th button').first().click();
+      const detail = page.getByRole('dialog');
+      await expect(detail).toBeVisible();
+      const sheet = await detail.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          fill: getComputedStyle(element).backgroundImage,
+          left: rect.left,
+          right: rect.right,
+          viewport: innerWidth,
+        };
+      });
+      expect(sheet.fill).toContain(assetPath);
+      expect(sheet.left).toBeGreaterThanOrEqual(0);
+      expect(sheet.right).toBeLessThanOrEqual(sheet.viewport);
+      await detail.getByRole('button', { name: '창 닫기', exact: true }).click();
+      await expect(table).toBeVisible();
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: '클럽 홈', exact: true })
+        .click();
+      await expect(page.getByTestId('club-hub')).toBeVisible();
+      await expect(page.getByTestId('game-date')).toHaveText(date);
+      expect(await commands(page)).toBe(sent);
+    }
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'sticker-club');
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page.getByTestId('game-date')).toHaveText(date);
+  });
+
 async function expectRegistryChoices(page: Page, fields: Field[] = ['locale', 'theme']) {
   if (fields.includes('locale')) {
     const locale = page.getByTestId('presentation-locale');

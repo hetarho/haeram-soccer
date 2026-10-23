@@ -1,0 +1,1115 @@
+/* Shared image-built shell and home. Artwork supplies surfaces; HTML retains live content.
+   Frames use fixed nine-slice corners, independent material tiles and independent icons. */
+html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
+  body {
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: 512px;
+    color: var(--text);
+  }
+
+  [data-ui='game-shell']:has(> [data-ui='sidebar']) {
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  [data-ui='game-shell'] > main {
+    --gutter: 28px;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: 512px;
+  }
+
+  button,
+  [data-select-trigger] {
+    box-shadow: none;
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+
+  button:focus-visible,
+  [data-select-trigger]:focus-visible,
+  label:focus-within {
+    outline: 2px dashed var(--focus);
+    outline-offset: 4px;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] {
+    position: relative;
+    padding: 26px 18px 24px;
+    gap: 22px;
+    overflow-x: hidden;
+    color: var(--image-on-dark);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    background-size: 320px;
+    border-right: 6px solid transparent;
+    border-image: var(--image-dark-frame) 40 / 0 4px 0 0 stretch;
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-on-dark-muted);
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child {
+    padding-bottom: 24px;
+    border: 0;
+    background: var(--image-art-rule-light) left bottom / 100% 3px no-repeat;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child > i {
+    display: none;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] h1 {
+    width: 100%;
+    height: 78px;
+    margin: 0;
+    overflow: hidden;
+    color: transparent;
+    font-size: 0;
+    background: var(--image-art-masthead) center / contain no-repeat;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child > span,
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child > small {
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 2.4px;
+    color: var(--image-on-dark);
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav {
+    gap: 0;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button {
+    --image-icon: none;
+    position: relative;
+    min-height: 62px;
+    gap: 12px;
+    padding: 8px 12px;
+    border: 7px solid transparent;
+    border-image: none;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-art-rule-light) left bottom / 100% 2px no-repeat;
+    color: var(--image-on-dark);
+    font-size: 17px;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button > [data-pixel-icon] {
+    display: none;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button::before {
+    content: '';
+    flex: 0 0 34px;
+    width: 34px;
+    height: 38px;
+    background: var(--image-on-dark);
+    mask: var(--image-icon) center / contain no-repeat;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page'] {
+    border-image: var(--image-selected-frame) 48 / 10px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: 256px;
+    color: var(--image-on-primary);
+  }
+
+  [data-ui='game-shell']
+    > [data-ui='sidebar']
+    nav
+    button:hover:not(:disabled):not([aria-current='page']) {
+    background-color: var(--image-sidebar-hover);
+  }
+
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='home']) {
+    --image-icon: var(--image-art-icon-home);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='table']) {
+    --image-icon: var(--image-art-icon-league);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='cup']) {
+    --image-icon: var(--image-art-icon-cup);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='history']) {
+    --image-icon: var(--image-art-icon-history);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='people']) {
+    --image-icon: var(--image-art-icon-people);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='training']) {
+    --image-icon: var(--image-art-icon-training);
+  }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='trend']) {
+    --image-icon: var(--image-art-icon-office);
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child {
+    position: relative;
+    padding-top: 190px;
+    color: var(--image-canvas);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child::before {
+    content: '';
+    position: absolute;
+    inset: 0 -18px auto;
+    height: 175px;
+    background: var(--image-art-sidebar-terrace) center / cover no-repeat;
+    mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+    pointer-events: none;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child > button {
+    width: 100%;
+    margin-top: 10px;
+    border: 0;
+    background: none;
+    color: var(--image-on-dark);
+    font-weight: 700;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] label {
+    color: var(--image-on-dark);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  [data-ui='game-shell'] > main > header {
+    min-height: 72px;
+    padding-top: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    background: none;
+    border: 0;
+    background-image: var(--image-art-rule-dark);
+    background-position: center bottom;
+    background-size: calc(100% - 56px) 3px;
+    background-repeat: no-repeat;
+  }
+
+  [data-ui='game-shell'] > main > header > button:first-child {
+    border: 0;
+    width: 44px;
+    min-width: 44px;
+    background: none;
+  }
+
+  [data-ui='game-shell'] > main > header [data-pixel-icon='menu'],
+  [data-ui='game-shell'] > main > header [data-pixel-icon='bell'],
+  [data-ui='progress-mode'] [data-pixel-icon='switch'] {
+    display: block;
+    width: 28px;
+    height: 28px;
+    background: currentColor;
+    mask: var(--image-icon) center / contain no-repeat;
+  }
+
+  [data-ui='game-shell'] > main > header [data-pixel-icon='menu'] {
+    --image-icon: var(--image-art-icon-menu);
+  }
+  [data-ui='game-shell'] > main > header [data-pixel-icon='bell'] {
+    --image-icon: var(--image-art-icon-bell);
+  }
+  [data-ui='progress-mode'] [data-pixel-icon='switch'] {
+    --image-icon: var(--image-art-icon-switch);
+  }
+
+  [data-ui='game-shell'] > main > header [data-pixel-icon] > path,
+  [data-ui='progress-mode'] [data-pixel-icon] > path {
+    visibility: hidden;
+  }
+
+  [data-ui='game-shell'] > main > header > div:has(> svg) > svg {
+    width: 36px;
+    height: 40px;
+  }
+
+  [data-ui='game-shell'] > main > header > div > div > b {
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  [data-testid='hud-cash'] {
+    padding: 2px 12px;
+    border: 0;
+    background: none;
+  }
+
+  [data-testid='hud-cash'] small {
+    font-size: 12px;
+    color: var(--image-muted);
+  }
+
+  [data-testid='hud-cash'] b {
+    font-size: 21px;
+    font-weight: 800;
+  }
+
+  [data-testid='view-scroller']:has([data-home-active='true']) {
+    display: block;
+    padding-bottom: 8px;
+  }
+
+  [data-testid='view-scroller'] {
+    padding-top: 12px;
+    background: none;
+  }
+
+  div:has(> [data-home-active='true']) {
+    display: block;
+    flex: none;
+    overflow: visible;
+  }
+
+  [data-ui='season-overview'] {
+    min-height: 66px;
+    margin: 0;
+    padding: 0 2px 12px;
+    gap: 24px;
+  }
+
+  [data-testid='calendar'] {
+    gap: 4px;
+  }
+
+  [data-testid='calendar'] small,
+  [data-testid='game-date'] {
+    color: var(--image-ink-color);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  [data-ui='season-overview'] > div:nth-child(2) {
+    gap: 7px;
+  }
+
+  [data-ui='season-overview'] > div:nth-child(2) > small {
+    color: var(--image-ink-color);
+    font-size: 12px;
+  }
+
+  [data-testid='game-round'] {
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  [data-testid='game-round-total'] {
+    font-size: 16px;
+  }
+
+  [data-ui='progress-mode'] {
+    min-height: 60px;
+    padding: 6px 12px;
+    gap: 16px;
+    border: 9px solid transparent;
+    border-image: var(--image-primary-frame) 52 / 12px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: 256px;
+    border-radius: var(--image-radius, 0px);
+    color: var(--image-on-primary);
+  }
+
+  [data-ui='progress-mode'] b {
+    font-size: 15px;
+    letter-spacing: 0.4px;
+  }
+
+  [data-ui='progress-mode'] small {
+    font-size: 11px;
+    color: var(--image-on-primary);
+  }
+
+  [data-ui='progress-mode'] [data-pixel-icon] {
+    color: var(--image-on-primary);
+  }
+
+  [data-testid='club-hub'] {
+    max-width: none;
+    gap: 12px;
+  }
+
+  [data-home-part='fixture'] {
+    min-height: 108px;
+    padding: 9px 14px;
+    border: 12px solid transparent;
+    border-image: var(--image-panel-frame) 54 / 17px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: 384px;
+    gap: 18px;
+  }
+
+  [data-home-part='fixture'] > div:first-child > small {
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+  }
+
+  [data-home-part='fixture'] h3 {
+    margin: 4px 0;
+    gap: 7px;
+    font-size: clamp(19px, 1.65vw, 27px);
+    font-weight: 800;
+  }
+
+  [data-home-part='fixture'] h3 button {
+    font-weight: inherit;
+  }
+
+  [data-home-part='fixture'] p {
+    font-size: 13px;
+    color: var(--image-muted);
+  }
+
+  [data-home-part='fixture'] > div:last-child > button {
+    min-height: 60px;
+    padding: 10px 14px;
+    border: 9px solid transparent;
+    border-image: var(--image-primary-frame) 54 / 13px stretch;
+    border-radius: var(--image-radius, 0px);
+    color: var(--image-on-primary);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: 256px;
+    font-size: 16px;
+    font-weight: 750;
+  }
+
+  [data-home-part='season-meter'] {
+    gap: 5px;
+  }
+
+  [data-home-part='season-meter'] > span {
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+    color: var(--image-ink-color);
+  }
+
+  [data-home-part='season-meter'] b {
+    color: var(--image-ink-color);
+    font-size: 15px;
+  }
+
+  [data-home-part='season-meter'] progress {
+    height: 13px;
+    border: 2px solid transparent;
+    border-image: var(--image-button-frame) 42 / 3px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+  }
+
+  [data-home-part='season-meter'] progress::-webkit-progress-bar {
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+  }
+
+  [data-home-part='season-meter'] progress::-webkit-progress-value {
+    min-width: 0;
+    background: var(--image-primary) var(--image-primary-material) repeat;
+    background-size: 220px;
+  }
+
+  [data-home-part='season-meter'] progress::-moz-progress-bar {
+    background: var(--image-primary) var(--image-primary-material) repeat;
+    background-size: 220px;
+  }
+
+  [data-home-part='stage'] {
+    --scene-stats-height: 108px;
+    isolation: isolate;
+    height: clamp(310px, 37vh, 440px);
+    min-height: 310px;
+  }
+
+  [data-home-part='stage']::after {
+    content: '';
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    pointer-events: none;
+    border: 8px solid transparent;
+    border-image: var(--image-tile-frame) 50 / 11px stretch;
+  }
+
+  [data-home-part='scene'] {
+    min-height: 0;
+    margin: 6px;
+    border: 0;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+  }
+
+  [data-home-part='scene'] > [data-facility-art] {
+    inset: 0 0 calc(var(--scene-stats-height) - 6px);
+  }
+
+  [data-home-part='scene-caption'] {
+    inset: 8px 10px auto;
+    padding: 0;
+    gap: 8px;
+    background: none;
+  }
+
+  [data-home-part='scene-caption'] > span,
+  [data-home-part='scene-caption'] > b,
+  [data-home-part='stage-label'] {
+    min-height: 32px;
+    padding: 5px 9px;
+    border: 5px solid transparent;
+    border-image: var(--image-dark-frame) 46 / 7px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
+    background-size: 256px;
+    color: var(--image-on-dark);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  [data-home-part='scene-caption'] > b {
+    margin: 0 auto;
+    font-weight: 650;
+  }
+
+  [data-home-part='scene-caption'] i {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    font-size: 0;
+    background: var(--image-on-dark);
+    mask: var(--image-art-icon-people) center / contain no-repeat;
+  }
+
+  [data-home-part='scene-caption'] > span:first-child i {
+    background: var(--image-heart);
+    mask-image: var(--image-art-icon-heart);
+  }
+
+  [data-home-part='stage-label'] {
+    right: 10px;
+    bottom: calc(var(--scene-stats-height) + 6px);
+    letter-spacing: 0;
+  }
+
+  [data-home-part='season-stats'] {
+    inset: auto 6px 6px;
+    width: calc(100% - 12px);
+    height: calc(var(--scene-stats-height) - 6px);
+    gap: 0;
+    border: 0;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    color: var(--image-on-dark);
+  }
+
+  [data-home-part='season-stats'] > div {
+    align-content: center;
+    padding: 8px 20px;
+    gap: 2px;
+    border: 0;
+    background: none;
+  }
+
+  [data-home-part='season-stats'] > div + div {
+    background: var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat;
+  }
+
+  [data-home-part='season-stats'] span,
+  [data-home-part='season-stats'] small {
+    color: var(--image-on-dark);
+    font-size: 13px;
+  }
+
+  [data-home-part='season-stats'] b,
+  [data-home-part='season-stats'] b > span {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  [data-home-part='season-stats'] b > small {
+    margin-left: 3px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-home-part='season-stats'] > i {
+    right: 14px;
+    bottom: 25px;
+    width: 11px;
+    height: 18px;
+    background: var(--image-on-dark);
+    mask: var(--image-art-icon-play) center / contain no-repeat;
+    font-size: 0;
+  }
+
+  [data-testid='team-state'] {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  [data-home-part='conditions'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+  }
+
+  [data-condition] {
+    min-width: 0;
+    border: 0;
+    border-radius: var(--image-radius, 0px);
+    background: none;
+  }
+
+  [data-condition] > button {
+    position: relative;
+    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    justify-items: start;
+    column-gap: 12px;
+    min-height: 88px;
+    padding: 6px 12px;
+    border: 9px solid transparent;
+    border-image: var(--image-tile-frame) 52 / 12px stretch;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: 384px;
+    color: var(--image-ink-color);
+  }
+
+  [data-condition] > button::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1 / 4;
+    align-self: center;
+    width: 58px;
+    height: 58px;
+    background: var(--image-icon) center / contain no-repeat;
+  }
+
+  [data-condition='fatigue'] {
+    --image-icon: var(--image-art-icon-boot);
+  }
+  [data-condition='morale'] {
+    --image-icon: var(--image-art-icon-supporters);
+  }
+  [data-condition='manager'] {
+    --image-icon: var(--image-art-icon-manager);
+  }
+  [data-condition='squad'] {
+    --image-icon: var(--image-art-icon-shirt);
+  }
+
+  [data-condition] > button > span,
+  [data-condition] > button > b,
+  [data-condition] > button > small {
+    grid-column: 2;
+  }
+
+  [data-condition] > button > span {
+    color: var(--image-ink-color);
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  [data-condition] > button > b {
+    font-size: clamp(23px, 2vw, 30px);
+    font-weight: 800;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  [data-condition] > button > small {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  [data-testid='team-state'] > p {
+    display: block;
+    margin-top: 6px;
+    color: var(--image-muted);
+    font-size: 12px;
+  }
+
+  [data-testid='view-scroller'] > footer {
+    margin-top: 22px;
+    padding: 0;
+    border: 0;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--image-muted);
+  }
+
+  [data-testid='view-scroller'] > footer + div {
+    margin-top: 10px;
+    gap: 5px;
+    padding-bottom: 5px;
+  }
+
+  [data-testid='view-scroller'] > footer + div > button,
+  [data-testid='view-scroller'] > footer + div > label {
+    min-height: 44px;
+    margin: 0;
+    padding: 5px 12px;
+    border: 7px solid transparent;
+    border-image: var(--image-dark-frame) 48 / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
+    background-size: 256px;
+    color: var(--image-on-dark);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  [data-testid='view-scroller'] > footer + div > button:first-child {
+    border-image-source: var(--image-primary-frame);
+    background-image: var(--image-primary-material);
+  }
+
+  [data-ui='season-transport'] {
+    min-height: 58px;
+    margin: 0 0 8px;
+    padding: 0 14px;
+    gap: 12px;
+    border: 7px solid transparent;
+    border-image: var(--image-dark-frame) 46 / 10px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
+    background-size: 256px;
+    color: var(--image-on-dark);
+  }
+
+  [data-ui='season-transport'] small,
+  [data-ui='season-transport'] [data-select-trigger] {
+    color: var(--image-on-dark);
+    font-size: 12px;
+  }
+
+  [data-ui='season-transport'] [data-select-trigger] {
+    height: 44px;
+    min-height: 44px;
+    border: 4px solid transparent;
+    border-image: var(--image-dark-frame) 54 / 6px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
+    background-size: 256px;
+  }
+
+  [data-ui='season-transport'] > i {
+    bottom: -3px;
+    height: 3px;
+    background: var(--image-primary) var(--image-primary-material) repeat;
+  }
+
+  [data-ui='season-transport']
+    button:is([aria-label='자동 진행 시작'], [aria-label='자동 진행 정지']) {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 6px solid transparent;
+    border-image: var(--image-primary-frame) 54 / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: 256px;
+  }
+
+  [data-ui='season-transport']
+    button:is([aria-label='자동 진행 시작'], [aria-label='자동 진행 정지'])::before {
+    display: none;
+  }
+
+  [data-ui='season-transport'] button > [data-pixel-icon='play'] {
+    width: 19px;
+    height: 19px;
+    background: var(--image-on-primary);
+    mask: var(--image-art-icon-play) center / contain no-repeat;
+  }
+
+  [data-ui='season-transport'] [data-pixel-icon='play'] > path {
+    visibility: hidden;
+  }
+
+  @media (min-width: 761px) and (max-width: 1190px) {
+    [data-ui='game-shell']:has(> [data-ui='sidebar']) {
+      grid-template-columns: 220px minmax(0, 1fr);
+    }
+    main {
+      --gutter: 20px;
+    }
+    [data-ui='game-shell'] > [data-ui='sidebar'] {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+    [data-ui='game-shell'] > [data-ui='sidebar'] nav button {
+      gap: 6px;
+      padding-right: 3px;
+      padding-left: 3px;
+      font-size: 15px;
+    }
+    [data-home-part='conditions'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    [data-condition] > button {
+      grid-template-columns: 52px minmax(0, 1fr);
+      column-gap: 12px;
+      padding: 6px;
+    }
+    [data-condition] > button::before {
+      width: 52px;
+      height: 52px;
+    }
+    [data-home-part='fixture'] {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    [data-home-part='fixture'] > div:first-child {
+      flex-basis: 100%;
+    }
+    [data-home-part='fixture'] > div:last-child > button {
+      min-height: 48px;
+      padding: 5px 12px;
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    [data-ui='game-shell'][data-playing='false'] > [data-ui='sidebar'] {
+      display: none;
+    }
+    [data-ui='game-shell']:has(> [data-ui='sidebar']) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body {
+      --mobile-nav-clearance: calc(82px + env(safe-area-inset-bottom));
+    }
+    main {
+      --gutter: 12px;
+    }
+    [data-ui='game-shell'] > main > header {
+      min-height: 62px;
+      gap: 4px;
+      padding-top: calc(5px + env(safe-area-inset-top));
+      padding-bottom: 7px;
+      background-size: calc(100% - 24px) 2px;
+    }
+    [data-ui='game-shell'] > main > header > button:first-child {
+      flex-basis: 44px;
+      min-width: 44px;
+      width: 44px;
+      min-height: 44px;
+    }
+    [data-ui='game-shell'] > main > header > div > div > b {
+      font-size: 15px;
+      line-height: 1.2;
+    }
+    [data-ui='game-shell'] > main > header > div:has(> svg) > svg {
+      width: 27px;
+      height: 31px;
+    }
+    [data-ui='game-shell'] > main > header [data-pixel-icon='menu'],
+    [data-ui='game-shell'] > main > header [data-pixel-icon='bell'] {
+      width: 24px;
+      height: 24px;
+    }
+    [data-testid='hud-cash'] {
+      padding: 3px 5px;
+    }
+    [data-testid='hud-cash'] small {
+      display: none;
+    }
+    [data-testid='hud-cash'] b {
+      font-size: 16px;
+    }
+    [data-testid='view-scroller'] {
+      padding-top: 10px;
+    }
+    [data-testid='view-scroller']:has([data-home-active='true']) {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 0;
+    }
+    div:has(> [data-home-active='true']) {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 10px;
+    }
+    [data-ui='season-overview'] {
+      min-height: 64px;
+      padding-bottom: 10px;
+      gap: 12px;
+    }
+    [data-testid='calendar'] small,
+    [data-testid='game-date'] {
+      font-size: 11px;
+    }
+    [data-ui='season-overview'] > div:nth-child(2) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 3px;
+      max-width: 72px;
+    }
+    [data-ui='season-overview'] > div:nth-child(2) > small:first-child {
+      flex-basis: 100%;
+      font-size: 10px;
+      line-height: 1;
+    }
+    [data-testid='game-round'] {
+      font-size: 29px;
+    }
+    [data-testid='game-round-total'] {
+      font-size: 11px;
+    }
+    [data-ui='progress-mode'] {
+      min-height: 52px;
+      gap: 8px;
+      padding: 2px 7px;
+      border-width: 8px;
+      border-image-width: 10px;
+    }
+    [data-ui='progress-mode'] b {
+      font-size: 13px;
+    }
+    [data-ui='progress-mode'] small {
+      font-size: 10px;
+    }
+    [data-ui='progress-mode'] [data-pixel-icon] {
+      width: 22px;
+      height: 22px;
+    }
+    [data-testid='club-hub'] {
+      gap: 10px;
+    }
+    [data-home-part='fixture'] {
+      flex-wrap: nowrap;
+      min-height: 0;
+      padding: 7px 8px;
+      gap: 8px;
+      border-width: 9px;
+      border-image-width: 12px;
+    }
+    [data-home-part='fixture'] > div:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    [data-home-part='fixture'] > div:first-child > small {
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
+    [data-home-part='fixture'] h3 {
+      font-size: 17px;
+      line-height: 1.3;
+      margin: 3px 0;
+    }
+    [data-home-part='fixture'] p {
+      font-size: 11px;
+    }
+    [data-home-part='fixture'] > div:last-child {
+      flex: 0 0 auto;
+      max-width: 112px;
+      gap: 7px;
+    }
+    [data-home-part='fixture'] > div:last-child > button {
+      min-height: 44px;
+      padding: 4px 10px;
+      border-width: 7px;
+      border-image-width: 10px;
+      font-size: 12px;
+    }
+    [data-home-part='season-meter'] > span {
+      font-size: 11px;
+    }
+    [data-home-part='season-meter'] b {
+      font-size: 12px;
+    }
+    [data-home-part='season-meter'] progress {
+      height: 10px;
+    }
+    [data-home-part='stage'] {
+      --scene-stats-height: 76px;
+      flex: none;
+      height: clamp(245px, 65vw, 330px);
+      min-height: 245px;
+      max-height: none;
+    }
+    [data-home-part='stage']::after {
+      border-image-width: 8px;
+    }
+    [data-home-part='scene'] {
+      margin: 5px;
+      max-height: none;
+    }
+    [data-home-part='scene-caption'] {
+      inset: 6px 5px auto;
+      gap: 4px;
+      justify-content: space-between;
+    }
+    [data-home-part='scene-caption'] > span,
+    [data-home-part='stage-label'] {
+      min-height: 27px;
+      padding: 3px 4px;
+      border-width: 4px;
+      border-image-width: 5px;
+      font-size: 10px;
+    }
+    [data-home-part='scene-caption'] > b {
+      display: none;
+    }
+    [data-home-part='stage-label'] {
+      bottom: calc(var(--scene-stats-height) + 3px);
+      right: 6px;
+    }
+    [data-home-part='season-stats'] {
+      inset: auto 5px 5px;
+      width: calc(100% - 10px);
+      height: calc(var(--scene-stats-height) - 5px);
+    }
+    [data-home-part='season-stats'] > div {
+      padding: 7px 9px;
+      gap: 3px;
+    }
+    [data-home-part='season-stats'] span {
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    [data-home-part='season-stats'] b,
+    [data-home-part='season-stats'] b > span {
+      font-size: 24px;
+      letter-spacing: -0.7px;
+    }
+    [data-home-part='season-stats'] b > small {
+      font-size: 10px;
+      margin-left: 1px;
+    }
+    [data-home-part='season-stats'] > i {
+      right: 5px;
+      bottom: 19px;
+      font-size: 20px;
+    }
+    [data-home-part='conditions'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+    [data-condition] > button {
+      grid-template-columns: 44px minmax(0, 1fr);
+      column-gap: 8px;
+      min-height: 83px;
+      padding: 4px 7px;
+      border-width: 7px;
+      border-image-width: 9px;
+    }
+    [data-condition] > button::before {
+      width: 44px;
+      height: 49px;
+    }
+    [data-condition] > button > span {
+      font-size: 11px;
+    }
+    [data-condition] > button > b {
+      font-size: 25px;
+    }
+    [data-condition] > button > small {
+      font-size: 11px;
+    }
+    [data-testid='team-state'] > p {
+      display: block;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    [data-ui='season-transport'] {
+      min-height: 56px;
+      padding: 0 6px;
+      margin-bottom: 3px;
+      border-width: 6px;
+      border-image-width: 8px;
+      gap: 5px;
+    }
+    [data-ui='season-transport'] small {
+      font-size: 10px;
+    }
+    [data-ui='game-shell'] > nav {
+      bottom: calc(6px + env(safe-area-inset-bottom));
+      left: 8px;
+      right: 8px;
+      padding: 3px 2px;
+      gap: 0;
+      border: 6px solid transparent;
+      border-image: var(--image-dark-frame) 46 / 9px stretch;
+      border-radius: var(--image-radius, 0px);
+      background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+        padding-box;
+      background-size: 256px;
+      box-shadow: none;
+    }
+    [data-ui='game-shell'] > nav button {
+      min-width: 0;
+      min-height: 52px;
+      gap: 3px;
+      padding: 4px 0;
+      color: var(--image-on-dark);
+      font-size: 10px;
+    }
+    [data-ui='game-shell'] > nav button[aria-current='page'] {
+      border: 4px solid transparent;
+      border-image: var(--image-selected-frame) 48 / 6px stretch;
+      background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+      background-size: 256px;
+      color: var(--image-on-primary);
+    }
+    [data-ui='game-shell'] > nav [data-pixel-icon] > path {
+      visibility: hidden;
+    }
+    [data-ui='game-shell'] > nav button::after {
+      display: none;
+    }
+    [data-ui='game-shell'] > nav [data-pixel-icon] {
+      background: currentColor;
+      mask: var(--image-icon) center / contain no-repeat;
+      width: 23px;
+      height: 23px;
+      color: inherit;
+    }
+  }
+
+  @media (max-width: 359px) {
+    [data-condition] > button {
+      grid-template-columns: 36px minmax(0, 1fr);
+      column-gap: 5px;
+      padding-right: 4px;
+      padding-left: 4px;
+    }
+    [data-condition] > button::before {
+      width: 36px;
+      height: 44px;
+    }
+    [data-condition] > button > b {
+      font-size: 22px;
+    }
+    [data-testid='game-date'] {
+      font-size: 10px;
+    }
+    [data-ui='season-overview'] {
+      gap: 8px;
+    }
+  }
+}

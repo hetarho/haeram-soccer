@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r136 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r137 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -442,7 +442,7 @@
   - Themes establish a complete visual language across facility illustrations, semantic icons, component surfaces, edges and interaction feedback. Preserve the shared home information, navigation, arrangement and responsive bounds. New smooth themes retain Pretendard unless their concept requires a different face; a palette-only study does not define a complete theme.
   - Matchday-print and sticker-club use Pretendard in every text role and provide their own complete facility image sets and semantic icon families, including trophy states.
   - Matchday-print uses warm newsprint, charcoal and vermilion, carved woodcut/halftone facility illustrations, solid stamped pictograms and printed-ticket controls. Keep distress in artwork and restrained background texture; text, numbers and status meanings stay clear.
-  - Matchday-print carries the same image-built visual language across founding, slots, home, match observation, league/cups, people, training, operations, records, settings, notices and dialogs/sheets. Image frames, button/tab skins, rules, icons and tiled materials form the controls and surfaces; fixed corners and stretchable/repeatable regions accommodate content and responsive dimensions. CSS positions and assembles these resources; labels, editable text, numbers, tables and game-driven diagrams remain semantic, live content.
+  - Matchday-print and sticker-club each carry their image-built visual language across founding, slots, home, match observation, league/cups, people, training, operations, records, settings, notices and dialogs/sheets. Image frames, button/tab skins, rules, icons and tiled materials form the controls and surfaces; fixed corners and stretchable/repeatable regions accommodate content and responsive dimensions. CSS positions and assembles these resources; labels, editable text, numbers, tables and game-driven diagrams remain semantic, live content.
   - Reuse semantic surface and control treatments across views. Shell decoration belongs only to the shell; sheets, events, dropdowns and floating feedback retain their own geometry, scrolling, focus and reachable actions. Image failures must not remove readable facts or usable controls.
   - Sticker-club uses flat cartoon facility illustrations, colourful filled pictograms with a cream die-cut edge and dark contour, and compact badge-like controls with restrained offset shadows. Keep illustration and icon detail distinct from data, preserve text space and avoid decorative foliage behind copy.
   - Structure the standard theme with distinct surface luminance and saturation, existing spacing and text hierarchy: subdued dark page/navigation backgrounds, quieter content surfaces and stronger green controls/selection. Keep the overall palette deep while preserving the visible green foundation and readable contrast.
@@ -498,6 +498,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r137 261024 WEB-91✎ all-screen image-built controls and surfaces: matchday-print only→matchday-print and sticker-club; retain their distinct materials, frames and icon families, with matchday-print still the registry default.
 - r136 261023 WEB-91✎ standard registry default and home-only image study→matchday-print default with reusable image-built surfaces and controls across every screen; valid stored selections and live semantic content retained
 - r135 261023 WEB-91✎ palette-only studies with retained art/icons→complete matchday-print and sticker-club concepts with independent full resources and Pretendard by default
 - r134 261023 WEB-31✎ owner-request-only preparation locks→calendar-wide edit protection; WEB-97+ management edits available between automatic ticks→disabled for the complete run and settling date step, shared across views; stop, pace and read-only browsing stay available
