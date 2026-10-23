@@ -19,6 +19,7 @@ import {
   type Action,
 } from './decide';
 import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
+import { chanceXg } from './resolve';
 import { enterSlot, slotOf } from './state';
 import { computeTags, type Tags } from './tags';
 import { gridKit } from './testkit';
@@ -558,6 +559,68 @@ describe('grid decisions', () => {
     // The candidate leans harder both ways than the pre-feature model.
     expect(K.candidate.leadingShot).toBeLessThan(K.leading.shot);
     expect(K.candidate.trailingPush).toBeGreaterThan(K.trailing.push);
+  });
+
+  it("weighs a box shot by its chance's xG on the candidate model only (T370)", () => {
+    const Q = DECISION_CONFIG.candidate.shotQuality as { ref: number; power: number };
+    const kept = Q.power;
+    // Shots against passes for a forward in the box, with the setting at `power`.
+    const ratio = (at: Point, power: number, candidate = true) => {
+      Q.power = power;
+      try {
+        const sc = scene(ST, at);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), minute: 20 });
+        return mix.shot / mix.pass;
+      } finally {
+        Q.power = kept;
+      }
+    };
+    for (const at of [centre(6, 2), centre(6, 1), centre(7, 2)]) {
+      const sc = scene(ST, at);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      const xg = chanceXg(at, { pressure: sc.tags().pressure, candidate: true }, sc.s.math);
+      expect(ratio(at, 1) / ratio(at, 0)).toBeCloseTo(xg / Q.ref, 9);
+      expect(ratio(at, 1, false)).toBeCloseTo(ratio(at, 0, false), 12);
+    }
+    // A weak angle loses more of its shots than the spot; outside the box nothing changes.
+    expect(ratio(centre(6, 1), 1) / ratio(centre(6, 1), 0)).toBeLessThan(
+      ratio(centre(6, 2), 1) / ratio(centre(6, 2), 0),
+    );
+    expect(ratio(centre(5, 2), 1)).toBeCloseTo(ratio(centre(5, 2), 0), 12);
+  });
+
+  it('carries further and more often unpressured before the final third, on the candidate model only (T370)', () => {
+    const K = DECISION_CONFIG.candidate.carry as {
+      upTo: number;
+      open: number;
+      length: readonly [number, number];
+    };
+    const kept = { open: K.open, length: K.length };
+    const run = (at: Point, candidate: boolean) => {
+      K.open = 2;
+      K.length = [20, 0];
+      try {
+        const sc = scene(CM, at);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        const tags = { ...sc.tags(), minute: 20 };
+        const end = chooseCarry(sc.s, 0, CM, tags, random('carry-open'));
+        const mix = actionMix(sc.s, 0, CM, tags);
+        return { length: Math.hypot(end[0] - at[0], end[1] - at[1]), carry: mix.carry / mix.pass };
+      } finally {
+        Object.assign(K, kept);
+      }
+    };
+    const deep = centre(3, 2);
+    expect(deep[0]).toBeLessThan(K.upTo);
+    expect(run(deep, true).length).toBeCloseTo(20, 6);
+    expect(run(deep, true).carry / run(deep, false).carry).toBeCloseTo(2, 9);
+    expect(run(deep, false).length).toBeLessThan(DECISION_CONFIG.carry.length[0] * 2 + 1e-9);
+    // In the final third the shared carry holds.
+    const high = centre(5, 2);
+    expect(high[0]).toBeGreaterThanOrEqual(K.upTo);
+    expect(run(high, true).length).toBeLessThan(DECISION_CONFIG.carry.length[0] * 2 + 1e-9);
+    expect(run(high, true).carry).toBeCloseTo(run(high, false).carry, 12);
   });
 
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
