@@ -673,9 +673,7 @@ export function chooseCarry(
   const c = attackFrame(side, me.pos);
   const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
   const open =
-    s.setup.model !== undefined &&
-    tags.pressure < 1 &&
-    c[0] < DECISION_CONFIG.candidate.carry.upTo;
+    s.setup.model !== undefined && tags.pressure < 1 && c[0] < DECISION_CONFIG.candidate.carry.upTo;
   const [base, spread] = inBox(c)
     ? K.boxLength
     : open

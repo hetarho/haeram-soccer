@@ -380,9 +380,7 @@ export function resolvePass(
   const u = r();
   const I = DUEL_CONFIG.candidate.intercept;
   const intercepted =
-    onCandidate(s) && from[0] < I.upTo
-      ? I.share[s.setup.tactics[other(side)]]
-      : P.lost.intercepted;
+    onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
   if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
