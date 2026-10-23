@@ -20,6 +20,7 @@ import type {
   ManagerTenureSummary,
 } from '../../../../packages/contracts/src/manager-history-view';
 import type { CareerDate } from '../../../../packages/contracts/src/types';
+import { ROUND_INTERVAL_DAYS } from '../../../../packages/engine/src/calendar';
 import { seasonName } from './format';
 
 /** Opens one season of our club's records; the row is the tenure to restore on return. */
@@ -343,7 +344,8 @@ export function managerLegacyView(row: ManagerLegacyEventRow): ManagerLegacyView
   return {
     kind: 'legacy',
     id: row.id,
-    when: at ? managerDate(at) : `${seasonName(event.year)} · ROUND ${event.round}`,
+    // An unrecorded day reads as its calendar week's date, never as a round (→WEB-18).
+    when: managerDate(at ?? { year: event.year, day: event.round * ROUND_INTERVAL_DAYS }),
     title: event.title,
     detail: event.detail,
     note: '옛 기록 · 감독별 성과와 연결되지 않아요',

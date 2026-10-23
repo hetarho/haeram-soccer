@@ -144,6 +144,12 @@
   letter-spacing: 1px;
   color: var(--text-faint);
 }
+.round .roundTotal {
+  font-family: var(--score);
+  font-size: 14px;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
 .round strong {
   font-family: var(--score);
   font-size: 32px;

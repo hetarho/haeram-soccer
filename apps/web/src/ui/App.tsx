@@ -45,6 +45,8 @@ import {
   daysUntilNextMatch,
   fixtureDate,
   nextOwnFixture,
+  ROUND_INTERVAL_DAYS,
+  seasonDayLabel,
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
@@ -292,9 +294,7 @@ function ClubJournal({ state }: { state: ClientState }) {
                   .reverse()
                   .map((e, i) => (
                     <li key={i}>
-                      <small>
-                        {e.year} · ROUND {e.round}
-                      </small>
+                      <small>{seasonDayLabel(e.year, e.round * ROUND_INTERVAL_DAYS)}</small>
                       <h3>{e.title}</h3>
                       <p>{e.detail}</p>
                     </li>

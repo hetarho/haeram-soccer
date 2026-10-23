@@ -13,6 +13,7 @@ import {
 } from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
+import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
 import p from './ProgressControls.module.css';
 
@@ -37,6 +38,7 @@ export const ProgressOverview = memo(function ProgressOverview({
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
   const manual = settingsOf(w).mode === 'manual';
+  const round = ownDivisionRound(w);
   return (
     <section
       className={p.overview}
@@ -49,9 +51,15 @@ export const ProgressOverview = memo(function ProgressOverview({
         </small>
         <span data-testid="game-date">{seasonDate(w)}</span>
       </div>
-      <div className={p.round}>
+      <div
+        className={p.round}
+        aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}
+      >
         <small>ROUND</small>
-        <strong data-testid="game-round">{w.round}</strong>
+        <strong data-testid="game-round">{round.played}</strong>
+        <small className={p.roundTotal} data-testid="game-round-total">
+          / {round.total}
+        </small>
       </div>
       {compact ? (
         <span className={p.modeStatus}>{manual ? 'MANUAL · 수동 진행' : 'AUTO · 자동 진행'}</span>

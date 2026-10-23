@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r132 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r133 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -56,7 +56,9 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment, league exploration and the clock's pace dropdown, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] Management views show an information row below the HUD with league/division, the full calendar date and a prominently sized round number, plus the current mode. Only home offers the mode-change shortcut (→WEB-96); other management views show its read-only status. It shows neither transfer-window copy nor a next-match D-day countdown. Report and delegation preferences live in the owner office (→WEB-79).
+- WEB-18 [o] Management views show an information row below the HUD with league/division, the full calendar date and a prominently sized round of our own division, plus the current mode. Only home offers the mode-change shortcut (→WEB-96); other management views show its read-only status. It shows neither transfer-window copy nor a next-match D-day countdown. Report and delegation preferences live in the owner office (→WEB-79).
+  - the round counts the rounds our division's fixtures have played this season, beside its season total (19 / 38 in a 20-club league, 19 / 46 in a 24-club one); a week the division sits out leaves it unchanged. The amateur league counts its own rounds the same way. ← divisions of one country play different numbers of rounds, so the calendar's shared week number is not a round of any league
+  - nothing presents the calendar's shared week as a round: club notices are stamped with their date.
   - Progression actions occupy a separate bottom transport bar: automatic play/pause beside the pace dropdown, or the manual next-event action. On phones the bar sits immediately above the seven navigation tabs, with space reserved so neither it nor the tabs cover content or actions. Keep the existing full touch targets, theme shapes and safe areas. Season progress remains a thin informational rule.
   - The match theatre has no season-progression transport; its presentation speed follows →WEB-32.
   - notifications/news (→WEB-51) lives in the HUD beside cash, separating global communication from progression controls; its counts and touch target remain readable without overlapping content.
@@ -484,6 +486,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r133 261023 WEB-18✎ round number=calendar's shared week (1부 showed ROUND 41 of 46)→our division's played rounds over its season total, unchanged in its idle weeks; club notices ROUND stamp→date
 - r132 261023 WEB-10/18/39/79/96✎ mode switches in every management calendar and the office→home-only mode shortcut, read-only mode elsewhere; office retains report/delegation/background choices
 - r131 261023 WEB-45/79✎ separate 받기/받지 않기 and 위임/직접 결정 sections with business-only bulk actions→one nine-row 보고받기/위임 list, matching departmental labels and topmost confirmed 전체 보고받기/전체 위임 across observations and responsibilities; progression mode remains separate
 - r130 261023 WEB-10/11/79✎ local cramped controls, flat fixture and edge-to-edge row hover→shared padded controls, distinct NEXT MATCH card and theme-shaped inset hover/focus rows; narrow layouts reflow before clipping

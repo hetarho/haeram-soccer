@@ -217,12 +217,13 @@
 | match-continuity-and-performance | converted@261021 |
 | manager-achievements | converted@261021 |
 | set-piece-defence-and-goal-feedback | converted@261022 |
+| own-club-match-edge | open@261023 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 132 | 132 | - | 0 |
+| WEB | 133 | 133 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -262,11 +263,17 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
+- ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
 - resume (r5n2 hand-off 261023 14:00): T369, T326, T374 done and pushed. Next: plan honest offside's follow-up from T374's exit (inbox 261023 decided T374 T370, option a: through-ball lead/depth scaled by the space behind the line + late MF box runs, screened on MATCH-29) as a create-task before T370 or folded into it; then T370 (baseline T373's football) → T371 → T372 (parity at pilot size) → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46, 47, 48 (49–50 free); calibration round 41 used by T374.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 ideation own-club-match-edge start: owner's 1995 save measured (own matches 2.51 v 1.70 points a match on equal strengths, one-sided manager/morale context); directions A–D open for the owner
+- 261023 T383 done: rounds numbered by our division (19 / 38 in 1부), idle weeks unchanged, notices dated; units 737/737, Chromium management/recovery/staff 12/16 with 4 pre-existing load failures
+- 261023 create-task WEB r133 → T383
+- 261023 update-ssot WEB start
+- 261023 update-ssot WEB r133 WEB-18✎ division round → create-task WEB
 - 261023 office pushed (o9r4; T379–T382): implementation 7a6581e0 on origin/main; combined typecheck/build and 65 affected units pass. CI 39909381793 remains pending with no jobs started; local watcher stopped, remote workflow stays queued, no CI pass claimed
 - 261023 office publication (o9r4; T379–T382): owner authorizes commit and push after the verified batch; origin/main ab3bb16b integrated, combined typecheck/build and 65 affected unit tests pass; read CI once for the pushed commit
 - 261023 T376 done (p3b6, from the owner's playback report): pre-feature frames draw each period's kick-off, sample every snapshot and kick with explicit times and fly passes 0.25× as long; every frame records ball holders for the carrier cue. Seed dump-1: ball to receiver at arrival p50 2.6 → 0.1 m, ball held 14% → 39%, carrier cue 14% → 38%; facts unchanged, six candidate positions digests re-recorded; unit 1913/1913, contract, build, Chromium match-core + mobile-match-presentation 9/9 (one flaky retry on a loaded host)

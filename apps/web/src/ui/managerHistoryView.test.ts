@@ -139,7 +139,7 @@ describe('manager-history view labels', () => {
     expect(legacy).toEqual({
       kind: 'legacy',
       id: 'legacy:synthetic:event:seo-hire',
-      when: '1979/80 · ROUND 4',
+      when: '1979-08-29',
       title: 'Seo Veteran 선임',
       detail: '구단이 새 감독을 선임했어요.',
       note: '옛 기록 · 감독별 성과와 연결되지 않아요',

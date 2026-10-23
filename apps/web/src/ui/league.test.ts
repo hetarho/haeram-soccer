@@ -1,14 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import type { StandingSnapshot, TableRow, World } from '../../../../packages/contracts/src/types';
+import type {
+  Club,
+  StandingSnapshot,
+  TableRow,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
+import { fixturesFor } from '../../../../packages/engine/src/season';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import {
   archivedTimeline,
   clubDivision,
+  divisionRound,
   formFor,
   leagueFixtures,
   leagueIds,
+  leagueRounds,
   leagueOf,
   leagueOverviewModel,
   leagueParam,
@@ -16,6 +24,7 @@ import {
   leagueRules,
   leagueTimeline,
   orderIds,
+  ownDivisionRound,
   ownLeagueIds,
   rankHistoryYears,
   RESULT_POINTS,
@@ -373,5 +382,81 @@ describe('league overview model', () => {
     const none = leagueOverviewModel(played([]));
     expect(none.lastMatch).toBeUndefined();
     expect(none.matchPoints).toBe(0);
+  });
+});
+
+describe('division rounds (WEB-18)', () => {
+  const clubs = (n: number) =>
+    Array.from(
+      { length: n },
+      (_, i) =>
+        ({
+          id: `ENG:0:0:${String(i).padStart(2, '0')}`,
+          country: 'ENG',
+          tier: 0,
+          group: 0,
+        }) as Club,
+    );
+  /** A league of `n` clubs alone in a 46-week calendar, `week` the last settled week. */
+  const league = (n: number, week: number) => {
+    const members = clubs(n);
+    return {
+      year: 1995,
+      round: week,
+      lower: false,
+      playerClub: members[0]!.id,
+      clubs: members,
+      fixtures: fixturesFor(members, 1995),
+    } as unknown as World;
+  };
+
+  it('counts a 20-club league in its own 38 rounds, unchanged in the weeks it sits out', () => {
+    const w = league(20, 0),
+      rounds = leagueRounds(leagueFixtures(w, ownLeagueIds(w)));
+    expect(rounds).toHaveLength(38);
+    expect(rounds.at(-1)).toBeLessThanOrEqual(46);
+    const idle = Array.from({ length: 46 }, (_, i) => i + 1).filter(
+      (week) => !rounds.includes(week),
+    );
+    expect(idle).toHaveLength(8);
+    for (const week of idle)
+      expect(divisionRound(rounds, week)).toBe(divisionRound(rounds, week - 1));
+    expect(divisionRound(rounds, rounds[18]!)).toBe(19);
+    expect(ownDivisionRound(w)).toEqual({ played: 0, total: 38 });
+    expect(ownDivisionRound(league(20, idle[4]!))).toEqual({
+      played: divisionRound(rounds, idle[4]! - 1),
+      total: 38,
+    });
+    expect(ownDivisionRound(league(20, 46))).toEqual({ played: 38, total: 38 });
+    expect(ownDivisionRound(league(24, 41))).toEqual({ played: 41, total: 46 });
+  });
+
+  it('counts the league rounds, not our matches, when an odd-sized league gives byes', () => {
+    const w = league(15, 46),
+      ours = w.fixtures.filter((f) => f.home === w.playerClub || f.away === w.playerClub);
+    expect(ours).toHaveLength(28);
+    expect(ownDivisionRound(w)).toEqual({ played: 30, total: 30 });
+  });
+
+  it('keeps only the snapshots after rounds the league played', () => {
+    const own = clubs(2);
+    const snapshot = (round: number, a: number, b: number): StandingSnapshot => ({
+      year: 1995,
+      round,
+      day: round * 7,
+      tier: 0,
+      group: 0,
+      rows: [
+        [0, a, a, 0],
+        [1, b, 0, b],
+      ],
+    });
+    const w = {
+      playerClub: own[0]!.id,
+      clubs: own,
+      // Week 2 is idle (the table repeats) and week 3 starts a new round.
+      rankHistory: [snapshot(1, 3, 0), snapshot(2, 3, 0), snapshot(3, 6, 0)],
+    } as unknown as World;
+    expect(archivedTimeline(w, 1995).map((round) => round.round)).toEqual([1, 3]);
   });
 });
