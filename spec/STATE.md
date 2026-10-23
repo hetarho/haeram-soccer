@@ -267,7 +267,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T391 | Finish remaining print surface skins and publish the complete theme | WEB ARCH | T390 | doing@261024.m8p2 |
+| T391 | Finish remaining print surface skins and publish the complete theme | WEB ARCH | T390 | blocked@261024 |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 | todo |
 | T402 | Activate the full model prospectively in the worker behind the release switch | MATCH HIST WEB SAVE KIT ARCH | T281 T282 T283 T348 T349 T350 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T402 | todo |
@@ -292,6 +292,7 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 
 ## next
+- T391 code and WEB r136 are pushed at 6a6bafab; only CI completion is blocked. Run 39993317846 passes 7/8 jobs; WebKit 2/2 is stuck in browser installation before build/tests. Current GitHub account cannot cancel it (403: admin required) or rerun the running job. Recover it with an authorized account, then record the outcome and archive T391; all merged local checks and 247 Chromium journeys already pass.
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
 - resume (t5q2 261024): T372 is done as measured on 4389396a (w6p4; context only, not release evidence) and T384 is done on main; two lanes run in parallel: the main session's calibration chain T396 (MATCH-29 paired intervals) → T397 → T398 → T399 (grid) → T400 (aggregate, MATCH r22 segments) → T401 (pilot-size parity on the M1 Max), and the history-activation lane T402 → T306 → T307 → T308 in a work group; T286's final gate follows both. Validation rounds spent: 11–26, 30–34, 40, 44, 46–56; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
@@ -299,6 +300,7 @@
 
 ## log
 - 261024 create-task T307 T308 base WEB@112→136 (t5q2): r113–r136 change theming (WEB-38/73), the owner office (WEB-74) and other screens, none of the records query, navigation or capacity they cite; no content change
+- 261024 T391 publication (m8p2): pulled origin including T384, committed/pushed 6a6bafab; merged unit 1968+4 skips, contract 39 and Chromium 247 all pass. CI 7/8 jobs pass; WebKit 2/2 install is stalled and cancellation returns admin-required 403, so only hosted verification remains blocked pending an authorized account.
 - 261024 T396 start (t5q2): base 4ee082ed; MATCH-29 rows get paired 95% intervals in the parity runner, tooling only
 - 261024 create-task T286 split done (t5q2): T402 prospective activation (lane history-activation with T306–T308, runnable now); T286 keeps the final gate, dep + T402 T308, base WEB@136; T306 dep T304 T402, base MATCH@22; T308's notes name the new order
 - 261024 merge wip/w6p4 (t5q2): w6p4's T372 (4389396a, validation round 55) and its MATCH r22 plan join main after c9v3's T384; w6p4's T390–T395 become T396–T401 because main's T390/T391 are m8p2's print theme; w6p4's later uncommitted T384 attempt (checkpoints 3befde45, d4216431) is dropped for main's done T384; the detailed artifact stays T384's refresh, the aggregate and parity artifacts are T372's
@@ -317,4 +319,3 @@
 - 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
 - 261023 merge origin/work/w6p4 (c9v3): w6p4's T375 (exit), T370 (kept h6) and T371 (kept RB) join main beside T376's recorded ball holders; facts digests are w6p4's, positions digests re-recorded for both; T384 next, T372 dep T384
 - 261023 WEB r136 planned as T390 doing (m8p2): all-screen print image skin and registry default, unchanged valid stored selections, no commit/push; CLI unavailable, explicitly assigned current checkout.
-- 261023 update-ssot WEB start: owner expands the approved image-built matchday-print home to every screen and makes it the registry default; preserve valid stored choices, all game behavior and existing local edits; no commit or push.
