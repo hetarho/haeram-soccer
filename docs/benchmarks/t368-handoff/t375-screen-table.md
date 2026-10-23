@@ -77,3 +77,7 @@ The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to
   also feed press. With 2¾ h of the timebox left, room 35/45 is not screened (room alone was not
   monotonic, so a 5 m step would sit inside the noise) and c40 goes to validation on fresh rounds 49
   and 50 against T373's football, each 21,600 matches (`--per 600 --core 2400 --gap 600`).
+  Started 15:13–15:19 KST by `t375-chain.mjs` over `node_modules/.cache/t375/spec-v{49,50}{base,cand}.json`
+  (base tree e578fc90, candidate tree 2020e999 with c40's patch), writing
+  `node_modules/.cache/t375/out/v{49,50}-{base,c40}.json` and a `.done` file per spec; read them with
+  `report.mts --root <candidate tree> --base v49-base.json,v50-base.json --cand v49-c40.json,v50-c40.json`.
