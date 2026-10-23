@@ -1,3 +1,0 @@
-# Review galleries use WebP; PNG capture intermediates stay local.
-captures/*.png
-screens/**/*.png

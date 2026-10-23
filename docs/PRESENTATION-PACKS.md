@@ -1,5 +1,8 @@
 # Presentation packs
 
+Use the [theme production checklist](THEME-CHECKLIST.md) when adding or completing a theme.
+This document defines the resource contract; the checklist covers implementation and visual review.
+
 The application discovers presentation choices from JSON served with the static deployment.
 The current product inventory is one locale, `ko-KR` (한국어), and four registered themes:
 `matchday-print` (기본 · 매치데이 인쇄), the default, `standard` (스타디움 그린), `pixel` (픽셀아트),
@@ -61,19 +64,17 @@ tables, inputs and engine-owned diagrams retain their HTML and game behavior. Sh
 targets the shell sidebar explicitly; it never matches event/feedback `aside` elements. Dialog
 headers, bodies, action footers and popup lists keep independent scrolling and hit targets. Home-only
 scrolling is scoped to the active home, while the shell and materials apply before founding too.
-Raw artwork, exact prompts and actual captures live in `apps/web/design/home-print`; deployed
-resources and provenance live in `apps/web/public/art/matchday-print/home`.
+Source atlases and exact prompts live in `apps/web/design/home-print`; approved concept references
+remain in `apps/web/design/home-themes`. Deployed resources and provenance live in
+`apps/web/public/art/matchday-print/home`. `node scripts/prepare-print-home.mjs` slices and encodes
+the shared UI assets; `--check` verifies their deployed checksums without writing. See the source
+directory's [README](../apps/web/design/home-print/README.md) for prerequisites and retained files.
 Small inset tiles, sticky toolbars and count/status badges use the same material inventory. Table
 headers and pinned cells paint their own opaque ink/paper tiles so horizontal scrolling preserves
 the print treatment and text contrast. Shared selected controls allow pack styles to supply their
-frames instead of forcing a plain fill. Review galleries use WebP; the capture scripts regenerate
-both galleries without adding raw PNG captures to the repository. WebKit retains PNG captures
-locally when its canvas cannot encode WebP; its verification report is versioned beside the main
-captures.
-With the dev server on port 19501, run `node scripts/capture-print-home.mjs` first to prepare an
-isolated review career, then `node scripts/capture-print-screens.mjs` for the complete gallery.
-Prefix the latter with `PRINT_CAPTURE_BROWSER=webkit` for WebKit verification. `PRINT_HOME_ORIGIN`
-can select another dev origin; these browser profiles never use the owner's browser save.
+frames instead of forcing a plain fill. Disposable review galleries, capture scripts and browser
+profiles have been removed after verification. Keep new review captures under ignored `.tmp/`,
+use isolated browser saves and retain the verification summary in the task result.
 Matchday-print combines warm newsprint, charcoal and vermilion with woodcut/halftone facility scenes,
 solid stamped pictograms and printed-ticket edges. Sticker-club combines flat cartoon facility scenes,
 colourful filled pictograms with a cream die-cut outline, compact rounded badges and restrained offset
