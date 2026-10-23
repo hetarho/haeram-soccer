@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-23T17:52:49.367Z",
+  "sourceCommit": "f545cb2d021761ecf4af76fa2a32c7bd17447e5b",
+  "group": {
+    "id": "history-activation",
+    "branch": "work/history-activation",
+    "status": "active",
+    "createdAt": "2026-10-23T17:51:30.513Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": "main",
+    "review": "risky",
+    "lastRun": {
+      "id": "bcb09742-78a1-4bac-af02-3eb2c5931097",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.296 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-23T17:51:38.881Z",
+      "stoppedAt": "2026-10-23T17:51:40.698Z",
+      "dispatched": 0,
+      "outcome": "needs-attention",
+      "failures": [],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 12,
+    "completed": 0,
+    "remaining": 12,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 12
+  },
+  "tasks": [
+    {
+      "id": "T286",
+      "title": "Activate the complete model only with combined accuracy and continuity evidence",
+      "dep": [
+        "T275",
+        "T283",
+        "T284",
+        "T285",
+        "T321",
+        "T323",
+        "T324",
+        "T325",
+        "T326",
+        "T328",
+        "T334",
+        "T336",
+        "T345",
+        "T348",
+        "T349",
+        "T350",
+        "T356",
+        "T357",
+        "T358",
+        "T359",
+        "T365",
+        "T366",
+        "T367",
+        "T368",
+        "T369",
+        "T370",
+        "T371",
+        "T372",
+        "T373",
+        "T374",
+        "T375",
+        "T384",
+        "T396",
+        "T397",
+        "T398",
+        "T399",
+        "T400",
+        "T401",
+        "T402",
+        "T308"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T306",
+      "title": "Connect manager attribution to settled gameplay and checkpoints",
+      "dep": [
+        "T304",
+        "T402"
+      ],
+      "lane": "history-activation",
+      "status": "todo"
+    },
+    {
+      "id": "T307",
+      "title": "Connect the bounded manager-history query and records navigation",
+      "dep": [
+        "T305",
+        "T306"
+      ],
+      "lane": "history-activation",
+      "status": "todo"
+    },
+    {
+      "id": "T308",
+      "title": "Verify manager-history journeys and lossless century capacity",
+      "dep": [
+        "T307"
+      ],
+      "lane": "history-activation",
+      "status": "todo"
+    },
+    {
+      "id": "T391",
+      "title": "Finish remaining print surface skins and publish the complete theme",
+      "dep": [
+        "T390"
+      ],
+      "status": "doing@261024.m8p2"
+    },
+    {
+      "id": "T396",
+      "title": "Give each MATCH-29 row's two-path difference a paired 95% interval",
+      "dep": [],
+      "status": "doing@261024.t5q2"
+    },
+    {
+      "id": "T397",
+      "title": "Bring the grid's attacking volume to MATCH-30 under the drawn offside call",
+      "dep": [
+        "T384",
+        "T396"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T398",
+      "title": "Bring grid forward goals to 50–60% through midfield box arrivals",
+      "dep": [
+        "T397"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T399",
+      "title": "Hold counter against press and balanced's flank defence on the grid",
+      "dep": [
+        "T398"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T400",
+      "title": "Couple the aggregate to the score state and recalibrate it to the final grid",
+      "dep": [
+        "T399"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T401",
+      "title": "Measure both references and MATCH-28 parity at the pilot size on the football T286 would release",
+      "dep": [
+        "T384",
+        "T396",
+        "T397",
+        "T398",
+        "T399",
+        "T400"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T402",
+      "title": "Activate the full model prospectively in the worker behind the release switch",
+      "dep": [
+        "T281",
+        "T282",
+        "T283",
+        "T348",
+        "T349",
+        "T350"
+      ],
+      "lane": "history-activation",
+      "status": "todo"
+    }
+  ],
+  "attempts": [],
+  "history": [
+    {
+      "sequence": 791,
+      "at": "2026-10-23T17:51:30.525Z",
+      "type": "group",
+      "group": "history-activation",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "history-activation",
+        "branch": "work/history-activation",
+        "status": "preparing",
+        "createdAt": "2026-10-23T17:51:30.513Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": "main",
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 792,
+      "at": "2026-10-23T17:51:31.130Z",
+      "type": "group",
+      "group": "history-activation",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 793,
+      "at": "2026-10-23T17:51:38.892Z",
+      "type": "group",
+      "group": "history-activation",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "bcb09742-78a1-4bac-af02-3eb2c5931097",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-23T17:51:38.881Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 794,
+      "at": "2026-10-23T17:51:40.698Z",
+      "type": "group",
+      "group": "history-activation",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "bcb09742-78a1-4bac-af02-3eb2c5931097",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.296 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-23T17:51:38.881Z",
+          "stoppedAt": "2026-10-23T17:51:40.698Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    }
+  ]
+}
