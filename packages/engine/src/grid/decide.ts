@@ -170,10 +170,10 @@ export const DECISION_CONFIG = {
     trailingPush: 1.6,
     /**
      * Shot selection in the box (T370, →MATCH-16): a shot's weight there is scaled by its chance's
-     * xG against `ref` to the power `power` (0 leaves it alone), so a carrier passes up a weak
-     * angle or a pressured look for a better chance.
+     * xG against `ref` to the power `power` (0 leaves it alone) while he stands below `upTo` m, so
+     * a carrier passes up a weak angle or a pressured look for a better chance.
      */
-    shotQuality: { ref: 0.15, power: 0 },
+    shotQuality: { ref: 0.15, power: 0, upTo: 105 },
     /**
      * Carrying after a reception (T370, →MATCH-16): an unpressured carrier below `upTo` m carries
      * `open` times as often and `length` ([base, spread] m) in place of `carry.length`, so the
@@ -321,7 +321,12 @@ export function actionMix(
   // The situation.
   if (candidate && tags.pressure < 1 && c[0] < C.candidate.carry.upTo)
     mix.carry *= C.candidate.carry.open;
-  if (candidate && inBox(c) && C.candidate.shotQuality.power !== 0)
+  if (
+    candidate &&
+    inBox(c) &&
+    c[0] < C.candidate.shotQuality.upTo &&
+    C.candidate.shotQuality.power !== 0
+  )
     mix.shot *= s.math.exp(
       C.candidate.shotQuality.power *
         s.math.log(
