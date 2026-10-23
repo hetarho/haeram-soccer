@@ -79,6 +79,12 @@ export const COORDINATION_CONFIG = {
    */
   late: { pull: 0, lead: 12 },
   /**
+   * T375 (→MATCH-8/18), candidate model: against a line that leaves at least `room` m behind it,
+   * runs in behind start from any band, so a side pinned back by a high press still has a runner
+   * to play over it. 0 keeps runs to band 3 and beyond outside a break.
+   */
+  highLine: { room: 0 },
+  /**
    * A combination closes when an opponent stands within `closed` m of the space a shower or an
    * overlapper goes to; he does not take that kind of job again for `retry` s.
    */
@@ -504,7 +510,10 @@ function attack(
       ? (T.odds[s.setup.tactics[side]] ?? 1)
       : 1;
   const ctx = runContext(s, side);
-  if (ctx.band < 3 && breaking === 1) return;
+  // Deep in its own half only runs in behind a high line go (`highLine`, T375).
+  const deep = ctx.band < 3 && breaking === 1;
+  const high = CC.highLine.room > 0 && PITCH.length - ctx.line >= CC.highLine.room;
+  if (deep && !high) return;
   // Settled play past halfway: the side's listed odds for its outfielders' runs (T365).
   const SR = CC.settledRuns;
   const settled = breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
@@ -523,7 +532,7 @@ function attack(
       timing * fresh(s, gp) * breaking,
       breaking > 1,
     );
-    return p ? [{ gp, p }] : [];
+    return p && (!deep || p.kind === 'behind') ? [{ gp, p }] : [];
   });
   // One overlap per flank: one under way keeps it, else the overlapper nearest his space takes it.
   const flank = (p: readonly number[]) => (p[1]! < CENTRE ? 0 : 1);
