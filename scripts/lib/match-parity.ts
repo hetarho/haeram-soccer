@@ -727,7 +727,7 @@ export const TARGET_BANDS: readonly TargetBand[] = [
     perTeam(detail(s, TD.goalKicks)),
   ),
   band('fouls', 'fouls (team)', [10, 13], 'count', 'record', (s) => perTeam(detail(s, TD.fouls))),
-  band('offsides', 'offsides (team)', [1.5, 2.5], 'count', 'record', (s) =>
+  band('offsides', 'offsides (team)', [1.7, 1.9], 'count', 'record', (s) =>
     perTeam(detail(s, TD.offsides)),
   ),
   band('yellowCards', 'yellow cards (match)', [3.3, 4.3], 'count', 'record', (s) => {

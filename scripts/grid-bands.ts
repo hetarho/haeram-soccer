@@ -255,7 +255,7 @@ export function measure(
     { label: 'corners (team)', band: [4, 6], value: td(TD.corners) / teams },
     { label: 'goal kicks (team)', band: [7, 9], value: td(TD.goalKicks) / teams },
     { label: 'fouls (team)', band: [10, 13], value: td(TD.fouls) / teams },
-    { label: 'offsides (team)', band: [1.5, 2.5], value: td(TD.offsides) / teams },
+    { label: 'offsides (team)', band: [1.7, 1.9], value: td(TD.offsides) / teams },
     { label: 'yellow cards (match)', band: [3.3, 4.3], value: yellows / n },
     { label: 'red cards (match)', band: [0.08, 0.15], value: reds / n },
     { label: 'goals (match)', band: [2.6, 2.9], value: goals.length / n },

@@ -642,7 +642,8 @@ On the candidate match model these are the least a restart takes: `prepareRestar
 When a pass (not a throw-in, goal kick or corner) is played to a target in the opponent half who stands beyond the second-last opponent and beyond the ball:
 
 - Offside with `p = clamp(0.03 − (판단력 − 60)/360 − (linebreaker ? 0.1 : 0) + (opponent DF line ≥ 40 m ? 0.05 : 0), 0.012, 0.7)` (`RESTART_CONFIG.offside`; 360 is the raw scale's 200 times the grid's skill scale, T216).
-- Offside gives an indirect free kick to the defenders at the target spot, and counts `offsides` for the target.
+- The candidate model calls it on the receiver's own 판단력 attribute (MATCH-18 r21, T384): `p = clamp(base × e^(−(판단력 − pivot)/spread) × (linebreaker ? linebreakerFactor : 1) × (opponent DF line ≥ 40 m ? highLineFactor : 1), min, max)` (`RESTART_CONFIG.offside.candidate`). On the duels' scale the match's level, the day's form, the slot and fatigue outweigh a player's 판단력, so no slope there separated the attribute's quarters (1.5× at every slope T384 screened); on the attribute, the lowest quarter of receptions from an offside position is called about four times as often as the highest. The aggregate path credits offsides with the same weight on the receiver's own 판단력, its exponent times `AGGREGATE_ATTRIBUTION_CONFIG.offsideCall`, so the calls fall where the grid's do.
+- Offside gives an indirect free kick to the defenders at the target spot, and counts `offsides` for the target. `GridSetup.offsideDraws`, set only by measurements, records every draw (side, receiver, chance, called, 판단력 on the duels' scale) outside the record.
 
 ### 7.4 Shots and xG
 

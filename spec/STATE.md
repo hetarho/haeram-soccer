@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| c9v3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T13:45Z | 2026-10-23T13:45Z | - |
+| c9v3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T13:45Z | 2026-10-23T15:17Z | T384 |
 
 ## inbox
 - 261023 decided T384 T371 T372: c9v3 takes over w6p4's pushed branch (the owner's other machines are off); that branch predated MATCH r21's plan, so T371 finished before T384 → T384 runs next on T371's football and T372 also waits for it, so parity is measured on the final offside; T371's kept rows (goal kicks, penalty goals, set-piece goals) are restarts and finishing that T384's calls should leave, and T372 reports any residual for T286 (alt: reopen T371 after T384)
@@ -260,7 +260,7 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T384 | Call offside 1.8 times a team a match, mostly on runners with poor 판단력 | MATCH ARCH | T370 | todo |
+| T384 | Call offside 1.8 times a team a match, mostly on runners with poor 판단력 | MATCH ARCH | T370 | doing@261024.c9v3 |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 T384 | todo |
 
 ## work
@@ -280,6 +280,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T384 start (c9v3; explore 3h from 00:16 KST, timebox 03:16): base 01b91f91 (T371's football merged with T376); MATCH r21's offside band 1.7–1.9 and the 판단력 split on both paths
 - 261024 fix e2e (c9v3): CI 39971746291 on d39bdd91 passed every job but Firefox recovery.spec:59, which ran every step on time and reached its last reload at 30.0 s; the two-round recovery journey takes test.slow()
 - 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
 - 261023 merge origin/work/w6p4 (c9v3): w6p4's T375 (exit), T370 (kept h6) and T371 (kept RB) join main beside T376's recorded ball holders; facts digests are w6p4's, positions digests re-recorded for both; T384 next, T372 dep T384

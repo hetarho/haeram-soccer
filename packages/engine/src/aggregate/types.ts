@@ -28,6 +28,7 @@ export const AGGREGATE_ATTRIBUTES = [
   'heading',
   'handling',
   'composure',
+  'decisions',
 ] as const;
 export type AggregateAttribute = (typeof AGGREGATE_ATTRIBUTES)[number];
 
@@ -65,6 +66,8 @@ export interface AggregateProfile {
  */
 export interface AggregateSkillAccess {
   skill(side: AggregateSide, line: number, attribute: AggregateAttribute, minute: number): number;
+  /** A participant's own attribute, before slot, form or fatigue (offside calls, T384). */
+  own?(side: AggregateSide, line: number, attribute: AggregateAttribute): number;
   finishing(shooting: number, keeping: number): number;
   targetChance(goal: number, shooting: number): number;
 }

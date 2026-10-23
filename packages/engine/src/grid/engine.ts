@@ -21,7 +21,7 @@ import {
 import {
   classifyOut,
   foulRestart,
-  isOffside,
+  offsideChance,
   playRestart,
   RESTART_CONFIG,
   type Restart,
@@ -37,6 +37,7 @@ import {
   kickOff,
   onPitch,
   other,
+  skill,
   slotOf,
   type GridPlayer,
   type GridState,
@@ -482,7 +483,17 @@ export function playGrid(setup: GridSetup): GridResult {
     switch (d.action) {
       case 'pass': {
         if (d.target === undefined) break;
-        if (isOffside(s, side, d.target, r)) {
+        const chance = offsideChance(s, side, d.target);
+        const offside = chance !== undefined && r() < chance;
+        if (chance !== undefined)
+          setup.offsideDraws?.push([
+            side,
+            d.target,
+            chance,
+            offside ? 1 : 0,
+            skill(s, side, d.target, 'decisions'),
+          ]);
+        if (offside) {
           const spot = s.players[side][d.target]!.pos;
           pending = {
             kind: 'indirectFreeKick',

@@ -80,6 +80,28 @@ export const RESTART_CONFIG = {
     highLineFrom: 40,
     min: 0.012,
     max: 0.7,
+    /**
+     * The candidate model's call (→MATCH-18 r21, T384): with `spread` above 0 the chance is
+     * `base` × e^(−(판단력 − `pivot`) / `spread`) on the receiver's own 판단력 attribute, times
+     * `linebreakerFactor` for a linebreaker and `highLineFactor` against a high line, then
+     * clamped. The attribute, not the duels' scale: there the match's level, the day's form, the
+     * slot and fatigue outweigh it, and the attribute's quarters stayed at 1.5× whatever the slope
+     * (T384's screens). Factors rather than the shared rule's added terms keep his 판단력 deciding
+     * against every line. `spread` 0 keeps the shared linear rule.
+     */
+    candidate: {
+      base: 0.055,
+      decisions: 360,
+      pivot: 67,
+      spread: 15,
+      linebreaker: 0.1,
+      linebreakerFactor: 0.3,
+      highLine: 0.05,
+      highLineFactor: 1.5,
+      highLineFrom: 40,
+      min: 0.002,
+      max: 0.7,
+    },
   },
 } as const;
 
@@ -130,19 +152,38 @@ export function isOffside(
   r: () => number,
   from?: RestartKind,
 ): boolean {
-  if (from === 'throwIn' || from === 'goalKick' || from === 'corner') return false;
-  const O = RESTART_CONFIG.offside;
+  const chance = offsideChance(s, side, target, from);
+  return chance !== undefined && r() < chance;
+}
+
+/** The chance a pass to `target` is called offside when played, or none when he is not offside. */
+export function offsideChance(
+  s: GridState,
+  side: 0 | 1,
+  target: number,
+  from?: RestartKind,
+): number | undefined {
+  if (from === 'throwIn' || from === 'goalKick' || from === 'corner') return undefined;
+  const O = s.setup.model !== undefined ? RESTART_CONFIG.offside.candidate : RESTART_CONFIG.offside;
   const gp = s.players[side][target]!;
   const p = attackFrame(side, gp.pos);
   const ball = attackFrame(side, s.ball);
   const foe = other(side);
-  if (p[0] <= PITCH.length / 2 || p[0] <= offsideLine(s, foe) || p[0] <= ball[0]) return false;
+  if (p[0] <= PITCH.length / 2 || p[0] <= offsideLine(s, foe) || p[0] <= ball[0]) return undefined;
+  const linebreaker = gp.player.traits.includes('linebreaker');
+  const highLine = lineX(s, foe, 'DF') >= O.highLineFrom;
+  const C = RESTART_CONFIG.offside.candidate;
   const chance =
-    O.base -
-    (skill(s, side, target, 'decisions') - 60) / O.decisions -
-    (gp.player.traits.includes('linebreaker') ? O.linebreaker : 0) +
-    (lineX(s, foe, 'DF') >= O.highLineFrom ? O.highLine : 0);
-  return r() < Math.min(O.max, Math.max(O.min, chance));
+    O === C && C.spread > 0
+      ? C.base *
+        s.math.exp(-(gp.player.attrs.decisions - C.pivot) / C.spread) *
+        (linebreaker ? C.linebreakerFactor : 1) *
+        (highLine ? C.highLineFactor : 1)
+      : O.base -
+        (skill(s, side, target, 'decisions') - 60) / O.decisions -
+        (linebreaker ? O.linebreaker : 0) +
+        (highLine ? O.highLine : 0);
+  return Math.min(O.max, Math.max(O.min, chance));
 }
 
 /** The restart a foul gives the fouled side: a penalty inside the box it attacks, else a free kick. */

@@ -178,6 +178,27 @@ describe('grid restarts', () => {
     expect(runnerRate).toBeLessThan(base - 0.05);
   });
 
+  it('a receiver with poor 판단력 in an offside position is called more often than one with good 판단력, on the candidate model only', () => {
+    const called = (decisions: number, candidate: boolean) => {
+      const s = offsideScene();
+      const gp = s.players[0][10]!;
+      const player = gp.player;
+      gp.player = { ...player, attrs: { ...player.attrs, decisions } };
+      s.setup.model = candidate ? MATCH_MODEL_REVISION : undefined;
+      try {
+        return rate(s, 10);
+      } finally {
+        gp.player = player;
+        s.setup.model = undefined;
+      }
+    };
+    // The candidate call reads his own 판단력 (T384): a quarter's worth below the pivot is called
+    // well over three times as often as a quarter's worth above it.
+    expect(called(55, true)).toBeGreaterThan(3 * called(80, true));
+    // The pre-feature call reads the duels' scale, where his attribute here is unchanged.
+    expect(called(55, false)).toBe(called(80, false));
+  });
+
   const kinds = (build: () => { s: GridState; rs: Restart }, n: number) => {
     const out: Record<string, number> = {};
     for (let i = 0; i < n; i++) {

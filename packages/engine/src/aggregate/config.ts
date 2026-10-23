@@ -86,10 +86,11 @@ export const AGGREGATE_CONFIG = {
   /**
    * How a failed pass ends: offside (into the final third), touchline, byline, interception.
    * T369: touch 0.42 → 0.39, since passes played wide of the box now fail toward the touchline
-   * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them).
+   * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them). T384: offside 0.06 / 0.3 → 0.064 /
+   * 0.32, so calls average 1.7–1.9 a team (MATCH-23 r21; 1.70 → 1.81 on validation rounds 55–56).
    */
   failed: {
-    offside: { forward: 0.06, through: 0.3 },
+    offside: { forward: 0.064, through: 0.32 },
     touch: 0.39,
     byline: 0.7,
     intercepted: 0.16,
@@ -299,6 +300,12 @@ export const AGGREGATE_PARTICIPATION_CONFIG = {
 export const AGGREGATE_ATTRIBUTION_CONFIG = {
   attributeScale: 70,
   attributePower: 2,
+  /**
+   * The offside role's lean on low 판단력: the grid call's exponent times this (players.ts
+   * `OFFSIDE_CALL`). Without the grid's runs the aggregate path weighs only who is on, so it
+   * leans harder to put the calls where the grid's fall (→MATCH-28, T384).
+   */
+  offsideCall: 2,
   /** Passes and carries started in each band (own goal area … opponent goal area). */
   pass: {
     GK: [3, 1.2, 0.1, 0, 0, 0, 0, 0],

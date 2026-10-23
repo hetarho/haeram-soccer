@@ -206,6 +206,11 @@ export interface GridSetup {
   recordPlayers: boolean;
   /** The match model this fixture plays; absent is the pre-feature model (→SAVE-23). */
   model?: MatchModelRevision;
+  /**
+   * Measurement only, never set in play (T384): each offside draw as side, receiver, chance,
+   * whether it was called and his 판단력 on the duels' scale, kept outside the record.
+   */
+  offsideDraws?: [0 | 1, number, number, 0 | 1, number][];
 }
 
 const NO_BEND: StyleBend = { pass: 0, possession: 0, shot: 0, defense: 0, lineHigh: 0, lineLow: 0 };

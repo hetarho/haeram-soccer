@@ -9,13 +9,18 @@ import { isPassKind } from './ledger';
 import { onPitchAt, planParticipation, playedMinutes } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
-import type { AggregatePlan, AggregateProfile, AggregateSide } from './types';
+import type { AggregatePlan, AggregateProfile, AggregateSide, AggregateSkillAccess } from './types';
 
 // Synthetic, explicitly marked test data: skills that differ by line, a full bench (→ARCH-21).
 const neutral: AggregateProfile = { possession: 0, pass: 0, shot: 0, defense: 0, pressure: 0 };
 const BENCH_LINES: Line[] = ['GK', 'DF', 'MF', 'FW', 'DF', 'MF', 'FW', 'MF', 'FW'];
 
-function match(fixture: string, year = 2024, length: 90 | 120 = 90) {
+function match(
+  fixture: string,
+  year = 2024,
+  length: 90 | 120 = 90,
+  own?: AggregateSkillAccess['own'],
+) {
   const era = eraRules(year);
   const roster = (side: number) =>
     Array.from({ length: 11 + era.named }, (_, i) => ({ id: `synthetic-${side}-${i}` }));
@@ -29,7 +34,7 @@ function match(fixture: string, year = 2024, length: 90 | 120 = 90) {
       profiles: [neutral, neutral],
       possessionChance: 0.52,
     },
-    { skill: (side, line) => 60 + ((line * 7 + side * 3) % 25), finishing, targetChance },
+    { skill: (side, line) => 60 + ((line * 7 + side * 3) % 25), own, finishing, targetChance },
     [roster(0), roster(1)],
   );
   const side = (s: AggregateSide) => ({
@@ -86,6 +91,22 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
         }
       }
     }
+  });
+
+  it('offsides fall on receivers with low 판단력 more than on those with high', () => {
+    // Synthetic: lines alternate between 판단력 50 and 85 on otherwise equal skills, so the
+    // offside role's own-판단력 weight (T384) alone separates them.
+    const own: AggregateSkillAccess['own'] = (_side, line) => (line % 2 ? 85 : 50);
+    let low = 0,
+      high = 0;
+    for (const fixture of fixtures(40, 'offside'))
+      for (const lines of match(fixture, 2024, 90, own).players.sides)
+        lines.forEach((l, line) => {
+          if (line % 2) high += l.detail[PD.offsides]!;
+          else low += l.detail[PD.offsides]!;
+        });
+    expect(low + high).toBeGreaterThan(0);
+    expect(low).toBeGreaterThan(3 * high);
   });
 
   it('never credits an unavailable or off-pitch player', () => {

@@ -10,6 +10,7 @@
 import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
 import { cellBand } from '../grid/pitch';
+import { RESTART_CONFIG } from '../grid/restarts';
 import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
@@ -55,6 +56,8 @@ const LAST_BAND = 7;
 interface Role {
   table: Table;
   attribute: AggregateAttribute;
+  /** Weighs by the grid's offside call on the participant's own attribute (`offsideCall`). */
+  call?: true;
   action?: MatchAction;
   wide?: number;
 }
@@ -64,6 +67,11 @@ const byBand = (rows: Readonly<Record<Line, readonly number[]>>, band: number): 
   MF: rows.MF[band]!,
   FW: rows.FW[band]!,
 });
+/**
+ * Offsides go where the grid's call falls (→MATCH-18 r21, T384): a receiver weighs
+ * e^(−(own 판단력 − pivot) / spread) with the candidate call's pivot and spread (restarts.ts).
+ */
+const OFFSIDE_CALL = RESTART_CONFIG.offside.candidate;
 const BANDS = Array.from({ length: LAST_BAND + 1 }, (_, band) => band);
 const makeRole = (r: Role): Role => r;
 /** Every role, built once: weights are cached by role. */
@@ -112,7 +120,7 @@ const ROLES = {
   shot: makeRole({ table: AC.shot, attribute: 'finishing', action: 'box' }),
   outsideShot: makeRole({ table: AC.outsideShot, attribute: 'finishing', action: 'long' }),
   header: makeRole({ table: AC.header, attribute: 'heading', action: 'aerial' }),
-  offside: makeRole({ table: AC.offside, attribute: 'pace', action: 'run' }),
+  offside: makeRole({ table: AC.offside, attribute: 'decisions', call: true, action: 'run' }),
   defend: (band: number, attribute: 'tackling' | 'positioning') =>
     DEFEND_ROLES[band]![attribute === 'tackling' ? 0 : 1]!,
 };
@@ -162,7 +170,8 @@ class SideLines {
   readonly rows: Row[];
   private readonly cache = new Map<string, Map<Role | TakerKey, number[]>>();
   private readonly expo = new Map<AggregatePeriod, AggregateExposure[]>();
-  private readonly terms = new Map<AggregatePeriod, Map<AggregateAttribute, number[]>>();
+  /** Per period, by attribute (and `:call` for the offside call's weight). */
+  private readonly terms = new Map<AggregatePeriod, Map<string, number[]>>();
   /** Each line-slot pair's action weight, read once per action (T326): `plan` is fixed here. */
   private readonly actions = new Map<MatchAction, number[]>();
   private readonly slotCount: number;
@@ -245,19 +254,26 @@ class SideLines {
     if (role.action) w *= this.actionWeight(line, slot, role.action);
     let term = terms ? terms[at]! : NaN;
     if (Number.isNaN(term)) {
-      const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
-      term = (value / AC.attributeScale) ** AC.attributePower;
+      if (role.call && OFFSIDE_CALL.spread > 0) {
+        const own =
+          this.input.access.own?.(this.side, line, role.attribute) ??
+          this.input.access.skill(this.side, line, role.attribute, mid);
+        term = Math.exp((-(own - OFFSIDE_CALL.pivot) / OFFSIDE_CALL.spread) * AC.offsideCall);
+      } else {
+        const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
+        term = (value / AC.attributeScale) ** AC.attributePower;
+      }
       if (terms) terms[at] = term;
     }
     return w * term;
   }
 
   /** Per period and attribute: each exposure's skill factor, filled as roles read it. */
-  private termsOf(period: AggregatePeriod, attribute: AggregateAttribute, size: number) {
+  private termsOf(period: AggregatePeriod, key: string, size: number) {
     let byAttribute = this.terms.get(period);
     if (!byAttribute) this.terms.set(period, (byAttribute = new Map()));
-    let terms = byAttribute.get(attribute);
-    if (!terms) byAttribute.set(attribute, (terms = Array<number>(size).fill(NaN)));
+    let terms = byAttribute.get(key);
+    if (!terms) byAttribute.set(key, (terms = Array<number>(size).fill(NaN)));
     return terms;
   }
 
@@ -275,7 +291,11 @@ class SideLines {
       // Plain doubles: the same sums as a Float64Array, without its costly creation (T326).
       out = Array<number>(this.rows.length).fill(0);
       const list = this.exposuresOf(period);
-      const terms = this.termsOf(period, role.attribute, list.length);
+      const terms = this.termsOf(
+        period,
+        role.call ? `${role.attribute}:call` : role.attribute,
+        list.length,
+      );
       for (let at = 0; at < list.length; at++) {
         const e = list[at]!;
         out[e.line]! += this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);

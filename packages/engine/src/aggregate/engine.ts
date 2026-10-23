@@ -117,6 +117,7 @@ export function aggregateSkillAccess(
         own.drainOf(line) * on
       );
     },
+    own: (side, line, attribute) => rosters[side][line]!.attrs[attribute],
     finishing,
     targetChance,
   };

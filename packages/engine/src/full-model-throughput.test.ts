@@ -74,10 +74,13 @@ const facts = (w: World) => ({
  * interceptions changed the candidate rounds (aggregate records unchanged), re-recorded with its
  * calibration artifact; 0e9f347a953ed3e1 before. T371's grid restarts, finishers and balanced
  * block changed the candidate rounds again (aggregate records unchanged); c1e07cfffabede5d before.
+ * T384's offside calls by the receiver's own 판단력 changed both: on the grid the call, on the
+ * aggregate path the share of failed passes ending offside (0.064 / 0.32) and the receivers they
+ * are credited to; d6a5c7feb76176f3 and 29d9bb53ba9487ea before.
  */
 const BEFORE = {
-  aggregateRecords: 'd6a5c7feb76176f3',
-  candidateRounds: '29d9bb53ba9487ea',
+  aggregateRecords: 'a8d299718d0919a0',
+  candidateRounds: '294f1d9b278a1461',
 };
 
 describe('complete-result throughput (T285)', () => {

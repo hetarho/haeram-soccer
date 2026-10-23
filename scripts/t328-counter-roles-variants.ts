@@ -5,10 +5,15 @@
  * before any squad, world or match is built.
  */
 import type { Position, RoleId } from '../packages/contracts/src/player';
+import {
+  AGGREGATE_ATTRIBUTION_CONFIG,
+  AGGREGATE_CONFIG,
+} from '../packages/engine/src/aggregate/config';
 import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
 import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
+import { RESTART_CONFIG } from '../packages/engine/src/grid/restarts';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
 import { STRENGTH_CONFIG } from '../packages/engine/src/grid/state';
 
@@ -102,6 +107,10 @@ export interface BehaviourPatch {
   strength?: object;
   duel?: object;
   shot?: object;
+  /** T384: the grid's offside call and the aggregate path's offside volume and attribution. */
+  restart?: object;
+  aggregate?: object;
+  attribution?: object;
 }
 
 const settled = (
@@ -249,6 +258,9 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     strength: STRENGTH_CONFIG,
     duel: DUEL_CONFIG,
     shot: SHOT_CONFIG,
+    restart: RESTART_CONFIG,
+    aggregate: AGGREGATE_CONFIG,
+    attribution: AGGREGATE_ATTRIBUTION_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(
