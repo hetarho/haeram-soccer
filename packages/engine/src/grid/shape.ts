@@ -84,6 +84,18 @@ export const SHAPE_CONFIG = {
      * at 0.
      */
     secondStriker: { drop: 0, roles: ['targetMan'] as readonly RoleId[] },
+    /**
+     * The flank beside a back three (T399, →MATCH-8, MATCH-17): out of possession, with the ball
+     * at least `wide` m off the centre line and no further up the pitch than `upTo` m (the
+     * defending side's frame), the ball-side wing-back closes `follow` of the way toward the ball's
+     * line and the ball-side wide centre-back steps `channel` m toward the touchline, covering the
+     * channel between them, and the far wing-back tucks `tuck` of the way toward the centre line,
+     * one more defender in the box against the cross. Shapes with three centre-backs only;
+     * neutral at 0, 0 and 0. T399 keeps `follow` 0.4 and `channel` 3 with the cross block
+     * (`DUEL_CONFIG.candidate.crossPressure`): balanced's xG conceded against the others' mean
+     * −0.041 → −0.017; a tucked far wing-back moved nothing (0).
+     */
+    flank: { follow: 0.4, channel: 3, tuck: 0, wide: 18, upTo: 60 },
   },
   lateral: 0.25,
   /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
@@ -316,6 +328,34 @@ export function shapePlace(
     (bx - MID) *
     (!inPossession && bx > MID && cfg.upfield !== undefined ? cfg.upfield : cfg.compact);
   y += (by - CENTRE) * SHAPE_CONFIG.lateral;
+  // The flank beside a back three, out of possession (candidate model, T399).
+  const F = SHAPE_CONFIG.candidate.flank;
+  if (
+    !inPossession &&
+    (F.follow || F.channel || F.tuck) &&
+    s.setup.model !== undefined &&
+    Math.abs(by - CENTRE) >= F.wide &&
+    bx <= F.upTo
+  ) {
+    const slots = FORMATIONS[tactic].slots;
+    const cbs = slots.flatMap((slot, i) => (slot.position === 'CB' ? [i] : []));
+    if (cbs.length >= 3) {
+      const left = by < CENTRE;
+      const pos = slots[gp.slot]!.position;
+      if ((left && pos === 'LWB') || (!left && pos === 'RWB')) y += (by - y) * F.follow;
+      else if ((left && pos === 'RWB') || (!left && pos === 'LWB')) y += (CENTRE - y) * F.tuck;
+      const wide = cbs.reduce((a, b) =>
+        (
+          left
+            ? SPOTS[tactic][b]![1] < SPOTS[tactic][a]![1]
+            : SPOTS[tactic][b]![1] > SPOTS[tactic][a]![1]
+        )
+          ? b
+          : a,
+      );
+      if (gp.slot === wide) y += left ? -F.channel : F.channel;
+    }
+  }
   if (inPossession) {
     const foe = other(side);
     // A second striker leaves the box to arriving midfielders (candidate model, T398).

@@ -86,7 +86,8 @@ const facts = (w: World) => ({
  * are credited to; d6a5c7feb76176f3 and 29d9bb53ba9487ea before. T397's through-ball count (a
  * receiver not yet past the line) and its balls in behind, first touches and cut-backs changed the
  * candidate rounds only (the aggregate path untouched); 294f1d9b278a1461 before. T398's late box
- * runs and shot scale changed them again; 8fd84923e38c3aa5 before.
+ * runs and shot scale changed them again; 8fd84923e38c3aa5 before. T399's flank beside a back three
+ * and pressed crosses left both unchanged: the two rounds' own grid matches settled the same facts.
  */
 const BEFORE = {
   aggregateRecords: 'a8d299718d0919a0',

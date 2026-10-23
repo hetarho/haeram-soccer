@@ -285,6 +285,7 @@ export const SHAPE_CONFIG = {
   - Then `x ≤ offsideLine − 0.5` for players not on a run, where `offsideLine` is the opponent's second-last player.
 - **Out of possession:**
   - `spot + [defend, 0]`, then `x += (b.x − 52.5) × compact` and `y += (b.y − 34) × lateral`.
+  - On the candidate model, in a shape with three centre-backs and the ball at least `SHAPE_CONFIG.candidate.flank.wide` (18) m off the centre line and no further up than `upTo` (60) m, the ball-side wing-back closes `follow` (0.4) of the way to the ball's line, the ball-side wide centre-back steps `channel` (3) m toward the touchline to cover the channel between them, and the far wing-back tucks `tuck` (0) of the way in (T399, →MATCH-8). With the pressed cross below, balanced's xG conceded against the other three's mean moved −0.041 (outside) → −0.017 and the crosses balanced concedes 21.5 → 21.2 a match.
   - DF-line players are clamped to `line[0] ≤ x ≤ line[1]`. With the ball played behind that line, the line drops to `deepLine.behindBall` (4) m goal-side of the ball, never deeper than `deepLine.min` (6) m (T215: back lines used to stay above their 18–30 m floor and left box shots unmarked).
   - For `transitionSeconds` (4) after losing the ball, the side's players move at `recoverySpeed` (1.15) times their speed (§4.4).
   - Pressers:
@@ -601,7 +602,7 @@ export const DUEL_CONFIG = {
 - **Loose balls.** Outside the boxes a 50/50 ends in a foul on its winner by the nearest opponent `looseFoul` of the time (T215).
 - **Cross.**
   - The target is drawn first among the attackers in the box, weighted `e^((rating − best)/targetSpread)` with `rating = (0.6 공중볼 + 0.4 몸싸움) × aerial habit`.
-  - Delivery: `p = clamp(base + (크로스 − 60)·skill − max(0, defenders − attackers in box)·crowd, min, max)`.
+  - Delivery: `p = clamp(base + (크로스 − 60)·skill − max(0, defenders − attackers in box)·crowd, min, max)`. On the candidate model a crosser under pressure loses `DUEL_CONFIG.candidate.crossPressure` (0.15, T399) × his `pressure` tag (up to 1) more: the closed-down cross is blocked, and cross completion falls 24.4 → 22.2% (MATCH-23 20–30%).
   - A failed delivery (or no target) goes out over the byline `failOut` of the time (a goal kick); otherwise the nearest defender to the target intercepts it `intercept` of the time and heads it clear as a loose ball the rest.
   - A delivered cross: the keeper claims it with `claim + (공중볼 처리 − 60)/400`, else the target duels his nearest marker in the air, `p = clamp(0.5 + (att − def)·aerial.skill, 0.15, 0.85)` on 0.6 공중볼 + 0.4 몸싸움. A marker who wins it heads it to a loose ball at the box edge (x = 88.5 m).
   - The attacker who wins it brings it down (`control.open` 0.8 in open play, `control.setPiece` 0.05 at a set piece) or heads at goal, under `SHOT_CONFIG.headerPressure` when a marker contested it (§7.4).

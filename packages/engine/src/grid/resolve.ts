@@ -120,6 +120,13 @@ export const DUEL_CONFIG = {
      * aerial-rating points more in the draw of whom the ball is played to. Neutral at 0.
      */
     crossArriving: 0,
+    /**
+     * A cross under pressure (T399, →MATCH-11): a crosser with a defender on him (his `pressure`
+     * tag, up to 1) delivers `crossPressure` less often, the closed-down cross being blocked.
+     * Neutral at 0. T399 keeps 0.15: cross completion 24.4 → 22.2% (MATCH-23 20–30%), with the
+     * wing-back beside a back three closing the crosser (`SHAPE_CONFIG.candidate.flank`).
+     */
+    crossPressure: 0.15,
     passLoose: 0.8,
     clearanceOut: 0.5,
     /**
@@ -558,7 +565,8 @@ export function resolveCross(
   const p = clamp(
     X.base +
       (skill(s, side, idx, 'crossing') - 60) * X.skill -
-      Math.max(0, defenders.length - attackers.length) * X.crowd,
+      Math.max(0, defenders.length - attackers.length) * X.crowd -
+      (onCandidate(s) ? DUEL_CONFIG.candidate.crossPressure * Math.min(1, tags.pressure) : 0),
     X.min,
     X.max,
   );
