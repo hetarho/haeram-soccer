@@ -292,18 +292,22 @@ describe('grid shape and movement', () => {
     expect(counter.line[0]).toBe(balanced.line[0]);
     expect(counter.line[1]).toBeLessThan(balanced.line[1]);
     // The opponents on the ball 30 m from counter's goal: its back four stand at the floor or
-    // higher on the candidate model, deeper on the pre-feature one.
-    const defenders = (candidate: boolean) => {
+    // higher on the candidate model, deeper on the pre-feature one. T374: the candidate's line
+    // drops `deepLine.candidate.behindBall` m goal-side of a ball nearer its goal, so the floor
+    // holds wherever the ball is at least that far beyond it.
+    const near = counter.line[0] + SHAPE_CONFIG.deepLine.candidate.behindBall;
+    const defenders = (candidate: boolean, bx = 30) => {
       const kit = gridKit(['counter', 'balanced']);
       if (candidate) kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
-      kit.state.ball = [30, 34];
+      kit.state.ball = [bx, 34];
       kit.state.possession = 1;
       kit.state.owner = [1, 9];
       return targets(kit)
         .slice(1, 5)
         .map((p) => p[0]);
     };
-    for (const x of defenders(true)) expect(x).toBeGreaterThanOrEqual(counter.line[0]);
+    for (const x of defenders(true, Math.max(30, near)))
+      expect(x).toBeGreaterThanOrEqual(counter.line[0]);
     expect(Math.min(...defenders(false))).toBeLessThan(counter.line[0]);
   });
 

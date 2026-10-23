@@ -118,13 +118,7 @@ export const DECISION_CONFIG = {
    */
   candidate: {
     crossScale: 6.3,
-    /**
-     * The cut-back's share of a delivery from the cut-back zones, in place of `cutBackShare` (T374,
-     * →MATCH-13, MATCH-16): with offside at the pass the box fills with runners arriving level
-     * with or behind the ball, the cut-back's receivers.
-     */
-    cutBackShare: 0.1,
-    shotBox: 0.9,
+    shotBox: 0.56,
     shotLine: { GK: 0, DF: 3.2, MF: 20, FW: 0.36 },
     /**
      * Positions that shoot with another line's weight (T321, →MATCH-16): a 4-2-3-1 shadow striker
@@ -144,12 +138,12 @@ export const DECISION_CONFIG = {
      * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
      * at 2.50 once defenders read the pass early).
      */
-    shotScale: 0.6,
+    shotScale: 0.42,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      */
-    longShotScale: 2.5,
+    longShotScale: 4,
     /**
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
@@ -267,14 +261,13 @@ export function actionMix(
         : C.holdUp.base,
     clearance: cell.clearance,
   };
-  const candidate = s.setup.model !== undefined;
   if (inCutBack) {
-    const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
-    mix.cutBack = share * mix.cross;
-    mix.cross *= 1 - share;
+    mix.cutBack = C.cutBackShare * mix.cross;
+    mix.cross *= 1 - C.cutBackShare;
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
+  const candidate = s.setup.model !== undefined;
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);

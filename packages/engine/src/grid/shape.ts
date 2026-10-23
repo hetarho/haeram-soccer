@@ -75,7 +75,7 @@ export const SHAPE_CONFIG = {
    * so a line that calls offside at the pass drops toward its box as an attack approaches and
    * attackers can arrive there onside.
    */
-  deepLine: { behindBall: 4, min: 6, candidate: { behindBall: 4 } },
+  deepLine: { behindBall: 4, min: 6, candidate: { behindBall: 12 } },
   keeperPull: 0.08,
   keeperMax: { sweeperKeeper: 22, other: 14 },
   /** Metres a sweeper keeper steps up per metre his line stands above 20 m, once it is at 40 m. */
