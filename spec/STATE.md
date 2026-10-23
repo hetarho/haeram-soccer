@@ -273,7 +273,7 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T402 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T396 | Give each MATCH-29 row's two-path difference a paired 95% interval | MATCH ARCH | - | todo |
+| T396 | Give each MATCH-29 row's two-path difference a paired 95% interval | MATCH ARCH | - | doing@261024.t5q2 |
 | T397 | Bring the grid's attacking volume to MATCH-30 under the drawn offside call | MATCH ARCH | T384 T396 | todo |
 | T398 | Bring grid forward goals to 50–60% through midfield box arrivals | MATCH PLAYER STAFF ARCH | T397 | todo |
 | T399 | Hold counter against press and balanced's flank defence on the grid | MATCH STAFF ARCH | T398 | todo |
@@ -297,6 +297,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T396 start (t5q2): base 4ee082ed; MATCH-29 rows get paired 95% intervals in the parity runner, tooling only
 - 261024 create-task T286 split done (t5q2): T402 prospective activation (lane history-activation with T306–T308, runnable now); T286 keeps the final gate, dep + T402 T308, base WEB@136; T306 dep T304 T402, base MATCH@22; T308's notes name the new order
 - 261024 merge wip/w6p4 (t5q2): w6p4's T372 (4389396a, validation round 55) and its MATCH r22 plan join main after c9v3's T384; w6p4's T390–T395 become T396–T401 because main's T390/T391 are m8p2's print theme; w6p4's later uncommitted T384 attempt (checkpoints 3befde45, d4216431) is dropped for main's done T384; the detailed artifact stays T384's refresh, the aggregate and parity artifacts are T372's
 - 261024 T391 origin rebase (m8p2): pulled T384 engine changes through 9de1efe1 before publication; combined STATE histories, preserved the complete print change, and repeat the batch gate on the merged tree before pushing.
@@ -316,4 +317,3 @@
 - 261023 WEB r136 planned as T390 doing (m8p2): all-screen print image skin and registry default, unchanged valid stored selections, no commit/push; CLI unavailable, explicitly assigned current checkout.
 - 261023 update-ssot WEB start: owner expands the approved image-built matchday-print home to every screen and makes it the registry default; preserve valid stored choices, all game behavior and existing local edits; no commit or push.
 - 261023 local print home follow-up fixed: sidebar image/spacing/colour selectors now target only the shell aside; reproduced the leaking match-eve card before the fix, then checked unobscured report actions at Chromium 320/390/1380px and WebKit 390px, report close/reopen, home captures, focused lint/format and build; added the real report to the capture script and preview; no commit or push.
-- 261023 local matchday-print home prototype ready: 31 image assets, nine-slice frames and tiled paper/ink; original/desktop/mobile/tablet comparison at apps/web/design/home-print/index.html; typecheck, focused lint/format, four home units, asset checks and build pass; Chromium 320–1536px and WebKit 390px captures, home actions and theme/page isolation checked; owner requested no commit or push, other checkout edits preserved.
