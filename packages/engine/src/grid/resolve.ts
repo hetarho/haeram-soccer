@@ -136,9 +136,11 @@ export const DUEL_CONFIG = {
      * Restarts and finishers (T371, →MATCH-18, MATCH-23): of the failed open-play crosses this
      * share runs over the byline for a goal kick, in place of `cross.failOut`; a cross's target
      * spreads over the box's headers by `targetSpread` aerial points, in place of
-     * `cross.targetSpread`.
+     * `cross.targetSpread`. Of the failed crosses running out, the keeper gathers `crossKeeper`
+     * before they cross the line (his 공중볼 처리 area, →MATCH-11), so play goes on from his hands.
      */
     crossFailOut: 0.15,
+    crossKeeper: 0,
     targetSpread: 8,
   },
 } as const;
@@ -565,6 +567,8 @@ export function resolveCross(
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   if (!delivered || !attacker) {
     const out = r() < (onCandidate(s) ? DUEL_CONFIG.candidate.crossFailOut : X.failOut);
+    const gathers = onCandidate(s) ? DUEL_CONFIG.candidate.crossKeeper : 0;
+    if (out && keeper && gathers > 0 && r() < gathers) return { kind: 'held', by: keeper.idx };
     const at = toEngine(side, [
       PITCH.length,
       clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
