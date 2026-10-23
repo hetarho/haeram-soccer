@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| w6p4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T04:52Z | 2026-10-23T04:52Z | - |
+| w6p4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T04:52Z | 2026-10-23T04:54Z | - |
 
 ## inbox
 - 261023 decided T375 T370: honest offside's follow-up (T374 option a, through-ball lead/depth scaled by the space behind the line, plus late midfield box runs from behind the ball) becomes its own explore task T375 before T370 → T370 already carries three levers with its own keep rule, and T375's keep rule must test MATCH-29 per screened setting against T373's football; T370's baseline becomes T375's result or T373's football; T375 also first cuts the held line's per-holder line read (T374 limit 3) (alt: fold into T370)
@@ -250,7 +250,7 @@
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 T375 | todo |
-| T375 | Make a high line cost again under honest offside and bring midfielders into the box onside | MATCH ARCH | T374 | todo |
+| T375 | Make a high line cost again under honest offside and bring midfielders into the box onside | MATCH ARCH | T374 | doing@261023.w6p4 |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
 

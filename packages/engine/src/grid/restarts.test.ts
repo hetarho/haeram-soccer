@@ -178,6 +178,58 @@ describe('grid restarts', () => {
     expect(runnerRate).toBeLessThan(base - 0.05);
   });
 
+  it("offside is the receiver's position when the pass is played, whatever his 판단력", () => {
+    // The candidate model (T368, →MATCH-18): the same scene, judged by position alone.
+    const scene = () => {
+      const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
+      const from = offsideScene();
+      for (const side of [0, 1] as const)
+        s.players[side].forEach((gp, i) => {
+          const at = from.players[side][i]!;
+          gp.pos = [at.pos[0], at.pos[1]];
+          gp.base.set(at.base);
+          gp.player.traits = [];
+        });
+      s.ball = [from.ball[0], from.ball[1]];
+      return s;
+    };
+    let draws = 0;
+    const r = () => {
+      draws++;
+      return 0.999;
+    };
+    // Beyond the ball and the second-last defender (82) in the opponent half: always offside,
+    // for a sharp reader, a dull one and a line breaker alike, and nothing is drawn.
+    for (const [decisions, traits] of [
+      [90, []],
+      [30, []],
+      [60, ['linebreaker']],
+    ] as const) {
+      const s = scene();
+      set(s, 0, 10, 'decisions', decisions);
+      s.players[0][10]!.player.traits = [...traits];
+      expect(isOffside(s, 0, 10, r)).toBe(true);
+      expect(isOffside(s, 0, 10, r, 'freeKick')).toBe(true);
+    }
+    // Behind the line, in his own half, behind the ball, or from a throw-in, goal kick or
+    // corner: never.
+    const s = scene();
+    put(s, 0, 10, [81.9, 34]);
+    expect(isOffside(s, 0, 10, r)).toBe(false);
+    put(s, 0, 10, [45, 34]);
+    expect(isOffside(s, 0, 10, r)).toBe(false);
+    put(s, 0, 10, [90, 34]);
+    s.ball = [95, 10];
+    expect(isOffside(s, 0, 10, r)).toBe(false);
+    s.ball = [60, 34];
+    for (const from of ['throwIn', 'goalKick', 'corner'] as const)
+      expect(isOffside(s, 0, 10, r, from)).toBe(false);
+    expect(draws).toBe(0);
+    // The pre-feature path still draws when the position alone is offside.
+    expect(isOffside(offsideScene(), 0, 10, r)).toBe(false);
+    expect(draws).toBe(1);
+  });
+
   const kinds = (build: () => { s: GridState; rs: Restart }, n: number) => {
     const out: Record<string, number> = {};
     for (let i = 0; i < n; i++) {
