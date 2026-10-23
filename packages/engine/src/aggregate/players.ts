@@ -19,12 +19,14 @@ import {
   binomialDraw,
   exposures,
   multinomialDraw,
+  multinomialInto,
   playedMinutes,
   recordLines,
   sideDraw,
   weightedIndex,
   type AggregateExposure,
 } from './participation';
+import { AGGREGATE_MOVE_KINDS } from './types';
 import type {
   AggregateAttribute,
   AggregateInput,
@@ -158,9 +160,19 @@ interface Row {
 /** One side's lines, their exposures and cached weights while the match is attributed. */
 class SideLines {
   readonly rows: Row[];
-  private readonly cache = new Map<string, Map<Role | TakerKey, Float64Array>>();
+  private readonly cache = new Map<string, Map<Role | TakerKey, number[]>>();
   private readonly expo = new Map<AggregatePeriod, AggregateExposure[]>();
-  private readonly terms = new Map<AggregatePeriod, Map<AggregateAttribute, Float64Array>>();
+  private readonly terms = new Map<AggregatePeriod, Map<AggregateAttribute, number[]>>();
+  /** Each line-slot pair's action weight, read once per action (T326): `plan` is fixed here. */
+  private readonly actions = new Map<MatchAction, number[]>();
+  private readonly slotCount: number;
+  /** Lines present in each minute asked for, in line order (T326): the stints are fixed here. */
+  private readonly presence = new Map<number, readonly { line: number; slot: number }[]>();
+  /** One split's buffers of the side's line count, reused by every move group (T326). */
+  readonly attempts: number[];
+  readonly completed: number[];
+  readonly broke: number[];
+  readonly split: number[];
 
   constructor(
     readonly side: AggregateSide,
@@ -172,6 +184,29 @@ class SideLines {
       metrics: zeroMetrics(),
       detail: Array<number>(PLAYER_DETAIL_SIZE).fill(0),
     }));
+    this.slotCount = input.sides[side].slots.length;
+    const n = this.rows.length;
+    this.attempts = Array<number>(n).fill(0);
+    this.completed = Array<number>(n).fill(0);
+    this.broke = Array<number>(n).fill(0);
+    this.split = Array<number>(n).fill(0);
+  }
+
+  /** The plan's action weight of a line at a slot, the same value read once (T326). */
+  private actionWeight(line: number, slot: number, action: MatchAction) {
+    let byPair = this.actions.get(action);
+    if (!byPair)
+      this.actions.set(
+        action,
+        (byPair = Array<number>(this.rows.length * this.slotCount).fill(NaN)),
+      );
+    const at = line * this.slotCount + slot;
+    let w = byPair[at]!;
+    if (Number.isNaN(w)) {
+      w = this.plan.sides[this.side].actionWeight(line, slot, action);
+      byPair[at] = w;
+    }
+    return w;
   }
 
   private exposuresOf(period: AggregatePeriod) {
@@ -200,14 +235,14 @@ class SideLines {
     minutes: number,
     mid: number,
     role: Role,
-    terms?: Float64Array,
+    terms?: number[],
     at = 0,
   ) {
     const s = this.input.sides[this.side].slots[slot]!;
     let w = role.table[s.line] * minutes;
     if (!(w > 0)) return 0;
     if (role.wide && s.wide) w *= role.wide;
-    if (role.action) w *= this.plan.sides[this.side].actionWeight(line, slot, role.action);
+    if (role.action) w *= this.actionWeight(line, slot, role.action);
     let term = terms ? terms[at]! : NaN;
     if (Number.isNaN(term)) {
       const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
@@ -222,7 +257,7 @@ class SideLines {
     let byAttribute = this.terms.get(period);
     if (!byAttribute) this.terms.set(period, (byAttribute = new Map()));
     let terms = byAttribute.get(attribute);
-    if (!terms) byAttribute.set(attribute, (terms = new Float64Array(size).fill(NaN)));
+    if (!terms) byAttribute.set(attribute, (terms = Array<number>(size).fill(NaN)));
     return terms;
   }
 
@@ -233,11 +268,12 @@ class SideLines {
   }
 
   /** Each line's weight for a role over a period: its minutes there, by slot, role and skill. */
-  weights(period: AggregatePeriod, role: Role): Float64Array {
+  weights(period: AggregatePeriod, role: Role): number[] {
     const cache = this.cacheOf(period);
     let out = cache.get(role);
     if (!out) {
-      out = new Float64Array(this.rows.length);
+      // Plain doubles: the same sums as a Float64Array, without its costly creation (T326).
+      out = Array<number>(this.rows.length).fill(0);
       const list = this.exposuresOf(period);
       const terms = this.termsOf(period, role.attribute, list.length);
       for (let at = 0; at < list.length; at++) {
@@ -252,11 +288,16 @@ class SideLines {
   }
 
   /** Lines present in a minute, with their slot. */
-  present(minute: number): { line: number; slot: number }[] {
-    const out: { line: number; slot: number }[] = [];
-    for (const s of this.participation.stints[this.side])
-      if (s.from < minute && s.to >= minute) out.push({ line: s.line, slot: s.slot });
-    return out.sort((a, b) => a.line - b.line);
+  present(minute: number): readonly { line: number; slot: number }[] {
+    let out = this.presence.get(minute);
+    if (!out) {
+      const list: { line: number; slot: number }[] = [];
+      for (const s of this.participation.stints[this.side])
+        if (s.from < minute && s.to >= minute) list.push({ line: s.line, slot: s.slot });
+      out = list.sort((a, b) => a.line - b.line);
+      this.presence.set(minute, out);
+    }
+    return out;
   }
 
   /** A line present in `minute` drawn by a role, never one of `except`. */
@@ -285,11 +326,11 @@ class SideLines {
   }
 
   /** Each line's minutes as the period's taker: the set-piece groups' weights. */
-  takerWeights(period: AggregatePeriod, key: TakerKey): Float64Array {
+  takerWeights(period: AggregatePeriod, key: TakerKey): number[] {
     const cache = this.cacheOf(period);
     let out = cache.get(key);
     if (!out) {
-      out = new Float64Array(this.rows.length);
+      out = Array<number>(this.rows.length).fill(0);
       const { from, to } = AGGREGATE_CONFIG.periods[period];
       const bounds = [
         ...new Set([
@@ -321,11 +362,14 @@ class SideLines {
  * Splits `k` over `counts` so that no part exceeds its count: a hypergeometric draw, unit by unit
  * when there are few units, otherwise by clamped sequential binomials.
  */
-function within(r: Rng, k: number, counts: readonly number[]): number[] {
-  // Built like multinomialDraw's result, so both arrays this splits share one element kind.
-  const out = Array<number>(counts.length).fill(0);
+function within(r: Rng, k: number, counts: readonly number[], out: number[]): number[] {
+  // Into a buffer built like multinomialDraw's result, so both arrays this splits share one
+  // element kind; zeroed first, the same draws as a fresh array (T326).
   let total = 0;
-  for (let i = 0; i < counts.length; i++) total += counts[i]!;
+  for (let i = 0; i < counts.length; i++) {
+    out[i] = 0;
+    total += counts[i]!;
+  }
   if (k <= 0) return out;
   if (k <= 4) {
     for (let unit = 0; unit < k; unit++) {
@@ -369,7 +413,17 @@ interface MoveTraits {
   cutBack: boolean;
   xt: number;
 }
+/** Traits by kind and cells, worked out once a process (T326): they read nothing else. */
+const TRAITS = new Map<number, MoveTraits>();
+/** The 40 grid cells a move runs between (`band * 5 + lane`). */
+const CELLS = 40;
 function moveTraits(move: AggregateMove): MoveTraits {
+  const key = (AGGREGATE_MOVE_KINDS.indexOf(move.kind) * CELLS + move.from) * CELLS + move.to;
+  let traits = TRAITS.get(key);
+  if (!traits) TRAITS.set(key, (traits = traitsOf(move)));
+  return traits;
+}
+function traitsOf(move: AggregateMove): MoveTraits {
   return {
     kind: move.kind,
     pass: isPassKind(move.kind),
@@ -527,19 +581,24 @@ function attributeSide(
     const weights = move.setPiece
       ? own.takerWeights(period, move.setPiece === 'corner' ? 'corner' : 'freeKick')
       : own.weights(period, moveRole(move));
-    const attempts = multinomialDraw(r, move.attempts - pins.length, weights);
-    const completed = within(r, move.completed - pins.length, attempts);
+    const attempts = multinomialInto(r, move.attempts - pins.length, weights, own.attempts);
+    const completed = within(r, move.completed - pins.length, attempts, own.completed);
     for (const line of pins) {
       attempts[line]!++;
       completed[line]!++;
     }
-    const broke = within(r, move.lineBreaking, completed);
+    const broke = within(r, move.lineBreaking, completed, own.broke);
     const traits = moveTraits(move);
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
         creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
     if (move.offside > 0) {
-      const offside = multinomialDraw(r, move.offside, own.weights(period, ROLES.offside));
+      const offside = multinomialInto(
+        r,
+        move.offside,
+        own.weights(period, ROLES.offside),
+        own.split,
+      );
       for (let line = 0; line < offside.length; line++)
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
     }
@@ -555,7 +614,7 @@ function attributeSide(
     if (won > 0) {
       const at = pass ? traits.toBand : traits.fromBand;
       const role = ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling');
-      const split = multinomialDraw(r, won, opp.weights(period, role));
+      const split = multinomialInto(r, won, opp.weights(period, role), opp.split);
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
         if (k === 0) continue;

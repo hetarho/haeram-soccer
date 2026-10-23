@@ -81,36 +81,40 @@ export function aggregateSkillAccess(
   const sides = ([0, 1] as const).map((side) => {
     const slots = FORMATIONS[prepared.tactics[side]].slots;
     const multiplier = prepared.multiplier[side]!;
-    const stints = new Map<number, AggregateStint[]>();
-    for (const s of participation.stints[side])
-      stints.set(s.line, [...(stints.get(s.line) ?? []), s]);
-    for (const list of stints.values()) list.sort((a, b) => a.from - b.from);
+    // Indexed by line (T326): the same stints, scales and drain, without a keyed lookup a read.
+    const stints: (AggregateStint[] | undefined)[] = [];
+    for (const s of participation.stints[side]) (stints[s.line] ??= []).push(s);
+    for (const list of stints) list?.sort((a, b) => a.from - b.from);
     /** Per line and slot: the slot level times the multiplier, read once. */
-    const scales = new Map<number, number>();
+    const scales: number[] = [];
     const scaleAt = (line: number, slot: number) => {
       const key = line * 16 + slot;
-      let scale = scales.get(key);
+      let scale = scales[key];
       if (scale === undefined) {
         const p = rosters[side][line]!;
         scale = levelFactor(p.positions, slots[slot]!.position) * multiplier(p);
-        scales.set(key, scale);
+        scales[key] = scale;
       }
       return scale;
     };
-    return { stints, scaleAt };
+    /** Per line: `drainPerMinute` of his stamina, read once. */
+    const drains: number[] = [];
+    const drainOf = (line: number) =>
+      (drains[line] ??= drainPerMinute(prepared, side, rosters[side][line]!.attrs.stamina));
+    return { stints, scaleAt, drainOf };
   });
   return {
     skill(side, line, attribute, minute) {
       const p = rosters[side][line]!;
       const own = sides[side]!;
-      const list = own.stints.get(line);
+      const list = own.stints[line];
       let slot = list?.[0]?.slot ?? Math.min(line, 10);
       if (list) for (const s of list) if (s.from < minute) slot = s.slot;
       const on = Math.max(0, minute - (list?.[0]?.from ?? 0));
       return (
         slotSkill(p, p.attrs[attribute], own.scaleAt(line, slot), KEEPING.has(attribute)) +
         prepared.shift[side]! -
-        drainPerMinute(prepared, side, p.attrs.stamina) * on
+        own.drainOf(line) * on
       );
     },
     finishing,

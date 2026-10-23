@@ -92,16 +92,29 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
  * there are fewer units than weights, otherwise by sequential binomials.
  */
 export function multinomialDraw(r: Rng, n: number, weights: ArrayLike<number>): number[] {
-  const out = Array<number>(weights.length).fill(0);
+  return multinomialInto(r, n, weights, Array<number>(weights.length).fill(0));
+}
+/**
+ * `multinomialDraw` into a caller's buffer of the weights' length, zeroed first: the same draws,
+ * without a new array for each split (T326).
+ */
+export function multinomialInto(
+  r: Rng,
+  n: number,
+  weights: ArrayLike<number>,
+  out: number[],
+): number[] {
   let rest = 0,
     positive = 0,
     last = -1;
-  for (let i = 0; i < weights.length; i++)
+  for (let i = 0; i < weights.length; i++) {
+    out[i] = 0;
     if (weights[i]! > 0) {
       rest += weights[i]!;
       positive++;
       last = i;
     }
+  }
   if (n <= 0 || last < 0) return out;
   if (n <= positive) {
     for (let k = 0; k < n; k++) {
