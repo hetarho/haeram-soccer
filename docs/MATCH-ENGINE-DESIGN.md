@@ -469,7 +469,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 2. **Position profile** (`POSITION_PROFILES[profileKey(position)]` against the league's overall, `factorRange` 0.2–3):
    - `takeOn × clamp(profile.takeOnPerPass / 0.075)`
    - `cross` and `cutBack × clamp(profile.crossShare / 0.025) × crossScale`, `crossScale` 7.2 (the cells' own cross shares gave under one cross a side, T215)
-3. **Shot volume:** `shot × shotLine[line] × shotScale × (band 6 ? shotBox : 1) × exp(−max(0, goalDistance − 28)/6)` with `shotLine` GK 0, DF 1, MF 3.8, FW 0.9, `shotScale` 0.19 (the first engine made about 25 shots a side), `shotBox` 0.42 (shoot in the box band rather than carry into the goal area) and `longShot` 28 m / 6 m (a cell's shots come from its near end), all T215.
+3. **Shot volume:** `shot × shotLine[line] × shotScale × (band 6 ? shotBox : 1) × exp(−max(0, goalDistance − 28)/6)` with `shotLine` GK 0, DF 1, MF 3.8, FW 0.9, `shotScale` 0.19 (the first engine made about 25 shots a side), `shotBox` 0.42 (shoot in the box band rather than carry into the goal area) and `longShot` 28 m / 6 m (a cell's shots come from its near end), all T215. On the candidate model (`DECISION_CONFIG.candidate`) `shotScale` is 0.45 and the long-shot fall-off 3.5 m (T370), and a shot in the box is also weighed by its chance: × min(1, (xG/0.3)^0.5), its xG from §7.4 with the pressure on him (`shotQuality`, T370, →MATCH-16). A carrier passes up a weak angle or a pressured look and a big chance keeps its weight, so box shots and key passes fall into MATCH-30's bands with goals unchanged; the scales hold the volume and keep the shot places inside MATCH-23.
 4. **Role and traits:** multiply by `actionWeight(role, traits, x)` for:
    - `shot ← 'shot'`
    - `takeOn ← 'dribble'`
@@ -590,7 +590,7 @@ export const DUEL_CONFIG = {
   - `passer` is 패스, or (패스 + 시야)/2 for long, through, switch or line-breaking passes, or 발밑 for a goalkeeper.
   - `marker` is 위치선정 of the opponent nearest the segment.
   - On failure, split by `lost`:
-    - `intercepted` (only when there is a marker): the marker wins it at his projection point.
+    - `intercepted` (only when there is a marker): the marker wins it at his projection point. On the candidate model a pass played from below 70 m (the passer's build-up) is intercepted by the defending side's tactic's share instead (`DUEL_CONFIG.candidate.intercept`, T370: possession 0.175, press 0.195, counter 0.155, balanced 0.175), taken from the loose balls so as many passes still leave play; press reads the build-up most and counter, which engages around halfway, least (→MATCH-8). It brings PPDA and high turnovers into MATCH-30's bands.
     - `loose`: a 50/50 at the target among the two nearest players of each side by `1/(distance + 1)`, where the receiver the pass missed weighs `receiverLoose` (T215: he won most of them back and possessions reached 83 a team).
     - `out`: the ball leaves the pitch along the pass line (§7.2).
   - Before resolving, check offside (§7.3).
