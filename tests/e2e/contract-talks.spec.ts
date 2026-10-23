@@ -129,7 +129,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(
     page.getByRole('region', { name: '계약 협상 위임' }).getByTestId('decision-owner-contracts'),
-  ).toContainText('직접 결정');
+  ).toContainText('보고받기');
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
@@ -170,7 +170,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
-  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접 결정');
+  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('보고받기');
   await expect(talks.getByRole('button', { name: /^재정 기조 · 표준/ })).toBeVisible();
   await expect(talks).toContainText('시장가의 110%까지');
   await expect(talks).toContainText('32세부터 1시즌');

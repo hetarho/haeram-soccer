@@ -237,7 +237,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   const delegation = page.getByRole('region', { name: '후원 위임' });
   const owner = delegation.getByTestId('decision-owner-sponsors');
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
-  await expect(owner).toContainText('직접 결정');
+  await expect(owner).toContainText('보고받기');
   await expect(owner).toContainText('후원 계약은 직접 골라요');
   await expect(page.getByTestId('sponsor-local-stable')).toBeVisible();
   const delegated = await exportWorld(page);

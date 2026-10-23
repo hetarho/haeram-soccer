@@ -36,6 +36,7 @@ export const ProgressOverview = memo(function ProgressOverview({
   const w = useGameState((state) => state.view!.world);
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
+  const manual = settingsOf(w).mode === 'manual';
   return (
     <section
       className={p.overview}
@@ -52,7 +53,11 @@ export const ProgressOverview = memo(function ProgressOverview({
         <small>ROUND</small>
         <strong data-testid="game-round">{w.round}</strong>
       </div>
-      <ProgressModeSwitch client={client} controller={controller} />
+      {compact ? (
+        <span className={p.modeStatus}>{manual ? 'MANUAL · 수동 진행' : 'AUTO · 자동 진행'}</span>
+      ) : (
+        <ProgressModeSwitch client={client} controller={controller} />
+      )}
     </section>
   );
 });

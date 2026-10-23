@@ -41,10 +41,10 @@ test('combined-playing-coach-review', async ({ page }) => {
   await expect(review).toContainText('즉시 지출');
   await expect(
     page.getByRole('region', { name: '지도자 진로' }).getByTestId('decision-owner-contracts'),
-  ).toContainText('직접 결정');
+  ).toContainText('보고받기');
   await expect(
     page.getByRole('region', { name: '지도자 진로' }).getByTestId('decision-owner-staff'),
-  ).toContainText('직접 결정');
+  ).toContainText('보고받기');
   await review.getByRole('button', { name: '선수·코치 계약 함께 승인', exact: true }).click();
   await expect(page.getByText('플레잉 코치 계약 승인 완료', { exact: false })).toBeVisible();
   await expect(review).toHaveCount(0);

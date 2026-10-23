@@ -8,7 +8,7 @@ import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
 import { OwnerOffice, PendingHandover } from './OwnerOfficeView';
-import { officeProposal } from './officeChanges';
+import { officeBulkChange, officeProposal, officeSettings } from './officeChanges';
 vi.mock('../runtime/store', async (original) => ({
   ...(await original<typeof import('../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),
@@ -43,7 +43,14 @@ describe('owner office page', () => {
     expect(markup).toContain('data-testid="owner-office"');
     expect(markup).toContain('data-facility-art="manager"');
     expect(markup).toContain('aria-label="선수 영입"');
-    expect(markup).toMatch(/aria-pressed="true"[^>]*>직접 결정/);
+    expect(markup).toMatch(/aria-pressed="true"[^>]*>보고받기/);
+    expect(markup.match(/>보고받기<\/button>/g)).toHaveLength(9);
+    expect(markup.match(/>위임<\/button>/g)).toHaveLength(9);
+    expect(markup.indexOf('전체 보고받기')).toBeLessThan(markup.indexOf('data-facility-art'));
+    expect(markup).not.toContain('진행 방식 변경');
+    expect(markup).not.toContain('진행 모드');
+    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 보고받기/);
+    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 위임/);
     expect(markup).not.toContain('role="dialog"');
     expect(markup).not.toContain('>적용</button>');
   });
@@ -55,12 +62,13 @@ describe('owner office page', () => {
       markup = render();
     expect(markup).toContain('aria-label="경기 전날 보고"');
     expect(markup).toContain('aria-label="이적시장 개장 보고"');
-    expect(markup).toContain('aria-label="업무 위임"');
+    expect(markup).toContain('aria-label="보고·위임 설정"');
     expect(markup).not.toContain('aria-label="자동 모드의 백그라운드 진행"');
     expect(markup).not.toContain('경기 이벤트가 필요');
     expect(markup).not.toContain('모달');
     expect(markup).not.toContain('멈추기');
-    expect(markup).toContain('받지 않기</button>');
+    expect(markup).toContain('위임</button>');
+    expect(markup).not.toContain('받지 않기');
     expect(settings).toEqual(before);
   });
   it('discloses transferred and jointly held work before confirmation', () => {
@@ -72,8 +80,22 @@ describe('owner office page', () => {
     ];
     const markup = renderToStaticMarkup(createElement(PendingHandover, { proposal }));
     expect(markup).toContain('대기 중인 선수 영입 2건도 위임됩니다.');
-    expect(markup).toContain('공동 승인 1건은 다른 직접 결정이 남아 대기해요.');
+    expect(markup).toContain('공동 승인 1건은 다른 업무의 구단주 승인이 필요해 대기해요.');
   });
+  it.each(['direct', 'delegated'] as const)(
+    'marks the bulk choice only when all rows are %s',
+    (value) => {
+      const w = gameStore.getState().view!.world;
+      w.settings = officeSettings(w, officeBulkChange(w, value)!);
+      const markup = render();
+      expect(markup).toMatch(
+        new RegExp(
+          `aria-pressed="true"[^>]*>${value === 'direct' ? '전체 보고받기' : '전체 위임'}`,
+        ),
+      );
+      expect(markup).toContain(`${value === 'direct' ? 0 : 9} / 9개 위임`);
+    },
+  );
   it('disables every mutation in readonly state', () => {
     gameStore.setState({ readonly: true });
     const markup = render();

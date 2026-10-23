@@ -12,11 +12,11 @@ import {
 import { Dialog } from './Dialog';
 import { Select } from './Select';
 import { FacilityArt } from './FacilityArt';
-import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { modeSwitchBlocked } from './progressMode';
 import { RESPONSIBILITY_LABELS } from './intervention';
 import {
   applyOfficeChange,
+  officeBulkChange,
   officeProposal,
   type OfficeChange,
   type OfficeProposal,
@@ -31,6 +31,46 @@ const DETAILS: Record<ResponsibilityKey, string> = {
   academy: '유소년 승격과 방출',
   sponsors: '자리별 스폰서 계약',
 };
+const OBSERVATIONS = [
+  ['matchEve', '경기 전날 보고', '위임하면 스태프가 경기를 치르고 결과를 전달해요.'],
+  ['windowOpen', '이적시장 개장 보고', '위임하면 개장 보고 확인을 기다리지 않고 업무를 계속해요.'],
+] as const;
+function OfficeRow({
+  label,
+  detail,
+  delegated,
+  blocked,
+  onSelect,
+}: {
+  label: string;
+  detail: string;
+  delegated: boolean;
+  blocked: boolean;
+  onSelect: (delegated: boolean) => void;
+}) {
+  return (
+    <div className={s.row}>
+      <span>
+        <b>{label}</b>
+        <small>{detail}</small>
+      </span>
+      <div className={s.choices} role="group" aria-label={label}>
+        {([false, true] as const).map((value) => (
+          <button
+            key={String(value)}
+            aria-pressed={delegated === value}
+            disabled={blocked}
+            onClick={() => {
+              if (delegated !== value) onSelect(value);
+            }}
+          >
+            {value ? '위임' : '보고받기'}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 export function PendingHandover({ proposal }: { proposal: OfficeProposal }) {
   if (!proposal.pending.length) return null;
   return (
@@ -42,11 +82,11 @@ export function PendingHandover({ proposal }: { proposal: OfficeProposal }) {
             {item.count > 0 && (
               <>
                 대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
-                {item.to === 'delegated' ? '위임됩니다' : '직접 결정으로 가져옵니다'}.
+                {item.to === 'delegated' ? '위임됩니다' : '보고받고 승인하게 됩니다'}.
               </>
             )}
             {(item.held ?? 0) > 0 && (
-              <> 공동 승인 {item.held}건은 다른 직접 결정이 남아 대기해요.</>
+              <> 공동 승인 {item.held}건은 다른 업무의 구단주 승인이 필요해 대기해요.</>
             )}
           </li>
         ))}
@@ -100,11 +140,38 @@ export function OwnerOffice({
   const keys = proposal
     ? RESPONSIBILITY_KEYS.filter((key) => proposal.change.responsibilities?.[key] !== undefined)
     : [];
+  const observations = proposal
+    ? OBSERVATIONS.filter(([key]) => proposal.change.observations?.[key] !== undefined)
+    : [];
   const delegated =
-    proposal && keys.length > 0 && proposal.change.responsibilities?.[keys[0]] === 'delegated';
-  const title = delegated ? '위임하겠습니다.' : '제가 관여하겠습니다.';
+    proposal &&
+    (keys.length > 0
+      ? proposal.change.responsibilities?.[keys[0]] === 'delegated'
+      : observations.length > 0 && proposal.change.observations?.[observations[0][0]] === false);
+  const title = delegated ? '위임하겠습니다.' : '보고받겠습니다.';
+  const delegatedCount =
+    RESPONSIBILITY_KEYS.filter((key) => settings.responsibilities[key] === 'delegated').length +
+    OBSERVATIONS.filter(([key]) => !settings.observations[key]).length;
+  const totalCount = RESPONSIBILITY_KEYS.length + OBSERVATIONS.length;
   return (
     <div className={s.office} data-testid="owner-office">
+      <div className={s.bulkActions} role="group" aria-label="전체 보고·위임 설정">
+        {(['direct', 'delegated'] as const).map((value) => (
+          <button
+            key={value}
+            aria-pressed={
+              value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
+            }
+            disabled={blocked}
+            onClick={() => {
+              const change = officeBulkChange(w, value);
+              if (change) propose(change);
+            }}
+          >
+            {value === 'delegated' ? '전체 위임' : '전체 보고받기'}
+          </button>
+        ))}
+      </div>
       <FacilityArt kind="manager" world={w} className={s.hero} eager />
       {state.readonly && <p className={s.message}>읽기 전용 상태에서는 변경할 수 없어요.</p>}
       {message && !proposal && (
@@ -112,95 +179,41 @@ export function OwnerOffice({
           {message}
         </p>
       )}
-      <section className={s.section} aria-label="업무 진행 방식">
+      <section className={s.section} aria-label="보고·위임 설정">
         <div className={s.sectionHead}>
-          <h3>업무 진행</h3>
-          <ProgressModeSwitch client={client} controller={controller} choices />
-        </div>
-        <div className={s.observations}>
-          {(
-            [
-              ['matchEve', '경기 전날 보고'],
-              ['windowOpen', '이적시장 개장 보고'],
-            ] as const
-          ).map(([key, label]) => (
-            <div className={s.row} key={key}>
-              <b>{label}</b>
-              <div className={s.choices} role="group" aria-label={label}>
-                {([true, false] as const).map((value) => (
-                  <button
-                    key={String(value)}
-                    aria-pressed={settings.observations[key] === value}
-                    disabled={blocked}
-                    onClick={() => {
-                      if (settings.observations[key] !== value)
-                        void apply(officeProposal(w, { observations: { [key]: value } }));
-                    }}
-                  >
-                    {value ? '받기' : '받지 않기'}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <p>
-          필요한 보고를 선택하세요. 보고가 도착하면 구단주의 확인을 기다립니다. 경기 전날 보고를
-          받지 않으면 스태프가 경기를 치르고 결과를 전달합니다.
-        </p>
-      </section>
-      <section className={s.section} aria-label="업무 위임">
-        <div className={s.sectionHead}>
-          <h3>업무 위임</h3>
+          <h3>보고받기 / 위임</h3>
           <small>
-            {
-              RESPONSIBILITY_KEYS.filter((key) => settings.responsibilities[key] === 'delegated')
-                .length
-            }{' '}
-            / {RESPONSIBILITY_KEYS.length}개 위임
+            {delegatedCount} / {totalCount}개 위임
           </small>
         </div>
-        <div className={s.bulkActions} role="group" aria-label="전체 업무 위임 설정">
-          {(['delegated', 'direct'] as const).map((value) => (
-            <button
-              key={value}
-              disabled={blocked}
-              onClick={() => {
-                const responsibilities = Object.fromEntries(
-                  RESPONSIBILITY_KEYS.filter((key) => settings.responsibilities[key] !== value).map(
-                    (key) => [key, value],
-                  ),
-                );
-                if (Object.keys(responsibilities).length) propose({ responsibilities });
-              }}
-            >
-              {value === 'delegated' ? '전체 위임' : '전체 직접 결정'}
-            </button>
-          ))}
-        </div>
+        <p>
+          보고받기는 구단주의 확인·승인을 기다립니다. 위임은 스태프가 방침에 따라 처리하고 결과를
+          보고합니다.
+        </p>
         <div className={s.rows}>
+          {OBSERVATIONS.map(([key, label, detail]) => (
+            <OfficeRow
+              key={key}
+              label={label}
+              detail={detail}
+              delegated={!settings.observations[key]}
+              blocked={blocked}
+              onSelect={(delegated) =>
+                void apply(officeProposal(w, { observations: { [key]: !delegated } }))
+              }
+            />
+          ))}
           {RESPONSIBILITY_KEYS.map((key) => (
-            <div className={s.row} key={key}>
-              <span>
-                <b>{RESPONSIBILITY_LABELS[key]}</b>
-                <small>{DETAILS[key]}</small>
-              </span>
-              <div className={s.choices} role="group" aria-label={RESPONSIBILITY_LABELS[key]}>
-                {(['delegated', 'direct'] as const).map((value) => (
-                  <button
-                    key={value}
-                    aria-pressed={settings.responsibilities[key] === value}
-                    disabled={blocked}
-                    onClick={() => {
-                      if (settings.responsibilities[key] !== value)
-                        propose({ responsibilities: { [key]: value } });
-                    }}
-                  >
-                    {value === 'delegated' ? '위임' : '직접 결정'}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <OfficeRow
+              key={key}
+              label={RESPONSIBILITY_LABELS[key]}
+              detail={DETAILS[key]}
+              delegated={settings.responsibilities[key] === 'delegated'}
+              blocked={blocked}
+              onSelect={(delegated) =>
+                propose({ responsibilities: { [key]: delegated ? 'delegated' : 'direct' } })
+              }
+            />
           ))}
         </div>
       </section>
@@ -246,7 +259,7 @@ export function OwnerOffice({
                 disabled={blocked || w.id !== proposal.id}
                 onClick={() => void apply(proposal)}
               >
-                {delegated ? '위임하기' : '직접 결정하기'}
+                {delegated ? '위임하기' : '보고받기'}
               </button>
             </div>
           }
@@ -258,13 +271,23 @@ export function OwnerOffice({
               className={s.hero}
               eager
             />
-            <p>{keys.map((key) => RESPONSIBILITY_LABELS[key]).join(' · ')}</p>
+            <p>
+              {[
+                ...observations.map(([, label]) => label),
+                ...keys.map((key) => RESPONSIBILITY_LABELS[key]),
+              ].join(' · ')}
+            </p>
             <strong>
               {delegated
                 ? '담당 스태프에게 판단과 실행을 맡깁니다.'
-                : '이 업무는 제가 직접 결정하겠습니다.'}
+                : '보고를 받고 필요한 사안은 제가 승인하겠습니다.'}
             </strong>
             <ul>
+              {observations.map(([key, label, detail]) => (
+                <li key={key}>
+                  {label}: {delegated ? detail : '구단주의 확인을 기다립니다.'}
+                </li>
+              ))}
               {keys.map((key) => (
                 <li key={key}>{DETAILS[key]}</li>
               ))}

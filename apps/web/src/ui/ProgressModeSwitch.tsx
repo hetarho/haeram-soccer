@@ -12,9 +12,7 @@ import s from './ProgressControls.module.css';
 export function ProgressModeSwitch({
   client,
   controller,
-  choices = false,
 }: {
-  choices?: boolean;
   client: GameClient;
   controller: ProgressionController;
 }) {
@@ -61,36 +59,19 @@ export function ProgressModeSwitch({
   };
   return (
     <>
-      {choices ? (
-        <div className={s.modeChoices} role="group" aria-label="진행 모드">
-          {(['automatic', 'manual'] as const).map((value) => (
-            <button
-              key={value}
-              aria-pressed={mode === value}
-              disabled={applying || modeSwitchBlocked(state)}
-              onClick={() => {
-                if (mode !== value) choose();
-              }}
-            >
-              {value === 'automatic' ? '자동 진행' : '수동 진행'}
-            </button>
-          ))}
-        </div>
-      ) : (
-        <button
-          className={s.modeSwitch}
-          aria-label={`진행 방식 변경 · 현재 ${mode === 'automatic' ? '자동' : '수동'} 모드`}
-          aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
-          disabled={applying || modeSwitchBlocked(state)}
-          onClick={choose}
-        >
-          <span>
-            <b>{mode === 'automatic' ? 'AUTO' : 'MANUAL'}</b>
-            <small>{mode === 'automatic' ? '자동 진행' : '수동 진행'}</small>
-          </span>
-          <PixelIcon name="switch" size={18} />
-        </button>
-      )}
+      <button
+        className={s.modeSwitch}
+        aria-label={`진행 방식 변경 · 현재 ${mode === 'automatic' ? '자동' : '수동'} 모드`}
+        aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
+        disabled={applying || modeSwitchBlocked(state)}
+        onClick={choose}
+      >
+        <span>
+          <b>{mode === 'automatic' ? 'AUTO' : 'MANUAL'}</b>
+          <small>{mode === 'automatic' ? '자동 진행' : '수동 진행'}</small>
+        </span>
+        <PixelIcon name="switch" size={18} />
+      </button>
       {request && (
         <Dialog
           label="게임 진행 방식이 변경됩니다."

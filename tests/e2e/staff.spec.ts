@@ -132,7 +132,7 @@ test.describe('사람 at 360x740', () => {
     const post = page.getByRole('region', { name: '감독 선임 위임' });
     await expect(post).toBeVisible();
     await expect(post.getByRole('checkbox')).toHaveCount(0);
-    await expect(post.getByTestId('decision-owner-manager')).toContainText('직접 결정');
+    await expect(post.getByTestId('decision-owner-manager')).toContainText('보고받기');
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
       '아래 방침은 이 업무를 위임할 때 사용해요.',
     );

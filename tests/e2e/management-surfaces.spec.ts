@@ -32,21 +32,16 @@ for (const themeId of ['standard', 'pixel']) {
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await navigate(page, '구단 운영');
-    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
-    const office = page.getByTestId('owner-office');
-    await office
-      .getByRole('group', { name: '진행 모드', exact: true })
-      .getByRole('button', { name: '수동 진행', exact: true })
-      .click();
+    await page.getByRole('button', { name: /진행 방식 변경/ }).click();
     await page
       .getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true })
       .getByRole('button', { name: '수동 모드로 변경', exact: true })
       .click();
-    await expect(office.getByRole('button', { name: '수동 진행', exact: true })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    await navigate(page, '구단 운영');
+    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
+    const office = page.getByTestId('owner-office');
+    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(office.getByRole('group', { name: '진행 모드', exact: true })).toHaveCount(0);
 
     for (const width of [360, 390, 760, 1380]) {
       await page.setViewportSize({ width, height: width === 360 ? 740 : 844 });

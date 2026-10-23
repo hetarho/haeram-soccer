@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r130 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r132 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -20,7 +20,7 @@
 
 - WEB-10 [o] Play uses a game HUD (menu, club crest/name, cash and notifications) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 선수단, 훈련 and 구단 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39).
   - The match view has no tab (→WEB-40).
-  - The shared settings menu, reached through the lower sidebar menu or its phone HUD entry, places theme and language change entries first, each closing the menu and opening a small centered picker over a light dim so the page behind visibly takes the change; it then groups news, reference/help and save/slot tools by purpose. Responsibility and progression controls live in the owner office (→WEB-79), with no separate HUD responsibility button. New observation starts from the match-eve dialog, and unfinished playback can resume from home; neither is a settings-menu action (→WEB-11/50).
+  - The shared settings menu, reached through the lower sidebar menu or its phone HUD entry, places theme and language change entries first, each closing the menu and opening a small centered picker over a light dim so the page behind visibly takes the change; it then groups news, reference/help and save/slot tools by purpose. Report and delegation preferences live in the owner office (→WEB-79); progression mode changes are available only on home (→WEB-96), with no separate HUD responsibility button. New observation starts from the match-eve dialog, and unfinished playback can resume from home; neither is a settings-menu action (→WEB-11/50).
   - Mobile bottom navigation has its own contrasting surface, a restrained edge and separation from scrolling content in every theme. Preserve seven destinations, centered home, selected underline, safe areas and touch targets; standard uses a softly elevated floating bar and pixel keeps angular styling.
   - Tapping the HUD cash opens the cash sheet (→WEB-44); the HUD shows cash in the money notation (→WEB-67), and on phones the club name wraps to two lines before it truncates.
   - The document never scrolls: HUD, clock and tab bar stay fixed and one content region scrolls between them, and the shell around that region never scrolls, by code (focus, an element scrolled into view) either, so warning bands taller than a low screen never push the HUD off its top; the match theatre fits that region at 360x740 and 390x844 CSS pixels and home may scroll vertically.
@@ -56,7 +56,7 @@
 - WEB-16 [o] First-session help explains optional match preparation, one-action observation, earned player growth and cost-bearing club investment. It derives completion from actual milestones, does not require a tutorial gate, and can be reopened from the menu.
 
 - WEB-17 [o] The match theatre passes 360x740 and390x844 viewport bounds without masking essential overflow; home has no horizontal overflow and scrolls vertically when needed. Supporter count and small text remain readable; all primary buttons and selection controls, including match preparation, recruitment, league exploration and the clock's pace dropdown, have touch targets of at least44 CSS pixels across Chromium, Firefox and Safari. Expanded records/settings may scroll; short screens or accessibility magnification can use necessary vertical scrolling.
-- WEB-18 [o] Management views show an information row below the HUD with league/division, the full calendar date and a prominently sized round number, plus the current-mode shortcut (→WEB-96). It shows neither transfer-window copy nor a next-match D-day countdown. Responsibility and progression preferences live in the owner office (→WEB-79).
+- WEB-18 [o] Management views show an information row below the HUD with league/division, the full calendar date and a prominently sized round number, plus the current mode. Only home offers the mode-change shortcut (→WEB-96); other management views show its read-only status. It shows neither transfer-window copy nor a next-match D-day countdown. Report and delegation preferences live in the owner office (→WEB-79).
   - Progression actions occupy a separate bottom transport bar: automatic play/pause beside the pace dropdown, or the manual next-event action. On phones the bar sits immediately above the seven navigation tabs, with space reserved so neither it nor the tabs cover content or actions. Keep the existing full touch targets, theme shapes and safe areas. Season progress remains a thin informational rule.
   - The match theatre has no season-progression transport; its presentation speed follows →WEB-32.
   - notifications/news (→WEB-51) lives in the HUD beside cash, separating global communication from progression controls; its counts and touch target remain readable without overlapping content.
@@ -137,7 +137,7 @@
   - 시설 presents the three existing facility parts (→ECON-32): stadium steps/capacity/demand, expansion or rebuild cost, days, upkeep and capacity impact; training ground and academy levels/effects; active works and completion timing.
   - 재정 presents cash projections, fixed costs/runway, ledger/currency notes, owner contributions and unsettled campaigns from before rules 1.19 (→ECON-7).
   - 후원 presents every sponsor slot, contract/end/offers and who signs under the sponsor-contract responsibility (→ECON-8/21, →WEB-45).
-  - 구단주 사무실 (`?view=office`) is the ordinary page for progression, observation stops, seven business responsibilities and background progression (→WEB-79).
+  - 구단주 사무실 (`?view=office`) is the ordinary page for observation choices, seven business responsibilities and background progression (→WEB-79).
   - 구단 디자인 opens the authoritative representative-colour, crest and home/away/third editor (→WEB-86).
   - Inspecting a choice never commits it; explicit apply or the named commit submits the engine command.
 
@@ -182,14 +182,14 @@
   - choices act through engine commands; navigation choices close the sheet and open their view.
   - a choice that changes a standing setting (less investment abroad or in the town, lower squad investment, higher ticket price) opens the relevant authoritative department sheet with the choice drafted for explicit apply (→WEB-77), and suggesting recovery opens the assistant's card with 회복 집중 ready to suggest; the sheet never changes either itself.
 
-- WEB-45 [o] One central responsibility screen chooses 직접 결정 or 위임 independently for seven business categories. A mandatory four-level ladder is not used. ← owners choose their own combination while keeping one authoritative place to see who decides
+- WEB-45 [o] One central responsibility screen chooses 보고받기 or 위임 independently for seven business categories. 보고받기 retains the owner's decision and waits for approval; 위임 lets staff decide and report the result. A mandatory four-level ladder is not used. ← owners choose their own combination while keeping one authoritative place to see who decides
   | responsibility | includes | new-game default |
   |---|---|---|
-  | 감독 인사 | manager appointment and renewal | 직접 결정 |
+  | 감독 인사 | manager appointment and renewal | 보고받기 |
   | 스태프 인사 | director, scout and all coaching departments' appointments and renewals | 위임 |
-  | 선수 계약 | renewals and improved contracts | 직접 결정 |
-  | 선수 영입 | signings, acquisition bids and director–manager mediation | 직접 결정 |
-  | 선수 매각 | responses to offers for our players and delegated sale stances | 직접 결정 |
+  | 선수 계약 | renewals and improved contracts | 보고받기 |
+  | 선수 영입 | signings, acquisition bids and director–manager mediation | 보고받기 |
+  | 선수 매각 | responses to offers for our players and delegated sale stances | 보고받기 |
   | 유소년 승격·방출 | academy promotion and release together | 위임 |
   | 스폰서 계약 | sponsor contracts | 위임 |
   - staff departments share one setting; appointment/renewal share their category. Recruitment and sales are independent. The staff follow the owning-domain decision rules (→STAFF-13).
@@ -374,12 +374,13 @@
   - player, coach and manager career views link the same retained person and actual career stages (→HIST-14). Never reset his age or fabricate missing other-club career statistics.
   - manager candidacy is shown only when coaching experience and managerial aptitude qualify him (→STAFF-24/28); specialist coaching remains a continuing career.
 
-- WEB-79 [o] 구단 → 구단주 사무실 is the authoritative ordinary page for responsibility and progression preferences, with no enclosing bottom sheet or settings dialog. Existing who-decides and match-event links navigate to this page; the common settings menu remains separate (→WEB-10/39).
-  - Paired report, mode and responsibility choices have equal target sizes, shared button padding and a clear applied state. Their row wraps before labels or horizontal padding are squeezed.
-  - Show current progression mode and observation stops, seven business responsibilities, then automatic background preferences. Manual mode hides background controls only; current choices and readable section dividers remain.
-  - Each responsibility offers two labelled buttons 위임 and 직접 결정 with its applied choice marked. Selecting a different choice opens a theme-provided office illustration and a confirmation titled 위임하겠습니다. or 제가 관여하겠습니다., naming the category, its scope and any affected unresolved work (→WEB-82). Bulk choices use the same explicit confirmation and disclose every affected category.
+- WEB-79 [o] 구단 → 구단주 사무실 is the authoritative ordinary page for report, delegation and background preferences, with no enclosing bottom sheet or settings dialog. Existing who-decides and match-event links navigate to this page; the common settings menu remains separate (→WEB-10/39).
+  - All nine configurable report/work rows use the same ordered pair 보고받기 / 위임, with equal target sizes, shared button padding and a clear applied state. Their row wraps before labels or horizontal padding are squeezed. Departmental responsibility summaries use these same labels.
+  - The first page controls, above the illustration, are 전체 보고받기 / 전체 위임. They set both observation choices and all seven business responsibilities together, without changing progression mode or background preferences. Mixed settings never imply an applied global choice; a fully applied choice is marked.
+  - Show one combined list of the two observations and seven business responsibilities, then automatic background preferences. The office has no progression-mode change control (→WEB-96). Manual mode hides background controls only; current choices and readable section dividers remain.
+  - Selecting a different business responsibility opens a theme-provided office illustration and a confirmation titled 위임하겠습니다. or 보고받겠습니다., naming the category, its scope and any affected unresolved work (→WEB-82). Bulk choices use the same explicit confirmation, including observation-only changes, and disclose every affected row and any pending-work transfer.
   - Confirmation commits only the reviewed changes, preserving unrelated settings. Cancel, close, Escape, backdrop or leaving the page commits nothing; failed or stale applications remain visible and retryable without overwriting another world's settings. Busy/read-only/error/critical protections remain.
-  - Mode uses the shared explained shortcut (→WEB-96); reports offer labelled 받기 / 받지 않기 choices named 경기 전날 보고 and 이적시장 개장 보고. Office copy describes reports, staff work and owner approval rather than modals or system stop conditions. They apply their explicit choice without a second page-level apply step. Manual mode accepts either observation state (→WEB-76).
+  - The observations named 경기 전날 보고 and 이적시장 개장 보고 use 보고받기 to await the owner's review and 위임 to continue staff work without that review; notices and results remain readable either way. Observation rows apply their explicit choice without a second page-level apply step. Office copy explains approval versus staff handling, including match handling when delegated. Manual mode accepts either observation state (→WEB-76); mandatory blockers remain effective in either choice.
   - Successful confirmation closes only its dialog and stays in the office, reporting a bottom toast (→WEB-36). The page has no global close/apply footer and never applies a change merely from visiting or navigating away.
 
 - WEB-80 [o] General progression controls are exclusive to the selected mode.
@@ -469,10 +470,10 @@
   - Read ownership at the currently presented instant from recorded player/side facts. A pass or shot in flight can retain a team cue only when the recorded action establishes that side; it has no carrier marker. A loose/contested ball, restart preparation or missing historical information uses the appropriate neutral state instead of guessing from proximity, the next receiver or the minute's leading action.
   - Turnovers, seeks, goal holds and playback replacement update or clear both cues together with the presented clock (→WEB-23/32/94). Both themes, phone widths and reduced motion retain the same readable information; this feedback never changes football or saved facts.
 
-- WEB-96 [o] A compact AUTO / MANUAL button beside the calendar information names the applied progression mode and shows a theme-provided change icon.
+- WEB-96 [o] Only home offers progression-mode switching: a compact AUTO / MANUAL button beside the calendar information names the applied mode and shows a theme-provided change icon. Other management views retain read-only mode information; the owner office has no separate mode control. Play/pause, pace and next-event actions retain their existing locations (→WEB-18/80).
   - Clicking opens a dialog titled 게임 진행 방식이 변경됩니다. It explains the target mode and its controls, with cancel, an explicit change action and 다시 보지 않기. Selecting the checkbox takes effect only after a successful confirmed change.
   - The dismissed explanation is a browser preference shared across games and both transition directions. Future clicks apply the same transition directly; unavailable storage preserves the choice for the current session. Cancelled or failed changes do not suppress future explanations.
-  - Entering manual through the shortcut enables 경기 전날 보고 and explicitly describes it; entering automatic preserves observations. Every other responsibility, observation and background choice remains unchanged. The office uses the same mode transition; its responsibility confirmations follow →WEB-79/82.
+  - Entering manual through the shortcut enables 경기 전날 보고 and explicitly describes it; entering automatic preserves observations. Every other responsibility, observation and background choice remains unchanged. Responsibility confirmations in the office follow →WEB-79/82.
   - A successful switch leaves the clock stopped and advances no days. Busy/read-only/error/critical protection, rejected settings and world replacement cannot apply a stale change or save a failed opt-out; failures remain visible and retryable.
 
 ## flow
@@ -483,6 +484,8 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r132 261023 WEB-10/18/39/79/96✎ mode switches in every management calendar and the office→home-only mode shortcut, read-only mode elsewhere; office retains report/delegation/background choices
+- r131 261023 WEB-45/79✎ separate 받기/받지 않기 and 위임/직접 결정 sections with business-only bulk actions→one nine-row 보고받기/위임 list, matching departmental labels and topmost confirmed 전체 보고받기/전체 위임 across observations and responsibilities; progression mode remains separate
 - r130 261023 WEB-10/11/79✎ local cramped controls, flat fixture and edge-to-edge row hover→shared padded controls, distinct NEXT MATCH card and theme-shaped inset hover/focus rows; narrow layouts reflow before clipping
 - r129 261023 WEB-42/76/79/83/96✎ manual preserves all reports→enables pre-match report on entry, still editable afterwards; system-stop copy/경기 전날 title→owner-report copy/NEXT MATCH; next-event consumes dismissed match report→reopens it without advancing
 - r128 261023 WEB-5/10/18/36/39/45/74/76/79/80/96✎ responsibility dialog/HUD entry→owner-office page with illustrated per-choice confirmation; required match-eve/manual auto-enable→optional preserved observations and next-result bound; settings outcome card→bottom timed toast

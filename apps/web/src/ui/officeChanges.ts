@@ -1,9 +1,10 @@
 import type {
   GameSettings,
+  ResponsibilityKey,
   ResponsibilitySettings,
   World,
 } from '../../../../packages/contracts/src/types';
-import { settingsOf } from '../../../../packages/engine/src/responsibilities';
+import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingWorkPreview } from '../../../../packages/engine/src/pending-work-preview';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
@@ -13,6 +14,27 @@ import { applyResponsibilitySettings } from './intervention';
 export interface OfficeChange {
   responsibilities?: Partial<ResponsibilitySettings>;
   observations?: Partial<GameSettings['observations']>;
+}
+/** Review all report/work choices together, without changing time mode or unrelated preferences. */
+export function officeBulkChange(
+  w: World,
+  value: ResponsibilitySettings[ResponsibilityKey],
+): OfficeChange | undefined {
+  const settings = settingsOf(w);
+  const responsibilities = Object.fromEntries(
+    RESPONSIBILITY_KEYS.filter((key) => settings.responsibilities[key] !== value).map((key) => [
+      key,
+      value,
+    ]),
+  );
+  const observations = Object.fromEntries(
+    Object.entries(settings.observations)
+      .filter(([, current]) => current !== (value === 'direct'))
+      .map(([key]) => [key, value === 'direct']),
+  );
+  return Object.keys(responsibilities).length || Object.keys(observations).length
+    ? { responsibilities, observations }
+    : undefined;
 }
 export function officeSettings(w: World, change: OfficeChange): GameSettings {
   const current = settingsOf(w);

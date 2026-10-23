@@ -1,5 +1,5 @@
 import { PixelIcon } from './PixelIcon';
-import { Children, isValidElement, useEffect, useId, useRef, type ReactNode } from 'react';
+import { Children, isValidElement, useLayoutEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import s from './App.module.css';
 import { exit, play, reducedMotion } from './motion';
@@ -116,7 +116,8 @@ export function Dialog({
   );
   const inferredActions = actionsIndex >= 0 ? content.splice(actionsIndex, 1)[0] : undefined;
   const actions = footerActions === undefined ? inferredActions : footerActions;
-  useEffect(() => {
+  // Prepare entry before paint and clone exits before removal, so no empty frame precedes a ghost.
+  useLayoutEffect(() => {
     window.dispatchEvent(new CustomEvent('haeram:dialog', { detail: { id: labelId, open: true } }));
     const active = document.activeElement;
     const previous =
