@@ -3,7 +3,7 @@ import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
 import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
-import { lineOf } from '../player';
+import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { MatchMath } from '../portable-math';
 import type { GridPlayer, GridState } from './state';
@@ -71,6 +71,19 @@ export const SHAPE_CONFIG = {
         compact: 0.38,
       },
     } as Partial<Record<Tactic, TacticShape>>,
+    /**
+     * Late runs into the box (T398, →MATCH-17, MATCH-23): a box run starts from band `from` on,
+     * `odds` times as often, and `extra` roles make it too (a role also listed for runs in
+     * behind then runs into the box instead). Neutral at 1, band 5 and none. T398 keeps `odds` 1.3:
+     * midfielders take 34% of the box shots (30%) and score 34% of the goals, forwards 57% (61%).
+     */
+    boxRun: { odds: 1.3, from: 5, extra: [] as readonly RoleId[] },
+    /**
+     * Two-striker shapes (T398): a striker of a listed role stands `drop` m deeper in possession
+     * once the ball is in front of the box, so the box is left for arriving midfielders. Neutral
+     * at 0.
+     */
+    secondStriker: { drop: 0, roles: ['targetMan'] as readonly RoleId[] },
   },
   lateral: 0.25,
   /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
@@ -305,6 +318,16 @@ export function shapePlace(
   y += (by - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
     const foe = other(side);
+    // A second striker leaves the box to arriving midfielders (candidate model, T398).
+    const SS = SHAPE_CONFIG.candidate.secondStriker;
+    if (
+      SS.drop &&
+      s.setup.model !== undefined &&
+      bandOf(bx) >= 5 &&
+      SS.roles.includes(slotOf(s, gp).role) &&
+      FORMATIONS[tactic].slots.filter((slot) => lineOf(slot.position) === 'FW').length >= 2
+    )
+      x -= SS.drop;
     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
     return toEngine(side, [x, y]);
   }
@@ -517,9 +540,15 @@ export function runPlan(
     BEHIND_ROLES.includes(role) ||
     (breaking && s.setup.model !== undefined && SHAPE_CONFIG.breakRoles.includes(role));
   const overlap = OVERLAP_ROLES.includes(role);
-  const box = BOX_ROLES.includes(role) && band >= 5;
+  // Late box runs on the candidate model (T398).
+  const BR = s.setup.model !== undefined ? SHAPE_CONFIG.candidate.boxRun : undefined;
+  const box =
+    (BOX_ROLES.includes(role) || (BR !== undefined && BR.extra.includes(role))) &&
+    band >= (BR?.from ?? 5);
   if (!behind && !overlap && !box) return undefined;
-  if (r() >= cfg.chance * actionWeight(role, gp.player.traits, 'run') * scale) return undefined;
+  const odds = box && BR ? BR.odds : 1;
+  if (r() >= cfg.chance * actionWeight(role, gp.player.traits, 'run') * scale * odds)
+    return undefined;
   const seconds = cfg.seconds[0] + (cfg.seconds[1] - cfg.seconds[0]) * r();
   const me = attackFrame(gp.side, gp.pos);
   const kind = box ? 'box' : behind ? 'behind' : 'overlap';

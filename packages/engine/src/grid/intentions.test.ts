@@ -18,7 +18,8 @@ import {
 } from './intentions';
 import { MOTION_STATES, buildFrames } from './playback';
 import { buildGridSetup } from './setup';
-import { SHAPE_CONFIG, targetOf } from './shape';
+import { runPlan, SHAPE_CONFIG, targetOf } from './shape';
+import { random } from '../primitives';
 import { createState, type GridPlayer, type GridState } from './state';
 import type { TraceEntry } from './trace';
 import { gridKit } from './testkit';
@@ -458,5 +459,36 @@ describe('grid intentions', () => {
       ),
     );
     expect(old.trace!.every((e: TraceEntry) => e.intentions === undefined)).toBe(true);
+  });
+});
+
+describe('late box runs (T398)', () => {
+  it('a box-to-box midfielder arrives in the box late in a settled attack more often than an anchor, on the candidate model only', () => {
+    const B = SHAPE_CONFIG.candidate.boxRun as { odds: number; from: number };
+    const kept = { odds: B.odds, from: B.from };
+    // Side 1 plays balanced's 3-5-2: slot 6 the anchor, slot 7 the box-to-box midfielder.
+    const runs = (candidate: boolean, slot: number, odds: number) => {
+      Object.assign(B, { odds, from: 5 });
+      try {
+        const s = createState(
+          candidate ? { ...kit.setup, model: MATCH_MODEL_REVISION } : kit.setup,
+        );
+        s.possession = 1;
+        const gp = s.players[1][slot]!;
+        const r = random('t398-box-runs');
+        let n = 0;
+        for (let i = 0; i < 4000; i++)
+          if (runPlan(s, gp, { b: [92, 34], band: 5, line: 100 }, r)?.kind === 'box') n++;
+        return n;
+      } finally {
+        Object.assign(B, kept);
+      }
+    };
+    expect(runs(true, 7, 2)).toBeGreaterThan(1.6 * runs(true, 7, 1));
+    expect(runs(true, 7, 1)).toBeGreaterThan(0);
+    expect(runs(true, 6, 2)).toBe(0);
+    // The pre-feature model keeps its own odds.
+    expect(runs(false, 7, 2)).toBe(runs(false, 7, 1));
+    expect(runs(true, 7, 1)).toBe(runs(false, 7, 1));
   });
 });

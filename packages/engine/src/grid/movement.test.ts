@@ -67,7 +67,9 @@ const w = createWorld({
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
-const watched = Array.from({ length: 4 }, (_, i) =>
+// Six observed matches (four until T398, whose late box runs left those four without a cross the
+// attackers kept from a set piece, which the placement check below needs).
+const watched = Array.from({ length: 6 }, (_, i) =>
   playGrid(
     buildGridSetup(
       w,

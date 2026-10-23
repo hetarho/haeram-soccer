@@ -115,6 +115,11 @@ export const DUEL_CONFIG = {
   candidate: {
     foul: 1.2,
     boxFoul: 0.06,
+    /**
+     * A cross's target (T398, →MATCH-17): a teammate arriving on a box run counts this many
+     * aerial-rating points more in the draw of whom the ball is played to. Neutral at 0.
+     */
+    crossArriving: 0,
     passLoose: 0.8,
     clearanceOut: 0.5,
     /**
@@ -511,7 +516,10 @@ function headerTarget(
       gp,
       v:
         aerialRating(s, side, gp.idx, 0.6) *
-        actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial'),
+          actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial') +
+        (onCandidate(s) && gp.run?.kind === 'box' && gp.run.until > s.elapsed
+          ? DUEL_CONFIG.candidate.crossArriving
+          : 0),
     }));
   if (!pool.length) return undefined;
   let top = -Infinity;
