@@ -76,11 +76,13 @@ const facts = (w: World) => ({
  * block changed the candidate rounds again (aggregate records unchanged); c1e07cfffabede5d before.
  * T384's offside calls by the receiver's own 판단력 changed both: on the grid the call, on the
  * aggregate path the share of failed passes ending offside (0.064 / 0.32) and the receivers they
- * are credited to; d6a5c7feb76176f3 and 29d9bb53ba9487ea before.
+ * are credited to; d6a5c7feb76176f3 and 29d9bb53ba9487ea before. T397's through-ball count (a
+ * receiver not yet past the line) and its balls in behind, first touches and cut-backs changed the
+ * candidate rounds only (the aggregate path untouched); 294f1d9b278a1461 before.
  */
 const BEFORE = {
   aggregateRecords: 'a8d299718d0919a0',
-  candidateRounds: '294f1d9b278a1461',
+  candidateRounds: '8fd84923e38c3aa5',
 };
 
 describe('complete-result throughput (T285)', () => {

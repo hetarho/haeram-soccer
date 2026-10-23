@@ -87,10 +87,12 @@ export const RESTART_CONFIG = {
      * clamped. The attribute, not the duels' scale: there the match's level, the day's form, the
      * slot and fatigue outweigh it, and the attribute's quarters stayed at 1.5× whatever the slope
      * (T384's screens). Factors rather than the shared rule's added terms keep his 판단력 deciding
-     * against every line. `spread` 0 keeps the shared linear rule.
+     * against every line. `spread` 0 keeps the shared linear rule. T397: `base` 0.055 → 0.05, as
+     * the stronger pull of a ball in behind (DECISION_CONFIG.candidate.through) finds more runners
+     * in an offside position, so calls stay at 1.85 a team.
      */
     candidate: {
-      base: 0.055,
+      base: 0.05,
       decisions: 360,
       pivot: 67,
       spread: 15,

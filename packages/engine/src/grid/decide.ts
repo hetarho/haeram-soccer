@@ -153,9 +153,10 @@ export const DECISION_CONFIG = {
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
-     * ball now really puts him through.
+     * ball now really puts him through. T397: `score` 0.4 → 2, with `past.through` halving it for
+     * a man already past the line: completed through balls 0.46 → 0.67 a team (MATCH-30 0.60–0.85).
      */
-    through: { lead: 5, depth: 88, score: 0.4, space: 12 },
+    through: { lead: 5, depth: 88, score: 2, space: 12 },
     /**
      * Press's shot weight in the opponents' half just after a regain, in place of
      * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
@@ -183,17 +184,21 @@ export const DECISION_CONFIG = {
      * A receiver standing past the opponents' offside line as the pass is played (T397, →MATCH-16,
      * MATCH-18): his option's prior is multiplied by `prior` and his through-ball pull by `through`.
      * A runner still level or behind keeps the full pull, so a ball in behind goes to a timed run.
-     * Neutral at 1 and 1.
+     * Neutral at 1 and 1; T397 keeps the prior and halves the pull (taking it away entirely sent
+     * long shots out of MATCH-23 and handed press's high line a free hand).
      */
-    past: { prior: 1, through: 1 },
-    /** The share of a cut-back zone's crosses played back as cut-backs, in place of `cutBackShare` (T397). */
-    cutBackShare: 0.1,
+    past: { prior: 1, through: 0.5 },
+    /**
+     * The share of a cut-back zone's crosses played back as cut-backs, in place of `cutBackShare`
+     * (T397: 0.1 → 0.5; cut-backs 0.17 → 0.23 a team, still short of MATCH-30's 0.35–0.60).
+     */
+    cutBackShare: 0.5,
     /**
      * A receiver's first decision on the ball (T397, →MATCH-16): facing play with pressure below
      * `pressure`, below the box band, his carry weight is multiplied by `carry`: he takes the
-     * ball forward in his stride. Neutral at 1.
+     * ball forward in his stride. Neutral at 1; T397 keeps 6 (progressive carries 40.8 → 46).
      */
-    firstTouch: { carry: 1, pressure: 1 },
+    firstTouch: { carry: 6, pressure: 1 },
     /** The weight of a pass's expected-threat gain in the pass choice (T397). Neutral at 1. */
     gain: 1,
     /**
@@ -399,7 +404,6 @@ export function actionMix(
   const F = C.candidate.firstTouch;
   if (
     candidate &&
-    F.carry !== 1 &&
     s.received?.[0] === side &&
     s.received[1] === idx &&
     tags.orientation === 'facing' &&
@@ -535,7 +539,9 @@ export function passOptions(
   const past = DECISION_CONFIG.candidate.past;
   return candidates.map(({ gp, p, dist, dir }) => {
     const gain =
-      (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * (candidate ? DECISION_CONFIG.candidate.gain : 1);
+      (CELL_BASELINES[cellOf(p)]!.xT - xt0) *
+      100 *
+      (candidate ? DECISION_CONFIG.candidate.gain : 1);
     let nearest = Infinity,
       risk = 0;
     const dx = p[0] - c[0],

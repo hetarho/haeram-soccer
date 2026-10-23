@@ -53,6 +53,26 @@ function lastLine(state: { players: unknown[][]; setup: { tactics: string[] } },
   return x;
 }
 
+/** After a box entry by a side, what happens next (the first tallied event), once per entry. */
+let open: 0 | 1 | undefined;
+const next = (what: string) => {
+  if (open === undefined) return;
+  add(`after:${what}`);
+  open = undefined;
+};
+const wrap = (name: string, label: (side: 0 | 1, ...a: unknown[]) => string) => {
+  const orig = Tally.prototype[name];
+  Tally.prototype[name] = function (side: 0 | 1, ...a: unknown[]) {
+    next(label(side, ...a));
+    return orig.call(this, side, ...a);
+  };
+};
+wrap('shot', (side) => (side === open ? 'shot' : 'other side shot'));
+wrap('tackle', (side) => (side === open ? 'won a tackle' : 'lost: tackled'));
+wrap('interception', (side) => (side === open ? 'intercepted' : 'lost: intercepted'));
+wrap('restart', (side, kind) => `restart ${String(kind)}`);
+wrap('offside', () => 'offside');
+wrap('foul', (side) => (side === open ? 'own foul' : 'fouled'));
 const pass = Tally.prototype.passEvent;
 Tally.prototype.passEvent = function (
   side: 0 | 1,
@@ -76,7 +96,11 @@ Tally.prototype.passEvent = function (
     if (bandOf(e.to[0]) === 5 && bandOf(e.from[0]) < 5) add(`front:${kind}`);
     add(`xt:${kind}`, xt(e.from, e.to));
   }
-  return pass.call(this, side, idx, e);
+  if (open === side) next(inBox(e.from) ? (inBox(e.to) ? 'pass within box' : 'pass out of box') : 'pass from outside');
+  else if (open !== undefined) next('other side passed');
+  const out = pass.call(this, side, idx, e);
+  if (e.ok && inBox(e.to) && !inBox(e.from)) open = side;
+  return out;
 };
 const restart = Tally.prototype.restartPass;
 Tally.prototype.restartPass = function (...a: unknown[]) {
@@ -85,7 +109,11 @@ Tally.prototype.restartPass = function (...a: unknown[]) {
 };
 const carry = Tally.prototype.carryEvent;
 Tally.prototype.carryEvent = function (side: 0 | 1, idx: number, from: Point, to: Point) {
-  if (inBox(to) && !inBox(from)) add('box:carry');
+  if (open === side) next(inBox(from) ? (inBox(to) ? 'carry within box' : 'carry out of box') : 'carry from outside');
+  if (inBox(to) && !inBox(from)) {
+    add('box:carry');
+    open = side;
+  }
   if (bandOf(to[0]) === 5 && bandOf(from[0]) < 5) add('front:carry');
   add('xt:carry', xt(from, to));
   add('carries');

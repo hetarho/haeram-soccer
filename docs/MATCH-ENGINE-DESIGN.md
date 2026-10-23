@@ -465,7 +465,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
    - `pass × (1 − crossOfPasses)`, `cross = pass × crossOfPasses`
    - `carry`, `takeOn`, `shot`, `clearance`
    - `holdUp = 0.03`, or 0.15 for FW/AM in central lanes when `backToGoal`
-   - In the cut-back cells (`goalArea` band × half-space lanes): `cutBack = cutBackShare × cross`, `cross = (1 − cutBackShare) × cross`, `cutBackShare` 0.1
+   - In the cut-back cells (`goalArea` band × half-space lanes): `cutBack = cutBackShare × cross`, `cross = (1 − cutBackShare) × cross`, `cutBackShare` 0.1 (0.5 on the candidate model, `DECISION_CONFIG.candidate.cutBackShare`, T397)
 2. **Position profile** (`POSITION_PROFILES[profileKey(position)]` against the league's overall, `factorRange` 0.2–3):
    - `takeOn × clamp(profile.takeOnPerPass / 0.075)`
    - `cross` and `cutBack × clamp(profile.crossShare / 0.025) × crossScale`, `crossScale` 7.2 (the cells' own cross shares gave under one cross a side, T215)
@@ -496,6 +496,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
    - no `shot` from bands 0–3 except a direct free kick
    - no `cross` or `cutBack` outside bands 5–7
    - no `clearance` in bands 5–7
+10. **First touch** (candidate model, T397, `DECISION_CONFIG.candidate.firstTouch`): the receiver of a completed pass, on his first decision (`GridState.received`, cleared when he acts), facing play with pressure below 1 and below the box band, carries `carry` 6 times as often. He takes the ball forward in his stride, so progressive carries rise (40.8 → 46 a team) with fewer passes per possession.
 
 ### 6.3 Pass target
 
@@ -507,6 +508,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 - `score_j = 1.0·gain + 0.8·open − 0.6·risk − max(0, dist − 15)/10 + through_j`
 - `through_j = 0.8 × actionWeight(role, traits, 'key')` when j is on a `behind` run or `inBehind`, else 0
 - candidate model only: `+ combination.show` (0.6) when j shows for the carrier, `+ combination.release` (0.9) when j's overlap combines with him and j is level with him or ahead (§4.6)
+- candidate model only (T397): `through_j` uses `candidate.through.score` 2 (0.4 before) in place of 0.8, times `candidate.past.through` 0.5 when j already stands past the opponents' offside line as the ball is played, so the pull goes to a run still level with the line; such a j's prior is also multiplied by `candidate.past.prior` (1, kept). `gain` is multiplied by `candidate.gain` (1; T397 screened lower weights: fewer final-third passes and entries, but fewer shots and goals). Completed through balls rose 0.46 → 0.67 a team (MATCH-30 0.60–0.85); `RESTART_CONFIG.offside.candidate.base` fell 0.055 → 0.05 so calls stay at 1.85 a team (§7.3).
 
 **Direction prior.** `dir_j` is forward, lateral or back by ±45° in the attack frame.
 
@@ -531,6 +533,8 @@ prior_j = CELL_BASELINES[cell][dir] × sqrt(profile[dir] / OVERALL[dir]) / n_dir
 - `lineBreaking`: the end x is beyond the deepest player of an opponent outfield line that the start x was not beyond
 
 ### 6.4 Carry and take-on
+
+- Candidate model (T397): a heading that takes a carry from outside the box into it scores `candidate.boxCarry` less in xT points (0, neutral). Screened at 5–20 it brought box entries inside MATCH-30 (carries into the box were 14.8 of 25.9 a team), but goals fell to about 2.3 a match: the grid's chances come from those carries.
 
 - **Carry.** Pick among 5 headings (0°, ±30°, ±90° from goal-ward) by `exp((xT gain − 0.5·pressure_at_point)/τ)`.
   - Length 6–12 m (`6 + 6·r()`), or 3–6 m (`boxLength`) for a carry that starts in the box (T215), kept `margin` (0.5 m) inside the pitch.

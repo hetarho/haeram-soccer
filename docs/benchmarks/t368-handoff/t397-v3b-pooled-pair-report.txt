@@ -1,0 +1,17 @@
+base: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 9, outside 12, unbanded 2
+  MATCH-23: inside 35, unresolved 2, outside 1
+  MATCH-29: inside 23, insufficient 1, outside 1
+  curve 1.87 (-35 6.9, -30 5.0, -25 2.0, -20 7.7, -15 9.2, -10 5.5, -5 8.7, 0 2.1, 5 6.5, 10 7.4, 15 8.1, 20 6.6, 25 1.9, 30 3.0, 35 6.6, 40 5.1); points possession 1.271, press 1.434, counter 1.449, balanced 1.331
+cand: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 11, unresolved 1, outside 9, unbanded 2
+  MATCH-23: inside 36, unresolved 1, outside 1
+  MATCH-29: inside 22, insufficient 2, outside 1
+  curve 2.28 (-35 11.0, -30 7.4, -25 5.3, -20 5.8, -15 11.8, -10 14.2, -5 7.2, 0 0.7, 5 6.7, 10 5.9, 15 9.4, 20 6.6, 25 2.1, 30 3.2, 35 9.6, 40 9.5); points possession 1.294, press 1.378, counter 1.456, balanced 1.375
+* 30:bigChances                    0.740 [0.723, 0.758] outside                 → 0.801 [0.783, 0.819] unresolved
+* 30:bigChancesScored              0.383 [0.371, 0.395] outside                 → 0.414 [0.401, 0.426] inside
+* 30:throughBallsCompleted         0.456 [0.436, 0.475] outside                 → 0.671 [0.645, 0.696] inside
+* 23:shotsGoalArea                 8.633 [8.474, 8.792] inside                  → 8.887 [8.728, 9.045] unresolved
+* 23:shotsOutside                  41.761 [41.446, 42.075] unresolved           → 41.036 [40.721, 41.350] inside
+* 23:tacklesInterceptions          29.939 [29.816, 30.062] unresolved           → 29.661 [29.544, 29.778] inside
+* 29:draws:press-press             0.252 [0.227, 0.276] inside                  → 0.277 [0.251, 0.302] insufficient
