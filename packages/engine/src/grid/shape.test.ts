@@ -15,6 +15,7 @@ import {
   setPieceShape,
   setPieceTargets,
   SHAPE_CONFIG,
+  shapePlace,
   speedOf,
   startRuns,
   tacticShape,
@@ -85,6 +86,45 @@ describe('grid shape and movement', () => {
           expect(t[i]![0], `${tactic} slot ${i} ball ${bx}`).toBeLessThanOrEqual(line[1] + 1e-9);
         });
       }
+    }
+  });
+
+  it('the back line drops toward its box as the ball approaches, on the candidate model only', () => {
+    const D = SHAPE_CONFIG.deepLine as { candidate: { behindBall: number } };
+    const kept = D.candidate.behindBall;
+    const kit = gridKit(['balanced', 'possession']);
+    const slots = FORMATIONS.balanced.slots;
+    /** Side 0's back four's shape x (its own frame) with side 1 on the ball at `bx`. */
+    const backLine = (model: string | undefined, bx: number) => {
+      const s = createState({ ...kit.setup, model });
+      s.possession = 1;
+      s.owner = [1, 9];
+      s.ball = [bx, 30];
+      return slots.flatMap((slot, i) =>
+        lineOf(slot.position) === 'DF' ? [shapePlace(s, 0, s.players[0][i]!.idx)[0]] : [],
+      );
+    };
+    D.candidate.behindBall = 12;
+    try {
+      const { line } = SHAPE_CONFIG.candidate.tactic.balanced!;
+      for (let bx = 10; bx <= 45; bx += 5) {
+        const floor = Math.min(line[0], Math.max(SHAPE_CONFIG.deepLine.min, bx - 12));
+        for (const x of backLine(MATCH_MODEL_REVISION, bx))
+          expect(x, `ball ${bx}`).toBeGreaterThanOrEqual(floor - 1e-9);
+      }
+      // With the ball at the box edge the candidate's line stands deeper than 4 m goal-side of
+      // it, so a man level with it is onside inside the box; far from the box nothing changes.
+      expect(Math.min(...backLine(MATCH_MODEL_REVISION, 22))).toBeLessThan(22 - 4 - 1);
+      const far = backLine(MATCH_MODEL_REVISION, 60);
+      D.candidate.behindBall = 4;
+      expect(backLine(MATCH_MODEL_REVISION, 60)).toEqual(far);
+      // The pre-feature line reads its own depth whatever the candidate's is.
+      const pre = backLine(undefined, 22);
+      D.candidate.behindBall = 12;
+      expect(backLine(undefined, 22)).toEqual(pre);
+      expect(Math.min(...pre)).toBeGreaterThanOrEqual(22 - SHAPE_CONFIG.deepLine.behindBall - 1e-9);
+    } finally {
+      D.candidate.behindBall = kept;
     }
   });
 
