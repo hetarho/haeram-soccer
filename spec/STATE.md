@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| c9v3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T13:45Z | 2026-10-23T16:31Z | - |
 
 ## inbox
 - 261024 decided T384 MATCH-18: the candidate call and the acceptance's 판단력 quarters read the receiver's own 판단력 attribute, not the duels' scale → at the draw the duels' scale (27–74 for 10–90%) is set more by the match's level, the day's form, the slot and fatigue than by the attribute, so no slope there moved the attribute's quarters past 1.6× (spread 15–25), while today's rule already reads 8.9× on the duels' quarters; 'runners with poor 판단력' is the player card's 판단력 (alt: quarters on the duels' scale, rejected: they measure the day, not the player)
@@ -277,11 +276,12 @@
 
 ## next
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
-- resume (c9v3 261024): T384 done (kept K: offside on the receiver's own 판단력, 1.78 a team, quarters 3.7×, aggregate 1.81 with the grid's split); T372 next on the final football (MATCH-29 mirror draws and FW goals to watch, T384 limits), then T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46–56; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384.
+- resume (c9v3 hand-off 261024 01:50 KST, session closed for a fresh one): T384 done and pushed with main's CI repair and w6p4's merge; first check CI for the T384 push (`gh run list --branch main`). Next is implement-task T372 on the final football: the pilot on a fresh validation round (57) over T323's 26 conditions, both reference artifacts on that round, then `scripts/match-parity.ts --report --reference` at the pilot size (T323 asked 10,308–19,229 a condition; 26 × 8,000 took 69 min at 8 workers on this M1 Max, so plan ~2–2.5 h; watch MATCH-29 mirror draws and FW goals from T384's limits), then T286 → T306–T308. The main checkout holds another session's uncommitted T390 work (matchday-print on every screen) and its local `main` is behind origin: work in a scratch worktree from origin/main or let that session commit first. Validation rounds spent: 11–26, 30–34, 40, 44, 46–56; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 c9v3 hand-off: session closes for a fresh one; main CI green at 01b91f91, T384 pushed after its batch gate, nothing doing; next is T372
 - 261024 T384 done (c9v3; explore, kept K): candidate offside chance 0.055 × e^(−(own 판단력 − 67)/15), linebreaker ×0.3, high line ×1.5, clamp 0.002–0.7; aggregate offsides by the same weight ×2 from 0.064 / 0.32 of failed final-third passes; pooled validation rounds 55+56: offsides 1.65 → 1.78 (inside), quarter ratio 1.96 → 3.7, aggregate 1.70 → 1.81, MATCH-23 35 → 34, MATCH-29 23 → 21 (mirror draws insufficient), MATCH-30 9 → 9, curve 1.75 → 1.75, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
 - 261024 T384 start (c9v3; explore 3h from 00:16 KST, timebox 03:16): base 01b91f91 (T371's football merged with T376); MATCH r21's offside band 1.7–1.9 and the 판단력 split on both paths
 - 261024 fix e2e (c9v3): CI 39971746291 on d39bdd91 passed every job but Firefox recovery.spec:59, which ran every step on time and reached its last reload at 30.0 s; the two-round recovery journey takes test.slow()
@@ -301,4 +301,3 @@
 - 261023 T389 start (k7p2): publication away-return failure exposes an armed clock consumed during client loading; defer until command readiness and retry once, with controller regressions and the real return journey
 - 261023 T388 done (k7p2): calendar-day contract checks, loaded office choices, expanded finance support, elapsed playback bounds and immediate celebration checks; five affected Chromium cases plus type/lint/format/spec checks pass
 - 261023 T388 start (k7p2): publication batch exposed stale week/round comparisons, lazy and collapsed control queries, playback timing assumptions and a celebration-expiry detour; escalate four-file test repair from lightweight fix
-- 261023 T387 done (k7p2): both complete themes registered with 184 original scenes and two icon families; full unit 1956+4 skips, contract 39, catalogs/assets/build pass; 247 current Chromium scenarios covered across batch and targeted fixes; owner authorizes main commit and push
