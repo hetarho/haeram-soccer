@@ -37,6 +37,7 @@ import {
   corpusFixtureIds,
   COUNTER_INDEXES,
   describeAdvancedCounters,
+  describeTacticPairingParity,
   describeTacticPairings,
   equivalencePower,
   HAT_TRICK_CONTEXT,
@@ -60,6 +61,7 @@ import {
   seedOverlap,
   TACTIC_PAIRING_TARGET,
   TARGET_BANDS,
+  tacticPairingParity,
   tacticPairingVerdicts,
   validateCorpusConfig,
   validateRegistry,
@@ -864,6 +866,94 @@ describe('MATCH-29 tactic pairings', () => {
     expect(row(unfresh, 'ordering:freshness')).toMatchObject({
       status: 'insufficient',
       reason: '30 matches with possession at home to press lack a reading',
+    });
+  });
+
+  describe('paired parity of the two paths (T396)', () => {
+    /** `n` fixtures at one venue, results cycling home win, away win, then three draws. */
+    const fixtures = (home: Tactic, away: Tactic, n: number) =>
+      Array.from({ length: n }, (_, i) => ({
+        ...tactical(home, away, i % 5 === 0 ? [1, 0] : i % 5 === 1 ? [0, 1] : [0, 0], {
+          freshness: [80, 80],
+        }),
+        fixture: `${home}-${away}:${i}`,
+      }));
+    /** The same fixtures with the first `k` decisive results of a venue drawn instead. */
+    const drawn = (samples: MatchSample[], home: Tactic, away: Tactic, k: number) => {
+      let left = k;
+      return samples.map((s) => {
+        const decisive = s.record.score.home !== s.record.score.away;
+        if (s.record.tactics[0] !== home || s.record.tactics[1] !== away || !decisive || !left)
+          return s;
+        left -= 1;
+        return { ...s, record: { ...s.record, score: { home: 0, away: 0 } } };
+      });
+    };
+    const every = (n: number) =>
+      TACTICS.flatMap((home) => TACTICS.flatMap((away) => fixtures(home, away, n)));
+    const parity = (aggregate: MatchSample[], detailed: MatchSample[], id: string) =>
+      tacticPairingParity(aggregate, detailed).rows.find((r) => r.id === id)!;
+
+    it('pairs MATCH-29 rows by fixture and gives each difference a 95% interval', () => {
+      const detailed = every(40);
+      // Reversed, so only the fixture id pairs them; two press–press fixtures end level instead.
+      const aggregate = drawn(detailed, 'press', 'press', 2).reverse();
+      const report = tacticPairingParity(aggregate, detailed);
+      expect(report.matches).toEqual({ aggregate: 640, detailed: 640, paired: 640 });
+      expect(report.rows.map((r) => r.id)).toEqual(
+        tacticPairingVerdicts(detailed).rows.map((r) => r.id),
+      );
+      // Paired by fixture, every other row's difference is exactly 0.
+      const other = report.rows.find((r) => r.id === 'draws:possession-counter')!;
+      expect(other).toMatchObject({ verdict: 'equivalent', difference: 0, interval: [0, 0] });
+      expect(other.margin).toBe(0.03);
+      // Two of 40 paired differences are 1: mean 0.05 with the paired sample's interval.
+      const drawRow = report.rows.find((r) => r.id === 'draws:press-press')!;
+      const d = [1, 1, ...Array<number>(38).fill(0)];
+      const sd = Math.sqrt(d.reduce((a, x) => a + (x - 0.05) ** 2, 0) / 39);
+      expect(drawRow.difference).toBeCloseTo(0.05, 12);
+      expect(drawRow.interval![0]).toBeCloseTo(0.05 - (z * sd) / Math.sqrt(40), 12);
+      expect(drawRow.interval![1]).toBeCloseTo(0.05 + (z * sd) / Math.sqrt(40), 12);
+      expect(drawRow.aggregate).toBeDefined();
+      expect(drawRow.detailed).toBeDefined();
+      // Points take MATCH-28's mean margin from the detailed reference: 3, 0, 1, 1, 1 a side.
+      const points = [3, 0, 1, 1, 1, 0, 3, 1, 1, 1];
+      const pointsSd = Math.sqrt(
+        (points.reduce((a, x) => a + (x - 1.2) ** 2, 0) * 128) / (points.length * 128 - 1),
+      );
+      expect(report.rows.find((r) => r.id === 'points:press')!.margin).toBeCloseTo(
+        Math.max(0.05 * 1.2, 0.1 * pointsSd),
+        12,
+      );
+      // An ordering reports each pairwise gap's paired difference.
+      const order = report.rows.find((r) => r.id === 'ordering:possession')!;
+      expect(order.differences!.length).toBe(5);
+      expect(
+        order.differences!.every((x) => x.difference === 0 && x.verdict === 'equivalent'),
+      ).toBe(true);
+      expect(report.counts.equivalent + report.counts.different + report.counts.insufficient).toBe(
+        25,
+      );
+      expect(describeTacticPairingParity(report)[0]).toContain('640 paired fixtures');
+    });
+
+    it('a MATCH-29 difference whose interval leaves the margin is different and one straddling it insufficient', () => {
+      // 40 of 400 fixtures drawn instead: 0.10 with half-width ≈ 0.03, wholly beyond 0.03.
+      const wide = fixtures('press', 'press', 400);
+      const beyond = parity(drawn(wide, 'press', 'press', 40), wide, 'draws:press-press');
+      expect(beyond.verdict).toBe('different');
+      expect(beyond.interval![0]).toBeGreaterThan(0.03);
+      // 2 of 40: 0.05 whose interval holds both 0 and the margin edge, so it decides nothing.
+      const few = fixtures('press', 'press', 40);
+      const straddling = parity(drawn(few, 'press', 'press', 2), few, 'draws:press-press');
+      expect(straddling.verdict).toBe('insufficient');
+      expect(straddling.interval![0]).toBeLessThan(0.03);
+      expect(straddling.interval![1]).toBeGreaterThan(0.03);
+      expect(straddling.reason).toBe('the interval crosses a margin edge');
+      // A fixture on one path only is left out; a venue short of pairs is never a pass.
+      const unpaired = parity(few.slice(0, 20), few, 'draws:press-press');
+      expect(unpaired).toMatchObject({ verdict: 'insufficient', pairs: 20 });
+      expect(unpaired.reason).toMatch(/fewer than 30/);
     });
   });
 

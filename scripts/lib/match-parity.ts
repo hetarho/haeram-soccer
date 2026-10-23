@@ -483,6 +483,11 @@ export interface MatchSample {
   incidentsTracked: boolean;
   /** A CORPUS_CONFIG condition id. */
   condition: string;
+  /**
+   * The corpus fixture id, which is also its seed: both paths play the same id, so their samples
+   * of one fixture pair (MATCH-29's paired parity, T396).
+   */
+  fixture?: string;
   /** Home-minus-away match strength before form (MATCH-2), for the outcome curve. */
   gap?: number;
   /**
@@ -2532,11 +2537,14 @@ export function buildOutcomeTargetReport(samples: readonly MatchSample[]) {
 /** A venue of a pairing: the first tactic at home to the second. */
 const venueOf = (home: Tactic, away: Tactic) => `${home}-${away}`;
 const venueLabel = (venue: string) => venue.replace('-', ' at home to ');
-/** One term of a pooled estimate: `weight` times a per-match reading, averaged over its venue. */
-interface PairingTerm {
+/**
+ * One term of a pooled estimate: `weight` times a per-match reading, averaged over its venue. A
+ * reading is of one sample, or of one fixture's pair of samples in the two-path comparison.
+ */
+interface PairingTerm<T = MatchSample> {
   venue: string;
   weight: number;
-  read: (s: MatchSample) => Reading;
+  read: (s: T) => Reading;
 }
 export interface PairingEstimate {
   value: number;
@@ -2553,11 +2561,11 @@ export type PairingReadout = PairingEstimate | { matches: number; reason: string
  * variance. A venue short of PARITY_CONFIG.minimumSamples matches, or a match without a reading,
  * leaves the estimate insufficient.
  */
-function pairingEstimate(
-  venues: ReadonlyMap<string, readonly MatchSample[]>,
-  terms: readonly PairingTerm[],
+function pairingEstimate<T>(
+  venues: ReadonlyMap<string, readonly T[]>,
+  terms: readonly PairingTerm<T>[],
 ): PairingReadout {
-  const byVenue = new Map<string, PairingTerm[]>();
+  const byVenue = new Map<string, PairingTerm<T>[]>();
   for (const t of terms) {
     if (!byVenue.has(t.venue)) byVenue.set(t.venue, []);
     byVenue.get(t.venue)!.push(t);
@@ -2739,91 +2747,148 @@ export function pairingAssignment(samples: readonly MatchSample[]): 'forced' | '
  * differences; a venue short of samples or a match lacking a measure is insufficient, never a
  * pass. Draws and wins are 90-minute results; per-match counts are per 90 minutes played.
  */
-export function tacticPairingVerdicts(samples: readonly MatchSample[]): TacticPairingReport {
-  const assignment = pairingAssignment(samples);
-  const venues = new Map<string, MatchSample[]>();
-  for (const s of samples) {
-    const key = venueOf(s.record.tactics[0], s.record.tactics[1]);
-    if (!venues.has(key)) venues.set(key, []);
-    venues.get(key)!.push(s);
-  }
-  const estimate = (terms: readonly PairingTerm[]) => pairingEstimate(venues, terms);
-  const rows: TacticPairingVerdict[] = [];
+/** One estimate a MATCH-29 row reads: a band row's value, or one difference of an ordering. */
+interface PairingPart {
+  higher?: string;
+  lower?: string;
+  strict?: boolean;
+  terms: PairingTerm[];
+}
+/**
+ * One MATCH-29 row as estimates over venues, shared by the verdicts on one path and the paired
+ * comparison of two (T396). `scale` is what sets the row's MATCH-28 margin in that comparison: an
+ * outcome rate, or the per-side reading whose reference mean and spread do.
+ */
+interface PairingRowSpec {
+  id: string;
+  label: string;
+  kind: 'band' | 'ordering';
+  band?: readonly [number, number];
+  parts: PairingPart[];
+  scale: { kind: 'rate' } | { kind: 'mean'; read: SideReader };
+  /** Freshness reads forced pairings only (T320 review). */
+  forcedOnly?: boolean;
+}
+const FORCED_ONLY_REASON =
+  "own-tactic samples start from each club's own squad fatigue; freshness reads forced pairings only";
+
+/** MATCH-29's rows in report order: draws, win-share gaps, head to head, points, orderings. */
+function pairingRowSpecs(): PairingRowSpec[] {
+  const specs: PairingRowSpec[] = [];
+  const rate = { kind: 'rate' } as const;
   const pairings = TACTICS.flatMap((a, i) => TACTICS.slice(i).map((b) => [a, b] as const));
   for (const [a, b] of pairings)
-    rows.push(
-      bandRow(`draws:${a}-${b}`, `draws, ${a} v ${b}`, PT.draws, estimate(inPairing(a, b, drawOf))),
-    );
+    specs.push({
+      id: `draws:${a}-${b}`,
+      label: `draws, ${a} v ${b}`,
+      kind: 'band',
+      band: PT.draws,
+      parts: [{ terms: inPairing(a, b, drawOf) }],
+      scale: rate,
+    });
   const winGap = (a: Tactic, b: Tactic) => [
     ...inPairing(a, b, winOf),
     ...scaled(inPairing(b, a, winOf), -1),
   ];
   for (const [a, b] of pairings.filter(([a, b]) => a !== b))
-    rows.push(
-      bandRow(
-        `winShareGap:${a}-${b}`,
-        `${a} win share minus ${b}'s, ${a} v ${b}`,
-        [-PT.winShareGap, PT.winShareGap],
-        estimate(winGap(a, b)),
-      ),
-    );
+    specs.push({
+      id: `winShareGap:${a}-${b}`,
+      label: `${a} win share minus ${b}'s, ${a} v ${b}`,
+      kind: 'band',
+      band: [-PT.winShareGap, PT.winShareGap],
+      parts: [{ terms: winGap(a, b) }],
+      scale: rate,
+    });
   for (const [a, b] of PT.atLeast)
-    rows.push(
-      orderingRow(`atLeast:${a}-${b}`, `${a} win share at least ${b}'s, head to head`, [
-        difference(a, b, false, estimate(winGap(a, b))),
-      ]),
-    );
+    specs.push({
+      id: `atLeast:${a}-${b}`,
+      label: `${a} win share at least ${b}'s, head to head`,
+      kind: 'ordering',
+      parts: [{ higher: a, lower: b, strict: false, terms: winGap(a, b) }],
+      scale: rate,
+    });
   const fourMean = TACTICS.flatMap((t) => scaled(againstOthers(t, pointsOf), -1 / TACTICS.length));
   for (const t of TACTICS)
-    rows.push(
-      bandRow(
-        `points:${t}`,
-        `${t} points a match against the other three, minus the four's mean`,
-        [-PT.pointsFromMean, PT.pointsFromMean],
-        estimate([...againstOthers(t, pointsOf), ...fourMean]),
-      ),
-    );
+    specs.push({
+      id: `points:${t}`,
+      label: `${t} points a match against the other three, minus the four's mean`,
+      kind: 'band',
+      band: [-PT.pointsFromMean, PT.pointsFromMean],
+      parts: [{ terms: [...againstOthers(t, pointsOf), ...fourMean] }],
+      scale: { kind: 'mean', read: pointsOf },
+    });
   for (const o of PT.orderings) {
     const of = (t: Tactic) => againstOthers(t, measureOf(o.measure));
-    const list: PairingDifference[] = [];
+    const parts: PairingPart[] = [];
     const above = (high: Tactic, low: Tactic) => {
-      if (high !== low && !list.some((d) => d.higher === high && d.lower === low))
-        list.push(difference(high, low, true, estimate([...of(high), ...scaled(of(low), -1)])));
+      if (high !== low && !parts.some((d) => d.higher === high && d.lower === low))
+        parts.push({
+          higher: high,
+          lower: low,
+          strict: true,
+          terms: [...of(high), ...scaled(of(low), -1)],
+        });
     };
-    const parts: string[] = [];
-    if (o.highest) parts.push(`${o.highest} highest`);
-    if (o.lowest) parts.push(`${o.lowest} lowest`);
+    const words: string[] = [];
+    if (o.highest) words.push(`${o.highest} highest`);
+    if (o.lowest) words.push(`${o.lowest} lowest`);
     for (const t of TACTICS) if (o.highest) above(o.highest, t);
     for (const t of TACTICS) if (o.lowest) above(t, o.lowest);
     if (o.atMostOthersMean) {
       const b = o.atMostOthersMean,
         others = TACTICS.filter((t) => t !== b);
-      parts.push(`${b} at most the mean of the other three`);
+      words.push(`${b} at most the mean of the other three`);
       const mean = others.flatMap((t) => scaled(of(t), 1 / others.length));
-      list.push(
-        difference(
-          `mean of ${others.join(', ')}`,
-          b,
-          false,
-          estimate([...mean, ...scaled(of(b), -1)]),
-        ),
-      );
+      parts.push({
+        higher: `mean of ${others.join(', ')}`,
+        lower: b,
+        strict: false,
+        terms: [...mean, ...scaled(of(b), -1)],
+      });
     }
-    const row = orderingRow(
-      `ordering:${o.measure}`,
-      `${PT.measures[o.measure].label}: ${parts.join(', ')}`,
-      list,
-    );
+    specs.push({
+      id: `ordering:${o.measure}`,
+      label: `${PT.measures[o.measure].label}: ${words.join(', ')}`,
+      kind: 'ordering',
+      parts,
+      scale: { kind: 'mean', read: measureOf(o.measure) },
+      ...(o.measure === 'freshness' && { forcedOnly: true }),
+    });
+  }
+  return specs;
+}
+
+/** Samples grouped into venues by their sides' tactics, home first. */
+function pairingVenues<T>(items: readonly T[], tacticsOf: (x: T) => readonly [Tactic, Tactic]) {
+  const venues = new Map<string, T[]>();
+  for (const x of items) {
+    const [home, away] = tacticsOf(x);
+    const key = venueOf(home, away);
+    if (!venues.has(key)) venues.set(key, []);
+    venues.get(key)!.push(x);
+  }
+  return venues;
+}
+
+export function tacticPairingVerdicts(samples: readonly MatchSample[]): TacticPairingReport {
+  const assignment = pairingAssignment(samples);
+  const venues = pairingVenues(samples, (s) => s.record.tactics);
+  const estimate = (terms: readonly PairingTerm[]) => pairingEstimate(venues, terms);
+  const rows: TacticPairingVerdict[] = [];
+  for (const spec of pairingRowSpecs()) {
+    const row =
+      spec.kind === 'band'
+        ? bandRow(spec.id, spec.label, spec.band!, estimate(spec.parts[0]!.terms))
+        : orderingRow(
+            spec.id,
+            spec.label,
+            spec.parts.map((p) => difference(p.higher!, p.lower!, p.strict!, estimate(p.terms))),
+          );
     // Own tactics carry the weekly press load into the match (MATCH-2), so freshness there reads
     // the squads' pre-match fatigue, not the tactic's in-match cost: never a pass (T320 review).
     rows.push(
-      o.measure === 'freshness' && assignment === 'club'
-        ? {
-            ...row,
-            status: 'insufficient',
-            reason:
-              "own-tactic samples start from each club's own squad fatigue; freshness reads forced pairings only",
-          }
+      spec.forcedOnly && assignment === 'club'
+        ? { ...row, status: 'insufficient', reason: FORCED_ONLY_REASON }
         : row,
     );
   }
@@ -2877,6 +2942,205 @@ export function describeTacticPairings(report: TacticPairingReport): string[] {
             .join('; ');
     const parts = [reading, r.reason && `(${r.reason})`].filter(Boolean).join(' ');
     lines.push(`  ${r.status.padEnd(12)} ${r.label}: ${parts}`);
+  }
+  return lines;
+}
+
+// ---- MATCH-29 parity of the two paths (MATCH-28) ---------------------------------------------------
+
+/** One fixture played on both paths. */
+interface FixturePair {
+  aggregate: MatchSample;
+  detailed: MatchSample;
+}
+export type PairingParityVerdict = 'equivalent' | 'different' | 'insufficient';
+/** One paired difference (aggregate − detailed) of a row's estimate against its MATCH-28 margin. */
+export interface PairingParityPart {
+  /** An ordering's difference: the tactic (or mean) that should be higher, and the lower one. */
+  higher?: string;
+  lower?: string;
+  verdict: PairingParityVerdict;
+  difference?: number;
+  interval?: [number, number];
+  /** Paired fixtures in the venues it reads. */
+  pairs: number;
+  reason?: string;
+}
+export interface TacticPairingParityRow {
+  id: string;
+  label: string;
+  kind: 'band' | 'ordering';
+  /** The row's MATCH-29 status on each path, from that path's own verdicts. */
+  aggregate: PairingStatus;
+  detailed: PairingStatus;
+  verdict: PairingParityVerdict;
+  /** MATCH-28's margin for this row: 3 points of a rate, or the reference measure's mean margin. */
+  margin: number;
+  /** A band row's paired difference; an ordering's are in `differences`. */
+  difference?: number;
+  interval?: [number, number];
+  differences?: PairingParityPart[];
+  pairs: number;
+  reason?: string;
+}
+export interface TacticPairingParityReport {
+  note: string;
+  version: string;
+  target: number;
+  matches: { aggregate: number; detailed: number; paired: number };
+  /** Rows with the same MATCH-29 status on both paths (context, not a verdict). */
+  agreeing: number;
+  rows: TacticPairingParityRow[];
+  counts: Record<PairingParityVerdict, number>;
+}
+
+/** A row's reading on one fixture pair: the aggregate's minus the detailed path's. */
+const pairedTerms = (terms: readonly PairingTerm[]): PairingTerm<FixturePair>[] =>
+  terms.map((t) => ({
+    venue: t.venue,
+    weight: t.weight,
+    read: (p) => {
+      const a = t.read(p.aggregate),
+        d = t.read(p.detailed);
+      return typeof a === 'number' && typeof d === 'number' ? a - d : undefined;
+    },
+  }));
+/**
+ * MATCH-28's mean margin for a row reading `read`: the larger of 5% of the detailed reference's
+ * mean or 0.1 of its per-match spread, over both sides of every reference match.
+ */
+function pairingMeanMargin(detailed: readonly MatchSample[], read: SideReader) {
+  const values = detailed.flatMap((s) =>
+    ([0, 1] as const)
+      .map((side) => read(side)(s))
+      .filter((v): v is number => typeof v === 'number'),
+  );
+  return values.length ? meanMargin({ mean: meanOf(values), sd: sdOf(values) }) : 0;
+}
+function parityPart(
+  readout: PairingReadout,
+  margin: number,
+  ends: { higher?: string; lower?: string },
+): PairingParityPart {
+  const base = {
+    ...(ends.higher !== undefined && { higher: ends.higher, lower: ends.lower }),
+    pairs: readout.matches,
+  };
+  if ('reason' in readout) return { ...base, verdict: 'insufficient', reason: readout.reason };
+  const verdictOf = verdict(readout.interval, -margin, margin);
+  return {
+    ...base,
+    verdict: verdictOf,
+    difference: readout.value,
+    interval: readout.interval,
+    ...(verdictOf === 'insufficient' && { reason: 'the interval crosses a margin edge' }),
+  };
+}
+
+/**
+ * MATCH-29 parity as a MATCH-28 verdict (T396): each row's aggregate − detailed difference over
+ * the same forced fixtures, paired fixture by fixture (`fixture`, else the record id), with a 95%
+ * interval from the paired differences pooled over venues as `tacticPairingVerdicts` pools one
+ * path. Outcome-rate rows (draws, win shares and their gap) take MATCH-28's 3 points; points and
+ * the orderings' measures take the larger of 5% of the detailed mean or 0.1 of its spread. A row is
+ * equivalent only when every interval it reads fits the margin, different when any lies beyond
+ * it, and insufficient otherwise: a straddling interval, a short venue or a missing reading is
+ * never a pass. Fixtures played on one path only are left out.
+ */
+export function tacticPairingParity(
+  aggregate: readonly MatchSample[],
+  detailed: readonly MatchSample[],
+): TacticPairingParityReport {
+  const onAggregate = tacticPairingVerdicts(aggregate),
+    onDetailed = tacticPairingVerdicts(detailed);
+  const keyOf = (s: MatchSample) => s.fixture ?? s.record.id;
+  const reference = new Map(detailed.map((s) => [keyOf(s), s]));
+  const pairs: FixturePair[] = [];
+  for (const a of aggregate) {
+    const d = reference.get(keyOf(a));
+    if (!d) continue;
+    if (a.record.tactics[0] !== d.record.tactics[0] || a.record.tactics[1] !== d.record.tactics[1])
+      throw new Error(
+        `${keyOf(a)} played ${a.record.tactics.join('-')} on the aggregate path and ${d.record.tactics.join('-')} on the detailed one`,
+      );
+    pairs.push({ aggregate: a, detailed: d });
+  }
+  const club = onAggregate.assignment === 'club' || onDetailed.assignment === 'club';
+  const venues = pairingVenues(pairs, (p) => p.aggregate.record.tactics);
+  const statusOf = (report: TacticPairingReport, id: string) =>
+    report.rows.find((r) => r.id === id)!.status;
+  const rows = pairingRowSpecs().map((spec): TacticPairingParityRow => {
+    const margin =
+      spec.scale.kind === 'rate'
+        ? PARITY_CONFIG.outcomeRateMargin
+        : pairingMeanMargin(detailed, spec.scale.read);
+    const parts = spec.parts.map((p) =>
+      parityPart(pairingEstimate(venues, pairedTerms(p.terms)), margin, p),
+    );
+    const verdictOf: PairingParityVerdict = parts.every((p) => p.verdict === 'equivalent')
+      ? 'equivalent'
+      : parts.some((p) => p.verdict === 'different')
+        ? 'different'
+        : 'insufficient';
+    const base = {
+      id: spec.id,
+      label: spec.label,
+      kind: spec.kind,
+      aggregate: statusOf(onAggregate, spec.id),
+      detailed: statusOf(onDetailed, spec.id),
+      margin,
+      pairs: Math.max(0, ...parts.map((p) => p.pairs)),
+    };
+    if (spec.forcedOnly && club)
+      return { ...base, verdict: 'insufficient', reason: FORCED_ONLY_REASON };
+    const reason = verdictOf === 'insufficient' ? parts.find((p) => p.reason)?.reason : undefined;
+    return spec.kind === 'band'
+      ? {
+          ...base,
+          verdict: verdictOf,
+          ...(parts[0]!.difference !== undefined && {
+            difference: parts[0]!.difference,
+            interval: parts[0]!.interval,
+          }),
+          ...(reason && { reason }),
+        }
+      : { ...base, verdict: verdictOf, differences: parts, ...(reason && { reason }) };
+  });
+  const count = (v: PairingParityVerdict) => rows.filter((r) => r.verdict === v).length;
+  return {
+    note: 'Each MATCH-29 row as aggregate − detailed over the same forced fixtures, paired by fixture, with a 95% interval against MATCH-28’s margin (T396).',
+    version: MATCH_PARITY_VERSION,
+    target: PT.version,
+    matches: { aggregate: aggregate.length, detailed: detailed.length, paired: pairs.length },
+    agreeing: rows.filter((r) => r.aggregate === r.detailed).length,
+    rows,
+    counts: {
+      equivalent: count('equivalent'),
+      different: count('different'),
+      insufficient: count('insufficient'),
+    },
+  };
+}
+
+/** The paired MATCH-29 parity as printed lines. */
+export function describeTacticPairingParity(report: TacticPairingParityReport): string[] {
+  const { equivalent, different, insufficient } = report.counts;
+  const lines = [
+    `MATCH-29 parity (aggregate − detailed, ${report.matches.paired} paired fixtures): ${equivalent} equivalent, ${different} different, ${insufficient} insufficient of ${report.rows.length}; ${report.agreeing} rows share a status`,
+  ];
+  const reading = (p: { difference?: number; interval?: [number, number] }) =>
+    p.difference === undefined ? '' : `${fixed(p.difference)} ${span(p.interval!)}`;
+  for (const r of report.rows) {
+    const body =
+      r.kind === 'band'
+        ? reading(r)
+        : r
+            .differences!.map((d) => `${d.higher} − ${d.lower} ${reading(d)} ${d.verdict}`)
+            .join('; ');
+    const parts = [body, `±${fixed(r.margin)}`, r.reason && `(${r.reason})`]
+      .filter(Boolean)
+      .join(' ');
+    lines.push(`  ${r.verdict.padEnd(12)} ${r.label} [${r.aggregate} / ${r.detailed}]: ${parts}`);
   }
   return lines;
 }

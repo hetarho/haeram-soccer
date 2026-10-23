@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T396 |
+| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T397 |
 
 ## inbox
 - 261024 decided T286 T402 T306 T308: how the remaining work runs in parallel → T286's activation machinery (the worker's SAVE-23 writer activation, its focused tests, the continuity journey, the contract docs) becomes T402, runnable now; T286 keeps the final gate (accuracy on the final football, century performance and capacity, the switch, docs) after T401 and T308; T306 depends on T304 T402, so the manager-history lane (T402 → T306 → T307 → T308, lane history-activation) runs in a work group beside the main session's calibration chain T396 → T401, and T286's century profiles then carry manager facts (alt: keep T306 behind T286, about 12 h more in series | split T286 further into accuracy and performance gates)
@@ -273,8 +273,7 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T402 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T396 | Give each MATCH-29 row's two-path difference a paired 95% interval | MATCH ARCH | - | doing@261024.t5q2 |
-| T397 | Bring the grid's attacking volume to MATCH-30 under the drawn offside call | MATCH ARCH | T384 T396 | todo |
+| T397 | Bring the grid's attacking volume to MATCH-30 under the drawn offside call | MATCH ARCH | T384 T396 | doing@261024.t5q2 |
 | T398 | Bring grid forward goals to 50–60% through midfield box arrivals | MATCH PLAYER STAFF ARCH | T397 | todo |
 | T399 | Hold counter against press and balanced's flank defence on the grid | MATCH STAFF ARCH | T398 | todo |
 | T400 | Couple the aggregate to the score state and recalibrate it to the final grid | MATCH ARCH | T399 | todo |
@@ -298,6 +297,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T396 done (t5q2): MATCH-29 parity paired by fixture id with 95% intervals against MATCH-28's margins (`tacticPairingParity`); rows shared with `tacticPairingVerdicts` through `pairingRowSpecs`; tooling only, 31 parity units pass
 - 261024 create-task T307 T308 base WEB@112→136 (t5q2): r113–r136 change theming (WEB-38/73), the owner office (WEB-74) and other screens, none of the records query, navigation or capacity they cite; no content change
 - 261024 T396 start (t5q2): base 4ee082ed; MATCH-29 rows get paired 95% intervals in the parity runner, tooling only
 - 261024 create-task T286 split done (t5q2): T402 prospective activation (lane history-activation with T306–T308, runnable now); T286 keeps the final gate, dep + T402 T308, base WEB@136; T306 dep T304 T402, base MATCH@22; T308's notes name the new order
@@ -317,4 +317,3 @@
 - 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
 - 261023 merge origin/work/w6p4 (c9v3): w6p4's T375 (exit), T370 (kept h6) and T371 (kept RB) join main beside T376's recorded ball holders; facts digests are w6p4's, positions digests re-recorded for both; T384 next, T372 dep T384
 - 261023 WEB r136 planned as T390 doing (m8p2): all-screen print image skin and registry default, unchanged valid stored selections, no commit/push; CLI unavailable, explicitly assigned current checkout.
-- 261023 update-ssot WEB start: owner expands the approved image-built matchday-print home to every screen and makes it the registry default; preserve valid stored choices, all game behavior and existing local edits; no commit or push.

@@ -96,6 +96,7 @@ import {
   CORPUS_CONFIG,
   corpusFixtureId,
   describeAdvancedCounters,
+  describeTacticPairingParity,
   describeTacticPairings,
   DETAILED_ONLY_REASON,
   MATCH_PARITY_VERSION,
@@ -106,6 +107,7 @@ import {
   requiredRareEvents,
   SCORING_CONCENTRATION_TARGET,
   scoringConcentrationVerdicts,
+  tacticPairingParity as tacticPairingParityReport,
   tacticPairingVerdicts,
   TARGET_BANDS,
   type LedgerDiagnostics,
@@ -277,6 +279,7 @@ export function aggregateRun(
       record: aggregateRecord(f, rosters, match),
       incidentsTracked: true,
       condition,
+      fixture: f.id,
       gap,
       // MATCH-29's freshness of a forced pairing only from its declared squad fatigue (T321).
       ...(conditioning.tactics === undefined || forcedFatigueApplied(rosters, conditioning.fatigue)
@@ -391,6 +394,7 @@ export function referenceCondition(
       diagnostics: result.diagnostics,
       incidentsTracked: true,
       condition: c.id,
+      fixture: f.id,
       gap: forced
         ? forcedGap([home, away], setup.rosters, setup.tactics)
         : rating(w, home, f) + 3 - rating(w, away, f),
@@ -720,6 +724,7 @@ function pairingSample(s: MatchSample): MatchSample {
     },
     incidentsTracked: false,
     condition: s.condition,
+    fixture: s.fixture,
     freshness: s.freshness,
   };
 }
@@ -1116,25 +1121,12 @@ async function runReport() {
     const referenceTacticPairings = referencePairingSamples.length
       ? tacticPairingVerdicts(referencePairingSamples)
       : null;
-    // MATCH-29 parity: each row's verdict on both paths over the same forced fixtures (T372).
-    const tacticPairingParity = tacticPairings &&
-      referenceTacticPairings && {
-        note: 'Each MATCH-29 row on the aggregate path and the detailed reference over the same forced-pairing fixtures and seeds; difference is aggregate − detailed.',
-        matches: { aggregate: tacticPairings.matches, detailed: referenceTacticPairings.matches },
-        agreeing: tacticPairings.rows.filter(
-          (r) => referenceTacticPairings.rows.find((x) => x.id === r.id)?.status === r.status,
-        ).length,
-        rows: tacticPairings.rows.map((r) => {
-          const ref = referenceTacticPairings.rows.find((x) => x.id === r.id);
-          return {
-            id: r.id,
-            aggregate: r.status,
-            detailed: ref?.status ?? 'missing',
-            ...(r.value !== undefined &&
-              ref?.value !== undefined && { difference: r.value - ref.value }),
-          };
-        }),
-      };
+    // MATCH-29 parity: each row as a paired aggregate − detailed difference over the same forced
+    // fixtures, judged against MATCH-28's margin (T396).
+    const tacticPairingParity =
+      pairingSamples.length && referencePairingSamples.length
+        ? tacticPairingParityReport(pairingSamples, referencePairingSamples)
+        : null;
     const measured = new Set(done.map((d) => d.condition));
     const artifact = referenceArtifact();
     const againstArtifact = artifact && {
@@ -1279,6 +1271,8 @@ async function runReport() {
       for (const line of describeTacticPairings(tacticPairings)) console.log(line);
     if (referenceTacticPairings)
       for (const line of describeTacticPairings(referenceTacticPairings)) console.log(line);
+    if (tacticPairingParity)
+      for (const line of describeTacticPairingParity(tacticPairingParity)) console.log(line);
   }
 }
 
