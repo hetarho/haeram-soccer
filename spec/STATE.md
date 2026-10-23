@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| w6p4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T04:52Z | 2026-10-23T04:54Z | - |
 
 ## inbox
 - 261023 decided T375 T370: honest offside's follow-up (T374 option a, through-ball lead/depth scaled by the space behind the line, plus late midfield box runs from behind the ball) becomes its own explore task T375 before T370 → T370 already carries three levers with its own keep rule, and T375's keep rule must test MATCH-29 per screened setting against T373's football; T370's baseline becomes T375's result or T373's football; T375 also first cuts the held line's per-holder line read (T374 limit 3) (alt: fold into T370)
