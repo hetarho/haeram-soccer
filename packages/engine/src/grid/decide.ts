@@ -200,6 +200,8 @@ export const DECISION_CONFIG = {
      */
     settled: {
       counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70 },
+      /** T371: balanced's mixed passing, neutral until its build-up is screened. */
+      balanced: { forward: 0, long: 0, lateral: 1, back: 1, pass: 1, upTo: 70 },
     } as Partial<
       Record<
         Tactic,

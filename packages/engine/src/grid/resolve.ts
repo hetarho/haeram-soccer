@@ -132,6 +132,14 @@ export const DUEL_CONFIG = {
         balanced: 0.175,
       } satisfies Record<Tactic, number>,
     },
+    /**
+     * Restarts and finishers (T371, →MATCH-18, MATCH-23): of the failed open-play crosses this
+     * share runs over the byline for a goal kick, in place of `cross.failOut`; a cross's target
+     * spreads over the box's headers by `targetSpread` aerial points, in place of
+     * `cross.targetSpread`.
+     */
+    crossFailOut: 0.15,
+    targetSpread: 8,
   },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
@@ -160,8 +168,12 @@ export const SHOT_CONFIG = {
   blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
-  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
-  candidate: { header: 0.42 },
+  /**
+   * Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. T371:
+   * a missed shot meets a defender on its line `blockBase` of the time before his numbers and
+   * skill, in place of `block.base`.
+   */
+  candidate: { header: 0.42, blockBase: 0.4 },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -467,7 +479,7 @@ export function resolveShot(
     }
   }
   const p = clamp(
-    C.block.base +
+    (onCandidate(s) ? C.candidate.blockBase : C.block.base) +
       C.block.perDefender * lane +
       (blocker ? (skill(s, other(side), blocker.idx, 'positioning') - 55) * C.block.skill : 0),
     C.block.min,
@@ -509,7 +521,10 @@ function headerTarget(
   let top = -Infinity;
   for (const p of pool) top = Math.max(top, p.v);
   const { exp } = s.math;
-  const weights = pool.map((p) => exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
+  const spread = onCandidate(s)
+    ? DUEL_CONFIG.candidate.targetSpread
+    : DUEL_CONFIG.cross.targetSpread;
+  const weights = pool.map((p) => exp((p.v - top) / spread));
   const total = weights.reduce((a, b) => a + b, 0);
   let u = r() * total;
   for (let i = 0; i < pool.length; i++) {
@@ -549,7 +564,7 @@ export function resolveCross(
   const delivered = r() < p;
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   if (!delivered || !attacker) {
-    const out = r() < X.failOut;
+    const out = r() < (onCandidate(s) ? DUEL_CONFIG.candidate.crossFailOut : X.failOut);
     const at = toEngine(side, [
       PITCH.length,
       clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),

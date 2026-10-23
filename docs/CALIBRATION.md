@@ -1059,7 +1059,7 @@ h6와 (c)만(c175)을 함께 검증했다. 합친 판정(`t370-pooled-pair-repor
 
 ### 산출물
 
-ARTIFACT
+- `docs/benchmarks/detailed-model-calibration.json`을 이 설정으로 다시 썼다. T365와 같은 검증 11회차, 51개 조건 × 600경기(1,569초, 10 작업자, 부하가 있는 공유 기계), 소스 `7bafb4ea`(packages·scripts 깨끗함), 지문 `03edfe37f016538aea669c4c4200847e87214d89c74c8c53bc51a035521f7d48`(398개 파일, Node v24.22.1, Intel Xeon Silver 4214)다. MATCH-30 8 inside, 3 unresolved(빅찬스 0.80, 빅찬스 득점 0.39, PPDA 13.9), 10 outside; core 27/38(골킥 9.31, FW 골 63.4% outside); MATCH-29 17/1/7(균형의 실점 xG만 outside, 압박의 하이 리게인과 체력 순서는 성립); 곡선 2.01점; 불변식 위반 0. 600경기 한 회차라 구간이 넓어 core와 MATCH-29의 unresolved·insufficient가 검증 51·52회차 합(4,800·19,200경기)보다 많다.
 
 ### 남은 것
 
