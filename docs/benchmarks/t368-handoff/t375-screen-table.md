@@ -1,0 +1,114 @@
+# T375 screen (calibration round 50)
+
+`scripts/t328-counter-roles.ts --variant base --partition calibration --round 50 --set all --per 60 --core 600 --gap 60`
+(16 tactic pairings × 60, 600 core matches, 17 gap buckets × 60), one tree per setting, tabled by
+`t375-table.mts`. `q12r41` is the reproduction of T374's q12 on calibration round 41 (core only):
+goals 2.59, offsides 1.79, MF goals 23.5%, core 29/38 and MATCH-30 7, as in `t374-screen-table.md`.
+[95%] intervals; ✗ outside, ~ unresolved or insufficient, no mark inside. MATCH-29 at 60 matches a
+pairing resolves few rows, so its count is read beside press's points and gaps.
+
+| setting | patch over q12 |
+|---|---|
+| base | T373's football (no q12) |
+| q12 | none: T374's honest offside and deeper candidate line |
+| a2 / a4 / a8 | `decide.candidate.through.grow` 0.2 / 0.4 / 0.8 (m of lead per m behind the line past `room` 20) |
+| l03 / l08 / l30 | grow 0.4 and `through.look` 0.03 / 0.08 / 0.3 (the runner's pull grows with the space too) |
+| b05 / b15 / b30 | `coordination.late.pull` 0.5 / 1.5 / 3 (late midfield box runs from behind the ball) |
+| l08b | grow 0.4, look 0.08, late pull 1.5 |
+| h30 / h40 / h50 | `coordination.highLine.room` 30 / 40 / 50 (runs in behind start from any band against a line leaving that much room) |
+| c40 | l08b and `highLine.room` 40 |
+| c40p3 | c40 with late pull 3 |
+
+| setting | core | MATCH-30 | MATCH-29 | offsides | goals | shots | goal-area % | outside % | distance m | MF goals % | FW goals % | through balls | completed | box entries | xT | press's points | gap possession v press | gap press v counter | gap press v balanced | curve |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| q12r41 | 29/38 | 7/23 | 0/0 | 1.79 [1.67, 1.91] | 2.59 [2.45, 2.73]~ | 12.3 [12.0, 12.5] | 7.2 [6.7, 7.6] | 40.6 [39.8, 41.5] | 17.69 [17.54, 17.84] | 23.5 [21.1, 25.8]✗ | 68.3 [65.7, 70.8]✗ | 8.27 [7.99, 8.55]✗ | 5.29 [5.11, 5.48]✗ | 23.7 [23.3, 24.1]✗ | 4.18 [4.13, 4.23]✗ | n/a | n/a | n/a | n/a | n/a |
+| base | 31/38 | 5/23 | 3/25 | 1.60 [1.50, 1.71]~ | 2.73 [2.60, 2.86]~ | 12.9 [12.7, 13.2] | 8.1 [7.7, 8.5] | 38.8 [37.9, 39.6] | 17.30 [17.15, 17.45] | 28.6 [26.3, 30.9]~ | 61.7 [59.2, 64.2]~ | 33.30 [32.25, 34.35]✗ | 24.95 [24.17, 25.73]✗ | 24.8 [24.4, 25.1]✗ | 4.32 [4.27, 4.37]✗ | 0.199 [0.067, 0.331]~ | -0.142 [-0.287, 0.003]~ | 0.133 [-0.023, 0.290]~ | 0.117 [-0.032, 0.265]~ | 4.09 |
+| q12 | 30/38 | 7/23 | 4/25 | 1.71 [1.60, 1.82] | 2.46 [2.34, 2.57]✗ | 12.5 [12.3, 12.8] | 7.3 [6.9, 7.7] | 41.0 [40.1, 41.8] | 17.78 [17.63, 17.94] | 24.0 [21.7, 26.2]✗ | 67.0 [64.5, 69.5]✗ | 8.13 [7.86, 8.40]✗ | 5.23 [5.04, 5.41]✗ | 23.4 [23.1, 23.8]✗ | 4.14 [4.09, 4.19]✗ | 0.430 [0.303, 0.557]✗ | -0.233 [-0.374, -0.093]~ | 0.267 [0.117, 0.416]~ | 0.358 [0.221, 0.496]✗ | 3.93 |
+| a2 | 31/38 | 7/23 | 4/25 | 1.79 [1.68, 1.89] | 2.53 [2.40, 2.66]~ | 12.4 [12.2, 12.7] | 7.4 [7.0, 7.9] | 40.7 [39.8, 41.5] | 17.71 [17.56, 17.86] | 23.9 [21.7, 26.0]✗ | 66.1 [63.5, 68.6]✗ | 8.74 [8.46, 9.01]✗ | 5.67 [5.48, 5.86]✗ | 23.5 [23.2, 23.8]✗ | 4.16 [4.11, 4.21]✗ | 0.359 [0.231, 0.487]✗ | -0.167 [-0.304, -0.030]~ | 0.233 [0.083, 0.384]~ | 0.317 [0.172, 0.462]✗ | 4.32 |
+| a4 | 29/38 | 7/23 | 3/25 | 1.68 [1.57, 1.79] | 2.49 [2.37, 2.62]~ | 12.6 [12.4, 12.9] | 7.0 [6.6, 7.5] | 40.7 [39.9, 41.6] | 17.75 [17.60, 17.90] | 25.2 [22.9, 27.5]~ | 64.8 [62.3, 67.4]✗ | 8.88 [8.61, 9.16]✗ | 5.84 [5.65, 6.03]✗ | 24.0 [23.7, 24.4]✗ | 4.22 [4.17, 4.28]✗ | 0.487 [0.362, 0.612]✗ | -0.275 [-0.412, -0.138]✗ | 0.283 [0.140, 0.427]✗ | 0.417 [0.279, 0.554]✗ | 4.30 |
+| a8 | 29/38 | 7/23 | 3/25 | 1.69 [1.58, 1.79] | 2.50 [2.37, 2.62]~ | 12.6 [12.4, 12.8] | 7.3 [6.9, 7.7] | 40.3 [39.5, 41.1] | 17.64 [17.50, 17.79] | 22.8 [20.7, 25.0]✗ | 68.7 [66.2, 71.1]✗ | 9.40 [9.11, 9.68]✗ | 6.21 [6.01, 6.40]✗ | 24.3 [24.0, 24.7]✗ | 4.24 [4.19, 4.29]✗ | 0.405 [0.279, 0.531]✗ | -0.258 [-0.405, -0.112]~ | 0.200 [0.049, 0.351]~ | 0.358 [0.231, 0.485]✗ | 4.76 |
+| l03 | 28/38 | 7/23 | 3/25 | 1.80 [1.68, 1.91] | 2.56 [2.43, 2.69]~ | 12.5 [12.3, 12.8] | 7.1 [6.6, 7.5] | 41.7 [40.8, 42.5]~ | 17.84 [17.69, 17.99] | 24.7 [22.5, 27.0]✗ | 65.6 [63.1, 68.1]✗ | 9.55 [9.25, 9.86]✗ | 6.31 [6.10, 6.53]✗ | 23.8 [23.5, 24.1]✗ | 4.20 [4.15, 4.25]✗ | 0.419 [0.286, 0.551]✗ | -0.225 [-0.375, -0.075]~ | 0.225 [0.068, 0.382]~ | 0.342 [0.198, 0.485]✗ | 3.77 |
+| l08 | 30/38 | 6/23 | 4/25 | 1.74 [1.63, 1.85] | 2.52 [2.40, 2.65]~ | 12.7 [12.5, 13.0] | 7.4 [6.9, 7.8] | 41.2 [40.4, 42.0]~ | 17.73 [17.59, 17.88] | 24.7 [22.4, 26.9]✗ | 65.4 [62.8, 68.0]✗ | 10.74 [10.38, 11.09]✗ | 7.30 [7.05, 7.56]✗ | 24.4 [24.0, 24.7]✗ | 4.26 [4.21, 4.31]✗ | 0.398 [0.273, 0.523]✗ | -0.267 [-0.407, -0.126]✗ | 0.217 [0.073, 0.361]~ | 0.342 [0.206, 0.477]✗ | 4.24 |
+| l30 | 29/38 | 5/23 | 3/25 | 1.86 [1.74, 1.98] | 2.69 [2.56, 2.82]~ | 12.9 [12.7, 13.1] | 7.3 [6.9, 7.7] | 40.5 [39.6, 41.4] | 17.63 [17.48, 17.78] | 24.0 [21.9, 26.2]✗ | 67.0 [64.6, 69.4]✗ | 14.95 [14.41, 15.48]✗ | 10.62 [10.23, 11.01]✗ | 25.2 [24.8, 25.5]✗ | 4.36 [4.31, 4.41]✗ | 0.328 [0.200, 0.457]✗ | -0.092 [-0.243, 0.059]~ | 0.167 [0.017, 0.316]~ | 0.383 [0.248, 0.519]✗ | 5.33 |
+| b05 | 27/38 | 7/23 | 2/25 | 1.72 [1.61, 1.83] | 2.46 [2.34, 2.58]✗ | 12.3 [12.1, 12.5] | 7.2 [6.7, 7.6] | 42.0 [41.1, 42.9]~ | 17.86 [17.71, 18.01]~ | 27.7 [25.3, 30.1]~ | 64.0 [61.4, 66.6]✗ | 8.85 [8.54, 9.17]✗ | 5.75 [5.53, 5.96]✗ | 23.4 [23.0, 23.7]✗ | 4.13 [4.08, 4.18]✗ | 0.456 [0.327, 0.584]✗ | -0.150 [-0.302, 0.002]~ | 0.375 [0.234, 0.516]✗ | 0.358 [0.218, 0.498]✗ | 2.98 |
+| b15 | 28/38 | 7/23 | 2/25 | 1.68 [1.58, 1.79] | 2.65 [2.52, 2.79]~ | 12.6 [12.4, 12.8] | 7.1 [6.7, 7.6] | 41.8 [40.9, 42.7]~ | 17.77 [17.61, 17.92] | 28.6 [26.3, 31.0]~ | 62.1 [59.6, 64.7]~ | 8.81 [8.50, 9.12]✗ | 5.75 [5.54, 5.97]✗ | 23.4 [23.1, 23.8]✗ | 4.15 [4.10, 4.20]✗ | 0.420 [0.294, 0.547]✗ | -0.125 [-0.270, 0.020]~ | 0.308 [0.160, 0.457]✗ | 0.400 [0.266, 0.534]✗ | 3.71 |
+| b30 | 27/38 | 6/23 | 2/25 | 1.69 [1.59, 1.80] | 2.73 [2.60, 2.86]~ | 12.7 [12.5, 13.0] | 7.1 [6.6, 7.5] | 41.7 [40.9, 42.6]~ | 17.80 [17.65, 17.94] | 27.3 [24.9, 29.6]~ | 63.8 [61.3, 66.4]✗ | 8.96 [8.63, 9.29]✗ | 5.90 [5.68, 6.12]✗ | 23.5 [23.2, 23.8]✗ | 4.16 [4.11, 4.21]✗ | 0.345 [0.216, 0.474]✗ | -0.167 [-0.312, -0.021]~ | 0.333 [0.190, 0.477]✗ | 0.217 [0.069, 0.364]~ | 3.61 |
+| l08b | 29/38 | 5/23 | 3/25 | 1.77 [1.66, 1.88] | 2.89 [2.76, 3.02]~ | 12.9 [12.7, 13.2] | 7.7 [7.2, 8.1] | 40.2 [39.3, 41.1] | 17.49 [17.34, 17.63] | 26.2 [24.1, 28.4]~ | 65.0 [62.6, 67.4]✗ | 11.44 [11.04, 11.83]✗ | 7.87 [7.60, 8.15]✗ | 24.4 [24.1, 24.7]✗ | 4.28 [4.23, 4.33]✗ | 0.336 [0.205, 0.467]✗ | -0.117 [-0.274, 0.041]~ | 0.333 [0.187, 0.479]✗ | 0.233 [0.094, 0.373]~ | 3.78 |
+| h30 | 29/38 | 7/23 | 4/25 | 1.69 [1.59, 1.80] | 2.47 [2.35, 2.59]✗ | 12.5 [12.2, 12.7] | 7.6 [7.2, 8.1] | 40.7 [39.8, 41.5] | 17.67 [17.53, 17.82] | 24.5 [22.2, 26.9]✗ | 66.2 [63.6, 68.8]✗ | 8.42 [8.15, 8.69]✗ | 5.49 [5.31, 5.68]✗ | 23.6 [23.3, 24.0]✗ | 4.16 [4.11, 4.21]✗ | 0.422 [0.294, 0.550]✗ | -0.175 [-0.325, -0.025]~ | 0.258 [0.109, 0.407]~ | 0.392 [0.257, 0.526]✗ | 5.31 |
+| h40 | 29/38 | 7/23 | 3/25 | 1.71 [1.60, 1.82] | 2.46 [2.34, 2.58]✗ | 12.5 [12.3, 12.7] | 7.5 [7.1, 8.0] | 41.0 [40.1, 41.8] | 17.78 [17.63, 17.93] | 24.3 [22.0, 26.5]✗ | 66.2 [63.7, 68.7]✗ | 8.23 [7.96, 8.49]✗ | 5.30 [5.12, 5.48]✗ | 23.5 [23.2, 23.9]✗ | 4.16 [4.11, 4.21]✗ | 0.301 [0.173, 0.428]✗ | -0.150 [-0.289, -0.011]~ | 0.217 [0.067, 0.366]~ | 0.242 [0.098, 0.385]~ | 4.42 |
+| h50 | 29/38 | 7/23 | 4/25 | 1.67 [1.57, 1.78] | 2.48 [2.36, 2.60]✗ | 12.5 [12.3, 12.8] | 7.6 [7.1, 8.0] | 41.1 [40.2, 41.9] | 17.79 [17.64, 17.94] | 24.6 [22.3, 26.9]✗ | 65.9 [63.4, 68.4]✗ | 8.15 [7.89, 8.41]✗ | 5.25 [5.07, 5.42]✗ | 23.4 [23.1, 23.8]✗ | 4.14 [4.09, 4.19]✗ | 0.463 [0.338, 0.588]✗ | -0.225 [-0.369, -0.081]~ | 0.275 [0.127, 0.423]✗ | 0.425 [0.295, 0.555]✗ | 5.25 |
+| c40 | 29/38 | 5/23 | 4/25 | 1.75 [1.64, 1.86] | 2.84 [2.71, 2.97]~ | 13.0 [12.8, 13.2] | 7.4 [7.0, 7.9] | 40.0 [39.1, 40.8] | 17.50 [17.35, 17.64] | 24.2 [22.1, 26.3]✗ | 66.8 [64.4, 69.2]✗ | 11.92 [11.48, 12.36]✗ | 8.09 [7.80, 8.39]✗ | 24.2 [23.9, 24.6]✗ | 4.27 [4.22, 4.32]✗ | 0.265 [0.134, 0.396]~ | -0.067 [-0.220, 0.087]~ | 0.242 [0.095, 0.388]~ | 0.233 [0.088, 0.379]~ | 2.38 |
+| c40p3 | 28/38 | 5/23 | 4/25 | 1.80 [1.69, 1.91] | 2.63 [2.50, 2.75]~ | 13.0 [12.7, 13.2] | 7.3 [6.9, 7.7] | 41.5 [40.7, 42.4]~ | 17.72 [17.57, 17.86] | 28.0 [25.6, 30.4]~ | 62.5 [59.9, 65.1]~ | 11.99 [11.54, 12.44]✗ | 8.16 [7.84, 8.47]✗ | 24.1 [23.8, 24.4]✗ | 4.26 [4.21, 4.31]✗ | 0.351 [0.219, 0.482]✗ | -0.242 [-0.389, -0.095]~ | 0.250 [0.102, 0.398]~ | 0.208 [0.055, 0.362]~ | 4.60 |
+
+## the held line's cost
+
+`prof.mts --count 40 --round 41 --partition calibration` (the first 40 core matches of calibration
+round 41, candidate model), one after another on a host also running two screen chains (10 of 12
+cores busy), so the times are relative:
+
+| tree | ms a match | facts digest |
+|---|---|---|
+| q12 (649410ac, a line read per holder) | 512.1 | 308ddefc684d421f |
+| q12 with one line read a step for all holders (25760709, new settings at 0) | 415.5 | 308ddefc684d421f |
+| T373's football | 394.9 | 54131f8153ee889c |
+
+The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to 1.05× T373's.
+
+## reading so far
+
+- q12 on round 50 repeats T374's validation: press's points 0.199 → 0.430 (band: within 0.15 of the
+  mean), MF goals 28.6 → 24.0%, MATCH-30 5 → 7.
+- (a) the through ball's growth (a2–a8, and its pull, l03–l30) adds through balls (8.1 → 15.0 at
+  l30) and box entries, but press's points stay 0.33–0.49 and MF goals 23–25%: a longer lead does
+  not reach a runner a high press already pins in his own third.
+- (b) late box runs (b05–b30) bring MF goals back to 27–29% (b15 28.6%, the base's level) with the
+  curve 3.0–3.7, but leave press's points 0.35–0.46.
+- No (a)/(b) setting moves press's points inside; the next lever (c) lets runs in behind a high line
+  start from the own third (`coordination.highLine.room`, 2020e999), screened as h30/h40/h50 and
+  combined with l08b as c40.
+- (c) alone is not monotonic (h30 0.42, h40 0.30, h50 0.46), so room 40 needs checking for noise.
+  c40 is the best so far: press's points 0.265 [0.134, 0.396] (unresolved, no longer outside), every
+  press gap unresolved rather than outside, the curve 2.38 (≤ 2.5), offsides 1.75 and goals 2.84 in
+  band. But MF goals stay 24.2% (outside) and MATCH-30 falls 7 → 5. Next: c40 with late pull 3
+  (b30's MF goals) and room 35/45 around 40, then validate the best on two fresh rounds against T373's
+  football, or take the exit.
+- c40p3 (late pull 3) brings MF goals back to 28.0% (unresolved) and goals 2.63, but press's points
+  return outside (0.351) and the curve rises to 4.60: the late runs that score for the midfielders
+  also feed press. With 2¾ h of the timebox left, room 35/45 is not screened (room alone was not
+  monotonic, so a 5 m step would sit inside the noise) and c40 goes to validation on fresh rounds 49
+  and 50 against T373's football, each 21,600 matches (`--per 600 --core 2400 --gap 600`).
+  Started 15:13–15:19 KST by `t375-chain.mjs` over `node_modules/.cache/t375/spec-v{49,50}{base,cand}.json`
+  (base tree e578fc90, candidate tree 2020e999 with c40's patch), writing
+  `node_modules/.cache/t375/out/v{49,50}-{base,c40}.json` and a `.done` file per spec; read them with
+  `report.mts --root <candidate tree> --base v49-base.json,v50-base.json --cand v49-c40.json,v50-c40.json`.
+
+## validation (rounds 49 and 50, T373's football v c40)
+
+`t375-v49-pair-report.txt`, `t375-v50-pair-report.txt`, `t375-pooled-pair-report.txt` (every row):
+21,600 matches a tree a round, 0 invalid records, 0 invariant failures.
+
+| pooled | T373's football | c40 |
+|---|---|---|
+| MATCH-23 core inside | 34 | 33 (none inside → outside; goals-MF inside → unresolved, 30 m+ shots inside → unresolved, penalty goals unresolved → outside) |
+| MATCH-30 inside | 5 | 6 (box shots outside → inside; none inside → outside) |
+| MATCH-29 inside / insufficient / outside | 19 / 5 / 1 | 14 / 4 / 7 |
+| press's points (to the mean) | +0.063 [0.033, 0.093] | **+0.303 [0.274, 0.332] inside → outside** |
+| points possession / press / counter / balanced | 1.290 / 1.432 / 1.481 / 1.274 | 1.206 / 1.675 / 1.419 / 1.190 |
+| gap possession v press | −0.056 | **−0.169 inside → outside** |
+| gap press v counter | −0.010 | **+0.168 inside → outside** |
+| gap press v balanced | +0.080 | **+0.265 inside → outside** |
+| balanced's points | −0.095 | **−0.183 inside → outside** |
+| offsides | 1.66 [1.62, 1.70] | 1.76 [1.72, 1.80] |
+| goals | 2.76 [2.71, 2.80] | 2.77 [2.72, 2.81] |
+| MF / FW goals % | 28.4 / 62.3 | 27.7 [26.9, 28.5] / 62.9 |
+| through balls / completed | 32.9 / 24.7 | 11.9 / 8.1 |
+| box entries / xT | 24.97 / 4.36 | 24.54 / 4.31 |
+| goal-area / outside-box shots %, distance | 8.2 / 39.1, 17.33 m | 7.4 / 40.9, 17.61 m |
+| curve | 1.49 | 1.22 |
+
+Round 49 alone: press's points +0.064 → +0.281 and possession v press, press's points inside →
+outside; round 50 alone: press's points +0.062 → +0.325, press v counter and balanced's points
+inside → outside. Keep rule: offsides inside (met), no core inside → outside (met), MATCH-30 inside
+≥ before (6 ≥ 5, met), curve ≤ 2.5 (met), **no MATCH-29 row inside → outside: five pooled, not
+met** — explore exit, T373's football stays. Against T374's q12 pooled on rounds 47+48 (press's
+points +0.358) the three levers took press's lead down by only about 0.05 points a match.

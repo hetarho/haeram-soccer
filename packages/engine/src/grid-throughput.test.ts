@@ -67,13 +67,15 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * Per era: a league fixture unobserved and observed, a knockout tie decided in extra time and one
  * decided on penalties (observed), and the pre-feature path for one league fixture. The knockout
  * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state, for
- * T348's set-piece defence and for T365's side share and possession runs, the first tie of each
- * kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10, 16/3 and 9/0).
+ * T348's set-piece defence, for T365's side share and possession runs, for T370's shot
+ * selection and build-up interceptions and for T371's restarts, finishers and balanced block, the
+ * first tie of each kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10, 16/3 and 9/0, T365's 2/8,
+ * 1/5 and 15/0, T370's 5/3, 34/0 and 18/3).
  */
 const CASES = {
-  1975: { extraTime: 2, shootout: 8 },
-  1995: { extraTime: 1, shootout: 5 },
-  2024: { extraTime: 15, shootout: 0 },
+  1975: { extraTime: 26, shootout: 6 },
+  1995: { extraTime: 1, shootout: 17 },
+  2024: { extraTime: 0, shootout: 19 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -106,31 +108,45 @@ interface CandidateDigests {
  * ties still reach extra time and penalties. T376's recorded ball holders in each frame moved
  * every positions digest and no facts (1975 967b2eed08697522 and 958e5c78b5f4a9aa, 1995
  * 84033ff29b355614 and c2babed2dbf8f2f0, 2024 d9194bb1f9e70b22 and f758ad0b3ed9de74 before).
+ * T370's shot selection in the box (with its volume and
+ * long-shot scales) and the tactics' build-up interceptions moved every value and the knockout ties
+ * (rescanned above); before it, facts 1975 6a0e093d7f4b8695, 3e3145221e46dcfb, a271a9f3a52a6427,
+ * 1995 d62f34799bd86c94, 781d87e697e93dc9, fab640b81546a4ee, 2024 f7d7fd11221f1941,
+ * 4dc91004081853d5, 586bb36d3e8eb92c and positions 1975 967b2eed08697522, 958e5c78b5f4a9aa, 1995
+ * 84033ff29b355614, c2babed2dbf8f2f0, 2024 d9194bb1f9e70b22, f758ad0b3ed9de74. T371's keeper
+ * gathering crosses that run out, box fouls, the lines' shot weights and balanced's block and
+ * settled play moved every value and the knockout ties (rescanned above); before it, facts 1975
+ * 209c3af0621dd846, 42b5439a0c21e378, 199aa1717566ec45, 1995 1f5e0b81550ff272, 6b03398d2eab00d8,
+ * 03150b551efe3134, 2024 3b8fd3a17094f200, 674e21e9a7afd0d4, 4080512485eaee22 and positions 1975
+ * bdb8c849d697f34b, 1ca812be62b58a6a, 1995 7d8c37466ec8ba7c, 65f33357a68dcb30, 2024
+ * fc457228477476ab, 73cc37963c85f102. Merging T376 with them re-recorded every positions digest and no facts
+ * (1975 39d6eabbb550538c and fad88ac87b4447cb, 1995 2d67c9c89168b857 and 6bb264703f6f7c23, 2024
+ * 80ec3c2f825d634c and b9a075ff6ef68c69 before).
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '6a0e093d7f4b8695',
-      extraTime: '3e3145221e46dcfb',
-      shootout: 'a271a9f3a52a6427',
+      league: 'd94909a5e2968fb3',
+      extraTime: 'da8ff901efefcc32',
+      shootout: 'a1cff84512b4cd7b',
     },
-    positions: { observed: '0dcfc030250a3ea7', shootout: '0ae0272cb2bf14df' },
+    positions: { observed: '8600f8623ec02642', shootout: '5bc0b036f3450842' },
   },
   1995: {
     facts: {
-      league: 'd62f34799bd86c94',
-      extraTime: '781d87e697e93dc9',
-      shootout: 'fab640b81546a4ee',
+      league: '3a31b1fadb9e7a01',
+      extraTime: '2eba922a8dff6947',
+      shootout: '28bc42a896a91f3c',
     },
-    positions: { observed: 'b4a1348d1539eebc', shootout: '49d495161061efad' },
+    positions: { observed: '55b4032f3aca4a34', shootout: 'b780d682e3740b36' },
   },
   2024: {
     facts: {
-      league: 'f7d7fd11221f1941',
-      extraTime: '4dc91004081853d5',
-      shootout: '586bb36d3e8eb92c',
+      league: 'db7907011305159d',
+      extraTime: 'fe8c16da21657962',
+      shootout: 'd93a980c191fc42f',
     },
-    positions: { observed: '844d51fd7ed5c406', shootout: 'ebe28ad0cebf3c25' },
+    positions: { observed: 'c656af098ce0f8b3', shootout: 'ddea4368a42f04bf' },
   },
 };
 

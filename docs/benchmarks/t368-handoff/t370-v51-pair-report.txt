@@ -1,0 +1,26 @@
+T370 validation, round 51: base = T373's football (e578fc90), cand = h6 on 91bdfec7
+(patch {"duel":{"candidate":{"intercept":{"share":{"possession":0.175,"press":0.195,"counter":0.155,"balanced":0.175}}}},"decide":{"candidate":{"shotScale":0.45,"longShotScale":3.5,"shotQuality":{"ref":0.3,"power":0.5,"most":1}}}})
+report.mts --root <cand tree> --base v51-base.json --cand v51-h6.json (moved rows only)
+
+base: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: outside 16, inside 5, unbanded 2
+  MATCH-23: inside 35, outside 2, unresolved 1
+  MATCH-29: inside 16, insufficient 8, outside 1
+  curve 1.80 (-35 7.2, -30 2.9, -25 2.3, -20 6.7, -15 9.1, -10 7.3, -5 11.3, 0 5.1, 5 1.9, 10 7.5, 15 5.8, 20 4.2, 25 3.5, 30 1.2, 35 5.4, 40 6.1); points possession 1.237, press 1.458, counter 1.471, balanced 1.331
+cand: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: inside 9, outside 12, unbanded 2
+  MATCH-23: inside 33, unresolved 3, outside 2
+  MATCH-29: insufficient 8, inside 16, outside 1
+  curve 1.81 (-35 7.2, -30 5.8, -25 2.9, -20 7.6, -15 10.3, -10 10.6, -5 10.8, 0 0.6, 5 1.9, 10 2.3, 15 6.9, 20 4.9, 25 2.0, 30 3.5, 35 7.4, 40 8.8); points possession 1.268, press 1.473, counter 1.450, balanced 1.302
+* 30:keyPasses                     10.832 [10.726, 10.938] outside              → 10.097 [9.996, 10.197] inside
+* 30:boxShots                      8.047 [7.961, 8.133] outside                 → 7.295 [7.214, 7.377] inside
+* 30:highTurnovers                 5.512 [5.434, 5.590] outside                 → 7.194 [7.099, 7.289] inside
+* 30:ppda                          17.216 [17.078, 17.354] outside              → 13.757 [13.655, 13.858] inside
+* 23:shotsGoalArea                 8.359 [8.140, 8.578] inside                  → 9.077 [8.851, 9.303] unresolved
+* 23:setPieceGoals                 20.985 [20.006, 21.964] inside               → 20.655 [19.664, 21.645] unresolved
+* 29:draws:possession-possession   0.248 [0.214, 0.283] inside                  → 0.293 [0.257, 0.330] insufficient
+* 29:draws:press-press             0.270 [0.234, 0.306] insufficient            → 0.247 [0.212, 0.281] inside
+* 29:draws:counter-counter         0.252 [0.217, 0.286] inside                  → 0.232 [0.198, 0.265] insufficient
+* 29:draws:balanced-balanced       0.245 [0.211, 0.279] inside                  → 0.213 [0.181, 0.246] insufficient
+* 29:points:possession             -0.137 [-0.178, -0.096] insufficient         → -0.105 [-0.146, -0.063] inside
+* 29:ordering:highRegains          0.587 [0.443, 0.731] insufficient            → 1.131 [0.949, 1.313] inside

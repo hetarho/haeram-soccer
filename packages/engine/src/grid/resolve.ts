@@ -1,5 +1,6 @@
 /** Open-play resolution: every chosen action is settled by a duel between named players on their attributes (→MATCH-11, MATCH-13). */
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight, finishing, goalChance, targetChance } from '../match';
 import { FORMATIONS, lineOf } from '../player';
 import { HOST_MATH, type MatchMath } from '../portable-math';
@@ -109,8 +110,37 @@ export const DUEL_CONFIG = {
    * foul `foul` times as often (within what a duel allows) and a defender in his own box keeps
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
+   * T371: `boxFoul` 0.05 → 0.06, so penalty goals reach MATCH-23's 6–9% (6.1% → 7.7%).
    */
-  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5 },
+  candidate: {
+    foul: 1.2,
+    boxFoul: 0.06,
+    passLoose: 0.8,
+    clearanceOut: 0.5,
+    /**
+     * Pressing in the opponent's build-up (T370, →MATCH-8, MATCH-13): of the failed passes played
+     * from below `upTo` m, the defending side's tactic intercepts this share in place of
+     * `pass.lost.intercepted`, taken from the loose balls, so as many still leave play. Press reads
+     * the build-up most and counter, engaging around halfway, least; PPDA and high turnovers come
+     * inside MATCH-30's bands with tackles and interceptions still inside MATCH-23's.
+     */
+    intercept: {
+      upTo: 70,
+      share: {
+        possession: 0.175,
+        press: 0.195,
+        counter: 0.155,
+        balanced: 0.175,
+      } satisfies Record<Tactic, number>,
+    },
+    /**
+     * Goal kicks (T371, →MATCH-11, MATCH-18): of the failed crosses running over the byline the
+     * keeper gathers this share before they cross it, so play goes on from his hands and the
+     * goal kicks come inside MATCH-23's 7–9 a team (9.35 → 8.71) without the extra
+     * interceptions a cross kept in play would add.
+     */
+    crossKeeper: 0.47,
+  },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
 const onCandidate = (s: GridState) => s.setup.model !== undefined;
@@ -360,7 +390,10 @@ export function resolvePass(
   );
   if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
   const u = r();
-  if (u < P.lost.intercepted && marker) {
+  const I = DUEL_CONFIG.candidate.intercept;
+  const intercepted =
+    onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
+  if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
       from[1] + (to[1] - from[1]) * marker.t,
@@ -525,6 +558,8 @@ export function resolveCross(
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   if (!delivered || !attacker) {
     const out = r() < X.failOut;
+    if (out && keeper && onCandidate(s) && r() < DUEL_CONFIG.candidate.crossKeeper)
+      return { kind: 'held', by: keeper.idx };
     const at = toEngine(side, [
       PITCH.length,
       clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
