@@ -33,7 +33,12 @@ function setup(current?: MatchPlayback, world = w) {
   });
   const command = vi.fn(async () => ({ ok: true, requestId: 'test', view: { world: w } as View }));
   const saveSoon = vi.fn();
-  const client = { command, cancel: vi.fn(), saveSoon } as unknown as GameClient;
+  const client = {
+    command,
+    cancel: vi.fn(),
+    saveSoon,
+    setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
+  } as unknown as GameClient;
   const controller = new ProgressionController(client);
   return { controller, command, client, saveSoon };
 }
@@ -47,6 +52,29 @@ afterEach(() => {
 });
 
 describe('the global progression clock', () => {
+  it('publishes a continuous edit lock over worker ticks and releases it on stop', () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    expect(gameStore.getState().clockRunning).toBe(true);
+    for (const processing of [true, false, true, false]) {
+      gameStore.setState({ processing });
+      expect(gameStore.getState().clockRunning).toBe(true);
+    }
+    controller.pause();
+    expect(gameStore.getState().clockRunning).toBe(false);
+  });
+  it.each([{ processing: true }, { pendingActions: 1 }, { busy: true }])(
+    'waits for admitted work before starting: %j',
+    (pending) => {
+      const s = setup();
+      controller = s.controller;
+      gameStore.setState(pending);
+      controller.start();
+      expect(controller.store.getState().running).toBe(false);
+      expect(gameStore.getState().clockRunning).not.toBe(true);
+    },
+  );
   it('pauses only while a suspension source holds and resumes without a restart', async () => {
     const s = setup();
     controller = s.controller;

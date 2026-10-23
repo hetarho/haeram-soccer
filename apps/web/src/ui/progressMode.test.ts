@@ -61,6 +61,7 @@ describe('progression mode shortcut', () => {
     'error',
     'busy',
     'processing',
+    'clockRunning',
     'pendingActions',
     'critical',
     'bankrupt',
@@ -74,6 +75,15 @@ describe('progression mode shortcut', () => {
       switchProgressMode(client, controller, { id: 'career', mode: 'automatic' }),
     ).rejects.toThrow();
     expect(command).not.toHaveBeenCalled();
+  });
+  it('rejects switching during play without pausing the running clock', async () => {
+    const p = ports();
+    gameStore.setState({ clockRunning: true });
+    await expect(
+      switchProgressMode(p.client, p.controller, { id: 'career', mode: 'automatic' }),
+    ).rejects.toThrow('정지');
+    expect(p.pause).not.toHaveBeenCalled();
+    expect(p.command).not.toHaveBeenCalled();
   });
   it.each(['world', 'mode'])('rejects a changed %s after waiting', async (change) => {
     const p = ports(async () =>

@@ -35,6 +35,14 @@ function ports(idle = async () => {}) {
   return { command, controller, client: { command, whenIdle: idle } as unknown as GameClient };
 }
 describe('reviewed office changes', () => {
+  it('rejects a report change during play without implicitly stopping the clock', async () => {
+    const p = ports();
+    const proposal = officeProposal(world(), { observations: { matchEve: false } });
+    gameStore.setState({ clockRunning: true });
+    await expect(applyOfficeChange(p.client, p.controller, proposal)).rejects.toThrow('정지');
+    expect(p.controller.pause).not.toHaveBeenCalled();
+    expect(p.command).not.toHaveBeenCalled();
+  });
   it.each(['direct', 'delegated'] as const)(
     'applies a reviewed bulk %s choice to observations and business while preserving fresh mode',
     async (value) => {

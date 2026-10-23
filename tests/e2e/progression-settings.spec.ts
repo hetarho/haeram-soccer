@@ -64,8 +64,10 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await expect(date).toHaveText('1950년 8월 1일');
   // Play starts the clock; stopping after the first tick advances exactly one day.
   await toggle.click();
+  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeDisabled();
   await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
+  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeEnabled();
   await expect(date).toHaveText('1950년 8월 2일');
   // x2 is a day every half second: it moves on and stops with the owner, short of the match eve.
   await chooseOption(pace, 'x2');

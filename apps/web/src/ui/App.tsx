@@ -36,7 +36,7 @@ import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
-import { gameStore, useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
 import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
@@ -892,7 +892,7 @@ function SaveActions({
           className={s.fileInput}
           type="file"
           accept="application/json,.json"
-          disabled={state.busy || state.readonly}
+          disabled={gameActionsBlocked(state, { recovery: true })}
           onChange={(event) => {
             void onImport(event.target.files?.[0]);
             event.target.value = '';
@@ -925,6 +925,7 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
 }
 export function App() {
   const { t } = useLocale();
+  const importBlocked = useGameState((state) => gameActionsBlocked(state, { recovery: true }));
   const worldId = useGameState((state) => state.view?.world.id);
   const state = gameStore.getSnapshot();
   const [client, setClient] = useState<GameClient>(),
@@ -1105,13 +1106,14 @@ export function App() {
     if (raw) saveFile(raw, String(gameStore.getSnapshot().view?.world.year || 'backup'));
   };
   const importFile = async (file?: File) => {
-    if (!file) return;
+    if (!file || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
     if (file.size > 8 * 1024 * 1024) {
       setLocalError(t('save.fileTooLarge'));
       return;
     }
     setLocalError('');
     const raw = await file.text();
+    if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
     let stored = false;
     try {
       stored = !!(
@@ -1332,7 +1334,9 @@ export function App() {
             <button onClick={() => setPendingImport(undefined)}>{t('common.cancel')}</button>
             <button
               className={s.primary}
+              disabled={importBlocked}
               onClick={() => {
+                if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
                 const raw = pendingImport;
                 setPendingImport(undefined);
                 void client?.importFile(raw);

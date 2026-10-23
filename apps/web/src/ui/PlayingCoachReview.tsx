@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ContractTerm, Player, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { STAFF_INFO } from '../../../../packages/engine/src/staff';
 import { DecisionOwner } from './DecisionOwner';
 import { Money } from './Money';
@@ -18,7 +18,7 @@ export function PlayingCoachReview({
   client: GameClient;
 }) {
   const assessment = useGameState((state) => state.view?.careers[player.id]);
-  const disabled = useGameState((state) => state.busy || state.readonly || !!state.pendingActions);
+  const disabled = useGameState(gameActionsBlocked);
   const readonly = useGameState((state) => state.readonly);
   const [term, setTerm] = useState<ContractTerm>(2);
   const [years, setYears] = useState<1 | 2>(1);

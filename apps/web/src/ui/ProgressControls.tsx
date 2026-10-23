@@ -4,7 +4,7 @@ import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
 import { memo, useEffect, useRef } from 'react';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import {
   pendingMatchReport,
   useProgression,
@@ -104,12 +104,7 @@ export const ProgressControls = memo(function ProgressControls({
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
-        disabled={
-          blocked ||
-          state.processing ||
-          !!state.pendingActions ||
-          (pending && !pendingMatchReport(w))
-        }
+        disabled={gameActionsBlocked(state) || blocked || (pending && !pendingMatchReport(w))}
         onClick={() => void controller.nextEvent()}
       >
         다음 이벤트
@@ -120,7 +115,7 @@ export const ProgressControls = memo(function ProgressControls({
       <button
         className={`${p.toggle} ${running ? p.pause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
-        disabled={!running && (blocked || state.processing)}
+        disabled={!running && (blocked || gameActionsBlocked(state))}
         onClick={() => {
           if (running) {
             userStop.current = true;

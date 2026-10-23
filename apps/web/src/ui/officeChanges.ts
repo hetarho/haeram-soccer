@@ -64,6 +64,8 @@ export async function applyOfficeChange(
   controller: ProgressionController,
   proposal: OfficeProposal,
 ) {
+  if (modeSwitchBlocked(gameStore.getSnapshot()))
+    throw new Error('진행을 정지하고 날짜 처리가 끝난 뒤 변경해 주세요.');
   controller.pause();
   await client.whenIdle();
   const state = gameStore.getSnapshot(),

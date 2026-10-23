@@ -224,7 +224,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 133 | 133 | - | 0 |
+| WEB | 134 | 134 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -241,6 +241,7 @@
 | id | st |
 |---|---|
 | outside-t216-t255-261019 | converted@261019 |
+| recent-code-quality-261023 | converted@261023 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -267,10 +268,16 @@
 ## next
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
 - resume (r5n2 hand-off 261023 14:00): T369, T326, T374 done and pushed. Next: plan honest offside's follow-up from T374's exit (inbox 261023 decided T374 T370, option a: through-ball lead/depth scaled by the space behind the line + late MF box runs, screened on MATCH-29) as a create-task before T370 or folded into it; then T370 (baseline T373's football) → T371 → T372 (parity at pilot size) → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46, 47, 48 (49–50 free); calibration round 41 used by T374.
-- T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
+- T385 is complete; its stable-controls-and-pacing and progression-settings browser scenarios await the next ARCH-30 batch gate. T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T385 done (p6h4): stable calendar edit lock across all management views, command admission protected, 145 isolated tests plus typecheck/lint/format/build passed; browser scenarios handed to next batch, committed without push
+- 261023 review-code recent-code-quality-261023 done: Oct 22–23 audit at 3ea6c36d; task-local reuse/cleanup present, no recorded periodic broad review; F1 P2 async statistics coverage and F2 P3 adapter dependency unadopted, workload/statistics duplication handed to T286/T372; frozen-source type/lint/format and 97 selected units pass, no application code changed
+- 261023 create-task WEB r134 done; T385 doing (p6h4), base 3ea6c36d, current checkout explicitly assigned by owner; direct checks because vibe/work CLI is absent
+- 261023 update-ssot WEB r134 done (p6h4): WEB-31/97 lock management changes for running/settling calendar, preserves stop, pace and browsing; create-task WEB next
+- 261023 update-ssot WEB start (p6h4): lock management changes throughout calendar progression; audit every accessible view, verify and commit as requested
+- 261023 review-code recent-code-quality-261023 start: audit Oct 22–23 commit history, reuse and cleanup under spec-creator 0.7.4; implementation remains unchanged
 - 261023 create-task MATCH r21 done (w6p4): T384 offside calls by 판단력 at the EPL mean, explore 3h, dep T370; T371 and T286 dep T384
 - 261023 update-ssot MATCH r21 done (w6p4): MATCH-18✎ offside is a drawn call set by the receiver's 판단력, MATCH-23✎ offsides 1.5–2.5→1.7–1.9; no doing task cites it on main (T370 runs in w6p4's worktree on MATCH@20, unaffected: offside is not its lever)
 - 261023 ideation own-club-match-edge start: owner's 1995 save measured (own matches 2.51 v 1.70 points a match on equal strengths, one-sided manager/morale context); directions A–D open for the owner
@@ -285,9 +292,3 @@
 - 261023 T382 done (o9r4): mode helper dismisses its toast after returning to the office; explicit nine-field configurations reuse bulk, applied modes skip navigation; manual-entry/direct retry passes in 9.2 s, type/lint/format pass; broader serial retry continues
 - 261023 office task IDs T375–T378 → T379–T382 before commit: a concurrent engine checkout already has T375.high-line-risk-under-honest-offside; preserve its allocation and keep the office block distinct (check artifacts retain their original task tags)
 - 261023 T382 start (o9r4): batch manual-entry trace finds toast dismissal behind home's same-date event group; move optional dismissal after the helper returns to the office
-- 261023 T381 done (o9r4): passive dialog cleanup showed a missing-layer frame before its exit copy; layout-effect preparation removes the gap (before/after browser frames), owner confirms the flash gone; 40 unit tests, typecheck, focused lint/format and build pass; final batch running
-- 261023 implement-task T381 start (o9r4): owner reports a flash around bulk report/delegation confirmation; reproduce opening and applying before correcting it
-- 261023 T380 start/done (o9r4; user steering): automatic/manual switching only on home, read-only mode elsewhere; shared mode variant and office hints cleaned; task checks reused from the combined working tree, browser journeys to batch
-- 261023 T379 done (o9r4): nine report/delegation pairs and topmost confirmed bulk controls, observation-only changes and stale/protected applications covered; type/lint/format, 33 unit tests and build pass; no commit/push requested
-- 261023 update-ssot WEB r132 and create-task T380: owner limits automatic/manual switching to home; office and other management views show no mode-change control; implementation follows T379
-- 261023 create-task WEB r131 → T379; implement-task T379 start (o9r4), standalone user-requested office UI scope, task-start 71e564e4

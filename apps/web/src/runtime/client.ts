@@ -26,6 +26,8 @@ export interface ClientState {
   busy: boolean;
   /** Commands remain serialized even when background simulation leaves the UI available. */
   processing: boolean;
+  /** Continuous automatic play, including the gaps between worker day calculations. */
+  clockRunning?: boolean;
   activity: 'idle' | 'foreground' | 'background';
   readonly: boolean;
   savedRevision: number;
@@ -44,10 +46,11 @@ export interface ClientState {
   playback?: Reply['playback'];
   /** The latest committed player command and the world it changed, for outcome feedback. */
   lastAction?: { id: number; command: Command; before: World };
-  /** Player commands queued or running; automatic clock ticks never count, so controls stay steady. */
+  /** Player commands queued or running; automatic clock ticks never count. */
   pendingActions?: number;
 }
 export class GameClient {
+  private automaticPending = 0;
   state: ClientState = {
     busy: true,
     processing: true,
@@ -537,7 +540,14 @@ export class GameClient {
    * AUTOSAVE_MS (→SAVE-8).
    */
   command(command: Command, options: { background?: boolean; automatic?: boolean } = {}) {
+    if (
+      !options.automatic &&
+      command.type !== 'read-inbox' &&
+      (this.state.clockRunning || this.automaticPending > 0)
+    )
+      return Promise.resolve(undefined);
     this.cancelled = false;
+    if (options.automatic) this.automaticPending++;
     if (!options.automatic) {
       this.state.pendingActions = (this.state.pendingActions || 0) + 1;
       this.emit();
@@ -566,11 +576,20 @@ export class GameClient {
         this.state.lastAction = { id: ++this.actionSerial, command, before };
       return reply;
     }, options);
-    if (options.automatic) return task;
+    if (options.automatic)
+      return task.finally(() => {
+        this.automaticPending--;
+      });
     return task.finally(() => {
       this.state.pendingActions = Math.max(0, (this.state.pendingActions || 1) - 1);
       this.emit();
     });
+  }
+  /** The progression controller owns this flag; worker activity cannot clear it between days. */
+  setClockRunning(running: boolean) {
+    if (!!this.state.clockRunning === running) return;
+    this.state.clockRunning = running;
+    this.emit();
   }
   /** Settle already admitted work before opening a manual decision or match. */
   whenIdle() {

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r133 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r134 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -108,7 +108,9 @@
 
 - WEB-30 [o] League standings initially show the leading 8 ranks plus the own-club row when outside that preview. Display the shown/full team counts and any rank gap, and offer one explicit expansion to all ranked clubs. Sorting and source facts remain complete; short previews reduce first-view layout cost on mobile and throttled devices.
 
-- WEB-31 [o] Background automatic progression does not alternate the enabled state or appearance of manual match and preparation buttons. Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers. Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming); preparation initializes from the settled current roster without pausing the clock. Controls disable only while a player command is queued, never for automatic ticks.
+- WEB-31 [o] Background automatic progression keeps preparation controls stable across day calculations, with calendar-wide edit protection under →WEB-97.
+  - Preparation remains inspectable during automatic play and initializes from the settled current roster without pausing the clock. Its local previews remain separate from applying changes.
+  - Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming). Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers.
 - WEB-32 [o] Match presentation defaults to 1x with exactly 4 real seconds per 60 match seconds of running playback, uniformly in and out of play (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the goal-feedback hold is an explicit presentation transition (→WEB-94). Speed changes preserve the current match-time position and never change settled outcomes or the game calendar.
   - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
@@ -478,6 +480,11 @@
   - Entering manual through the shortcut enables 경기 전날 보고 and explicitly describes it; entering automatic preserves observations. Every other responsibility, observation and background choice remains unchanged. Responsibility confirmations in the office follow →WEB-79/82.
   - A successful switch leaves the clock stopped and advances no days. Busy/read-only/error/critical protection, rejected settings and world replacement cannot apply a stale change or save a failed opt-out; failures remain visible and retryable.
 
+- WEB-97 [o] Management changes remain disabled throughout automatic calendar play and until an admitted date step finishes after stopping. The same protection covers manual next-event processing. ← a running calendar must not alternate editable and disabled controls between day calculations
+  - Apply one stable lock across home remedies, mode switching, preparation, squad/contracts/recruitment/staff, training/academy, operating policies, facilities/sponsors/finance, club-design application and report/delegation/background changes, including their dialogs and confirmations.
+  - Automatic stop stays available throughout play. Pace changes, navigation, inspection, filters, draft previews, reading notifications, exports and presentation-only preferences remain usable; opening a view or dialog does not itself stop the clock (→WEB-18/90).
+  - Reject game-changing owner commands received while automatic play is running without queueing them or changing the selected mode. Commands admitted before play must settle before play starts. Retain read-only, error, critical and world-replacement protections.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -486,6 +493,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r134 261023 WEB-31✎ owner-request-only preparation locks→calendar-wide edit protection; WEB-97+ management edits available between automatic ticks→disabled for the complete run and settling date step, shared across views; stop, pace and read-only browsing stay available
 - r133 261023 WEB-18✎ round number=calendar's shared week (1부 showed ROUND 41 of 46)→our division's played rounds over its season total, unchanged in its idle weeks; club notices ROUND stamp→date
 - r132 261023 WEB-10/18/39/79/96✎ mode switches in every management calendar and the office→home-only mode shortcut, read-only mode elsewhere; office retains report/delegation/background choices
 - r131 261023 WEB-45/79✎ separate 받기/받지 않기 and 위임/직접 결정 sections with business-only bulk actions→one nine-row 보고받기/위임 list, matching departmental labels and topmost confirmed 전체 보고받기/전체 위임 across observations and responsibilities; progression mode remains separate

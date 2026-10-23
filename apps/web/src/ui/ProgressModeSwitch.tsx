@@ -51,6 +51,7 @@ export function ProgressModeSwitch({
   };
   const manual = request?.mode === 'automatic';
   const choose = () => {
+    if (applying || modeSwitchBlocked(state)) return;
     const expected = { id: w.id, mode };
     setRemember(false);
     setError('');
@@ -64,6 +65,7 @@ export function ProgressModeSwitch({
         aria-label={`진행 방식 변경 · 현재 ${mode === 'automatic' ? '자동' : '수동'} 모드`}
         aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
         disabled={applying || modeSwitchBlocked(state)}
+        title={state.clockRunning ? '진행을 정지한 뒤 변경할 수 있어요.' : undefined}
         onClick={choose}
       >
         <span>

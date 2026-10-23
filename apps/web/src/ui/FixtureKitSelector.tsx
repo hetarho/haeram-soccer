@@ -10,7 +10,7 @@ import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
 import type { GameClient } from '../runtime/client';
-import { gameStore, useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { ownSeasonFixtures } from './fixtures';
 import { competitionLabel } from './format';
 import { KIT_ROLE_LABELS } from './identityPreview';
@@ -64,6 +64,8 @@ export interface FixtureKitViewProps {
   role: KitRole | null;
   /** No choice can be committed: a command in flight, an error, a critical alert or read-only. */
   disabled: boolean;
+  /** Local kit previews remain available while calendar play locks commitment. */
+  previewDisabled?: boolean;
   readonly: boolean;
   /** Why the preview started again, after the next fixture changed under it. */
   notice: string;
@@ -80,6 +82,7 @@ export function FixtureKitView({
   fixture,
   role,
   disabled,
+  previewDisabled = disabled,
   readonly,
   notice,
   message,
@@ -164,7 +167,7 @@ export function FixtureKitView({
               role="radio"
               aria-checked={role === kit}
               aria-label={`우리 ${KIT_ROLE_LABELS[kit]} 유니폼`}
-              disabled={disabled}
+              disabled={previewDisabled}
               onClick={() => onSelect(kit)}
             >
               <KitSwatch
@@ -235,6 +238,8 @@ const selectKitWorld = worldSelector([
  */
 export function FixtureKitSelector({ client, blocked }: { client: GameClient; blocked: boolean }) {
   const w = useGameState(selectKitWorld);
+  const actionBlocked = useGameState(gameActionsBlocked);
+  const previewBlocked = useGameState((state) => gameActionsBlocked(state, { preview: true }));
   const readonly = useGameState((state) => state.readonly);
   const fixture = w ? nextOwnFixture(w) : undefined;
   // The previewed fixture and role; `pending` while the role differs from what is stored for it.
@@ -266,7 +271,7 @@ export function FixtureKitSelector({ client, blocked }: { client: GameClient; bl
   if (!w) return null;
 
   const submit = async (role: KitRole | null) => {
-    if (!fixture || stale || sending || blocked || readonly) return;
+    if (!fixture || stale || sending || blocked || actionBlocked) return;
     // The fixture the preview showed, never whichever one is next when the command runs.
     const fixtureId = fixture.id;
     setSending(true);
@@ -302,7 +307,8 @@ export function FixtureKitSelector({ client, blocked }: { client: GameClient; bl
       w={w}
       fixture={fixture}
       role={role}
-      disabled={blocked || readonly || sending || stale}
+      disabled={blocked || actionBlocked || sending || stale}
+      previewDisabled={previewBlocked || sending || stale || !!w.critical}
       readonly={readonly}
       notice={notice}
       message={message}

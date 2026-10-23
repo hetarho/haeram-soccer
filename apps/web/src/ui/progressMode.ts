@@ -2,23 +2,12 @@ import type { GameSettings, World } from '../../../../packages/contracts/src/typ
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { gameStore } from '../runtime/store';
+import { gameActionsBlocked, gameStore } from '../runtime/store';
 import { applyResponsibilitySettings } from './intervention';
 
 export function modeSwitchBlocked(state: ClientState) {
   const w = state.view?.world;
-  return (
-    !w ||
-    !!(
-      state.readonly ||
-      state.error ||
-      state.busy ||
-      state.processing ||
-      state.pendingActions ||
-      w.critical ||
-      w.bankrupt
-    )
-  );
+  return !w || !!(gameActionsBlocked(state) || w.critical || w.bankrupt);
 }
 export function settingsForMode(w: World, mode: GameSettings['mode']): GameSettings {
   const settings = settingsOf(w);
@@ -35,6 +24,8 @@ export async function switchProgressMode(
   controller: ProgressionController,
   expected: { id: string; mode: GameSettings['mode'] },
 ) {
+  if (modeSwitchBlocked(gameStore.getSnapshot()))
+    throw new Error('진행을 정지하고 날짜 처리가 끝난 뒤 변경해 주세요.');
   controller.pause();
   await client.whenIdle();
   const state = gameStore.getSnapshot(),

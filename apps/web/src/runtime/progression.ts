@@ -162,6 +162,7 @@ export class ProgressionController {
   private resumeAfterEvents = false;
   private timer: ReturnType<typeof setInterval>;
   private unsubscribe: () => void;
+  private unsubscribeClock: () => void;
   private inFlight = false;
   private suspensionSources = new Set<string>();
   private get suspended() {
@@ -191,6 +192,9 @@ export class ProgressionController {
     const initial = gameStore.getSnapshot().view?.world;
     this.mode = initial ? settingsOf(initial).mode : undefined;
     this.armed = this.worldId ? this.recordToResume(this.worldId) : undefined;
+    this.unsubscribeClock = this.store.subscribe((state, previous) => {
+      if (state.running !== previous.running) this.client.setClockRunning(state.running);
+    });
     // A season close is recorded, not a stop: its review waits in the league's season list, so a
     // running clock plays on into the next season (→WEB-47).
     this.unsubscribe = gameStore.subscribe((state) => {
@@ -484,6 +488,9 @@ export class ProgressionController {
       this.mode !== 'automatic' ||
       this.store.getState().watching ||
       this.suspended ||
+      state.processing ||
+      state.busy ||
+      state.pendingActions ||
       state.readonly ||
       state.error ||
       state.view?.world.critical ||
@@ -621,6 +628,7 @@ export class ProgressionController {
     if (this.inFlight) this.client.cancel();
     clearInterval(this.timer);
     this.unsubscribe();
+    this.unsubscribeClock();
     this.suspensionSources.clear();
   }
 }

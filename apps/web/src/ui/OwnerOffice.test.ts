@@ -38,6 +38,21 @@ beforeEach(() =>
 );
 afterEach(() => gameStore.setState(initialClientState, true));
 describe('owner office page', () => {
+  it('keeps every report/delegation/background edit disabled across automatic day calculations', () => {
+    for (const processing of [false, true, false]) {
+      gameStore.setState({ clockRunning: true, processing });
+      const markup = render();
+      const buttons = [...markup.matchAll(/<button([^>]*)>/g)];
+      expect(buttons).toHaveLength(21);
+      expect(buttons.every(([, attributes]) => attributes.includes('disabled=""'))).toBe(true);
+      expect(markup).toMatch(/<input[^>]*disabled=""/);
+      expect(markup).toMatch(/role="combobox"[^>]*disabled=""|disabled=""[^>]*role="combobox"/);
+    }
+    gameStore.setState({ clockRunning: false, processing: true });
+    expect(render()).toMatch(/<button[^>]*disabled=""/);
+    gameStore.setState({ processing: false });
+    expect(render()).not.toMatch(/<button[^>]*disabled=""/);
+  });
   it('renders applied authority pairs with no enclosing dialog or global apply footer', () => {
     const markup = render();
     expect(markup).toContain('data-testid="owner-office"');

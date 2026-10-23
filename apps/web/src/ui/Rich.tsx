@@ -42,7 +42,7 @@ import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { UNHAPPY_MORALE } from '../../../../packages/engine/src/morale';
 import { ratio } from '../../../../packages/engine/src/primitives';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
@@ -228,8 +228,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
     [tactic, setTactic] = useState(w.tactic),
     [tone, setTone] = useState('respect'),
     [requests, setRequests] = useState<StateKey>();
-  const acting = useGameState((state) => !!state.pendingActions);
-  const disabled = state.busy || state.readonly || acting;
+  const disabled = useGameState(gameActionsBlocked);
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
   // What a conditional acceptance asks the owner to put into training.
   const support = quote(c.country, w.year, 30);
@@ -385,8 +384,7 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [hiring, setHiring] = useState<string>(),
     [term, setTerm] = useState<ContractTerm>(1);
-  const acting = useGameState((state) => !!state.pendingActions);
-  const disabled = state.busy || state.readonly || acting;
+  const disabled = useGameState(gameActionsBlocked);
   const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
   // Replacing a contracted manager pays him 25% of his wage per season left; an interim leaves
   // freely.
@@ -837,8 +835,7 @@ function Roster({ state, client }: Props) {
     [stanceId, setStanceId] = useState<string>();
   const talkId = useContractTalk((state) => state.id),
     { open: openTalk, close: closeTalk } = useContractTalk.getState();
-  const acting = useGameState((state) => !!state.pendingActions);
-  const disabled = state.busy || state.readonly || acting;
+  const disabled = useGameState(gameActionsBlocked);
   const active = w.players.filter((p) => p.status === 'active');
   const registered = squadRegistration(w);
   const window = transferWindow(w);
