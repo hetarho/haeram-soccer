@@ -382,6 +382,21 @@ describe('candidate counting rules (→MATCH-13, MATCH-14, MATCH-30)', () => {
     expect([td[TD.throughBalls], td[TD.throughBallsCompleted]]).toEqual([2, 1]);
   });
 
+  it('a pass to a receiver already beyond the deepest defender is not a through ball (T397)', () => {
+    const { t, s } = placed({ GK: 104, DF: 85, MF: 60, FW: 40 });
+    const pass = (receiverAt: Point, to: Point) =>
+      t.passEvent(0, 7, { from: [70, 30], to, receiverAt, ok: true, kind: 'short' });
+    pass([84, 30], [90, 30]); // a runner level with the line, played in behind
+    pass([80, 40], [92, 40]); // a runner short of the line, played in behind
+    pass([88, 30], [90, 30]); // already past the line: to his feet, not into the space
+    pass([92, 30], [95, 30]);
+    // A restart's receiver stands where the ball goes, so one past the line is no through ball.
+    s.players[0][9]!.pos = [90, 30];
+    t.restartPass(0, 4, [70, 30], received(9, [90, 30]));
+    const td = counted(t, s);
+    expect([td[TD.throughBalls], td[TD.throughBallsCompleted]]).toEqual([2, 2]);
+  });
+
   it("keeps PPDA's build-up zone the same on both paths", () => {
     // The zones sit on MATCH-14's bands: the final third from 70 m, the press from 35 m.
     expect(BAND_EDGES[COUNTER_ZONES.finalThird]).toBe(70);
