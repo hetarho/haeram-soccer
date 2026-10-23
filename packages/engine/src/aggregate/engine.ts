@@ -143,6 +143,24 @@ export function matchdayRosters(
 }
 
 /** What the participation plan reads of each matchday line and side. */
+/**
+ * A substitute's levels at the formation's `size` slots, each computed on its first read and
+ * kept (T326): the same values as computing them all, for only the slots a change asks about.
+ */
+function lazySlotLevels(size: number, level: (slot: number) => number): readonly number[] {
+  const levels: (number | undefined)[] = Array<number | undefined>(size).fill(undefined);
+  return new Proxy(levels as number[], {
+    get(target, key, receiver) {
+      if (typeof key === 'string') {
+        const slot = Number(key);
+        if (Number.isInteger(slot) && slot >= 0 && slot < size)
+          return (levels[slot] ??= level(slot));
+      }
+      return Reflect.get(target, key, receiver) as unknown;
+    },
+  });
+}
+
 export function aggregatePlan(
   w: World,
   prepared: Prepared,
@@ -161,8 +179,9 @@ export function aggregatePlan(
       stamina: p.attrs.stamina,
       injury: injuryChance(p, pressing),
       reflexes: p.attrs.reflexes,
-      // Only the bench is chosen by slot level (→MATCH-20).
-      slotLevel: index < 11 ? [] : slots.map((slot) => slotOvr(p, slot, multiplier(p))),
+      // Only the bench is chosen by slot level (→MATCH-20), each slot's read when first asked.
+      slotLevel:
+        index < 11 ? [] : lazySlotLevels(slots.length, (i) => slotOvr(p, slots[i]!, multiplier(p))),
       traits: p.traits,
     }));
     return {
