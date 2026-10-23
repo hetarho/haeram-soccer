@@ -103,7 +103,9 @@ interface CandidateDigests {
  * delivery handed the ball to nobody, moved five positions digests and no facts: nobody runs to
  * press him while the ball is in the air (1975 a23abe6daaceace9 and 0818c79f81f161a0, 1995
  * shoot-out 630da178551d5a75, 2024 81c845a7261a92d7 and 0323962fb6ef130c before); the knockout
- * ties still reach extra time and penalties.
+ * ties still reach extra time and penalties. T376's recorded ball holders in each frame moved
+ * every positions digest and no facts (1975 967b2eed08697522 and 958e5c78b5f4a9aa, 1995
+ * 84033ff29b355614 and c2babed2dbf8f2f0, 2024 d9194bb1f9e70b22 and f758ad0b3ed9de74 before).
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
@@ -112,7 +114,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '3e3145221e46dcfb',
       shootout: 'a271a9f3a52a6427',
     },
-    positions: { observed: '967b2eed08697522', shootout: '958e5c78b5f4a9aa' },
+    positions: { observed: '0dcfc030250a3ea7', shootout: '0ae0272cb2bf14df' },
   },
   1995: {
     facts: {
@@ -120,7 +122,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '781d87e697e93dc9',
       shootout: 'fab640b81546a4ee',
     },
-    positions: { observed: '84033ff29b355614', shootout: 'c2babed2dbf8f2f0' },
+    positions: { observed: 'b4a1348d1539eebc', shootout: '49d495161061efad' },
   },
   2024: {
     facts: {
@@ -128,7 +130,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '4dc91004081853d5',
       shootout: '586bb36d3e8eb92c',
     },
-    positions: { observed: 'd9194bb1f9e70b22', shootout: 'f758ad0b3ed9de74' },
+    positions: { observed: '844d51fd7ed5c406', shootout: 'ebe28ad0cebf3c25' },
   },
 };
 
