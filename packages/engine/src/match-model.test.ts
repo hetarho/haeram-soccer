@@ -5,10 +5,20 @@ import {
   MATCH_MODEL_REVISION,
   type FullMatchRecord,
 } from '../../contracts/src/match-model';
+import { canonical } from '../../contracts/src/index';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { upgradeWorldRules } from '../../contracts/src/versions';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { currentDay } from './calendar';
 import { M } from './grid/record';
-import { assertFullMatchRecord, MATCH_MODEL_RELEASE, validateFullMatchRecord } from './match-model';
+import { createWorld } from './index';
+import {
+  activateMatchModel,
+  assertFullMatchRecord,
+  MATCH_MODEL_RELEASE,
+  validateFullMatchRecord,
+} from './match-model';
+import { trackingBoundary } from './npc-stats';
 import { zeroMetrics } from './primitives';
 
 /** A synthetic 1–0: eleven lines a side, a scorer, his creator and one passer for the away side. */
@@ -225,5 +235,75 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
     expect(validateFullMatchRecord(off)).toEqual([]);
     off.players[15]!.metrics[M.minutes] = 90;
     expect(validateFullMatchRecord(off).join()).toMatch(/a:4 minutes 90 for 0′–40′/);
+  });
+});
+
+describe('prospective activation (→SAVE-23, HIST-17)', () => {
+  const founding = {
+    country: 'ENG' as const,
+    name: 'Model Athletic',
+    color: '#224466',
+    seed: 'match-model',
+    level: 'normal' as const,
+  };
+  const enabled = { ...MATCH_MODEL_RELEASE, enabled: true };
+
+  it('records the model from founding or from the next unplayed day', () => {
+    const founded = simulatedWorld(founding);
+    const boundary = trackingBoundary(founded);
+    expect(activateMatchModel(founded, enabled)).toBe(true);
+    expect(founded.matchModel).toEqual({
+      revision: MATCH_MODEL_REVISION,
+      activated: { year: founded.year, day: currentDay(founded), revision: founded.revision },
+      trackedFrom: boundary,
+      coverage: 'founding',
+    });
+    expect(founded.npcSeason).toEqual({
+      year: founded.year,
+      model: MATCH_MODEL_REVISION,
+      trackedFrom: boundary,
+      competitions: [],
+    });
+    // Founding with the switch on is the same career recorded from its first day.
+    expect(canonical(createWorld(founding, enabled))).toBe(canonical(founded));
+    expect(createWorld(founding).matchModel).toBeUndefined();
+    // Mid-season only the model and its empty ledger are added; every settled fact stays.
+    const played = simulatedWorld(founding, { rounds: 2 });
+    const before = structuredClone(played);
+    expect(activateMatchModel(played, enabled)).toBe(true);
+    expect(played.matchModel).toMatchObject({
+      trackedFrom: trackingBoundary(before),
+      coverage: 'activation',
+    });
+    expect(played.npcSeason!.competitions).toEqual([]);
+    const { matchModel: _model, npcSeason: _season, ...rest } = played;
+    void _model;
+    void _season;
+    expect(canonical(rest)).toBe(canonical(before));
+    expect(played.ownMatches.length).toBeGreaterThan(0);
+    expect(played.ownMatches.every((m) => m.model === undefined)).toBe(true);
+  });
+
+  it('activateMatchModel leaves a disabled release, a modelled world and earlier rules untouched', () => {
+    const untouched = (w: World, release = enabled) => {
+      const before = canonical(w);
+      expect(activateMatchModel(w, release)).toBe(false);
+      expect(canonical(w)).toBe(before);
+    };
+    const w = simulatedWorld(founding, { rounds: 2 });
+    untouched(w, MATCH_MODEL_RELEASE);
+    expect(w.matchModel).toBeUndefined();
+    // A recorded model is the career's model: never moved to a later boundary.
+    const modelled = structuredClone(w);
+    activateMatchModel(modelled, enabled);
+    modelled.round++;
+    untouched(modelled);
+    // Any model data counts, a single full record included.
+    const recorded = structuredClone(w);
+    recorded.ownMatches.at(-1)!.model = MATCH_MODEL_REVISION;
+    untouched(recorded);
+    const earlier = structuredClone(w);
+    earlier.engine = '3.0.0';
+    untouched(earlier);
   });
 });

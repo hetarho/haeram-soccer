@@ -20,7 +20,11 @@ import {
   europeanCoefficient,
   clubNews,
   installMissingIdentities,
+  activateMatchModel,
+  activatesMatchModel,
+  MATCH_MODEL_RELEASE,
   BANKRUPT_MESSAGE,
+  type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
@@ -59,6 +63,17 @@ function adoptIdentities(w: World, revised: boolean): World {
   }
   return candidate;
 }
+/**
+ * Whether `live` has settled an own match that `candidate`, a checkpoint of the same career, does
+ * not hold yet: a queued or revealed playback (or a day step's result) still ahead of that
+ * checkpoint. Loading the checkpoint replays the fixture, and it must replay under the model it
+ * was settled with, so the match-model activation waits for a checkpoint that holds it (→SAVE-23).
+ */
+function settledAhead(live: World | undefined, candidate: World) {
+  if (live?.id !== candidate.id) return false;
+  const held = new Set(candidate.ownMatches.map((m) => m.id));
+  return live.ownMatches.some((m) => !held.has(m.id));
+}
 /** A view part as JSON, to compare with the last one sent; none when it cannot be written so. */
 function partText(value: unknown) {
   try {
@@ -88,7 +103,32 @@ export class Host {
   cancelled = false;
   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
   codec?: { postMessage(job: CodecJob): void };
-  constructor(private progress: (reply: Reply) => void = () => {}) {}
+  /** Whether founding and writer activation record the full match model; only tests set it. */
+  private release: MatchModelRelease;
+  constructor(
+    private progress: (reply: Reply) => void = () => {},
+    options: { release?: MatchModelRelease } = {},
+  ) {
+    this.release = options.release ?? MATCH_MODEL_RELEASE;
+  }
+  /**
+   * SAVE-23: a copy of the validated candidate on the full match model, or the candidate itself
+   * when the release is off, it already carries model data (its recorded model is kept whatever
+   * the switch says), its rules are earlier or this career's live world has settled an own match
+   * the checkpoint lacks (activation then waits for a checkpoint that holds it). Like identity
+   * adoption, the revision moves once, and the model records the revision it is written in.
+   */
+  private adoptModel(w: World, revised: boolean): World {
+    if (!activatesMatchModel(w, this.release) || settledAhead(this.world, w)) return w;
+    const candidate = structuredClone(w);
+    if (!revised) {
+      if (!Number.isSafeInteger(candidate.revision + 1))
+        throw new Error('저장 revision 범위를 초과했습니다.');
+      candidate.revision++;
+    }
+    activateMatchModel(candidate, this.release);
+    return candidate;
+  }
   handle(input: unknown): Promise<Reply> {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
@@ -348,12 +388,13 @@ export class Host {
         const rules = r.body.upgrade
           ? upgradeWorldRules(result.world, CURRENT_CATALOG)
           : result.world;
-        // Only the writer's activation adopts missing identities (→SAVE-21); inspection and
-        // read-only tabs keep the career exactly as stored.
-        const activated =
-          r.body.activate && r.body.upgrade
-            ? adoptIdentities(rules, rules !== result.world)
-            : rules;
+        // Only the writer's activation adopts missing identities (→SAVE-21) and records the full
+        // match model (→SAVE-23); inspection and read-only tabs keep the career exactly as stored.
+        const writer = r.body.activate && r.body.upgrade;
+        const identified = writer ? adoptIdentities(rules, rules !== result.world) : rules;
+        const activated = writer
+          ? this.adoptModel(identified, identified !== result.world)
+          : identified;
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
@@ -363,7 +404,7 @@ export class Host {
       } else if (r.body.type === 'found') {
         if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
-        this.world = createWorld(r.body.input);
+        this.world = createWorld(r.body.input, this.release);
         changed = true;
       } else {
         const w = this.world;

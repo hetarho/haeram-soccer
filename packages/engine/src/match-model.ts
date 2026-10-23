@@ -4,25 +4,63 @@
  */
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
 import {
+  carriesMatchModel,
   isMatchModelRevision,
   MATCH_MODEL_REVISION,
   type FullMatchRecord,
   type MatchModelRevision,
 } from '../../contracts/src/match-model';
-import type { Incident, MatchRecord, Metrics } from '../../contracts/src/types';
+import type { Incident, MatchRecord, Metrics, World } from '../../contracts/src/types';
+import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
+import { currentDay } from './calendar';
 import { M } from './grid/record';
 import { eraRules } from './grid/setup';
+import { openNpcSeason, trackingBoundary } from './npc-stats';
 import { zeroMetrics } from './primitives';
 
+/** Which model a release activates and whether it activates at all. */
+export interface MatchModelRelease {
+  readonly revision: MatchModelRevision;
+  readonly enabled: boolean;
+}
 /**
  * The internal release switch: off until the combined accuracy, compatibility, storage and speed
  * gates pass (→MATCH-28, ARCH-31). While off no world activates the candidate; tests and
- * measurements request it explicitly, and no player control or timing ever selects it.
+ * measurements pass an enabled release explicitly, and no player control or timing ever selects it.
  */
-export const MATCH_MODEL_RELEASE: {
-  readonly revision: MatchModelRevision;
-  readonly enabled: boolean;
-} = { revision: MATCH_MODEL_REVISION, enabled: false };
+export const MATCH_MODEL_RELEASE: MatchModelRelease = {
+  revision: MATCH_MODEL_REVISION,
+  enabled: false,
+};
+
+/**
+ * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world carries
+ * no model data yet and plays the current rules (4.0.0, →SAVE-19); earlier rules never activate.
+ */
+export const activatesMatchModel = (w: World, release: MatchModelRelease) =>
+  release.enabled && !carriesMatchModel(w) && w.engine === CURRENT_ENGINE_VERSION;
+
+/**
+ * Records the full match model on `w` prospectively (→SAVE-23, HIST-17): the revision, the game
+ * date and world revision it was recorded at, where its counters start (`trackingBoundary`) and the
+ * coverage — `founding` for a world with no settled round and no own match, `activation` otherwise
+ * — then opens the season's empty aggregates from that boundary. Settled fixtures, records, money,
+ * dates and people stay as they are: nothing is replayed or backfilled, and only fixtures not yet
+ * played use the model. Returns whether it activated; a disabled release, a world already carrying
+ * model data or earlier rules leave `w` untouched. Callers own the safe boundary and the revision.
+ */
+export function activateMatchModel(w: World, release: MatchModelRelease): boolean {
+  if (!activatesMatchModel(w, release)) return false;
+  const trackedFrom = trackingBoundary(w);
+  w.matchModel = {
+    revision: release.revision,
+    activated: { year: w.year, day: currentDay(w), revision: w.revision },
+    trackedFrom,
+    coverage: w.round === 0 && w.ownMatches.length === 0 ? 'founding' : 'activation',
+  };
+  openNpcSeason(w, trackedFrom);
+  return true;
+}
 
 const sides = [0, 1] as const;
 const METRICS_SIZE = zeroMetrics().length;

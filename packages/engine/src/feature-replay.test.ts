@@ -1,10 +1,15 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
+import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
+import { FULL_MODEL_CHECKPOINT_SCHEMA } from '../../contracts/src/versions';
+import type { World } from '../../contracts/src/types';
 import { Host } from '../../../apps/web/src/runtime/host';
+import type { Body } from '../../../apps/web/src/runtime/protocol';
+import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { createWorld, currentDay, advanceDays } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { createWorld, currentDay, advanceDays, fixtureDay, fullStatsRead } from './index';
+import { cachedWorld, ENABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 import { command, facts, readAndReload } from './feature-replay.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -74,3 +79,100 @@ for (const retained of [false])
     },
     retained ? 480000 : undefined,
   );
+
+describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
+  const founding = {
+    country: 'ENG' as const,
+    name: 'Feature Replay',
+    color: '#224466',
+    seed: 'feature-replay',
+    level: 'easy' as const,
+  };
+  let serial = 0;
+  async function send(host: Host, body: Body) {
+    const reply = await host.handle({
+      protocol: 1,
+      session: 'activation',
+      requestId: `activation-${++serial}`,
+      expectedRevision: host.world?.revision ?? -1,
+      generation: 1,
+      parentGeneration: 0,
+      body,
+    });
+    expect(reply.ok, reply.error).toBe(true);
+    return reply;
+  }
+  const load = (host: Host, raw: string) =>
+    send(host, { type: 'inspect', raw, activate: true, upgrade: true });
+  /** A supported career three rounds in, activated by its writer, then played to an own result. */
+  let built: Promise<{ before: World; at: World; host: Host }> | undefined;
+  const activated = () =>
+    (built ??= (async () => {
+      const before = simulatedWorld(founding, { rounds: 3 });
+      const host = new Host(undefined, { release: ENABLED_RELEASE });
+      await load(host, await encode(before));
+      const at = structuredClone(host.world!);
+      for (let n = 0; n < 3 && host.world!.ownMatches.length === before.ownMatches.length; n++)
+        await send(host, { type: 'command', command: { type: 'advance', rounds: 1 } });
+      return { before, at, host };
+    })());
+
+  it('never backfills old statistics', async () => {
+    const { before, at, host } = await activated();
+    const own = before.fixtures.find(
+      (f) => f.home === before.playerClub || f.away === before.playerClub,
+    )!;
+    const scope = { kind: own.kind as 'league' | 'lower', groupKey: own.groupKey };
+    const played = (w: World) =>
+      w.fixtures.filter((f) => f.kind === own.kind && f.groupKey === own.groupKey && f.score);
+    const earlier = played(before);
+    expect(earlier.length).toBeGreaterThan(0);
+    // At activation the ledger starts empty at the boundary; earlier fixtures are untracked, not 0.
+    expect(fullStatsRead(at, scope)).toEqual({
+      year: at.year,
+      trackedFrom: at.matchModel!.trackedFrom,
+      untracked: earlier.length,
+      competition: { ...scope, clubs: [], players: [] },
+    });
+    // The settled past stays as it was: own records, tables and history.
+    expect(at.matchModel!.coverage).toBe('activation');
+    expect(canonical(at.ownMatches)).toBe(canonical(before.ownMatches));
+    expect(canonical(at.tables)).toBe(canonical(before.tables));
+    expect(canonical(at.history)).toBe(canonical(before.history));
+    // Played on, only the fixtures from the boundary count.
+    const w = host.world!;
+    const later = played(w).filter((f) => fixtureDay(f) >= at.matchModel!.trackedFrom.day);
+    expect(later.length).toBeGreaterThan(0);
+    const read = fullStatsRead(w, scope)!;
+    expect(read.untracked).toBe(earlier.length);
+    expect(read.competition.clubs.reduce((n, club) => n + club.matches, 0)).toBe(2 * later.length);
+    expect(canonical(w.ownMatches.slice(0, before.ownMatches.length))).toBe(
+      canonical(before.ownMatches),
+    );
+  });
+
+  it('reload and import preserve full aggregates and appearances', async () => {
+    const { before, host } = await activated();
+    const w = host.world!;
+    const added = w.ownMatches.slice(before.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === MATCH_MODEL_REVISION && m.appearance)).toBe(true);
+    expect(w.npcSeason!.competitions.length).toBeGreaterThan(0);
+    // A reload follows the recorded model whatever the switch says, and writes nothing.
+    const reloaded = new Host();
+    expect((await load(reloaded, await encode(w))).upgraded).toBeUndefined();
+    // An exported file imported into a writer with the switch on is not activated again.
+    const exported = (await send(host, { type: 'export' })).raw!;
+    expect((await decode(exported)).envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    const imported = new Host(undefined, { release: ENABLED_RELEASE });
+    expect((await load(imported, exported)).upgraded).toBeUndefined();
+    for (const copy of [reloaded.world!, imported.world!]) {
+      expect(copy.npcSeason).toEqual(w.npcSeason);
+      expect(copy.matchModel).toEqual(w.matchModel);
+      expect(copy.ownMatches.map((m) => m.appearance)).toEqual(
+        w.ownMatches.map((m) => m.appearance),
+      );
+      expect(canonical(copy)).toBe(canonical(w));
+    }
+  });
+});
