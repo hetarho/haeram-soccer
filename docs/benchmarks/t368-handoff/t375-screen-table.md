@@ -32,6 +32,20 @@ pairing resolves few rows, so its count is read beside press's points and gaps.
 | b30 | 27/38 | 6/23 | 2/25 | 1.69 [1.59, 1.80] | 2.73 [2.60, 2.86]~ | 12.7 [12.5, 13.0] | 7.1 [6.6, 7.5] | 41.7 [40.9, 42.6]~ | 17.80 [17.65, 17.94] | 27.3 [24.9, 29.6]~ | 63.8 [61.3, 66.4]✗ | 8.96 [8.63, 9.29]✗ | 5.90 [5.68, 6.12]✗ | 23.5 [23.2, 23.8]✗ | 4.16 [4.11, 4.21]✗ | 0.345 [0.216, 0.474]✗ | -0.167 [-0.312, -0.021]~ | 0.333 [0.190, 0.477]✗ | 0.217 [0.069, 0.364]~ | 3.61 |
 | l08b | 29/38 | 5/23 | 3/25 | 1.77 [1.66, 1.88] | 2.89 [2.76, 3.02]~ | 12.9 [12.7, 13.2] | 7.7 [7.2, 8.1] | 40.2 [39.3, 41.1] | 17.49 [17.34, 17.63] | 26.2 [24.1, 28.4]~ | 65.0 [62.6, 67.4]✗ | 11.44 [11.04, 11.83]✗ | 7.87 [7.60, 8.15]✗ | 24.4 [24.1, 24.7]✗ | 4.28 [4.23, 4.33]✗ | 0.336 [0.205, 0.467]✗ | -0.117 [-0.274, 0.041]~ | 0.333 [0.187, 0.479]✗ | 0.233 [0.094, 0.373]~ | 3.78 |
 
+## the held line's cost
+
+`prof.mts --count 40 --round 41 --partition calibration` (the first 40 core matches of calibration
+round 41, candidate model), one after another on a host also running two screen chains (10 of 12
+cores busy), so the times are relative:
+
+| tree | ms a match | facts digest |
+|---|---|---|
+| q12 (649410ac, a line read per holder) | 512.1 | 308ddefc684d421f |
+| q12 with one line read a step for all holders (25760709, new settings at 0) | 415.5 | 308ddefc684d421f |
+| T373's football | 394.9 | 54131f8153ee889c |
+
+The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to 1.05× T373's.
+
 ## reading so far
 
 - q12 on round 50 repeats T374's validation: press's points 0.199 → 0.430 (band: within 0.15 of the
