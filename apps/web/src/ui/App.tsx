@@ -1083,9 +1083,11 @@ export function App() {
     const root = scroller.current;
     if (!root) return;
     const desired = useTaskMemory.getState().scrolls[taskAddress()] ?? 0;
-    root.scrollTo(0, desired);
+    // The options form: WebKit ignores scrollTo(0, 0) from a 2 px offset, so home kept the
+    // office's scroll (CI 39952590526).
+    root.scrollTo({ top: desired });
     // Lazy screens may not have their final height at the navigation boundary.
-    const resize = new ResizeObserver(() => root.scrollTo(0, desired));
+    const resize = new ResizeObserver(() => root.scrollTo({ top: desired }));
     const body = root.firstElementChild;
     if (desired && body) resize.observe(body);
     const timer = window.setTimeout(() => resize.disconnect(), 500);
