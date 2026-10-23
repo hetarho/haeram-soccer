@@ -13,6 +13,7 @@ import { clamp, random } from '../primitives';
 import { AGGREGATE_CONFIG as C } from './config';
 import { participationIssues, sideCards, sideUnits, type AggregateUnits } from './input';
 import { deriveTeamFacts, inBoxCell, inGoalAreaCell } from './ledger';
+import { noneOf } from './participation';
 import type {
   AggregateFouls,
   AggregateInput,
@@ -77,7 +78,7 @@ function binomial(r: Rng, n: number, p: number): number {
   const ratio = p / (1 - p),
     u = r();
   let k = 0,
-    pk = (1 - p) ** n,
+    pk = noneOf(1 - p, n),
     cdf = pk;
   while (u > cdf && k < n) {
     pk *= ((n - k) / (k + 1)) * ratio;
@@ -685,9 +686,21 @@ function setPieceShots(m: Match, p: Period, side: AggregateSide, r: Rng) {
     if (delivered)
       deliver(f.cell, 'freeKick', delivered, C.crosses.completion, C.setPieces.deliveryShot);
   }
-  const won = () =>
-    own.shots.reduce((n, s) => n + (s.period === p.period && s.corner ? 1 : 0), 0) +
-    own.moves.reduce((n, mv) => n + (mv.period === p.period ? mv.cornersWon : 0), 0);
+  // Corners won so far, counted once per shot and group as they are added (T326).
+  let counted = 0,
+    shotsSeen = 0,
+    movesSeen = 0;
+  const won = () => {
+    for (; shotsSeen < own.shots.length; shotsSeen++) {
+      const s = own.shots[shotsSeen]!;
+      if (s.period === p.period && s.corner) counted++;
+    }
+    for (; movesSeen < own.moves.length; movesSeen++) {
+      const mv = own.moves[movesSeen]!;
+      if (mv.period === p.period) counted += mv.cornersWon;
+    }
+    return counted;
+  };
   let taken = 0;
   for (let pending = won(); pending > 0; pending = won() - taken) {
     const from = cell(7, r() < 0.5 ? 0 : 4);

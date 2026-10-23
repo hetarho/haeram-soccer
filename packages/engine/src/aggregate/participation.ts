@@ -78,7 +78,7 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
   const ratio = p / (1 - p),
     u = r();
   let k = 0,
-    pk = (1 - p) ** n,
+    pk = noneOf(1 - p, n),
     cdf = pk;
   while (u > cdf && k < n) {
     pk *= ((n - k) / (k + 1)) * ratio;
@@ -87,6 +87,12 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
   }
   return k;
 }
+/**
+ * `q ** n`, the chance that none of `n` trials succeeds: one or two trials by product, which
+ * equals the power exactly (IEEE pow returns x for y = 1 and x·x for y = 2), without the power's
+ * cost on the many groups of one or two (T326).
+ */
+export const noneOf = (q: number, n: number) => (n === 1 ? q : n === 2 ? q * q : q ** n);
 /**
  * Splits `n` over `weights` exactly, all of it when any weight is positive: unit by unit when
  * there are fewer units than weights, otherwise by sequential binomials.
