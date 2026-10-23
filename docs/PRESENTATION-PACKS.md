@@ -56,8 +56,11 @@ These are the current contents, not a permanent limit or a supported-ID list in 
 
 The print and sticker concepts replace complete resource sets rather than only accent colours.
 Both retain licensed Pretendard for body, display and score roles and the common responsive layouts.
-The print pack's imported shell/home and UI stylesheets reuse fixed-corner image frames, independently
-tiled paper/ink/red materials and stamped pictograms across all screens. Generic `data-surface="panel"`
+The print and sticker packs import shared `image-ui-shell.css` and `image-ui-controls.css` rules.
+Each pack binds its own fixed-corner image frames, independently tiled materials and pictograms
+through scoped CSS variables across all screens. Print retains its paper/ink/red materials and
+stamped silhouettes; sticker uses cream/forest/orange materials, rounded die-cut frames and full-color
+stickers without monochrome masking. Generic `data-surface="panel"`
 and `data-ui` roles mark reusable panels, primary actions, inline links, icon controls, dialogs, the
 game shell and its sidebar; these attributes contain no theme IDs and do not affect alternative packs. Live text,
 tables, inputs and engine-owned diagrams retain their HTML and game behavior. Shell-only artwork
@@ -69,6 +72,13 @@ remain in `apps/web/design/home-themes`. Deployed resources and provenance live 
 `apps/web/public/art/matchday-print/home`. `node scripts/prepare-print-home.mjs` slices and encodes
 the shared UI assets; `--check` verifies their deployed checksums without writing. See the source
 directory's [README](../apps/web/design/home-print/README.md) for prerequisites and retained files.
+Sticker sources and exact prompts live in `apps/web/design/sticker-club`; its 31 deployed UI assets
+and provenance live in `apps/web/public/art/sticker-club/ui`. Run
+`node scripts/prepare-sticker-ui.mjs` to regenerate them or append `--check` to verify their hashes.
+Both preparation commands use `scripts/ui-art-resources.mjs` for decoding, cropping and WebP encoding.
+Sticker silhouettes are isolated before cropping, so minor generated grid-gutter offsets do not
+clip their cream rims. Keep the pinned project toolchain, Playwright Chromium, `ffmpeg` and `ffprobe`
+available for regeneration; hash checks only need Node and the deployed resources.
 Small inset tiles, sticky toolbars and count/status badges use the same material inventory. Table
 headers and pinned cells paint their own opaque ink/paper tiles so horizontal scrolling preserves
 the print treatment and text contrast. Shared selected controls allow pack styles to supply their

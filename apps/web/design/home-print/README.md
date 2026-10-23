@@ -17,6 +17,8 @@ resources and their manifest in `apps/web/public/art/matchday-print/home/`. This
 installed project dependencies, Playwright Chromium, `ffmpeg` and `ffprobe`. Use the pinned
 project toolchain when regenerating. `node scripts/prepare-print-home.mjs --check` verifies the
 deployed hashes without requiring the image conversion tools or launching a browser.
+The preparation pipeline is shared with Sticker Football Club in `scripts/ui-art-resources.mjs`;
+the print crops, encoding parameters and deployed artwork retain their existing output.
 
 Review screenshots and comparison galleries are disposable. Store new captures in ignored
 `.tmp/` and record their findings in the task result. Follow the

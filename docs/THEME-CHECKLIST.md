@@ -13,7 +13,9 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       Inventory shared surfaces before drawing individual screens.
 - [ ] Retain editable source assets, prompts, provenance, licenses and a reproducible preparation
       command. Matchday Print UI sources are in `apps/web/design/home-print/`; the original print
-      and sticker references are in `apps/web/design/home-themes/`.
+      and sticker references are in `apps/web/design/home-themes/`. Sticker UI sources are in
+      `apps/web/design/sticker-club/`; both packs reuse the shared image-UI stylesheets and media
+      preparation helper while retaining separate resource bindings.
 - [ ] Separate artwork from live HTML text, numbers, forms, tables and accessible labels. Keep
       theme changes independent of engine facts, club identity and the live-pitch renderer.
 
@@ -25,6 +27,8 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       pressed, disabled and keyboard-focus states. Preserve semantic status meanings.
 - [ ] Check transparent atlas gutters, crop bounds, repeat seams, image density and text contrast.
       Grain belongs behind text; it must not filter or distort the text itself.
+      Generated atlas grids can drift: inspect full silhouettes before cropping to avoid clipped
+      sticker rims. Render colorful stickers as images rather than monochrome masks.
 - [ ] Encode appropriately sized production assets, keep shared materials reusable and record
       checksums. Keep a readable fallback when decorative CSS images cannot load.
 

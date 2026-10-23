@@ -1,26 +1,8 @@
-/* Shared print shell and approved home. Artwork supplies surfaces; HTML retains live content.
-   Frames use fixed nine-slice corners, repeatable paper/ink tiles and independent icons. */
-html[data-theme='matchday-print'] {
-  --print-paper: url('../../art/matchday-print/home/paper.webp');
-  --print-quiet: url('../../art/matchday-print/home/paper-quiet.webp');
-  --print-ink: url('../../art/matchday-print/home/ink.webp');
-  --print-red: url('../../art/matchday-print/home/vermilion.webp');
-  --print-ticket: url('../../art/matchday-print/home/frame-ticket.webp');
-  --print-stamp: url('../../art/matchday-print/home/frame-stamp.webp');
-  --print-dark-frame: url('../../art/matchday-print/home/frame-dark.webp');
-  --print-tile: url('../../art/matchday-print/home/frame-tile.webp');
-  --print-button: url('../../art/matchday-print/home/frame-button.webp');
-  --print-selected: url('../../art/matchday-print/home/frame-selected.webp');
-  --page-grain: none;
-  --surface-grain: none;
-  --text: #24231e;
-  --text-muted: #39372e;
-  --text-faint: #4c473b;
-  --accent-text: #a62e20;
-  --focus: #9a271c;
-
+/* Shared image-built shell and home. Artwork supplies surfaces; HTML retains live content.
+   Frames use fixed nine-slice corners, independent material tiles and independent icons. */
+html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   body {
-    background: #eddfc3 var(--print-paper) repeat;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: 512px;
     color: var(--text);
   }
@@ -31,7 +13,7 @@ html[data-theme='matchday-print'] {
 
   [data-ui='game-shell'] > main {
     --gutter: 28px;
-    background: #eddfc3 var(--print-paper) repeat;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: 512px;
   }
 
@@ -56,21 +38,20 @@ html[data-theme='matchday-print'] {
     padding: 26px 18px 24px;
     gap: 22px;
     overflow-x: hidden;
-    color: #f2e6c9;
-    background: #24231e var(--print-ink) repeat;
+    color: var(--image-on-dark);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     background-size: 320px;
     border-right: 6px solid transparent;
-    border-image: var(--print-dark-frame) 40 / 0 4px 0 0 stretch;
-    --text: #f2e6c9;
-    --text-muted: #f2e6c9;
-    --text-faint: #e7d8b7;
+    border-image: var(--image-dark-frame) 40 / 0 4px 0 0 stretch;
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-on-dark-muted);
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child {
     padding-bottom: 24px;
     border: 0;
-    background: url('../../art/matchday-print/home/rule-light.webp') left bottom / 100% 3px
-      no-repeat;
+    background: var(--image-art-rule-light) left bottom / 100% 3px no-repeat;
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child > i {
@@ -84,7 +65,7 @@ html[data-theme='matchday-print'] {
     overflow: hidden;
     color: transparent;
     font-size: 0;
-    background: url('../../art/matchday-print/home/masthead.webp') center / contain no-repeat;
+    background: var(--image-art-masthead) center / contain no-repeat;
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:first-child > span,
@@ -93,7 +74,7 @@ html[data-theme='matchday-print'] {
     font-size: 12px;
     line-height: 1.5;
     letter-spacing: 2.4px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] nav {
@@ -101,17 +82,16 @@ html[data-theme='matchday-print'] {
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] nav button {
-    --print-icon: none;
+    --image-icon: none;
     position: relative;
     min-height: 62px;
     gap: 12px;
     padding: 8px 12px;
     border: 7px solid transparent;
     border-image: none;
-    border-radius: 0;
-    background: url('../../art/matchday-print/home/rule-light.webp') left bottom / 100% 2px
-      no-repeat;
-    color: #f2e6c9;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-art-rule-light) left bottom / 100% 2px no-repeat;
+    color: var(--image-on-dark);
     font-size: 17px;
     font-weight: 750;
     white-space: nowrap;
@@ -126,57 +106,57 @@ html[data-theme='matchday-print'] {
     flex: 0 0 34px;
     width: 34px;
     height: 38px;
-    background: #f2e6c9;
-    mask: var(--print-icon) center / contain no-repeat;
+    background: var(--image-on-dark);
+    mask: var(--image-icon) center / contain no-repeat;
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page'] {
-    border-image: var(--print-selected) 48 / 10px stretch;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-selected-frame) 48 / 10px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
-    color: #fff1d8;
+    color: var(--image-on-primary);
   }
 
   [data-ui='game-shell']
     > [data-ui='sidebar']
     nav
     button:hover:not(:disabled):not([aria-current='page']) {
-    background-color: #f4e5c514;
+    background-color: var(--image-sidebar-hover);
   }
 
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='home']) {
-    --print-icon: url('../../art/matchday-print/home/icon-home.webp');
+    --image-icon: var(--image-art-icon-home);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='table']) {
-    --print-icon: url('../../art/matchday-print/home/icon-league.webp');
+    --image-icon: var(--image-art-icon-league);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='cup']) {
-    --print-icon: url('../../art/matchday-print/home/icon-cup.webp');
+    --image-icon: var(--image-art-icon-cup);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='history']) {
-    --print-icon: url('../../art/matchday-print/home/icon-history.webp');
+    --image-icon: var(--image-art-icon-history);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='people']) {
-    --print-icon: url('../../art/matchday-print/home/icon-people.webp');
+    --image-icon: var(--image-art-icon-people);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='training']) {
-    --print-icon: url('../../art/matchday-print/home/icon-training.webp');
+    --image-icon: var(--image-art-icon-training);
   }
   :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
     button:has([data-pixel-icon='trend']) {
-    --print-icon: url('../../art/matchday-print/home/icon-office.webp');
+    --image-icon: var(--image-art-icon-office);
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child {
     position: relative;
     padding-top: 190px;
-    color: #eddfc3;
+    color: var(--image-canvas);
     font-size: 12px;
     line-height: 1.8;
   }
@@ -186,7 +166,7 @@ html[data-theme='matchday-print'] {
     position: absolute;
     inset: 0 -18px auto;
     height: 175px;
-    background: url('../../art/matchday-print/home/sidebar-terrace.webp') center / cover no-repeat;
+    background: var(--image-art-sidebar-terrace) center / cover no-repeat;
     mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
     pointer-events: none;
   }
@@ -196,12 +176,12 @@ html[data-theme='matchday-print'] {
     margin-top: 10px;
     border: 0;
     background: none;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     font-weight: 700;
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] label {
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -213,7 +193,7 @@ html[data-theme='matchday-print'] {
     margin-bottom: 0;
     background: none;
     border: 0;
-    background-image: url('../../art/matchday-print/home/rule-dark.webp');
+    background-image: var(--image-art-rule-dark);
     background-position: center bottom;
     background-size: calc(100% - 56px) 3px;
     background-repeat: no-repeat;
@@ -233,17 +213,17 @@ html[data-theme='matchday-print'] {
     width: 28px;
     height: 28px;
     background: currentColor;
-    mask: var(--print-icon) center / contain no-repeat;
+    mask: var(--image-icon) center / contain no-repeat;
   }
 
   [data-ui='game-shell'] > main > header [data-pixel-icon='menu'] {
-    --print-icon: url('../../art/matchday-print/home/icon-menu.webp');
+    --image-icon: var(--image-art-icon-menu);
   }
   [data-ui='game-shell'] > main > header [data-pixel-icon='bell'] {
-    --print-icon: url('../../art/matchday-print/home/icon-bell.webp');
+    --image-icon: var(--image-art-icon-bell);
   }
   [data-ui='progress-mode'] [data-pixel-icon='switch'] {
-    --print-icon: url('../../art/matchday-print/home/icon-switch.webp');
+    --image-icon: var(--image-art-icon-switch);
   }
 
   [data-ui='game-shell'] > main > header [data-pixel-icon] > path,
@@ -269,7 +249,7 @@ html[data-theme='matchday-print'] {
 
   [data-testid='hud-cash'] small {
     font-size: 12px;
-    color: #39372e;
+    color: var(--image-muted);
   }
 
   [data-testid='hud-cash'] b {
@@ -306,7 +286,7 @@ html[data-theme='matchday-print'] {
 
   [data-testid='calendar'] small,
   [data-testid='game-date'] {
-    color: #24231e;
+    color: var(--image-ink-color);
     font-size: 14px;
     line-height: 1.4;
   }
@@ -316,7 +296,7 @@ html[data-theme='matchday-print'] {
   }
 
   [data-ui='season-overview'] > div:nth-child(2) > small {
-    color: #24231e;
+    color: var(--image-ink-color);
     font-size: 12px;
   }
 
@@ -335,11 +315,11 @@ html[data-theme='matchday-print'] {
     padding: 6px 12px;
     gap: 16px;
     border: 9px solid transparent;
-    border-image: var(--print-stamp) 52 / 12px stretch;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 52 / 12px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
-    border-radius: 0;
-    color: #fff1d8;
+    border-radius: var(--image-radius, 0px);
+    color: var(--image-on-primary);
   }
 
   [data-ui='progress-mode'] b {
@@ -349,11 +329,11 @@ html[data-theme='matchday-print'] {
 
   [data-ui='progress-mode'] small {
     font-size: 11px;
-    color: #fff1d8;
+    color: var(--image-on-primary);
   }
 
   [data-ui='progress-mode'] [data-pixel-icon] {
-    color: #fff1d8;
+    color: var(--image-on-primary);
   }
 
   [data-testid='club-hub'] {
@@ -365,9 +345,9 @@ html[data-theme='matchday-print'] {
     min-height: 108px;
     padding: 9px 14px;
     border: 12px solid transparent;
-    border-image: var(--print-ticket) 54 / 17px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-panel-frame) 54 / 17px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     gap: 18px;
   }
@@ -392,17 +372,17 @@ html[data-theme='matchday-print'] {
 
   [data-home-part='fixture'] p {
     font-size: 13px;
-    color: #39372e;
+    color: var(--image-muted);
   }
 
   [data-home-part='fixture'] > div:last-child > button {
     min-height: 60px;
     padding: 10px 14px;
     border: 9px solid transparent;
-    border-image: var(--print-stamp) 54 / 13px stretch;
-    border-radius: 0;
-    color: #fff1d8;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 54 / 13px stretch;
+    border-radius: var(--image-radius, 0px);
+    color: var(--image-on-primary);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
     font-size: 16px;
     font-weight: 750;
@@ -416,34 +396,34 @@ html[data-theme='matchday-print'] {
     font-size: 13px;
     line-height: 1.4;
     font-weight: 700;
-    color: #24231e;
+    color: var(--image-ink-color);
   }
 
   [data-home-part='season-meter'] b {
-    color: #24231e;
+    color: var(--image-ink-color);
     font-size: 15px;
   }
 
   [data-home-part='season-meter'] progress {
     height: 13px;
     border: 2px solid transparent;
-    border-image: var(--print-button) 42 / 3px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat;
+    border-image: var(--image-button-frame) 42 / 3px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
   }
 
   [data-home-part='season-meter'] progress::-webkit-progress-bar {
-    background: #f1e5cb var(--print-quiet) repeat;
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
   }
 
   [data-home-part='season-meter'] progress::-webkit-progress-value {
     min-width: 0;
-    background: #a63724 var(--print-red) repeat;
+    background: var(--image-primary) var(--image-primary-material) repeat;
     background-size: 220px;
   }
 
   [data-home-part='season-meter'] progress::-moz-progress-bar {
-    background: #a63724 var(--print-red) repeat;
+    background: var(--image-primary) var(--image-primary-material) repeat;
     background-size: 220px;
   }
 
@@ -461,15 +441,15 @@ html[data-theme='matchday-print'] {
     inset: 0;
     pointer-events: none;
     border: 8px solid transparent;
-    border-image: var(--print-tile) 50 / 11px stretch;
+    border-image: var(--image-tile-frame) 50 / 11px stretch;
   }
 
   [data-home-part='scene'] {
     min-height: 0;
     margin: 6px;
     border: 0;
-    border-radius: 0;
-    background: #24231e var(--print-ink) repeat;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
   }
 
   [data-home-part='scene'] > [data-facility-art] {
@@ -489,10 +469,11 @@ html[data-theme='matchday-print'] {
     min-height: 32px;
     padding: 5px 9px;
     border: 5px solid transparent;
-    border-image: var(--print-dark-frame) 46 / 7px stretch;
-    background: #24231e var(--print-ink) repeat padding-box;
+    border-image: var(--image-dark-frame) 46 / 7px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
     background-size: 256px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     font-size: 13px;
     line-height: 1.2;
   }
@@ -507,13 +488,13 @@ html[data-theme='matchday-print'] {
     height: 14px;
     flex: 0 0 14px;
     font-size: 0;
-    background: #f2e6c9;
-    mask: url('../../art/matchday-print/home/icon-people.webp') center / contain no-repeat;
+    background: var(--image-on-dark);
+    mask: var(--image-art-icon-people) center / contain no-repeat;
   }
 
   [data-home-part='scene-caption'] > span:first-child i {
-    background: #ed6950;
-    mask-image: url('../../art/matchday-print/home/icon-heart.webp');
+    background: var(--image-heart);
+    mask-image: var(--image-art-icon-heart);
   }
 
   [data-home-part='stage-label'] {
@@ -528,8 +509,8 @@ html[data-theme='matchday-print'] {
     height: calc(var(--scene-stats-height) - 6px);
     gap: 0;
     border: 0;
-    background: #24231e var(--print-ink) repeat;
-    color: #f2e6c9;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    color: var(--image-on-dark);
   }
 
   [data-home-part='season-stats'] > div {
@@ -541,13 +522,12 @@ html[data-theme='matchday-print'] {
   }
 
   [data-home-part='season-stats'] > div + div {
-    background: url('../../art/matchday-print/home/rule-light-vertical.webp') left center / 2px
-      calc(100% - 20px) no-repeat;
+    background: var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat;
   }
 
   [data-home-part='season-stats'] span,
   [data-home-part='season-stats'] small {
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     font-size: 13px;
   }
 
@@ -571,8 +551,8 @@ html[data-theme='matchday-print'] {
     bottom: 25px;
     width: 11px;
     height: 18px;
-    background: #f2e6c9;
-    mask: url('../../art/matchday-print/home/icon-play.webp') center / contain no-repeat;
+    background: var(--image-on-dark);
+    mask: var(--image-art-icon-play) center / contain no-repeat;
     font-size: 0;
   }
 
@@ -591,7 +571,7 @@ html[data-theme='matchday-print'] {
   [data-condition] {
     min-width: 0;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--image-radius, 0px);
     background: none;
   }
 
@@ -605,10 +585,10 @@ html[data-theme='matchday-print'] {
     min-height: 88px;
     padding: 6px 12px;
     border: 9px solid transparent;
-    border-image: var(--print-tile) 52 / 12px stretch;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-tile-frame) 52 / 12px stretch;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
-    color: #24231e;
+    color: var(--image-ink-color);
   }
 
   [data-condition] > button::before {
@@ -618,20 +598,20 @@ html[data-theme='matchday-print'] {
     align-self: center;
     width: 58px;
     height: 58px;
-    background: var(--print-icon) center / contain no-repeat;
+    background: var(--image-icon) center / contain no-repeat;
   }
 
   [data-condition='fatigue'] {
-    --print-icon: url('../../art/matchday-print/home/icon-boot.webp');
+    --image-icon: var(--image-art-icon-boot);
   }
   [data-condition='morale'] {
-    --print-icon: url('../../art/matchday-print/home/icon-supporters.webp');
+    --image-icon: var(--image-art-icon-supporters);
   }
   [data-condition='manager'] {
-    --print-icon: url('../../art/matchday-print/home/icon-manager.webp');
+    --image-icon: var(--image-art-icon-manager);
   }
   [data-condition='squad'] {
-    --print-icon: url('../../art/matchday-print/home/icon-shirt.webp');
+    --image-icon: var(--image-art-icon-shirt);
   }
 
   [data-condition] > button > span,
@@ -641,7 +621,7 @@ html[data-theme='matchday-print'] {
   }
 
   [data-condition] > button > span {
-    color: #24231e;
+    color: var(--image-ink-color);
     font-size: 13px;
     line-height: 1.3;
   }
@@ -661,7 +641,7 @@ html[data-theme='matchday-print'] {
   [data-testid='team-state'] > p {
     display: block;
     margin-top: 6px;
-    color: #39372e;
+    color: var(--image-muted);
     font-size: 12px;
   }
 
@@ -671,7 +651,7 @@ html[data-theme='matchday-print'] {
     border: 0;
     gap: 12px;
     font-size: 12px;
-    color: #39372e;
+    color: var(--image-muted);
   }
 
   [data-testid='view-scroller'] > footer + div {
@@ -686,19 +666,20 @@ html[data-theme='matchday-print'] {
     margin: 0;
     padding: 5px 12px;
     border: 7px solid transparent;
-    border-image: var(--print-dark-frame) 48 / 10px stretch;
-    border-radius: 0;
-    background: #24231e var(--print-ink) repeat padding-box;
+    border-image: var(--image-dark-frame) 48 / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
     background-size: 256px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     font-size: 13px;
     font-weight: 700;
     text-decoration: none;
   }
 
   [data-testid='view-scroller'] > footer + div > button:first-child {
-    border-image-source: var(--print-stamp);
-    background-image: var(--print-red);
+    border-image-source: var(--image-primary-frame);
+    background-image: var(--image-primary-material);
   }
 
   [data-ui='season-transport'] {
@@ -707,15 +688,16 @@ html[data-theme='matchday-print'] {
     padding: 0 14px;
     gap: 12px;
     border: 7px solid transparent;
-    border-image: var(--print-dark-frame) 46 / 10px stretch;
-    background: #24231e var(--print-ink) repeat padding-box;
+    border-image: var(--image-dark-frame) 46 / 10px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
     background-size: 256px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
   }
 
   [data-ui='season-transport'] small,
   [data-ui='season-transport'] [data-select-trigger] {
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     font-size: 12px;
   }
 
@@ -723,15 +705,16 @@ html[data-theme='matchday-print'] {
     height: 44px;
     min-height: 44px;
     border: 4px solid transparent;
-    border-image: var(--print-dark-frame) 54 / 6px stretch;
-    background: #24231e var(--print-ink) repeat padding-box;
+    border-image: var(--image-dark-frame) 54 / 6px stretch;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+      padding-box;
     background-size: 256px;
   }
 
   [data-ui='season-transport'] > i {
     bottom: -3px;
     height: 3px;
-    background: #a63724 var(--print-red) repeat;
+    background: var(--image-primary) var(--image-primary-material) repeat;
   }
 
   [data-ui='season-transport']
@@ -741,9 +724,9 @@ html[data-theme='matchday-print'] {
     min-height: 44px;
     padding: 0;
     border: 6px solid transparent;
-    border-image: var(--print-stamp) 54 / 8px stretch;
-    border-radius: 0;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 54 / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
   }
 
@@ -755,8 +738,8 @@ html[data-theme='matchday-print'] {
   [data-ui='season-transport'] button > [data-pixel-icon='play'] {
     width: 19px;
     height: 19px;
-    background: #fff1d8;
-    mask: url('../../art/matchday-print/home/icon-play.webp') center / contain no-repeat;
+    background: var(--image-on-primary);
+    mask: var(--image-art-icon-play) center / contain no-repeat;
   }
 
   [data-ui='season-transport'] [data-pixel-icon='play'] > path {
@@ -1071,9 +1054,10 @@ html[data-theme='matchday-print'] {
       padding: 3px 2px;
       gap: 0;
       border: 6px solid transparent;
-      border-image: var(--print-dark-frame) 46 / 9px stretch;
-      border-radius: 0;
-      background: #24231e var(--print-ink) repeat padding-box;
+      border-image: var(--image-dark-frame) 46 / 9px stretch;
+      border-radius: var(--image-radius, 0px);
+      background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
+        padding-box;
       background-size: 256px;
       box-shadow: none;
     }
@@ -1082,15 +1066,15 @@ html[data-theme='matchday-print'] {
       min-height: 52px;
       gap: 3px;
       padding: 4px 0;
-      color: #f2e6c9;
+      color: var(--image-on-dark);
       font-size: 10px;
     }
     [data-ui='game-shell'] > nav button[aria-current='page'] {
       border: 4px solid transparent;
-      border-image: var(--print-selected) 48 / 6px stretch;
-      background: #a63724 var(--print-red) repeat padding-box;
+      border-image: var(--image-selected-frame) 48 / 6px stretch;
+      background: var(--image-primary) var(--image-primary-material) repeat padding-box;
       background-size: 256px;
-      color: #fff1d8;
+      color: var(--image-on-primary);
     }
     [data-ui='game-shell'] > nav [data-pixel-icon] > path {
       visibility: hidden;
@@ -1100,7 +1084,7 @@ html[data-theme='matchday-print'] {
     }
     [data-ui='game-shell'] > nav [data-pixel-icon] {
       background: currentColor;
-      mask: var(--print-icon) center / contain no-repeat;
+      mask: var(--image-icon) center / contain no-repeat;
       width: 23px;
       height: 23px;
       color: inherit;

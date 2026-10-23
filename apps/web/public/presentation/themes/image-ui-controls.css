@@ -1,10 +1,9 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
-html[data-theme='matchday-print'] {
-  --surface-grain: url('../../art/standard/grain.png');
+html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   --control-hover-filter: brightness(0.96);
   --control-active-filter: brightness(0.9);
-  --ovr-bronze: #8e4d1e;
-  --ovr-silver: #4d5960;
+  --ovr-bronze: var(--image-ovr-bronze);
+  --ovr-silver: var(--image-ovr-silver);
 
   :where(
     button:not(
@@ -17,10 +16,10 @@ html[data-theme='matchday-print'] {
     )
   ) {
     border: 6px solid transparent;
-    border-image: var(--print-button) 54 / 8px stretch;
-    border-radius: 0;
-    background-image: var(--print-quiet);
-    background-color: #f1e5cb;
+    border-image: var(--image-button-frame) 54 / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background-image: var(--image-quiet-material);
+    background-color: var(--image-quiet);
     background-size: 384px;
     background-clip: padding-box;
     box-shadow: none;
@@ -30,39 +29,39 @@ html[data-theme='matchday-print'] {
   button[type='submit'],
   button[aria-pressed='true'],
   button[aria-selected='true'] {
-    --text: #fff1d8;
-    --text-muted: #fff1d8;
-    --text-faint: #f1dfbf;
-    --accent-text: #fff1d8;
-    --gold: #fff1d8;
-    color: #fff1d8;
+    --text: var(--image-on-primary);
+    --text-muted: var(--image-on-primary);
+    --text-faint: var(--image-on-primary-muted);
+    --accent-text: var(--image-on-primary);
+    --gold: var(--image-on-primary);
+    color: var(--image-on-primary);
     border-width: 6px;
-    border-image: var(--print-stamp) 54 / 9px stretch;
-    background-image: var(--print-red);
-    background-color: #a63724;
+    border-image: var(--image-primary-frame) 54 / 9px stretch;
+    background-image: var(--image-primary-material);
+    background-color: var(--image-primary);
     background-size: 256px;
     background-clip: padding-box;
   }
 
   button[data-ui='primary'] {
-    background-image: var(--print-red) !important;
-    color: #fff1d8;
-    border-image: var(--print-stamp) 54 / 9px stretch;
+    background-image: var(--image-primary-material) !important;
+    color: var(--image-on-primary);
+    border-image: var(--image-primary-frame) 54 / 9px stretch;
   }
 
   [data-ui='link'] {
     border: 0;
     border-image: none;
-    border-radius: 0;
+    border-radius: var(--image-radius, 0px);
     background: none;
     box-shadow: none;
   }
 
   [data-ui='icon'] {
     border: 4px solid transparent;
-    border-image: var(--print-button) 54 / 6px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     box-shadow: none;
   }
@@ -74,33 +73,33 @@ html[data-theme='matchday-print'] {
     select
   ) {
     border: 5px solid transparent;
-    border-image: var(--print-button) 54 / 7px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 7px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
-    color: #24231e;
+    color: var(--image-ink-color);
     box-shadow: none;
   }
 
   input[type='checkbox'],
   input[type='radio'],
   input[type='range'] {
-    accent-color: #a63724;
+    accent-color: var(--image-primary);
   }
 
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'] {
     border: 8px solid transparent;
-    border-image: var(--print-tile) 54 / 10px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-tile-frame) 54 / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     box-shadow: none;
   }
 
   [data-surface='panel'] > header {
     border-bottom-color: transparent;
-    background-image: url('../../art/matchday-print/home/rule-dark.webp');
+    background-image: var(--image-art-rule-dark);
     background-position: center bottom;
     background-size: 100% 2px;
     background-repeat: no-repeat;
@@ -109,15 +108,15 @@ html[data-theme='matchday-print'] {
   [data-surface='tile'],
   [data-ui='game-shell'] [data-surface='tile'] {
     border: 4px solid transparent;
-    border-image: var(--print-button) 54 / 6px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     box-shadow: none;
   }
 
   [data-ui='toolbar'] {
-    background: #eddfc3 var(--print-paper) repeat;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: 512px;
   }
 
@@ -125,7 +124,7 @@ html[data-theme='matchday-print'] {
   [data-ui='choices'] {
     gap: 6px;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--image-radius, 0px);
     background: none;
     padding: 4px 0 8px;
   }
@@ -136,11 +135,11 @@ html[data-theme='matchday-print'] {
     flex-shrink: 0;
     min-height: 44px;
     border: 6px solid transparent;
-    border-image: var(--print-button) 54 / 8px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
-    color: #24231e;
+    color: var(--image-ink-color);
     font-weight: 700;
     box-shadow: none;
   }
@@ -148,14 +147,14 @@ html[data-theme='matchday-print'] {
   [role='tab'][aria-selected='true'],
   [data-ui='choices'] > button[aria-pressed='true'],
   [role='radio'][aria-checked='true'] {
-    --text: #fff1d8;
-    --text-muted: #fff1d8;
-    --text-faint: #f1dfbf;
-    color: #fff1d8;
+    --text: var(--image-on-primary);
+    --text-muted: var(--image-on-primary);
+    --text-faint: var(--image-on-primary-muted);
+    color: var(--image-on-primary);
     /* The shared .selected utility forces a border; replace that complete border here. */
     border: 6px solid transparent !important;
-    border-image: var(--print-stamp) 54 / 9px stretch !important;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 54 / 9px stretch !important;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
   }
 
@@ -165,70 +164,70 @@ html[data-theme='matchday-print'] {
   }
 
   table {
-    background: #f1e5cb var(--print-quiet) repeat;
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
     background-size: 384px;
   }
 
   thead {
-    background: #24231e var(--print-ink) repeat;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     background-size: 256px;
-    --text: #f2e6c9;
-    --text-muted: #f2e6c9;
-    --text-faint: #eddfc3;
-    --accent-text: #f2e6c9;
-    color: #f2e6c9;
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-canvas);
+    --accent-text: var(--image-on-dark);
+    color: var(--image-on-dark);
   }
 
   table thead :is(th, td),
   table[aria-label] thead :is(th, td) {
-    background: #24231e var(--print-ink) repeat;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     background-size: 256px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
     border-bottom-color: transparent;
     font-weight: 700;
   }
 
   td {
-    border-bottom: 1px solid #7c6d4e38;
+    border-bottom: 1px solid var(--image-table-line);
   }
 
   [data-tier] {
     border: 4px solid transparent;
-    border-image: var(--print-button) 54 / 5px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 5px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
   }
 
   tbody tr:nth-child(even) {
-    background-color: #8d6b3210;
+    background-color: var(--image-table-hover);
   }
 
   /* Pinned cells paint their own opaque paper, including while the table scrolls. */
   table tbody :is(th, td),
   table[aria-label] tbody :is(th, td) {
-    background: #f1e5cb var(--print-quiet) repeat;
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
     background-size: 384px;
   }
 
   table tbody tr:nth-child(even) > :is(th, td) {
-    background-color: #e8d9b9;
+    background-color: var(--image-selected-row);
     background-blend-mode: multiply;
   }
 
   table tbody tr[data-own='true'] > :is(th, td) {
-    background: #eddfc3 var(--print-paper) repeat;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: 512px;
   }
 
   [data-ui='badge'],
   [data-ui='count'] {
     border: 4px solid transparent;
-    border-image: var(--print-stamp) 54 / 6px stretch;
-    border-radius: 0;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 54 / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
-    color: #fff1d8;
+    color: var(--image-on-primary);
     font-weight: 700;
     white-space: nowrap;
   }
@@ -254,29 +253,29 @@ html[data-theme='matchday-print'] {
   details > summary {
     padding-top: 10px;
     padding-bottom: 10px;
-    color: #39372e;
+    color: var(--image-muted);
     font-weight: 700;
   }
 
   [data-ui='dialog'] {
     border: 10px solid transparent;
-    border-image: var(--print-ticket) 54 / 13px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-panel-frame) 54 / 13px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
-    box-shadow: 0 8px 48px #20170d40;
+    box-shadow: 0 8px 48px var(--image-dialog-shadow);
   }
 
   [data-ui='dialog-header'] {
-    --text: #f2e6c9;
-    --text-muted: #f2e6c9;
-    --text-faint: #eddfc3;
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-canvas);
     flex-shrink: 0;
     border: 0;
     padding: 10px 16px;
-    background: #24231e var(--print-ink) repeat;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     background-size: 256px;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
   }
 
   [data-ui='dialog-header'] h2 {
@@ -290,7 +289,7 @@ html[data-theme='matchday-print'] {
     border: 0;
     border-image: none;
     background: none;
-    color: #f2e6c9;
+    color: var(--image-on-dark);
   }
 
   [data-ui='game-shell'] > main > header > button:has([data-pixel-icon]) {
@@ -306,36 +305,36 @@ html[data-theme='matchday-print'] {
   }
 
   [data-ui='dialog-body'] {
-    background: #f1e5cb var(--print-quiet) repeat;
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
     background-size: 384px;
   }
 
   [data-ui='dialog-actions'] {
     border: 0;
-    background: #eddfc3 var(--print-paper) repeat;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: 384px;
   }
 
   [role='listbox'] {
     border: 8px solid transparent;
-    border-image: var(--print-tile) 54 / 10px stretch;
-    border-radius: 0;
+    border-image: var(--image-tile-frame) 54 / 10px stretch;
+    border-radius: var(--image-radius, 0px);
     padding: 4px;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
-    box-shadow: 2px 4px 0 #31251a30;
-    color: #24231e;
+    box-shadow: 2px 4px 0 var(--image-popover-shadow);
+    color: var(--image-ink-color);
   }
 
   [role='option'] {
-    border-radius: 0;
+    border-radius: var(--image-radius, 0px);
   }
 
   :where([role='option'][data-highlighted], [role='option'][data-state='checked']) {
-    --text: #fff1d8;
-    --text-muted: #fff1d8;
-    color: #fff1d8;
-    background: #a63724 var(--print-red) repeat;
+    --text: var(--image-on-primary);
+    --text-muted: var(--image-on-primary);
+    color: var(--image-on-primary);
+    background: var(--image-primary) var(--image-primary-material) repeat;
     background-size: 256px;
   }
 
@@ -346,23 +345,23 @@ html[data-theme='matchday-print'] {
   [data-testid='runtime-alerts'] > div,
   [data-testid='team-state-alert'] > div {
     border: 8px solid transparent;
-    border-image: var(--print-ticket) 54 / 10px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-panel-frame) 54 / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     box-shadow: none;
   }
 
   [data-testid='event-pill'] {
-    border-image: var(--print-stamp) 54 / 9px stretch;
-    background: #a63724 var(--print-red) repeat padding-box;
+    border-image: var(--image-primary-frame) 54 / 9px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: 256px;
-    color: #fff1d8;
+    color: var(--image-on-primary);
   }
 
   [data-testid='event-pill'] > i {
     background: none;
-    color: #fff1d8;
+    color: var(--image-on-primary);
   }
 
   /* The framed pending-event ticket must clear the last action in the content scroller. */
@@ -380,27 +379,26 @@ html[data-theme='matchday-print'] {
 
   [data-testid='club-founding'] > header {
     padding: 18px 0;
-    background: url('../../art/matchday-print/home/rule-dark.webp') center bottom / 100% 3px
-      no-repeat;
+    background: var(--image-art-rule-dark) center bottom / 100% 3px no-repeat;
   }
 
   [data-testid='club-founding'] form {
     padding: 24px;
     border: 10px solid transparent;
-    border-image: var(--print-ticket) 54 / 13px stretch;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-panel-frame) 54 / 13px stretch;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
   }
 
   [data-testid='facility-overview'] {
-    border-image: var(--print-tile) 54 / 10px stretch;
+    border-image: var(--image-tile-frame) 54 / 10px stretch;
   }
 
   label:has(input[type='file']) {
     border: 3px solid transparent;
-    border-image: var(--print-button) 54 / 6px stretch;
-    border-radius: 0;
-    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     min-height: 44px;
     padding: 2px 8px;

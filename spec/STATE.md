@@ -245,7 +245,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 136 | 136 | - | 0 |
+| WEB | 137 | 137 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -267,6 +267,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T403 | Complete the image-built Sticker Football Club theme across all screens | WEB ARCH | T390 | doing@261024.m8p2 |
 | T391 | Finish remaining print surface skins and publish the complete theme | WEB ARCH | T390 | blocked@261024 |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 | todo |
 | T402 | Activate the full model prospectively in the worker behind the release switch | MATCH HIST WEB SAVE KIT ARCH | T281 T282 T283 T348 T349 T350 | todo |
@@ -299,6 +300,9 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T403 local checks (m8p2): 31 sticker UI assets generated with retained sources/prompts; shared image-skin rules preserve print geometry/art. Type/lint/format/build, 1970 units + 4 skips, 39 contracts, catalogs, presentation, generator/hash checks pass; 85 Chromium and 85 WebKit captures cover all views, zero page/resource errors, fresh default and saved alternatives preserved. Final Chromium batch runs before publication. WEB r137 changes sticker styling only; T391 and other WEB-referencing tasks retain their existing scope.
+- 261024 WEB r137 planned as T403 doing (m8p2): extend WEB-91 image-built coverage to sticker-club; reuse shared semantic hooks and responsive geometry, replace artwork/materials and keep matchday-print presentation/default unchanged. Spec CLI unavailable; direct current-checkout assignment.
+- 261024 update-ssot WEB start (m8p2): owner requests the same all-screen image-built treatment for sticker-club and publication to main; pulled origin at 1111514e, explicitly assigned current checkout. Preserve the matchday-print default and valid selections; retain production sources/provenance and keep review artifacts in ignored .tmp.
 - 261024 print maintenance done (m8p2): pulled origin; removed 110 tracked review/capture files plus local print scratch (372 files, 178 MiB total), retaining approved references, atlases, prompts, production assets and regenerators. Added docs/THEME-CHECKLIST.md and source README; fixed resource documentation and retained verification summaries. Type/lint/format/build, presentation 380, 31 asset hashes, concept generators and 6 doc links pass. Application/engine/deployed resources/tests/dependencies/configuration match 6a6bafab, so its passing 1968-unit/39-contract/247-Chromium batch is reused; no product policy or SSOT revision change. Existing T391 hosted-CI block remains recorded.
 - 261024 create-task T307 T308 base WEB@112→136 (t5q2): r113–r136 change theming (WEB-38/73), the owner office (WEB-74) and other screens, none of the records query, navigation or capacity they cite; no content change
 - 261024 T391 publication (m8p2): pulled origin including T384, committed/pushed 6a6bafab; merged unit 1968+4 skips, contract 39 and Chromium 247 all pass. CI 7/8 jobs pass; WebKit 2/2 install is stalled and cancellation returns admin-required 403, so only hosted verification remains blocked pending an authorized account.
@@ -316,6 +320,3 @@
 - 261024 T391 local checks complete (m8p2): image skins cover remaining table/count/choice/apply-bar/inset fills; sidebar role prevents result-card leakage, mobile founding/touch/clock/home scrolling preserved; units 1966+4 skips, contract 39, Chromium 247 covered after repairs, Chrome/WebKit 85 captures each; ready for authorized publication.
 - 261024 T391 start (m8p2): owner identifies residual flat table/badge/season/apply-bar fills and authorizes commit/push; origin pulled to 01b91f91, STATE histories combined after autostash, all theme work preserved; implements existing WEB-91 without a policy change.
 - 261024 fix e2e (c9v3): CI 39971746291 on d39bdd91 passed every job but Firefox recovery.spec:59, which ran every step on time and reached its last reload at 30.0 s; the two-round recovery journey takes test.slow()
-- 261024 T390 done (m8p2): matchday-print is the main/default theme with shared image skins across all views and overlays; valid saved themes retained; UI 361 and presentation/home 52 units, type/lint/format/build/assets pass, Chromium and WebKit each cover 82 states; local galleries ready, no commit or push.
-- 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
-- 261023 merge origin/work/w6p4 (c9v3): w6p4's T375 (exit), T370 (kept h6) and T371 (kept RB) join main beside T376's recorded ball holders; facts digests are w6p4's, positions digests re-recorded for both; T384 next, T372 dep T384

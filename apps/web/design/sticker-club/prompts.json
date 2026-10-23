@@ -1,0 +1,27 @@
+{
+  "method": "built-in image_gen",
+  "reference": "apps/web/design/home-themes/captures/sticker.png",
+  "purpose": "Image-built Sticker Football Club UI across all screens; live text and game facts remain HTML.",
+  "assets": [
+    {
+      "file": "frames.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Image 1 is STYLE REFERENCE ONLY: the approved Sticker Football Club game UI. Create ONE production UI frame atlas on transparent background, exact 3 columns by 2 rows, canvas 1536x1024, six equally sized 512x512 cells. One centered flat rounded rectangle plate in each cell, identical outer bounds approximately x=30..482, y=100..412 per cell. Bold clean dark-forest ink contours, generous cream die-cut outline and small restrained lower-right offset dark graphic shadow, smooth corner radius 36px suitable for fixed-corner nine-slice. TOP ROW: 1 warm cream panel with dark forest outline and neat cream sticker rim; 2 burnt orange-red primary button #b84620 with cream double rim and dark contour; 3 deep forest green panel #174b35 with a cream rim and dark green contour. BOTTOM ROW: 4 quieter ivory inset tile with restrained pale gold contour; 5 warm cream secondary button with forest contour and a cream sticker rim; 6 pale yellow-cream selected navigation sticker label with cream rim and dark green contour. Flat vector-style indie sports game, crisp confidently drawn die-cut stickers, not painterly, no print distress, no photorealistic gloss, no gradients, no 3D. Interiors EMPTY and uniform clean for live HTML labels. Absolutely no text, numbers, letters, pictograms, foliage, decorative motifs, content or guides inside plates. Actual transparent alpha outside all six plates, no checkerboard, no white backdrop. Keep thick uncluttered corners and straight middle edges with no ornaments, plates must never touch."
+    },
+    {
+      "file": "icons.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Image 1 is STYLE REFERENCE ONLY, approved Sticker Football Club. Create ONE production transparent sticker pictogram atlas, exact 4x4 regular grid on 1024x1024 canvas, cells 256x256 with centered single icon about 175px square and generous transparent gutters. Cohesive flat colorful sports-game stickers: bold dark forest ink contour, thick clean warm-cream die-cut rim and subtle lower-right offset ink shadow. Warm cream, rich grass green, orange-red, cobalt blue, sunny yellow. ROW1 left-to-right: small clubhouse HOUSE, heraldic LEAGUE SHIELD with football, gold handled TROPHY CUP, football-record NOTEBOOK. ROW2: THREE PEOPLE, blue DUMBBELL, small OFFICE BUILDING, orange FOOTBALL BOOT. ROW3: THREE CHEERING SUPPORTERS, smiling MANAGER in suit, orange FOOTBALL SHIRT, red ringing BELL. ROW4: HAMBURGER MENU three dark strokes, opposing LEFT-RIGHT SWITCH ARROWS, green PLAY TRIANGLE, red HEART. Each icon clearly readable at navigation size, exactly one icon per cell, charming confident indie sports game style like reference. No text, numbers, letters, logos, grid lines or cell labels. Not emoji, not painterly, no complex textures. Preserve actual alpha transparency between all icons and inside cut-outs, no solid background, checkerboard or white squares. All icons completely within their own cells."
+    },
+    {
+      "file": "materials.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Image 1 is STYLE REFERENCE ONLY, approved Sticker Football Club. Create ONE square 1024x1024 flat material atlas of FOUR exact equally sized quadrants, flush to edges, no dividing lines, borders, gaps, margins or content. TOP LEFT warm light cream #fff3da. TOP RIGHT deep rich forest green #174b35. BOTTOM LEFT burnt orange-red #b84620. BOTTOM RIGHT quiet ivory #fffbef. Each quadrant is a nearly uniform matte colored sticker-paper material with only exceptionally restrained very fine paper grain, matching the clean flat cartoon game reference. Uniform lighting, seamless small-scale texture at all edges, no vignette, gradient, focal marks, foliage, stains or distressed print. No text, objects, icons, letters, numbers or frame. Production background fill atlas, not a UI mockup. These materials will tile behind crisp HTML text; avoid visible pattern or distractions."
+    },
+    {
+      "file": "sidebar.png",
+      "transparent": false,
+      "prompt": "Use case: illustration-story. Image 1 is STYLE REFERENCE ONLY, approved Sticker Football Club game UI. Create ONE wide landscape 3:2 original flat cartoon vignette for the bottom of a deep forest green game sidebar. Deep #174b35 background, clean stylized shrubs and round fluffy tree silhouettes in layered medium and dark greens along the LOWER HALF, a tiny charming old English football clubhouse roof and a modest cream rail fence peeking through at lower left, one small orange corner flag. Thick dark contours, flat warm cream and green color blocks, restrained lower-right offset shadows, charming modern indie sports sticker illustration. Upper HALF nearly plain forest green to blend behind the sidebar; artwork dissolves naturally into solid green along upper and side edges. Keep objects low and unintrusive, no decorative foliage behind copy. No letters, text, words, numbers, UI, frame, mockup, pixel art, photo, painterly strokes or print distress. This is a supporting sidebar background vignette, not a full stadium scene."
+    }
+  ]
+}
