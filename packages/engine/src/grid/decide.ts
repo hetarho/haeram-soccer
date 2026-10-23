@@ -137,14 +137,16 @@ export const DECISION_CONFIG = {
     inBehind: { shot: 2, carry: 1.3, pass: 0.5 },
     /**
      * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
-     * at 2.50 once defenders read the pass early).
+     * at 2.50 once defenders read the pass early). T370: 0.42 → 0.45 with `shotQuality`, which
+     * passes up weak box shots, so the volume holds.
      */
-    shotScale: 0.42,
+    shotScale: 0.45,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
+     * T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.
      */
-    longShotScale: 4,
+    longShotScale: 3.5,
     /**
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
@@ -169,20 +171,12 @@ export const DECISION_CONFIG = {
     leadingShot: 0.5,
     trailingPush: 1.6,
     /**
-     * Shot selection in the box (T370, →MATCH-16): a shot's weight there is scaled by its chance's
-     * xG against `ref` to the power `power` (0 leaves it alone), at most `most` times, while he
-     * stands below `upTo` m, so a carrier passes up a weak angle or a pressured look for a better
-     * chance.
+     * Shot selection in the box (T370, →MATCH-16, MATCH-30): a shot's weight there is scaled by
+     * its chance's xG (pressure included) against `ref` to the power `power`, at most `most` times,
+     * so a carrier passes up a weak angle or a pressured look and a big chance keeps its weight:
+     * fewer box shots and key passes, the same goals.
      */
-    shotQuality: { ref: 0.15, power: 0, most: 1000, upTo: 105 },
-    /** The final ball from the cut-back zones (T370): the share of crosses played back, in place of `cutBackShare`. */
-    cutBackShare: 0.1,
-    /**
-     * Carrying after a reception (T370, →MATCH-16): an unpressured carrier below `upTo` m carries
-     * `open` times as often and `length` ([base, spread] m) in place of `carry.length`, so the
-     * ball moves up by carries before the final third, where longer carries raised goals (T323).
-     */
-    carry: { upTo: 70, open: 1, length: [6, 6] as readonly [number, number] },
+    shotQuality: { ref: 0.3, power: 0.5, most: 1 },
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -270,14 +264,13 @@ export function actionMix(
         : C.holdUp.base,
     clearance: cell.clearance,
   };
-  const candidate = s.setup.model !== undefined;
   if (inCutBack) {
-    const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
-    mix.cutBack = share * mix.cross;
-    mix.cross *= 1 - share;
+    mix.cutBack = C.cutBackShare * mix.cross;
+    mix.cross *= 1 - C.cutBackShare;
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
+  const candidate = s.setup.model !== undefined;
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
@@ -323,24 +316,11 @@ export function actionMix(
   mix.carry *= 1 - bend.possession / 100;
   mix.shot *= (1 + bend.shot / 20) * (1 - oppBend.defense / 20);
   // The situation.
-  if (candidate && tags.pressure < 1 && c[0] < C.candidate.carry.upTo)
-    mix.carry *= C.candidate.carry.open;
-  if (
-    candidate &&
-    inBox(c) &&
-    c[0] < C.candidate.shotQuality.upTo &&
-    C.candidate.shotQuality.power !== 0
-  )
-    mix.shot *= Math.min(
-      C.candidate.shotQuality.most,
-      s.math.exp(
-        C.candidate.shotQuality.power *
-          s.math.log(
-            chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) /
-              C.candidate.shotQuality.ref,
-          ),
-      ),
-    );
+  if (candidate && inBox(c)) {
+    const Q = C.candidate.shotQuality;
+    const xg = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math);
+    mix.shot *= Math.min(Q.most, s.math.exp(Q.power * s.math.log(xg / Q.ref)));
+  }
   if (tags.pressure >= 1) {
     mix.carry *= C.pressure.carry;
     if (skill(s, side, idx, 'dribbling') >= C.pressure.takeOnDribbling)
@@ -672,13 +652,7 @@ export function chooseCarry(
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
   const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
-  const open =
-    s.setup.model !== undefined && tags.pressure < 1 && c[0] < DECISION_CONFIG.candidate.carry.upTo;
-  const [base, spread] = inBox(c)
-    ? K.boxLength
-    : open
-      ? DECISION_CONFIG.candidate.carry.length
-      : K.length;
+  const [base, spread] = inBox(c) ? K.boxLength : K.length;
   const length = base + spread * r();
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
   const ends = K.headings.map((deg): Point => {
