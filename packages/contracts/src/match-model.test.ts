@@ -16,6 +16,7 @@ import {
   FULL_MODEL_CHECKPOINT_SCHEMA,
   isCheckpointSchema,
   isEarlierEngine,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   isSaveCompatibilityError,
   LEGACY_ENGINE_VERSIONS,
   SaveCompatibilityError,
@@ -69,18 +70,21 @@ describe('match-model metadata (→SAVE-23)', () => {
     expect(matchModelStateSchema.safeParse({ ...state, revision: future }).success).toBe(false);
     expect(matchModelStateSchema.safeParse({ ...state, extra: 1 }).success).toBe(false);
     // The full-model container follows the identity container and is read beside the older ones;
-    // the next container is a future one, whose header is no evidence of earlier rules.
+    // the manager-history container follows it, and the one after is a future one, whose header is
+    // no evidence of earlier rules.
     expect(FULL_MODEL_CHECKPOINT_SCHEMA).toBe(CURRENT_CHECKPOINT_SCHEMA + 1);
+    expect(MANAGER_HISTORY_CHECKPOINT_SCHEMA).toBe(FULL_MODEL_CHECKPOINT_SCHEMA + 1);
     expect(isCheckpointSchema(CURRENT_CHECKPOINT_SCHEMA)).toBe(true);
     expect(isCheckpointSchema(1)).toBe(true);
     expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA)).toBe(true);
-    expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA + 1)).toBe(false);
+    expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA)).toBe(true);
+    expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1)).toBe(false);
     expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"4.0.0"}`)).toBe(
       '4.0.0',
     );
-    expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`)).toBe(
-      undefined,
-    );
+    expect(
+      envelopeEngine(`{"schema":${MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`),
+    ).toBe(undefined);
   });
 
   it('keeps the current container for unactivated worlds and writes model data only in its own', () => {

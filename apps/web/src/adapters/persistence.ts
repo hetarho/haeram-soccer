@@ -16,11 +16,13 @@ import { encodePayload, decodePayload } from './compression';
 import {
   assertMatchModelFormat,
   carriesMatchModel,
-  checkpointSchemaFor,
 } from '../../../../packages/contracts/src/match-model';
 import { readMatchModelFormat } from './matchModelPacking';
+import { checkpointContainerFor, readManagerHistoryFormat } from './managerHistoryPacking';
 import {
+  carriesManagerHistory,
   FULL_MODEL_CHECKPOINT_SCHEMA,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   isCheckpointSchema,
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
@@ -46,7 +48,7 @@ async function digest(bytes: Uint8Array) {
   ).join('');
 }
 export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
-  const schema = checkpointSchemaFor(w);
+  const schema = checkpointContainerFor(w);
   const bytes = new TextEncoder().encode(canonical(pack(w)));
   const payload = await encodePayload(bytes);
   const e: Envelope = {
@@ -127,17 +129,30 @@ async function readCheckpoint(
   const { json, envelope } = await readEnvelope(raw, supported);
   // A newer game's identity or match-model data is a compatibility failure before unpacking can
   // call it corrupt.
-  const packed = json as { format?: unknown; world?: unknown; model?: unknown } | null;
+  const packed = json as {
+    format?: unknown;
+    world?: unknown;
+    model?: unknown;
+    managerHistory?: unknown;
+  } | null;
   const compact = packed?.format === 'compact1';
   const world = compact ? packed.world : json;
   assertIdentityFormatVersions(world);
   assertMatchModelFormat(world);
   if (compact && packed.model !== undefined) readMatchModelFormat(packed.model);
+  if (compact && packed.managerHistory !== undefined)
+    readManagerHistoryFormat(packed.managerHistory);
   const value = unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld);
-  // Model data travels only in its own container, which an older reader refuses (→SAVE-23). A
-  // checksum-valid payload in the other container is no writer this version knows, so it is kept
+  // Manager history travels only in its own container, with or without model data, and model
+  // data otherwise only in the full-model container, each refused by an older reader (→SAVE-23/24).
+  // A checksum-valid payload in another container is no writer this version knows, so it is kept
   // as incompatible rather than recovered over (→SAVE-11).
-  if (carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
+  const history = carriesManagerHistory(value);
+  if (history !== (envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA))
+    throw new SaveCompatibilityError(
+      '지원하지 않는 저장 컨테이너와 감독 이력 데이터 조합입니다. 원본 파일을 보관하세요.',
+    );
+  if (!history && carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
     throw new SaveCompatibilityError(
       '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.',
     );
@@ -150,8 +165,12 @@ async function readCheckpoint(
 export async function recognizedLegacy(raw: string): Promise<boolean> {
   try {
     const { json, envelope } = await readEnvelope(raw, LEGACY_ENGINE_VERSIONS);
-    // Earlier rules were never written in the match-model container.
-    if (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA) return false;
+    // Earlier rules were never written in the match-model or manager-history container.
+    if (
+      envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA ||
+      envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA
+    )
+      return false;
     const packed = json as { format?: unknown; world?: Partial<World> } | null;
     const world = packed?.world;
     return (

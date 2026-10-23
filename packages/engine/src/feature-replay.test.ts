@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
-import { FULL_MODEL_CHECKPOINT_SCHEMA } from '../../contracts/src/versions';
+import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../contracts/src/versions';
 import type { World } from '../../contracts/src/types';
 import { Host } from '../../../apps/web/src/runtime/host';
 import type { Body } from '../../../apps/web/src/runtime/protocol';
@@ -163,7 +163,8 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
     expect((await load(reloaded, await encode(w))).upgraded).toBeUndefined();
     // An exported file imported into a writer with the switch on is not activated again.
     const exported = (await send(host, { type: 'export' })).raw!;
-    expect((await decode(exported)).envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
+    expect((await decode(exported)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     const imported = new Host(undefined, { release: ENABLED_RELEASE });
     expect((await load(imported, exported)).upgraded).toBeUndefined();
     for (const copy of [reloaded.world!, imported.world!]) {

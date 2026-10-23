@@ -230,6 +230,17 @@ export function simulatedWorld(input: Founding, span: Simulated = {}): World {
   );
 }
 
+/**
+ * `w` as a writer before own-manager history saved it (→SAVE-24): no tracked facts and no record
+ * linked to a tenure, as every older container and earlier-rules career is. A new career tracks
+ * from its founding, so fixtures of those checkpoints remove what today's founding records.
+ */
+export function withoutManagerHistory<T extends World>(w: T): T {
+  delete w.managerHistory;
+  for (const m of w.ownMatches) delete m.managerTenure;
+  return w;
+}
+
 /** The release switch turned on, for tests and measurements; production keeps it off. */
 export const ENABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: true };
 

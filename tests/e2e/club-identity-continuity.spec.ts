@@ -8,6 +8,7 @@ import {
 import { canonical } from '../../packages/contracts/src/index';
 import { KIT_ROLES } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
+import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { identityOf, nextOwnFixture } from '../../packages/engine/src/index';
 import { legacyCrestMap } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
@@ -286,14 +287,19 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
 });
 
 /**
- * Writer activation has committed the pre-identity career once (→SAVE-3/21): container 2 at the
- * next generation, missing designs installed with every visible crest and colour kept (→KIT-15),
- * no recorded kit invented, and the original kept verbatim as the verified previous copy.
+ * Writer activation has committed the pre-identity career once (→SAVE-3/21): at the next
+ * generation, missing designs installed with every visible crest and colour kept (→KIT-15), no
+ * recorded kit invented, manager tracking started there in its container (→SAVE-24), and the
+ * original kept verbatim as the verified previous copy.
  */
 async function expectAdopted(page: Page, legacy: World, original: string) {
   await expect.poll(() => committedRaw(page), { timeout: 20000 }).not.toBe(original);
   const { world, envelope } = await decode((await committedRaw(page))!);
-  expect([envelope.schema, envelope.generation, envelope.parentGeneration]).toEqual([2, 2, 1]);
+  expect([envelope.schema, envelope.generation, envelope.parentGeneration]).toEqual([
+    MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+    2,
+    1,
+  ]);
   expect(canonical(world)).toBe(canonical(adoptedCareer(legacy)));
   const crests = legacyCrestMap(legacy);
   for (const club of world.clubs) {

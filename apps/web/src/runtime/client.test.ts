@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ENABLED_RELEASE, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import {
+  ENABLED_RELEASE,
+  simulatedWorld,
+  withoutManagerHistory,
+} from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
 import {
   CURRENT_ENGINE_VERSION,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
 } from '../../../../packages/contracts/src/versions';
 import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
@@ -539,7 +543,10 @@ describe('background worker publication', () => {
 });
 
 async function legacyCheckpoint(withHistory = false) {
-  const legacy = simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 });
+  // Earlier rules never tracked manager history (→SAVE-24), so they never used its container.
+  const legacy = withoutManagerHistory(
+    simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 }),
+  );
   legacy.engine = '1.0.0';
   legacy.revision = 17;
   legacy.cash = '98765432101234567890';
@@ -648,7 +655,8 @@ describe('full match-model activation (→SAVE-23)', () => {
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
     const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
-    expect(saved.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(saved.world.matchModel).toEqual(world.matchModel);
     // The career as it was stays the previous copy until a newer save commits.
     expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
@@ -675,7 +683,7 @@ describe('full match-model activation (→SAVE-23)', () => {
     expect(notifications()).toEqual([]);
     // The activated career stays in memory and exportable.
     const exported = await decode((await client.exportFile())!);
-    expect(exported.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    expect(exported.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(exported.world.revision).toBe(career.revision + 1);
     expect(exported.world.matchModel?.trackedFrom.round).toBe(career.round + 1);
     expect(canonical((await decode(raw)).world)).toBe(canonical(career));

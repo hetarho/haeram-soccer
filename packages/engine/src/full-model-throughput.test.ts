@@ -25,10 +25,17 @@ const npcFixtures = (w: World, n: number) =>
     .filter((f) => !own(w, f))
     .sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1))
     .slice(0, n);
-/** The settled football facts of a candidate world: scores, own records, ledger and discipline. */
+/**
+ * The settled football facts of a candidate world: scores, own records, ledger and discipline. A
+ * record's manager-tenure link (→HIST-18) is attribution, not football, so it is left out.
+ */
 const facts = (w: World) => ({
   scores: w.fixtures.filter((f) => f.score).map((f) => [f.id, f.score]),
-  ownMatches: w.ownMatches,
+  ownMatches: w.ownMatches.map((m) => {
+    const { managerTenure: _tenure, ...football } = m;
+    void _tenure;
+    return football;
+  }),
   npcSeason: w.npcSeason,
   discipline: w.discipline,
 });

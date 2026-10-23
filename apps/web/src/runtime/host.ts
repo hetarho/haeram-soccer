@@ -22,6 +22,7 @@ import {
   installMissingIdentities,
   activateMatchModel,
   activatesMatchModel,
+  ensureManagerHistory,
   MATCH_MODEL_RELEASE,
   BANKRUPT_MESSAGE,
   type MatchModelRelease,
@@ -129,6 +130,21 @@ export class Host {
     activateMatchModel(candidate, this.release);
     return candidate;
   }
+  /**
+   * SAVE-24: the validated candidate with own-manager tracking started at this writer boundary, or
+   * the candidate itself when it is already tracked or this career's live world has settled an
+   * own match the checkpoint lacks (tracking then waits, as the model does). Independent of the
+   * release switch and its football metadata; older facts and service years stay as stored, and
+   * only the facts and the revision (once) are added.
+   */
+  private adoptManagerHistory(w: World, revised: boolean): World {
+    if (w.managerHistory || settledAhead(this.world, w)) return w;
+    if (!revised && !Number.isSafeInteger(w.revision + 1))
+      throw new Error('저장 revision 범위를 초과했습니다.');
+    const candidate = { ...w, revision: revised ? w.revision : w.revision + 1 };
+    ensureManagerHistory(candidate);
+    return candidate;
+  }
   handle(input: unknown): Promise<Reply> {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
@@ -172,10 +188,12 @@ export class Host {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
-    // The season's complete statistics are read on request (`full-stats`), not sent every day.
-    const { people: _people, npcSeason: _season, ...projected } = w;
+    // The season's complete statistics are read on request (`full-stats`), not sent every day, and
+    // so are the manager-history facts.
+    const { people: _people, npcSeason: _season, managerHistory: _history, ...projected } = w;
     void _people;
     void _season;
+    void _history;
     return {
       coaches: staffMarket(w),
       careers: Object.fromEntries(
@@ -392,9 +410,12 @@ export class Host {
         // match model (→SAVE-23); inspection and read-only tabs keep the career exactly as stored.
         const writer = r.body.activate && r.body.upgrade;
         const identified = writer ? adoptIdentities(rules, rules !== result.world) : rules;
-        const activated = writer
+        const modelled = writer
           ? this.adoptModel(identified, identified !== result.world)
           : identified;
+        const activated = writer
+          ? this.adoptManagerHistory(modelled, modelled !== result.world)
+          : modelled;
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
