@@ -600,9 +600,12 @@ function summarise(job: Job) {
     ]),
   );
   let reference: unknown;
+  let referencePairing: MatchSample[] | undefined;
   if (job.reference > 0) {
     const refStarted = performance.now();
     const refSamples = referenceCondition(job.condition, job.partition, job.round, job.reference);
+    // MATCH-29 on the detailed reference too, so both paths' pairing verdicts compare (T372).
+    if (c.family === 'tactics') referencePairing = refSamples.map(pairingSample);
     const refMs = (performance.now() - refStarted) / job.reference;
     const eq = buildEquivalenceReport({
       condition: c.id,
@@ -699,24 +702,27 @@ function summarise(job: Job) {
       c.family === 'gap'
         ? samples.map((s, i) => [s.gap!, ninety[i]!.home, ninety[i]!.away] as const)
         : undefined,
-    pairingSamples:
-      c.family === 'tactics'
-        ? samples.map((s): MatchSample => ({
-            record: {
-              ...s.record,
-              players: [],
-              highlights: [],
-              lineCounts: undefined,
-              incidents: undefined,
-            },
-            incidentsTracked: false,
-            condition: s.condition,
-            freshness: s.freshness,
-          }))
-        : undefined,
+    pairingSamples: c.family === 'tactics' ? samples.map(pairingSample) : undefined,
+    referencePairingSamples: referencePairing,
   };
 }
 type Summary = ReturnType<typeof summarise>;
+
+/** What MATCH-29's pairing verdicts read of a match, compact enough to send to the parent. */
+function pairingSample(s: MatchSample): MatchSample {
+  return {
+    record: {
+      ...s.record,
+      players: [],
+      highlights: [],
+      lineCounts: undefined,
+      incidents: undefined,
+    },
+    incidentsTracked: false,
+    condition: s.condition,
+    freshness: s.freshness,
+  };
+}
 
 // ---- Seasons --------------------------------------------------------------------------------------
 
@@ -987,7 +993,14 @@ function reportJobs(): Job[] {
 function referenceArtifact() {
   const file = 'docs/benchmarks/detailed-model-calibration.json';
   if (!existsSync(file)) return undefined;
-  const a = JSON.parse(readFileSync(file, 'utf8')) as {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    // grid-bands may be writing it while a long run reports (T372).
+    return undefined;
+  }
+  const a = parsed as {
     version: string;
     provenance: { gitHead: string; fingerprint: { sha256: string } };
     conditions: {
@@ -1075,157 +1088,198 @@ async function runReport() {
         console.log(
           `${result.condition}: ${result.matches} matches, goals ${result.goals.mean.toFixed(2)}, W/D/L ${(100 * o.homeWin.share).toFixed(1)}/${(100 * o.draw.share).toFixed(1)}/${(100 * o.awayWin.share).toFixed(1)}, targets inside ${inside}/${result.targets.length}, ${result.msPerMatch.toFixed(1)} ms${result.reference ? ' (+reference)' : ''}`,
         );
+        // A long reference run keeps what it measured if it is cut off (T372).
+        if (result.reference) writeArtifact(false);
       }
       child.kill();
     }),
   );
   if (sourceFingerprint().sha256 !== source.sha256)
     throw new Error('Source changed during the measurement; rerun after edits settle');
-  const order = new Map(CORPUS_CONFIG.conditions.map((c, i) => [c.id, i]));
-  done.sort((a, b) => order.get(a.condition)! - order.get(b.condition)!);
-  const gapSamples: MatchSample[] = done.flatMap((d) =>
-    (d.gapScores ?? []).map(([gap, home, away]) => ({
-      record: { score: { home, away } } as MatchRecord,
-      incidentsTracked: true,
-      condition: d.condition,
-      gap,
-    })),
-  );
-  const curve = gapSamples.length ? buildOutcomeTargetReport(gapSamples) : null;
-  const pairingSamples = done.flatMap((d) => d.pairingSamples ?? []);
-  const tacticPairings = pairingSamples.length ? tacticPairingVerdicts(pairingSamples) : null;
-  const measured = new Set(done.map((d) => d.condition));
-  const artifact = referenceArtifact();
-  const againstArtifact = artifact && {
-    note: 'Point differences (aggregate − detailed) of the target readings on the same condition fixtures and seeds; the detailed artifact may come from another source tree, so this is context for T286, not MATCH-28 equivalence.',
-    reference: {
-      version: artifact.version,
-      gitHead: artifact.provenance.gitHead,
-      fingerprint: artifact.provenance.fingerprint.sha256,
-    },
-    conditions: done.flatMap((d) => {
-      const ref = artifact.conditions.find((x) => x.condition === d.condition);
-      if (!ref) return [];
-      return [
-        {
-          condition: d.condition,
-          draws: d.outcome.draw.share - (ref.outcome.draw?.share ?? NaN),
-          homeWins: d.outcome.homeWin.share - (ref.outcome.homeWin?.share ?? NaN),
-          targets: Object.fromEntries(
-            d.targets.flatMap((t) => {
-              const r = ref.targets.find((x) => x.id === t.id);
-              return t.value === undefined || r?.value === undefined
-                ? []
-                : [[t.id, t.value - r.value]];
-            }),
+  writeArtifact(true);
+
+  function writeArtifact(final: boolean) {
+    const order = new Map(CORPUS_CONFIG.conditions.map((c, i) => [c.id, i]));
+    done.sort((a, b) => order.get(a.condition)! - order.get(b.condition)!);
+    const gapSamples: MatchSample[] = done.flatMap((d) =>
+      (d.gapScores ?? []).map(([gap, home, away]) => ({
+        record: { score: { home, away } } as MatchRecord,
+        incidentsTracked: true,
+        condition: d.condition,
+        gap,
+      })),
+    );
+    const curve = gapSamples.length ? buildOutcomeTargetReport(gapSamples) : null;
+    const pairingSamples = done.flatMap((d) => d.pairingSamples ?? []);
+    const tacticPairings = pairingSamples.length ? tacticPairingVerdicts(pairingSamples) : null;
+    const referencePairingSamples = done.flatMap((d) => d.referencePairingSamples ?? []);
+    const referenceTacticPairings = referencePairingSamples.length
+      ? tacticPairingVerdicts(referencePairingSamples)
+      : null;
+    // MATCH-29 parity: each row's verdict on both paths over the same forced fixtures (T372).
+    const tacticPairingParity = tacticPairings &&
+      referenceTacticPairings && {
+        note: 'Each MATCH-29 row on the aggregate path and the detailed reference over the same forced-pairing fixtures and seeds; difference is aggregate − detailed.',
+        matches: { aggregate: tacticPairings.matches, detailed: referenceTacticPairings.matches },
+        agreeing: tacticPairings.rows.filter(
+          (r) => referenceTacticPairings.rows.find((x) => x.id === r.id)?.status === r.status,
+        ).length,
+        rows: tacticPairings.rows.map((r) => {
+          const ref = referenceTacticPairings.rows.find((x) => x.id === r.id);
+          return {
+            id: r.id,
+            aggregate: r.status,
+            detailed: ref?.status ?? 'missing',
+            ...(r.value !== undefined &&
+              ref?.value !== undefined && { difference: r.value - ref.value }),
+          };
+        }),
+      };
+    const measured = new Set(done.map((d) => d.condition));
+    const artifact = referenceArtifact();
+    const againstArtifact = artifact && {
+      note: 'Point differences (aggregate − detailed) of the target readings on the same condition fixtures and seeds; the detailed artifact may come from another source tree, so this is context for T286, not MATCH-28 equivalence.',
+      reference: {
+        version: artifact.version,
+        gitHead: artifact.provenance.gitHead,
+        fingerprint: artifact.provenance.fingerprint.sha256,
+      },
+      conditions: done.flatMap((d) => {
+        const ref = artifact.conditions.find((x) => x.condition === d.condition);
+        if (!ref) return [];
+        return [
+          {
+            condition: d.condition,
+            draws: d.outcome.draw.share - (ref.outcome.draw?.share ?? NaN),
+            homeWins: d.outcome.homeWin.share - (ref.outcome.homeWin?.share ?? NaN),
+            targets: Object.fromEntries(
+              d.targets.flatMap((t) => {
+                const r = ref.targets.find((x) => x.id === t.id);
+                return t.value === undefined || r?.value === undefined
+                  ? []
+                  : [[t.id, t.value - r.value]];
+              }),
+            ),
+          },
+        ];
+      }),
+    };
+    const report = {
+      kind: 'aggregate-model-calibration',
+      version: MATCH_PARITY_VERSION,
+      task: 'T284',
+      model: MATCH_MODEL_REVISION,
+      productionActivation:
+        'off: the runner plays the aggregate adapter (playAggregate) directly; no world activates the model',
+      releaseEvidence: false,
+      // Written after each finished reference job; false only once every job is in (T372).
+      partial: !final,
+      provenance: {
+        date: new Date().toISOString(),
+        gitHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+        gitDirty: !!execFileSync('git', ['status', '--porcelain', '--', ...SOURCE_SCOPE], {
+          encoding: 'utf8',
+        }).trim(),
+        fingerprint: { ...source, scope: SOURCE_SCOPE },
+        node: process.version,
+        machine: {
+          platform: platform(),
+          arch: arch(),
+          cpu: cpus()[0]?.model ?? 'unknown',
+          logicalCpus: cpus().length,
+        },
+        command: `pnpm exec tsx scripts/match-parity.ts ${args.join(' ')}`,
+      },
+      configs: {
+        parity: PARITY_CONFIG.version,
+        corpus: CORPUS_CONFIG.version,
+        aggregate: AGGREGATE_CONFIG,
+        participation: AGGREGATE_PARTICIPATION_CONFIG,
+        scoringConcentration: SCORING_CONCENTRATION_TARGET,
+      },
+      settings: {
+        partition: text('partition', 'calibration'),
+        round: option('round', 0),
+        scale: option('scale', 1),
+        rareScale: option('rare-scale', option('scale', 1)),
+        seasons: seasonCount,
+        workers,
+        forcedTactics:
+          "tactic pairings force both tactics on the core pairs with each club's squad built for its forced formation (grid-bands forcedRosters, the detailed runner's rule) and start both squads from NEUTRAL_SQUAD_FATIGUE; the XI is rated at the formation it plays, the profiles and possession chance follow the tactics played",
+        fatigue:
+          'fatigue conditions set every matchday player of both sides to the pre-match fatigue',
+        knockouts:
+          'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
+        cellRows: TARGET_BANDS.filter((t) => t.reads === 'cells').map((t) => t.id),
+        detailedOnlyRows: {
+          rows: TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id),
+          reason: DETAILED_ONLY_REASON,
+        },
+        advancedCounters: {
+          target: ADVANCED_COUNTER_TARGET.version,
+          unbanded: Object.fromEntries(
+            ADVANCED_COUNTER_TARGET.counters.flatMap((c) =>
+              'unbanded' in c ? [[c.id, c.unbanded]] : [],
+            ),
           ),
         },
-      ];
-    }),
-  };
-  const report = {
-    kind: 'aggregate-model-calibration',
-    version: MATCH_PARITY_VERSION,
-    task: 'T284',
-    model: MATCH_MODEL_REVISION,
-    productionActivation:
-      'off: the runner plays the aggregate adapter (playAggregate) directly; no world activates the model',
-    releaseEvidence: false,
-    provenance: {
-      date: new Date().toISOString(),
-      gitHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-      gitDirty: !!execFileSync('git', ['status', '--porcelain', '--', ...SOURCE_SCOPE], {
-        encoding: 'utf8',
-      }).trim(),
-      fingerprint: { ...source, scope: SOURCE_SCOPE },
-      node: process.version,
-      machine: {
-        platform: platform(),
-        arch: arch(),
-        cpu: cpus()[0]?.model ?? 'unknown',
-        logicalCpus: cpus().length,
       },
-      command: `pnpm exec tsx scripts/match-parity.ts ${args.join(' ')}`,
-    },
-    configs: {
-      parity: PARITY_CONFIG.version,
-      corpus: CORPUS_CONFIG.version,
-      aggregate: AGGREGATE_CONFIG,
-      participation: AGGREGATE_PARTICIPATION_CONFIG,
-      scoringConcentration: SCORING_CONCENTRATION_TARGET,
-    },
-    settings: {
-      partition: text('partition', 'calibration'),
-      round: option('round', 0),
-      scale: option('scale', 1),
-      rareScale: option('rare-scale', option('scale', 1)),
-      seasons: seasonCount,
-      workers,
-      forcedTactics:
-        "tactic pairings force both tactics on the core pairs with each club's squad built for its forced formation (grid-bands forcedRosters, the detailed runner's rule) and start both squads from NEUTRAL_SQUAD_FATIGUE; the XI is rated at the formation it plays, the profiles and possession chance follow the tactics played",
-      fatigue:
-        'fatigue conditions set every matchday player of both sides to the pre-match fatigue',
-      knockouts:
-        'target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)',
-      cellRows: TARGET_BANDS.filter((t) => t.reads === 'cells').map((t) => t.id),
-      detailedOnlyRows: {
-        rows: TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id),
-        reason: DETAILED_ONLY_REASON,
+      coverage: CORPUS_CONFIG.conditions.map((c) => ({
+        condition: c.id,
+        status: measured.has(c.id)
+          ? 'measured'
+          : c.id === 'season:league-20' && seasons.length
+            ? `measured: ${seasons.length} founded worlds, one season each through ordinary settlement`
+            : c.family === 'season'
+              ? 'not measured: century careers need 100-season worlds (T285/T286 century runs)'
+              : 'not selected',
+      })),
+      seasons: seasons.length ? seasonsReport(seasons) : null,
+      settlementStress: stress ?? null,
+      speed: {
+        note: 'Wall time on a shared, loaded machine: context for T285, never a football or release claim.',
+        elapsedSeconds: (performance.now() - started) / 1000,
+        msPerMatch: Object.fromEntries(done.map((d) => [d.condition, d.msPerMatch])),
       },
-      advancedCounters: {
-        target: ADVANCED_COUNTER_TARGET.version,
-        unbanded: Object.fromEntries(
-          ADVANCED_COUNTER_TARGET.counters.flatMap((c) =>
-            'unbanded' in c ? [[c.id, c.unbanded]] : [],
-          ),
-        ),
-      },
-    },
-    coverage: CORPUS_CONFIG.conditions.map((c) => ({
-      condition: c.id,
-      status: measured.has(c.id)
-        ? 'measured'
-        : c.id === 'season:league-20' && seasons.length
-          ? `measured: ${seasons.length} founded worlds, one season each through ordinary settlement`
-          : c.family === 'season'
-            ? 'not measured: century careers need 100-season worlds (T285/T286 century runs)'
-            : 'not selected',
-    })),
-    seasons: seasons.length ? seasonsReport(seasons) : null,
-    settlementStress: stress ?? null,
-    speed: {
-      note: 'Wall time on a shared, loaded machine: context for T285, never a football or release claim.',
-      elapsedSeconds: (performance.now() - started) / 1000,
-      msPerMatch: Object.fromEntries(done.map((d) => [d.condition, d.msPerMatch])),
-    },
-    outcomeCurve: curve,
-    tacticPairings,
-    againstArtifact,
-    conditions: done.map((d) => ({
-      ...d,
-      gapScores: undefined,
-      pairingSamples: undefined,
-      msPerMatch: undefined,
-    })),
-  };
-  mkdirSync(dirname(out), { recursive: true });
-  const rounded = (_key: string, value: unknown) =>
-    typeof value === 'number' && !Number.isInteger(value) ? Number(value.toPrecision(5)) : value;
-  writeFileSync(out, JSON.stringify(report, rounded, 1) + '\n');
-  console.log(
-    `wrote ${out}: ${done.length} conditions in ${report.speed.elapsedSeconds.toFixed(0)} s, fingerprint ${source.sha256}`,
-  );
-  for (const d of done.filter((x) => x.family === 'core' || x.family === 'rare'))
+      outcomeCurve: curve,
+      tacticPairings,
+      referenceTacticPairings,
+      tacticPairingParity,
+      againstArtifact,
+      conditions: done.map((d) => ({
+        ...d,
+        gapScores: undefined,
+        pairingSamples: undefined,
+        referencePairingSamples: undefined,
+        msPerMatch: undefined,
+      })),
+    };
+    mkdirSync(dirname(out), { recursive: true });
+    const rounded = (_key: string, value: unknown) =>
+      typeof value === 'number' && !Number.isInteger(value) ? Number(value.toPrecision(5)) : value;
+    writeFileSync(out, JSON.stringify(report, rounded, 1) + '\n');
     console.log(
-      `${d.condition} targets inside ${d.targets.filter((t) => t.status === 'inside').length}/${d.targets.length}; outside ${d.targets
-        .filter((t) => t.status === 'outside' || t.status === 'unresolved')
-        .map((t) => `${t.id}=${t.value?.toFixed(3)}(${t.status[0]})`)
-        .join(' ')}; detailed-only ${d.targets.filter((t) => t.status === 'detailed-only').length}`,
+      `wrote ${out}${final ? '' : ' (partial)'}: ${done.length} conditions in ${report.speed.elapsedSeconds.toFixed(0)} s, fingerprint ${source.sha256}`,
     );
-  const core = done.find((x) => x.family === 'core');
-  if (core) for (const line of describeAdvancedCounters(core.advancedCounters)) console.log(line);
-  if (curve) console.log(`outcome curve mean absolute error (−10…+40): ${curve.meanAbsoluteError}`);
-  if (tacticPairings) for (const line of describeTacticPairings(tacticPairings)) console.log(line);
+    if (!final) return;
+    for (const d of done.filter((x) => x.family === 'core' || x.family === 'rare'))
+      console.log(
+        `${d.condition} targets inside ${d.targets.filter((t) => t.status === 'inside').length}/${d.targets.length}; outside ${d.targets
+          .filter((t) => t.status === 'outside' || t.status === 'unresolved')
+          .map((t) => `${t.id}=${t.value?.toFixed(3)}(${t.status[0]})`)
+          .join(
+            ' ',
+          )}; detailed-only ${d.targets.filter((t) => t.status === 'detailed-only').length}`,
+      );
+    const core = done.find((x) => x.family === 'core');
+    if (core) for (const line of describeAdvancedCounters(core.advancedCounters)) console.log(line);
+    if (curve)
+      console.log(`outcome curve mean absolute error (−10…+40): ${curve.meanAbsoluteError}`);
+    if (tacticPairings)
+      for (const line of describeTacticPairings(tacticPairings)) console.log(line);
+    if (referenceTacticPairings)
+      for (const line of describeTacticPairings(referenceTacticPairings)) console.log(line);
+  }
 }
 
 if (args.includes('--aggregate-worker')) {

@@ -1107,7 +1107,8 @@ R(재시작·득점 레버만, r2)과 RB(R + g4)를 함께 검증했다. 합친 
 
 ### 산출물
 
-ARTIFACT_PLACEHOLDER
+- `docs/benchmarks/detailed-model-calibration.json`을 이 설정으로 다시 썼다. T365·T370과 같은 검증 11회차, 51개 조건 × 600경기(1,602초, 8 작업자, 부하가 있는 공유 기계), 소스 `6a607031`(깨끗함), 지문 `27483179d4977ae143d6c53471b4d3fc12d3be3b35b85c178d17353ede7651c0`(398개 파일, Node v24.22.1, Intel Xeon Silver 4214)다. MATCH-30 8 inside, 2 unresolved(빅찬스 득점 0.38, PPDA 13.8), 11 outside(빅찬스 0.71이 T370 artifact의 unresolved에서 outside로); core 27/38, outside 없음(T370 artifact는 골킥 9.31, FW 골 63.4% outside); MATCH-29 23/1/1(T370 artifact 17/1/7; 균형의 실점 xG −0.057 [−0.084, −0.030]만 outside); 곡선 1.78점(T370 artifact 2.01); 불변식 위반 0. 600경기 한 회차라 구간이 넓다.
+- 후보 다이제스트와 후보 회차 다이제스트(`c1e07cfffabede5d` → `29d9bb53ba9487ea`)를 다시 기록했고, 녹아웃 경기 ID를 다시 찾았다(1975 26/6, 1995 1/17, 2024 0/19). 사전 기능 사실과 집계 기록은 그대로다.
 
 ### 남은 것
 
