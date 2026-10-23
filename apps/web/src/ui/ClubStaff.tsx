@@ -32,7 +32,7 @@ import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { clubOf } from '../../../../packages/engine/src/world';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { openTraining, useStaffRequest } from './state';
 import { DirectionLines } from './DirectionLines';
 import { Dialog } from './Dialog';
@@ -46,7 +46,7 @@ import s from './ClubStaff.module.css';
 import management from './ManagementView.module.css';
 
 function useActing() {
-  return useGameState((state) => !!state.pendingActions || state.readonly || !!state.error);
+  return useGameState(gameActionsBlocked);
 }
 
 function Meter({ value }: { value: number }) {

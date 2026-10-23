@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import type { ClientState, GameClient } from '../runtime/client';
-import { gameStore, useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { CrestMark } from './ClubCrest';
 import { ClubIdentityEditor } from './ClubIdentityEditor';
 import { cloneIdentity } from './clubIdentityDraft';
@@ -60,6 +60,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const w = state.view!.world;
   const applied = identityOf(w, w.playerClub);
   const readonly = useGameState((current) => current.readonly);
+  const blocked = useGameState(gameActionsBlocked);
   const [work, setWork] = useTaskState<ClubDesignDraft | null>(w.id, CLUB_DESIGN_DRAFT, null);
   const [pending, setPending] = useState(false);
   const design = clubDesignState(work, w.id, applied);
@@ -89,7 +90,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
     setWork(null);
   };
   const apply = async () => {
-    if (!draft || !changed || stale || readonly || pending) return;
+    if (!draft || !changed || stale || blocked || pending) return;
     const worldId = w.id;
     const sent = draft.draft;
     setPending(true);
@@ -139,7 +140,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
             <button
               type="button"
               className={s.apply}
-              disabled={!changed || stale || readonly || pending}
+              disabled={!changed || stale || blocked || pending}
               onClick={() => void apply()}
             >
               적용
@@ -160,7 +161,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
           <div className={s.alert} role="alert">
             <p>{notice.text}</p>
             <div className={s.actions}>
-              <button type="button" disabled={pending || readonly} onClick={() => void apply()}>
+              <button type="button" disabled={pending || blocked} onClick={() => void apply()}>
                 다시 적용
               </button>
               <button type="button" onClick={discard}>

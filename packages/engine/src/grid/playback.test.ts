@@ -55,15 +55,68 @@ describe('grid playback', () => {
       expect(frames.at(-1)!.metrics[0]![m]).toBe(result.record.metrics[0]![m]);
   });
 
-  it('samples 8 positions and 80 ball points per minute', () => {
-    for (const f of frames) {
-      expect(f.motion).toHaveLength(8);
-      expect(f.ballTrack).toHaveLength(80);
-      expect(f.motion!.at(-1)!.elapsedSeconds).toBe(f.elapsedSeconds);
-      // Pre-feature frames carry no explicit times; the clock decodes them at equal intervals.
-      expect(f.startSeconds).toBeUndefined();
-      expect(f.ballTimes).toBeUndefined();
+  it('times every pre-feature minute explicitly and draws each period from its kick-off', () => {
+    expect(frameTimeIssues(frames)).toEqual([]);
+    frames.forEach((f, i) => {
+      expect(f.startSeconds).toBeDefined();
+      expect(f.motion!.at(-1)!.elapsedSeconds).toBe(f.startSeconds! + 60);
+      expect(f.ballTrack!.length).toBeGreaterThanOrEqual(80);
+      expect(f.ballTimes).toHaveLength(f.ballTrack!.length);
+      if (i && frames[i - 1]!.period === f.period) return;
+      // The opening sample: the ball on the centre spot and both sides in their own halves.
+      const [opening] = f.motion!;
+      expect(opening!.elapsedSeconds).toBe(f.startSeconds);
+      expect(opening!.ball).toEqual([50, 50]);
+      const home = f.period === 1 ? 0 : 1;
+      for (const side of [0, 1] as const)
+        for (const player of opening!.players[side])
+          if (side === home) expect(player.position[0]).toBeLessThanOrEqual(50);
+          else expect(player.position[0]).toBeGreaterThanOrEqual(50);
+    });
+  });
+
+  it('puts the receiver on the ball where a pre-feature pass lands (MATCH-12)', () => {
+    const at = new Map(frames.flatMap((f) => f.motion!.map((m) => [m.elapsedSeconds, m])));
+    let landed = 0,
+      passes = 0;
+    for (const e of result.trace!) {
+      if (e.action !== 'pass' || e.outcome !== 'complete' || e.receiver === undefined) continue;
+      passes++;
+      const sample = at.get(e.elapsed);
+      if (!sample) continue;
+      const receiver = sample.players[e.side].find(
+        (p) => p.id === setup.rosters[e.side][e.receiver!]!.id,
+      );
+      if (!receiver) continue;
+      // Within a metre of the ball in either direction.
+      expect(Math.abs(receiver.position[0] - sample.ball[0])).toBeLessThan(1);
+      expect(Math.abs(receiver.position[1] - sample.ball[1])).toBeLessThan(1.5);
+      landed++;
     }
+    expect(landed).toBeGreaterThan(passes * 0.8);
+  });
+
+  it('records who holds the ball through each minute (WEB-95)', () => {
+    let held = 0;
+    for (const f of frames) {
+      const holders = f.holders!;
+      expect(holders[0]![0]).toBe(0);
+      holders.forEach(([t, who], i) => {
+        if (!i) return;
+        expect(t).toBeGreaterThan(holders[i - 1]![0]);
+        expect(who).not.toBe(holders[i - 1]![1]);
+      });
+      for (let i = 0; i < holders.length; i++)
+        if (holders[i]![1]) held += (holders[i + 1]?.[0] ?? 60) - holders[i]![0];
+      // A sample's recorded owner is the holder at its instant.
+      for (const sample of f.motion!) {
+        const seconds = sample.elapsedSeconds - f.startSeconds!;
+        const holder = holders.findLast(([t]) => t <= seconds + 0.05)?.[1];
+        if (sample.ownerId) expect(holder).toBe(sample.ownerId);
+      }
+    }
+    // Passes fly about as long as the candidate's, so receivers are seen on the ball.
+    expect(held / (frames.length * 60)).toBeGreaterThan(0.25);
   });
 
   it('keeps everyone on the pitch inside 0–100 units and mirrors the second half', () => {

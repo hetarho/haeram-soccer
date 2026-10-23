@@ -27,7 +27,7 @@
   gap: 2px;
   padding: 6px 0;
   border-radius: var(--card-radius);
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.22));
   border: 1px solid var(--line);
   min-width: 0;
 }

@@ -101,7 +101,7 @@
   position: absolute;
   inset: 8px 8px auto;
   padding: 5px 8px;
-  background: #0c0f10d9;
+  background: var(--scene-caption-surface, #0c0f10d9);
   z-index: 1;
   display: flex;
   justify-content: space-between;
@@ -111,7 +111,7 @@
 .sceneCaption b {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: var(--scene-caption-text, #fff);
   text-shadow: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -125,12 +125,12 @@
   padding: 3px 0;
   font-size: 12px;
   font-weight: 400;
-  color: var(--text-muted);
+  color: var(--scene-caption-text, var(--text-muted));
   font-family: var(--display);
 }
 .badge i {
   font-style: normal;
-  color: var(--gold);
+  color: var(--scene-caption-icon, var(--gold));
 }
 
 .fixture {
@@ -213,8 +213,9 @@
   padding: var(--control-padding-block) var(--control-padding-inline);
   font-size: 12px;
   white-space: nowrap;
-  background: var(--subtle-fill);
-  border-color: transparent;
+  background: var(--fixture-control-fill, var(--subtle-fill));
+  color: var(--fixture-control-text, var(--text));
+  border-color: var(--fixture-control-edge, transparent);
 }
 .play {
   display: flex;
@@ -390,7 +391,7 @@
   padding: 0;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--team-state-fill, rgba(0, 0, 0, 0.22));
   transition:
     border-color 300ms,
     background 300ms;

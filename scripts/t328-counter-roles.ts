@@ -20,7 +20,7 @@
  * with scripts/t328-counter-roles-report.ts.
  */
 import { fork } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PD, TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
@@ -31,7 +31,10 @@ import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { M } from '../packages/engine/src/grid/record';
 import { attackFrame, inBox } from '../packages/engine/src/grid/pitch';
+import { OFFSIDE_PROBE, RESTART_CONFIG } from '../packages/engine/src/grid/restarts';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
+import { lineX } from '../packages/engine/src/grid/shape';
+import { skill, type GridState } from '../packages/engine/src/grid/state';
 import {
   conditionClubs,
   conditionFixture,
@@ -77,7 +80,9 @@ if (!possessionSpec) throw new Error(`unknown possession table ${possessionTable
 }));
 // The measurement's behaviour overrides (T334): candidate configs patched in this process only.
 const behaviour = opt('behaviour', '');
-const patch = opt('patch', '');
+// `--patch @file.json` reads the patch from a file (T384: runners that re-quote their arguments).
+const patchArg = opt('patch', '');
+const patch = patchArg.startsWith('@') ? readFileSync(patchArg.slice(1), 'utf8') : patchArg;
 for (const p of behaviourOf(behaviour, patch || undefined)) applyBehaviour(p);
 
 const TACTICS: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
@@ -123,6 +128,41 @@ function playJob(job: Job) {
     byRole: {} as Record<string, number>,
     behindByRole: {} as Record<string, number>,
   };
+  // T384: every pass to a receiver in an offside position outside the gap family, by his 판단력 (the
+  // duel-scale skill the call reads, and his own attribute) and whether he was called.
+  const offside = {
+    sides: 0,
+    positions: 0,
+    calls: 0,
+    bySkill: {} as Record<string, [number, number]>,
+    byRaw: {} as Record<string, [number, number]>,
+    linebreaker: [0, 0] as [number, number],
+    joint: {} as Record<string, [number, number]>,
+  };
+  const tallyOffside = (s: GridState, sd: 0 | 1, target: number, called: boolean) => {
+    const gp = s.players[sd][target]!;
+    const add = (map: Record<string, [number, number]>, key: number) => {
+      const row = (map[String(key)] ??= [0, 0]);
+      row[0]++;
+      if (called) row[1]++;
+    };
+    offside.positions++;
+    if (called) offside.calls++;
+    add(offside.bySkill, Math.round(skill(s, sd, target, 'decisions')));
+    add(offside.byRaw, gp.player.attrs.decisions);
+    const linebreaker = gp.player.traits.includes('linebreaker');
+    if (linebreaker) {
+      offside.linebreaker[0]++;
+      if (called) offside.linebreaker[1]++;
+    }
+    // Duel-scale and own 판단력, linebreaker, high line: what any setting's chance reads.
+    const highLine = lineX(s, (1 - sd) as 0 | 1, 'DF') >= RESTART_CONFIG.offside.highLineFrom;
+    const key = `${Math.round(skill(s, sd, target, 'decisions'))}|${gp.player.attrs.decisions}|${+linebreaker}|${+highLine}`;
+    const row = (offside.joint[key] ??= [0, 0]);
+    row[0]++;
+    if (called) row[1]++;
+  };
+  OFFSIDE_PROBE.seen = c.family === 'gap' ? undefined : tallyOffside;
   let invalid = 0;
   // Consume the club stream for the fixtures before `from`, so chunks of a condition read as one run.
   for (let i = 0; i < job.from + job.count; i++) {
@@ -139,6 +179,7 @@ function playJob(job: Job) {
     const fatigueApplied =
       c.family === 'tactics' && forceTacticRosters(w, f, setup, [home, away], params.fatigue);
     const result = playGrid(setup);
+    if (c.family !== 'gap') offside.sides += 2;
     if (validateFullMatchRecord(result.record).length) invalid++;
     const rec = result.record;
     // Counter side readings (each side that plays counter).
@@ -258,6 +299,7 @@ function playJob(job: Job) {
     counterSides,
     side,
     traced,
+    offside,
     invalid,
     invariants,
   };

@@ -26,7 +26,7 @@ import {
   type TransferOffer,
 } from '../../../../packages/engine/src/recruitment';
 import type { ClientState, GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { compactMoney } from './format';
 import { Money } from './Money';
@@ -284,10 +284,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   // 모두 보기 on the 이적 협상 list: closed bids past the first rows.
   const [expanded, setExpanded] = useState(false);
   const registered = squadRegistration(w);
-  const acting = useGameState((current) => !!current.pendingActions);
-  const readonly = useGameState((current) => current.readonly);
-  const error = useGameState((current) => current.error);
-  const blocked = acting || readonly || !!error;
+  const blocked = useGameState(gameActionsBlocked);
   const recommended = recruitmentLineNeed(w);
   const candidates: Candidate[] = state.view!.transfers.map((offer, index) => ({
     index,

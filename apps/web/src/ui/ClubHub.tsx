@@ -8,7 +8,7 @@ import { cashState, teamStates, urgentState, type StateKey } from './teamState';
 import { RemedySheet, useRemedyRunner } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
 import { useMatchView, useNavigation } from './state';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -105,7 +105,7 @@ function TeamState({
   client: GameClient;
   onPrepare: () => void;
 }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const acting = useGameState(gameActionsBlocked);
   const runtimeError = useGameState((state) => !!state.error);
   const home = useNavigation((state) => state.page === 'dashboard');
   const [sheet, setSheet] = useState<StateKey>();

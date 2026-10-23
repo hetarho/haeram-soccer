@@ -4,7 +4,7 @@ import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
 import { memo, useEffect, useRef } from 'react';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import {
   pendingMatchReport,
   useProgression,
@@ -13,6 +13,7 @@ import {
 } from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
+import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
 import p from './ProgressControls.module.css';
 
@@ -36,6 +37,8 @@ export const ProgressOverview = memo(function ProgressOverview({
   const w = useGameState((state) => state.view!.world);
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
+  const manual = settingsOf(w).mode === 'manual';
+  const round = ownDivisionRound(w);
   return (
     <section
       className={p.overview}
@@ -48,11 +51,21 @@ export const ProgressOverview = memo(function ProgressOverview({
         </small>
         <span data-testid="game-date">{seasonDate(w)}</span>
       </div>
-      <div className={p.round}>
+      <div
+        className={p.round}
+        aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}
+      >
         <small>ROUND</small>
-        <strong data-testid="game-round">{w.round}</strong>
+        <strong data-testid="game-round">{round.played}</strong>
+        <small className={p.roundTotal} data-testid="game-round-total">
+          / {round.total}
+        </small>
       </div>
-      <ProgressModeSwitch client={client} controller={controller} />
+      {compact ? (
+        <span className={p.modeStatus}>{manual ? 'MANUAL · 수동 진행' : 'AUTO · 자동 진행'}</span>
+      ) : (
+        <ProgressModeSwitch client={client} controller={controller} />
+      )}
     </section>
   );
 });
@@ -91,12 +104,7 @@ export const ProgressControls = memo(function ProgressControls({
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
-        disabled={
-          blocked ||
-          state.processing ||
-          !!state.pendingActions ||
-          (pending && !pendingMatchReport(w))
-        }
+        disabled={gameActionsBlocked(state) || blocked || (pending && !pendingMatchReport(w))}
         onClick={() => void controller.nextEvent()}
       >
         다음 이벤트
@@ -107,7 +115,7 @@ export const ProgressControls = memo(function ProgressControls({
       <button
         className={`${p.toggle} ${running ? p.pause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
-        disabled={!running && (blocked || state.processing)}
+        disabled={!running && (blocked || gameActionsBlocked(state))}
         onClick={() => {
           if (running) {
             userStop.current = true;

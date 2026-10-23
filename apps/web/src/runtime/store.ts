@@ -70,6 +70,20 @@ export function createGameStore(initial: ClientState = initialClientState) {
 
 export const gameStore = createGameStore();
 
+/** Editing unlocks only after the clock stops and its last admitted operation settles. */
+export function gameActionsBlocked(
+  state: ClientState,
+  options?: { recovery?: boolean; preview?: boolean },
+): boolean {
+  return !!(
+    (!options?.preview && (state.clockRunning || state.processing)) ||
+    state.busy ||
+    state.pendingActions ||
+    state.readonly ||
+    (state.error && !options?.recovery)
+  );
+}
+
 export function useGameState<T>(selector: (state: ClientState) => T): T {
   return useStore(gameStore, selector);
 }

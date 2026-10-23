@@ -320,6 +320,11 @@ export const AGGREGATE_ATTRIBUTION_CONFIG = {
   outsideShot: { GK: 0, DF: 0.3, MF: 1.6, FW: 1.1 },
   /** Offsides by the receiver's line. */
   offside: { GK: 0, DF: 0.05, MF: 0.5, FW: 2.5 },
+  /**
+   * T384 (→MATCH-18 r21): offsides fall on a receiver by his 판단력 read the other way round,
+   * `(attributeScale / 판단력) ** offsideJudgement`, so the split by 판단력 quarter follows the grid's.
+   */
+  offsideJudgement: 4,
   /** Tackles, interceptions and fouls by the band they happen in (the defending side's frame). */
   defend: {
     GK: [0.3, 0.05, 0, 0, 0, 0, 0, 0],

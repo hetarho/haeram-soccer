@@ -7,7 +7,7 @@ import type {
   CareerDate,
 } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { requestLabel } from '../../../../packages/engine/src/signings';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
@@ -49,7 +49,7 @@ export function MediationReview({
       value: Awaited<ReturnType<GameClient['mediationPreview']>>;
     }>(),
     [error, setError] = useState<string>();
-  const disabled = useGameState((state) => state.busy || state.readonly || !!state.pendingActions),
+  const disabled = useGameState(gameActionsBlocked),
     readonly = useGameState((state) => state.readonly);
   const preview = checked?.id === record.id ? checked.value : undefined;
   const ready =

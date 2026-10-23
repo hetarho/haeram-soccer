@@ -36,7 +36,7 @@ import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
-import { gameStore, useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
 import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
@@ -45,6 +45,8 @@ import {
   daysUntilNextMatch,
   fixtureDate,
   nextOwnFixture,
+  ROUND_INTERVAL_DAYS,
+  seasonDayLabel,
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
@@ -292,9 +294,7 @@ function ClubJournal({ state }: { state: ClientState }) {
                   .reverse()
                   .map((e, i) => (
                     <li key={i}>
-                      <small>
-                        {e.year} · ROUND {e.round}
-                      </small>
+                      <small>{seasonDayLabel(e.year, e.round * ROUND_INTERVAL_DAYS)}</small>
                       <h3>{e.title}</h3>
                       <p>{e.detail}</p>
                     </li>
@@ -892,7 +892,7 @@ function SaveActions({
           className={s.fileInput}
           type="file"
           accept="application/json,.json"
-          disabled={state.busy || state.readonly}
+          disabled={gameActionsBlocked(state, { recovery: true })}
           onChange={(event) => {
             void onImport(event.target.files?.[0]);
             event.target.value = '';
@@ -925,6 +925,8 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
 }
 export function App() {
   const { t } = useLocale();
+  const importBlocked = useGameState((state) => gameActionsBlocked(state, { recovery: true }));
+  const progressionBlocked = useGameState(gameActionsBlocked);
   const worldId = useGameState((state) => state.view?.world.id);
   const state = gameStore.getSnapshot();
   const [client, setClient] = useState<GameClient>(),
@@ -1001,8 +1003,8 @@ export function App() {
     if (playing) loadRich().catch(() => undefined);
   }, [playing]);
   useEffect(() => {
-    if (playing && worldId) controller?.resumeAway();
-  }, [playing, worldId, controller]);
+    if (playing && worldId && !progressionBlocked) controller?.resumeAway();
+  }, [playing, worldId, controller, progressionBlocked]);
   useTabTitle(controller);
   // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
   const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
@@ -1081,9 +1083,11 @@ export function App() {
     const root = scroller.current;
     if (!root) return;
     const desired = useTaskMemory.getState().scrolls[taskAddress()] ?? 0;
-    root.scrollTo(0, desired);
+    // The options form: WebKit ignores scrollTo(0, 0) from a 2 px offset, so home kept the
+    // office's scroll (CI 39952590526).
+    root.scrollTo({ top: desired });
     // Lazy screens may not have their final height at the navigation boundary.
-    const resize = new ResizeObserver(() => root.scrollTo(0, desired));
+    const resize = new ResizeObserver(() => root.scrollTo({ top: desired }));
     const body = root.firstElementChild;
     if (desired && body) resize.observe(body);
     const timer = window.setTimeout(() => resize.disconnect(), 500);
@@ -1105,13 +1109,14 @@ export function App() {
     if (raw) saveFile(raw, String(gameStore.getSnapshot().view?.world.year || 'backup'));
   };
   const importFile = async (file?: File) => {
-    if (!file) return;
+    if (!file || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
     if (file.size > 8 * 1024 * 1024) {
       setLocalError(t('save.fileTooLarge'));
       return;
     }
     setLocalError('');
     const raw = await file.text();
+    if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
     let stored = false;
     try {
       stored = !!(
@@ -1332,7 +1337,9 @@ export function App() {
             <button onClick={() => setPendingImport(undefined)}>{t('common.cancel')}</button>
             <button
               className={s.primary}
+              disabled={importBlocked}
               onClick={() => {
+                if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
                 const raw = pendingImport;
                 setPendingImport(undefined);
                 void client?.importFile(raw);

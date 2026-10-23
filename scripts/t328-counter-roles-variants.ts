@@ -9,6 +9,7 @@ import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
 import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
+import { RESTART_CONFIG } from '../packages/engine/src/grid/restarts';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
 import { STRENGTH_CONFIG } from '../packages/engine/src/grid/state';
 
@@ -102,6 +103,8 @@ export interface BehaviourPatch {
   strength?: object;
   duel?: object;
   shot?: object;
+  /** T384: `RESTART_CONFIG`, for the candidate offside call. */
+  restarts?: object;
 }
 
 const settled = (
@@ -249,6 +252,7 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     strength: STRENGTH_CONFIG,
     duel: DUEL_CONFIG,
     shot: SHOT_CONFIG,
+    restarts: RESTART_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(

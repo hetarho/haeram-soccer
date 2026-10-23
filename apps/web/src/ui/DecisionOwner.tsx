@@ -37,11 +37,11 @@ export function DecisionOwner({
       data-testid={`decision-owner-${decision}`}
     >
       <div className={s.row}>
-        <span className={s.mode}>{on ? '위임' : '직접 결정'}</span>
+        <span className={s.mode}>{on ? '위임' : '보고받기'}</span>
         <button
           type="button"
           className={s.level}
-          aria-label={`${name} · ${on ? '위임' : '직접 결정'} · 구단주 사무실 열기`}
+          aria-label={`${name} · ${on ? '위임' : '보고받기'} · 구단주 사무실 열기`}
           onClick={openOwnerOffice}
         >
           구단주 사무실

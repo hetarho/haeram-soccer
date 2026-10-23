@@ -16,6 +16,7 @@ import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';
 import {
+  gameActionsBlocked,
   notificationStore,
   useGameState,
   useNotifications,
@@ -166,7 +167,7 @@ const EventCard = memo(function EventCard({
     await read(item);
     controller.eventDecided();
   };
-  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const acting = useGameState(gameActionsBlocked);
   const setPage = useNavigation((state) => state.setPage);
   const next = nextOwnFixture(w);
   const eve = item.kind === 'match' && next?.id === item.ref ? next : undefined;

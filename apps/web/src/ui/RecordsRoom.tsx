@@ -58,7 +58,7 @@ function savedRecordYear(w: World) {
 }
 function recordScroll(value: number) {
   requestAnimationFrame(() =>
-    document.querySelector<HTMLElement>('[data-testid="view-scroller"]')?.scrollTo(0, value),
+    document.querySelector<HTMLElement>('[data-testid="view-scroller"]')?.scrollTo({ top: value }),
   );
 }
 

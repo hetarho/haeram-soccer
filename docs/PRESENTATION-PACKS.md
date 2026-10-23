@@ -1,8 +1,9 @@
 # Presentation packs
 
 The application discovers presentation choices from JSON served with the static deployment.
-The current product inventory is one locale, `ko-KR` (한국어), and two registered themes:
-`standard` (기본 · 스타디움 그린), the default, and `pixel` (픽셀아트). Existing valid browser
+The current product inventory is one locale, `ko-KR` (한국어), and four registered themes:
+`standard` (기본 · 스타디움 그린), the default, `pixel` (픽셀아트), `matchday-print` (매치데이 인쇄),
+and `sticker-club` (스티커 풋볼클럽). Existing valid browser
 preferences remain selected. The standard theme uses self-hosted Pretendard and a deep
 stadium-green palette: subdued page/navigation backgrounds, quieter content surfaces and stronger
 green controls/selection. A fine static monochrome grain tile paints page and UI backgrounds;
@@ -49,6 +50,28 @@ encodes original generated sources for deployment. Prompts, source provenance an
 in `apps/web/public/art/standard/generation.json`. Reviewed candidates and retired vector scenes
 are removed after the selected production set is integrated.
 These are the current contents, not a permanent limit or a supported-ID list in application code.
+
+The two optional smooth concepts replace complete resource sets rather than only accent colours.
+Both retain licensed Pretendard for body, display and score roles and the common responsive layouts.
+Matchday-print combines warm newsprint, charcoal and vermilion with woodcut/halftone facility scenes,
+solid stamped pictograms and printed-ticket edges. Sticker-club combines flat cartoon facility scenes,
+colourful filled pictograms with a cream die-cut outline, compact rounded badges and restrained offset
+shadows. Each has 92 independently generated facility illustrations, including all completed stages in
+all three eras and separate period-neutral manager/staff offices. Each replaces all 36 semantic icon
+roles and supplies distinct earned/unearned trophy states. Club identities and the engine-owned pitch
+retain their game facts. Background texture never filters HTML type.
+
+`node scripts/generate-concept-themes.mjs` regenerates both JSON packs and their registry entries from original pictogram
+geometry and token definitions; `--check` verifies them without writing. The generic `scripts/prepare-concept-art.mjs` plans and encodes their
+built-in-image-tool sources; each deployed art directory contains `generation.json` with prompts,
+source provenance and encoded checksums. The home caption's optional `scene-caption-surface`,
+`scene-caption-text` and `scene-caption-icon` roles keep light concepts readable over art. CSS fallbacks
+preserve the existing standard/pixel captions. Optional `team-state-fill` and `fixture-control-fill/text/edge`
+roles keep light status cards and preparation actions readable. The standard and concept preparation
+commands share `scripts/art-resources.mjs` for 3:1 validation and 1440×480 WebP encoding.
+Inset rows, selected training focus, relegation badges and chart series also have optional semantic
+fills/colours. New light packs supply these roles; literal CSS fallbacks preserve the existing dark packs.
+
 `pnpm run validate:presentation` reports the actual deployed-source registry inventory and checks
 every registered resource before the build/deployment gates. Local `pnpm run verify` and the CI
 `checks` job both include that command.

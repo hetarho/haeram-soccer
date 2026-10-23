@@ -1,0 +1,23 @@
+html {
+  --page-grain: url('../../art/standard/grain.png');
+  --surface-grain: none;
+  --icon-paper: #f6eedb;
+}
+html[data-theme='matchday-print'] aside {
+  --surface-deep: #282821;
+  --surface-2: #514b3c;
+  --text: #fff4de;
+  --text-muted: #f0e4cc;
+  --text-faint: #ddceb4;
+  --icon-paper: #282821;
+  --brand-line: #d9c5a44d;
+  --nav-active: #a63724;
+  --warm: #eedab3;
+  --control-fill: transparent;
+}
+html[data-theme='matchday-print'] aside nav button[aria-current='page'] {
+  --surface-2: var(--nav-active);
+  --text: #fff4de;
+  --text-muted: #fff4de;
+  --accent-text: #fff4de;
+}

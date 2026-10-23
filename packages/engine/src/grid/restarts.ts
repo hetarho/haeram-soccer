@@ -80,6 +80,21 @@ export const RESTART_CONFIG = {
     highLineFrom: 40,
     min: 0.012,
     max: 0.7,
+    /**
+     * Candidate model only (T384, →MATCH-18 r21): a ratio form, so 판단력 sets the chance whatever
+     * the line does. `base` is the chance at 판단력 `at` on the duels' scale, multiplied by e for
+     * every `decisions` points below it (divided above), by `linebreaker` for a linebreaker and by
+     * `highLine` behind a high line, then clamped to [`min`, `max`].
+     */
+    candidate: {
+      base: 0.04,
+      at: 60,
+      decisions: 30,
+      linebreaker: 0.3,
+      highLine: 1.6,
+      min: 0.002,
+      max: 0.6,
+    },
   },
 } as const;
 
@@ -122,6 +137,14 @@ export function classifyOut(out: {
   };
 }
 
+/**
+ * A measurement's view of every pass to a receiver in an offside position (T384: calls by his
+ * 판단력): scripts set `seen`, the engine never does, and it changes no draw or fact.
+ */
+export const OFFSIDE_PROBE: {
+  seen?: (s: GridState, side: 0 | 1, target: number, called: boolean) => void;
+} = {};
+
 /** Whether a pass to `target` is offside when played; one draw only when the position alone is offside. */
 export function isOffside(
   s: GridState,
@@ -137,12 +160,30 @@ export function isOffside(
   const ball = attackFrame(side, s.ball);
   const foe = other(side);
   if (p[0] <= PITCH.length / 2 || p[0] <= offsideLine(s, foe) || p[0] <= ball[0]) return false;
-  const chance =
-    O.base -
-    (skill(s, side, target, 'decisions') - 60) / O.decisions -
-    (gp.player.traits.includes('linebreaker') ? O.linebreaker : 0) +
-    (lineX(s, foe, 'DF') >= O.highLineFrom ? O.highLine : 0);
-  return r() < Math.min(O.max, Math.max(O.min, chance));
+  const linebreaker = gp.player.traits.includes('linebreaker');
+  const highLine = lineX(s, foe, 'DF') >= O.highLineFrom;
+  let chance: number, min: number, max: number;
+  if (s.setup.model !== undefined) {
+    const C = O.candidate;
+    chance =
+      C.base *
+      s.math.exp((C.at - skill(s, side, target, 'decisions')) / C.decisions) *
+      (linebreaker ? C.linebreaker : 1) *
+      (highLine ? C.highLine : 1);
+    min = C.min;
+    max = C.max;
+  } else {
+    chance =
+      O.base -
+      (skill(s, side, target, 'decisions') - 60) / O.decisions -
+      (linebreaker ? O.linebreaker : 0) +
+      (highLine ? O.highLine : 0);
+    min = O.min;
+    max = O.max;
+  }
+  const called = r() < Math.min(max, Math.max(min, chance));
+  OFFSIDE_PROBE.seen?.(s, side, target, called);
+  return called;
 }
 
 /** The restart a foul gives the fouled side: a penalty inside the box it attacks, else a free kick. */

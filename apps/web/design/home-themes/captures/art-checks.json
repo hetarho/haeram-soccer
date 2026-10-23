@@ -1,0 +1,47 @@
+{
+  "images": [
+    {
+      "src": "./captures/source-desktop.png",
+      "width": 1380,
+      "height": 920
+    },
+    {
+      "src": "./captures/clay.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "./captures/paper.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "./captures/print.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "./captures/chalk.png",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "./captures/sticker.png",
+      "width": 1536,
+      "height": 1024
+    }
+  ],
+  "results": [
+    {
+      "width": 1380,
+      "selections": 6,
+      "horizontalOverflow": 0
+    },
+    {
+      "width": 390,
+      "selections": 6,
+      "horizontalOverflow": 0
+    }
+  ],
+  "errors": []
+}

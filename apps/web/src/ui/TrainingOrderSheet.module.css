@@ -5,7 +5,7 @@
   padding: 10px 12px;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.2));
   font-size: 14px;
 }
 .now small {

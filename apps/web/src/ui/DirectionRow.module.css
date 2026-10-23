@@ -83,7 +83,7 @@
   padding: 8px 10px;
   border-radius: var(--card-radius);
   border: 1px solid transparent;
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.22));
   font-size: 12px;
   font-family: var(--display);
 }

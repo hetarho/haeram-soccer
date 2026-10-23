@@ -2,7 +2,7 @@ import { chooseOption, selectOptions } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import { chooseLevel, configureResponsibilities, openOffice } from './events';
+import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
 async function foundQuiet(page: Page) {
   await page.goto('/');
@@ -64,8 +64,10 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await expect(date).toHaveText('1950년 8월 1일');
   // Play starts the clock; stopping after the first tick advances exactly one day.
   await toggle.click();
+  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeDisabled();
   await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
+  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeEnabled();
   await expect(date).toHaveText('1950년 8월 2일');
   // x2 is a day every half second: it moves on and stops with the owner, short of the match eve.
   await chooseOption(pace, 'x2');
@@ -196,10 +198,14 @@ test('a page that closed with the clock running plays the time away on return an
       'haeram-soccor:background',
       JSON.stringify({ hidden: true, away: 'month' }),
     );
-    localStorage.setItem(
-      'haeram-soccor:clock',
-      JSON.stringify({ [worldId]: { running: true, pace: 'x1', at: Date.now() - 600_000 } }),
-    );
+    const clocks = JSON.parse(localStorage.getItem('haeram-soccor:clock') || '{}');
+    clocks[worldId] = {
+      ...clocks[worldId],
+      running: true,
+      pace: 'x1',
+      at: Date.now() - 600_000,
+    };
+    localStorage.setItem('haeram-soccor:clock', JSON.stringify(clocks));
   }, worldId);
   await page.reload();
   const summary = page.getByRole('dialog', { name: '자리를 비운 동안' });
@@ -323,6 +329,98 @@ for (const themeId of ['standard', 'pixel']) {
 }
 
 for (const width of [390, 1280]) {
+  test(`office bulk report choices include observations and preserve mode ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    const w = createWorld({
+      name: '보고 통일',
+      country: 'ENG',
+      color: '#224466',
+      seed: 'office-bulk',
+      level: 'easy',
+    });
+    for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
+      typeof w.settings
+    >['responsibilities'])[])
+      w.settings!.responsibilities[key] = 'delegated';
+    w.settings!.mode = 'manual';
+    w.settings!.observations = { matchEve: true, windowOpen: true };
+    await importResponsibilityCareer(page, w);
+    const office = await openOffice(page);
+    const date = await page.getByTestId('game-date').innerText();
+    const bulk = office.getByRole('group', { name: '전체 보고·위임 설정', exact: true });
+    const rows = office.getByRole('region', { name: '보고·위임 설정', exact: true });
+    const allDelegated = bulk.getByRole('button', { name: '전체 위임', exact: true });
+    const report = rows.getByRole('group', { name: '경기 전날 보고', exact: true });
+    const delegatedDialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
+    // Business already matches: the confirmation must still include both changed reports.
+    await allDelegated.click();
+    await expect(delegatedDialog).toContainText('경기 전날 보고');
+    await expect(delegatedDialog).toContainText('이적시장 개장 보고');
+    await expect(delegatedDialog).toContainText('스태프가 경기를 치르고');
+    await delegatedDialog.getByRole('button', { name: '취소', exact: true }).click();
+    await expect(report.getByRole('button', { name: '보고받기', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(allDelegated).toHaveAttribute('aria-pressed', 'false');
+    await allDelegated.click();
+    // The outgoing layer must never reappear after a paint without it. Track both the live
+    // dialog and its detached exit copy, which inherits this attribute.
+    await delegatedDialog.evaluate((dialog) => {
+      const layer = dialog.parentElement!;
+      layer.setAttribute('data-office-exit', '');
+      const samples: boolean[] = [];
+      let goneAt: number | undefined;
+      const target = window as typeof window & { officeExitFrames?: Promise<boolean[]> };
+      target.officeExitFrames = new Promise((resolve) => {
+        const frame = () => {
+          const present = !!document.querySelector('[data-office-exit]');
+          samples.push(present);
+          if (present) goneAt = undefined;
+          else goneAt ??= performance.now();
+          if (goneAt !== undefined && performance.now() - goneAt >= 300) resolve(samples);
+          else requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      });
+    });
+    await delegatedDialog.getByRole('button', { name: '위임하기', exact: true }).click();
+    const frames = await page.evaluate(
+      () => (window as typeof window & { officeExitFrames: Promise<boolean[]> }).officeExitFrames,
+    );
+    const gone = frames.indexOf(false);
+    expect(gone).toBeGreaterThanOrEqual(0);
+    expect(frames.slice(gone)).not.toContain(true);
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('위임'));
+    await expect(allDelegated).toHaveAttribute('aria-pressed', 'true');
+    await dismissSettingsToast(page);
+    await bulk.getByRole('button', { name: '전체 보고받기', exact: true }).click();
+    const reportDialog = page.getByRole('dialog', { name: '보고받겠습니다.', exact: true });
+    await expect(reportDialog).toContainText('경기 전날 보고');
+    await expect(reportDialog).toContainText('선수 영입');
+    await reportDialog.getByRole('button', { name: '보고받기', exact: true }).click();
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
+    await expect(bulk.getByRole('button', { name: '전체 보고받기', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+      'MANUAL',
+    );
+    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(page.getByTestId('game-date')).toHaveText(date);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+    await page.reload();
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
+    await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+      'MANUAL',
+    );
+    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(page.getByTestId('game-date')).toHaveText(date);
+  });
   test(`office authority confirmation and pending handover ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const w = pendingAcquisitionCareer();
@@ -338,7 +436,7 @@ for (const width of [390, 1280]) {
       '선수 영입',
     );
     await dialog.getByRole('button', { name: '취소', exact: true }).click();
-    await expect(choice.getByRole('button', { name: '직접 결정', exact: true })).toHaveAttribute(
+    await expect(choice.getByRole('button', { name: '보고받기', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -356,8 +454,8 @@ for (const width of [390, 1280]) {
       .boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(transport.y);
     await expect(toast).toHaveCount(0, { timeout: 6000 });
-    await choice.getByRole('button', { name: '직접 결정', exact: true }).click();
-    const direct = page.getByRole('dialog', { name: '제가 관여하겠습니다.', exact: true });
+    await choice.getByRole('button', { name: '보고받기', exact: true }).click();
+    const direct = page.getByRole('dialog', { name: '보고받겠습니다.', exact: true });
     await expect(direct.locator('[data-facility-art="manager"]')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(choice.getByRole('button', { name: '위임', exact: true })).toHaveAttribute(
@@ -379,16 +477,15 @@ test('manual can keep match eve disabled and stop at the next result', async ({ 
   await expect(
     office
       .getByRole('group', { name: '경기 전날 보고', exact: true })
-      .getByRole('button', { name: '받지 않기', exact: true }),
+      .getByRole('button', { name: '위임', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(office).toBeVisible();
-  await expect(
-    office
-      .getByRole('group', { name: '진행 모드', exact: true })
-      .getByRole('button', { name: '수동 진행', exact: true }),
-  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+    'MANUAL',
+  );
+  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
 });
 
 for (const themeId of ['standard', 'pixel']) {

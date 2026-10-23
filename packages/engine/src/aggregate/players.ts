@@ -57,6 +57,8 @@ interface Role {
   attribute: AggregateAttribute;
   action?: MatchAction;
   wide?: number;
+  /** Reads the attribute the other way round, a low value weighing more, at this power (T384). */
+  inverse?: number;
 }
 const byBand = (rows: Readonly<Record<Line, readonly number[]>>, band: number): Table => ({
   GK: rows.GK[band]!,
@@ -112,7 +114,13 @@ const ROLES = {
   shot: makeRole({ table: AC.shot, attribute: 'finishing', action: 'box' }),
   outsideShot: makeRole({ table: AC.outsideShot, attribute: 'finishing', action: 'long' }),
   header: makeRole({ table: AC.header, attribute: 'heading', action: 'aerial' }),
-  offside: makeRole({ table: AC.offside, attribute: 'pace', action: 'run' }),
+  // A runner with poor 판단력 times his run worse (→MATCH-18 r21, T384).
+  offside: makeRole({
+    table: AC.offside,
+    attribute: 'decisions',
+    action: 'run',
+    inverse: AC.offsideJudgement,
+  }),
   defend: (band: number, attribute: 'tackling' | 'positioning') =>
     DEFEND_ROLES[band]![attribute === 'tackling' ? 0 : 1]!,
 };
@@ -246,7 +254,9 @@ class SideLines {
     let term = terms ? terms[at]! : NaN;
     if (Number.isNaN(term)) {
       const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
-      term = (value / AC.attributeScale) ** AC.attributePower;
+      term = role.inverse
+        ? (AC.attributeScale / value) ** role.inverse
+        : (value / AC.attributeScale) ** AC.attributePower;
       if (terms) terms[at] = term;
     }
     return w * term;
@@ -275,7 +285,8 @@ class SideLines {
       // Plain doubles: the same sums as a Float64Array, without its costly creation (T326).
       out = Array<number>(this.rows.length).fill(0);
       const list = this.exposuresOf(period);
-      const terms = this.termsOf(period, role.attribute, list.length);
+      // An inverse role's skill factor differs from the attribute's ordinary one: not shared.
+      const terms = role.inverse ? undefined : this.termsOf(period, role.attribute, list.length);
       for (let at = 0; at < list.length; at++) {
         const e = list[at]!;
         out[e.line]! += this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);

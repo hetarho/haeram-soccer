@@ -739,6 +739,12 @@ export interface MatchFrame {
    */
   startSeconds?: number;
   ballTimes?: number[];
+  /**
+   * Who has the ball through this minute (→WEB-95, observed matches only): from each change's
+   * seconds into the minute (as an event's `t`), the holder's ID, or '' while nobody holds it (in
+   * flight, loose or dead). Absent on older frames.
+   */
+  holders?: [number, string][];
   period: 1 | 2 | 3 | 4;
   /** '23', '45+2', '90+4', '105+1'. */
   label: string;

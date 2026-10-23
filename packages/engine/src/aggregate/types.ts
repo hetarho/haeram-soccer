@@ -28,6 +28,7 @@ export const AGGREGATE_ATTRIBUTES = [
   'heading',
   'handling',
   'composure',
+  'decisions',
 ] as const;
 export type AggregateAttribute = (typeof AGGREGATE_ATTRIBUTES)[number];
 

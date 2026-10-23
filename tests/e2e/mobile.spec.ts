@@ -125,6 +125,8 @@ test('floating warnings leave the HUD and content fixed on low and phone screens
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
   await page.goto('/');
+  // An import before the client is ready is dropped; founding enables once it is (CI 39952590526).
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
   await page
     .locator('input[type=file]')
     .last()
