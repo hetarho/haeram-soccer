@@ -18,6 +18,7 @@ import {
   throughPoint,
   type Action,
 } from './decide';
+import { playGrid } from './engine';
 import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
 import { enterSlot, slotOf } from './state';
 import { computeTags, type Tags } from './tags';
@@ -507,6 +508,42 @@ describe('grid decisions', () => {
     runner.vel = [-7, 0];
     away.players[1][CM]!.pos = [55, 34];
     expect(throughPoint(away, 1, CM, ST)).toEqual([35 - T.lead, 38]);
+  });
+
+  it('a through ball behind a high line leads its runner further than one behind a deep line, on the candidate model only', () => {
+    const T = DECISION_CONFIG.candidate.through;
+    const grow = T.grow as number;
+    const setGrow = (v: number) => ((T as { grow: number }).grow = v);
+    // T375: the lead grows with the space the line leaves behind it beyond `room` m.
+    const g = grow || 0.4;
+    const s = scene(CM, [45, 34]).s;
+    const line = (x: number) => s.players[1].forEach((gp) => (gp.pos = [x, 6 + 5 * gp.idx]));
+    place(s, ST, [55, 30]);
+    s.players[0][ST]!.vel = [7, 0];
+    const lead = (x: number) => {
+      line(x);
+      return throughPoint(s, 0, CM, ST)[0] - 55;
+    };
+    setGrow(g);
+    try {
+      // A line at 60 m leaves 45 m behind it, one at 80 m 25 m: the high line's runner goes further.
+      expect(lead(60)).toBeCloseTo(T.lead + g * (45 - T.room), 9);
+      expect(lead(80)).toBeCloseTo(T.lead + g * (25 - T.room), 9);
+      expect(lead(60)).toBeGreaterThan(lead(80));
+      // A line leaving no more than `room` m keeps the plain lead.
+      expect(lead(105 - T.room)).toBe(T.lead);
+    } finally {
+      setGrow(grow);
+    }
+    // The pre-feature model plays every pass to the receiver's feet: its matches do not read it.
+    const record = () => playGrid(gridKit(['press', 'counter'], 'through-grow').setup).record;
+    const before = record();
+    setGrow(g + 0.5);
+    try {
+      expect(record()).toEqual(before);
+    } finally {
+      setGrow(grow);
+    }
   });
 
   it('keeps a leading side safer late', () => {

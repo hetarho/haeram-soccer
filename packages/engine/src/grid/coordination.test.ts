@@ -5,11 +5,12 @@ import type { Tactic } from '../../../contracts/src/types';
 import {
   closedAt,
   COORDINATION_CONFIG,
+  lateRunner,
   planCoordination,
   pressReach,
   type CoordinationPlan,
 } from './coordination';
-import { combination } from './decide';
+import { combination, offsideBy, passOptions, throughPoint } from './decide';
 import { playGrid } from './engine';
 import {
   applyCoordination,
@@ -25,7 +26,8 @@ import {
 import { advance, holdOf } from './movement';
 import { attackFrame, type Point } from './pitch';
 import { setPieceTargets, SHAPE_CONFIG, shapePlace } from './shape';
-import { createState, onPitch, type GridPlayer, type GridState } from './state';
+import { createState, onPitch, slotOf, type GridPlayer, type GridState } from './state';
+import { computeTags } from './tags';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
@@ -844,5 +846,54 @@ describe('grid coordination', () => {
     expect(gp.pos[0]).toBeGreaterThan(80);
     // The pre-feature model holds no line: the same run goes on past it.
     expect(run(90, 4, false).gp.pos[0]).toBeGreaterThan(80);
+  });
+
+  it('a midfielder behind the ball starts a late box run and is onside when the pass is played', () => {
+    const L = COORDINATION_CONFIG.late as { pull: number; lead: number };
+    const pull = L.pull;
+    /**
+     * Side 0's mezzala runs for the box from 70 m while its striker (9) has the ball at 82 m and
+     * side 1's line stands still at 88 m (its keeper deeper); with late runs on or off, returns
+     * where he stands after 4 s, the striker's pass option to him and where it would be played.
+     */
+    const run = (on: boolean) => {
+      L.pull = on ? pull || 1 : 0;
+      try {
+        const s = scene(['possession', 'balanced'], 9, [82, 34]);
+        const still = s.players[1].map((gp, i) => {
+          gp.pos = i === 0 ? [104, 34] : [88, 4 + 6 * i];
+          return { gp, to: [gp.pos[0], gp.pos[1]] as const };
+        });
+        const gp = s.players[0].find((p) => slotOf(s, p).role === 'mezzala')!;
+        gp.pos = [70, 30];
+        setIntention(s, gp, {
+          kind: 'run',
+          run: 'box',
+          priority: 'tactical',
+          target: [95, 34],
+          until: s.elapsed + 6,
+        });
+        advance(s, 4, still);
+        const option = passOptions(s, 0, 9, computeTags(s, 0, 9)).find((o) => o.target === gp.idx);
+        return { gp, late: lateRunner(s, gp), option, to: throughPoint(s, 0, 9, gp.idx) };
+      } finally {
+        L.pull = pull;
+      }
+    };
+    // Late: he comes up level with the ball, not the line, so he is onside when it is played, and
+    // the striker plays him through into the box ahead of him.
+    const late = run(true);
+    expect(late.late).toBe(true);
+    expect(late.gp.pos[0]).toBeLessThanOrEqual(82 + 1e-9);
+    expect(late.gp.pos[0]).toBeGreaterThan(76);
+    expect(offsideBy(attackFrame(0, late.gp.pos), 82, 88)).toBe(0);
+    expect(late.option?.kind).toBe('through');
+    expect(late.to[0]).toBeGreaterThan(88.5);
+    // Off: the same box run waits on the line beyond the ball, and the pass goes to his feet.
+    const held = run(false);
+    expect(held.late).toBe(false);
+    expect(held.gp.pos[0]).toBeGreaterThan(82);
+    expect(held.gp.pos[0]).toBeLessThan(88);
+    expect(held.option?.kind).not.toBe('through');
   });
 });
