@@ -17,6 +17,7 @@ import {
   toEngine,
   type Point,
 } from './pitch';
+import { chanceXg } from './resolve';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
@@ -167,6 +168,18 @@ export const DECISION_CONFIG = {
      */
     leadingShot: 0.5,
     trailingPush: 1.6,
+    /**
+     * Shot selection in the box (T370, →MATCH-16): a shot's weight there is scaled by its chance's
+     * xG against `ref` to the power `power` (0 leaves it alone), so a carrier passes up a weak
+     * angle or a pressured look for a better chance.
+     */
+    shotQuality: { ref: 0.15, power: 0 },
+    /**
+     * Carrying after a reception (T370, →MATCH-16): an unpressured carrier below `upTo` m carries
+     * `open` times as often and `length` ([base, spread] m) in place of `carry.length`, so the
+     * ball moves up by carries before the final third, where longer carries raised goals (T323).
+     */
+    carry: { upTo: 70, open: 1, length: [6, 6] as readonly [number, number] },
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -306,6 +319,16 @@ export function actionMix(
   mix.carry *= 1 - bend.possession / 100;
   mix.shot *= (1 + bend.shot / 20) * (1 - oppBend.defense / 20);
   // The situation.
+  if (candidate && tags.pressure < 1 && c[0] < C.candidate.carry.upTo)
+    mix.carry *= C.candidate.carry.open;
+  if (candidate && inBox(c) && C.candidate.shotQuality.power !== 0)
+    mix.shot *= s.math.exp(
+      C.candidate.shotQuality.power *
+        s.math.log(
+          chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) /
+            C.candidate.shotQuality.ref,
+        ),
+    );
   if (tags.pressure >= 1) {
     mix.carry *= C.pressure.carry;
     if (skill(s, side, idx, 'dribbling') >= C.pressure.takeOnDribbling)
@@ -637,7 +660,15 @@ export function chooseCarry(
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
   const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
-  const [base, spread] = inBox(c) ? K.boxLength : K.length;
+  const open =
+    s.setup.model !== undefined &&
+    tags.pressure < 1 &&
+    c[0] < DECISION_CONFIG.candidate.carry.upTo;
+  const [base, spread] = inBox(c)
+    ? K.boxLength
+    : open
+      ? DECISION_CONFIG.candidate.carry.length
+      : K.length;
   const length = base + spread * r();
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
   const ends = K.headings.map((deg): Point => {
