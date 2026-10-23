@@ -200,15 +200,15 @@ describe('grid open-play resolution', () => {
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
       return resolveCross(sc.s, 0, 10, sc.tags(), shotContext(sc.s), () => draws.shift() ?? 0.5);
     };
-    const out = C.crossFailOut - 1e-6;
+    const out = DUEL_CONFIG.cross.failOut - 1e-6;
     expect(cross([0.5, out, C.crossKeeper - 1e-6], true)).toEqual({ kind: 'held', by: 0 });
     expect(cross([0.5, out, C.crossKeeper + 1e-6], true)).toMatchObject({
       kind: 'out',
       over: 'byline',
     });
     // A failed cross that stays in play, and every one on the pre-feature model, plays as before.
-    expect(cross([0.5, C.crossFailOut + 1e-6, 0], true).kind).not.toBe('held');
-    expect(cross([0.5, DUEL_CONFIG.cross.failOut - 1e-6, 0], false)).toMatchObject({
+    expect(cross([0.5, DUEL_CONFIG.cross.failOut + 1e-6, 0], true).kind).not.toBe('held');
+    expect(cross([0.5, out, 0], false)).toMatchObject({
       kind: 'out',
       over: 'byline',
     });

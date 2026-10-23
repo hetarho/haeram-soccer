@@ -357,10 +357,10 @@ describe('grid coordination', () => {
       return jobsOf(planCoordination(s, false), 'press').length;
     };
     const at = (d: number, lost: boolean) => TACTICS.map((t) => pressers(t, d, lost));
-    // Settled: press engages furthest, counter around halfway, balanced in the middle (T321: one
-    // presser each).
+    // Settled: press engages furthest, counter around halfway, balanced's mid block as far as
+    // possession (T321: one presser each; T371: balanced 10 → 12 m).
     expect(at(7, false)).toEqual([1, 1, 1, 1]);
-    expect(at(11, false)).toEqual([1, 1, 1, 0]);
+    expect(at(11.5, false)).toEqual([1, 1, 0, 1]);
     expect(at(12.5, false)).toEqual([0, 1, 0, 0]);
     // Just after a loss possession and press counter-press furthest, counter does not.
     expect(at(17, true)).toEqual([1, 1, 0, 0]);

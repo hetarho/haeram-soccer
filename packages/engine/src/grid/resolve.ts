@@ -110,10 +110,11 @@ export const DUEL_CONFIG = {
    * foul `foul` times as often (within what a duel allows) and a defender in his own box keeps
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
+   * T371: `boxFoul` 0.05 → 0.06, so penalty goals reach MATCH-23's 6–9% (6.1% → 7.7%).
    */
   candidate: {
     foul: 1.2,
-    boxFoul: 0.05,
+    boxFoul: 0.06,
     passLoose: 0.8,
     clearanceOut: 0.5,
     /**
@@ -133,15 +134,12 @@ export const DUEL_CONFIG = {
       } satisfies Record<Tactic, number>,
     },
     /**
-     * Restarts and finishers (T371, →MATCH-18, MATCH-23): of the failed open-play crosses this
-     * share runs over the byline for a goal kick, in place of `cross.failOut`; a cross's target
-     * spreads over the box's headers by `targetSpread` aerial points, in place of
-     * `cross.targetSpread`. Of the failed crosses running out, the keeper gathers `crossKeeper`
-     * before they cross the line (his 공중볼 처리 area, →MATCH-11), so play goes on from his hands.
+     * Goal kicks (T371, →MATCH-11, MATCH-18): of the failed crosses running over the byline the
+     * keeper gathers this share before they cross it, so play goes on from his hands and the
+     * goal kicks come inside MATCH-23's 7–9 a team (9.35 → 8.71) without the extra
+     * interceptions a cross kept in play would add.
      */
-    crossFailOut: 0.15,
-    crossKeeper: 0,
-    targetSpread: 8,
+    crossKeeper: 0.47,
   },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
@@ -170,12 +168,8 @@ export const SHOT_CONFIG = {
   blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
-  /**
-   * Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. T371:
-   * a missed shot meets a defender on its line `blockBase` of the time before his numbers and
-   * skill, in place of `block.base`.
-   */
-  candidate: { header: 0.42, blockBase: 0.4 },
+  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
+  candidate: { header: 0.42 },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -481,7 +475,7 @@ export function resolveShot(
     }
   }
   const p = clamp(
-    (onCandidate(s) ? C.candidate.blockBase : C.block.base) +
+    C.block.base +
       C.block.perDefender * lane +
       (blocker ? (skill(s, other(side), blocker.idx, 'positioning') - 55) * C.block.skill : 0),
     C.block.min,
@@ -523,10 +517,7 @@ function headerTarget(
   let top = -Infinity;
   for (const p of pool) top = Math.max(top, p.v);
   const { exp } = s.math;
-  const spread = onCandidate(s)
-    ? DUEL_CONFIG.candidate.targetSpread
-    : DUEL_CONFIG.cross.targetSpread;
-  const weights = pool.map((p) => exp((p.v - top) / spread));
+  const weights = pool.map((p) => exp((p.v - top) / DUEL_CONFIG.cross.targetSpread));
   const total = weights.reduce((a, b) => a + b, 0);
   let u = r() * total;
   for (let i = 0; i < pool.length; i++) {
@@ -566,9 +557,9 @@ export function resolveCross(
   const delivered = r() < p;
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   if (!delivered || !attacker) {
-    const out = r() < (onCandidate(s) ? DUEL_CONFIG.candidate.crossFailOut : X.failOut);
-    const gathers = onCandidate(s) ? DUEL_CONFIG.candidate.crossKeeper : 0;
-    if (out && keeper && gathers > 0 && r() < gathers) return { kind: 'held', by: keeper.idx };
+    const out = r() < X.failOut;
+    if (out && keeper && onCandidate(s) && r() < DUEL_CONFIG.candidate.crossKeeper)
+      return { kind: 'held', by: keeper.idx };
     const at = toEngine(side, [
       PITCH.length,
       clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),

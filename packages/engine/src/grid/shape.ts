@@ -37,6 +37,10 @@ export const SHAPE_CONFIG = {
    * between it and the box (box entries conceded 40.6 → 34.9 a match); its block stays below
    * balanced's wherever the ball is. T336: without the ball counter's block does not follow a ball
    * in the opponents' half (`upfield` 0), so press, not counter, wins the most balls high up.
+   * T371: balanced's mid block presses from 12 m instead of 10 and counter-presses from 8 instead
+   * of 12, so it engages in the middle third and holds its shape after a loss (MATCH-8's
+   * stability): with its settled play (`DECISION_CONFIG.direct.settled.balanced`) its xG conceded
+   * fell toward the others' mean (−0.122 → −0.081 on validation rounds 53+54).
    */
   candidate: {
     tactic: {
@@ -62,24 +66,11 @@ export const SHAPE_CONFIG = {
         advance: 4,
         defend: -6,
         line: [24, 45],
-        press: 10,
-        counterPress: 12,
+        press: 12,
+        counterPress: 8,
         compact: 0.38,
       },
     } as Partial<Record<Tactic, TacticShape>>,
-    /**
-     * Without the ball (T371, →MATCH-8): how far each tactic's block shifts toward the ball's side,
-     * in place of `lateral`, and how strongly an outfielder leans toward the attacker near his
-     * spot, in place of `markBlend`.
-     */
-    lateral: { possession: 0.25, press: 0.25, counter: 0.25, balanced: 0.25 } satisfies Record<
-      Tactic,
-      number
-    >,
-    markBlend: { possession: 0.4, press: 0.4, counter: 0.4, balanced: 0.4 } satisfies Record<
-      Tactic,
-      number
-    >,
   },
   lateral: 0.25,
   /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
@@ -311,17 +302,14 @@ export function shapePlace(
   x +=
     (bx - MID) *
     (!inPossession && bx > MID && cfg.upfield !== undefined ? cfg.upfield : cfg.compact);
-  const candidate = s.setup.model !== undefined;
-  y +=
-    (by - CENTRE) *
-    (candidate && !inPossession ? SHAPE_CONFIG.candidate.lateral[tactic] : SHAPE_CONFIG.lateral);
+  y += (by - CENTRE) * SHAPE_CONFIG.lateral;
   if (inPossession) {
     const foe = other(side);
     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
     return toEngine(side, [x, y]);
   }
   // On the candidate model only a press intention presses; this is the pre-feature presser.
-  if (!candidate && (cache.pressers[side] ??= pressers(s, side)).includes(idx))
+  if (s.setup.model === undefined && (cache.pressers[side] ??= pressers(s, side)).includes(idx))
     return pressPoint(s, gp, [bx, by], false);
   // Another outfielder leans toward the goal-side point of the nearest attacker around his spot.
   let best: number = SHAPE_CONFIG.markRadius;
@@ -348,9 +336,8 @@ export function shapePlace(
     }
   }
   if (found) {
-    const blend = candidate ? SHAPE_CONFIG.candidate.markBlend[tactic] : SHAPE_CONFIG.markBlend;
-    x += (nx - SHAPE_CONFIG.markGoalSide - x) * blend;
-    y += (ny - y) * blend;
+    x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
+    y += (ny - y) * SHAPE_CONFIG.markBlend;
   }
   if (own === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);

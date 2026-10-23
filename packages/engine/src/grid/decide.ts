@@ -115,12 +115,14 @@ export const DECISION_CONFIG = {
    * forwards' so the lines' shares of goals hold, and raised the box band's (0.52) against shots
    * from the goal area. T324 recalibrated the lines (DF 1.3, MF 7.5, FW 0.62 before) and the volume
    * scale (0.215) after through balls into the runner's path and players reacting at the kick
-   * moved goals to the forwards and closer to goal.
+   * moved goals to the forwards and closer to goal. T371 (DF 3.2, MF 20, FW 0.36 before; with
+   * `shotScale` 0.45 → 0.475 so the volume holds): forwards took 62.5% of the goals against
+   * MATCH-23's 50–60%, so midfielders and defenders shoot a little more of the side's shots.
    */
   candidate: {
     crossScale: 6.3,
     shotBox: 0.56,
-    shotLine: { GK: 0, DF: 3.2, MF: 20, FW: 0.36 },
+    shotLine: { GK: 0, DF: 4.5, MF: 22.5, FW: 0.3 },
     /**
      * Positions that shoot with another line's weight (T321, →MATCH-16): a 4-2-3-1 shadow striker
      * lives in the box like a forward, so the midfield line's weight made him take most of press's
@@ -138,9 +140,9 @@ export const DECISION_CONFIG = {
     /**
      * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
      * at 2.50 once defenders read the pass early). T370: 0.42 → 0.45 with `shotQuality`, which
-     * passes up weak box shots, so the volume holds.
+     * passes up weak box shots, so the volume holds. T371: 0.475 with the lines' new weights.
      */
-    shotScale: 0.45,
+    shotScale: 0.475,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
@@ -200,8 +202,12 @@ export const DECISION_CONFIG = {
      */
     settled: {
       counter: { forward: 1, long: 0.5, lateral: 0.5, back: 0.35, pass: 0.75, upTo: 70 },
-      /** T371: balanced's mixed passing, neutral until its build-up is screened. */
-      balanced: { forward: 0, long: 0, lateral: 1, back: 1, pass: 1, upTo: 70 },
+      /**
+       * Balanced (T371): MATCH-8's mixed passing in its own half. Its back three built up short
+       * and lost the most balls high up of the four (high turnovers conceded 9.0 a match against
+       * 5.0–8.0), so below halfway it plays a long ball `long` more and recycles less.
+       */
+      balanced: { forward: 0, long: 0.6, lateral: 0.8, back: 0.6, pass: 1, upTo: 52.5 },
     } as Partial<
       Record<
         Tactic,
