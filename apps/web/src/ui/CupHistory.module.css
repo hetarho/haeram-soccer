@@ -260,7 +260,7 @@
   padding: 8px 10px;
   border-left: 3px solid var(--gold);
   border-radius: var(--card-radius);
-  background: rgba(0, 0, 0, 0.18);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.18));
   font-size: 13px;
 }
 .feats > li > span {

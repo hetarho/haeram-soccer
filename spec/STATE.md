@@ -224,7 +224,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 134 | 134 | - | 0 |
+| WEB | 135 | 135 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -272,6 +272,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T387 done (k7p2): both complete themes registered with 184 original scenes and two icon families; full unit 1956+4 skips, contract 39, catalogs/assets/build pass; 247 current Chromium scenarios covered across batch and targeted fixes; owner authorizes main commit and push
+- 261023 update-ssot WEB r135, create-task and integrate T387 (k7p2): both complete visual concepts selected for the real theme picker; 184 original scenes and two original icon families, isolated at c223c1ea; renumbered from T386 after calendar publication reserved it
 - 261023 T386 done (p6h4): cups accessible-name fix and survey budget; owner explicitly waives additional batch tests and CI waiting for this push, reusing T385 checks; publish main directly
 - 261023 T386 start (p6h4): owner authorizes push of T385; correct deferred browser navigation and run the ARCH-30 publication gate before pushing main
 - 261023 T385 done (p6h4): stable calendar edit lock across all management views, command admission protected, 145 isolated tests plus typecheck/lint/format/build passed; browser scenarios handed to next batch, committed without push
@@ -290,5 +292,3 @@
 - 261023 office pushed (o9r4; T379–T382): implementation 7a6581e0 on origin/main; combined typecheck/build and 65 affected units pass. CI 39909381793 remains pending with no jobs started; local watcher stopped, remote workflow stays queued, no CI pass claimed
 - 261023 office publication (o9r4; T379–T382): owner authorizes commit and push after the verified batch; origin/main ab3bb16b integrated, combined typecheck/build and 65 affected unit tests pass; read CI once for the pushed commit
 - 261023 T376 done (p3b6, from the owner's playback report): pre-feature frames draw each period's kick-off, sample every snapshot and kick with explicit times and fly passes 0.25× as long; every frame records ball holders for the carrier cue. Seed dump-1: ball to receiver at arrival p50 2.6 → 0.1 m, ball held 14% → 39%, carrier cue 14% → 38%; facts unchanged, six candidate positions digests re-recorded; unit 1913/1913, contract, build, Chromium match-core + mobile-match-presentation 9/9 (one flaky retry on a loaded host)
-- 261023 office batch verified (o9r4; T379–T382): type/lint/format and build pass; 1,915 unit tests (4 skipped), 39 contract tests, catalogs/presentation pass; Chromium 212 initial + 30 serial retries pass (shared-host load, 90 s CLI test budget, source timeouts/assertions unchanged); no commit/push
-- 261023 T382 done (o9r4): mode helper dismisses its toast after returning to the office; explicit nine-field configurations reuse bulk, applied modes skip navigation; manual-entry/direct retry passes in 9.2 s, type/lint/format pass; broader serial retry continues

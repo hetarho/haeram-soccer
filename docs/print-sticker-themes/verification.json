@@ -1,0 +1,38 @@
+{
+  "themes": [
+    "matchday-print",
+    "sticker-club"
+  ],
+  "illustrationsPerTheme": 92,
+  "iconsPerTheme": 36,
+  "artGeneration": "built-in image_gen",
+  "promptSets": [
+    "../../apps/web/public/art/matchday-print/generation.json",
+    "../../apps/web/public/art/sticker-club/generation.json"
+  ],
+  "focusedUnitTests": 72,
+  "validatedPresentationAssets": 380,
+  "typecheck": true,
+  "build": true,
+  "lint": true,
+  "format": true,
+  "minMeasuredHomeTextContrast": 5.1087504326971205,
+  "browserScope": "All 247 current Chromium journeys covered across full batch and targeted retries; Firefox/WebKit CI pending",
+  "themeReload": true,
+  "unchangedDate": true,
+  "unchangedManifest": true,
+  "batchUnitTests": 1956,
+  "batchUnitFiles": 264,
+  "batchUnitSkipped": 4,
+  "batchContractTests": 39,
+  "batchCatalogValidation": true,
+  "batchBuild": true,
+  "batchChromiumScenarios": 247,
+  "batchChromiumCoverage": "browser-coverage.json",
+  "postFixUnitTests": 80,
+  "awayResumeRegressionCases": 3,
+  "awayResumeRegressionBeforeFix": "all three cases failed",
+  "newThemeViewportCases": 6,
+  "newThemeViewportBudgetMs": 30000,
+  "busyHostRetryBudgetMs": 90000
+}

@@ -66,7 +66,7 @@
   background: var(--positive);
 }
 .down {
-  color: #fff;
+  color: var(--relegation-text, #fff);
   background: var(--surface-grain, none) var(--surface-2);
 }
 .stay {
@@ -177,10 +177,23 @@
   border-radius: var(--badge-radius);
 }
 .keyPoints {
-  background: #2fc274;
+  background: var(--series-points, #2fc274);
 }
 .keyXpts {
-  background: #ffcb47;
+  background: var(--series-reference, #ffcb47);
+}
+/* Map the existing SVG series attributes to optional theme colours without changing data. */
+.chart polyline[stroke='#2fc274'] {
+  stroke: var(--series-points, #2fc274);
+}
+.chart polyline[stroke='#ffcb47'] {
+  stroke: var(--series-reference, #ffcb47);
+}
+.chart circle[fill='#2fc274'] {
+  fill: var(--series-points, #2fc274);
+}
+.chart circle[fill='#ffcb47'] {
+  fill: var(--series-reference, #ffcb47);
 }
 .chart svg {
   display: block;

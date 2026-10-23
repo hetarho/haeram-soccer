@@ -76,7 +76,7 @@
   padding: 14px;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.22));
   opacity: 1;
 }
 .focuses li b {
@@ -99,7 +99,7 @@
 }
 .focuses li[aria-current] {
   border-color: var(--accent-edge);
-  background: #26382b;
+  background: var(--inset-active-fill, #26382b);
   opacity: 1;
   box-shadow: inset 3px 0 var(--accent-edge);
 }
@@ -152,7 +152,7 @@
   padding: 16px;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.2));
 }
 .delegate > p {
   margin: 10px 0 0;
@@ -218,7 +218,7 @@
   text-align: left;
   font-weight: inherit;
   border-color: var(--line);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.2));
   box-shadow: none;
 }
 .driverText {
@@ -273,7 +273,7 @@
   gap: 12px;
   padding: 14px;
   border-radius: var(--card-radius);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.2));
 }
 .growingName,
 .prospectText {

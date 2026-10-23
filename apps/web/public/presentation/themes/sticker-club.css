@@ -1,0 +1,21 @@
+html {
+  --page-grain: none;
+  --surface-grain: none;
+}
+html[data-theme='sticker-club'] aside {
+  --surface-deep: #174b35;
+  --surface-2: #2b6547;
+  --text: #fff9e5;
+  --text-muted: #f5efd9;
+  --text-faint: #e5ddc3;
+  --nav-active: #fff0be;
+  --on-accent: #17382b;
+  --warm: #f8c866;
+  --control-fill: transparent;
+}
+html[data-theme='sticker-club'] aside nav button[aria-current='page'] {
+  --surface-2: var(--nav-active);
+  --text: #17382b;
+  --text-muted: #17382b;
+  --accent-text: #17382b;
+}

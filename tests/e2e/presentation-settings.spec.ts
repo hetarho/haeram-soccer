@@ -126,45 +126,44 @@ const commands = (page: Page) =>
   );
 
 for (const width of [390, 1380])
-  test(`shipped standard and pixel themes replace art and reload while preserving facts at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 844 });
-    await loadPausedGame(page);
-    const raw = await committedRaw(page);
-    const date = await page.getByTestId('calendar').innerText();
-    const artwork = await page.locator('[data-facility-art="stadium"] img').getAttribute('src');
-    const pixel = await (await page.request.get('/presentation/themes/pixel.json')).json();
-    await page.getByRole('button', { name: '설정', exact: true }).click();
-    const menu = page.getByRole('dialog', { name: '설정', exact: true });
-    await expect(menu.getByRole('button', { name: /관전|경기로 돌아가기/ })).toHaveCount(0);
-    await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-    await expectMenuRegistryChoices(page);
-    await openSettings(page);
-    await expect(page.getByRole('dialog', { name: '테마 변경', exact: true })).toBeVisible();
-    await chooseOption(page.getByTestId('presentation-theme'), pixel.id);
-    await expect.poll(() => background(page)).toBe(pixel.tokens.palette.bg);
-    await closeSettings(page);
-    await expectHomeBounds(page);
-    await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
-    await expect(page.locator('[data-facility-art="stadium"] img')).not.toHaveAttribute(
-      'src',
-      artwork!,
-    );
-    await openSettings(page);
-    await chooseOption(page.getByTestId('presentation-theme'), baseline.theme.id);
-    await expect.poll(() => background(page)).toBe(baseline.theme.tokens.palette.bg);
-    await closeSettings(page);
-    await expect(page.locator('[data-facility-art="stadium"] img')).toHaveAttribute(
-      'src',
-      artwork!,
-    );
-    await page.reload();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
-    expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
-    expect(await committedRaw(page)).toBe(raw);
-    await expectHomeBounds(page);
-  });
+  for (const entry of baseline.themeRegistry.entries.filter(({ id }) => id !== baseline.theme.id))
+    test(`shipped ${entry.id} theme replaces art and reloads while preserving facts at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 844 });
+      await loadPausedGame(page);
+      const raw = await committedRaw(page);
+      const date = await page.getByTestId('calendar').innerText();
+      const art = page.locator('[data-facility-art="stadium"] img');
+      const artwork = await art.getAttribute('src');
+      const pack = await (await page.request.get(`/presentation/themes/${entry.resource}`)).json();
+      await openSettings(page);
+      await chooseOption(page.getByTestId('presentation-theme'), entry.id);
+      await expect.poll(() => background(page)).toBe(pack.tokens.palette.bg);
+      await closeSettings(page);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', entry.id);
+      await expect(art).not.toHaveAttribute('src', artwork!);
+      expect(
+        (await art.getAttribute('src'))?.startsWith(pack.images.facility.pattern.split('{')[0]),
+      ).toBe(true);
+      await expectHomeBounds(page);
+      await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
+      await page.reload();
+      await expect(page.getByTestId('club-hub')).toBeVisible();
+      expect(await background(page)).toBe(pack.tokens.palette.bg);
+      await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
+      expect(await committedRaw(page)).toBe(raw);
+      await openSettings(page);
+      await chooseOption(page.getByTestId('presentation-theme'), baseline.theme.id);
+      await expect.poll(() => background(page)).toBe(baseline.theme.tokens.palette.bg);
+      await closeSettings(page);
+      await expect(art).toHaveAttribute('src', artwork!);
+      await page.reload();
+      await expect(page.getByTestId('club-hub')).toBeVisible();
+      expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
+      expect(await committedRaw(page)).toBe(raw);
+      await expectHomeBounds(page);
+    });
 
 test('pending theme resources add no feedback row or picker layout shift', async ({ page }) => {
   await page.goto('/');

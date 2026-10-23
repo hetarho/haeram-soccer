@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HAERAM · 홈 테마 5가지</title>
+    <link rel="stylesheet" href="./viewer.css" />
+  </head>
+  <body>
+    <main>
+      <section class="overview" aria-label="홈 테마 한눈에 비교">
+        <header class="intro">
+          <div>
+            <p class="eyebrow">HAERAM FOOTBALL · HOME THEME STUDIES</p>
+            <h1>그림의 언어가 바뀌는, 다섯 가지 테마.</h1>
+            <p class="lead">
+              현재 홈을 기준으로 구장 삽화 · 아이콘 · 버튼 · 표면 질감을 함께 바꾼 아트 방향
+              시안입니다.
+            </p>
+          </div>
+          <p class="note">00 현재 테마 + 01–05 새 콘셉트<br />1950 · Haeram Athletic</p>
+        </header>
+        <div class="study-grid" id="studies"></div>
+        <p class="overview-foot">
+          추천 01 클레이 디오라마 — 작은 구단을 직접 키우는 감각을 모형 구장과 입체 아이콘으로
+          표현합니다. 본문은 기본 산세리프를 기준으로 합니다.
+        </p>
+      </section>
+      <section class="detail" id="detail" aria-label="홈 테마 크게 보기">
+        <div class="detail-head">
+          <div>
+            <p class="eyebrow">EXPLORE THE HOME</p>
+            <h2 id="detail-title">클레이 디오라마</h2>
+            <p id="detail-description"></p>
+          </div>
+          <a
+            class="original-link"
+            id="original-link"
+            href="./captures/clay.png"
+            target="_blank"
+            rel="noreferrer"
+            >이미지 원본 보기 ↗</a
+          >
+        </div>
+        <div class="theme-picker" id="picker" role="group" aria-label="테마 선택"></div>
+        <div class="preview-stage">
+          <img id="home-preview" src="./captures/clay.png" alt="클레이 디오라마 홈 시안" />
+        </div>
+        <dl class="direction-spec" id="direction-spec"></dl>
+        <p class="detail-note">
+          현재 홈 캡처를 참고해 생성한 콘셉트 이미지입니다. 본문 서체는 Pretendard 계열을 기준으로
+          하며, 실제 구현 전 삽화·아이콘·UI 재질의 방향을 비교합니다.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="./art-viewer.mjs"></script>
+  </body>
+</html>

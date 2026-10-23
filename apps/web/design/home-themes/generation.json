@@ -1,0 +1,35 @@
+{
+  "method": "built-in image_gen",
+  "date": "2026-10-23",
+  "reference": "captures/source-desktop.png",
+  "promptSet": "prompts.json",
+  "type": "Art-direction mockups; not implemented theme packs",
+  "fonts": "Keep regular Pretendard-like UI sans-serif; optional Latin masthead styling only",
+  "images": [
+    {
+      "id": "clay",
+      "source": "/home/deep/.codex/generated_images/01a167ef-6ed9-7500-a1df-d980024bbe1a/exec-f5afe417-2cd3-4d16-ac5c-41e71ba88faf.png",
+      "output": "captures/clay.png"
+    },
+    {
+      "id": "paper",
+      "source": "/home/deep/.codex/generated_images/01a167ef-6ed9-7500-a1df-d980024bbe1a/exec-8ef6f9ea-cd54-4ab0-9432-7f75aa3921e0.png",
+      "output": "captures/paper.png"
+    },
+    {
+      "id": "print",
+      "source": "/home/deep/.codex/generated_images/01a167ef-6ed9-7500-a1df-d980024bbe1a/exec-91b87d3e-3d9d-40cc-84b9-5c4464ae820b.png",
+      "output": "captures/print.png"
+    },
+    {
+      "id": "chalk",
+      "source": "/home/deep/.codex/generated_images/01a167ef-6ed9-7500-a1df-d980024bbe1a/exec-08484293-3023-4cd4-8701-dd712d48b6ce.png",
+      "output": "captures/chalk.png"
+    },
+    {
+      "id": "sticker",
+      "source": "/home/deep/.codex/generated_images/01a167ef-6ed9-7500-a1df-d980024bbe1a/exec-274d1d81-3370-4ba6-80b6-7c24a0d7462c.png",
+      "output": "captures/sticker.png"
+    }
+  ]
+}
