@@ -138,6 +138,9 @@ describe('grid decisions', () => {
     expect(R.pass).toBeLessThan(1);
     expect(R.back).toBeLessThan(R.lateral);
     expect(R.lateral).toBeLessThan(1);
+    // The balanced side it is read against plays its own settled rule in its half (T371).
+    const B = D.settled.balanced!;
+    expect(centre(3, 2)[0]).toBeLessThanOrEqual(B.upTo);
     {
       const options = (tactic: Tactic, candidate: boolean, regainAgo?: number) => {
         const sc = scene(CM, centre(3, 2), [tactic, 'balanced']);
@@ -165,8 +168,8 @@ describe('grid decisions', () => {
         };
         return ratio('counter') / ratio('balanced');
       };
-      expect(passing(true)).toBeCloseTo(R.pass, 9);
-      expect(passing(true, D.seconds + 1)).toBeCloseTo(R.pass, 9);
+      expect(passing(true)).toBeCloseTo(R.pass / B.pass, 9);
+      expect(passing(true, D.seconds + 1)).toBeCloseTo(R.pass / B.pass, 9);
       expect(passing(true, 1)).toBeCloseTo(1, 9);
       expect(passing(false)).toBeCloseTo(1, 9);
       const compare = (a: ReturnType<typeof options>, b: ReturnType<typeof options>) =>
@@ -184,12 +187,17 @@ describe('grid decisions', () => {
         );
         expect(pairs.some((p) => p.o.kind === 'long' && p.o.direction === 'forward')).toBe(true);
         for (const { o, flat } of pairs) {
-          const long = o.kind === 'long' || o.kind === 'switch' ? R.long : 0;
+          const long = o.kind === 'long' || o.kind === 'switch' ? R.long - B.long : 0;
           expect(o.score - flat.score).toBeCloseTo(
-            (o.direction === 'forward' ? R.forward : 0) + long,
+            (o.direction === 'forward' ? R.forward - B.forward : 0) + long,
             9,
           );
-          const prior = o.direction === 'back' ? R.back : o.direction === 'lateral' ? R.lateral : 1;
+          const prior =
+            o.direction === 'back'
+              ? R.back / B.back
+              : o.direction === 'lateral'
+                ? R.lateral / B.lateral
+                : 1;
           expect(o.prior / flat.prior).toBeCloseTo(prior, 9);
         }
       }
@@ -207,6 +215,43 @@ describe('grid decisions', () => {
       for (const { o, flat } of compare(options('counter', false), options('balanced', false)))
         expect([o.score, o.prior]).toEqual([flat.score, flat.prior]);
     }
+  });
+
+  it("plays balanced's settled long balls in its own half only (T371)", () => {
+    const R = DECISION_CONFIG.direct.settled.counter!;
+    const B = DECISION_CONFIG.direct.settled.balanced!;
+    expect(B.long).toBeGreaterThan(0);
+    expect(B.back).toBeLessThan(1);
+    // Past halfway, still inside counter's zone, counter differs from balanced by its own rule only.
+    const at = centre(4, 2);
+    expect(at[0]).toBeGreaterThan(B.upTo);
+    expect(at[0]).toBeLessThanOrEqual(R.upTo);
+    const options = (tactic: Tactic) => {
+      const sc = scene(CM, at, [tactic, 'balanced']);
+      (
+        [
+          [at[0] + 12, at[1] - 3],
+          [at[0] + 30, at[1] + 4],
+          [at[0], at[1] + 14],
+          [at[0] - 12, at[1]],
+        ] as Point[]
+      ).forEach((p, i) => place(sc.s, 1 + i, p));
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      return passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4);
+    };
+    const counter = options('counter');
+    const balanced = options('balanced');
+    expect(counter.some((o) => o.kind === 'long' || o.kind === 'switch')).toBe(true);
+    counter.forEach((o, i) => {
+      const flat = balanced[i]!;
+      const long = o.kind === 'long' || o.kind === 'switch' ? R.long : 0;
+      expect(o.score - flat.score).toBeCloseTo(
+        (o.direction === 'forward' ? R.forward : 0) + long,
+        9,
+      );
+      const prior = o.direction === 'back' ? R.back : o.direction === 'lateral' ? R.lateral : 1;
+      expect(o.prior / flat.prior).toBeCloseTo(prior, 9);
+    });
   });
 
   it("stops counter's settled pass weights past its zone, not its pass factor (T336)", () => {

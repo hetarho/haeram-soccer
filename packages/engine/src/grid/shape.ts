@@ -37,6 +37,10 @@ export const SHAPE_CONFIG = {
    * between it and the box (box entries conceded 40.6 → 34.9 a match); its block stays below
    * balanced's wherever the ball is. T336: without the ball counter's block does not follow a ball
    * in the opponents' half (`upfield` 0), so press, not counter, wins the most balls high up.
+   * T371: balanced's mid block presses from 12 m instead of 10 and counter-presses from 8 instead
+   * of 12, so it engages in the middle third and holds its shape after a loss (MATCH-8's
+   * stability): with its settled play (`DECISION_CONFIG.direct.settled.balanced`) its xG conceded
+   * fell toward the others' mean (−0.122 → −0.081 on validation rounds 53+54).
    */
   candidate: {
     tactic: {
@@ -62,8 +66,8 @@ export const SHAPE_CONFIG = {
         advance: 4,
         defend: -6,
         line: [24, 45],
-        press: 10,
-        counterPress: 12,
+        press: 12,
+        counterPress: 8,
         compact: 0.38,
       },
     } as Partial<Record<Tactic, TacticShape>>,

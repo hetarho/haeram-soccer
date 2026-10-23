@@ -72,11 +72,12 @@ const facts = (w: World) => ({
  * presence, the skill access indexed by line, a substitute's slot levels read on demand) left
  * both digests unchanged. T370's grid shot selection in the box and the tactics' build-up
  * interceptions changed the candidate rounds (aggregate records unchanged), re-recorded with its
- * calibration artifact; 0e9f347a953ed3e1 before.
+ * calibration artifact; 0e9f347a953ed3e1 before. T371's grid restarts, finishers and balanced
+ * block changed the candidate rounds again (aggregate records unchanged); c1e07cfffabede5d before.
  */
 const BEFORE = {
   aggregateRecords: 'd6a5c7feb76176f3',
-  candidateRounds: 'c1e07cfffabede5d',
+  candidateRounds: '29d9bb53ba9487ea',
 };
 
 describe('complete-result throughput (T285)', () => {
