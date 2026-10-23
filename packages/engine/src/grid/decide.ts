@@ -151,9 +151,10 @@ export const DECISION_CONFIG = {
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
      * ball now really puts him through. T375 (→MATCH-8/18): the lead grows by `grow` m for each
      * metre the line leaves behind it beyond `room` m (a line at halfway leaves 52.5), so a high
-     * line pays for the space it leaves; 0 leaves the lead at `lead`.
+     * line pays for the space it leaves; 0 leaves the lead at `lead`. `look` adds as much to the
+     * pull for each such metre, so the passer looks for the runner more behind a high line.
      */
-    through: { lead: 5, depth: 99, score: 0.25, space: 6, grow: 0, room: 20 },
+    through: { lead: 5, depth: 99, score: 0.25, space: 6, grow: 0, room: 20, look: 0 },
     /**
      * How the passer reads the line (T368, →MATCH-18): a teammate standing more than `offsideSeen`
      * m beyond the second-last opponent (`offsideBy`) is seen offside and not played to; one
@@ -461,6 +462,9 @@ export function passOptions(
   const model = s.setup.model !== undefined;
   const seen = DECISION_CONFIG.candidate.offsideSeen;
   const ballX = attackFrame(side, s.ball)[0];
+  // A runner in behind's pull, more behind a line that leaves more space (T375).
+  const TB = DECISION_CONFIG.candidate.through;
+  const lookScore = TB.score + TB.look * Math.max(0, PITCH.length - offside - TB.room);
   const candidates: { gp: GridPlayer; p: Point; dist: number; dir: Direction }[] = [];
   for (const gp of s.players[side]) {
     if (gp.idx === idx || !onPitch(gp) || (opts.filter && !opts.filter(gp))) continue;
@@ -515,11 +519,8 @@ export function passOptions(
     // On the candidate model only a runner holding the line in behind is played through (T368).
     const through =
       behindRun || late || (!model && p[0] > offside)
-        ? (late
-            ? COORDINATION_CONFIG.late.pull
-            : model
-              ? DECISION_CONFIG.candidate.through.score
-              : P.through) * actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
+        ? (late ? COORDINATION_CONFIG.late.pull : model ? lookScore : P.through) *
+          actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
     const kind: PassOption['kind'] =
