@@ -7,7 +7,7 @@
  * (→ARCH-9, T358): the same paths on every host.
  */
 import { cos, hypot, sin } from '../portable-math';
-import { COORDINATION_CONFIG } from './coordination';
+import { COORDINATION_CONFIG, lateRunner } from './coordination';
 import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
 import { clamp, PITCH } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
@@ -217,22 +217,56 @@ export function holdLimit(
   ahead: number,
   ballX: number,
 ): number {
-  // The second-last opponent `ahead` seconds on, in one pass like `offsideLine`.
+  return limitOn(lineRead(s, side), margin, ahead, ballX);
+}
+
+/**
+ * The opponents of `side` as one read of the line (T375): each on-pitch opponent's position and
+ * velocity along `side`'s attack, so every holder of a step reads the same line without walking
+ * the roster again.
+ */
+interface LineRead {
+  x: Float64Array;
+  v: Float64Array;
+  count: number;
+}
+
+function lineRead(s: GridState, side: 0 | 1, into?: LineRead): LineRead {
   const flip = side === 1;
-  let first = -Infinity,
-    second = -Infinity,
-    count = 0;
+  const read = into ?? { x: new Float64Array(11), v: new Float64Array(11), count: 0 };
+  let count = 0;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp)) continue;
+    if (count === read.x.length) {
+      const x = new Float64Array(count * 2);
+      const v = new Float64Array(count * 2);
+      x.set(read.x);
+      v.set(read.v);
+      read.x = x;
+      read.v = v;
+    }
     const vx = gp.vel?.[0] ?? 0;
-    const x = flip ? PITCH.length - gp.pos[0] - vx * ahead : gp.pos[0] + vx * ahead;
+    // `L - p - vx·a` is `(L - p) + (-vx)·a` bit for bit, so the read keeps holdLimit's facts.
+    read.x[count] = flip ? PITCH.length - gp.pos[0] : gp.pos[0];
+    read.v[count] = flip ? -vx : vx;
+    count++;
+  }
+  read.count = count;
+  return read;
+}
+
+/** `holdLimit` on a line already read: the second-last opponent `ahead` seconds on. */
+function limitOn(read: LineRead, margin: number, ahead: number, ballX: number): number {
+  let first = -Infinity,
+    second = -Infinity;
+  for (let i = 0; i < read.count; i++) {
+    const x = read.x[i]! + read.v[i]! * ahead;
     if (x > first) {
       second = first;
       first = x;
     } else if (x > second) second = x;
-    count++;
   }
-  const line = count > 1 ? second : count ? first : PITCH.length;
+  const line = read.count > 1 ? second : read.count ? first : PITCH.length;
   return Math.max(line - margin, ballX, PITCH.length / 2);
 }
 
@@ -265,8 +299,8 @@ export function advance(
     vmax: number;
     holdUntil: number;
     hold: readonly [number, number];
-    /** Whether he holds the line, and his margin and read (`holdOf`). */
-    line?: { margin: number; ahead: number; before: boolean };
+    /** Whether he holds the line, and his margin and read (`holdOf`); a late runner holds the ball's. */
+    line?: { margin: number; ahead: number; before: boolean; late: boolean };
   }[] = [];
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
@@ -280,7 +314,7 @@ export function advance(
         vmax: speedOf(s, gp),
         holdUntil: before ? p.readAt! : (p?.holdUntil ?? 0),
         hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
-        ...(holds ? { line: { ...holdOf(s, gp), before: !!before } } : {}),
+        ...(holds ? { line: { ...holdOf(s, gp), before: !!before, late: lateRunner(s, gp) } } : {}),
       });
     }
   const whole = Math.floor(dt / C.step + 1e-9);
@@ -288,19 +322,25 @@ export function advance(
   const limits = new Float64Array(movers.length);
   // Without a read ahead every holder shares one line a step (`holdLimit` with `ahead` 0).
   const shared = movers.every((m) => !m.line || m.line.ahead === 0);
+  const holders = movers.some((m) => m.line);
+  let read: LineRead | undefined;
   for (let i = 0; i <= whole; i++) {
     const h = i < whole ? C.step : rest;
     if (h <= 1e-9) break;
     const t = i * C.step;
-    // Every limit reads the line as it stands at the step's start, before anyone moves in it.
-    const line = hold && shared ? holdLimit(s, att, 0, 0, -Infinity) : 0;
+    // Every limit reads the line as it stands at the step's start, before anyone moves in it: one
+    // read of the opponents a step for all holders (T375).
+    if (hold && holders) read = lineRead(s, att, read);
+    const line = read && shared ? limitOn(read, 0, 0, -Infinity) : 0;
     for (let k = 0; k < movers.length; k++) {
       const m = movers[k]!;
       limits[k] = !m.line
         ? Infinity
-        : shared
+        : m.line.late
+          ? Math.max(ballX, PITCH.length / 2)
+          : shared
           ? Math.max(line - m.line.margin, ballX, PITCH.length / 2)
-          : holdLimit(s, att, m.line.margin, m.line.ahead, ballX);
+          : limitOn(read!, m.line.margin, m.line.ahead, ballX);
     }
     for (let k = 0; k < movers.length; k++) {
       const m = movers[k]!;

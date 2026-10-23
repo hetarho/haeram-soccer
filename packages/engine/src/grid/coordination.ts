@@ -71,6 +71,14 @@ export const COORDINATION_CONFIG = {
    */
   hold: { far: 1.6, near: 0.35, early: 0.5 },
   /**
+   * T375 (→MATCH-17/18), candidate model: a late box run. With `pull` above 0 a midfielder on an
+   * open-play box run (`lateRunner`) holds level with the ball instead of the line until the pass
+   * is played, so he is onside by construction; the carrier plays him through with `pull` in place
+   * of `through.score`, the ball led `lead` m ahead of him toward his box spot (`throughPoint`).
+   * 0 leaves box runs as they were.
+   */
+  late: { pull: 0, lead: 12 },
+  /**
    * A combination closes when an opponent stands within `closed` m of the space a shower or an
    * overlapper goes to; he does not take that kind of job again for `retry` s.
    */
@@ -354,6 +362,17 @@ function defend(
       job(gp, { kind: 'recover', priority: 'tactical', target: shape });
   }
 }
+
+/**
+ * Whether `gp` makes a late box run (`late`, T375): an open-play box run on the candidate model,
+ * not a set piece's (whose box runs are committed).
+ */
+export const lateRunner = (s: GridState, gp: GridPlayer): boolean =>
+  CC.late.pull > 0 &&
+  s.setup.model !== undefined &&
+  gp.intention?.kind === 'run' &&
+  gp.intention.run === 'box' &&
+  gp.intention.priority === 'tactical';
 
 /** Whether `gp` gave up a `kind` of job as closed within the last `combination.retry` s. */
 const retrying = (s: GridState, gp: GridPlayer, kind: IntentionKind) =>

@@ -5,6 +5,7 @@ import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
+import { COORDINATION_CONFIG, lateRunner } from './coordination';
 import {
   attackFrame,
   cellBand,
@@ -148,9 +149,11 @@ export const DECISION_CONFIG = {
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
-     * ball now really puts him through.
+     * ball now really puts him through. T375 (→MATCH-8/18): the lead grows by `grow` m for each
+     * metre the line leaves behind it beyond `room` m (a line at halfway leaves 52.5), so a high
+     * line pays for the space it leaves; 0 leaves the lead at `lead`.
      */
-    through: { lead: 5, depth: 99, score: 0.25, space: 6 },
+    through: { lead: 5, depth: 99, score: 0.25, space: 6, grow: 0, room: 20 },
     /**
      * How the passer reads the line (T368, →MATCH-18): a teammate standing more than `offsideSeen`
      * m beyond the second-last opponent (`offsideBy`) is seen offside and not played to; one
@@ -507,11 +510,16 @@ export function passOptions(
     }
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
+    // A late box runner still behind the ball is played through into the box (T375).
+    const late = model && p[0] <= ballX && lateRunner(s, gp);
     // On the candidate model only a runner holding the line in behind is played through (T368).
     const through =
-      behindRun || (!model && p[0] > offside)
-        ? (model ? DECISION_CONFIG.candidate.through.score : P.through) *
-          actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
+      behindRun || late || (!model && p[0] > offside)
+        ? (late
+            ? COORDINATION_CONFIG.late.pull
+            : model
+              ? DECISION_CONFIG.candidate.through.score
+              : P.through) * actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
     const kind: PassOption['kind'] =
@@ -570,16 +578,30 @@ export function throughPoint(
   const T = DECISION_CONFIG.candidate.through;
   const gp = s.players[side][target]!;
   const feet: [number, number] = [gp.pos[0], gp.pos[1]];
-  if (T.depth - offsideLine(s, other(side)) < T.space) return feet;
   const { hypot } = s.math;
+  const p = attackFrame(side, gp.pos);
+  const c = attackFrame(side, s.players[side][passer]!.pos);
+  // A late box runner (T375): led `late.lead` m toward his box spot, short of it.
+  if (lateRunner(s, gp)) {
+    const spot = attackFrame(side, gp.intention!.target);
+    const d = hypot(spot[0] - p[0], spot[1] - p[1]);
+    if (d < 1e-9 || spot[0] <= p[0]) return feet;
+    const k = Math.min(COORDINATION_CONFIG.late.lead, d) / d;
+    const q: Point = [Math.min(T.depth, p[0] + (spot[0] - p[0]) * k), p[1] + (spot[1] - p[1]) * k];
+    return hypot(q[0] - c[0], q[1] - c[1]) > hypot(p[0] - c[0], p[1] - c[1])
+      ? toEngine(side, q)
+      : feet;
+  }
+  const line = offsideLine(s, other(side));
+  if (T.depth - line < T.space) return feet;
   const v = gp.vel ?? [0, 0];
   const speed = hypot(v[0], v[1]);
   let dx = (side === 0 ? v[0] : -v[0]) / (speed || 1),
     dy = (side === 0 ? v[1] : -v[1]) / (speed || 1);
   if (dx <= 0) [dx, dy] = [1, 0];
-  const p = attackFrame(side, gp.pos);
-  const c = attackFrame(side, s.players[side][passer]!.pos);
-  const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * T.lead);
+  // The lead grows with the space the line leaves behind it (T375).
+  const lead = T.lead + T.grow * Math.max(0, PITCH.length - line - T.room);
+  const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * lead);
   const q: Point = [x, clamp(p[1] + (dy * (x - p[0])) / dx, 0.5, PITCH.width - 0.5)];
   const further = hypot(q[0] - c[0], q[1] - c[1]) > hypot(p[0] - c[0], p[1] - c[1]);
   return further ? toEngine(side, q) : feet;
