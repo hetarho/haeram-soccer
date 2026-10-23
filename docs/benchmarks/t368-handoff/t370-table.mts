@@ -4,14 +4,18 @@
  * they could push out, MATCH-29's widest rows and the curve; [95%] intervals, ✗ outside,
  * ~ unresolved or insufficient, no mark inside.
  *
- *   pnpm exec tsx t370-table.mts --root <tree> <name>=<run.json> ...
+ *   pnpm exec tsx t370-table.mts --root <tree> [--out <file.md>] <name>=<run.json> ...
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2);
 const i = args.indexOf('--root');
 const root = args[i + 1]!;
-const runs = args.filter((_, k) => k !== i && k !== i + 1);
+const o = args.indexOf('--out');
+const file = o >= 0 ? args[o + 1] : undefined;
+const runs = args.filter((_, k) => k !== i && k !== i + 1 && (o < 0 || (k !== o && k !== o + 1)));
+const lines: string[] = [];
+const print = (line: string) => (file ? lines.push(line) : console.log(line));
 const mp = await import(`${root}/scripts/lib/match-parity.ts`);
 type Row = { id: string; status: string; value?: number; interval?: [number, number] };
 type Pair = Row & { kind: string; differences?: { value?: number; interval?: [number, number] }[] };
@@ -45,8 +49,8 @@ const cols: [string, string, number][] = [
   ['29:points:possession', "possession's points", 3],
 ];
 const header = ['setting', 'core', 'MATCH-30', 'MATCH-29', ...cols.map((c) => c[1]), 'curve'];
-console.log(`| ${header.join(' | ')} |`);
-console.log(`|${header.map(() => '---').join('|')}|`);
+print(`| ${header.join(' | ')} |`);
+print(`|${header.map(() => '---').join('|')}|`);
 for (const spec of runs) {
   const at = spec.indexOf('=');
   const name = spec.slice(0, at);
@@ -78,7 +82,7 @@ for (const spec of runs) {
   };
   const gap = of('gap:');
   const curve = gap.length ? mp.buildOutcomeTargetReport(gap).meanAbsoluteError : undefined;
-  console.log(
+  print(
     `| ${[
       name,
       inside('23:'),
@@ -89,3 +93,4 @@ for (const spec of runs) {
     ].join(' | ')} |`,
   );
 }
+if (file) writeFileSync(file, `${lines.join('\n')}\n`);
