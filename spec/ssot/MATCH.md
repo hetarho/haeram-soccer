@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r21 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r22 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -159,6 +159,7 @@
 - MATCH-22 [o] Which engine plays a fixture:
   - the own club's matches always play the grid engine.
   - every fixture without the own club, including fixtures in its league, takes a fast aggregate probabilistic path producing complete results (→MATCH-26/27). It does not run the detailed 22-player spatial simulation or replay a per-minute chance loop. ← a world season settles about 10,000 fixtures
+  - the aggregate path may draw one match as at most six consecutive time segments, so the score reached by a segment shapes the later segments' shot volume and risk the way →MATCH-16's score effects shape detailed play; the segments are one joint draw of one match and stay within →ARCH-31's fixture budget. ← without the score state the aggregate's goals follow shots and xG far more tightly than detailed play (shots~goals correlation 0.50 against 0.23, measured 261024)
   - the paths use the same strength factors and intended football targets (→MATCH-2/23/28), including named contributors, discipline, injuries, substitutions, extra time and shootouts. Generated incidents affect availability and subsequent fixtures through the ordinary world rules.
   - a fixture always takes the same path whether observed or not. Performance and release evidence follow →ARCH-31; timing measurements never choose a fixture's path at runtime.
 - MATCH-23 [o] Both engines hold the intended football distributions below for equal top-tier sides (sources and per-cell tables →docs/MATCH-BASELINES.md); comparisons across other conditions follow →MATCH-28. ← the decision tables and aggregate outcomes must describe the same football
@@ -225,6 +226,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r22 261024 MATCH-22✎ aggregate path one undivided joint draw (no per-minute chance loop)→may draw a match as at most six time segments whose reached score shapes later shot volume and risk, still no per-minute loop, within ARCH-31's fixture budget
 - r21 261023 MATCH-18✎ offside position always offside, 판단력 times the run→the position is called by a draw whose chance the receiver's 판단력 sets (lowest quarter ≥3× the highest per reception), a linebreaker less, a high line more; MATCH-23✎ offsides 1.5–2.5→1.7–1.9 a team (Premier League 2016/17–2025/26 mean 1.80)
 - r20 261022 MATCH-12✎ explicit transitions limited to seeking/period breaks→+goal-feedback holds outside simulated time; MATCH-18✎ set-piece delivery/duels→+continuous defensive tracking, cover, goalkeeper and second-ball responses
 - r19 261022 MATCH-3✎ possession unspecified (the detailed engine measured time on the ball)→a side's share of both sides' attempted passes, the published convention
