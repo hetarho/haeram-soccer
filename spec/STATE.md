@@ -15,9 +15,12 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| c9v3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T13:45Z | 2026-10-23T15:17Z | T384 |
+| c9v3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T13:45Z | 2026-10-23T16:31Z | - |
 
 ## inbox
+- 261024 decided T384 MATCH-18: the candidate call and the acceptance's 판단력 quarters read the receiver's own 판단력 attribute, not the duels' scale → at the draw the duels' scale (27–74 for 10–90%) is set more by the match's level, the day's form, the slot and fatigue than by the attribute, so no slope there moved the attribute's quarters past 1.6× (spread 15–25), while today's rule already reads 8.9× on the duels' quarters; 'runners with poor 판단력' is the player card's 판단력 (alt: quarters on the duels' scale, rejected: they measure the day, not the player)
+- 261024 decided T384 MATCH-18: on the candidate a linebreaker and a high line multiply the call (×0.3, ×1.5) instead of adding −0.1 / +0.05 → the added terms flattened every quarter toward the clamp and the high-line term, so 판단력 no longer decided against a high line (alt: keep the shared added terms with a smaller high-line term)
+- 261024 decided T384 MATCH-28: the aggregate path credits offsides by the grid call's weight on the receiver's own 판단력 with the exponent doubled (`offsideCall` 2) → without the grid's runs it weighs only who is on, and at 1× its calls fell 37/29/18/16% by quarter against the grid's 51/24/15/10%; 2× gave 47/29/14/10% on calibration and 43/30/16/10% against the grid's 44/28/17/10% on validation (alt: one shared exponent and a gap left to T372)
 - 261023 decided T384 T371 T372: c9v3 takes over w6p4's pushed branch (the owner's other machines are off); that branch predated MATCH r21's plan, so T371 finished before T384 → T384 runs next on T371's football and T372 also waits for it, so parity is measured on the final offside; T371's kept rows (goal kicks, penalty goals, set-piece goals) are restarts and finishing that T384's calls should leave, and T372 reports any residual for T286 (alt: reopen T371 after T384)
 - 261023 decided T371 MATCH-23 MATCH-29: keep RB (the keeper gathers 0.47 of the failed crosses running out, box fouls 0.06, the lines' shot weights DF 4.5 / MF 22.5 / FW 0.30 with shotScale 0.475, balanced's press 12 / counter-press 8 and settled long balls in its own half) over the restart and finishing levers alone (R), both validated on rounds 53+54 with the same seeds → both bring goal kicks (9.35 → 8.71) and penalty goals (6.1 → 7.7%) inside with no MATCH-23, MATCH-29 or MATCH-30 row inside → outside; RB keeps MATCH-29 inside 23 → 23 (R 22) and moves balanced's xG conceded −0.122 → −0.081 (R −0.107), curve 1.79 (R 1.87); FW goals 62.5 → 60.3% unresolved and balanced's xG conceded still outside; tackles+interceptions 29.58 → 30.04 inside → unresolved for T372 to watch (alt: keep R alone | keep nothing and screen more)
 - 261023 suggest T371 MATCH-29 MATCH-8: balanced's xG conceded (−0.081 against at most the others' mean) moved only about +0.025 a lever under block depth, compactness, line height, lateral shift, marking and settled play; the rest comes from the crosses it concedes (21.6 a match against 15.4–19.3) beside its back three → who defends the flank beside a back three (the wing-backs' defending place or a wide centre-back's cover, role or intention level) is the next lever, planned only if the owner wants this row before T286
@@ -260,7 +263,6 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T384 | Call offside 1.8 times a team a match, mostly on runners with poor 판단력 | MATCH ARCH | T370 | doing@261024.c9v3 |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 T384 | todo |
 
 ## work
@@ -275,11 +277,12 @@
 
 ## next
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
-- resume (c9v3 261023, took over w6p4): T375, T370 and T371 are on main; T384 next on T371's football (planned before T371, but w6p4's branch predated the plan), then T372 on the final football → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46–54; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371.
+- resume (c9v3 261024): T384 done (kept K: offside on the receiver's own 판단력, 1.78 a team, quarters 3.7×, aggregate 1.81 with the grid's split); T372 next on the final football (MATCH-29 mirror draws and FW goals to watch, T384 limits), then T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46–56; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T384 done (c9v3; explore, kept K): candidate offside chance 0.055 × e^(−(own 판단력 − 67)/15), linebreaker ×0.3, high line ×1.5, clamp 0.002–0.7; aggregate offsides by the same weight ×2 from 0.064 / 0.32 of failed final-third passes; pooled validation rounds 55+56: offsides 1.65 → 1.78 (inside), quarter ratio 1.96 → 3.7, aggregate 1.70 → 1.81, MATCH-23 35 → 34, MATCH-29 23 → 21 (mirror draws insufficient), MATCH-30 9 → 9, curve 1.75 → 1.75, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
 - 261024 T384 start (c9v3; explore 3h from 00:16 KST, timebox 03:16): base 01b91f91 (T371's football merged with T376); MATCH r21's offside band 1.7–1.9 and the 판단력 split on both paths
 - 261024 fix e2e (c9v3): CI 39971746291 on d39bdd91 passed every job but Firefox recovery.spec:59, which ran every step on time and reached its last reload at 30.0 s; the two-round recovery journey takes test.slow()
 - 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
@@ -299,18 +302,3 @@
 - 261023 T388 done (k7p2): calendar-day contract checks, loaded office choices, expanded finance support, elapsed playback bounds and immediate celebration checks; five affected Chromium cases plus type/lint/format/spec checks pass
 - 261023 T388 start (k7p2): publication batch exposed stale week/round comparisons, lazy and collapsed control queries, playback timing assumptions and a celebration-expiry detour; escalate four-file test repair from lightweight fix
 - 261023 T387 done (k7p2): both complete themes registered with 184 original scenes and two icon families; full unit 1956+4 skips, contract 39, catalogs/assets/build pass; 247 current Chromium scenarios covered across batch and targeted fixes; owner authorizes main commit and push
-- 261023 update-ssot WEB r135, create-task and integrate T387 (k7p2): both complete visual concepts selected for the real theme picker; 184 original scenes and two original icon families, isolated at c223c1ea; renumbered from T386 after calendar publication reserved it
-- 261023 T386 done (p6h4): cups accessible-name fix and survey budget; owner explicitly waives additional batch tests and CI waiting for this push, reusing T385 checks; publish main directly
-- 261023 T386 start (p6h4): owner authorizes push of T385; correct deferred browser navigation and run the ARCH-30 publication gate before pushing main
-- 261023 T385 done (p6h4): stable calendar edit lock across all management views, command admission protected, 145 isolated tests plus typecheck/lint/format/build passed; browser scenarios handed to next batch, committed without push
-- 261023 review-code recent-code-quality-261023 done: Oct 22–23 audit at 3ea6c36d; task-local reuse/cleanup present, no recorded periodic broad review; F1 P2 async statistics coverage and F2 P3 adapter dependency unadopted, workload/statistics duplication handed to T286/T372; frozen-source type/lint/format and 97 selected units pass, no application code changed
-- 261023 create-task WEB r134 done; T385 doing (p6h4), base 3ea6c36d, current checkout explicitly assigned by owner; direct checks because vibe/work CLI is absent
-- 261023 update-ssot WEB r134 done (p6h4): WEB-31/97 lock management changes for running/settling calendar, preserves stop, pace and browsing; create-task WEB next
-- 261023 update-ssot WEB start (p6h4): lock management changes throughout calendar progression; audit every accessible view, verify and commit as requested
-- 261023 review-code recent-code-quality-261023 start: audit Oct 22–23 commit history, reuse and cleanup under spec-creator 0.7.4; implementation remains unchanged
-- 261023 create-task MATCH r21 done (w6p4): T384 offside calls by 판단력 at the EPL mean, explore 3h, dep T370; T371 and T286 dep T384
-- 261023 update-ssot MATCH r21 done (w6p4): MATCH-18✎ offside is a drawn call set by the receiver's 판단력, MATCH-23✎ offsides 1.5–2.5→1.7–1.9; no doing task cites it on main (T370 runs in w6p4's worktree on MATCH@20, unaffected: offside is not its lever)
-- 261023 ideation own-club-match-edge start: owner's 1995 save measured (own matches 2.51 v 1.70 points a match on equal strengths, one-sided manager/morale context); directions A–D open for the owner
-- 261023 T383 done: rounds numbered by our division (19 / 38 in 1부), idle weeks unchanged, notices dated; units 737/737, Chromium management/recovery/staff 12/16 with 4 pre-existing load failures
-- 261023 create-task WEB r133 → T383
-- 261023 update-ssot WEB start
