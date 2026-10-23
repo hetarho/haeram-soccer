@@ -95,7 +95,7 @@ describe('grid shape and movement', () => {
     const kit = gridKit(['balanced', 'possession']);
     const slots = FORMATIONS.balanced.slots;
     /** Side 0's back four's shape x (its own frame) with side 1 on the ball at `bx`. */
-    const backLine = (model: string | undefined, bx: number) => {
+    const backLine = (model: typeof MATCH_MODEL_REVISION | undefined, bx: number) => {
       const s = createState({ ...kit.setup, model });
       s.possession = 1;
       s.owner = [1, 9];

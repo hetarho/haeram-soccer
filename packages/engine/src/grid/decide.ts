@@ -118,6 +118,12 @@ export const DECISION_CONFIG = {
    */
   candidate: {
     crossScale: 6.3,
+    /**
+     * The cut-back's share of a delivery from the cut-back zones, in place of `cutBackShare` (T374,
+     * →MATCH-13, MATCH-16): with offside at the pass the box fills with runners arriving level
+     * with or behind the ball, the cut-back's receivers.
+     */
+    cutBackShare: 0.1,
     shotBox: 0.9,
     shotLine: { GK: 0, DF: 3.2, MF: 20, FW: 0.36 },
     /**
@@ -261,13 +267,14 @@ export function actionMix(
         : C.holdUp.base,
     clearance: cell.clearance,
   };
+  const candidate = s.setup.model !== undefined;
   if (inCutBack) {
-    mix.cutBack = C.cutBackShare * mix.cross;
-    mix.cross *= 1 - C.cutBackShare;
+    const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
+    mix.cutBack = share * mix.cross;
+    mix.cross *= 1 - share;
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
-  const candidate = s.setup.model !== undefined;
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
