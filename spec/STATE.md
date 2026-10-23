@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
+| r5n2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T00:39Z | 2026-10-23T00:39Z | T369 |
 
 ## inbox
 - 261022 decided T349 WEB-94: the scoreboard shows the presented running score (goals reached on the clock) instead of the minute's settled `frame.score`, which already counts a goal later in that minute → otherwise the score changes before the held goal and leaks it (alt: keep frame.score and hold at the minute boundary, which freezes up to a minute away from the goal)
@@ -241,7 +242,6 @@
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T369 | Bring the aggregate's box arrivals, xT, cut-backs and finishing spread inside their targets | MATCH ARCH | T323 | todo |
 | T374 | Give the candidate a deeper back line near its box and restore T368's honest offside | MATCH ARCH | T368 T367 T373 | todo |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 | todo |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
@@ -263,6 +263,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T369 done (r5n2; explore exit, kept, from q8m5's record on `origin/work/q8m5-T369`): merged over T373 on main (one comment conflict in `full-model-throughput.test.ts`, digests unchanged by T373); aggregate, throughput and calibration tests 74/74 on the merged tree; batch gate before the push
 - 261023 hand-off (q8m5): session closes for the owner's other machine; T369 finished and kept on `origin/work/q8m5-T369` (aggregate box entries 26.96 → 15.22, cut-backs 0.82 → 0.49 inside, MATCH-30 18/3/0 → 20/1/0, pooled curve 1.65 → 1.67), awaiting the batch gate
 - 261023 T368 done (q8m5; explore exit at the hand-off, not kept): honest offside cut completions beyond the line 23.4 → 0.05 a team, but shots left their core bands because the back line drops only 4 m behind the ball → T374
 - 261023 T373 done (q8m5): the kick's update reads no carrier while a delivery that reached nobody is in the air, so nobody presses the taker (presses on the taker 311 → 1, markers drawn off a held runner 219 → 0 in 96 matches); facts unchanged, five positions digests re-recorded; round 46 MATCH-29 18/1/6 → 17/1/7 (press–press draws at the band edge), core and set-piece goals unchanged

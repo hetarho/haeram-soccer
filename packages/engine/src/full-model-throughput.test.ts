@@ -63,11 +63,15 @@ const facts = (w: World) => ({
  * a3c1c7230ca5bc28 and 3be456505f08231a before. T367's urgent pairing (a set-piece marker is taken,
  * never moved to another runner) left both digests unchanged: the two rounds' own grid matches
  * settled the same facts. So did T373's (a delivered taker is no carrier for the kick's update
- * while the ball is in the air).
+ * while the ball is in the air). T369's aggregate box flows (passes aimed into the box from wide played
+ * wide of it, lateral passes beside the box kept on the flank, the cut-back zones played inward
+ * less, the box shot rate, territory and touchline outs recalibrated, forwards' shot share 2.2 →
+ * 2.0) changed both again, re-recorded on T367's merged tree with the aggregate calibration
+ * artifact (the grid untouched by T369); 4f190f1b1d803d86 and 53d5f04e2624eb4e before.
  */
 const BEFORE = {
-  aggregateRecords: '4f190f1b1d803d86',
-  candidateRounds: '53d5f04e2624eb4e',
+  aggregateRecords: 'd6a5c7feb76176f3',
+  candidateRounds: '0e9f347a953ed3e1',
 };
 
 describe('complete-result throughput (T285)', () => {

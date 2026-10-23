@@ -287,18 +287,41 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
         const straight = cell(to, lane),
           drifted = cell(to, inward(lane, r));
         const extra = kind === 'long' ? C.completion.long : 0;
-        group(c, straight, kind, k - drift, q(d.forward + extra, straight));
-        group(c, drifted, kind, drift, q(d.forward + extra, drifted));
+        for (const [to, n] of [
+          [straight, k - drift],
+          [drifted, drift],
+        ] as const) {
+          // From a half-space or a wing, a pass aimed into the box is played wide of it this often,
+          // to the flank cell of the same band, and is as hard to complete as the pass it replaces.
+          const wide =
+            C.forward.outside > 0 && lane !== 2 && inBoxCell(to) && !inBoxCell(c)
+              ? binomial(r, n, C.forward.outside)
+              : 0;
+          const flank = cell(cellBand(to), lane < 2 ? 0 : 4);
+          group(c, to, kind, n - wide, q(d.forward + extra, to));
+          group(c, flank, kind, wide, q(d.forward + extra, to));
+        }
       }
     }
     if (lateral) {
+      const L = C.lateral;
       const lanes = lane === 0 ? [1] : lane === 4 ? [3] : [lane - 1, lane + 1];
-      const left = lanes.length === 1 ? lateral : binomial(r, lateral, 0.5);
+      // From a cut-back zone the first lane is outward on the left and inward on the right.
+      const cutBackZone = band === 7 && (lane === 1 || lane === 3);
+      const first = cutBackZone ? (lane === 1 ? 1 - L.cutBackInward : L.cutBackInward) : 0.5;
+      const left = lanes.length === 1 ? lateral : binomial(r, lateral, first);
+      // Beside the box, the share not played inside stays on the flank in the same cell, as hard
+      // to complete as the pass inside it replaces.
+      const along =
+        lanes.length === 1 && band >= 6 && L.flankIntoBox < 1
+          ? lateral - binomial(r, lateral, L.flankIntoBox)
+          : 0;
       lanes.forEach((l, i) => {
         const to = cell(band, l);
-        const k = i === 0 ? left : lateral - left;
+        const k = i === 0 ? left - along : lateral - left;
         group(c, to, pullBack(c, to) ? 'cutBack' : 'short', k, q(d.lateral, to));
       });
+      group(c, c, 'short', along, q(d.lateral, cell(band, lanes[0]!)));
     }
     if (backward) {
       const to = cell(band - 1, lane);
