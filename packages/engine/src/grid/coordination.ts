@@ -63,28 +63,6 @@ export const COORDINATION_CONFIG = {
   /** 판단력 times a run: the run odds scale from `min` to `max` across the attribute. */
   timing: { min: 0.8, max: 1.2 },
   /**
-   * T368 (→MATCH-18): the side in possession holds an onside line until the pass is played
-   * (`movement.ts` `advance`). Each outfielder off the ball waits `far` m behind the second-last
-   * opponent at 판단력 1 and `near` m at 99, and reads `early` × his 판단력 share seconds of the
-   * defenders' movement ahead, so a better reader starts closer to the line without being caught
-   * by it stepping up. A run in behind waits on that line and the through ball sends him.
-   */
-  hold: { far: 1.6, near: 0.35, early: 0.5 },
-  /**
-   * T375 (→MATCH-17/18), candidate model: a late box run. With `pull` above 0 a midfielder on an
-   * open-play box run (`lateRunner`) holds level with the ball instead of the line until the pass
-   * is played, so he is onside by construction; the carrier plays him through with `pull` in place
-   * of `through.score`, the ball led `lead` m ahead of him toward his box spot (`throughPoint`).
-   * 0 leaves box runs as they were.
-   */
-  late: { pull: 0, lead: 12 },
-  /**
-   * T375 (→MATCH-8/18), candidate model: against a line that leaves at least `room` m behind it,
-   * runs in behind start from any band, so a side pinned back by a high press still has a runner
-   * to play over it. 0 keeps runs to band 3 and beyond outside a break.
-   */
-  highLine: { room: 0 },
-  /**
    * A combination closes when an opponent stands within `closed` m of the space a shower or an
    * overlapper goes to; he does not take that kind of job again for `retry` s.
    */
@@ -369,17 +347,6 @@ function defend(
   }
 }
 
-/**
- * Whether `gp` makes a late box run (`late`, T375): an open-play box run on the candidate model,
- * not a set piece's (whose box runs are committed).
- */
-export const lateRunner = (s: GridState, gp: GridPlayer): boolean =>
-  CC.late.pull > 0 &&
-  s.setup.model !== undefined &&
-  gp.intention?.kind === 'run' &&
-  gp.intention.run === 'box' &&
-  gp.intention.priority === 'tactical';
-
 /** Whether `gp` gave up a `kind` of job as closed within the last `combination.retry` s. */
 const retrying = (s: GridState, gp: GridPlayer, kind: IntentionKind) =>
   gp.ended?.reason === 'closed' &&
@@ -510,10 +477,7 @@ function attack(
       ? (T.odds[s.setup.tactics[side]] ?? 1)
       : 1;
   const ctx = runContext(s, side);
-  // Deep in its own half only runs in behind a high line go (`highLine`, T375).
-  const deep = ctx.band < 3 && breaking === 1;
-  const high = CC.highLine.room > 0 && PITCH.length - ctx.line >= CC.highLine.room;
-  if (deep && !high) return;
+  if (ctx.band < 3 && breaking === 1) return;
   // Settled play past halfway: the side's listed odds for its outfielders' runs (T365).
   const SR = CC.settledRuns;
   const settled = breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
@@ -532,7 +496,7 @@ function attack(
       timing * fresh(s, gp) * breaking,
       breaking > 1,
     );
-    return p && (!deep || p.kind === 'behind') ? [{ gp, p }] : [];
+    return p ? [{ gp, p }] : [];
   });
   // One overlap per flank: one under way keeps it, else the overlapper nearest his space takes it.
   const flank = (p: readonly number[]) => (p[1]! < CENTRE ? 0 : 1);

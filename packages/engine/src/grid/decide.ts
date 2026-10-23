@@ -5,7 +5,6 @@ import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
-import { COORDINATION_CONFIG, lateRunner } from './coordination';
 import {
   attackFrame,
   cellBand,
@@ -149,19 +148,9 @@ export const DECISION_CONFIG = {
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
-     * ball now really puts him through. T375 (→MATCH-8/18): the lead grows by `grow` m for each
-     * metre the line leaves behind it beyond `room` m (a line at halfway leaves 52.5), so a high
-     * line pays for the space it leaves; 0 leaves the lead at `lead`. `look` adds as much to the
-     * pull for each such metre, so the passer looks for the runner more behind a high line.
+     * ball now really puts him through.
      */
-    through: { lead: 5, depth: 99, score: 0.25, space: 6, grow: 0, room: 20, look: 0 },
-    /**
-     * How the passer reads the line (T368, →MATCH-18): a teammate standing more than `offsideSeen`
-     * m beyond the second-last opponent (`offsideBy`) is seen offside and not played to; one
-     * closer to it looks level, so a ball to him is flagged. Only a runner on his run in behind,
-     * holding the line, draws the through ball's pull and is played into his path.
-     */
-    offsideSeen: 0.75,
+    through: { lead: 5, depth: 88, score: 0.4, space: 12 },
     /**
      * Press's shot weight in the opponents' half just after a regain, in place of
      * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
@@ -459,12 +448,6 @@ export function passOptions(
   const dfDeep = lineDepth(s, foe, side, 'DF');
   const mfDeep = lineDepth(s, foe, side, 'MF');
   const offside = offsideLine(s, foe);
-  const model = s.setup.model !== undefined;
-  const seen = DECISION_CONFIG.candidate.offsideSeen;
-  const ballX = attackFrame(side, s.ball)[0];
-  // A runner in behind's pull, more behind a line that leaves more space (T375).
-  const TB = DECISION_CONFIG.candidate.through;
-  const lookScore = TB.score + TB.look * Math.max(0, PITCH.length - offside - TB.room);
   const candidates: { gp: GridPlayer; p: Point; dist: number; dir: Direction }[] = [];
   for (const gp of s.players[side]) {
     if (gp.idx === idx || !onPitch(gp) || (opts.filter && !opts.filter(gp))) continue;
@@ -472,8 +455,6 @@ export function passOptions(
     const dist = hypot(p[0] - c[0], p[1] - c[1]);
     if (dist > reach || dist < 1e-9) continue;
     if (opts.crossOnly && !inBox(p)) continue;
-    // The candidate passer does not play to a man he sees standing offside (T368).
-    if (model && offsideBy(p, ballX, offside) > seen) continue;
     const angle = Math.abs(atan2(p[1] - c[1], p[0] - c[0])) / DEG;
     candidates.push({
       gp,
@@ -514,12 +495,9 @@ export function passOptions(
     }
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
-    // A late box runner still behind the ball is played through into the box (T375).
-    const late = model && p[0] <= ballX && lateRunner(s, gp);
-    // On the candidate model only a runner holding the line in behind is played through (T368).
     const through =
-      behindRun || late || (!model && p[0] > offside)
-        ? (late ? COORDINATION_CONFIG.late.pull : model ? lookScore : P.through) *
+      behindRun || p[0] > offside
+        ? (s.setup.model !== undefined ? DECISION_CONFIG.candidate.through.score : P.through) *
           actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
         : 0;
     const combo = combination(s, gp, idx, c);
@@ -555,20 +533,12 @@ export function passOptions(
 }
 
 /**
- * How many metres a receiver at `p` (the passing side's attack frame) stands in an offside position
- * when the pass is played (→MATCH-18): beyond the second-last opponent at `line`, in the opponent
- * half and beyond the ball at `ballX`; 0 when he is onside.
- */
-export const offsideBy = (p: Point, ballX: number, line: number): number =>
-  p[0] <= PITCH.length / 2 || p[0] <= ballX ? 0 : Math.max(0, p[0] - line);
-
-/**
  * Where `passer`'s through ball to `target` is played on the candidate model (engine frame,
  * →MATCH-16): into his path, `through.lead` metres ahead of him along his run (toward goal when he
  * stands or turns), never deeper than `through.depth`, when the opponents' line leaves at least
  * `through.space` metres behind it before that depth; to his feet otherwise or when that would not
- * take the ball further from the passer. A through ball goes to a runner in behind holding the
- * line (T368: the man already past it is offside, `isOffside`).
+ * take the ball further from the passer. A through ball goes to a runner in behind or to a man
+ * past the line whose run the offside draw found timed (`isOffside`).
  */
 export function throughPoint(
   s: GridState,
@@ -579,30 +549,16 @@ export function throughPoint(
   const T = DECISION_CONFIG.candidate.through;
   const gp = s.players[side][target]!;
   const feet: [number, number] = [gp.pos[0], gp.pos[1]];
+  if (T.depth - offsideLine(s, other(side)) < T.space) return feet;
   const { hypot } = s.math;
-  const p = attackFrame(side, gp.pos);
-  const c = attackFrame(side, s.players[side][passer]!.pos);
-  // A late box runner (T375): led `late.lead` m toward his box spot, short of it.
-  if (lateRunner(s, gp)) {
-    const spot = attackFrame(side, gp.intention!.target);
-    const d = hypot(spot[0] - p[0], spot[1] - p[1]);
-    if (d < 1e-9 || spot[0] <= p[0]) return feet;
-    const k = Math.min(COORDINATION_CONFIG.late.lead, d) / d;
-    const q: Point = [Math.min(T.depth, p[0] + (spot[0] - p[0]) * k), p[1] + (spot[1] - p[1]) * k];
-    return hypot(q[0] - c[0], q[1] - c[1]) > hypot(p[0] - c[0], p[1] - c[1])
-      ? toEngine(side, q)
-      : feet;
-  }
-  const line = offsideLine(s, other(side));
-  if (T.depth - line < T.space) return feet;
   const v = gp.vel ?? [0, 0];
   const speed = hypot(v[0], v[1]);
   let dx = (side === 0 ? v[0] : -v[0]) / (speed || 1),
     dy = (side === 0 ? v[1] : -v[1]) / (speed || 1);
   if (dx <= 0) [dx, dy] = [1, 0];
-  // The lead grows with the space the line leaves behind it (T375).
-  const lead = T.lead + T.grow * Math.max(0, PITCH.length - line - T.room);
-  const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * lead);
+  const p = attackFrame(side, gp.pos);
+  const c = attackFrame(side, s.players[side][passer]!.pos);
+  const x = Math.min(Math.max(p[0], T.depth), p[0] + dx * T.lead);
   const q: Point = [x, clamp(p[1] + (dy * (x - p[0])) / dx, 0.5, PITCH.width - 0.5)];
   const further = hypot(q[0] - c[0], q[1] - c[1]) > hypot(p[0] - c[0], p[1] - c[1]);
   return further ? toEngine(side, q) : feet;
