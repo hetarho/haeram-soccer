@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| r5n2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T00:39Z | 2026-10-23T00:39Z | T369 |
+| r5n2 | hq-dev1-pve2-vm2 | autopilot | 2026-10-23T00:39Z | 2026-10-23T00:39Z | T374 T326 |
 
 ## inbox
+- 261023 decided T374 T326: session r5n2 runs T374 and T326 side by side with session subagents in their own worktrees (both explore, so no work group, as q8m5 did for T325/T345), integrates each on main behind a batch gate and pushes main once both are in; validation rounds 47–48 go to T374 and 49–50 to T326 (alt: one after the other on this checkout)
 - 261022 decided T349 WEB-94: the scoreboard shows the presented running score (goals reached on the clock) instead of the minute's settled `frame.score`, which already counts a goal later in that minute → otherwise the score changes before the held goal and leaks it (alt: keep frame.score and hold at the minute boundary, which freezes up to a minute away from the goal)
 - 261022 decided T350 WEB-95: possession follows the recorded action under way (the minute's first event ending at or after the instant), the sample's owner only as fallback → a seeded probe found event `t` is where the ball arrives (859/864 passes) and the default engine records an owner in 126 of 752 samples ~7.5 s apart, so a sample owner lingered on a passer after the ball had left (alt: sample owner first, as the task's baseline suggested)
 - 261022 decided T349 T350: session v7c3 works on `work/v7c3` in the owner's checkout, pushing the branch after each task and main once at the end (owner's instruction for this session) (alt: commit on main and push at the end only)
@@ -238,11 +239,11 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 | todo |
-| T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 T369 | todo |
+| T326 | Measure how far the aggregate fixture's cost can fall toward its budget | MATCH ARCH | T323 T369 | doing@261023.r5n2 |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
-| T374 | Give the candidate a deeper back line near its box and restore T368's honest offside | MATCH ARCH | T368 T367 T373 | todo |
+| T374 | Give the candidate a deeper back line near its box and restore T368's honest offside | MATCH ARCH | T368 T367 T373 | doing@261023.r5n2 |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 | todo |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
