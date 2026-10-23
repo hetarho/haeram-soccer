@@ -200,8 +200,25 @@ if (args.includes('--child')) {
   const core = mp.buildTargetReport(samples);
   console.log(`core ${core.filter((x: { status: string }) => x.status === 'inside').length}/${core.length} inside`);
   for (const x of core)
-    if (x.status !== 'inside' || /offside|goals|shots/i.test(x.id))
+    if (x.status !== 'inside' || /offside|goal|shot/i.test(x.id))
       console.log(`  ${x.status.padEnd(12)} ${x.id}: ${x.value?.toFixed(3)} [${x.interval?.[0].toFixed(3)}, ${x.interval?.[1].toFixed(3)}] band ${x.band.join('–')}`);
+  // T374: open-play shots and goals by the shooter's line, with box share and mean distance.
+  const byLine: Record<string, { shots: number; goals: number; box: number; dist: number; head: number }> = {};
+  for (const smp of samples as { diagnostics: { shots: { x: number; y: number; line: string; goal: boolean; setPiece: boolean; penalty: boolean; header: boolean }[] } }[])
+    for (const sh of smp.diagnostics.shots) {
+      if (sh.setPiece || sh.penalty) continue;
+      const b = (byLine[sh.line] ??= { shots: 0, goals: 0, box: 0, dist: 0, head: 0 });
+      b.shots++;
+      if (sh.goal) b.goals++;
+      if (sh.x >= 88.5 && Math.abs(sh.y - 34) <= 20.16) b.box++;
+      if (sh.header) b.head++;
+      b.dist += Math.hypot(105 - sh.x, 34 - sh.y);
+    }
+  const m = samples.length;
+  for (const [line, b] of Object.entries(byLine))
+    console.log(
+      `  open play ${line}: shots ${(b.shots / m).toFixed(2)} a match, goals ${(b.goals / m).toFixed(3)}, conversion ${((100 * b.goals) / b.shots).toFixed(1)}%, in box ${((100 * b.box) / b.shots).toFixed(1)}%, headers ${((100 * b.head) / b.shots).toFixed(1)}%, distance ${(b.dist / b.shots).toFixed(1)} m`,
+    );
   const out = opt('out', '');
   if (out) writeFileSync(out, JSON.stringify({ sum, adv, core }));
 }
