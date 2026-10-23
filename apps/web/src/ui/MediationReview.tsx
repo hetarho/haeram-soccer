@@ -87,6 +87,7 @@ export function MediationReview({
         <div className={s.actions}>
           <button onClick={onClose}>닫기</button>
           <button
+            data-ui="primary"
             disabled={disabled || !ready || !!error || record.status !== 'pending'}
             data-preview-pending={
               (!!preview && !ready && !error && !disabled && record.status === 'pending') ||
@@ -126,14 +127,14 @@ export function MediationReview({
         <div className={s.layout}>
           <section className={s.positions} aria-label="감독과 단장 의견">
             <h3>요청과 재정 판단</h3>
-            <article className={s.position}>
+            <article data-surface="panel" className={s.position}>
               <h4>
                 <span>감독 요청</span>
                 <b>{record.manager.name}</b>
               </h4>
               <p>{record.managerReason}</p>
             </article>
-            <article className={s.position}>
+            <article data-surface="panel" className={s.position}>
               <h4>
                 <span>단장 판단</span>
                 <b>{record.director.name}</b>
@@ -262,7 +263,7 @@ export function MediationButton({
 }
 function PromiseCard({ promise }: { promise: ReinforcementPromise }) {
   return (
-    <article className={s.card}>
+    <article data-surface="panel" className={s.card}>
       <h4>
         {requestLabel(promise.target)} · {status[promise.status]}
       </h4>
@@ -323,7 +324,7 @@ export function RecruitmentCommitments({ w, client }: { w: World; client: GameCl
           ) : (
             <>
               {history.mediations.map((m) => (
-                <article className={s.card} key={m.id}>
+                <article data-surface="panel" className={s.card} key={m.id}>
                   <h3>
                     {m.manager.name} 감독 · {m.director.name} 단장
                   </h3>

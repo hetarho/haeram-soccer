@@ -97,6 +97,7 @@ function CupSeasonPicker({
   return (
     <>
       <button
+        data-ui="icon"
         type="button"
         className={ch.seasonStep}
         aria-label="이전 컵 시즌"
@@ -118,6 +119,7 @@ function CupSeasonPicker({
         ))}
       </Select>
       <button
+        data-ui="icon"
         type="button"
         className={ch.seasonStep}
         aria-label="다음 컵 시즌"
@@ -400,7 +402,7 @@ export function CupHistory({
   };
   const lineage = LINEAGES.find((entry) => entry.key === key);
   return (
-    <section className={c.card} aria-label="컵 대회 역사">
+    <section data-surface="panel" className={c.card} aria-label="컵 대회 역사">
       <div className={ch.historyPanel}>
         {year !== undefined && !final && honours.finals.length > 0 ? (
           <div className={s.panelBody}>

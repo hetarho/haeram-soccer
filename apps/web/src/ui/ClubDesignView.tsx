@@ -123,6 +123,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   return (
     <section className={s.view} aria-label="구단 디자인">
       <div
+        data-surface="panel"
         className={s.bar}
         role="group"
         aria-label="구단 디자인 적용"
@@ -138,6 +139,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
               되돌리기
             </button>
             <button
+              data-ui="primary"
               type="button"
               className={s.apply}
               disabled={!changed || stale || blocked || pending}

@@ -744,6 +744,7 @@ export function Pitch({
         )}
         {summary && (
           <button
+            data-ui="icon"
             className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
             aria-label={playLabel}
             disabled={!p}

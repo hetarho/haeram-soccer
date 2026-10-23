@@ -7,14 +7,14 @@ import s from './StyleCard.module.css';
 export function StyleCard({ style, compact = false }: { style?: ManagerStyle; compact?: boolean }) {
   if (!style)
     return (
-      <div className={`${s.card} ${s.neutral}`} data-testid="style-card">
+      <div data-surface="panel" className={`${s.card} ${s.neutral}`} data-testid="style-card">
         <b>기본형</b>
         <small>창단 감독 · 특정 학파의 보정 없이 균형 있게 팀을 운영해요</small>
       </div>
     );
   const info = STYLE_INFO[style];
   return (
-    <div className={`${s.card} ${s[style]}`} data-testid="style-card">
+    <div data-surface="panel" className={`${s.card} ${s[style]}`} data-testid="style-card">
       <b>
         {info.label}
         {info.tactic && <span>{tacticLabel[info.tactic]}</span>}

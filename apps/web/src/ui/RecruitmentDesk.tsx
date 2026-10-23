@@ -84,6 +84,7 @@ function CandidateCard({
   const scout = staffMember(w, 'scout')?.ability;
   return (
     <article
+      data-surface="panel"
       className={s.card}
       data-testid={`candidate-${player.id}`}
       data-candidate-id={player.id}
@@ -215,6 +216,7 @@ function CandidateCard({
           <div>
             {offer.freeAgent ? (
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={blocked || !buy.eligible || !buy.affordable}
                 onClick={() => onRecruit(false)}
@@ -223,6 +225,7 @@ function CandidateCard({
               </button>
             ) : (
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={blocked || !offer.available || !window.open || !buy.eligible}
                 onClick={onBid}
@@ -570,7 +573,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               >
                 초기화
               </button>
-              <button type="button" className={s.primary} onClick={() => setPanel(undefined)}>
+              <button
+                data-ui="primary"
+                type="button"
+                className={s.primary}
+                onClick={() => setPanel(undefined)}
+              >
                 {ordered.length}명 목록 보기
               </button>
             </div>
@@ -653,6 +661,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                   {actionable && (
                     <span className={s.negotiationActions}>
                       <button
+                        data-ui="primary"
                         className={s.primary}
                         disabled={blocked}
                         onClick={() =>
@@ -764,6 +773,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             <div className={s.bidActions}>
               <button onClick={() => setBiddingId(undefined)}>취소</button>
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={blocked || BigInt(fee) > BigInt(w.cash) || BigInt(fee) < 1n}
                 onClick={async () => {

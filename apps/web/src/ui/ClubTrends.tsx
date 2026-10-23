@@ -368,6 +368,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
             >
               <td>
                 <button
+                  data-ui="link"
                   type="button"
                   className={s.seasonRowLink}
                   aria-label={`${seasonName(w.year)} 구단 시즌 기록 보기`}
@@ -402,6 +403,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   <td>
                     {onSeason ? (
                       <button
+                        data-ui="link"
                         type="button"
                         className={s.seasonRowLink}
                         aria-label={`${seasonName(h.year)} 구단 시즌 기록 보기`}

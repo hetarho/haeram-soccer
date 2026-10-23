@@ -325,6 +325,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               </label>
             </div>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={disabled}
               onClick={() => void client.command({ type: 'tactics', tactic, tone })}
@@ -400,7 +401,7 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
     ),
     others = v.managers.filter((candidate) => candidate.source === 'club');
   const card = (candidate: (typeof v.managers)[number]) => (
-    <article className={s.card} key={candidate.id}>
+    <article data-surface="panel" className={s.card} key={candidate.id}>
       <div className={s.personHead}>
         <OvrBadge value={candidate.ability} role="감독" potential={candidate.potential} large />
         <div>
@@ -547,6 +548,7 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
           <div className={s.actions}>
             <button onClick={() => setHiring(undefined)}>취소</button>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={disabled}
               onClick={() => {
@@ -604,6 +606,7 @@ function StanceBadge({
     <button
       type="button"
       className={s.stanceBadge}
+      data-surface="tile"
       data-stance={stance}
       disabled={disabled}
       aria-label={`${player.name} 이적 상태 · ${STANCE_INFO[stance].label} · 바꾸기`}
@@ -751,7 +754,12 @@ function ContractTalkSheet({
           ) : (
             <button onClick={onClose}>닫기</button>
           )}
-          <button className={s.primary} disabled={disabled} onClick={() => onOffer(term)}>
+          <button
+            data-ui="primary"
+            className={s.primary}
+            disabled={disabled}
+            onClick={() => onOffer(term)}
+          >
             하한 <Money value={talk.floor} code={c.country} year={w.year} plain /> ·{' '}
             {termLabel(window, term)} 제시
           </button>
@@ -892,7 +900,7 @@ function Roster({ state, client }: Props) {
         )}
         <div className={s.rosterCards}>
           {visiblePlayers.map((p) => (
-            <article key={p.id}>
+            <article data-surface="panel" key={p.id}>
               <div className={s.rosterBody}>
                 <OvrBadge value={overall(p)} role={p.position} />
                 <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
@@ -921,6 +929,7 @@ function Roster({ state, client }: Props) {
                   <button
                     type="button"
                     className={s.stanceBadge}
+                    data-surface="tile"
                     data-stance="listed"
                     disabled={disabled}
                     aria-label={`${p.name} 계약 협상 열기`}

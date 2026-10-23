@@ -18,7 +18,12 @@ export function Segments<T extends string>({
   wrap?: boolean;
 }) {
   return (
-    <div className={`${s.segments} ${wrap ? s.segmentsWrap : ''}`} role="group" aria-label={label}>
+    <div
+      className={`${s.segments} ${wrap ? s.segmentsWrap : ''}`}
+      role="group"
+      aria-label={label}
+      data-ui="choices"
+    >
       {options.map(([id, text]) => (
         <button
           key={id}

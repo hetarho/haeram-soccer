@@ -63,6 +63,7 @@ function Celebrating() {
         ))}
       </div>
       <section
+        data-surface="panel"
         key={current.id}
         className={s.card}
         style={{ '--file-at': `${SHOW_MS - FILE_MS}ms` } as CSSProperties}

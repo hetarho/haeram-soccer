@@ -89,7 +89,7 @@ export function ClubFounding({
         <h2>당신의 클럽, 첫 시즌.</h2>
         <p>선수와 구장을 키우고, 우리만의 방향으로 더 높은 무대에 도전해요.</p>
       </header>
-      <div className={s.loop} aria-label="클럽 성장 흐름">
+      <div className={s.loop} aria-label="클럽 성장 흐름" data-surface="tile">
         <span>
           <b>01</b> 준비
         </span>
@@ -200,7 +200,7 @@ export function ClubFounding({
         </div>
         {/* The current crest and its 꾸미기 entry share the create row, so the basic screen still
             fits (→WEB-15). */}
-        <div className={s.launch}>
+        <div className={s.launch} data-ui="launch">
           <button
             type="button"
             className={s.design}
@@ -211,6 +211,7 @@ export function ClubFounding({
             <span>꾸미기</span>
           </button>
           <button
+            data-ui="primary"
             className={s.play}
             type="submit"
             disabled={state.busy || state.readonly || (!replace && !!state.error) || !name.trim()}
@@ -230,6 +231,7 @@ export function ClubFounding({
                 취소
               </button>
               <button
+                data-ui="primary"
                 type="button"
                 className={s.use}
                 disabled={state.readonly}

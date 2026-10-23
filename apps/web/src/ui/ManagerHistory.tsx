@@ -40,6 +40,7 @@ export function ManagerHistory(props: ManagerHistoryProps) {
   const state = managerHistoryListState(props);
   return (
     <section
+      data-surface="panel"
       className={`${s.panel} ${m.root}`}
       aria-labelledby={heading}
       aria-busy={props.loading || undefined}
@@ -103,7 +104,7 @@ function TenureCard({
   const details = useId();
   const openSeason = (season: ManagerSourceSeason) => onOpenSeason(season, row.id);
   return (
-    <article className={m.card} aria-label={`${row.name} · ${row.service}`}>
+    <article data-surface="panel" className={m.card} aria-label={`${row.name} · ${row.service}`}>
       <header className={m.head}>
         <div className={m.identity}>
           <h4>{row.name}</h4>
@@ -249,7 +250,11 @@ function Accomplishments({
 
 function LegacyEvent({ row }: { row: ManagerLegacyView }) {
   return (
-    <article className={`${m.card} ${m.legacy}`} aria-label={`${row.when} · ${row.title}`}>
+    <article
+      data-surface="panel"
+      className={`${m.card} ${m.legacy}`}
+      aria-label={`${row.when} · ${row.title}`}
+    >
       <small>{row.when}</small>
       <b>{row.title}</b>
       {row.detail && <p>{row.detail}</p>}

@@ -93,7 +93,7 @@ export function AwaySummary({ controller }: { controller: ProgressionController 
         </li>
       </ul>
       <div className={a.actions}>
-        <button className={a.primary} onClick={() => controller.clearAway()}>
+        <button data-ui="primary" className={a.primary} onClick={() => controller.clearAway()}>
           확인
         </button>
       </div>

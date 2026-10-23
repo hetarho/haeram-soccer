@@ -1,0 +1,488 @@
+/* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
+html[data-theme='matchday-print'] {
+  --surface-grain: url('../../art/standard/grain.png');
+  --control-hover-filter: brightness(0.96);
+  --control-active-filter: brightness(0.9);
+  --ovr-bronze: #8e4d1e;
+  --ovr-silver: #4d5960;
+
+  :where(
+    button:not(
+      [data-ui='link'],
+      [data-ui='icon'],
+      [data-ui='navigation'],
+      [data-ui='badge'],
+      [data-home-part],
+      [data-select-trigger]
+    )
+  ) {
+    border: 6px solid transparent;
+    border-image: var(--print-button) 54 / 8px stretch;
+    border-radius: 0;
+    background-image: var(--print-quiet);
+    background-color: #f1e5cb;
+    background-size: 384px;
+    background-clip: padding-box;
+    box-shadow: none;
+  }
+
+  button[data-ui='primary'],
+  button[type='submit'],
+  button[aria-pressed='true'],
+  button[aria-selected='true'] {
+    --text: #fff1d8;
+    --text-muted: #fff1d8;
+    --text-faint: #f1dfbf;
+    --accent-text: #fff1d8;
+    --gold: #fff1d8;
+    color: #fff1d8;
+    border-width: 6px;
+    border-image: var(--print-stamp) 54 / 9px stretch;
+    background-image: var(--print-red);
+    background-color: #a63724;
+    background-size: 256px;
+    background-clip: padding-box;
+  }
+
+  button[data-ui='primary'] {
+    background-image: var(--print-red) !important;
+    color: #fff1d8;
+    border-image: var(--print-stamp) 54 / 9px stretch;
+  }
+
+  [data-ui='link'] {
+    border: 0;
+    border-image: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  [data-ui='icon'] {
+    border: 4px solid transparent;
+    border-image: var(--print-button) 54 / 6px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: none;
+  }
+
+  [data-select-trigger],
+  :where(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+    textarea,
+    select
+  ) {
+    border: 5px solid transparent;
+    border-image: var(--print-button) 54 / 7px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    color: #24231e;
+    box-shadow: none;
+  }
+
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'] {
+    accent-color: #a63724;
+  }
+
+  [data-surface='panel'],
+  [data-ui='game-shell'] [data-surface='panel'] {
+    border: 8px solid transparent;
+    border-image: var(--print-tile) 54 / 10px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: none;
+  }
+
+  [data-surface='panel'] > header {
+    border-bottom-color: transparent;
+    background-image: url('../../art/matchday-print/home/rule-dark.webp');
+    background-position: center bottom;
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+  }
+
+  [data-surface='tile'],
+  [data-ui='game-shell'] [data-surface='tile'] {
+    border: 4px solid transparent;
+    border-image: var(--print-button) 54 / 6px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: none;
+  }
+
+  [data-ui='toolbar'] {
+    background: #eddfc3 var(--print-paper) repeat;
+    background-size: 512px;
+  }
+
+  [role='tablist'],
+  [data-ui='choices'] {
+    gap: 6px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    padding: 4px 0 8px;
+  }
+
+  [role='tab'],
+  [data-ui='choices'] > button,
+  [role='radiogroup'] > button {
+    flex-shrink: 0;
+    min-height: 44px;
+    border: 6px solid transparent;
+    border-image: var(--print-button) 54 / 8px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    color: #24231e;
+    font-weight: 700;
+    box-shadow: none;
+  }
+
+  [role='tab'][aria-selected='true'],
+  [data-ui='choices'] > button[aria-pressed='true'],
+  [role='radio'][aria-checked='true'] {
+    --text: #fff1d8;
+    --text-muted: #fff1d8;
+    --text-faint: #f1dfbf;
+    color: #fff1d8;
+    /* The shared .selected utility forces a border; replace that complete border here. */
+    border: 6px solid transparent !important;
+    border-image: var(--print-stamp) 54 / 9px stretch !important;
+    background: #a63724 var(--print-red) repeat padding-box;
+    background-size: 256px;
+  }
+
+  [role='tab']::after,
+  [data-ui='choices'] > button::after {
+    display: none;
+  }
+
+  table {
+    background: #f1e5cb var(--print-quiet) repeat;
+    background-size: 384px;
+  }
+
+  thead {
+    background: #24231e var(--print-ink) repeat;
+    background-size: 256px;
+    --text: #f2e6c9;
+    --text-muted: #f2e6c9;
+    --text-faint: #eddfc3;
+    --accent-text: #f2e6c9;
+    color: #f2e6c9;
+  }
+
+  table thead :is(th, td),
+  table[aria-label] thead :is(th, td) {
+    background: #24231e var(--print-ink) repeat;
+    background-size: 256px;
+    color: #f2e6c9;
+    border-bottom-color: transparent;
+    font-weight: 700;
+  }
+
+  td {
+    border-bottom: 1px solid #7c6d4e38;
+  }
+
+  [data-tier] {
+    border: 4px solid transparent;
+    border-image: var(--print-button) 54 / 5px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #8d6b3210;
+  }
+
+  /* Pinned cells paint their own opaque paper, including while the table scrolls. */
+  table tbody :is(th, td),
+  table[aria-label] tbody :is(th, td) {
+    background: #f1e5cb var(--print-quiet) repeat;
+    background-size: 384px;
+  }
+
+  table tbody tr:nth-child(even) > :is(th, td) {
+    background-color: #e8d9b9;
+    background-blend-mode: multiply;
+  }
+
+  table tbody tr[data-own='true'] > :is(th, td) {
+    background: #eddfc3 var(--print-paper) repeat;
+    background-size: 512px;
+  }
+
+  [data-ui='badge'],
+  [data-ui='count'] {
+    border: 4px solid transparent;
+    border-image: var(--print-stamp) 54 / 6px stretch;
+    border-radius: 0;
+    background: #a63724 var(--print-red) repeat padding-box;
+    background-size: 256px;
+    color: #fff1d8;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  [data-ui='count'] {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    width: max-content;
+    height: auto;
+    min-height: 24px;
+    padding: 0 3px;
+    line-height: 1.2;
+  }
+
+  table :where(button:not([data-ui='primary'])) {
+    border: 0;
+    border-image: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  details > summary {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #39372e;
+    font-weight: 700;
+  }
+
+  [data-ui='dialog'] {
+    border: 10px solid transparent;
+    border-image: var(--print-ticket) 54 / 13px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: 0 8px 48px #20170d40;
+  }
+
+  [data-ui='dialog-header'] {
+    --text: #f2e6c9;
+    --text-muted: #f2e6c9;
+    --text-faint: #eddfc3;
+    flex-shrink: 0;
+    border: 0;
+    padding: 10px 16px;
+    background: #24231e var(--print-ink) repeat;
+    background-size: 256px;
+    color: #f2e6c9;
+  }
+
+  [data-ui='dialog-header'] h2 {
+    color: inherit;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  [data-ui='dialog-header'] button {
+    flex: 0 0 44px;
+    border: 0;
+    border-image: none;
+    background: none;
+    color: #f2e6c9;
+  }
+
+  [data-ui='game-shell'] > main > header > button:has([data-pixel-icon]) {
+    border: 0;
+    border-image: none;
+    background: none;
+  }
+
+  [data-ui='season-overview'] {
+    border: 0;
+    border-image: none;
+    background: none;
+  }
+
+  [data-ui='dialog-body'] {
+    background: #f1e5cb var(--print-quiet) repeat;
+    background-size: 384px;
+  }
+
+  [data-ui='dialog-actions'] {
+    border: 0;
+    background: #eddfc3 var(--print-paper) repeat;
+    background-size: 384px;
+  }
+
+  [role='listbox'] {
+    border: 8px solid transparent;
+    border-image: var(--print-tile) 54 / 10px stretch;
+    border-radius: 0;
+    padding: 4px;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: 2px 4px 0 #31251a30;
+    color: #24231e;
+  }
+
+  [role='option'] {
+    border-radius: 0;
+  }
+
+  :where([role='option'][data-highlighted], [role='option'][data-state='checked']) {
+    --text: #fff1d8;
+    --text-muted: #fff1d8;
+    color: #fff1d8;
+    background: #a63724 var(--print-red) repeat;
+    background-size: 256px;
+  }
+
+  [data-testid='action-outcome'],
+  [data-testid='settings-toast'],
+  [data-testid='event-card'],
+  [data-testid='event-group'],
+  [data-testid='runtime-alerts'] > div,
+  [data-testid='team-state-alert'] > div {
+    border: 8px solid transparent;
+    border-image: var(--print-ticket) 54 / 10px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    box-shadow: none;
+  }
+
+  [data-testid='event-pill'] {
+    border-image: var(--print-stamp) 54 / 9px stretch;
+    background: #a63724 var(--print-red) repeat padding-box;
+    background-size: 256px;
+    color: #fff1d8;
+  }
+
+  [data-testid='event-pill'] > i {
+    background: none;
+    color: #fff1d8;
+  }
+
+  /* The framed pending-event ticket must clear the last action in the content scroller. */
+  &:has([data-testid='event-pill'])
+    [data-ui='game-shell']:not([data-page='match'], [data-page='dashboard'])
+    [data-testid='view-scroller'] {
+    padding-bottom: 72px;
+  }
+
+  &:has([data-testid='event-pill'])
+    [data-ui='game-shell'][data-page='dashboard']
+    div:has(> [data-home-active='true']) {
+    padding-bottom: 72px;
+  }
+
+  [data-testid='club-founding'] > header {
+    padding: 18px 0;
+    background: url('../../art/matchday-print/home/rule-dark.webp') center bottom / 100% 3px
+      no-repeat;
+  }
+
+  [data-testid='club-founding'] form {
+    padding: 24px;
+    border: 10px solid transparent;
+    border-image: var(--print-ticket) 54 / 13px stretch;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+  }
+
+  [data-testid='facility-overview'] {
+    border-image: var(--print-tile) 54 / 10px stretch;
+  }
+
+  label:has(input[type='file']) {
+    border: 3px solid transparent;
+    border-image: var(--print-button) 54 / 6px stretch;
+    border-radius: 0;
+    background: #f1e5cb var(--print-quiet) repeat padding-box;
+    background-size: 384px;
+    min-height: 44px;
+    padding: 2px 8px;
+  }
+
+  @media (max-width: 760px) {
+    [data-surface='panel'] {
+      border-width: 6px;
+      border-image-width: 8px;
+    }
+    [data-ui='dialog'] {
+      border-width: 7px;
+      border-image-width: 10px;
+      max-height: calc(100dvh - 12px);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    [data-ui='dialog-header'] {
+      padding: 6px 12px;
+    }
+    [data-ui='dialog-header'] h2 {
+      font-size: 16px;
+    }
+    [data-ui='game-shell'][data-playing='false'] > main {
+      --gutter: 12px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    [data-ui='game-shell'][data-playing='false'] > main > header {
+      min-height: 48px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+    [data-ui='game-shell'][data-playing='false'] [data-testid='view-scroller'] {
+      padding-top: 4px;
+    }
+    [data-ui='game-shell'][data-playing='false'] [data-testid='view-scroller'] > footer {
+      margin-top: 8px;
+    }
+    [data-testid='club-founding'] > header {
+      padding: 4px 0;
+    }
+    [data-testid='club-founding'] h2 {
+      margin: 4px 0;
+    }
+    [data-testid='club-founding'] header p {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    [data-testid='club-founding'] > [data-surface='tile'] {
+      margin: 3px 0;
+      padding: 2px 8px;
+      border-width: 3px;
+      border-image-width: 6px;
+    }
+    [data-testid='club-founding'] form {
+      gap: 6px;
+      padding: 4px 6px;
+      border-width: 6px;
+      border-image-width: 11px;
+    }
+    [data-testid='club-founding'] :is(input, [data-select-trigger]) {
+      min-height: 44px;
+    }
+    [data-testid='club-founding'] fieldset button {
+      min-width: 0;
+      min-height: 62px;
+      gap: 1px;
+      padding: 2px 1px;
+      border-width: 3px;
+      border-image-width: 6px;
+    }
+    [data-testid='club-founding'] fieldset :is(b, small) {
+      line-height: 1.3;
+    }
+    [data-testid='club-founding'] [data-ui='launch'] button {
+      min-height: 48px;
+      padding: 3px 6px;
+      border-width: 4px;
+      border-image-width: 7px;
+    }
+    [data-testid='event-group'] {
+      padding: 6px;
+    }
+  }
+}

@@ -85,6 +85,7 @@ export function FacilityParts({
           </div>
         </div>
         <button
+          data-ui="primary"
           type="button"
           className={s.primary}
           disabled={blocked || !p.eligible || !p.affordable}
@@ -102,7 +103,12 @@ export function FacilityParts({
   const reviewed = review ? preview(review) : undefined;
   return (
     <>
-      <section className={f.part} aria-label="경기장" data-testid="facility-stadium">
+      <section
+        data-surface="panel"
+        className={f.part}
+        aria-label="경기장"
+        data-testid="facility-stadium"
+      >
         <div className={s.panelHeading}>
           <div>
             <h3>경기장 · {STADIUM_STEPS[w.stadium].name}</h3>
@@ -116,6 +122,7 @@ export function FacilityParts({
           {STADIUM_STEPS.map((step, index) => (
             <li
               key={step.name}
+              data-surface="tile"
               data-state={
                 index < w.stadium
                   ? 'built'
@@ -149,6 +156,7 @@ export function FacilityParts({
       </section>
       {(['training', 'academy'] as const).map((part) => (
         <section
+          data-surface="panel"
           key={part}
           className={f.part}
           aria-label={FACILITY_PART_LABEL[part]}
@@ -182,6 +190,7 @@ export function FacilityParts({
             <div className={s.reviewActions}>
               <button onClick={() => setReview(undefined)}>취소</button>
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={blocked || !reviewed.eligible || !reviewed.affordable}
                 onClick={async () => {

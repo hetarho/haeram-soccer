@@ -4,6 +4,9 @@ import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { horizontalOverflow } from './layout';
+import { readPresentationBaselines } from '../fixtures/presentation';
+
+const defaultThemeId = readPresentationBaselines().themeEntry.id;
 
 for (const width of [360, 390]) {
   test(`fixed pitch ratio ${width}`, async ({ page }) => {
@@ -158,7 +161,7 @@ for (const viewport of [
     test.slow();
     await page.emulateMedia({ reducedMotion: viewport.width === 390 ? 'reduce' : 'no-preference' });
     await page.setViewportSize(viewport);
-    // Desktop watches in the pixel theme, phones in the standard one.
+    // Desktop watches in pixel; phones exercise the registered default theme.
     if (viewport.width === 1280)
       await page.addInitScript(() =>
         localStorage.setItem(
@@ -169,7 +172,7 @@ for (const viewport of [
     await importResponsibilityCareer(page, goalWorld());
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme',
-      viewport.width === 1280 ? 'pixel' : 'standard',
+      viewport.width === 1280 ? 'pixel' : defaultThemeId,
     );
     const cues = await countCues(page);
     await watchNext(page);

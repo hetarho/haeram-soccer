@@ -236,7 +236,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 135 | 135 | - | 0 |
+| WEB | 136 | 136 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -258,6 +258,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T391 | Finish remaining print surface skins and publish the complete theme | WEB ARCH | T390 | doing@261024.m8p2 |
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
@@ -281,23 +282,23 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T391 origin rebase (m8p2): pulled T384 engine changes through 9de1efe1 before publication; combined STATE histories, preserved the complete print change, and repeat the batch gate on the merged tree before pushing.
 - 261024 c9v3 hand-off: session closes for a fresh one; main CI green at 01b91f91, T384 pushed after its batch gate, nothing doing; next is T372
 - 261024 T384 done (c9v3; explore, kept K): candidate offside chance 0.055 × e^(−(own 판단력 − 67)/15), linebreaker ×0.3, high line ×1.5, clamp 0.002–0.7; aggregate offsides by the same weight ×2 from 0.064 / 0.32 of failed final-third passes; pooled validation rounds 55+56: offsides 1.65 → 1.78 (inside), quarter ratio 1.96 → 3.7, aggregate 1.70 → 1.81, MATCH-23 35 → 34, MATCH-29 23 → 21 (mirror draws insufficient), MATCH-30 9 → 9, curve 1.75 → 1.75, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
 - 261024 T384 start (c9v3; explore 3h from 00:16 KST, timebox 03:16): base 01b91f91 (T371's football merged with T376); MATCH r21's offside band 1.7–1.9 and the 판단력 split on both paths
+- 261024 T391 local checks complete (m8p2): image skins cover remaining table/count/choice/apply-bar/inset fills; sidebar role prevents result-card leakage, mobile founding/touch/clock/home scrolling preserved; units 1966+4 skips, contract 39, Chromium 247 covered after repairs, Chrome/WebKit 85 captures each; ready for authorized publication.
+- 261024 T391 start (m8p2): owner identifies residual flat table/badge/season/apply-bar fills and authorizes commit/push; origin pulled to 01b91f91, STATE histories combined after autostash, all theme work preserved; implements existing WEB-91 without a policy change.
 - 261024 fix e2e (c9v3): CI 39971746291 on d39bdd91 passed every job but Firefox recovery.spec:59, which ran every step on time and reached its last reload at 30.0 s; the two-round recovery journey takes test.slow()
 - 261023 fix e2e (c9v3): the merged football's batch gate (a280d500, Chromium 244/247) — set-piece-defence takes the first of three seeded careers whose reference match holds the defenders' jobs through two samples (the first seed's only delivery now held them through one), and openOffice reads the address before trusting a visible office that a deferred return home is about to replace
 - 261023 merge origin/work/w6p4 (c9v3): w6p4's T375 (exit), T370 (kept h6) and T371 (kept RB) join main beside T376's recorded ball holders; facts digests are w6p4's, positions digests re-recorded for both; T384 next, T372 dep T384
+- 261024 T390 done (m8p2): matchday-print is the main/default theme with shared image skins across all views and overlays; valid saved themes retained; UI 361 and presentation/home 52 units, type/lint/format/build/assets pass, Chromium and WebKit each cover 82 states; local galleries ready, no commit or push.
+- 261023 WEB r136 planned as T390 doing (m8p2): all-screen print image skin and registry default, unchanged valid stored selections, no commit/push; CLI unavailable, explicitly assigned current checkout.
+- 261023 update-ssot WEB start: owner expands the approved image-built matchday-print home to every screen and makes it the registry default; preserve valid stored choices, all game behavior and existing local edits; no commit or push.
+- 261023 local print home follow-up fixed: sidebar image/spacing/colour selectors now target only the shell aside; reproduced the leaking match-eve card before the fix, then checked unobscured report actions at Chromium 320/390/1380px and WebKit 390px, report close/reopen, home captures, focused lint/format and build; added the real report to the capture script and preview; no commit or push.
+- 261023 local matchday-print home prototype ready: 31 image assets, nine-slice frames and tiled paper/ink; original/desktop/mobile/tablet comparison at apps/web/design/home-print/index.html; typecheck, focused lint/format, four home units, asset checks and build pass; Chromium 320–1536px and WebKit 390px captures, home actions and theme/page isolation checked; owner requested no commit or push, other checkout edits preserved.
 - 261023 fix e2e (c9v3): openOffice dismisses the outcome toast only after a 2 s tab click fails, with a bounded click; dismissing it first hung manual-progression:123 (direct) where an event card covers the toast's close button (batch gate on daebabec)
 - 261023 fix ui (c9v3): fading copies of removed dialogs and cards rename their ids and their own url(#…) references; a closing card's copy duplicated a crest clip-path id as a match opened (match-core:94 on Chromium, Firefox and WebKit CI; 0 duplicates in 12 probes after)
 - 261023 fix ui (c9v3): the view scroller restores with scrollTo({ top }); WebKit ignored scrollTo(0, 0) from a 2 px offset, so home at 1380 kept the office's scroll (management-surfaces:22 on WebKit CI)
 - 261023 fix e2e (c9v3): openOffice dismisses the decision outcome toast that covered the office tab; Firefox CI 39952590526 waited 7.5 s there in both attempts and ran recovery.spec:28/:59 past 30 s (Chromium hit the same toast in 39909381793)
 - 261023 fix e2e (c9v3): mobile.spec:113 imports its low-screen fixture once founding is enabled, since an import before the client is ready is dropped (Chromium and WebKit failed it under load)
 - 261023 fix-ci start (c9v3): main CI red since 7a6581e0 (last 39952590526 at b388356f: Chromium mobile.spec:113, Firefox recovery.spec:28/:59, WebKit management-surfaces:22 standard and match-core:94 360); engine chain T372→ stays with w6p4
-- 261023 T371 done (w6p4; explore, kept RB): candidate keeper gathers 0.47 of the failed crosses running out, box fouls 0.06, shot lines DF 4.5 / MF 22.5 / FW 0.30 with shotScale 0.475, balanced press 12 / counter-press 8 and settled long balls below halfway; pooled validation rounds 53+54: MATCH-23 33 → 35 inside (goal kicks 8.71, penalty goals 7.7%, set-piece goals), MATCH-29 23 → 23, MATCH-30 9 → 9, balanced's xG conceded −0.122 → −0.081 (outside), curve 1.59 → 1.79, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
-- 261023 T370 done (w6p4; explore, kept h6): candidate box shots weighed by min(1, (xG/0.3)^0.5) with shotScale 0.45 and long-shot fall-off 3.5, and failed build-up passes intercepted by the defending tactic (0.175/0.195/0.155/0.175); pooled validation rounds 51+52: MATCH-30 5 → 9 inside (key passes, box shots, high turnovers, PPDA), no core, MATCH-29 or MATCH-30 row inside → outside, curve 1.54 → 1.56; carries after reception not kept; digests, knockout ties and calibration artifact re-recorded
-- 261023 T375 done (w6p4; explore exit, not kept): q12 with a shared line read (bit-identical, 1.30× → 1.05× T373's time), through-ball growth, late MF box runs and runs in behind a high line; best c40 held MATCH-30 (6 inside), core and MF goals (27.7%) on validation rounds 49+50 but five MATCH-29 rows moved inside → outside (press's points +0.06 → +0.30); engine reverted, evidence in `docs/benchmarks/t368-handoff/t375-*`
-- 261023 create-task T374 follow-up done (w6p4): T375 (high line's risk under honest offside + late MF box runs, explore 4h) before T370; T370 and T286 dep T375
-- 261023 T389 done (k7p2): preserve the return clock during loading and retry on readiness; three regressions fail before/pass after, 80 affected units and rebuilt hidden/away/writer-reload journeys pass
-- 261023 T389 start (k7p2): publication away-return failure exposes an armed clock consumed during client loading; defer until command readiness and retry once, with controller regressions and the real return journey
-- 261023 T388 done (k7p2): calendar-day contract checks, loaded office choices, expanded finance support, elapsed playback bounds and immediate celebration checks; five affected Chromium cases plus type/lint/format/spec checks pass
-- 261023 T388 start (k7p2): publication batch exposed stale week/round comparisons, lazy and collapsed control queries, playback timing assumptions and a celebration-expiry detour; escalate four-file test repair from lightweight fix

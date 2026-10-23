@@ -51,7 +51,7 @@ export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
       player.name
     );
   return (
-    <section className={s.panel} aria-label="리그 득점왕 순위">
+    <section data-surface="panel" className={s.panel} aria-label="리그 득점왕 순위">
       <div className={s.head}>
         <div>
           <h3>득점왕 경쟁</h3>
@@ -191,7 +191,7 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
       : [...new Set([1, Math.ceil(max / 2), max])];
   const available = [...ranked, ...players.filter((player) => !player.goals)];
   return (
-    <section className={s.panel} aria-label="득점왕 추이">
+    <section data-surface="panel" className={s.panel} aria-label="득점왕 추이">
       <div className={s.head}>
         <div>
           <h3>득점왕 추이</h3>
@@ -401,7 +401,12 @@ export function DisciplineTable({ league }: { league?: LeagueChoice }) {
     [w, league, reds],
   );
   return (
-    <section className={s.panel} aria-label="리그 징계 기록" data-testid="league-discipline">
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label="리그 징계 기록"
+      data-testid="league-discipline"
+    >
       <div className={s.head}>
         <div>
           <h3>징계</h3>

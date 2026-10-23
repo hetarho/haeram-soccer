@@ -21,7 +21,9 @@ export function MilestoneCollection({
       onClose={onClose}
       actions={
         <div className={s.actions}>
-          <button onClick={onClose}>목표 확인 마치기</button>
+          <button data-ui="primary" onClick={onClose}>
+            목표 확인 마치기
+          </button>
         </div>
       }
     >

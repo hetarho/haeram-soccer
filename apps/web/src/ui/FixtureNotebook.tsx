@@ -124,7 +124,7 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                   opponent = w.clubs.find((c) => c.id === (ownHome ? f.away : f.home)),
                   result = resultFor(f, w.playerClub);
                 return (
-                  <article key={f.id} data-testid="fixture-card">
+                  <article data-surface="panel" key={f.id} data-testid="fixture-card">
                     <p className={s.note}>
                       {fixtureDate(w, f)} · {competitionLabel(w, f)} · {ownHome ? '홈' : '원정'}
                       {f.id === next?.id && ' · 다음 경기'}

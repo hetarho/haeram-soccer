@@ -151,7 +151,7 @@ export function RecordsRoom({ state, client }: Props) {
   return (
     <>
       <h2 className={s.srOnly}>클럽 기록실</h2>
-      <div className={s.recordsNav}>
+      <div className={s.recordsNav} data-ui="toolbar">
         <TabList
           tabs={RECORD_TABS}
           value={tab}
@@ -335,7 +335,7 @@ function MatchRecords({
         ) : records.played ? (
           <div className={a.cards}>
             {cards.map(([label, body]) => (
-              <article key={label} aria-label={label}>
+              <article data-surface="panel" key={label} aria-label={label}>
                 <h4>{label}</h4>
                 {body || <p className={a.note}>아직 없어요.</p>}
               </article>
@@ -446,6 +446,7 @@ function SeasonRecords({
             aria-label="기록 시즌 선택"
           >
             <button
+              data-ui="icon"
               type="button"
               className={t.seasonStep}
               aria-label="이전 기록 시즌"
@@ -468,6 +469,7 @@ function SeasonRecords({
               ))}
             </Select>
             <button
+              data-ui="icon"
               type="button"
               className={t.seasonStep}
               aria-label="다음 기록 시즌"

@@ -184,6 +184,7 @@ export function ManagerRenewal({
       )}
       <TermCosts w={w} wage={terms.wage} fee={terms.fee} term={chosen} until={terms.until} />
       <button
+        data-ui="primary"
         className={s.primary}
         disabled={disabled}
         onClick={() => void client.command({ type: 'renew-manager', term: chosen })}
@@ -319,7 +320,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const renewal = renewing ? members.get(renewing) : undefined;
   const renewed = renewal && isExpiring(w, renewal) ? renewalTerms(w, renewal, term) : undefined;
   return (
-    <section className={s.staff} aria-label="스태프">
+    <section data-surface="panel" className={s.staff} aria-label="스태프">
       <header>
         <h3>스태프</h3>
         <span>
@@ -405,6 +406,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
               <div className={s.rowActions}>
                 {member && isExpiring(w, member) && (
                   <button
+                    data-ui="primary"
                     className={s.primary}
                     disabled={acting}
                     title={`연봉 ${text(renewalTerms(w, member).wage)} · 계약금 ${text(renewalTerms(w, member).fee)} · 기간 선택`}
@@ -463,6 +465,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 </button>
               )}
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={acting || !chosen}
                 onClick={() => {
@@ -564,6 +567,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
             <div className={s.sheetActions}>
               <button onClick={() => setRenewing(undefined)}>취소</button>
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={acting}
                 onClick={() => {
@@ -624,7 +628,7 @@ function ManagerPreview({ w, title }: { w: World; title: string }) {
     club = clubOf(w),
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
-    <div className={s.preview} data-testid="manager-pick">
+    <div data-surface="tile" className={s.preview} data-testid="manager-pick">
       <b>{title}</b>
       {pick ? (
         <div className={s.pick}>
@@ -661,7 +665,7 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
     club = clubOf(w),
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
-    <div className={s.preview} data-testid={`coach-pick-${role}`}>
+    <div data-surface="tile" className={s.preview} data-testid={`coach-pick-${role}`}>
       <b>{title}</b>
       {pick ? (
         <div className={s.pick}>

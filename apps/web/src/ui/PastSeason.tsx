@@ -141,7 +141,7 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
   });
   const count = (mark: string) => results.filter((result) => result.mark === mark).length;
   return (
-    <section className={l.panel} aria-label="우리 리그 경기">
+    <section data-surface="panel" className={l.panel} aria-label="우리 리그 경기">
       <div className={l.panelHead}>
         <div>
           <h3>우리 리그 경기</h3>
@@ -217,7 +217,7 @@ function SeasonRanks({
   const places = Math.max(clubs ?? 0, ...(ranks ?? [])),
     axis = rankAxis(ranks?.length ?? 0, places);
   return (
-    <section className={l.panel} aria-label="시즌 순위 추이">
+    <section data-surface="panel" className={l.panel} aria-label="시즌 순위 추이">
       <div className={l.panelHead}>
         <div>
           <h3>시즌 순위 추이</h3>
@@ -308,7 +308,7 @@ function SeasonScorers({ w, season, read }: { w: World; season: SeasonArchive; r
   const scorers = read.files.season?.scorers,
     top = scorers?.[0];
   return (
-    <section className={c.panel} aria-label="지난 시즌 득점왕">
+    <section data-surface="panel" className={c.panel} aria-label="지난 시즌 득점왕">
       <div className={c.head}>
         <div>
           <h3>시즌 득점 순위</h3>

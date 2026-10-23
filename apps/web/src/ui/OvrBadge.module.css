@@ -1,6 +1,6 @@
 /* Overall rating chip: a rating card's corner, tinted by card tier. */
 .ovr {
-  --tone: #d99a62;
+  --tone: var(--ovr-bronze, #d99a62);
   --tone-soft: #3a2a1d;
   flex: none;
   display: inline-grid;
@@ -16,7 +16,7 @@
   line-height: 1;
 }
 .ovr[data-tier='silver'] {
-  --tone: #cfd8dc;
+  --tone: var(--ovr-silver, #cfd8dc);
   --tone-soft: #2c3438;
 }
 .ovr[data-tier='gold'] {

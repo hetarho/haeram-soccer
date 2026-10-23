@@ -175,7 +175,7 @@ function conceptIcon(name, style, unearned = false) {
 
 export const CONCEPT_THEMES = {
   'matchday-print': {
-    label: '매치데이 인쇄',
+    label: '기본 · 매치데이 인쇄',
     style:
       'Bold woodcut / linocut artwork printed in charcoal black and muted vermilion on warm cream newsprint. Flat ink masses, expressive carved hatching, selective coarse halftone and ink wear, crisp believable architecture. Vintage football match programme art, fully redrawn in this medium. No painted gouache, no photography, no gradients, no 3D.',
     palette: {

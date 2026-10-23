@@ -8,11 +8,29 @@ import { acknowledgeEvents } from './events';
 import { expectHomeBounds, settle } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { createThemeResolver } from '../../apps/web/src/presentation/theme';
-import type { FacilityEra, FacilityKind } from '../../apps/web/src/presentation/contracts';
+import {
+  FACILITY_ERAS,
+  FACILITY_KINDS,
+  type FacilityEra,
+  type FacilityKind,
+} from '../../apps/web/src/presentation/contracts';
+import { facilityStageTop } from '../../apps/web/src/presentation/facilityImages';
 
 const presentation = readPresentationBaselines();
 const defaultThemeLabel = presentation.themeEntry.label;
 const defaultTheme = createThemeResolver(presentation.theme, { url: presentation.themeUrl });
+const facilitySources = new Set(
+  FACILITY_ERAS.flatMap((era) =>
+    FACILITY_KINDS.flatMap((kind) =>
+      Array.from(
+        { length: facilityStageTop(kind) + 1 },
+        (_, stage) =>
+          new URL(defaultTheme.facility({ era, kind, stage }).src, 'https://presentation.invalid')
+            .pathname,
+      ),
+    ),
+  ),
+);
 
 /** Synthetic presentation fixture, not a claim to have simulated the intervening seasons. */
 function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility = 0) {
@@ -107,9 +125,8 @@ for (const scenario of [
     const requested = new Set<string>();
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
-      // The shared background tile is not a facility scene or a preloaded future stage.
-      if (pathname.startsWith('/art/') && pathname !== '/art/standard/grain.png')
-        requested.add(pathname);
+      // Only registered facility scenes count here; UI materials and frames load independently.
+      if (facilitySources.has(pathname)) requested.add(pathname);
     });
     await page.setViewportSize({ width: scenario.width, height: scenario.height });
     await load(

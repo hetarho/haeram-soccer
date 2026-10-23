@@ -28,6 +28,7 @@ export function PlayerLink({
 }) {
   return (
     <button
+      data-ui="link"
       type="button"
       className={`${link.link} ${className ?? ''}`}
       aria-label={`${name} 선수 기록`}

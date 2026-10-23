@@ -6,7 +6,7 @@ import s from './Glossary.module.css';
 function Entry({ id }: { id: string }) {
   const entry = glossaryEntry(id)!;
   return (
-    <article className={s.entry} data-testid={`glossary-${id}`}>
+    <article data-surface="panel" className={s.entry} data-testid={`glossary-${id}`}>
       <h3>
         {entry.term}
         {entry.abbr && <small>{entry.abbr}</small>}

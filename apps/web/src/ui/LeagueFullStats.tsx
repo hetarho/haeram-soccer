@@ -63,7 +63,12 @@ export function LeagueFullStats({
   const title = lens === 'teams' ? '팀 세부 기록' : '선수 세부 기록';
   const read = full.status === 'ready' ? full.read : undefined;
   return (
-    <section className={s.panel} aria-label={title} data-testid={`full-stats-${lens}`}>
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label={title}
+      data-testid={`full-stats-${lens}`}
+    >
       <div className={s.panelHead}>
         <div>
           <h3>{title}</h3>

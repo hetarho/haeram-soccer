@@ -139,6 +139,7 @@ export function GameSlotScreen({
           if (!entry)
             return (
               <li
+                data-surface="panel"
                 key={slot}
                 className={`${s.slot} ${s.empty}`}
                 aria-label={t('slots.emptyLabel', { label })}
@@ -149,6 +150,7 @@ export function GameSlotScreen({
                 </div>
                 <div className={s.actions}>
                   <button
+                    data-ui="primary"
                     className={a.primary}
                     disabled={locked || (!!world && !slots.canPark)}
                     onClick={() => void run('slots.preparing', async () => onNew(slot))}
@@ -178,6 +180,7 @@ export function GameSlotScreen({
             // A career of earlier rules never opens: it can be kept as a file or deleted (→SAVE-16).
             return (
               <li
+                data-surface="panel"
                 key={entry.id}
                 className={`${s.slot} ${s.earlier}`}
                 aria-label={t('slots.earlierLabel', { label })}
@@ -220,7 +223,12 @@ export function GameSlotScreen({
               </li>
             );
           return (
-            <li key={entry.id} className={`${s.slot} ${inPlay ? s.inPlay : ''}`} aria-label={label}>
+            <li
+              data-surface="panel"
+              key={entry.id}
+              className={`${s.slot} ${inPlay ? s.inPlay : ''}`}
+              aria-label={label}
+            >
               <div className={s.slotHead}>
                 <span className={s.number}>{label}</span>
                 {inPlay && <em>{t('slots.inPlay')}</em>}
@@ -244,6 +252,7 @@ export function GameSlotScreen({
               </div>
               <div className={s.actions}>
                 <button
+                  data-ui="primary"
                   className={a.primary}
                   disabled={busy || (readonly && !inPlay)}
                   onClick={() =>
@@ -292,6 +301,7 @@ export function GameSlotScreen({
             <button onClick={() => void exportSlot(confirm.slot)}>{t('save.export')}</button>
             <button onClick={() => setConfirm(undefined)}>{t('common.cancel')}</button>
             <button
+              data-ui="primary"
               className={a.primary}
               onClick={() => {
                 const { kind, slot } = confirm;

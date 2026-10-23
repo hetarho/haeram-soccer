@@ -18,7 +18,7 @@ export const FinancialBreakdown = memo(
     const format = (amount: string) => money(amount, club.country, w.year);
     const costs = breakdown.costs;
     return (
-      <section className={s.panel} aria-label="수입과 지출 장부">
+      <section data-surface="panel" className={s.panel} aria-label="수입과 지출 장부">
         <div className={s.heading}>
           <div>
             <small>CLUB ACCOUNTS</small>

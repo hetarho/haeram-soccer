@@ -16,7 +16,7 @@ export function CompetitionRecords({ w, rows }: { w: World; rows: CompetitionRow
       (metric === 'ga' ? value(a) - value(b) : value(b) - value(a)) || a.id.localeCompare(b.id),
   );
   return (
-    <section className={s.panel} aria-label="리그 팀 기록">
+    <section data-surface="panel" className={s.panel} aria-label="리그 팀 기록">
       <div className={s.panelHeading}>
         <h3>팀 성적 기록</h3>
       </div>
@@ -79,7 +79,7 @@ export function UnavailableLeagueRecord({
   onOwn: () => void;
 }) {
   return (
-    <section className={s.panel} aria-label="선택 리그 기록 안내">
+    <section data-surface="panel" className={s.panel} aria-label="선택 리그 기록 안내">
       <div className={s.panelBody}>
         <h3>
           {leagueName(league)} · {label}

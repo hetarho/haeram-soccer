@@ -1,0 +1,19 @@
+{
+  "background": "none",
+  "foreground": "rgb(36, 35, 30)",
+  "height": 229.234375,
+  "actions": [
+    {
+      "label": "관전하기 ▶",
+      "bottom": 798,
+      "height": 48,
+      "reachable": true
+    },
+    {
+      "label": "결과만 보고 계속",
+      "bottom": 798,
+      "height": 48,
+      "reachable": true
+    }
+  ]
+}

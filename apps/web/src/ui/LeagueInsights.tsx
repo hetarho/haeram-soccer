@@ -129,14 +129,22 @@ export function Standings({
             // No zone before the club has played.
             const zone = t.played > 0 ? places?.zones[i] : undefined;
             return (
-              <tr key={id} className={`${id === w.playerClub ? s.own : ''} ${zone ? s[zone] : ''}`}>
+              <tr
+                key={id}
+                data-own={id === w.playerClub || undefined}
+                className={`${id === w.playerClub ? s.own : ''} ${zone ? s[zone] : ''}`}
+              >
                 <td>
                   {t.played ? i + 1 : '—'}
                   {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
                 </td>
                 <th scope="row" className={s.club}>
                   <ClubLink w={w} id={id}>
-                    {id === w.playerClub && <span className={s.myClub}>우리 팀</span>}
+                    {id === w.playerClub && (
+                      <span data-ui="badge" className={s.myClub}>
+                        우리 팀
+                      </span>
+                    )}
                   </ClubLink>
                 </th>
                 <td>
@@ -255,7 +263,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
     rivalTable = rivalId && w.tables[rivalId];
   const leagueGame = next?.kind === 'league' || next?.kind === 'lower';
   return (
-    <section className={s.overview} aria-label="우리 팀 리그 현황">
+    <section data-surface="panel" className={s.overview} aria-label="우리 팀 리그 현황">
       <div className={s.overviewTitle}>
         <h3>{t.played ? '이번 경기로 바뀐 순위' : '우리 팀의 순위 경쟁'}</h3>
         {onOpenLeague && <button onClick={onOpenLeague}>순위 경쟁 보기 →</button>}
@@ -493,7 +501,7 @@ export function RankHistoryGraph({
     { x, y } = axis;
   const home = w.clubs.find((c) => c.id === w.playerClub)?.country ?? '';
   return (
-    <section className={s.panel} aria-label="시즌 순위 추이">
+    <section data-surface="panel" className={s.panel} aria-label="시즌 순위 추이">
       <div className={s.panelHead}>
         <div>
           <h3>시즌 순위 추이</h3>
@@ -669,7 +677,7 @@ export function RoundResults({
   const ours = sameMembers(ids, ownLeagueIds(w));
   if (!rounds.length) return null;
   return (
-    <section className={s.panel} aria-label="리그 라운드 결과">
+    <section data-surface="panel" className={s.panel} aria-label="리그 라운드 결과">
       <div className={s.panelHead}>
         <div>
           <h3>{ours ? '같은 라운드, 다른 경기' : '라운드 결과'}</h3>
@@ -729,7 +737,7 @@ export function LeagueInsights({ w, ids = ownLeagueIds(w) }: { w: World; ids?: s
   return (
     <div className={s.insights}>
       <RankHistoryGraph w={w} ids={ids} />
-      <section className={s.panel}>
+      <section data-surface="panel" className={s.panel}>
         <div className={s.panelHead}>
           <div>
             <h3>{rules ? `${rules.cp.name} · ${rules.first.tier + 1}부 순위표` : '리그 순위표'}</h3>

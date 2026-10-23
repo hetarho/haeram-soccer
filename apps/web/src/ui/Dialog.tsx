@@ -224,18 +224,30 @@ export function Dialog({
         className={s.modal}
         style={wide ? { maxWidth: 900 } : undefined}
         role="dialog"
+        data-ui="dialog"
         aria-modal="true"
         aria-labelledby={labelId}
         tabIndex={-1}
       >
-        <header className={s.modalHead}>
+        <header className={s.modalHead} data-ui="dialog-header">
           <h2 id={labelId}>{label}</h2>
-          <button className={s.modalClose} aria-label="창 닫기" onClick={requestClose}>
+          <button
+            data-ui="icon"
+            className={s.modalClose}
+            aria-label="창 닫기"
+            onClick={requestClose}
+          >
             <PixelIcon name="close" size={20} />
           </button>
         </header>
-        <div className={s.modalBody}>{content}</div>
-        {actions && <footer className={s.modalActions}>{actions}</footer>}
+        <div className={s.modalBody} data-ui="dialog-body">
+          {content}
+        </div>
+        {actions && (
+          <footer className={s.modalActions} data-ui="dialog-actions">
+            {actions}
+          </footer>
+        )}
       </section>
     </div>,
     document.body,

@@ -1,9 +1,12 @@
+@import './matchday-print-home.css';
+@import './matchday-print-ui.css';
+
 html {
   --page-grain: url('../../art/standard/grain.png');
   --surface-grain: none;
   --icon-paper: #f6eedb;
 }
-html[data-theme='matchday-print'] aside {
+html[data-theme='matchday-print'] [data-ui='game-shell'] > [data-ui='sidebar'] {
   --surface-deep: #282821;
   --surface-2: #514b3c;
   --text: #fff4de;
@@ -15,7 +18,11 @@ html[data-theme='matchday-print'] aside {
   --warm: #eedab3;
   --control-fill: transparent;
 }
-html[data-theme='matchday-print'] aside nav button[aria-current='page'] {
+html[data-theme='matchday-print']
+  [data-ui='game-shell']
+  > [data-ui='sidebar']
+  nav
+  button[aria-current='page'] {
   --surface-2: var(--nav-active);
   --text: #fff4de;
   --text-muted: #fff4de;

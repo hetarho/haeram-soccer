@@ -64,7 +64,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   return (
     <div className={s.stack}>
       {arrived && (
-        <section className={s.card} aria-label="승격한 선수 관리">
+        <section data-surface="panel" className={s.card} aria-label="승격한 선수 관리">
           <h3>1군에 합류했어요</h3>
           <PlayerLink id={arrived.id} name={arrived.name} />
           <div className={s.filters}>
@@ -83,7 +83,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           </p>
         </section>
       )}
-      <section className={s.card} aria-label="유소년 아카데미">
+      <section data-surface="panel" className={s.card} aria-label="유소년 아카데미">
         <header className={s.head}>
           <h3>유소년 아카데미</h3>
           <span>
@@ -124,6 +124,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
                       </div>
                       <div className={s.prospectActions}>
                         <button
+                          data-ui="primary"
                           type="button"
                           className={readiness === 'ready' ? s.primary : undefined}
                           aria-label={`${p.name} 1군 승격`}
@@ -170,11 +171,16 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
         )}
       </section>
       <YouthTraining w={w} />
-      <section className={s.card} aria-label="유소년 운영">
+      <section data-surface="panel" className={s.card} aria-label="유소년 운영">
         <header className={s.head}>
           <h3>아카데미 운영</h3>
         </header>
-        <button type="button" className={s.homeLine} onClick={() => openDirection('youth')}>
+        <button
+          data-ui="link"
+          type="button"
+          className={s.homeLine}
+          onClick={() => openDirection('youth')}
+        >
           <span>
             <b>유소년 투자 · 유입 방식은 운영 방침에서</b>
             <small>
@@ -184,14 +190,24 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           </span>
           <span aria-hidden="true">›</span>
         </button>
-        <button type="button" className={s.homeLine} onClick={() => openStaff('youth')}>
+        <button
+          data-ui="link"
+          type="button"
+          className={s.homeLine}
+          onClick={() => openStaff('youth')}
+        >
           <span>
             <b>유스 디렉터 {director?.name ?? '공석'}</b>
             <small>담당자의 효과와 계약 · 선임·교체</small>
           </span>
           <span aria-hidden="true">›</span>
         </button>
-        <button type="button" className={s.homeLine} onClick={() => openFacility('academy')}>
+        <button
+          data-ui="link"
+          type="button"
+          className={s.homeLine}
+          onClick={() => openFacility('academy')}
+        >
           <span>
             <b>유소년 시설 {w.academyFacility}단계 · 공사 보기</b>
             <small>투자 운영비와 별도로 공사비를 내고 완공 후 효과를 받아요</small>
@@ -199,7 +215,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           <span aria-hidden="true">›</span>
         </button>
       </section>
-      <section className={s.card} aria-label="유소년 위임">
+      <section data-surface="panel" className={s.card} aria-label="유소년 위임">
         <header className={s.head}>
           <h3>유스 디렉터</h3>
           <span>
@@ -250,7 +266,7 @@ function YouthTraining({ w }: { w: World }) {
   const call = callLine(w, 'youth'),
     focus = academySummary(w).focus;
   return (
-    <section className={s.card} aria-label="유소년 훈련 방향">
+    <section data-surface="panel" className={s.card} aria-label="유소년 훈련 방향">
       <header className={s.head}>
         <h3>유소년 훈련 방향</h3>
         <span data-testid="youth-focus">
@@ -258,7 +274,12 @@ function YouthTraining({ w }: { w: World }) {
         </span>
       </header>
       <p className={s.advice}>{call.reason}</p>
-      <button type="button" className={s.homeLine} onClick={() => openCoachSheet('youth')}>
+      <button
+        data-ui="link"
+        type="button"
+        className={s.homeLine}
+        onClick={() => openCoachSheet('youth')}
+      >
         <span>
           <b>유스 디렉터에게 훈련 제안·강행</b>
           <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>

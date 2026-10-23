@@ -333,6 +333,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                     </button>
                   )}
                   <button
+                    data-ui="primary"
                     className={s.primary}
                     disabled={blocked || outlook.alreadyAnswered}
                     onClick={() => void respond()}
@@ -344,6 +345,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               ) : (
                 <div className={s.actions}>
                   <button
+                    data-ui="primary"
                     className={`${s.primary} ${s.lineupAction}`}
                     disabled={blocked || !valid}
                     onClick={() => void saveLineup(draft)}
@@ -427,7 +429,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
             aria-labelledby={`${tabId}-tactic-tab`}
             hidden={tab !== 'tactic'}
           >
-            <section className={s.section} aria-label="경기 전술 준비">
+            <section data-surface="panel" className={s.section} aria-label="경기 전술 준비">
               <div className={s.sectionHead}>
                 <h3>경기 흐름 바꾸기</h3>
                 <span>
@@ -517,7 +519,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
             aria-labelledby={`${tabId}-lineup-tab`}
             hidden={tab !== 'lineup'}
           >
-            <section className={s.section} aria-label="선발 선수 준비">
+            <section data-surface="panel" className={s.section} aria-label="선발 선수 준비">
               <div className={s.sectionHead}>
                 <h3>선발 11명 고르기</h3>
                 <span>

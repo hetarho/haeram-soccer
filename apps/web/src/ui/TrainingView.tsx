@@ -181,7 +181,7 @@ function TrainingFocusPanel({
 }) {
   const call = callLine(w, 'assistant');
   return (
-    <section className={s.card} id="training-focus" aria-label="훈련 방향">
+    <section data-surface="panel" className={s.card} id="training-focus" aria-label="훈련 방향">
       <header className={s.head}>
         <h3>훈련 방향</h3>
         <span data-testid="training-focus">
@@ -189,7 +189,7 @@ function TrainingFocusPanel({
           {focus.rounds ? ` · ${focus.rounds}라운드 남음` : ''}
         </span>
       </header>
-      <p className={s.advice} data-testid="training-advice">
+      <p data-surface="tile" className={s.advice} data-testid="training-advice">
         {call.reason}
       </p>
       <p className={s.actor}>
@@ -198,7 +198,12 @@ function TrainingFocusPanel({
           {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
         </button>
       </p>
-      <button type="button" className={s.homeLine} onClick={() => onSheet({ coach: 'assistant' })}>
+      <button
+        data-ui="link"
+        type="button"
+        className={s.homeLine}
+        onClick={() => onSheet({ coach: 'assistant' })}
+      >
         <span>
           <b>수석코치에게 훈련 제안·강행</b>
           <small>다음 라운드부터 4라운드 · 강행 시 사임 위험</small>
@@ -289,7 +294,7 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
   );
   const own = all.filter((player) => playerCallLine(w, player, squadFocus).by !== '팀 훈련').length;
   return (
-    <section className={`${s.card} ${s.wide}`} aria-label="개별 훈련">
+    <section data-surface="panel" className={`${s.card} ${s.wide}`} aria-label="개별 훈련">
       <header className={s.head}>
         <h3>선수별 육성</h3>
         <span data-testid="own-focus-count">따로 훈련 {own}명</span>
@@ -432,7 +437,7 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
     (skill) => `${ATTRIBUTE_LABEL[skill]} ${times(skills[skill])}`,
   );
   return (
-    <section className={s.card} aria-label="성장 배수">
+    <section data-surface="panel" className={s.card} aria-label="성장 배수">
       <header className={s.head}>
         <h3>성장 배수</h3>
         <span>라운드마다 곱해져요</span>

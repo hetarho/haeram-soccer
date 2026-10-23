@@ -145,14 +145,14 @@ function DomesticCup({ w }: { w: World }) {
   ).length;
   if (!cup)
     return (
-      <section className={c.card}>
+      <section data-surface="panel" className={c.card}>
         <h3>{name}</h3>
         <p className={s.muted}>다음 시즌 시작과 함께 첫 라운드 대진을 추첨해요.</p>
       </section>
     );
   const entered = cup.clubs.includes(w.playerClub);
   return (
-    <section className={c.card} aria-label={name}>
+    <section data-surface="panel" className={c.card} aria-label={name}>
       <header className={c.cardHead}>
         <div>
           <h3>{name}</h3>
@@ -193,7 +193,7 @@ function Continental({ w, t }: { w: World; t: EuropeTournament }) {
       ? '우승!'
       : (t.ownExit ?? ownStatus(w, rounds, t.fixtures, true));
   return (
-    <section className={c.card} aria-label={t.name}>
+    <section data-surface="panel" className={c.card} aria-label={t.name}>
       <header className={c.cardHead}>
         <div>
           <h3>{t.name}</h3>

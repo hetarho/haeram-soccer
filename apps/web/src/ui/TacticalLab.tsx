@@ -38,7 +38,7 @@ export function TacticalLab({
         </p>
         <div className={s.cards}>
           {compareTactics(w, players, applied, opponent).map((row) => (
-            <article key={row.tactic}>
+            <article data-surface="panel" key={row.tactic}>
               <button
                 aria-pressed={selected === row.tactic}
                 onClick={() => onSelect(row.tactic)}

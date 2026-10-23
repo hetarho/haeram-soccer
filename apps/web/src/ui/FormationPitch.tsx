@@ -49,6 +49,7 @@ export function FormationPitch({
         const [along, across] = spots[index] ?? [50, 50];
         return (
           <div
+            data-surface="panel"
             key={index}
             className={s.slot}
             data-line={place.position === 'GK' ? 'GK' : undefined}

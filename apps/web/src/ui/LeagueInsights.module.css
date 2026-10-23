@@ -582,14 +582,14 @@
   padding: 1px 6px;
   border-radius: var(--badge-radius);
   border: 1px solid #d99a6266;
-  color: #d99a62;
+  color: var(--ovr-bronze, #d99a62);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
 .teamOvr[data-tier='silver'] {
   border-color: #cfd8dc66;
-  color: #cfd8dc;
+  color: var(--ovr-silver, #cfd8dc);
 }
 .teamOvr[data-tier='gold'] {
   border-color: color-mix(in srgb, var(--gold) 50%, transparent);

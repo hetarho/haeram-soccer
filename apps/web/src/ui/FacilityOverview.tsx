@@ -17,7 +17,12 @@ export function FacilityOverview({
   children: ReactNode;
 }) {
   return (
-    <figure className={s.overview} aria-label={title} data-testid="facility-overview">
+    <figure
+      data-surface="panel"
+      className={s.overview}
+      aria-label={title}
+      data-testid="facility-overview"
+    >
       <FacilityArt kind={kind} world={w} className={s.art} />
       <figcaption className={s.caption}>
         <strong>{title}</strong>

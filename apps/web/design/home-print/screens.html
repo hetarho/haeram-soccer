@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>매치데이 인쇄 · 전체 화면</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #24231e url('/art/matchday-print/home/ink.webp') repeat;
+        color: #f2e6c9;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 16px 22px;
+        border-bottom: 1px solid #b9aa85;
+        background: #24231e;
+      }
+      h1 {
+        margin: 0 auto 0 0;
+        font-size: 18px;
+      }
+      nav {
+        display: flex;
+        gap: 6px;
+      }
+      button,
+      a,
+      select {
+        min-height: 40px;
+        padding: 8px 12px;
+        border: 1px solid #ad9b75;
+        border-radius: 2px;
+        background: #f1e5cb;
+        color: #24231e;
+        font: inherit;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      button[aria-pressed='true'],
+      a {
+        background: #a63724;
+        color: #fff1d8;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      select {
+        max-width: min(480px, 80vw);
+      }
+      main {
+        padding: 22px;
+      }
+      figure {
+        max-width: 1380px;
+        margin: 0 auto;
+      }
+      figure.phone {
+        max-width: 390px;
+      }
+      figcaption {
+        margin-bottom: 12px;
+        color: #eddfc3;
+      }
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      :focus-visible {
+        outline: 2px solid #f2e6c9;
+        outline-offset: 3px;
+      }
+      @media (max-width: 600px) {
+        header,
+        main {
+          padding: 12px;
+        }
+        h1 {
+          flex-basis: 100%;
+        }
+        label {
+          flex-wrap: wrap;
+        }
+        select {
+          max-width: calc(100vw - 24px);
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>매치데이 인쇄 · 전체 화면</h1>
+      <label
+        >화면
+        <select id="screen" aria-label="볼 화면"></select
+      ></label>
+      <nav aria-label="화면 크기">
+        <button type="button" data-device="desktop" aria-pressed="true">데스크톱</button>
+        <button type="button" data-device="mobile" aria-pressed="false">모바일</button>
+      </nav>
+      <a href="./">홈 시안 비교</a>
+    </header>
+    <main>
+      <figure>
+        <figcaption id="caption" role="status">화면을 불러오는 중…</figcaption>
+        <img id="capture" alt="매치데이 인쇄 테마의 실제 게임 화면" />
+      </figure>
+    </main>
+    <script>
+      const names = {
+        founding: '창단',
+        slots: '게임 슬롯',
+        home: '홈',
+        league: '리그',
+        cups: '컵 대회',
+        people: '선수단·스태프',
+        training: '훈련·육성',
+        business: '구단 운영',
+        records: '클럽 기록실',
+        match: '경기',
+        player: '선수 정보',
+        team: '구단 정보',
+        dropdown: '드롭다운',
+        news: '알림·뉴스',
+        preparation: '전술·선발',
+        confirmation: '확인 창',
+        settings: '설정',
+        theme: '테마 선택',
+        standard: '스타디움 그린',
+      };
+      const picker = document.querySelector('#screen');
+      let device = 'desktop';
+      let captures = [];
+      const show = () => {
+        const capture = captures.find(
+          (entry) => entry.id === picker.value && entry.device === device,
+        );
+        if (!capture) return;
+        document.querySelector('#capture').src = `./screens/${capture.id}-${capture.device}.webp`;
+        document.querySelector('#capture').alt =
+          capture.title || names[capture.id.split('-')[0]] || capture.id;
+        document.querySelector('#caption').textContent =
+          `${names[capture.id.split('-')[0]] || capture.id} · ${capture.title || ''} · ${capture.width}px`;
+        document.querySelector('figure').classList.toggle('phone', device === 'mobile');
+      };
+      const choices = () => {
+        const previous = picker.value;
+        picker.replaceChildren();
+        for (const entry of captures.filter((capture) => capture.device === device)) {
+          const option = document.createElement('option');
+          option.value = entry.id;
+          option.textContent = `${names[entry.id.split('-')[0]] || entry.id} · ${entry.title || entry.id}`;
+          picker.appendChild(option);
+        }
+        if ([...picker.options].some((option) => option.value === previous))
+          picker.value = previous;
+        else if ([...picker.options].some((option) => option.value === 'home'))
+          picker.value = 'home';
+        show();
+      };
+      picker.addEventListener('change', show);
+      for (const button of document.querySelectorAll('[data-device]'))
+        button.addEventListener('click', () => {
+          device = button.dataset.device;
+          for (const choice of document.querySelectorAll('[data-device]'))
+            choice.setAttribute('aria-pressed', String(choice === button));
+          choices();
+        });
+      fetch('./screens/checks.json')
+        .then((response) => response.json())
+        .then((report) => {
+          captures = report.captures;
+          choices();
+        })
+        .catch(() => {
+          document.querySelector('#caption').textContent = '화면을 불러오지 못했어요.';
+        });
+    </script>
+  </body>
+</html>

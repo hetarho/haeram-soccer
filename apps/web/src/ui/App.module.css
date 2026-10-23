@@ -1912,9 +1912,9 @@
   color: var(--text-muted);
 }
 .segments .selected {
-  color: var(--on-accent) !important;
-  background: var(--surface-grain, none) var(--accent-fill) !important;
-  border: 0 !important;
+  color: var(--on-accent);
+  background: var(--surface-grain, none) var(--accent-fill);
+  border: 0;
   box-shadow: none;
 }
 .segmentsWrap {

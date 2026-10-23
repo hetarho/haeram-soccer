@@ -166,7 +166,7 @@ export function Panel({
   footer?: ReactNode;
 }) {
   return (
-    <section className={s.panel}>
+    <section data-surface="panel" className={s.panel}>
       <div className={s.panelHead}>
         <h3>{title}</h3>
         {note && <span>{note}</span>}
@@ -584,6 +584,7 @@ const GameHud = memo(function GameHud({
     <header className={s.hud}>
       {playing && (
         <button
+          data-ui="icon"
           className={s.hudMenu}
           aria-label={t('shell.menu')}
           onClick={(event) => {
@@ -707,7 +708,7 @@ function GameOver({
       <div className={s.gameOverActions}>
         <button onClick={onExport}>기록 내보내기</button>
         <button onClick={onSlots}>{t('slots.title')}</button>
-        <button className={s.primary} onClick={onNew}>
+        <button data-ui="primary" className={s.primary} onClick={onNew}>
           이 슬롯에서 새 게임
         </button>
       </div>
@@ -752,6 +753,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
               감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
               <div className={s.criticalActions}>
                 <button
+                  data-ui="primary"
                   className={s.primary}
                   disabled={blocked}
                   onClick={() => {
@@ -1135,9 +1137,12 @@ export function App() {
   const menuDisabled = !playing;
   return (
     <div
+      data-ui="game-shell"
+      data-playing={playing}
+      data-page={page}
       className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''}`}
     >
-      <aside className={s.sidebar}>
+      <aside className={s.sidebar} data-ui="sidebar">
         <div className={s.brand}>
           <i className={s.brandSignal} aria-hidden="true" />
           <h1>HAERAM</h1>
@@ -1147,6 +1152,7 @@ export function App() {
         <nav className={s.nav} aria-label={t('shell.navigation')}>
           {NAV.map(([id, label]) => (
             <button
+              data-ui="navigation"
               key={id}
               disabled={menuDisabled}
               aria-current={page === id ? 'page' : undefined}
@@ -1277,6 +1283,7 @@ export function App() {
       <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
         {TABS.map(([id, label, full, owns]) => (
           <button
+            data-ui="navigation"
             key={id}
             aria-label={t(full)}
             aria-current={owns.includes(page) ? 'page' : undefined}
@@ -1336,6 +1343,7 @@ export function App() {
             <button onClick={() => void download()}>{t('save.exportCurrent')}</button>
             <button onClick={() => setPendingImport(undefined)}>{t('common.cancel')}</button>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={importBlocked}
               onClick={() => {

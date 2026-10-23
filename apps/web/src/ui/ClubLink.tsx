@@ -38,6 +38,7 @@ export function ClubLink({
   const mark = crest > 0 && <ClubCrest w={w} id={id} size={crest} />;
   return (
     <button
+      data-ui="link"
       type="button"
       className={`${s.link} ${large ? s.large : ''} ${className ?? ''}`}
       aria-label={`${club.name} 팀 정보`}

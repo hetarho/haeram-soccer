@@ -101,7 +101,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
         {contributions.map((p) => {
           const d = p.detail;
           return (
-            <article key={p.id}>
+            <article data-surface="panel" key={p.id}>
               <b>{players.get(p.id)?.name ?? p.id}</b>
               <p className={s.note}>
                 {p.metrics[10]}분{changes.has(p.id) && ` (${changes.get(p.id)})`} · {p.metrics[0]}골

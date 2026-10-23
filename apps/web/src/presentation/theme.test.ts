@@ -36,6 +36,19 @@ function resources(overrides: Record<string, unknown> = {}) {
 }
 
 describe('theme resource resolution', () => {
+  it('defaults to shipped matchday print while retaining every saved alternative', async () => {
+    const loader = resources();
+    const registry = await loader.loadRegistry('theme');
+    expect(resolvePackEntry(registry).id).toBe('matchday-print');
+    expect(resolvePackEntry(registry, 'missing-theme').id).toBe('matchday-print');
+    for (const id of ['matchday-print', 'standard', 'pixel', 'sticker-club']) {
+      const entry = resolvePackEntry(registry, id);
+      expect(entry.id).toBe(id);
+      const resource = await loader.loadPack('theme', entry);
+      expect(resource.pack.id).toBe(id);
+    }
+  });
+
   it.each([standardData, printData, stickerData])(
     'keeps every $id icon and completed facility scene independent from pixel assets',
     (data) => {

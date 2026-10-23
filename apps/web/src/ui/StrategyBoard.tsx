@@ -295,7 +295,7 @@ export function StrategyBoard({
             </details>
           </header>
 
-          <article className={s.current} aria-label="지금 방향">
+          <article data-surface="panel" className={s.current} aria-label="지금 방향">
             <div className={s.summaryHead}>
               <span>지금 방향</span>
               <b data-testid="current-strategy">{currentName}</b>
@@ -332,6 +332,7 @@ export function StrategyBoard({
               key={key}
               id={`${department ? 'sheet' : 'board'}-area-${key}`}
               className={s.area}
+              data-surface="panel"
               aria-label={area.label}
               data-area={key}
             >
@@ -342,7 +343,7 @@ export function StrategyBoard({
                 aria-controls={`${department ? 'sheet' : 'board'}-area-body-${key}`}
                 onClick={() => toggle(key)}
               >
-                <span className={s.domainIcon} aria-hidden="true">
+                <span data-surface="tile" className={s.domainIcon} aria-hidden="true">
                   {area.icon}
                 </span>
                 <span>
@@ -730,6 +731,7 @@ export function StrategyBoard({
               되돌리기
             </button>
             <button
+              data-ui="primary"
               type="button"
               className={s.apply}
               disabled={blocked}
@@ -765,6 +767,7 @@ export function StrategyBoard({
           <div className={a.actions}>
             <button onClick={() => setRemoving(undefined)}>취소</button>
             <button
+              data-ui="primary"
               className={a.primary}
               onClick={() => {
                 removeSaved(removing.id);

@@ -54,7 +54,7 @@ function OfficeRow({
         <b>{label}</b>
         <small>{detail}</small>
       </span>
-      <div className={s.choices} role="group" aria-label={label}>
+      <div className={s.choices} role="group" aria-label={label} data-ui="choices">
         {([false, true] as const).map((value) => (
           <button
             key={String(value)}
@@ -155,7 +155,12 @@ export function OwnerOffice({
   const totalCount = RESPONSIBILITY_KEYS.length + OBSERVATIONS.length;
   return (
     <div className={s.office} data-testid="owner-office">
-      <div className={s.bulkActions} role="group" aria-label="전체 보고·위임 설정">
+      <div
+        className={s.bulkActions}
+        role="group"
+        aria-label="전체 보고·위임 설정"
+        data-ui="choices"
+      >
         {(['direct', 'delegated'] as const).map((value) => (
           <button
             key={value}
@@ -179,7 +184,7 @@ export function OwnerOffice({
           {message}
         </p>
       )}
-      <section className={s.section} aria-label="보고·위임 설정">
+      <section data-surface="panel" className={s.section} aria-label="보고·위임 설정">
         <div className={s.sectionHead}>
           <h3>보고받기 / 위임</h3>
           <small>
@@ -218,7 +223,11 @@ export function OwnerOffice({
         </div>
       </section>
       {settings.mode === 'automatic' && (
-        <section className={s.section} aria-label="자동 모드의 백그라운드 진행">
+        <section
+          data-surface="panel"
+          className={s.section}
+          aria-label="자동 모드의 백그라운드 진행"
+        >
           <h3>자리를 비운 동안</h3>
           <label className={s.check}>
             <input
@@ -256,6 +265,7 @@ export function OwnerOffice({
                 취소
               </button>
               <button
+                data-ui="primary"
                 disabled={blocked || w.id !== proposal.id}
                 onClick={() => void apply(proposal)}
               >

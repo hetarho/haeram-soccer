@@ -54,7 +54,7 @@ export function NextMatchCard({
     last.home === w.playerClub ? last.score.away : last.score.home,
   ];
   return (
-    <section className={s.fixture} aria-label="다음 경기">
+    <section className={s.fixture} aria-label="다음 경기" data-home-part="fixture">
       <div className={s.fixtureInfo}>
         <small>
           NEXT MATCH
@@ -114,9 +114,9 @@ function TeamState({
     urgent = urgentState(states, cashState(w));
   return (
     <section className={s.state} aria-label="팀 상태" data-testid="team-state">
-      <ul>
+      <ul data-home-part="conditions">
         {states.map((state) => (
-          <li key={state.key} className={s[state.tone]}>
+          <li key={state.key} className={s[state.tone]} data-condition={state.key}>
             <button
               aria-label={`${state.label} ${state.value} · ${state.status} · 대처 방법 보기`}
               onClick={(event) => {
@@ -180,10 +180,11 @@ function ClubScene({ w }: { w: World }) {
   return (
     <figure
       className={s.scene}
+      data-home-part="scene"
       aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
     >
       <FacilityArt kind="stadium" world={w} className={s.sceneArt} />
-      <div className={s.sceneCaption}>
+      <div className={s.sceneCaption} data-home-part="scene-caption">
         <span className={s.badge}>
           <i aria-hidden="true">♥</i>
           {number(club.fans)}명의 서포터
@@ -195,7 +196,9 @@ function ClubScene({ w }: { w: World }) {
         </span>
       </div>
       <CashAlarm overlay />
-      <span className={s.stageLabel}>구장 {w.stadium + 1}단계</span>
+      <span className={s.stageLabel} data-home-part="stage-label">
+        구장 {w.stadium + 1}단계
+      </span>
     </figure>
   );
 }
@@ -231,10 +234,15 @@ export function ClubHub({
     Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
   );
   return (
-    <section className={s.hub} data-testid="club-hub" aria-label="클럽 키우기">
+    <section
+      className={s.hub}
+      data-testid="club-hub"
+      data-home-active={!away}
+      aria-label="클럽 키우기"
+    >
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} matchAction={matchAction} />
       <div className={s.seasonOverview}>
-        <div className={s.seasonMeter}>
+        <div className={s.seasonMeter} data-home-part="season-meter">
           <span>
             시즌 진행률 <b>{progress}%</b>
           </span>
@@ -242,10 +250,11 @@ export function ClubHub({
         </div>
       </div>
       {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
-      <div className={s.stage}>
+      <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />
         <button
           className={s.resources}
+          data-home-part="season-stats"
           aria-label="시즌 상세"
           aria-describedby="hub-stats-hint"
           onClick={(event) => {

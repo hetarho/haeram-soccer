@@ -42,6 +42,7 @@ export const ProgressOverview = memo(function ProgressOverview({
   return (
     <section
       className={p.overview}
+      data-ui="season-overview"
       aria-label="시즌 정보"
       data-testid={compact ? 'mini-clock' : undefined}
     >
@@ -113,6 +114,7 @@ export const ProgressControls = memo(function ProgressControls({
   ) : (
     <div className={p.buttons} role="group" aria-label="자동 진행 속도">
       <button
+        data-ui="icon"
         className={`${p.toggle} ${running ? p.pause : ''}`}
         aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
         disabled={!running && (blocked || gameActionsBlocked(state))}
@@ -143,7 +145,11 @@ export const ProgressControls = memo(function ProgressControls({
   // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
-    <section className={`${p.controls} ${running ? p.running : ''}`} aria-label="시즌 진행">
+    <section
+      className={`${p.controls} ${running ? p.running : ''}`}
+      data-ui="season-transport"
+      aria-label="시즌 진행"
+    >
       <div className={p.transportSummary}>
         <small className={p.status} aria-live="polite" aria-atomic="true">
           {status}

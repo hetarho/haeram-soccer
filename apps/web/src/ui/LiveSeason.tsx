@@ -98,6 +98,7 @@ function NextMatchAction({ controls }: { controls: PitchControls }) {
   const reveal = live && !controls.finished;
   return (
     <button
+      data-ui="primary"
       className={t.watch}
       aria-label={reveal ? '결과 보기' : '홈으로'}
       aria-describedby="match-next-hint"
@@ -227,7 +228,7 @@ const MatchPane = memo(function MatchPane({
         completed.current === playback?.record.id && (
           <div className={s.afterMatch}>
             <LeagueOverview w={finishedWorld} onOpenLeague={() => setPage('league')} />
-            <section className={s.panel}>
+            <section data-surface="panel" className={s.panel}>
               <div className={s.panelHead}>
                 <h3>경기 뒤의 순위표</h3>
               </div>
@@ -252,7 +253,7 @@ const TablePane = memo(function TablePane({
   return (
     <>
       <h2 className={s.seasonPaneTitle}>리그 순위표</h2>
-      <section className={s.panel}>
+      <section data-surface="panel" className={s.panel}>
         <Standings w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
       </section>
     </>
@@ -440,6 +441,7 @@ function SeasonPicker({
   return (
     <div className={t.seasonPicker} role="group" aria-label="리그 시즌 선택">
       <button
+        data-ui="icon"
         type="button"
         className={t.seasonStep}
         aria-label="이전 시즌"
@@ -461,6 +463,7 @@ function SeasonPicker({
         ))}
       </Select>
       <button
+        data-ui="icon"
         type="button"
         className={t.seasonStep}
         aria-label="다음 시즌"
@@ -606,7 +609,7 @@ export const LiveSeason = memo(function LiveSeason({
       {page === 'league' && !reviewing && <LeagueScope league={league} onLeague={setLeague} />}
       {/* Only the tabs stay pinned: a taller pinned band would hide what scrolls up under it. */}
       {page === 'league' && !reviewing && (
-        <div className={t.navigation}>
+        <div className={t.navigation} data-ui="toolbar">
           <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
             {visibleTabs.map(([id, label], i) => (
               <button

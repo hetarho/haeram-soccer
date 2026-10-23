@@ -124,6 +124,7 @@ export function StrategyComposer({
             저장
           </button>
           <button
+            data-ui="primary"
             type="submit"
             form="strategy-composer"
             className={a.primary}
@@ -158,7 +159,7 @@ export function StrategyComposer({
           return (
             <fieldset key={area.key} className={s.domain} data-area={area.key}>
               <legend className={s.domainHead}>
-                <span className={s.domainIcon} aria-hidden="true">
+                <span data-surface="tile" className={s.domainIcon} aria-hidden="true">
                   {area.icon}
                 </span>
                 <span>
@@ -173,7 +174,7 @@ export function StrategyComposer({
             </fieldset>
           );
         })}
-        <article className={s.current} aria-live="polite">
+        <article data-surface="panel" className={s.current} aria-live="polite">
           <div className={s.summaryHead}>
             <span>이 방향의 효과</span>
             <b>

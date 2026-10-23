@@ -8,7 +8,7 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
       label="클럽 키우기 가이드"
       onClose={onClose}
       actions={
-        <button className={s.close} onClick={onClose}>
+        <button data-ui="primary" className={s.close} onClick={onClose}>
           가이드 확인 마치기
         </button>
       }

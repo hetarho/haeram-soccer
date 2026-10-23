@@ -85,7 +85,11 @@ function SponsorContractCard({
 }) {
   const remaining = contract.until - year;
   return (
-    <article className={s.card} data-testid={`sponsor-contract-${contract.slot}`}>
+    <article
+      data-surface="panel"
+      className={s.card}
+      data-testid={`sponsor-contract-${contract.slot}`}
+    >
       <h3>{contract.name}</h3>
       <p>
         {SPONSOR_KIND_LABELS[contract.kind]} · {season(contract.until - 1)}까지
@@ -189,7 +193,7 @@ function MoneyWorkbench({
     return !!reply?.ok;
   };
   const contribution = (
-    <div className={s.contribution}>
+    <div data-surface="tile" className={s.contribution}>
       <div>
         <b>운영을 이어갈 자금</b>
         <p>
@@ -220,15 +224,15 @@ function MoneyWorkbench({
             <span>매 라운드 빠져나가는 돈과 지금까지의 기록</span>
           </header>
           <div className={s.summary}>
-            <div>
+            <div data-surface="tile">
               <span>연간 고정 지출</span>
               <b>{format(finance.costs.annual)}</b>
             </div>
-            <div>
+            <div data-surface="tile">
               <span>다음 고정 지출</span>
               <b>{format(finance.costs.nextRound)}</b>
             </div>
-            <div>
+            <div data-surface="tile">
               <span>고정 지출 여유</span>
               <b>{runway(fixedCostRunway(w.cash, finance.costs.annual))}</b>
             </div>
@@ -259,14 +263,14 @@ function MoneyWorkbench({
             )}
           </div>
           {BigInt(w.cash) >= 0n && (
-            <details className={s.recovery}>
+            <details data-surface="panel" className={s.recovery}>
               <summary>운영을 이어갈 추가 출자</summary>
               {contribution}
             </details>
           )}
         </>
       ) : (
-        <div className={s.panel}>
+        <div data-surface="panel" className={s.panel}>
           {tab === 'build' ? (
             <FacilityParts w={w} blocked={blocked} act={act} format={format} />
           ) : tab === 'sponsor' ? (
@@ -283,6 +287,7 @@ function MoneyWorkbench({
               <div className={s.slots}>
                 {state.view!.sponsors.map((view) => (
                   <section
+                    data-surface="panel"
                     className={s.slot}
                     key={view.slot}
                     aria-label={view.label}
@@ -323,6 +328,7 @@ function MoneyWorkbench({
                       <div className={s.cards}>
                         {view.offers.map((offer, index) => (
                           <article
+                            data-surface="panel"
                             className={s.card}
                             key={offer.kind}
                             data-testid={`sponsor-${view.slot}-${offer.kind}`}
@@ -388,6 +394,7 @@ function MoneyWorkbench({
               <div className={s.cards}>
                 {w.campaigns.map((campaign) => (
                   <article
+                    data-surface="panel"
                     className={s.card}
                     key={campaign.id}
                     data-testid={`campaign-${campaign.kind}`}

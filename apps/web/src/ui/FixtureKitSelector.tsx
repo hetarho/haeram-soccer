@@ -200,6 +200,7 @@ export function FixtureKitView({
         )}
         <div className={s.actions}>
           <button
+            data-ui="primary"
             type="button"
             className={s.confirm}
             disabled={disabled || !role || role === stored}

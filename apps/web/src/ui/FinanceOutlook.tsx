@@ -22,7 +22,12 @@ export function FinanceOutlook({ w }: { w: World }) {
   const tone = (value: string) =>
     BigInt(value) < 0n ? s.negative : BigInt(value) > 0n ? s.positive : '';
   return (
-    <section className={s.outlook} aria-label="재정 전망" data-testid="finance-outlook">
+    <section
+      data-surface="panel"
+      className={s.outlook}
+      aria-label="재정 전망"
+      data-testid="finance-outlook"
+    >
       <header>
         <h3>재정 전망</h3>
         <small>지금 상태를 유지한다면</small>

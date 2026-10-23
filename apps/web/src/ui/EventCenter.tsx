@@ -183,6 +183,7 @@ const EventCard = memo(function EventCard({
     };
     return (
       <aside
+        data-surface="panel"
         key={eve.id}
         ref={cardExit}
         className={`${s.card} ${s.matchReport}`}
@@ -199,11 +200,16 @@ const EventCard = memo(function EventCard({
         <p>
           {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
         </p>
-        <button type="button" className={s.stops} onClick={openOwnerOffice}>
+        <button data-ui="link" type="button" className={s.stops} onClick={openOwnerOffice}>
           구단주 사무실
         </button>
         <div className={s.actions}>
-          <button className={s.primary} disabled={blocked} onClick={() => void watch()}>
+          <button
+            data-ui="primary"
+            className={s.primary}
+            disabled={blocked}
+            onClick={() => void watch()}
+          >
             관전하기 ▶
           </button>
           <button disabled={blocked} onClick={() => controller.playThrough()}>
@@ -232,6 +238,7 @@ const EventCard = memo(function EventCard({
   };
   return (
     <aside
+      data-surface="panel"
       key={item.id}
       ref={cardExit}
       className={s.card}
@@ -278,7 +285,12 @@ const EventCard = memo(function EventCard({
       <div className={s.actions}>
         {bid?.direction === 'in' && bid.status === 'pending' ? (
           <>
-            <button className={s.primary} disabled={acting} onClick={() => void answer(true)}>
+            <button
+              data-ui="primary"
+              className={s.primary}
+              disabled={acting}
+              onClick={() => void answer(true)}
+            >
               수락하고 매각
             </button>
             <button disabled={acting} onClick={() => void answer(false)}>
@@ -287,7 +299,12 @@ const EventCard = memo(function EventCard({
           </>
         ) : bid?.direction === 'out' && bid.status === 'countered' ? (
           <>
-            <button className={s.primary} disabled={acting} onClick={() => void answer(true)}>
+            <button
+              data-ui="primary"
+              className={s.primary}
+              disabled={acting}
+              onClick={() => void answer(true)}
+            >
               역제안 수락
             </button>
             <button disabled={acting} onClick={() => void answer(false)}>
@@ -296,7 +313,7 @@ const EventCard = memo(function EventCard({
           </>
         ) : item.kind === 'window-open' ? (
           <>
-            <button className={s.primary} disabled={acting} onClick={showMarket}>
+            <button data-ui="primary" className={s.primary} disabled={acting} onClick={showMarket}>
               이적시장 보기
             </button>
             <button disabled={acting} onClick={() => void decide(item)}>
@@ -306,6 +323,7 @@ const EventCard = memo(function EventCard({
         ) : item.kind === 'finance' || item.kind === 'sponsor-ending' ? (
           <>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={acting}
               onClick={() => {
@@ -333,6 +351,7 @@ const EventCard = memo(function EventCard({
           <>
             {keepManager && (
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={acting}
                 onClick={() => void decide(item, () => client.command({ type: 'renew-manager' }))}
@@ -341,6 +360,7 @@ const EventCard = memo(function EventCard({
               </button>
             )}
             <button
+              data-ui="primary"
               className={keepManager ? undefined : s.primary}
               disabled={acting}
               onClick={() => {
@@ -358,6 +378,7 @@ const EventCard = memo(function EventCard({
           <>
             {expiring.length > 0 && (
               <button
+                data-ui="primary"
                 className={s.primary}
                 disabled={acting}
                 onClick={() =>
@@ -371,6 +392,7 @@ const EventCard = memo(function EventCard({
               </button>
             )}
             <button
+              data-ui="primary"
               className={expiring.length ? undefined : s.primary}
               disabled={acting}
               onClick={() => {
@@ -394,6 +416,7 @@ const EventCard = memo(function EventCard({
         ) : item.kind === 'cup' ? (
           <>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={acting}
               onClick={() => {
@@ -410,6 +433,7 @@ const EventCard = memo(function EventCard({
         ) : talker ? (
           <>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={acting}
               onClick={() => {
@@ -426,6 +450,7 @@ const EventCard = memo(function EventCard({
         ) : item.kind === 'youth-intake' ? (
           <>
             <button
+              data-ui="primary"
               className={s.primary}
               disabled={acting}
               onClick={() => {
@@ -440,7 +465,12 @@ const EventCard = memo(function EventCard({
             </button>
           </>
         ) : (
-          <button className={s.primary} disabled={acting} onClick={() => void decide(item)}>
+          <button
+            data-ui="primary"
+            className={s.primary}
+            disabled={acting}
+            onClick={() => void decide(item)}
+          >
             확인
           </button>
         )}
@@ -499,7 +529,11 @@ export function CommunicationsButton({ className = '' }: { className?: string })
       }}
     >
       <PixelIcon name="bell" size={20} />
-      {total > 0 && <b aria-hidden="true">{total > 99 ? '99+' : total}</b>}
+      {total > 0 && (
+        <b data-ui="count" aria-hidden="true">
+          {total > 99 ? '99+' : total}
+        </b>
+      )}
     </button>
   );
 }

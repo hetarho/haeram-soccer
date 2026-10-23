@@ -37,7 +37,7 @@ function SeasonContext({ code, record }: { code: string; record: SeasonArchive }
 function Leader({ player, index, label }: { player?: Player; index: number; label: string }) {
   const careerApps = useCareerApps();
   return (
-    <article>
+    <article data-surface="panel">
       <h4>{label}</h4>
       {player ? (
         <>
@@ -69,7 +69,7 @@ export function CareerRecordBook({ w }: { w: World }) {
         </p>
         <div className={a.cards}>
           {records.finish && (
-            <article>
+            <article data-surface="panel">
               <h4>가장 높은 무대의 성적</h4>
               <b>
                 {divisionName(code, records.finish.tier)} {records.finish.rank}위
@@ -78,7 +78,7 @@ export function CareerRecordBook({ w }: { w: World }) {
             </article>
           )}
           {records.points && (
-            <article>
+            <article data-surface="panel">
               <h4>최고 승점 페이스</h4>
               <b>{(records.points.points / records.points.played).toFixed(2)}점 / 경기</b>
               <p className={a.note}>
@@ -88,7 +88,7 @@ export function CareerRecordBook({ w }: { w: World }) {
             </article>
           )}
           {records.attack && (
-            <article>
+            <article data-surface="panel">
               <h4>최고 득점 페이스</h4>
               <b>{(records.attack.gf / records.attack.played).toFixed(2)}골 / 경기</b>
               <p className={a.note}>
@@ -98,7 +98,7 @@ export function CareerRecordBook({ w }: { w: World }) {
             </article>
           )}
           {records.supporters && (
-            <article>
+            <article data-surface="panel">
               <h4>시즌 결산 서포터 최다</h4>
               <b>{number(records.supporters.fans)}명</b>
               <SeasonContext code={code} record={records.supporters} />

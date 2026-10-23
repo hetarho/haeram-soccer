@@ -62,6 +62,7 @@ export function ProgressModeSwitch({
     <>
       <button
         className={s.modeSwitch}
+        data-ui="progress-mode"
         aria-label={`진행 방식 변경 · 현재 ${mode === 'automatic' ? '자동' : '수동'} 모드`}
         aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
         disabled={applying || modeSwitchBlocked(state)}
@@ -84,6 +85,7 @@ export function ProgressModeSwitch({
                 취소
               </button>
               <button
+                data-ui="primary"
                 disabled={
                   applying ||
                   modeSwitchBlocked(state) ||
