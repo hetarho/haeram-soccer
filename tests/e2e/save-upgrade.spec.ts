@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
+import { withoutManagerHistory } from '../fixtures/worlds';
 
 /** A career of the current rules, one round in. */
 async function current() {
@@ -50,7 +51,8 @@ async function exportRaw(page: Page, recovery = false) {
 test('recognized legacy gameplay resets on writer activation and new careers reload', async ({
   page,
 }) => {
-  const { world } = await current();
+  // Earlier rules never tracked manager history, so they wrote only the older containers.
+  const world = withoutManagerHistory((await current()).world);
   world.engine = '2.0.0';
   const earlier = await encode(world);
   await seed(page, earlier);
@@ -118,7 +120,7 @@ test('readonly legacy stays intact until writer handoff', async ({ page, context
   const holder = await context.newPage();
   await holder.goto('/');
   await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
-  const { world } = await current();
+  const world = withoutManagerHistory((await current()).world);
   world.engine = '2.0.0';
   const raw = await encode(world);
   await seed(page, raw);

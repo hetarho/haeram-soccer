@@ -10,6 +10,8 @@ import { openShortlistWindow } from './signings';
 import { defaultSettings } from './responsibilities';
 import { installMissingIdentities } from './club-identity';
 import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
+import { ensureManagerHistory } from './manager-history-capture';
+export * from './manager-history-capture';
 export {
   activateMatchModel,
   activatesMatchModel,
@@ -97,6 +99,8 @@ export function createWorld(input: Founding, release: MatchModelRelease = MATCH_
   openShortlistWindow(w);
   // With the release on, founding coverage: the first season is tracked whole.
   activateMatchModel(w, release);
+  // Own-manager attribution starts at the founding, whatever the switch (→SAVE-24).
+  ensureManagerHistory(w);
   return w;
 }
 export function simulateSeason(w: World) {

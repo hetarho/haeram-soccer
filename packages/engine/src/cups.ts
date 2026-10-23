@@ -6,6 +6,7 @@ import { addEvent, broadcastQuote, clubOf, findClub } from './world';
 import { credit } from './transactions';
 import { pushInbox } from './inbox';
 import { seasonDayLabel } from './calendar';
+import { captureCupTitle } from './manager-history-capture';
 import {
   decideTie,
   isDue,
@@ -129,6 +130,8 @@ function progress(w: World, cup: DomesticCup) {
     w.cupWinners[cup.country] = cup.winner;
     awardReputation(w, cup.winner, REPUTATION_CONFIG.cup);
     if (cup.winner === w.playerClub) {
+      // Credited to the manager in charge as the final is decided (→HIST-19).
+      captureCupTitle(w, 'cup');
       const prize = broadcastQuote(clubOf(w).country, w.year, CUP_PRIZE_CONFIG.honor);
       credit(w, prize);
       addEvent(

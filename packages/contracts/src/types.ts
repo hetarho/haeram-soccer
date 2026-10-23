@@ -1,5 +1,6 @@
 import type { ClubBuild } from './build';
 import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
+import type { ManagerHistoryFacts } from './manager-history';
 import type {
   IntentionObservation,
   MatchModelRevision,
@@ -645,6 +646,11 @@ export interface MatchRecord extends Fixture {
   appearance?: MatchAppearance;
   /** The match model that settled it (→SAVE-23); absent under the pre-feature model. */
   model?: MatchModelRevision;
+  /**
+   * The own-manager tenure responsible when it settled (→HIST-18), frozen then; absent before
+   * tracking began, which stays unattributed.
+   */
+  managerTenure?: string;
 }
 export type PlayerMotionState =
   'shape' | 'support' | 'run' | 'press' | 'mark' | 'recover' | 'carry' | 'keeper';
@@ -1118,6 +1124,11 @@ export interface World {
   matchModel?: MatchModelState;
   /** Current-season NPC aggregates under the full model (→HIST-17); absent before activation. */
   npcSeason?: NpcSeasonStats;
+  /**
+   * Own-manager tenures and their attributed outcomes (→HIST-18/19, SAVE-24), tracked from the
+   * founding or a writer activation; absent in a career not yet tracked.
+   */
+  managerHistory?: ManagerHistoryFacts;
   history: SeasonArchive[];
   events: Event[];
   cash: string;

@@ -21,15 +21,15 @@ import {
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
-  checkpointSchemaFor,
   MATCH_MODEL_REVISION,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
 import { pack } from '../adapters/packing';
 import { encodePayload } from '../adapters/compression';
+import { checkpointContainerFor } from '../adapters/managerHistoryPacking';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
 import {
-  FULL_MODEL_CHECKPOINT_SCHEMA,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   PRIOR_CATALOG_HASHES,
 } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
@@ -780,7 +780,7 @@ async function sealed(w: World) {
   const { codec, payload } = await encodePayload(bytes);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return JSON.stringify({
-    schema: checkpointSchemaFor(w),
+    schema: checkpointContainerFor(w),
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -864,9 +864,10 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(w.npcSeason!.competitions).toEqual([]);
     // Nothing settled is replayed, rewritten or backfilled.
     expect(settled(w)).toBe(settled(source));
-    // It is written in the model's container, validated as any checkpoint.
+    // It is written in the container of a tracked career, model data included, validated as any
+    // checkpoint (→SAVE-23/24).
     const written = await decode(reply.raw!);
-    expect(written.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    expect(written.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(canonical(written.world)).toBe(canonical(w));
     // Loading it again keeps the recorded boundary and writes nothing.
     const again = enabled();
@@ -955,7 +956,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       req('model-export', host.world!.revision, { type: 'export' }),
     );
     const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(canonical(saved.world)).toBe(canonical(host.world));
     expect(canonical((await decode(disk)).world)).toBe(canonical(source));
     // A retry from the kept checkpoint activates at the same boundary.
@@ -993,7 +994,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       req('recorded-export', host.world!.revision, { type: 'export' }),
     );
     const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(saved.world.matchModel).toEqual(modelled.matchModel);
   });
 });
