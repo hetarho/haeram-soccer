@@ -17,6 +17,8 @@
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
 
 ## inbox
+- 261023 decided T375 T370 MATCH-29: T375 closes as an explore exit (not kept, engine back on T373's football; 2020e999 with c40's patch restores the validated setting) → on validation rounds 49+50 the best setting c40 (through-ball growth, late midfield box runs, runs in behind a high line from any band) kept MATCH-30 6 inside, core with none inside → outside, MF goals 27.7% and the curve 1.22, but five MATCH-29 rows moved inside → outside (press's points +0.063 → +0.303); T370 starts from T373's football as T375's notes set (alt: keep c40 for its MATCH-30 and curve gains | screen more around c40 past the validation)
+- 261023 suggest T375 MATCH-8 MATCH-29: honest offside makes press's high line nearly free whatever the attackers do (three levers moved press's lead only +0.358 → +0.303) → before honest offside returns, an update-ssot question on MATCH-8: lower press's line or its reach under a held line (trims press's identity), or accept the 97% pardon and its MATCH-30 through-ball/box-entry/xT misses
 - 261023 decided T375 T370: honest offside's follow-up (T374 option a, through-ball lead/depth scaled by the space behind the line, plus late midfield box runs from behind the ball) becomes its own explore task T375 before T370 → T370 already carries three levers with its own keep rule, and T375's keep rule must test MATCH-29 per screened setting against T373's football; T370's baseline becomes T375's result or T373's football; T375 also first cuts the held line's per-holder line read (T374 limit 3) (alt: fold into T370)
 - 261023 decided - : the owner asked for parallel autopilot, but the remaining work is one serial chain of explore tasks (T375 → T370 → T371 → T372 → T286 → T306–T308), so no work group and no second explore lane; session w6p4 runs it in its own worktree (`work/w6p4`, session scratch) because another session is writing WEB planning on the main checkout, and integrates onto main behind the batch gate (alt: wait for the main checkout | run T375 and T370 side by side, rejected: same engine files and T370 reads T375's result)
 - 261023 decided T374 T326: session r5n2 runs T374 and T326 side by side with session subagents in their own worktrees (both explore, so no work group, as q8m5 did for T325/T345), integrates each on main behind a batch gate and pushes it (T369 first, once its gate passed); validation rounds 47–48 go to T374 and 49–50 to T326 (alt: one after the other on this checkout)
@@ -249,7 +251,6 @@
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 T375 | todo |
-| T375 | Make a high line cost again under honest offside and bring midfielders into the box onside | MATCH ARCH | T374 | doing@261023.w6p4 |
 | T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
 
@@ -264,11 +265,12 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 
 ## next
-- resume (w6p4 261023): T375 planned (honest offside follow-up, explore 4h) → implement-task T375 next, then T370 (baseline T375's result or T373's football) → T371 → T372 → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46, 47, 48; calibration round 41 used by T374.
+- resume (w6p4 261023): T375 done (explore exit, T373's football stays) → implement-task T370 next from T373's football, then T371 → T372 → T286 → T306–T308. Validation rounds spent: 11–26, 30–34, 40, 44, 46–50; calibration round 41 used by T374, 50 by T375.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T375 done (w6p4; explore exit, not kept): q12 with a shared line read (bit-identical, 1.30× → 1.05× T373's time), through-ball growth, late MF box runs and runs in behind a high line; best c40 held MATCH-30 (6 inside), core and MF goals (27.7%) on validation rounds 49+50 but five MATCH-29 rows moved inside → outside (press's points +0.06 → +0.30); engine reverted, evidence in `docs/benchmarks/t368-handoff/t375-*`
 - 261023 create-task T374 follow-up done (w6p4): T375 (high line's risk under honest offside + late MF box runs, explore 4h) before T370; T370 and T286 dep T375
 - 261023 r5n2 hand-off: session closes for another session; T369, T326 and T374 on main and pushed, nothing doing; next is the T374 follow-up plan, then T370
 - 261023 T374 done (r5n2; explore exit, not kept): T368's offside and held line restored with a candidate back line 12 m goal-side near the box (q12) passed screens on calibration round 41 but failed on validation rounds 47+48 (MF goals outside, MATCH-29 21 → 9 inside); engine reverted, evidence in `docs/benchmarks/t368-handoff/t374-*`; own match 1.3–1.5× slower with the held line

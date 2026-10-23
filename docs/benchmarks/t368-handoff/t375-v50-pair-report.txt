@@ -1,0 +1,29 @@
+T375 validation round 50: base = T373's football (e578fc90), cand = q12 with c40 (2020e999 and c40's patch)
+report.mts --root <cand tree> --base v50-base.json --cand v50-c40.json (changed rows only)
+
+base: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: unresolved 1, inside 5, outside 15, unbanded 2
+  MATCH-23: inside 34, outside 2, unresolved 2
+  MATCH-29: insufficient 10, inside 14, outside 1
+  curve 1.72 (-35 4.2, -30 6.2, -25 2.6, -20 7.7, -15 13.0, -10 9.3, -5 3.3, 0 5.5, 5 2.4, 10 7.3, 15 8.1, 20 4.3, 25 1.4, 30 6.1, 35 4.8, 40 4.4); points possession 1.292, press 1.430, counter 1.481, balanced 1.270
+cand: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: unresolved 1, inside 6, outside 14, unbanded 2
+  MATCH-23: inside 33, unresolved 2, outside 3
+  MATCH-29: insufficient 6, inside 13, outside 6
+  curve 1.69 (-35 1.0, -30 1.2, -25 3.5, -20 7.1, -15 8.7, -10 13.7, -5 7.0, 0 0.7, 5 3.7, 10 5.1, 15 7.2, 20 5.5, 25 5.2, 30 2.8, 35 1.8, 40 3.0); points possession 1.214, press 1.697, counter 1.401, balanced 1.176
+* 30:boxShots                      7.911 [7.827, 7.995] outside                 → 7.614 [7.530, 7.698] inside
+* 23:shotsFar                      9.509 [9.272, 9.747] inside                  → 10.040 [9.795, 10.285] unresolved
+* 23:setPieceGoals                 20.657 [19.700, 21.614] unresolved           → 21.210 [20.233, 22.187] inside
+* 23:penaltyGoals                  6.058 [5.487, 6.629] unresolved              → 5.149 [4.608, 5.689] outside
+* 23:goalsMF                       28.548 [27.385, 29.710] inside               → 27.469 [26.349, 28.590] unresolved
+* 29:draws:possession-press        0.280 [0.255, 0.305] insufficient            → 0.255 [0.230, 0.280] inside
+* 29:draws:possession-counter      0.276 [0.251, 0.301] insufficient            → 0.269 [0.244, 0.294] inside
+* 29:winShareGap:possession-press  -0.050 [-0.098, -0.002] inside               → -0.158 [-0.206, -0.111] insufficient
+* 29:winShareGap:press-counter     -0.011 [-0.059, 0.037] inside                → 0.192 [0.145, 0.240] outside
+* 29:winShareGap:press-balanced    0.086 [0.038, 0.134] insufficient            → 0.294 [0.249, 0.339] outside
+* 29:atLeast:counter-press         0.011 [-0.037, 0.059] insufficient           → -0.192 [-0.240, -0.145] outside
+* 29:points:possession             -0.076 [-0.118, -0.035] inside               → -0.158 [-0.200, -0.117] insufficient
+* 29:points:press                  0.062 [0.020, 0.104] inside                  → 0.325 [0.284, 0.366] outside
+* 29:points:counter                0.113 [0.071, 0.155] insufficient            → 0.029 [-0.012, 0.071] inside
+* 29:points:balanced               -0.098 [-0.140, -0.057] inside               → -0.196 [-0.237, -0.155] outside
+* 29:ordering:highRegains          0.420 [0.276, 0.564] insufficient            → 1.224 [1.075, 1.372] inside
