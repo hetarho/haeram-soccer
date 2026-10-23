@@ -153,9 +153,10 @@ export const DECISION_CONFIG = {
      * A through ball into the runner's path (T324, →MATCH-16, `throughPoint`): `lead` metres ahead
      * of him, never deeper than `depth`, when the line leaves `space` metres behind it; `score` is
      * the pull of a runner in behind in the pass choice, in place of `pass.through`, since such a
-     * ball now really puts him through.
+     * ball now really puts him through. T397: `score` 0.4 → 2, with `past.through` halving it for
+     * a man already past the line: completed through balls 0.46 → 0.67 a team (MATCH-30 0.60–0.85).
      */
-    through: { lead: 5, depth: 88, score: 0.4, space: 12 },
+    through: { lead: 5, depth: 88, score: 2, space: 12 },
     /**
      * Press's shot weight in the opponents' half just after a regain, in place of
      * `tactic.press.shotAfterRegain` (T324): its pressing already wins the ball closer to goal.
@@ -179,6 +180,33 @@ export const DECISION_CONFIG = {
      * fewer box shots and key passes, the same goals.
      */
     shotQuality: { ref: 0.3, power: 0.5, most: 1 },
+    /**
+     * A receiver standing past the opponents' offside line as the pass is played (T397, →MATCH-16,
+     * MATCH-18): his option's prior is multiplied by `prior` and his through-ball pull by `through`.
+     * A runner still level or behind keeps the full pull, so a ball in behind goes to a timed run.
+     * Neutral at 1 and 1; T397 keeps the prior and halves the pull (taking it away entirely sent
+     * long shots out of MATCH-23 and handed press's high line a free hand).
+     */
+    past: { prior: 1, through: 0.5 },
+    /**
+     * The share of a cut-back zone's crosses played back as cut-backs, in place of `cutBackShare`
+     * (T397: 0.1 → 0.5; cut-backs 0.17 → 0.23 a team, still short of MATCH-30's 0.35–0.60).
+     */
+    cutBackShare: 0.5,
+    /**
+     * A receiver's first decision on the ball (T397, →MATCH-16): facing play with pressure below
+     * `pressure`, below the box band, his carry weight is multiplied by `carry`: he takes the
+     * ball forward in his stride. Neutral at 1; T397 keeps 6 (progressive carries 40.8 → 46).
+     */
+    firstTouch: { carry: 6, pressure: 1 },
+    /** The weight of a pass's expected-threat gain in the pass choice (T397). Neutral at 1. */
+    gain: 1,
+    /**
+     * A carry from outside the box that would end in it scores this much less (T397, →MATCH-16,
+     * in the heading choice's xT points): defenders close the box's edge, so a carrier there more
+     * often runs across it than into it. Neutral at 0.
+     */
+    boxCarry: 0,
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -272,13 +300,14 @@ export function actionMix(
         : C.holdUp.base,
     clearance: cell.clearance,
   };
+  const candidate = s.setup.model !== undefined;
   if (inCutBack) {
-    mix.cutBack = C.cutBackShare * mix.cross;
-    mix.cross *= 1 - C.cutBackShare;
+    const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
+    mix.cutBack = share * mix.cross;
+    mix.cross *= 1 - share;
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
-  const candidate = s.setup.model !== undefined;
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
@@ -371,6 +400,17 @@ export function actionMix(
   // An overlap still arriving: unpressured, he holds the ball for it.
   if (tags.pressure < 1 && s.players[side].some((gp) => combination(s, gp, idx, c) === 'waiting'))
     mix.carry *= C.combination.wait;
+  // His first touch on the ball, facing play with room (candidate model, T397).
+  const F = C.candidate.firstTouch;
+  if (
+    candidate &&
+    s.received?.[0] === side &&
+    s.received[1] === idx &&
+    tags.orientation === 'facing' &&
+    tags.pressure < F.pressure &&
+    tags.band < 6
+  )
+    mix.carry *= F.carry;
   // His head on shots.
   const decisions = skill(s, side, idx, 'decisions');
   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
@@ -495,8 +535,13 @@ export function passOptions(
   // `upTo` m up the pitch (T336).
   const rule = settledOf(s, side);
   const settled = rule && c[0] <= rule.upTo ? rule : undefined;
+  const candidate = s.setup.model !== undefined;
+  const past = DECISION_CONFIG.candidate.past;
   return candidates.map(({ gp, p, dist, dir }) => {
-    const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100;
+    const gain =
+      (CELL_BASELINES[cellOf(p)]!.xT - xt0) *
+      100 *
+      (candidate ? DECISION_CONFIG.candidate.gain : 1);
     let nearest = Infinity,
       risk = 0;
     const dx = p[0] - c[0],
@@ -518,10 +563,13 @@ export function passOptions(
     }
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
+    // A man already past the offside line as the ball is played (candidate model, T397).
+    const beyondLine = candidate && p[0] > offside;
     const through =
       behindRun || p[0] > offside
-        ? (s.setup.model !== undefined ? DECISION_CONFIG.candidate.through.score : P.through) *
-          actionWeight(slotOf(s, gp).role, gp.player.traits, 'key')
+        ? (candidate ? DECISION_CONFIG.candidate.through.score : P.through) *
+          actionWeight(slotOf(s, gp).role, gp.player.traits, 'key') *
+          (beyondLine ? past.through : 1)
         : 0;
     const combo = combination(s, gp, idx, c);
     const kind: PassOption['kind'] =
@@ -548,6 +596,7 @@ export function passOptions(
     let prior = (baseline[dir] * Math.sqrt(profile[dir] / OVERALL_PROFILE[dir])) / count[dir];
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
+    if (beyondLine) prior *= past.prior;
     const lineBreaking =
       (dfDeep !== undefined && c[0] <= dfDeep && p[0] > dfDeep) ||
       (mfDeep !== undefined && c[0] <= mfDeep && p[0] > mfDeep);
@@ -670,8 +719,14 @@ export function chooseCarry(
       clamp(c[1] + length * sin(a), K.margin, PITCH.width - K.margin),
     ];
   });
+  // Into the box from outside it (candidate model, T397).
+  const boxCarry =
+    s.setup.model !== undefined && !inBox(c) ? DECISION_CONFIG.candidate.boxCarry : 0;
   const scores = ends.map(
-    (p) => (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 - K.pressure * pressureAt(s, side, p),
+    (p) =>
+      (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 -
+      K.pressure * pressureAt(s, side, p) -
+      (boxCarry && inBox(p) ? boxCarry : 0),
   );
   const tau = temperature(s, side, idx, tags);
   let top = -Infinity;

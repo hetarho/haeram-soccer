@@ -126,26 +126,26 @@ const beyond = (line: number | undefined, from: Point, to: Point) =>
  * How MATCH-13 classifies a pass of `side` from `from` to `to` (its attack frame) with the players
  * where they stand when it is played: a cut-back by its cells; otherwise a through ball when it is
  * played from at or behind the deepest outfield opponent into the space beyond him (MATCH-15's
- * "in behind"); a line-breaking pass when it is played from at or behind the deepest player of an
- * opponent line (defenders or midfielders) to beyond him. A cross stays a cross. Read by the
- * candidate model's tally only; the pre-feature tally keeps the decision's labels.
+ * "in behind") for a receiver who is not beyond him yet (`receiverAt`, T397: a ball to a man
+ * already standing past the line is a pass to his feet, not a ball into the space in behind); a
+ * line-breaking pass when it is played from at or behind the deepest player of an opponent line
+ * (defenders or midfielders) to beyond him. A cross stays a cross. Read by the candidate model's
+ * tally only; the pre-feature tally keeps the decision's labels.
  */
 function classifyPass(
   s: GridState,
   side: 0 | 1,
-  e: { from: Point; to: Point; kind: string },
+  e: { from: Point; to: Point; kind: string; receiverAt?: Point },
 ): { cutBack: boolean; through: boolean; lineBreaking: boolean } {
   const foe = side === 0 ? 1 : 0;
   const cross = e.kind === 'cross';
   const cutBack = isCutBack(cellOf(e.from), cellOf(e.to));
+  const last = deepest(s, foe, side, () => true);
   const through =
     !cross &&
     !cutBack &&
-    beyond(
-      deepest(s, foe, side, () => true),
-      e.from,
-      e.to,
-    );
+    beyond(last, e.from, e.to) &&
+    (e.receiverAt === undefined || e.receiverAt[0] <= last!);
   const lineBreaking = BROKEN_LINES.some((line) =>
     beyond(
       deepest(s, foe, side, (l) => l === line),
@@ -467,9 +467,9 @@ export class Tally {
 
   /**
    * A pass, cross or cut-back by `idx`. Points are in the passer's attack frame: the pass starts at
-   * `from` and is played to `to`; `ok` when a teammate got it. The candidate model classifies it
-   * by MATCH-13's rules where the players stand (`classifyPass`); the pre-feature model keeps the
-   * decision's kind and line-breaking flag.
+   * `from` and is played to `to`, for a receiver standing at `receiverAt` when it is played; `ok`
+   * when a teammate got it. The candidate model classifies it by MATCH-13's rules where the players
+   * stand (`classifyPass`); the pre-feature model keeps the decision's kind and line-breaking flag.
    */
   passEvent(
     side: 0 | 1,
@@ -477,6 +477,7 @@ export class Tally {
     e: {
       from: Point;
       to: Point;
+      receiverAt?: Point;
       ok: boolean;
       kind: 'short' | 'long' | 'switch' | 'through' | 'cross' | 'cutBack';
       lineBreaking?: boolean;
@@ -507,7 +508,7 @@ export class Tally {
     const target =
       res.target === undefined ? undefined : this.matchState().players[side][res.target];
     const to = target ? attackFrame(side, target.pos) : from;
-    this.counted(side, idx, { from, to, ok, kind: 'short' });
+    this.counted(side, idx, { from, to, receiverAt: to, ok, kind: 'short' });
   }
 
   private matchState(): GridState {
@@ -522,6 +523,7 @@ export class Tally {
     e: {
       from: Point;
       to: Point;
+      receiverAt?: Point;
       ok: boolean;
       kind: 'short' | 'long' | 'switch' | 'through' | 'cross' | 'cutBack';
       lineBreaking?: boolean;

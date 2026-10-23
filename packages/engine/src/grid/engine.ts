@@ -170,6 +170,7 @@ export function playGrid(setup: GridSetup): GridResult {
     s.owner = [side, idx];
     s.possession = side;
     s.ball = [where[0], where[1]];
+    s.received = candidate && passer !== undefined ? [side, idx] : undefined;
   }
 
   function endOfPlay(side: 0 | 1, o: ShotOutcome): [number, number] {
@@ -479,6 +480,8 @@ export function playGrid(setup: GridSetup): GridResult {
     idx: number,
     d: Decision,
   ): { key: ActionKey; outcome: Outcome | 'offside' } {
+    // His first touch has been decided (T397).
+    s.received = undefined;
     const tags = computeTags(s, side, idx);
     switch (d.action) {
       case 'pass': {
@@ -509,6 +512,7 @@ export function playGrid(setup: GridSetup): GridResult {
           tally.passEvent(side, idx, {
             from: attackFrame(side, s.players[side][idx]!.pos),
             to: attackFrame(side, spot),
+            receiverAt: attackFrame(side, spot),
             ok: false,
             kind: d.kind === 'through' ? 'through' : 'short',
           });
@@ -516,6 +520,8 @@ export function playGrid(setup: GridSetup): GridResult {
           return { key: d.kind ?? 'short', outcome: 'offside' };
         }
         const from = attackFrame(side, s.players[side][idx]!.pos);
+        // Where the receiver stands as the ball is played: in behind or not (MATCH-13, T397).
+        const receiverAt = attackFrame(side, s.players[side][d.target]!.pos);
         // On the candidate model a through ball goes into the runner's path (T324).
         const lead =
           candidate && d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
@@ -535,6 +541,7 @@ export function playGrid(setup: GridSetup): GridResult {
         tally.passEvent(side, idx, {
           from,
           to,
+          receiverAt,
           ok: o.kind === 'complete',
           kind: d.kind ?? 'short',
           lineBreaking: d.lineBreaking,
@@ -557,7 +564,13 @@ export function playGrid(setup: GridSetup): GridResult {
         const from = attackFrame(side, s.players[side][idx]!.pos);
         const to = attackFrame(side, s.players[side][d.target]!.pos);
         const o = resolveCutBack(s, side, idx, d.target, r);
-        tally.passEvent(side, idx, { from, to, ok: o.kind === 'complete', kind: 'cutBack' });
+        tally.passEvent(side, idx, {
+          from,
+          to,
+          receiverAt: to,
+          ok: o.kind === 'complete',
+          kind: 'cutBack',
+        });
         if (candidate && o.kind !== 'complete') losePass(s, side, idx, d.target);
         apply(side, idx, o);
         if (o.kind === 'complete') {

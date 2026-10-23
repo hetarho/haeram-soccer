@@ -637,6 +637,92 @@ describe('grid decisions', () => {
     expect(factor(centre(5, 2))).toBeCloseTo(1, 12);
   });
 
+  /** Runs `body` with candidate settings set as given, then puts them back. */
+  const withCandidate = <T>(set: Record<string, unknown>, body: () => T): T => {
+    const C = DECISION_CONFIG.candidate as Record<string, unknown>;
+    const kept = Object.fromEntries(Object.keys(set).map((k) => [k, C[k]]));
+    Object.assign(C, set);
+    try {
+      return body();
+    } finally {
+      Object.assign(C, kept);
+    }
+  };
+
+  it('pulls a through ball to a runner still level with the line more than to a man past it, on the candidate model only (T397)', () => {
+    const at = centre(4, 2);
+    // A runner in behind at `x`, the opponents' outfield line at 80 m, their keeper behind it.
+    const pull = (x: number, candidate: boolean, past: { prior: number; through: number }) =>
+      withCandidate({ past }, () => {
+        const sc = scene(CM, at);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        for (const gp of sc.s.players[1].slice(1, 11)) gp.pos = [80, gp.pos[1]];
+        place(sc.s, ST, [x, 34]);
+        sc.s.players[0][ST]!.run = { kind: 'behind', until: 610, target: [90, 34] };
+        return passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!;
+      });
+    const off = { prior: 1, through: 1 };
+    const on = { prior: 0.5, through: 0.25 };
+    // Level with the line: the full pull either way. Past it: the pull and the prior scaled.
+    expect(pull(79, true, on).score).toBeCloseTo(pull(79, true, off).score, 12);
+    const beyond = pull(84, true, on),
+      neutral = pull(84, true, off);
+    expect(beyond.prior / neutral.prior).toBeCloseTo(0.5, 12);
+    expect(beyond.score).toBeLessThan(neutral.score);
+    // The pre-feature model ignores the setting.
+    expect(pull(84, false, on).score).toBeCloseTo(pull(84, false, off).score, 12);
+  });
+
+  it("weighs a receiver's first touch, a cut-back and a carry into the box on the candidate model only (T397)", () => {
+    // First touch: facing play, unpressured, below the box band.
+    const firstTouch = (candidate: boolean, carry: number, received: boolean) =>
+      withCandidate({ firstTouch: { carry, pressure: 1 } }, () => {
+        const sc = scene(CM, centre(3, 2));
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (received) sc.s.received = [0, CM];
+        const tags = { ...sc.tags(), orientation: 'facing' as const, pressure: 0 };
+        const mix = actionMix(sc.s, 0, CM, tags);
+        return mix.carry / mix.pass;
+      });
+    expect(firstTouch(true, 3, true) / firstTouch(true, 1, true)).toBeCloseTo(3, 9);
+    expect(firstTouch(true, 3, false)).toBeCloseTo(firstTouch(true, 1, false), 12);
+    expect(firstTouch(false, 3, true)).toBeCloseTo(firstTouch(false, 1, true), 12);
+    // Cut-back share: of a cut-back zone's crosses, the candidate's share is played back.
+    const cutBack = (candidate: boolean, share: number) =>
+      withCandidate({ cutBackShare: share }, () => {
+        const sc = scene(ST, centre(7, 1));
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        const mix = actionMix(sc.s, 0, ST, sc.tags());
+        return mix.cutBack / (mix.cutBack + mix.cross);
+      });
+    expect(cutBack(true, 0.5)).toBeCloseTo(0.5, 12);
+    expect(cutBack(false, 0.5)).toBeCloseTo(DECISION_CONFIG.cutBackShare, 12);
+    // A carry from in front of the box ends in it less often with the penalty.
+    const intoBox = (penalty: number) =>
+      withCandidate({ boxCarry: penalty }, () => {
+        const sc = scene(CM, [86, 34]);
+        sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        const r = random('t397-carry');
+        let n = 0;
+        for (let i = 0; i < 400; i++) {
+          const end = chooseCarry(sc.s, 0, CM, sc.tags(), r);
+          if (end[0] >= 105 - 16.5 && Math.abs(end[1] - 34) <= 20.16) n++;
+        }
+        return n;
+      });
+    expect(intoBox(20)).toBeLessThan(intoBox(0));
+    // The weight of a pass's xT gain in the pass choice: the score is linear in it.
+    const forward = (gain: number) =>
+      withCandidate({ gain }, () => {
+        const sc = scene(CM, centre(4, 2));
+        sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        place(sc.s, ST, [85, 34]);
+        return passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!.score;
+      });
+    expect(forward(1) - forward(0.5)).toBeCloseTo((forward(1) - forward(0)) / 2, 9);
+    expect(forward(1)).toBeGreaterThan(forward(0));
+  });
+
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
     const share = (tactic: Tactic) => {
       const kit = gridKit([tactic, 'balanced']);

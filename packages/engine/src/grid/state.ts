@@ -56,6 +56,11 @@ export interface GridState {
   lastLoss?: { side: 0 | 1; at: number };
   /** The last completed pass, in the receiving side's attack frame; tags read the carrier's orientation from it. */
   lastPass?: { dx: number; dy: number };
+  /**
+   * The candidate model's receiver of the last completed pass until his first action on the ball
+   * (T397): his first touch is a decision of its own (`DECISION_CONFIG.candidate.firstTouch`).
+   */
+  received?: [0 | 1, number];
   /** Match seconds when the possessing side got the ball. */
   possessionSince: number;
   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */

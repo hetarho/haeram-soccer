@@ -69,14 +69,14 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * IDs come from scanning `knockout-<year>-<i>` (e3aa9b9; rescanned for T345's score state, for
  * T348's set-piece defence, for T365's side share and possession runs, for T370's shot
  * selection and build-up interceptions, for T371's restarts, finishers and balanced block and for
- * T384's offside calls by 판단력, the first tie of each kind; T345's were 20/4, 1/16 and 9/5,
- * T348's 7/10, 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6,
- * 1/17 and 0/19).
+ * T384's offside calls by 판단력 and for T397's balls in behind, first touches and cut-backs, the
+ * first tie of each kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10, 16/3 and 9/0, T365's 2/8,
+ * 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19, T384's 1/11, 7/9 and 3/1).
  */
 const CASES = {
-  1975: { extraTime: 1, shootout: 11 },
-  1995: { extraTime: 7, shootout: 9 },
-  2024: { extraTime: 3, shootout: 1 },
+  1975: { extraTime: 0, shootout: 1 },
+  1995: { extraTime: 1, shootout: 2 },
+  2024: { extraTime: 34, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -127,32 +127,39 @@ interface CandidateDigests {
  * (rescanned above); before it, facts 1975 d94909a5e2968fb3, da8ff901efefcc32, a1cff84512b4cd7b,
  * 1995 3a31b1fadb9e7a01, 2eba922a8dff6947, 28bc42a896a91f3c, 2024 db7907011305159d,
  * fe8c16da21657962, d93a980c191fc42f and positions 1975 8600f8623ec02642, 5bc0b036f3450842, 1995
- * 55b4032f3aca4a34, b780d682e3740b36, 2024 c656af098ce0f8b3, ddea4368a42f04bf.
+ * 55b4032f3aca4a34, b780d682e3740b36, 2024 c656af098ce0f8b3, ddea4368a42f04bf. T397 counts a
+ * through ball only for a receiver not yet past the line (MATCH-13) and keeps a stronger pull of a
+ * ball in behind, a forward first touch and more cut-backs, which moved every value and the
+ * knockout ties (rescanned above); the count alone moved only facts. Before T397, facts 1975
+ * 64ad8ad25c48a52e, 77cae93d84b47c88, 2c0cd4086c51f65e, 1995 7935aef6035aab63, d0ee029421443620,
+ * 5114bbcce2d2d120, 2024 26b91d689fd91742, caf9c91e4836f057, 1782d8fba2b2f9e1 and positions 1975
+ * f89f18426227fad7, c5d30a3e151789e6, 1995 6a2a429bc3cc3a57, 6c27813b5d3a6c1b, 2024
+ * c1db18f2b9e940e1, 3b6897b9d0105c29.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '64ad8ad25c48a52e',
-      extraTime: '77cae93d84b47c88',
-      shootout: '2c0cd4086c51f65e',
+      league: '77922360f27a59b4',
+      extraTime: '65d95de592b7f768',
+      shootout: 'a62874c80b1f5ffb',
     },
-    positions: { observed: 'f89f18426227fad7', shootout: 'c5d30a3e151789e6' },
+    positions: { observed: 'fc8d1b66ff7b5740', shootout: '397d33c5de64493c' },
   },
   1995: {
     facts: {
-      league: '7935aef6035aab63',
-      extraTime: 'd0ee029421443620',
-      shootout: '5114bbcce2d2d120',
+      league: '4d4b14aec66e4bbe',
+      extraTime: '154eab38d6802ddc',
+      shootout: 'bb480703c224e4f4',
     },
-    positions: { observed: '6a2a429bc3cc3a57', shootout: '6c27813b5d3a6c1b' },
+    positions: { observed: 'c5e8589ea6648cc8', shootout: '8a83f7b4ae156ff4' },
   },
   2024: {
     facts: {
-      league: '26b91d689fd91742',
-      extraTime: 'caf9c91e4836f057',
-      shootout: '1782d8fba2b2f9e1',
+      league: 'c8c6d976c6ac856d',
+      extraTime: '2a73e0f73d8d166e',
+      shootout: '02ca3d882eee3a48',
     },
-    positions: { observed: 'c1db18f2b9e940e1', shootout: '3b6897b9d0105c29' },
+    positions: { observed: 'cd4e3d64a4838ca2', shootout: '8a3e5ad1de8591d2' },
   },
 };
 
