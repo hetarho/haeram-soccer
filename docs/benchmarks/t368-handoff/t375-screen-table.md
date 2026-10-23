@@ -17,6 +17,7 @@ pairing resolves few rows, so its count is read beside press's points and gaps.
 | l08b | grow 0.4, look 0.08, late pull 1.5 |
 | h30 / h40 / h50 | `coordination.highLine.room` 30 / 40 / 50 (runs in behind start from any band against a line leaving that much room) |
 | c40 | l08b and `highLine.room` 40 |
+| c40p3 | c40 with late pull 3 |
 
 | setting | core | MATCH-30 | MATCH-29 | offsides | goals | shots | goal-area % | outside % | distance m | MF goals % | FW goals % | through balls | completed | box entries | xT | press's points | gap possession v press | gap press v counter | gap press v balanced | curve |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -37,6 +38,7 @@ pairing resolves few rows, so its count is read beside press's points and gaps.
 | h40 | 29/38 | 7/23 | 3/25 | 1.71 [1.60, 1.82] | 2.46 [2.34, 2.58]✗ | 12.5 [12.3, 12.7] | 7.5 [7.1, 8.0] | 41.0 [40.1, 41.8] | 17.78 [17.63, 17.93] | 24.3 [22.0, 26.5]✗ | 66.2 [63.7, 68.7]✗ | 8.23 [7.96, 8.49]✗ | 5.30 [5.12, 5.48]✗ | 23.5 [23.2, 23.9]✗ | 4.16 [4.11, 4.21]✗ | 0.301 [0.173, 0.428]✗ | -0.150 [-0.289, -0.011]~ | 0.217 [0.067, 0.366]~ | 0.242 [0.098, 0.385]~ | 4.42 |
 | h50 | 29/38 | 7/23 | 4/25 | 1.67 [1.57, 1.78] | 2.48 [2.36, 2.60]✗ | 12.5 [12.3, 12.8] | 7.6 [7.1, 8.0] | 41.1 [40.2, 41.9] | 17.79 [17.64, 17.94] | 24.6 [22.3, 26.9]✗ | 65.9 [63.4, 68.4]✗ | 8.15 [7.89, 8.41]✗ | 5.25 [5.07, 5.42]✗ | 23.4 [23.1, 23.8]✗ | 4.14 [4.09, 4.19]✗ | 0.463 [0.338, 0.588]✗ | -0.225 [-0.369, -0.081]~ | 0.275 [0.127, 0.423]✗ | 0.425 [0.295, 0.555]✗ | 5.25 |
 | c40 | 29/38 | 5/23 | 4/25 | 1.75 [1.64, 1.86] | 2.84 [2.71, 2.97]~ | 13.0 [12.8, 13.2] | 7.4 [7.0, 7.9] | 40.0 [39.1, 40.8] | 17.50 [17.35, 17.64] | 24.2 [22.1, 26.3]✗ | 66.8 [64.4, 69.2]✗ | 11.92 [11.48, 12.36]✗ | 8.09 [7.80, 8.39]✗ | 24.2 [23.9, 24.6]✗ | 4.27 [4.22, 4.32]✗ | 0.265 [0.134, 0.396]~ | -0.067 [-0.220, 0.087]~ | 0.242 [0.095, 0.388]~ | 0.233 [0.088, 0.379]~ | 2.38 |
+| c40p3 | 28/38 | 5/23 | 4/25 | 1.80 [1.69, 1.91] | 2.63 [2.50, 2.75]~ | 13.0 [12.7, 13.2] | 7.3 [6.9, 7.7] | 41.5 [40.7, 42.4]~ | 17.72 [17.57, 17.86] | 28.0 [25.6, 30.4]~ | 62.5 [59.9, 65.1]~ | 11.99 [11.54, 12.44]✗ | 8.16 [7.84, 8.47]✗ | 24.1 [23.8, 24.4]✗ | 4.26 [4.21, 4.31]✗ | 0.351 [0.219, 0.482]✗ | -0.242 [-0.389, -0.095]~ | 0.250 [0.102, 0.398]~ | 0.208 [0.055, 0.362]~ | 4.60 |
 
 ## the held line's cost
 
@@ -70,3 +72,8 @@ The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to
   band. But MF goals stay 24.2% (outside) and MATCH-30 falls 7 → 5. Next: c40 with late pull 3
   (b30's MF goals) and room 35/45 around 40, then validate the best on two fresh rounds against T373's
   football, or take the exit.
+- c40p3 (late pull 3) brings MF goals back to 28.0% (unresolved) and goals 2.63, but press's points
+  return outside (0.351) and the curve rises to 4.60: the late runs that score for the midfielders
+  also feed press. With 2¾ h of the timebox left, room 35/45 is not screened (room alone was not
+  monotonic, so a 5 m step would sit inside the noise) and c40 goes to validation on fresh rounds 49
+  and 50 against T373's football, each 21,600 matches (`--per 600 --core 2400 --gap 600`).
