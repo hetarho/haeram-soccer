@@ -4,14 +4,17 @@ import { Host } from './host';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
 import {
+  advanceDays,
   captureCupTitle,
   createWorld,
   currentDay,
   domesticCupName,
   managerCandidates,
   operate,
+  ROUND_INTERVAL_DAYS,
   simulateSeason,
 } from '../../../../packages/engine/src/index';
+import { encode } from '../adapters/persistence';
 import { headToHead } from './headToHead';
 import {
   cachedWorld,
@@ -228,6 +231,55 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
     expect(legacy).toHaveLength(
       w.events.filter((e) => e.kind === 'manager-hire' || e.kind === 'manager-departure').length,
     );
+  });
+
+  it('keeps an appointment in the week tracking began a tenure, never an older event too', async () => {
+    // A career saved before manager history, its manager replaced in round 3, then loaded by the
+    // writer on a day between league rounds.
+    const source = withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
+    source.cash = '999999999999';
+    operate(source, {
+      type: 'hire',
+      id: managerCandidates(source).find((c) => c.source !== 'club')!.id,
+    });
+    advanceDays(source, ROUND_INTERVAL_DAYS + 1);
+    expect(source.round).toBe(4);
+    expect(currentDay(source) % ROUND_INTERVAL_DAYS).not.toBe(0);
+    const h = new Host();
+    const loaded = await h.handle(
+      req('load', -1, {
+        type: 'inspect',
+        raw: await encode(source),
+        activate: true,
+        upgrade: true,
+      }),
+    );
+    expect(loaded.upgraded, loaded.error).toBe(true);
+    const w = h.world!,
+      logged = w.events.length;
+    expect(w.managerHistory!.trackedFrom).toMatchObject({ year: w.year, day: currentDay(source) });
+    // Replaced again the same week, after the load: an event of the round tracking began in.
+    const hired = managerCandidates(w).find((c) => c.source !== 'club')!;
+    operate(w, { type: 'hire', id: hired.id });
+    expect(w.events.slice(logged).some((e) => e.kind === 'manager-hire' && e.round === 4)).toBe(
+      true,
+    );
+    const rows = (await pages(h)).flatMap((page) => page.rows);
+    expect(rows.flatMap((row) => (row.kind === 'tenure' ? [row.manager.id] : []))).toEqual([
+      hired.id,
+      source.manager.id,
+    ]);
+    // Older rows are exactly the personnel events of the rounds over before the load.
+    const older = w.events.flatMap((e, index) =>
+      (e.kind === 'manager-hire' || e.kind === 'manager-departure') &&
+      (e.year < w.year || e.round < 4)
+        ? [index]
+        : [],
+    );
+    expect(older.length).toBeGreaterThan(0);
+    expect(
+      rows.flatMap((row) => (row.kind === 'legacy-event' ? [row.event.order] : [])).reverse(),
+    ).toEqual(older);
   });
 
   it('answers between queued simulation steps without revisions, receipts or a projection', async () => {

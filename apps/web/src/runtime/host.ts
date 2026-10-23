@@ -34,7 +34,6 @@ import {
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import { managerHistoryPage } from '../../../../packages/engine/src/manager-achievements';
-import { managerHistoryDateKey } from '../../../../packages/contracts/src/manager-history';
 import type {
   ManagerHistorySeason,
   ManagerHistorySource,
@@ -100,7 +99,8 @@ function provisionalPlace(w: World) {
  * the canonical facts; every retained own match at its fixture day in settlement order; one
  * snapshot per closed season (its final table, its cup winners and a promotion, the division it
  * led to being the next season's) and this season's decided cups and provisional place; and the
- * readable personnel events from before tracking began, keyed by their place in the event log.
+ * readable personnel events of the league rounds over before tracking began, keyed by their place
+ * in the event log.
  * Nothing is parsed from a name or kept: every read builds the sources again.
  */
 function managerHistorySource(w: World): ManagerHistorySource {
@@ -172,7 +172,15 @@ function managerHistorySource(w: World): ManagerHistorySource {
     });
   }
   // Events from the tracked period are the tenures' own story; only older ones stay readable rows.
-  const tracked = facts && managerHistoryDateKey(facts.trackedFrom);
+  // An event carries the league round its day falls in (round r covers days 7r to 7r + 6, the
+  // round's own day included), not its day, so only a round over before the tracking day is wholly
+  // older. The round tracking began in may hold changes on either side of it, so its events are
+  // left to the tenures (the 감독들이 남긴 계절 panel still shows every event as written).
+  const tracked = facts?.trackedFrom;
+  const older = (event: { year: number; round: number }) =>
+    !tracked ||
+    event.year < tracked.year ||
+    (event.year === tracked.year && event.round < Math.floor(tracked.day / ROUND_INTERVAL_DAYS));
   return {
     ...(facts ? { facts } : {}),
     club: own.id,
@@ -191,10 +199,7 @@ function managerHistorySource(w: World): ManagerHistorySource {
     })),
     seasons,
     personnelEvents: w.events.flatMap((event, index) =>
-      (event.kind === 'manager-hire' || event.kind === 'manager-departure') &&
-      (tracked === undefined ||
-        managerHistoryDateKey({ year: event.year, day: event.round * ROUND_INTERVAL_DAYS }) <
-          tracked)
+      (event.kind === 'manager-hire' || event.kind === 'manager-departure') && older(event)
         ? [
             {
               id: `event:${index}`,
