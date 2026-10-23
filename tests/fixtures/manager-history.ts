@@ -449,6 +449,10 @@ export async function managerActivationCareer(): Promise<ManagerActivationCareer
     level: 'easy',
   });
   w.cash = '999999999999';
+  // Every business decision delegated, so the seeded seasons leave no owner answer pending.
+  const responsibilities = w.settings!.responsibilities;
+  for (const key of Object.keys(responsibilities) as (keyof typeof responsibilities)[])
+    responsibilities[key] = 'delegated';
   for (let round = 0; round < 20; round++) advanceRound(w, undefined, false);
   hire(w, freeManager(w)?.id);
   simulateSeason(w);

@@ -270,10 +270,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 | todo |
-| T402 | Activate the full model prospectively in the worker behind the release switch | MATCH HIST WEB SAVE KIT ARCH | T281 T282 T283 T348 T349 T350 | todo |
-| T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T402 | todo |
-| T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
-| T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T399 | Hold counter against press and balanced's flank defence on the grid | MATCH STAFF ARCH | T398 | doing@261024.t5q2 |
 | T400 | Couple the aggregate to the score state and recalibrate it to the final grid | MATCH ARCH | T399 | todo |
 | T401 | Measure both references and MATCH-28 parity at the pilot size on the football T286 would release | MATCH ARCH | T384 T396 T397 T398 T399 T400 | todo |
@@ -296,6 +292,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T402 T306 T307 T308 done (work group history-activation, integrated by t5q2): prospective full-model activation behind the release switch, manager attribution, the bounded manager-history query and its journeys; the runner's integration failed on the new Chromium journeys, fixed on the merged tree (league season restore from the address, a delegated fixture) and passed 6/6 before the batch gate
 - 261024 T398 done (t5q2; explore, kept q1): box runs ×1.3, candidate shot scale 0.43; validation rounds 59+60: FW goals 61.5 → 57.4% inside, MF 33.6%, MATCH-23 33 → 36, MATCH-29 21 → 24, MATCH-30 10 → 9 (box shots unresolved), goals 2.88, curve 2.11, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
 - 261024 create-task T286 T307 T308 T402 base WEB@136→137 (t5q2): r137 extends WEB-91's image-built surfaces to sticker-club, which none of them cites; no content change
 - 261024 T397 done (t5q2; explore, kept v3): through balls counted only for a receiver not yet past the line (33.9 → 0.55); pull of a timed run 2 (half past the line), first-touch carry ×6, cut-back share 0.5, offside base 0.05; validation rounds 57+58: through balls completed inside, MATCH-30 9 → 10, MATCH-23 35 → 35, MATCH-29 23 → 24 (counter ≥ press inside), offsides 1.86, goals 2.82, curve 1.86, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
@@ -315,4 +312,3 @@
 - 261024 c9v3 hand-off: session closes for a fresh one; main CI green at 01b91f91, T384 pushed after its batch gate, nothing doing; next is T372
 - 261024 create-task MATCH r22 done (w6p4): T396–T401 (w6p4 numbered them T390–T395) from T372's follow-ups; T286 dep T396–T401 and base MATCH@22 WEB@135 (WEB r131–r135 change the office, calendar lock, round labels and themes, none of T286's cited WEB decisions); T384 base MATCH@22 (no content change: offside is not MATCH-22)
 - 261024 update-ssot MATCH r22 done (w6p4): MATCH-22✎ aggregate may draw a match in at most six score-state segments; no doing task cites MATCH-22
-- 261024 T384 done (c9v3; explore, kept K): candidate offside chance 0.055 × e^(−(own 판단력 − 67)/15), linebreaker ×0.3, high line ×1.5, clamp 0.002–0.7; aggregate offsides by the same weight ×2 from 0.064 / 0.32 of failed final-third passes; pooled validation rounds 55+56: offsides 1.65 → 1.78 (inside), quarter ratio 1.96 → 3.7, aggregate 1.70 → 1.81, MATCH-23 35 → 34, MATCH-29 23 → 21 (mirror draws insufficient), MATCH-30 9 → 9, curve 1.75 → 1.75, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded

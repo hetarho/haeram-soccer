@@ -503,6 +503,9 @@ export const LiveSeason = memo(function LiveSeason({
     return p.get('view') === 'scorer-trend' || p.get('detail') === 'trend' ? 'trend' : 'scorers';
   });
   const [reviewYear, setReviewYear] = useState<number | undefined>(() => {
+    // Only the league page's own address names its season: a records-room season in the address
+    // after a reload is that page's, not a closed league season to open here.
+    if (!location.pathname.startsWith('/leagues')) return undefined;
     const saved = Number(new URLSearchParams(location.search).get('season'));
     return Number.isInteger(saved) && saved > 0 ? saved : undefined;
   });
