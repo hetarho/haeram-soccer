@@ -53,7 +53,7 @@ for (const width of [390, 1380])
     await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
     await observeCommands(page);
     await loadPausedGame(page);
-    const date = await page.getByTestId('calendar').innerText();
+    const date = await page.getByTestId('game-date').innerText();
     const sent = await commands(page);
     for (const theme of ['matchday-print', 'sticker-club']) {
       await openSettings(page);
@@ -101,13 +101,13 @@ for (const width of [390, 1380])
         .getByRole('button', { name: '클럽 홈', exact: true })
         .click();
       await expect(page.getByTestId('club-hub')).toBeVisible();
-      await expect(page.getByTestId('calendar')).toHaveText(date);
+      await expect(page.getByTestId('game-date')).toHaveText(date);
       expect(await commands(page)).toBe(sent);
     }
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'sticker-club');
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await expect(page.getByTestId('calendar')).toHaveText(date);
+    await expect(page.getByTestId('game-date')).toHaveText(date);
   });
 
 async function expectRegistryChoices(page: Page, fields: Field[] = ['locale', 'theme']) {
