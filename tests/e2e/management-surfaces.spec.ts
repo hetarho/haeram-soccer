@@ -47,6 +47,7 @@ for (const themeId of ['standard', 'pixel']) {
       await page.setViewportSize({ width, height: width === 360 ? 740 : 844 });
       await settle(page);
       const reports = office.getByRole('group', { name: '경기 전날 보고', exact: true });
+      await expect(reports.getByRole('button')).toHaveCount(2);
       const choices = await reports.getByRole('button').evaluateAll((buttons) =>
         buttons.map((button) => {
           const box = button.getBoundingClientRect(),

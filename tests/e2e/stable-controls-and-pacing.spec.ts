@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('surveys every management destination during uninterrupted calendar play', async ({
@@ -64,8 +65,10 @@ test('surveys every management destination during uninterrupted calendar play', 
   for (const name of ['운영 방침', '시설', '재정', '후원', '구단 디자인', '구단주 사무실']) {
     await page.getByRole('tab', { name, exact: true }).click();
     await continues();
-    if (name === '재정')
+    if (name === '재정') {
+      await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
       await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeDisabled();
+    }
     if (name === '구단주 사무실') {
       const office = page.getByTestId('owner-office');
       for (const button of await office.getByRole('button').all())
@@ -201,13 +204,16 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
     );
   for (const value of ['2×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
-    // A speed change keeps the presented minute: it never jumps back to kick-off or ahead.
+    // Account for play time spent handling the click, including at the fastest rate.
+    const beforeAt = await page.evaluate(() => performance.now());
     const before = await minuteNow();
     await speed.click();
     await expect(speed).toHaveAttribute('aria-checked', 'true');
     const after = await minuteNow();
+    const elapsed = await page.evaluate((from) => performance.now() - from, beforeAt);
+    const elapsedMinutes = Math.ceil((elapsed * parseInt(value, 10)) / WATCH_MINUTE_MS);
     expect(after).toBeGreaterThanOrEqual(before);
-    expect(after).toBeLessThanOrEqual(before + 2);
+    expect(after).toBeLessThanOrEqual(before + Math.max(2, elapsedMinutes));
   }
   // At 16x every minute lasts 250 ms, restarts and chances alike: 2 s cover about 8 minutes,
   // never a slowed set piece nor a skipped spell.

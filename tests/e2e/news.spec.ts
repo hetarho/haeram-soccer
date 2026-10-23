@@ -2,7 +2,7 @@ import { gameHud } from './layout';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
-import { chooseLevel } from './events';
+import { chooseLevel, configureResponsibilities } from './events';
 import { horizontalOverflow, settle } from './layout';
 
 const founding = (seed: string) => ({
@@ -84,6 +84,8 @@ test('celebrates in one lower line, with headlines collected in the clock news b
   // A first round can queue several celebrations, each shown for a few seconds.
   test.setTimeout(60000);
   await found(page);
+  // Stay at the earned result instead of spending the banner's lifetime restoring settings.
+  await configureResponsibilities(page, { mode: 'manual' });
   await expect(newsButton(page)).toHaveAttribute('aria-label', /^알림·뉴스/);
   await playRound(page);
   const banner = page.getByTestId('celebration');
