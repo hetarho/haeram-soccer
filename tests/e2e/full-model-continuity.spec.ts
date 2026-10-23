@@ -185,7 +185,8 @@ for (const viewport of VIEWPORTS)
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(nav(page).getByRole('button', { name: '리그', exact: true })).toBeVisible();
-    expect(await (await coverageLine(page)).innerText()).toBe(played);
+    // The records load after the page: wait for the line rather than read it at once.
+    await expect(await coverageLine(page)).toHaveText(played);
     const raw = await exportRaw(page);
     const file = await decode(raw);
     // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
@@ -222,7 +223,7 @@ for (const viewport of VIEWPORTS)
         });
       await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
       expect(canonical(await exportWorld(other))).toBe(canonical(saved));
-      expect(await (await coverageLine(other)).innerText()).toBe(played);
+      await expect(await coverageLine(other)).toHaveText(played);
     } finally {
       await elsewhere.close();
     }
