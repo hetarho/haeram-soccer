@@ -17,12 +17,12 @@ import { watchNext } from './watch';
  * delivery the defenders keep their set-piece jobs through, and the page is paused on those
  * recorded samples.
  */
-function career(): World {
+function career(seed: string): World {
   const w = createWorld({
     country: 'ENG',
     name: 'Set Piece Defence',
     color: '#224466',
-    seed: 'set-piece-defence',
+    seed,
     level: 'easy',
   });
   const settings = w.settings!;
@@ -53,8 +53,8 @@ const placed = (p: PlayerMotion | undefined) =>
  * walk-in to the delivery's recorded kick (T359): the preparation's samples, where the marker, his
  * man and the guard hold their restart places, the last of them at the kick, standing on them.
  */
-function recordedScene() {
-  const playback = advanceToNextMatch(career())!;
+function recordedScene(seed: string) {
+  const playback = advanceToNextMatch(career(seed))!;
   const { samples } = presentationSamples(playback.frames);
   // Each sample's recorded match second, in the same order.
   const elapsedOf = playback.frames.flatMap((f) =>
@@ -139,7 +139,19 @@ function recordedScene() {
         keeper: who(side, keeper.id),
       };
     }
-  throw new Error('no delivery the defenders hold in the reference match');
+  return undefined;
+}
+/**
+ * The first of a few seeded careers whose reference match has such a delivery: a football change
+ * can leave one match without it (after T370 and T371 the first seed's only one held its jobs
+ * through a single sample), and the scene, not the seed, is what this journey checks.
+ */
+function sceneCareer() {
+  for (const seed of ['set-piece-defence', 'set-piece-defence-2', 'set-piece-defence-3']) {
+    const scene = recordedScene(seed);
+    if (scene) return { scene, career: career(seed) };
+  }
+  throw new Error('no delivery the defenders hold in the reference matches');
 }
 
 for (const viewport of [
@@ -151,8 +163,8 @@ for (const viewport of [
     // candidate match reads only the portable math (T358), so every browser records the same match.
     test.slow();
     await page.setViewportSize(viewport);
-    const scene = recordedScene();
-    await importResponsibilityCareer(page, career());
+    const { scene, career } = sceneCareer();
+    await importResponsibilityCareer(page, career);
     await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
     await expect(canvas).toBeVisible();

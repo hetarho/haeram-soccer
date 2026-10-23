@@ -25,7 +25,12 @@ export async function dismissMatchReport(page: Page) {
 }
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
-  if (!(await page.getByTestId('owner-office').isVisible())) {
+  // The address changes at once, while a page left a moment ago may still show its office until
+  // the deferred view commits (a gate run read it there just after returning home).
+  const open =
+    new URL(page.url()).pathname === '/direction' &&
+    (await page.getByTestId('owner-office').isVisible());
+  if (!open) {
     await page
       .getByRole('navigation')
       .getByRole('button', { name: '구단 운영', exact: true })
