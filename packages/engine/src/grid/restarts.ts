@@ -87,9 +87,9 @@ export const RESTART_CONFIG = {
      * `highLine` behind a high line, then clamped to [`min`, `max`].
      */
     candidate: {
-      base: 0.04,
+      base: 0.0255,
       at: 60,
-      decisions: 30,
+      decisions: 20,
       linebreaker: 0.3,
       highLine: 1.6,
       min: 0.002,

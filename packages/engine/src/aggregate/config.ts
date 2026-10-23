@@ -86,10 +86,11 @@ export const AGGREGATE_CONFIG = {
   /**
    * How a failed pass ends: offside (into the final third), touchline, byline, interception.
    * T369: touch 0.42 → 0.39, since passes played wide of the box now fail toward the touchline
-   * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them).
+   * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them). T384: offside 0.06/0.3 →
+   * 0.0632/0.316, for MATCH r21's 1.7–1.9 a team (1.71 → 1.80 on calibration round 56's core).
    */
   failed: {
-    offside: { forward: 0.06, through: 0.3 },
+    offside: { forward: 0.0632, through: 0.316 },
     touch: 0.39,
     byline: 0.7,
     intercepted: 0.16,
@@ -324,7 +325,7 @@ export const AGGREGATE_ATTRIBUTION_CONFIG = {
    * T384 (→MATCH-18 r21): offsides fall on a receiver by his 판단력 read the other way round,
    * `(attributeScale / 판단력) ** offsideJudgement`, so the split by 판단력 quarter follows the grid's.
    */
-  offsideJudgement: 4,
+  offsideJudgement: 8,
   /** Tackles, interceptions and fouls by the band they happen in (the defending side's frame). */
   defend: {
     GK: [0.3, 0.05, 0, 0, 0, 0, 0, 0],

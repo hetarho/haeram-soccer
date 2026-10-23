@@ -45,11 +45,20 @@ const grid: Required<Offside> = {
   linebreaker: [0, 0],
   joint: {},
 };
+/** The core condition alone, MATCH-23's offsides row. */
+const core = { sides: 0, positions: 0, calls: 0 };
 for (const file of opt('grid')!.split(',')) {
-  const run = JSON.parse(readFileSync(file, 'utf8')) as { chunks: { offside?: Offside }[] };
+  const run = JSON.parse(readFileSync(file, 'utf8')) as {
+    chunks: { condition: string; offside?: Offside }[];
+  };
   for (const chunk of run.chunks) {
     const o = chunk.offside;
     if (!o) continue;
+    if (chunk.condition.startsWith('core:')) {
+      core.sides += o.sides;
+      core.positions += o.positions;
+      core.calls += o.calls;
+    }
     grid.sides += o.sides;
     grid.positions += o.positions;
     grid.calls += o.calls;
@@ -100,6 +109,9 @@ function ratio(h: Hist, label: string) {
 }
 console.log(
   `grid: ${grid.sides / 2} matches (core + pairings); receptions from an offside position ${f(grid.positions / grid.sides, 2)} a team, calls ${f(grid.calls / grid.sides)} a team, ${f((100 * grid.calls) / grid.positions, 2)}% a reception`,
+);
+console.log(
+  `  core alone: ${core.sides / 2} matches, receptions ${f(core.positions / core.sides, 2)} a team, calls ${f(core.calls / core.sides)} a team, ${f((100 * core.calls) / core.positions, 2)}% a reception`,
 );
 ratio(grid.bySkill, 'duel-scale 판단력');
 const rawQ = ratio(grid.byRaw, 'own 판단력');

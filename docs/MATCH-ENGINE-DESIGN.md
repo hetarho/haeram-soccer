@@ -642,6 +642,7 @@ On the candidate match model these are the least a restart takes: `prepareRestar
 When a pass (not a throw-in, goal kick or corner) is played to a target in the opponent half who stands beyond the second-last opponent and beyond the ball:
 
 - Offside with `p = clamp(0.03 − (판단력 − 60)/360 − (linebreaker ? 0.1 : 0) + (opponent DF line ≥ 40 m ? 0.05 : 0), 0.012, 0.7)` (`RESTART_CONFIG.offside`; 360 is the raw scale's 200 times the grid's skill scale, T216).
+- The candidate model reads a ratio form instead (`RESTART_CONFIG.offside.candidate`, T384, MATCH-18 r21): `p = clamp(0.0255 × e^((60 − 판단력)/20) × (linebreaker ? 0.3 : 1) × (opponent DF line ≥ 40 m ? 1.6 : 1), 0.002, 0.6)`, `e^` from the match's portable math. 판단력 is the receiver's skill on the duels' scale (his attribute at the slot, the day's shift and his drain, §3.3): 20 points less multiply the chance by e, so the lowest quarter of the receivers in an offside position is called about twelve times as often as the highest, and calls average about 1.8 a team (MATCH-23). Still one draw per pass to an offside position.
 - Offside gives an indirect free kick to the defenders at the target spot, and counts `offsides` for the target.
 
 ### 7.4 Shots and xG

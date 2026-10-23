@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import { PORTABLE_MATH } from '../portable-math';
 import { random } from '../primitives';
 import { interruptAll, takeBall, updateIntentions, type IntentionReason } from './intentions';
 import { prepareOnClock, type MotionKnot } from './movement';
@@ -176,6 +177,43 @@ describe('grid restarts', () => {
     expect(sharpRate).toBeLessThan(base);
     expect(dullRate).toBeGreaterThan(base);
     expect(runnerRate).toBeLessThan(base - 0.05);
+  });
+
+  it('a receiver with poor 판단력 in an offside position is called more often than one with good 판단력, on the candidate model only', () => {
+    const onCandidate = (s: GridState): GridState => ({
+      ...s,
+      setup: { ...s.setup, model: MATCH_MODEL_REVISION },
+      math: PORTABLE_MATH,
+    });
+    const at = (decisions: number, candidate: boolean) => {
+      const s = offsideScene();
+      set(s, 0, 10, 'decisions', decisions);
+      return rate(candidate ? onCandidate(s) : s, 10);
+    };
+    const dull = at(40, true);
+    const sharp = at(75, true);
+    expect(dull).toBeGreaterThan(3 * sharp);
+    // One draw per pass to an offside position, as on the pre-feature path.
+    const s = onCandidate(offsideScene());
+    let draws = 0;
+    const r = random('offside-draws');
+    for (let i = 0; i < 50; i++)
+      isOffside(s, 0, 10, () => {
+        draws++;
+        return r();
+      });
+    expect(draws).toBe(50);
+    // The candidate setting moves only the candidate model's calls.
+    const C = RESTART_CONFIG.offside.candidate as { base: number };
+    const before = [at(50, false), at(50, true)];
+    const saved = C.base;
+    C.base *= 3;
+    try {
+      expect(at(50, false)).toBe(before[0]);
+      expect(at(50, true)).toBeGreaterThan(before[1]!);
+    } finally {
+      C.base = saved;
+    }
   });
 
   const kinds = (build: () => { s: GridState; rs: Restart }, n: number) => {
