@@ -173,8 +173,7 @@ describe('grid open-play resolution', () => {
       sc.s.players[0][8]!.pos = [x + 10, 34];
       sc.s.players[1][3]!.pos = [x + 5, 34];
       const draws = [0.9999, u, 0.5, 0.5, 0.5, 0.5];
-      return resolvePass(sc.s, 0, 7, 8, sc.tags(), 'short', false, () => draws.shift() ?? 0.5)
-        .kind;
+      return resolvePass(sc.s, 0, 7, 8, sc.tags(), 'short', false, () => draws.shift() ?? 0.5).kind;
     };
     const tactics: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
     for (const tactic of tactics) {
