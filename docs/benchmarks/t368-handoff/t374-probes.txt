@@ -1,0 +1,27 @@
+# base (5c9f0120), calibration round 41, first 300 core matches (probe.mts --count 300)
+core:equal-top-tier calibration r41: 300 matches (133 s), patch none
+  a team a match: open-play passes 383.84, completed 308.14, completed to a receiver beyond the line 23.60 (of them on a run 7.34), offside calls 1.64 (calls ÷ (calls + beyond completions) 0.065)
+  decision kind through 37.82, completed 28.75, completed beyond 22.98; per decision: attackers offside 0.326, behind runners 0.139 (offside 0.070)
+  box shots a match: MF 4.20 (after a receipt beyond the line within 15 s 1.55), MF goals 0.703 (after beyond 0.260); FW 6.21 (after beyond 2.02)
+  open play FW: shots 11.46 a match, goals 1.473, conversion 12.9%, in box 60.2%, headers 7.1%, distance 17.6 m
+  open play MF: shots 8.23 a match, goals 0.807, conversion 9.8%, in box 49.0%, headers 1.7%, distance 20.4 m
+  open play DF: shots 0.17 a match, goals 0.010, conversion 6.0%, in box 70.0%, headers 0.0%, distance 18.1 m
+# q12 (3e2243f3), the same matches
+core:equal-top-tier calibration r41: 300 matches (183 s), patch none
+  a team a match: open-play passes 391.51, completed 315.63, completed to a receiver beyond the line 0.10 (of them on a run 0.07), offside calls 1.88 (calls ÷ (calls + beyond completions) 0.949)
+  decision kind through 12.10, completed 9.57, completed beyond 0.04; per decision: attackers offside 0.061, behind runners 0.160 (offside 0.006)
+  box shots a match: MF 3.17 (after a receipt beyond the line within 15 s 0.02), MF goals 0.487 (after beyond 0.003); FW 6.08 (after beyond 0.02)
+  open play FW: shots 11.29 a match, goals 1.327, conversion 11.8%, in box 59.7%, headers 6.9%, distance 17.7 m
+  open play MF: shots 7.17 a match, goals 0.570, conversion 8.0%, in box 42.0%, headers 1.8%, distance 21.7 m
+  open play DF: shots 0.19 a match, goals 0.013, conversion 6.9%, in box 55.2%, headers 0.0%, distance 19.4 m
+# own-match time in one process, validation round 47's first 40 core matches (prof.mts with --cpu-prof); selftime.mjs base v q12, ms over the 40 matches
+/tmp/claude-2378/-home-deep-haeram-haeram-soccor/0900a8bf-b6e3-40d9-8dd9-9448ba6f19c8/scratchpad/t374/base: 40 matches, 384.8 ms a match (1001 shots)
+/tmp/claude-2378/-home-deep-haeram-haeram-soccor/0900a8bf-b6e3-40d9-8dd9-9448ba6f19c8/scratchpad/t374/cand: 40 matches, 520.7 ms a match (962 shots)
+total ms: base 18404, cand 23810
+   2653    1588    4241  advance movement.ts:1
+   2314       0    2314  holdLimit movement.ts:1
+    158     825     983  playGrid engine.ts:1
+    126     944    1070  shapePlace shape.ts:1
+     97    1804    1902  stepToward movement.ts:1
+     37     269     306  set TextDecoder :0
+     35     297     333  passOptions decide.ts:1
