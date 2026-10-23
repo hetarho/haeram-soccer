@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import type { Tactic } from '../../../contracts/src/types';
 import { finishing } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
@@ -21,8 +23,8 @@ import { gridKit } from './testkit';
 import { strengthScaled, type GridState } from './state';
 
 /** Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`. */
-function scene(slot: number, at: Point) {
-  const kit = gridKit();
+function scene(slot: number, at: Point, tactics?: [Tactic, Tactic]) {
+  const kit = gridKit(tactics);
   const s = kit.state;
   for (const side of s.players)
     for (const gp of side) {
@@ -159,6 +161,35 @@ describe('grid open-play resolution', () => {
     expect(Math.abs(contested / lost - L.loose)).toBeLessThan(0.03);
     expect(Math.abs((o.out ?? 0) / lost - L.out)).toBeLessThan(0.03);
     expect(Math.abs((o.foul ?? 0) / contested - DUEL_CONFIG.looseFoul)).toBeLessThan(0.01);
+  });
+
+  it("intercepts a failed build-up pass by the defending tactic's share on the candidate model only (T370)", () => {
+    const I = DUEL_CONFIG.candidate.intercept;
+    const P = DUEL_CONFIG.pass.lost;
+    // The completion draw fails, then `u` splits the lost pass; a defender stands in the lane.
+    const lost = (u: number, x: number, tactic: Tactic, candidate: boolean) => {
+      const sc = scene(7, [x, 34], ['balanced', tactic]);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.players[0][8]!.pos = [x + 10, 34];
+      sc.s.players[1][3]!.pos = [x + 5, 34];
+      const draws = [0.9999, u, 0.5, 0.5, 0.5, 0.5];
+      return resolvePass(sc.s, 0, 7, 8, sc.tags(), 'short', false, () => draws.shift() ?? 0.5)
+        .kind;
+    };
+    const tactics: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
+    for (const tactic of tactics) {
+      const share = I.share[tactic];
+      expect(lost(share - 1e-6, 40, tactic, true)).toBe('intercepted');
+      expect(lost(share + 1e-6, 40, tactic, true)).not.toBe('intercepted');
+      // In the final third, and on the pre-feature model, the shared split holds.
+      expect(lost(P.intercepted - 1e-6, I.upTo + 5, tactic, true)).toBe('intercepted');
+      expect(lost(P.intercepted + 1e-6, I.upTo + 5, tactic, true)).not.toBe('intercepted');
+      expect(lost(P.intercepted + 1e-6, 40, tactic, false)).not.toBe('intercepted');
+      // The extra interceptions come from the loose balls: as many passes still leave play.
+      const out = P.intercepted + DUEL_CONFIG.candidate.passLoose;
+      expect(lost(out + 1e-6, 40, tactic, true)).toBe('out');
+      expect(lost(out - 1e-6, 40, tactic, true)).not.toBe('out');
+    }
   });
 
   it('lets a better dribbler beat his man more often and fouls a set share of failed take-ons', () => {

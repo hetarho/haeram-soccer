@@ -69,13 +69,8 @@ export const SHAPE_CONFIG = {
     } as Partial<Record<Tactic, TacticShape>>,
   },
   lateral: 0.25,
-  /**
-   * With the ball behind it the back line drops to this many metres goal-side of it, never deeper
-   * than `min`. Candidate model only (→MATCH-8, MATCH-18, T374): `candidate.behindBall` m instead,
-   * so a line that calls offside at the pass drops toward its box as an attack approaches and
-   * attackers can arrive there onside.
-   */
-  deepLine: { behindBall: 4, min: 6, candidate: { behindBall: 12 } },
+  /** With the ball behind it the back line drops to this many metres goal-side of it, never deeper than `min`. */
+  deepLine: { behindBall: 4, min: 6 },
   keeperPull: 0.08,
   keeperMax: { sweeperKeeper: 22, other: 14 },
   /** Metres a sweeper keeper steps up per metre his line stands above 20 m, once it is at 40 m. */
@@ -340,19 +335,13 @@ export function shapePlace(
     x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
     y += (ny - y) * SHAPE_CONFIG.markBlend;
   }
-  if (own === 'DF') x = clamp(x, lineFloor(s, bx, cfg.line[0]), cfg.line[1]);
+  if (own === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);
 }
 
-/**
- * The deepest the back line stands: its tactic's line, or goal-side of a ball played in behind it
- * (T215), on the candidate model by its own depth (T374).
- */
-function lineFloor(s: GridState, ball: number, line: number): number {
-  const { behindBall, min, candidate } = SHAPE_CONFIG.deepLine;
-  const behind = s.setup.model === undefined ? behindBall : candidate.behindBall;
-  return Math.min(line, Math.max(min, ball - behind));
-}
+/** The deepest the back line stands: its tactic's line, or goal-side of a ball played in behind it (T215). */
+const lineFloor = (ball: number, line: number) =>
+  Math.min(line, Math.max(SHAPE_CONFIG.deepLine.min, ball - SHAPE_CONFIG.deepLine.behindBall));
 
 /**
  * Where a presser of `gp`'s side goes for the ball at `at` (his attack frame): goal-side of it, a
@@ -364,7 +353,7 @@ function pressPoint(s: GridState, gp: GridPlayer, at: Point, urgent: boolean): [
   const goalSide = at[0] - SHAPE_CONFIG.pressGoalSide;
   return toEngine(side, [
     lineOfSlot(s, gp) === 'DF' && !urgent
-      ? clamp(goalSide, lineFloor(s, at[0], cfg.line[0]), cfg.line[1])
+      ? clamp(goalSide, lineFloor(at[0], cfg.line[0]), cfg.line[1])
       : Math.max(0, goalSide),
     at[1],
   ]);

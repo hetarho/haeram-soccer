@@ -81,3 +81,34 @@ The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to
   (base tree e578fc90, candidate tree 2020e999 with c40's patch), writing
   `node_modules/.cache/t375/out/v{49,50}-{base,c40}.json` and a `.done` file per spec; read them with
   `report.mts --root <candidate tree> --base v49-base.json,v50-base.json --cand v49-c40.json,v50-c40.json`.
+
+## validation (rounds 49 and 50, T373's football v c40)
+
+`t375-v49-pair-report.txt`, `t375-v50-pair-report.txt`, `t375-pooled-pair-report.txt` (every row):
+21,600 matches a tree a round, 0 invalid records, 0 invariant failures.
+
+| pooled | T373's football | c40 |
+|---|---|---|
+| MATCH-23 core inside | 34 | 33 (none inside → outside; goals-MF inside → unresolved, 30 m+ shots inside → unresolved, penalty goals unresolved → outside) |
+| MATCH-30 inside | 5 | 6 (box shots outside → inside; none inside → outside) |
+| MATCH-29 inside / insufficient / outside | 19 / 5 / 1 | 14 / 4 / 7 |
+| press's points (to the mean) | +0.063 [0.033, 0.093] | **+0.303 [0.274, 0.332] inside → outside** |
+| points possession / press / counter / balanced | 1.290 / 1.432 / 1.481 / 1.274 | 1.206 / 1.675 / 1.419 / 1.190 |
+| gap possession v press | −0.056 | **−0.169 inside → outside** |
+| gap press v counter | −0.010 | **+0.168 inside → outside** |
+| gap press v balanced | +0.080 | **+0.265 inside → outside** |
+| balanced's points | −0.095 | **−0.183 inside → outside** |
+| offsides | 1.66 [1.62, 1.70] | 1.76 [1.72, 1.80] |
+| goals | 2.76 [2.71, 2.80] | 2.77 [2.72, 2.81] |
+| MF / FW goals % | 28.4 / 62.3 | 27.7 [26.9, 28.5] / 62.9 |
+| through balls / completed | 32.9 / 24.7 | 11.9 / 8.1 |
+| box entries / xT | 24.97 / 4.36 | 24.54 / 4.31 |
+| goal-area / outside-box shots %, distance | 8.2 / 39.1, 17.33 m | 7.4 / 40.9, 17.61 m |
+| curve | 1.49 | 1.22 |
+
+Round 49 alone: press's points +0.064 → +0.281 and possession v press, press's points inside →
+outside; round 50 alone: press's points +0.062 → +0.325, press v counter and balanced's points
+inside → outside. Keep rule: offsides inside (met), no core inside → outside (met), MATCH-30 inside
+≥ before (6 ≥ 5, met), curve ≤ 2.5 (met), **no MATCH-29 row inside → outside: five pooled, not
+met** — explore exit, T373's football stays. Against T374's q12 pooled on rounds 47+48 (press's
+points +0.358) the three levers took press's lead down by only about 0.05 points a match.

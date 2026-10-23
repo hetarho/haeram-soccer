@@ -1,5 +1,6 @@
 /** Open-play resolution: every chosen action is settled by a duel between named players on their attributes (→MATCH-11, MATCH-13). */
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight, finishing, goalChance, targetChance } from '../match';
 import { FORMATIONS, lineOf } from '../player';
 import { HOST_MATH, type MatchMath } from '../portable-math';
@@ -110,7 +111,24 @@ export const DUEL_CONFIG = {
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
    */
-  candidate: { foul: 1.2, boxFoul: 0.05, passLoose: 0.8, clearanceOut: 0.5 },
+  candidate: {
+    foul: 1.2,
+    boxFoul: 0.05,
+    passLoose: 0.8,
+    clearanceOut: 0.5,
+    /**
+     * Pressing in the opponent's build-up (T370, →MATCH-8, MATCH-13): of the failed passes played
+     * from below `upTo` m, the defending side's tactic intercepts this share in place of
+     * `pass.lost.intercepted`, taken from the loose balls, so as many still leave play.
+     */
+    intercept: {
+      upTo: 70,
+      share: { possession: 0.07, press: 0.07, counter: 0.07, balanced: 0.07 } satisfies Record<
+        Tactic,
+        number
+      >,
+    },
+  },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
 const onCandidate = (s: GridState) => s.setup.model !== undefined;
@@ -360,7 +378,12 @@ export function resolvePass(
   );
   if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
   const u = r();
-  if (u < P.lost.intercepted && marker) {
+  const I = DUEL_CONFIG.candidate.intercept;
+  const intercepted =
+    onCandidate(s) && from[0] < I.upTo
+      ? I.share[s.setup.tactics[other(side)]]
+      : P.lost.intercepted;
+  if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
       from[1] + (to[1] - from[1]) * marker.t,

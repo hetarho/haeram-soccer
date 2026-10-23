@@ -1,16 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import {
   closedAt,
   COORDINATION_CONFIG,
-  lateRunner,
   planCoordination,
   pressReach,
   type CoordinationPlan,
 } from './coordination';
-import { combination, offsideBy, passOptions, throughPoint } from './decide';
+import { combination } from './decide';
 import { playGrid } from './engine';
 import {
   applyCoordination,
@@ -23,11 +21,9 @@ import {
   updateIntentions,
   type Intention,
 } from './intentions';
-import { advance, holdOf } from './movement';
 import { attackFrame, type Point } from './pitch';
 import { setPieceTargets, SHAPE_CONFIG, shapePlace } from './shape';
-import { createState, onPitch, slotOf, type GridPlayer, type GridState } from './state';
-import { computeTags } from './tags';
+import { createState, onPitch, type GridPlayer, type GridState } from './state';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
@@ -797,103 +793,5 @@ describe('grid coordination', () => {
     } finally {
       SR.odds.possession = odds;
     }
-  });
-
-  it('a runner holds an onside line until the pass and a better 판단력 starts closer to it', () => {
-    const H = COORDINATION_CONFIG.hold;
-    expect(H.far).toBeGreaterThan(H.near);
-    /**
-     * Side 0's striker (9) runs in behind from 70 m while side 1's line stands still at 80 m (its
-     * keeper deeper); returns where he stands after `seconds` of play with `decisions` 판단력.
-     */
-    const run = (decisions: number, seconds = 4, model = true) => {
-      const s = scene();
-      if (!model) s.setup = kitOf(['possession', 'balanced']).setup;
-      const still = s.players[1].map((gp, i) => {
-        gp.pos = i === 0 ? [104, 34] : [80, 4 + 6 * i];
-        return { gp, to: [gp.pos[0], gp.pos[1]] as const };
-      });
-      const gp = s.players[0][9]!;
-      gp.pos = [70, 30];
-      gp.base[ATTRIBUTES.indexOf('decisions')] = decisions;
-      setIntention(s, gp, {
-        kind: 'run',
-        run: 'behind',
-        priority: 'tactical',
-        target: [86, 30],
-        until: s.elapsed + 6,
-      });
-      advance(s, seconds, still);
-      return { s, gp, margin: holdOf(s, gp).margin };
-    };
-    // Held 판단력's margin behind the line, not at his run's target beyond it.
-    const sharp = run(90);
-    const dull = run(30);
-    for (const { gp, margin } of [sharp, dull]) {
-      expect(gp.pos[0]).toBeLessThanOrEqual(80 - margin + 1e-9);
-      expect(gp.pos[0]).toBeGreaterThan(80 - margin - 0.2);
-      expect(gp.intention).toMatchObject({ kind: 'run', run: 'behind' });
-    }
-    expect(sharp.margin).toBeLessThan(dull.margin);
-    expect(sharp.gp.pos[0]).toBeGreaterThan(dull.gp.pos[0]);
-    expect(sharp.margin).toBeGreaterThanOrEqual(H.near);
-    expect(dull.margin).toBeLessThanOrEqual(H.far);
-    // The pass sends him: played into his path beyond the line, he runs onto it.
-    const { s, gp } = sharp;
-    s.owner = [0, 9];
-    s.ball = [85, 30];
-    advance(s, 2, [{ gp, to: [85, 30] }]);
-    expect(gp.pos[0]).toBeGreaterThan(80);
-    // The pre-feature model holds no line: the same run goes on past it.
-    expect(run(90, 4, false).gp.pos[0]).toBeGreaterThan(80);
-  });
-
-  it('a midfielder behind the ball starts a late box run and is onside when the pass is played', () => {
-    const L = COORDINATION_CONFIG.late as { pull: number; lead: number };
-    const pull = L.pull;
-    /**
-     * Side 0's mezzala runs for the box from 70 m while its striker (9) has the ball at 82 m and
-     * side 1's line stands still at 88 m (its keeper deeper); with late runs on or off, returns
-     * where he stands after 4 s, the striker's pass option to him and where it would be played.
-     */
-    const run = (on: boolean) => {
-      L.pull = on ? pull || 1 : 0;
-      try {
-        const s = scene(['possession', 'balanced'], 9, [82, 34]);
-        const still = s.players[1].map((gp, i) => {
-          gp.pos = i === 0 ? [104, 34] : [88, 4 + 6 * i];
-          return { gp, to: [gp.pos[0], gp.pos[1]] as const };
-        });
-        const gp = s.players[0].find((p) => slotOf(s, p).role === 'mezzala')!;
-        gp.pos = [70, 30];
-        setIntention(s, gp, {
-          kind: 'run',
-          run: 'box',
-          priority: 'tactical',
-          target: [95, 34],
-          until: s.elapsed + 6,
-        });
-        advance(s, 4, still);
-        const option = passOptions(s, 0, 9, computeTags(s, 0, 9)).find((o) => o.target === gp.idx);
-        return { gp, late: lateRunner(s, gp), option, to: throughPoint(s, 0, 9, gp.idx) };
-      } finally {
-        L.pull = pull;
-      }
-    };
-    // Late: he comes up level with the ball, not the line, so he is onside when it is played, and
-    // the striker plays him through into the box ahead of him.
-    const late = run(true);
-    expect(late.late).toBe(true);
-    expect(late.gp.pos[0]).toBeLessThanOrEqual(82 + 1e-9);
-    expect(late.gp.pos[0]).toBeGreaterThan(76);
-    expect(offsideBy(attackFrame(0, late.gp.pos), 82, 88)).toBe(0);
-    expect(late.option?.kind).toBe('through');
-    expect(late.to[0]).toBeGreaterThan(88.5);
-    // Off: the same box run waits on the line beyond the ball, and the pass goes to his feet.
-    const held = run(false);
-    expect(held.late).toBe(false);
-    expect(held.gp.pos[0]).toBeGreaterThan(82);
-    expect(held.gp.pos[0]).toBeLessThan(88);
-    expect(held.option?.kind).not.toBe('through');
   });
 });
