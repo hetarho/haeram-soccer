@@ -28,9 +28,17 @@ import {
   openLeagueSeason,
   openCupSeason,
   useRecordRequest,
+  leaveManagerSeason,
+  rememberManagerSeason,
+  returnedToManagers,
+  MANAGER_RECORDS,
   RECORD_TABS,
+  type ManagerRecords as ManagerPlace,
   type RecordTab,
 } from './state';
+import type { ManagerSourceSeason } from '../../../../packages/contracts/src/manager-history-view';
+import { ManagerHistory, type ManagerHistoryProps } from './ManagerHistory';
+import { useManagerHistory } from './useManagerHistory';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 import t from './LiveSeason.module.css';
@@ -56,10 +64,9 @@ function savedRecordYear(w: World) {
   const year = raw ? Number(raw) : params.get('view') === 'season' ? w.year : undefined;
   return year === w.year || w.history.some((season) => season.year === year) ? year : undefined;
 }
+const scroller = () => document.querySelector<HTMLElement>('[data-testid="view-scroller"]');
 function recordScroll(value: number) {
-  requestAnimationFrame(() =>
-    document.querySelector<HTMLElement>('[data-testid="view-scroller"]')?.scrollTo({ top: value }),
-  );
+  requestAnimationFrame(() => scroller()?.scrollTo({ top: value }));
 }
 
 /**
@@ -105,24 +112,38 @@ export function RecordsRoom({ state, client }: Props) {
     savedRecordYear(w),
   );
   const request = useRecordRequest((store) => store.request);
+  const [managers] = useTaskState<ManagerPlace>(w.id, MANAGER_RECORDS, {});
   const openSeason = (picked: number) => {
-    const root = document.querySelector<HTMLElement>('[data-testid="view-scroller"]');
-    if (year === undefined)
+    if (tab === 'seasons' && year === undefined)
       useTaskMemory.setState((memory) => ({
-        scrolls: { ...memory.scrolls, 'record-list': root?.scrollTop ?? 0 },
+        scrolls: { ...memory.scrolls, 'record-list': scroller()?.scrollTop ?? 0 },
       }));
     setTab('seasons');
     setYear(picked);
     history.pushState(null, '', `/history?season=${picked}`);
     recordScroll(0);
   };
+  // An accomplishment or a tenure's season opens our season record; the list keeps its place.
+  const openManagerSeason = (season: ManagerSourceSeason, row: string) => {
+    if (season.club !== w.playerClub) return;
+    rememberManagerSeason(w.id, season, row, scroller()?.scrollTop ?? 0);
+    openSeason(season.year);
+  };
+  const returnToManagers = () => {
+    setTab('managers');
+    setYear(undefined);
+    history.pushState(null, '', '/history?view=managers');
+  };
+  const openedFrom =
+    managers.opened && managers.page?.rows.find((r) => r.id === managers.opened!.row);
   useEffect(() => {
     if (!request) return;
     useRecordRequest.getState().take();
+    leaveManagerSeason(w.id);
     setTab('seasons');
     setYear(request.year);
     recordScroll(0);
-  }, [request, setTab, setYear]);
+  }, [request, setTab, setYear, w.id]);
   useEffect(() => {
     const restore = () => setYear(savedRecordYear(w));
     window.addEventListener('popstate', restore);
@@ -144,6 +165,7 @@ export function RecordsRoom({ state, client }: Props) {
     [tab, year],
   );
   const selectTab = (next: RecordTab) => {
+    leaveManagerSeason(w.id);
     setTab(next);
     if (next === 'seasons') setYear(undefined);
     recordScroll(0);
@@ -172,9 +194,16 @@ export function RecordsRoom({ state, client }: Props) {
           ) : (
             <>
               <div className={s.recordControls}>
+                {managers.opened && (
+                  <button type="button" onClick={returnToManagers}>
+                    ← 감독 이력으로
+                    {openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
+                    leaveManagerSeason(w.id);
                     setYear(undefined);
                     history.pushState(null, '', '/history');
                     recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
@@ -211,7 +240,15 @@ export function RecordsRoom({ state, client }: Props) {
         ) : tab === 'players' ? (
           <ClubLeaders w={w} />
         ) : (
-          <ManagerSeasons w={w} archive={archive?.data} error={archive?.error} />
+          <>
+            <ManagerRecords
+              client={client}
+              world={w.id}
+              historyKey={state.view!.managerHistoryKey}
+              onOpenSeason={openManagerSeason}
+            />
+            <ManagerSeasons w={w} archive={archive?.data} error={archive?.error} />
+          </>
         )}
       </div>
     </>
@@ -351,6 +388,29 @@ function MatchRecords({
       </section>
     </Panel>
   );
+}
+
+/**
+ * 감독 이력 (→HIST-18/19, WEB-92): every tenure's summary read from the worker, which keeps every
+ * own match. Back from a season it opened, the list stands where it was left.
+ */
+function ManagerRecords({
+  client,
+  world,
+  historyKey,
+  onOpenSeason,
+}: {
+  client: GameClient;
+  world: string;
+  historyKey?: string;
+  onOpenSeason: ManagerHistoryProps['onOpenSeason'];
+}) {
+  const props = useManagerHistory(client, world, historyKey, onOpenSeason);
+  useEffect(() => {
+    const scroll = returnedToManagers(world);
+    if (scroll !== undefined) recordScroll(scroll);
+  }, [world]);
+  return <ManagerHistory {...props} />;
 }
 
 /** The managers' seasons: every hiring and departure, then the man in charge now. */

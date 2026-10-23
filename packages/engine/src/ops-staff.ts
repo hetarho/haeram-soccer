@@ -2,6 +2,8 @@ import { cancelPromises } from './promises';
 import { careerDate, closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
+import type { ManagerDeparture } from '../../contracts/src/manager-history';
+import { captureManagerChange } from './manager-history-capture';
 import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
 import { clamp, random, ratio } from './primitives';
 import {
@@ -150,6 +152,8 @@ function installManager(
     { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
     chosen,
   );
+  // A new tenure; the one he replaces, an interim's included, ends today (→HIST-18).
+  captureManagerChange(w, w.manager);
   // The squad starts to learn its new manager (→PLAYER-13).
   onManagerChange(w, before, w.manager);
   syncMentorExposures(w);
@@ -237,9 +241,9 @@ export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하�
  * The manager leaves and a basic interim steps in (→STAFF-7). With the post delegated the staff
  * appoint a successor by the owner's criteria at once and the clock runs on; when nobody fits the
  * interim stays, the owner is told and the staff keep looking. Otherwise the departure stops the
- * clock.
+ * clock. `departure` is why his tenure ends, recorded with the interim's (→HIST-18).
  */
-function resign(w: World, reason: string) {
+function resign(w: World, reason: string, departure: ManagerDeparture) {
   const old = w.manager;
   cancelPromises(w, old.id, reason);
   if (old.person) closeEmployment(w, old.person, 'manager');
@@ -266,6 +270,8 @@ function resign(w: World, reason: string) {
   interim.wage = staffQuote(w, 40);
   interim.interim = true;
   w.manager = interim;
+  // The interim's tenure is recorded even if a successor follows at once without a match.
+  captureManagerChange(w, interim, departure);
   onManagerChange(w, old, interim);
   syncMentorExposures(w);
   if (!isDelegated(w, 'manager')) {
@@ -368,7 +374,7 @@ export function yearlyStaff(w: World) {
       Object.assign(w.people[m.person].management!, next);
   }
   if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
-    resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.');
+    resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.', 'retired');
   // No manager renews himself (→STAFF-14): an unrenewed contract ends at the close.
   else if (m.until <= w.year && !m.interim)
     resign(
@@ -376,6 +382,7 @@ export function yearlyStaff(w: World) {
       managerTerm(m) === 1
         ? '시즌 종료까지의 단기 계약을 마치고 떠났습니다.'
         : '재계약 없이 계약 기간을 마치고 떠났습니다.',
+      'expired',
     );
   delete w.manager.lastRequest;
   delete w.manager.requestHistory;
@@ -437,7 +444,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
           '감독의 사직서',
           '제 판단을 존중받을 수 없다면 함께할 수 없습니다.',
         );
-        resign(w, '구단주의 강한 전술 간섭');
+        resign(w, '구단주의 강한 전술 간섭', 'resigned');
         break;
       }
       let response: string;

@@ -171,22 +171,54 @@ export interface IdentityWorkloadEvidence {
 }
 
 /**
+ * What a workload has applied and counted, as JSON: a benchmark that runs its century in several
+ * processes (T308) hands it from one to the next, and `identityWorkload(state)` carries on exactly
+ * where the first left off.
+ */
+export interface IdentityWorkloadState {
+  seasons: number[];
+  applied?: { identity: ClubIdentity; from: number };
+  choices: WorkloadKitChoice[];
+  appearanceChecks: number;
+  appearancesCompared: number;
+  recordsWearingAppliedDesign: number;
+}
+
+/**
  * A workload for one career: `edit` at each season's start, `chooseKit` before the checkpoint that
  * must carry a pending choice, `evidence` for the report. Its only state is what it applied, so
- * two workloads driven alike over equal worlds leave equal worlds and equal evidence.
+ * two workloads driven alike over equal worlds leave equal worlds and equal evidence; `state` and
+ * `identityWorkload(state)` continue one in another process.
  */
-export function identityWorkload() {
+export function identityWorkload(resume?: IdentityWorkloadState) {
   const designs: string[] = [];
   const seasons: number[] = [];
   const palette = new Set<string>();
   const patterns = new Set<ShirtPattern>();
   const compositions = new Set<number>();
   const counts = { '1': 0, '2': 0, '3': 0 };
-  const choices: WorkloadKitChoice[] = [];
-  let applied: { identity: ClubIdentity; from: number } | undefined;
-  let appearanceChecks = 0,
-    appearancesCompared = 0,
-    recordsWearingAppliedDesign = 0;
+  const choices: WorkloadKitChoice[] = structuredClone(resume?.choices ?? []);
+  let applied: { identity: ClubIdentity; from: number } | undefined = resume?.applied
+    ? structuredClone(resume.applied)
+    : undefined;
+  let appearanceChecks = resume?.appearanceChecks ?? 0,
+    appearancesCompared = resume?.appearancesCompared ?? 0,
+    recordsWearingAppliedDesign = resume?.recordsWearingAppliedDesign ?? 0;
+
+  /** Season `n`'s design counted as applied. */
+  function note(identity: ClubIdentity, n: number) {
+    designs.push(canonical(identity));
+    seasons.push(n);
+    for (const value of [
+      ...identity.colours,
+      ...Object.values(identity.kits).flatMap(shirtColours),
+    ])
+      palette.add(value);
+    for (const role of KIT_ROLES) patterns.add(identity.kits[role].pattern);
+    compositions.add(n % CREST_PRESETS.length);
+    counts[String(identity.colours.length) as '1' | '2' | '3']++;
+  }
+  for (const n of resume?.seasons ?? []) note(seasonIdentity(n), n);
 
   /** The own records settled since the last edit wear its crest and one of its saved shirts. */
   function verifyApplied(w: World) {
@@ -239,16 +271,7 @@ export function identityWorkload() {
       )
         throw new Error(`Season ${n} design edit reassigned another club's identity`);
       applied = { identity: structuredClone(identity), from: w.ownMatches.length };
-      designs.push(canonical(identity));
-      seasons.push(n);
-      for (const value of [
-        ...identity.colours,
-        ...Object.values(identity.kits).flatMap(shirtColours),
-      ])
-        palette.add(value);
-      for (const role of KIT_ROLES) patterns.add(identity.kits[role].pattern);
-      compositions.add(n % CREST_PRESETS.length);
-      counts[String(identity.colours.length) as '1' | '2' | '3']++;
+      note(identity, n);
     },
     /**
      * Stores, through the `match-kit` command, a role for the real next own fixture that automatic
@@ -284,6 +307,17 @@ export function identityWorkload() {
       };
       choices.push(choice);
       return structuredClone(choice);
+    },
+    /** What it has applied and counted so far, to continue in another process. */
+    state(): IdentityWorkloadState {
+      return structuredClone({
+        seasons,
+        ...(applied ? { applied } : {}),
+        choices,
+        appearanceChecks,
+        appearancesCompared,
+        recordsWearingAppliedDesign,
+      });
     },
     evidence(): IdentityWorkloadEvidence {
       return {

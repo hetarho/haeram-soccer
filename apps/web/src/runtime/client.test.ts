@@ -1,7 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { simulatedWorld } from '../../../../tests/fixtures/worlds';
+import {
+  ENABLED_RELEASE,
+  simulatedWorld,
+  withoutManagerHistory,
+} from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
+import {
+  CURRENT_ENGINE_VERSION,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+} from '../../../../packages/contracts/src/versions';
+import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
@@ -31,11 +39,13 @@ class MemoryStorage implements StoragePort {
 /** Real host + persistence, with structured cloning at both worker boundaries. */
 class WorkerPort {
   static instances: WorkerPort[] = [];
+  /** The match-model release the next engine host takes; the production switch unless a test sets it. */
+  static release?: MatchModelRelease;
   requests: Request[] = [];
   replies: { request: Request; reply: Reply }[] = [];
   onmessage?: (event: MessageEvent<Reply>) => void;
   onerror?: () => void;
-  host = new Host((reply) => this.deliver(reply));
+  host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release });
   private codecPort?: MessagePort;
   constructor() {
     WorkerPort.instances.push(this);
@@ -138,6 +148,7 @@ async function delegateMarket(client: GameClient) {
 beforeEach(() => {
   storage = new MemoryStorage();
   WorkerPort.instances = [];
+  WorkerPort.release = undefined;
   CodecPort.instances = [];
   ChannelPort.instances = [];
   vi.stubGlobal('Worker', FakeWorker);
@@ -532,7 +543,10 @@ describe('background worker publication', () => {
 });
 
 async function legacyCheckpoint(withHistory = false) {
-  const legacy = simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 });
+  // Earlier rules never tracked manager history (→SAVE-24), so they never used its container.
+  const legacy = withoutManagerHistory(
+    simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 }),
+  );
   legacy.engine = '1.0.0';
   legacy.revision = 17;
   legacy.cash = '98765432101234567890';
@@ -612,6 +626,160 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
     expect(canonical((await decode(storage.getItem('haeram-soccor:slot:a')!)).world)).toBe(
       canonical(legacy),
     );
+  });
+});
+
+/** A supported career from before the full match model, the game in play at generation 7. */
+async function preModelCheckpoint() {
+  const career = simulatedWorld(founding, { rounds: 2 });
+  const raw = await encode(career, 7, 6);
+  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem(
+    'haeram-soccor:manifest',
+    JSON.stringify({ slot: 0, worldId: career.id, generation: 7, parentGeneration: 6 }),
+  );
+  return { career, raw };
+}
+
+describe('full match-model activation (→SAVE-23)', () => {
+  it('activation commits through the existing save repository', async () => {
+    WorkerPort.release = ENABLED_RELEASE;
+    const { career, raw } = await preModelCheckpoint();
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toBeUndefined();
+    const world = client.state.view!.world;
+    expect(world.matchModel?.coverage).toBe('activation');
+    expect(client.state.savedRevision).toBe(career.revision + 1);
+    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
+    const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
+    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(saved.world.matchModel).toEqual(world.matchModel);
+    // The career as it was stays the previous copy until a newer save commits.
+    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
+    // Loading the activated career again changes nothing and tells nothing more.
+    const committed = new Map(storage.data);
+    await client.reload();
+    expect(client.state.view!.world.matchModel).toEqual(world.matchModel);
+    expect(storage.data).toEqual(committed);
+  });
+
+  it('failure preserves old raw data and export access', async () => {
+    WorkerPort.release = ENABLED_RELEASE;
+    const { career, raw } = await preModelCheckpoint();
+    const manifest = storage.getItem('haeram-soccor:manifest');
+    storage.fail = 'haeram-soccor:manifest';
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
+    expect(client.state.saveFailed).toBe(true);
+    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
+    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    expect(notifications()).toEqual([]);
+    // The activated career stays in memory and exportable.
+    const exported = await decode((await client.exportFile())!);
+    expect(exported.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(exported.world.revision).toBe(career.revision + 1);
+    expect(exported.world.matchModel?.trackedFrom.round).toBe(career.round + 1);
+    expect(canonical((await decode(raw)).world)).toBe(canonical(career));
+  });
+
+  it('a read-only tab neither activates nor writes', async () => {
+    WorkerPort.release = ENABLED_RELEASE;
+    await preModelCheckpoint();
+    const stored = new Map(storage.data);
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+          callback(null),
+      },
+    });
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    expect(reader.state.view!.world.matchModel).toBeUndefined();
+    expect(storage.data).toEqual(stored);
+  });
+
+  it('keeps a revealed playback of this career across a reload that holds its match', async () => {
+    const client = await start();
+    const founded = new Map(storage.data);
+    await client.command({ type: 'advance', rounds: 1 });
+    await client.whenSaved();
+    const playback = client.state.playback!;
+    expect(playback.record.id).toBe(client.state.view!.world.ownMatches.at(-1)!.id);
+    await client.reload();
+    expect(client.state.playback).toBe(playback);
+    // A checkpoint without that match replays its fixture: the playback goes.
+    storage.data = new Map(founded);
+    await client.reload();
+    expect(client.state.view!.world.ownMatches).toHaveLength(0);
+    expect(client.state.playback).toBeUndefined();
+  });
+});
+
+describe('manager-history reads (→HIST-18, WEB-92)', () => {
+  it('reads a page in a read-only tab without the command queue, a write or a view', async () => {
+    await start();
+    const stored = new Map(storage.data);
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+          callback(null),
+      },
+    });
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    const view = reader.state.view!;
+    expect(view.managerHistoryKey).toEqual(expect.any(String));
+    expect(view.world).not.toHaveProperty('managerHistory');
+    const page = await reader.managerHistory();
+    expect(page.rows).toEqual([
+      expect.objectContaining({
+        kind: 'tenure',
+        current: true,
+        manager: expect.objectContaining({ id: view.world.manager.id }),
+      }),
+    ]);
+    expect(page.nextCursor).toBeNull();
+    const worker = WorkerPort.instances[1],
+      read = worker.replies.findLast(({ request }) => request.body.type === 'manager-history')!;
+    // The read names the career it shows and comes back without a view to take.
+    expect(read.request.body).toEqual({ type: 'manager-history', world: view.world.id });
+    expect(read.reply.view).toBeUndefined();
+    expect(read.reply.viewDelta).toBeUndefined();
+    expect(reader.state.view).toBe(view);
+    expect(reader.state.busy).toBe(false);
+    expect(worker.requests.some((request) => ['command', 'save'].includes(request.body.type))).toBe(
+      false,
+    );
+    expect(storage.data).toEqual(stored);
+  });
+
+  it('refuses a page for any career but the one this tab shows', async () => {
+    const client = await start();
+    const worker = WorkerPort.instances[0],
+      shown = worker.host.world!;
+    // The worker has moved to another game before this tab heard of it.
+    worker.host.world = { ...shown, id: 'world:another' };
+    await expect(client.managerHistory()).rejects.toThrow('다른 커리어');
+    worker.host.world = shown;
+    expect((await client.managerHistory()).rows).toHaveLength(1);
+    // This tab moved to another game while the page was on its way.
+    const pending = client.managerHistory();
+    client.state.view = {
+      ...client.state.view!,
+      world: { ...client.state.view!.world, id: 'world:next' },
+    };
+    await expect(pending).rejects.toThrow('다른 커리어');
   });
 });
 

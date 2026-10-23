@@ -1,6 +1,6 @@
 import { chooseOption } from './select';
 import { finishSeason } from './season-progression';
-import { openCurrentClubSeason } from './record-navigation';
+import { managerHistoryList, openCurrentClubSeason } from './record-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 
@@ -50,6 +50,11 @@ for (const [label, viewport] of [
       await page.getByRole('tab', { name: '감독 이력', exact: true }).click();
       await expect(page.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
       await expect(page.getByText(/ · 현재$/)).toBeVisible();
+      // The founding manager's tenure, tracked from the founding with no match yet (→WEB-92).
+      const tenures = managerHistoryList(page).getByRole('article');
+      await expect(tenures).toHaveCount(1);
+      await expect(tenures.first()).toContainText('현재 감독');
+      await expect(tenures.first()).toContainText('지휘한 공식전 없음');
       await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x1');
       await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
       await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', {
@@ -283,6 +288,10 @@ for (const [label, viewport] of [
       await expect(page).toHaveURL(/\/history\?view=managers$/);
       await expect(page.getByRole('heading', { name: '감독들이 남긴 계절' })).toBeVisible();
       await expect(page.getByText(/ · 현재$/)).toBeVisible();
+      // The closed season's tenures above it: the one in charge now on top, with a record.
+      const tenures = managerHistoryList(page).getByRole('article');
+      await expect(tenures.first()).toContainText('현재 감독');
+      await expect(managerHistoryList(page)).toContainText(/\d+경기 \d+승 \d+무 \d+패/);
 
       // The address keeps the tab: a fresh page on it opens 감독 first and still reads the
       // archive (CI WebKit stalls on reloads of the records room, so as with the record book the

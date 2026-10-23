@@ -2,9 +2,14 @@ import { encode } from '../../apps/web/src/adapters/persistence';
 import type { IdentityDraftAction } from '../../apps/web/src/ui/clubIdentityDraft';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
 import type { Founding, World } from '../../packages/contracts/src/types';
-import { FULL_MODEL_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
-import { createWorld, identityOf, installMissingIdentities } from '../../packages/engine/src/index';
-import { simulatedWorld } from './worlds';
+import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
+import {
+  createWorld,
+  ensureManagerHistory,
+  identityOf,
+  installMissingIdentities,
+} from '../../packages/engine/src/index';
+import { simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
  * Marked synthetic fixtures for the club-identity continuity journeys (T254; →KIT-9/12/15,
@@ -92,10 +97,11 @@ export const LEGACY_FOUNDING: Founding = {
 };
 /**
  * A current-rules career as it was saved before club identities: two rounds played, then every
- * identity, recorded appearance and pending kit choice taken away.
+ * identity, recorded appearance and pending kit choice taken away, and the manager history that
+ * came later still (→SAVE-24).
  */
 export function preIdentityCareer(): World {
-  const w = simulatedWorld(LEGACY_FOUNDING, { rounds: 2 });
+  const w = withoutManagerHistory(simulatedWorld(LEGACY_FOUNDING, { rounds: 2 }));
   for (const club of w.clubs) delete club.identity;
   for (const match of w.ownMatches) delete match.appearance;
   delete w.kitChoice;
@@ -112,11 +118,15 @@ export async function containerOneCheckpoint(w: World, generation = 1, parentGen
     schema: 1,
   });
 }
-/** What writer activation makes of a pre-identity career: missing designs, one revision, no more. */
+/**
+ * What writer activation makes of a pre-identity career: missing designs, one revision, and own-
+ * manager tracking started there (→SAVE-24), no more.
+ */
 export function adoptedCareer(legacy: World) {
   const w = structuredClone(legacy);
   installMissingIdentities(w);
   w.revision++;
+  ensureManagerHistory(w);
   return w;
 }
 
@@ -138,15 +148,15 @@ export const FUTURE_CHECKPOINTS: Record<
   string,
   (w: World, generation: number, parentGeneration: number) => Promise<string>
 > = {
-  // The container after the match-model one (→SAVE-23), which this version cannot know.
-  [`envelope schema ${FULL_MODEL_CHECKPOINT_SCHEMA + 1}`]: async (
+  // The container after the manager-history one (→SAVE-24), which this version cannot know.
+  [`envelope schema ${MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1}`]: async (
     w,
     generation,
     parentGeneration,
   ) =>
     JSON.stringify({
       ...JSON.parse(await encode(w, generation, parentGeneration)),
-      schema: FULL_MODEL_CHECKPOINT_SCHEMA + 1,
+      schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1,
     }),
   'identity format 2': async (w, generation, parentGeneration) => {
     const future = structuredClone(w);

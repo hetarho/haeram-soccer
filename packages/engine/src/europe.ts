@@ -7,6 +7,7 @@ import { emptyTable } from './season';
 import { credit } from './transactions';
 import { installMissingIdentities } from './club-identity';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
+import { captureCupTitle } from './manager-history-capture';
 import {
   decideTie,
   finalOf,
@@ -558,6 +559,8 @@ function crown(w: World, t: EuropeTournament, winner: string) {
     t.firstStandings = phaseRows(w, t, t.clubs);
   }
   if (t.key !== 'super') awardReputation(w, winner, REPUTATION_CONFIG.continentalTitle);
+  // Every continental title, the Super Cup's included whatever its prize and news (→HIST-19).
+  if (winner === w.playerClub) captureCupTitle(w, t.key);
   if (winner === w.playerClub && t.key !== 'super') {
     const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.honor);
     credit(w, prize);

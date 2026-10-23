@@ -16,6 +16,7 @@ import {
   matchModelStateSchema,
   trackingBoundarySchema,
 } from './match-model';
+import { managerHistoryFactsSchema } from './manager-history';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -338,6 +339,7 @@ const match = fixture
       .optional(),
     appearance: matchAppearanceSchema.optional(),
     model: z.enum(MATCH_MODEL_REVISIONS).optional(),
+    managerTenure: id.optional(),
   })
   .refine((m) => !m.lineCounts || m.lineCounts[0] + m.lineCounts[1] === m.players.length);
 /** Current-season NPC aggregates under the full model (→HIST-17); widths follow the record rows. */
@@ -1027,6 +1029,7 @@ const worldSchema: z.ZodType<World> = z.object({
   ownMatches: z.array(match).max(100000),
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),
+  managerHistory: managerHistoryFactsSchema.optional(),
   history: z.array(archive).max(2200),
   events: z.array(event).max(100000),
   cash: money,
@@ -1496,6 +1499,13 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       (m.appearance.sides[0].club !== m.home || m.appearance.sides[1].club !== m.away)
     )
       throw new Error('경기 복장 기록 참조 손상');
+  // HIST-18: the facts are the own club's, and a record names a tenure they hold, never a guess.
+  const tenures = new Set(w.managerHistory?.tenures.map((t) => t.id));
+  if (w.managerHistory && w.managerHistory.club !== w.playerClub)
+    throw new Error('감독 이력 구단 참조 손상');
+  for (const m of w.ownMatches)
+    if (m.managerTenure !== undefined && !tenures.has(m.managerTenure))
+      throw new Error('감독 이력 경기 참조 손상');
   // KIT-7: a kit choice names a known unplayed own fixture of this season, not necessarily the earliest.
   if (w.kitChoice) {
     const fixtureId = w.kitChoice.fixtureId;

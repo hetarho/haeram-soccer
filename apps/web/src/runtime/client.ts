@@ -284,13 +284,23 @@ export class GameClient {
     }
     const result = await this.saves.load();
     if (result) {
+      const playback = this.state.playback,
+        career = this.state.view?.world.id;
       const reply = await this.rpc({
         type: 'inspect',
         raw: result.raw,
         activate: true,
         upgrade: !this.state.readonly,
       });
-      this.state.playback = undefined;
+      // A revealed playback of this career whose match the checkpoint holds finishes under the
+      // model it was settled with, even when this load activates a newer one (→SAVE-23).
+      const world = this.state.view?.world;
+      this.state.playback =
+        playback &&
+        world?.id === career &&
+        world?.ownMatches.some((match) => match.id === playback.record.id)
+          ? playback
+          : undefined;
       this.state.savedRevision = result.world.revision;
       this.savedCheckpoint = {
         raw: result.raw,
@@ -312,7 +322,8 @@ export class GameClient {
             revision: this.state.view!.world.revision,
           };
           this.state.savedAt = Date.now();
-          // A catalog pin or missing club designs (→SAVE-21) are updated, never the gameplay rules.
+          // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
+          // updated, never the gameplay rules or a settled fact.
           notificationStore.add(SAVE_DATA_UPDATED);
           this.channel.postMessage({
             revision: this.state.savedRevision,
@@ -640,6 +651,23 @@ export class GameClient {
     const reply = await this.rpc({ type: 'club-records' });
     if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
     return reply.clubRecords;
+  }
+  /**
+   * One page of our managers' history (→HIST-18/19, WEB-92), summarised from every own match the
+   * worker keeps and read like head-to-head without the command queue; `cursor` is the previous
+   * page's. It names the career this tab shows, and a page for any other career is refused: one
+   * answered after the worker switched games or landing after this tab did.
+   */
+  async managerHistory(cursor?: string) {
+    const world = this.state.view?.world.id;
+    const reply = await this.rpc({
+      type: 'manager-history',
+      ...(cursor !== undefined ? { cursor } : {}),
+      ...(world !== undefined ? { world } : {}),
+    });
+    if (!reply.managerHistory) throw new Error(reply.error ?? '감독 이력 응답이 없습니다.');
+    if (this.state.view?.world.id !== world) throw new Error('다른 커리어의 감독 이력입니다.');
+    return reply.managerHistory;
   }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
   async leagueFixtures(league: { code: string; tier: number; group: number }) {

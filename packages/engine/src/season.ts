@@ -79,6 +79,7 @@ import { fansAfterMatch } from './fans';
 import { applyDiscipline, closeDisciplineSeason, recordNpcInjury, serveBans } from './discipline';
 import { captureAppearance } from './match-appearance';
 import { assertFullMatchRecord } from './match-model';
+import { attributeOwnMatch, captureSeasonClose } from './manager-history-capture';
 import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import {
@@ -309,7 +310,8 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
         ? [players.length, 0]
         : [0, players.length]
       : undefined;
-    const saved = { ...m, players, ...(lineCounts ? { lineCounts } : {}) };
+    // The manager in charge is frozen on the kept record as it settles (→HIST-18).
+    const saved = attributeOwnMatch(w, { ...m, players, ...(lineCounts ? { lineCounts } : {}) });
     w.ownMatches.push(saved);
     gate(w, m);
     // Every starter settles a little by the slot he played, a substitute by the slot of the
@@ -739,6 +741,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const finishes = leagueFinishes(w);
   // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
+  // The final table and any promotion are credited before the close's departures (→HIST-19).
+  captureSeasonClose(w, { tier: oldTier, group: oldGroup });
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
