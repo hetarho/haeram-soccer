@@ -191,6 +191,29 @@ describe('grid open-play resolution', () => {
     }
   });
 
+  it('lets the keeper gather a share of the failed crosses running out on the candidate model only (T371)', () => {
+    const C = DUEL_CONFIG.candidate;
+    expect(C.crossKeeper).toBeGreaterThan(0);
+    // A wide cross with nobody of his side in the box fails; the draws after it decide where it goes.
+    const cross = (draws: number[], candidate: boolean) => {
+      const sc = scene(10, [95, 6]);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      return resolveCross(sc.s, 0, 10, sc.tags(), shotContext(sc.s), () => draws.shift() ?? 0.5);
+    };
+    const out = C.crossFailOut - 1e-6;
+    expect(cross([0.5, out, C.crossKeeper - 1e-6], true)).toEqual({ kind: 'held', by: 0 });
+    expect(cross([0.5, out, C.crossKeeper + 1e-6], true)).toMatchObject({
+      kind: 'out',
+      over: 'byline',
+    });
+    // A failed cross that stays in play, and every one on the pre-feature model, plays as before.
+    expect(cross([0.5, C.crossFailOut + 1e-6, 0], true).kind).not.toBe('held');
+    expect(cross([0.5, DUEL_CONFIG.cross.failOut - 1e-6, 0], false)).toMatchObject({
+      kind: 'out',
+      over: 'byline',
+    });
+  });
+
   it('lets a better dribbler beat his man more often and fouls a set share of failed take-ons', () => {
     const run = (dribbling: number, x = 60) => {
       const sc = scene(8, [x, 34]);
