@@ -59,6 +59,9 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
 test('recovers prior checkpoint after active corruption without clearing another application key', async ({
   page,
 }) => {
+  // Two rounds, a reload, the recovery and an export: Firefox CI 39971746291 reached the last
+  // reload at 30.0 s with every step on time.
+  test.slow();
   await found(page);
   const first = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
