@@ -67,10 +67,7 @@
 .bulkActions {
   composes: choices from './ChoiceGroup.module.css';
   flex-wrap: wrap;
-  padding-bottom: 4px;
-}
-.bulkActions button {
-  flex: none;
+  margin-bottom: 20px;
 }
 .check {
   display: flex;

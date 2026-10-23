@@ -105,7 +105,10 @@ interface CandidateDigests {
  * delivery handed the ball to nobody, moved five positions digests and no facts: nobody runs to
  * press him while the ball is in the air (1975 a23abe6daaceace9 and 0818c79f81f161a0, 1995
  * shoot-out 630da178551d5a75, 2024 81c845a7261a92d7 and 0323962fb6ef130c before); the knockout
- * ties still reach extra time and penalties. T370's shot selection in the box (with its volume and
+ * ties still reach extra time and penalties. T376's recorded ball holders in each frame moved
+ * every positions digest and no facts (1975 967b2eed08697522 and 958e5c78b5f4a9aa, 1995
+ * 84033ff29b355614 and c2babed2dbf8f2f0, 2024 d9194bb1f9e70b22 and f758ad0b3ed9de74 before).
+ * T370's shot selection in the box (with its volume and
  * long-shot scales) and the tactics' build-up interceptions moved every value and the knockout ties
  * (rescanned above); before it, facts 1975 6a0e093d7f4b8695, 3e3145221e46dcfb, a271a9f3a52a6427,
  * 1995 d62f34799bd86c94, 781d87e697e93dc9, fab640b81546a4ee, 2024 f7d7fd11221f1941,
@@ -116,7 +119,9 @@ interface CandidateDigests {
  * 209c3af0621dd846, 42b5439a0c21e378, 199aa1717566ec45, 1995 1f5e0b81550ff272, 6b03398d2eab00d8,
  * 03150b551efe3134, 2024 3b8fd3a17094f200, 674e21e9a7afd0d4, 4080512485eaee22 and positions 1975
  * bdb8c849d697f34b, 1ca812be62b58a6a, 1995 7d8c37466ec8ba7c, 65f33357a68dcb30, 2024
- * fc457228477476ab, 73cc37963c85f102.
+ * fc457228477476ab, 73cc37963c85f102. Merging T376 with them re-recorded every positions digest and no facts
+ * (1975 39d6eabbb550538c and fad88ac87b4447cb, 1995 2d67c9c89168b857 and 6bb264703f6f7c23, 2024
+ * 80ec3c2f825d634c and b9a075ff6ef68c69 before).
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
@@ -125,7 +130,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: 'da8ff901efefcc32',
       shootout: 'a1cff84512b4cd7b',
     },
-    positions: { observed: '39d6eabbb550538c', shootout: 'fad88ac87b4447cb' },
+    positions: { observed: '8600f8623ec02642', shootout: '5bc0b036f3450842' },
   },
   1995: {
     facts: {
@@ -133,7 +138,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '2eba922a8dff6947',
       shootout: '28bc42a896a91f3c',
     },
-    positions: { observed: '2d67c9c89168b857', shootout: '6bb264703f6f7c23' },
+    positions: { observed: '55b4032f3aca4a34', shootout: 'b780d682e3740b36' },
   },
   2024: {
     facts: {
@@ -141,7 +146,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: 'fe8c16da21657962',
       shootout: 'd93a980c191fc42f',
     },
-    positions: { observed: '80ec3c2f825d634c', shootout: 'b9a075ff6ef68c69' },
+    positions: { observed: 'c656af098ce0f8b3', shootout: 'ddea4368a42f04bf' },
   },
 };
 

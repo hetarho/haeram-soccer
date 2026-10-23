@@ -1,13 +1,11 @@
 import { createHash } from 'node:crypto';
-import { execFile } from 'node:child_process';
 import { mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, resolve } from 'node:path';
-import { promisify } from 'node:util';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { facilityStageTop } from '../apps/web/src/presentation/facilityImages.ts';
+import { encodeFacilityPanorama } from './art-resources.mjs';
 
-const execute = promisify(execFile);
 const root = fileURLToPath(new URL('../', import.meta.url));
 const destination = resolve(root, 'apps/web/public/art/standard');
 const planPath = resolve(destination, 'production-plan.json');
@@ -80,53 +78,14 @@ if (args.includes('--finalize')) {
   if (!source || !job) throw new Error('Expected a source and an asset from the production plan');
   if (job.kind !== 'manager' && job.kind !== 'staff' && job.stage > facilityStageTop(job.kind))
     throw new Error(`Invalid completed stage: ${asset}`);
-  const { stdout } = await execute('ffprobe', [
-    '-v',
-    'error',
-    '-select_streams',
-    'v:0',
-    '-show_entries',
-    'stream=width,height',
-    '-of',
-    'json',
-    source,
-  ]);
-  const { width, height } = JSON.parse(stdout).streams[0];
-  if (Math.abs(width / height - 3) > 0.015)
-    throw new Error(`Expected a panoramic 3:1 source for ${asset}: ${width}x${height}`);
   const output = resolve(destination, `${asset}.webp`);
-  await mkdir(dirname(output), { recursive: true });
-  await execute('ffmpeg', [
-    '-hide_banner',
-    '-loglevel',
-    'error',
-    '-y',
-    '-i',
-    source,
-    '-vf',
-    'scale=1440:480',
-    '-c:v',
-    'libwebp',
-    '-quality',
-    '85',
-    '-compression_level',
-    '6',
-    '-frames:v',
-    '1',
-    '-threads',
-    '1',
-    output,
-  ]);
-  const content = await readFile(output);
+  const encoded = await encodeFacilityPanorama(source, output);
   const record = {
     id: job.id,
     source,
-    width: 1440,
-    height: 480,
-    bytes: content.length,
-    sha256: createHash('sha256').update(content).digest('hex'),
+    ...encoded,
   };
   await mkdir(progress, { recursive: true });
   await writeFile(resolve(progress, `${job.id}.json`), JSON.stringify(record, null, 2) + '\n');
-  console.log(JSON.stringify({ asset, bytes: content.length }));
+  console.log(JSON.stringify({ asset, bytes: encoded.bytes }));
 }

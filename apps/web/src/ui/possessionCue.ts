@@ -29,11 +29,12 @@ const SENDING = new Set<MatchEvent['kind']>([
 ]);
 
 /**
- * The possession cue of the presented sample, `seconds` into its minute. An observed minute's
- * events end where the ball arrives (their `t`), so the action under way is the minute's first
- * event still ahead: its actor carries the ball, or its side has sent it. Without one, the
- * sample's recorded owner and phase decide. The side is never guessed from distance, a receiver
- * or the minute's leading side (`frame.side`).
+ * The possession cue of the presented sample, `seconds` into its minute. The minute's recorded
+ * holder at that instant (`frame.holders`) carries the ball. Otherwise an observed minute's events
+ * end where the ball arrives (their `t`), so the action under way is the minute's first event still
+ * ahead: its side has sent the ball, or a carry lost it (contested). Older frames without holders
+ * read a carrying action's actor as the carrier, then the sample's recorded owner and phase. The
+ * side is never guessed from distance, a receiver or the minute's leading side (`frame.side`).
  */
 export function resolvePossessionCue(
   sample: PresentationSample | undefined,
@@ -47,9 +48,17 @@ export function resolvePossessionCue(
       : sample.players![1].some((player) => player.id === id)
         ? 1
         : undefined;
+  const holders = frame?.holders;
+  const holder = holders?.findLast(([t]) => t <= seconds)?.[1];
+  if (holder) {
+    const side = onPitch(holder);
+    if (side !== undefined) return { state: 'carrier', side, carrierId: holder };
+  }
   // An event ending now (a goal under its hold) is still the presented action.
   const action = frame?.events?.find((event) => event.t >= seconds);
   if (action) {
+    // Nobody holds the ball: a carry under way has lost it.
+    if (holders && CARRYING.has(action.kind)) return { state: 'contested' };
     if (CARRYING.has(action.kind)) {
       const side = onPitch(action.actor);
       return side === action.side
@@ -61,7 +70,7 @@ export function resolvePossessionCue(
     // A foul, card, substitution, injury, offside or whistle: the ball is dead until the restart.
     return UNKNOWN;
   }
-  if (sample.ownerId) {
+  if (sample.ownerId && !holders) {
     const side = onPitch(sample.ownerId);
     return side === undefined ? UNKNOWN : { state: 'carrier', side, carrierId: sample.ownerId };
   }

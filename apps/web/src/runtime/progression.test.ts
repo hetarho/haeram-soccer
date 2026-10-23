@@ -33,7 +33,12 @@ function setup(current?: MatchPlayback, world = w) {
   });
   const command = vi.fn(async () => ({ ok: true, requestId: 'test', view: { world: w } as View }));
   const saveSoon = vi.fn();
-  const client = { command, cancel: vi.fn(), saveSoon } as unknown as GameClient;
+  const client = {
+    command,
+    cancel: vi.fn(),
+    saveSoon,
+    setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
+  } as unknown as GameClient;
   const controller = new ProgressionController(client);
   return { controller, command, client, saveSoon };
 }
@@ -47,6 +52,29 @@ afterEach(() => {
 });
 
 describe('the global progression clock', () => {
+  it('publishes a continuous edit lock over worker ticks and releases it on stop', () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    expect(gameStore.getState().clockRunning).toBe(true);
+    for (const processing of [true, false, true, false]) {
+      gameStore.setState({ processing });
+      expect(gameStore.getState().clockRunning).toBe(true);
+    }
+    controller.pause();
+    expect(gameStore.getState().clockRunning).toBe(false);
+  });
+  it.each([{ processing: true }, { pendingActions: 1 }, { busy: true }])(
+    'waits for admitted work before starting: %j',
+    (pending) => {
+      const s = setup();
+      controller = s.controller;
+      gameStore.setState(pending);
+      controller.start();
+      expect(controller.store.getState().running).toBe(false);
+      expect(gameStore.getState().clockRunning).not.toBe(true);
+    },
+  );
   it('pauses only while a suspension source holds and resumes without a restart', async () => {
     const s = setup();
     controller = s.controller;
@@ -428,6 +456,37 @@ describe('background play (WEB-64)', () => {
     expect(s.command.mock.calls.length).toBe(before);
     vi.unstubAllGlobals();
   });
+
+  it.each([{ busy: true }, { processing: true }, { pendingActions: 1 }])(
+    'retains the return clock until client work settles: %j',
+    async (pending) => {
+      const storage = memory();
+      vi.stubGlobal('localStorage', storage);
+      try {
+        storage.setItem(
+          'haeram-soccor:clock',
+          JSON.stringify({ [w.id]: { running: true, pace: 'x2', at: Date.now() - 10_000 } }),
+        );
+        const s = setup(undefined, quiet);
+        controller = s.controller;
+        const day = calendarHost(s);
+        gameStore.setState(pending);
+        controller.resumeAway();
+        expect(controller.store.getState().running).toBe(false);
+        expect(s.command).not.toHaveBeenCalled();
+        gameStore.setState({ busy: false, processing: false, pendingActions: 0 });
+        controller.resumeAway();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(controller.store.getState()).toMatchObject({ running: true, pace: 'x2' });
+        expect(day()).toBe(5);
+        controller.resumeAway();
+        await vi.advanceTimersByTimeAsync(0);
+        expect(s.command).toHaveBeenCalledTimes(1);
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    },
+  );
 
   it('resumes a clock left running when the page closed, once the game is shown', async () => {
     const storage = memory();

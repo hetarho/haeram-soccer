@@ -26,7 +26,7 @@ import { INCOMING_BID_CHANCE } from '../../../../packages/engine/src/transfers';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import type { SavedRows, SavedStrategy } from '../adapters/profile';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import {
   departmentDraft,
   replaceDepartment,
@@ -106,10 +106,12 @@ export function StrategyBoard({
   department?: AreaKey;
   onApplied?: () => void;
 }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.busy);
+  const acting = useGameState(gameActionsBlocked);
+  const draftBlocked = useGameState((state) => gameActionsBlocked(state, { preview: true }));
+  const previewBlocked = draftBlocked || !!w.critical;
   const error = useGameState((state) => state.error);
   const readonly = useGameState((state) => state.readonly);
-  const blocked = acting || readonly || !!w.critical || !!error;
+  const blocked = acting || !!w.critical;
   const saved = useStrategies((state) => state.items);
   const removeSaved = useStrategies((state) => state.remove);
   const [fullDraft, setDraftState] = useTaskState<BoardDraft>(w.id, 'board-draft', {});
@@ -237,6 +239,7 @@ export function StrategyBoard({
 
   // 적용 sends the strategy, then each dial, then the ticket, and stops at the first refusal.
   const apply = async () => {
+    if (gameActionsBlocked(gameStore.getSnapshot()) || w.critical) return;
     const before = client.state.view!.world;
     let remaining = (useTaskMemory.getState().values['board-draft'] as BoardDraft) ?? fullDraft;
     const selected = department ? departmentDraft(before, remaining, department) : remaining;
@@ -382,7 +385,7 @@ export function StrategyBoard({
                       options={options.map((option) => cardOf({ [slot]: option }, slot).label)}
                       inForce={options.indexOf(current[slot])}
                       drafted={drafted}
-                      disabled={blocked}
+                      disabled={previewBlocked}
                       detail={
                         <>
                           <PolicyContext w={w} row={slot} />
@@ -429,7 +432,7 @@ export function StrategyBoard({
                           options={info.options.map((option) => option.name)}
                           inForce={inForce}
                           drafted={step}
-                          disabled={blocked}
+                          disabled={previewBlocked}
                           detail={
                             <>
                               <PolicyContext w={w} row={row} />
@@ -458,7 +461,7 @@ export function StrategyBoard({
                         options={dial.levels.map((level) => level.name)}
                         inForce={dial.current}
                         drafted={step}
-                        disabled={blocked}
+                        disabled={previewBlocked}
                         detail={
                           shown >= 0 && (
                             <>
@@ -499,7 +502,7 @@ export function StrategyBoard({
                     type="button"
                     aria-pressed={drafted}
                     className={`${s.preset} ${drafted ? s.presetOn : ''}`}
-                    disabled={blocked}
+                    disabled={previewBlocked}
                     onClick={() =>
                       setDraft(
                         // Tapping the drafted preset again clears the draft.
@@ -536,7 +539,7 @@ export function StrategyBoard({
                         type="button"
                         className={s.savedPick}
                         aria-pressed={drafted}
-                        disabled={blocked}
+                        disabled={previewBlocked}
                         onClick={() =>
                           setDraft(
                             drafted
@@ -723,7 +726,7 @@ export function StrategyBoard({
             </p>
           )}
           <div className={s.confirm}>
-            <button type="button" disabled={acting} onClick={() => setDraft({})}>
+            <button type="button" disabled={draftBlocked} onClick={() => setDraft({})}>
               되돌리기
             </button>
             <button

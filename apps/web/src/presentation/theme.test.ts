@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import pixelData from '../../public/presentation/themes/pixel.json';
 import registryData from '../../public/presentation/themes/index.json';
 import standardData from '../../public/presentation/themes/standard.json';
+import printData from '../../public/presentation/themes/matchday-print.json';
+import stickerData from '../../public/presentation/themes/sticker-club.json';
 import { createPresentationResources } from '../adapters/presentationResources';
 import { FACILITY_ERAS, FACILITY_KINDS, THEME_ICON_ROLES, validateThemePack } from './contracts';
 import { facilityStageTop } from './facilityImages';
@@ -34,33 +36,44 @@ function resources(overrides: Record<string, unknown> = {}) {
 }
 
 describe('theme resource resolution', () => {
-  it('keeps every standard icon and completed facility scene independent from pixel assets', () => {
-    const standard = createThemeResolver(validateThemePack(standardData), {
-      url: '/presentation/themes/standard.json',
-    });
-    const original = createThemeResolver(pixel, { url });
-    for (const role of THEME_ICON_ROLES) {
-      expect(standard.icon(role), role).not.toEqual(original.icon(role));
-      if (role.startsWith('trophy.'))
-        expect(standard.icon(role, 'unearned'), role).not.toEqual(original.icon(role, 'unearned'));
-    }
-    for (const era of FACILITY_ERAS)
-      for (const kind of FACILITY_KINDS) {
-        const artwork = new Set<string>();
-        for (let stage = 0; stage <= facilityStageTop(kind); stage++) {
-          const selection = { era, kind, stage };
-          const scene = standard.facility(selection);
-          expect(scene.src).not.toBe(original.facility(selection).src);
-          expect(scene.treatment.imageRendering).toBe('auto');
-          const content = readFileSync(new URL(`../../public${scene.src}`, import.meta.url));
-          expect(content.toString('ascii', 8, 12), scene.src).toBe('WEBP');
-          artwork.add(createHash('sha256').update(content).digest('hex'));
+  it.each([standardData, printData, stickerData])(
+    'keeps every $id icon and completed facility scene independent from pixel assets',
+    (data) => {
+      const standard = createThemeResolver(validateThemePack(data), {
+        url: `/presentation/themes/${data.id}.json`,
+      });
+      const original = createThemeResolver(pixel, { url });
+      for (const role of THEME_ICON_ROLES) {
+        expect(standard.icon(role), role).not.toEqual(original.icon(role));
+        if (role.startsWith('trophy.')) {
+          expect(standard.icon(role, 'unearned'), role).not.toEqual(
+            original.icon(role, 'unearned'),
+          );
+          if (data.id !== 'standard')
+            expect(
+              standard.icon(role, 'unearned'),
+              `${data.id}/${role} has a distinct unearned state`,
+            ).not.toEqual(standard.icon(role));
         }
-        expect(artwork.size, `${era}/${kind} has distinct completed-stage artwork`).toBe(
-          facilityStageTop(kind) + 1,
-        );
       }
-  });
+      for (const era of FACILITY_ERAS)
+        for (const kind of FACILITY_KINDS) {
+          const artwork = new Set<string>();
+          for (let stage = 0; stage <= facilityStageTop(kind); stage++) {
+            const selection = { era, kind, stage };
+            const scene = standard.facility(selection);
+            expect(scene.src).not.toBe(original.facility(selection).src);
+            expect(scene.treatment.imageRendering).toBe('auto');
+            const content = readFileSync(new URL(`../../public${scene.src}`, import.meta.url));
+            expect(content.toString('ascii', 8, 12), scene.src).toBe('WEBP');
+            artwork.add(createHash('sha256').update(content).digest('hex'));
+          }
+          expect(artwork.size, `${era}/${kind} has distinct completed-stage artwork`).toBe(
+            facilityStageTop(kind) + 1,
+          );
+        }
+    },
+  );
 
   it('validates every shipped theme and preserves baseline licensed assets', async () => {
     const loader = resources();

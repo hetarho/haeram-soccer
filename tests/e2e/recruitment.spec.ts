@@ -382,7 +382,7 @@ test('the market ends with who answers offers and names the recruitment level, o
   const offers = page.getByRole('region', { name: '이적 제안 위임' });
   const owner = offers.getByTestId('decision-owner-sales');
   await expect(offers.getByRole('checkbox')).toHaveCount(0);
-  await expect(owner).toContainText('직접 결정');
+  await expect(owner).toContainText('보고받기');
 
   // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');

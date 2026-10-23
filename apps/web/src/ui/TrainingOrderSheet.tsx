@@ -22,7 +22,7 @@ import { YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
 import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff';
 import { trainingFocusInfo } from '../../../../packages/engine/src/training';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import s from './TrainingOrderSheet.module.css';
 
@@ -88,7 +88,7 @@ export function TrainingOrderSheet({
   player?: Player;
   onClose: () => void;
 }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const acting = useGameState(gameActionsBlocked);
   const [sending, setSending] = useState(false);
   const member = staffMember(w, coach),
     title = player ? `${player.name} 개별 훈련` : `${STAFF_INFO[coach].label} 훈련 제안`,

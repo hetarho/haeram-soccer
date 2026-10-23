@@ -12,7 +12,7 @@ import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import { currentStepName } from './board';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { DecisionOwner } from './DecisionOwner';
 import { DirectionLines } from './DirectionLines';
 import { directionOption } from '../../../../packages/engine/src/direction';
@@ -28,7 +28,7 @@ import { callLine } from './TrainingOrderSheet';
 import s from './TrainingView.module.css';
 
 function useActing() {
-  return useGameState((state) => !!state.pendingActions || state.readonly || !!state.error);
+  return useGameState(gameActionsBlocked);
 }
 
 function Meter({ value }: { value: number }) {

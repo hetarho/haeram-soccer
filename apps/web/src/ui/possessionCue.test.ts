@@ -189,4 +189,41 @@ describe('possession cue', () => {
       resolvePossessionCue(sample({ phase: 'possession' }), frame([], { side: 1 }), 30),
     ).toEqual({ state: 'unknown' });
   });
+  it('recorded holders mark a receiver on the ball before his pass is played', () => {
+    // h9 receives at 20 s, holds it until his kick at 22.5 s; the pass lands at 24 s.
+    const minute = frame([event(20, 'pass', 1, { actor: 'a4' }), event(24, 'pass', 0)], {
+      holders: [
+        [0, ''],
+        [20, 'h9'],
+        [22.5, ''],
+        [24, 'a4'],
+      ],
+    });
+    expect(resolvePossessionCue(sample(), minute, 21)).toEqual({
+      state: 'carrier',
+      side: 0,
+      carrierId: 'h9',
+    });
+    // In flight: the sending side, no carrier.
+    expect(resolvePossessionCue(sample(), minute, 23)).toEqual({ state: 'flight', side: 0 });
+    expect(resolvePossessionCue(sample(), minute, 30).carrierId).toBe('a4');
+  });
+
+  it('a carry that lost the ball is contested while nobody holds it', () => {
+    const minute = frame([event(26, 'carry', 0)], {
+      holders: [
+        [0, 'h9'],
+        [24, ''],
+      ],
+    });
+    expect(resolvePossessionCue(sample(), minute, 20).carrierId).toBe('h9');
+    expect(resolvePossessionCue(sample(), minute, 25)).toEqual({ state: 'contested' });
+  });
+
+  it('a stale sample owner is ignored once holders are recorded', () => {
+    const minute = frame([], { holders: [[0, '']] });
+    expect(resolvePossessionCue(sample({ ownerId: 'h9' }), minute, 30)).toEqual({
+      state: 'unknown',
+    });
+  });
 });

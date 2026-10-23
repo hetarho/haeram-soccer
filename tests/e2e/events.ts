@@ -25,12 +25,33 @@ export async function dismissMatchReport(page: Page) {
 }
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
-  if (!(await page.getByTestId('owner-office').isVisible())) {
+  // The address changes at once, while a page left a moment ago may still show its office until
+  // the deferred view commits (a gate run read it there just after returning home).
+  const open =
+    new URL(page.url()).pathname === '/direction' &&
+    (await page.getByTestId('owner-office').isVisible());
+  if (!open) {
     await page
       .getByRole('navigation')
       .getByRole('button', { name: '구단 운영', exact: true })
       .click();
-    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
+    const tab = page.getByRole('tab', { name: '구단주 사무실', exact: true });
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await tab.click({ timeout: 2000 });
+        break;
+      } catch (error) {
+        if (attempt >= 3) throw error;
+        // A decision's outcome toast can cover the tab until it hides: CI 39952590526 waited
+        // 7.5 s there and ran recovery out of time. An event card may cover the toast's own
+        // close button in turn, so that click is bounded too.
+        await page
+          .getByTestId('action-outcome')
+          .getByRole('button', { name: /^(확인|알림 닫기)$/ })
+          .click({ timeout: 2000 })
+          .catch(() => undefined);
+      }
+    }
   }
   await expect(page.getByTestId('owner-office')).toBeVisible();
   return page.getByTestId('owner-office');
@@ -44,16 +65,16 @@ async function confirmAuthority(page: Page, label: string, value: 'direct' | 'de
   const choice = page
     .getByTestId('owner-office')
     .getByRole('group', { name: label, exact: true })
-    .getByRole('button', { name: value === 'delegated' ? '위임' : '직접 결정', exact: true });
+    .getByRole('button', { name: value === 'delegated' ? '위임' : '보고받기', exact: true });
   if ((await choice.getAttribute('aria-pressed')) === 'true') return;
   await choice.click();
   const dialog = page.getByRole('dialog', {
-    name: value === 'delegated' ? '위임하겠습니다.' : '제가 관여하겠습니다.',
+    name: value === 'delegated' ? '위임하겠습니다.' : '보고받겠습니다.',
     exact: true,
   });
   await dialog
     .getByRole('button', {
-      name: value === 'delegated' ? '위임하기' : '직접 결정하기',
+      name: value === 'delegated' ? '위임하기' : '보고받기',
       exact: true,
     })
     .click();
@@ -95,51 +116,51 @@ export async function configureResponsibilities(
   }
   const office = await openOffice(page);
   const entries = Object.entries(options.responsibilities ?? {});
-  if (
+  // The bulk control is safe when all nine fields are explicitly requested. Otherwise preserve
+  // unspecified report choices by changing only individual business responsibilities.
+  const bulkValue =
     entries.length === Object.keys(LABELS).length &&
-    new Set(entries.map(([, value]) => value)).size === 1
-  ) {
-    const value = entries[0][1];
-    const bulk = office.getByRole('button', {
-      name: value === 'delegated' ? '전체 위임' : '전체 직접 결정',
+    new Set(entries.map(([, value]) => value)).size === 1 &&
+    options.observations?.matchEve !== undefined &&
+    options.observations?.windowOpen !== undefined
+      ? entries[0][1]
+      : undefined;
+  if (bulkValue) {
+    const choice = office.getByRole('button', {
+      name: bulkValue === 'delegated' ? '전체 위임' : '전체 보고받기',
       exact: true,
     });
-    const labels = Object.values(LABELS);
-    const selected = await Promise.all(
-      labels.map((label) =>
-        office
-          .getByRole('group', { name: label, exact: true })
-          .getByRole('button', { name: value === 'delegated' ? '위임' : '직접 결정', exact: true })
-          .getAttribute('aria-pressed'),
-      ),
-    );
-    if (selected.some((pressed) => pressed !== 'true')) {
-      await bulk.click();
+    if ((await choice.getAttribute('aria-pressed')) !== 'true') {
+      await choice.click();
       const dialog = page.getByRole('dialog', {
-        name: value === 'delegated' ? '위임하겠습니다.' : '제가 관여하겠습니다.',
+        name: bulkValue === 'delegated' ? '위임하겠습니다.' : '보고받겠습니다.',
         exact: true,
       });
       await dialog
         .getByRole('button', {
-          name: value === 'delegated' ? '위임하기' : '직접 결정하기',
+          name: bulkValue === 'delegated' ? '위임하기' : '보고받기',
           exact: true,
         })
         .click();
       await expect(dialog).toHaveCount(0);
       await dismissSettingsToast(page);
     }
-  } else
+  } else {
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
-  if (options.mode) {
-    const choice = office
-      .getByRole('group', { name: '진행 모드', exact: true })
-      .getByRole('button', {
-        name: options.mode === 'manual' ? '수동 진행' : '자동 진행',
-        exact: true,
-      });
-    if ((await choice.getAttribute('aria-pressed')) !== 'true') {
-      await choice.click();
+  }
+  const currentMode = await page
+    .getByRole('region', { name: '시즌 정보', exact: true })
+    .innerText();
+  if (options.mode && !currentMode.includes(options.mode === 'manual' ? 'MANUAL' : 'AUTO')) {
+    await page
+      .getByRole('navigation')
+      .getByRole('button', { name: '클럽 홈', exact: true })
+      .click();
+    const shortcut = page.getByRole('button', { name: /진행 방식 변경/ });
+    const expected = options.mode === 'manual' ? '현재 수동 모드' : '현재 자동 모드';
+    if (!(await shortcut.getAttribute('aria-label'))?.includes(expected)) {
+      await shortcut.click();
       const dialog = page.getByRole('dialog', {
         name: '게임 진행 방식이 변경됩니다.',
         exact: true,
@@ -151,10 +172,11 @@ export async function configureResponsibilities(
             exact: true,
           })
           .click();
-      await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await expect(shortcut).toHaveAttribute('aria-label', `진행 방식 변경 · ${expected}`);
       await dismissMatchReport(page);
-      await dismissSettingsToast(page);
     }
+    await openOffice(page);
+    await dismissSettingsToast(page);
   }
   // Explicit report choices are applied after the mode-entry default.
   for (const [key, value] of Object.entries(options.observations ?? {})) {
@@ -163,7 +185,7 @@ export async function configureResponsibilities(
         name: key === 'matchEve' ? '경기 전날 보고' : '이적시장 개장 보고',
         exact: true,
       })
-      .getByRole('button', { name: value ? '받기' : '받지 않기', exact: true });
+      .getByRole('button', { name: value ? '보고받기' : '위임', exact: true });
     if ((await choice.getAttribute('aria-pressed')) !== 'true') {
       await choice.click();
       await expect(choice).toHaveAttribute('aria-pressed', 'true');

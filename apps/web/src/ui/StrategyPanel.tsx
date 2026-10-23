@@ -32,7 +32,7 @@ import { tacticRequestOutlook } from '../../../../packages/engine/src/ops-staff'
 import { FORMATIONS, lineOf, ROLE_LABEL } from '../../../../packages/engine/src/player';
 import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
 import type { GameClient } from '../runtime/client';
-import { gameStore, useGameState } from '../runtime/store';
+import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { FixtureKitSelector } from './FixtureKitSelector';
 import { Money } from './Money';
@@ -198,15 +198,15 @@ function Preview({
 }
 
 export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, playerId }: Props) {
-  const acting = useGameState((state) => !!state.pendingActions);
-  const readonly = useGameState((state) => state.readonly);
-  const error = useGameState((state) => state.error);
+  const acting = useGameState(gameActionsBlocked);
+  const draftBlocked = useGameState((state) => gameActionsBlocked(state, { preview: true }));
   const tabId = useId();
   const [tab, setTab] = useState<PreparationTab>('tactic');
   const [preset, setPreset] = useState<'current' | 'strongest' | 'rest' | 'manual'>('current');
   const [open, setOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
-  const blocked = preparing || acting || readonly || !!error || !!w.critical;
+  const blocked = preparing || acting || !!w.critical;
+  const previewBlocked = preparing || draftBlocked || !!w.critical;
   const [draft, setDraft] = useState<string[]>([]);
   const [tactic, setTactic] = useState<Tactic>(w.tactic);
   const [tone, setTone] = useState<Tone>('evidence');
@@ -438,7 +438,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                 {(Object.keys(styles) as Tactic[]).map((value) => (
                   <button
                     key={value}
-                    disabled={blocked}
+                    disabled={previewBlocked}
                     aria-pressed={tactic === value}
                     onClick={() => setTactic(value)}
                   >
@@ -472,7 +472,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   감독에게 전달할 방식
                   <Select
                     aria-label="전술 요청 방식"
-                    disabled={blocked}
+                    disabled={previewBlocked}
                     value={tone}
                     onValueChange={(value) => setTone(value as Tone)}
                   >
@@ -532,7 +532,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               </div>
               <div className={s.presets}>
                 <button
-                  disabled={blocked}
+                  disabled={previewBlocked}
                   aria-pressed={preset === 'strongest'}
                   onClick={() => {
                     setDraft(lineupPreset(w, 'strongest', next));
@@ -542,7 +542,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   전력 우선으로 선택
                 </button>
                 <button
-                  disabled={blocked}
+                  disabled={previewBlocked}
                   aria-pressed={preset === 'rest'}
                   onClick={() => {
                     setDraft(lineupPreset(w, 'rest', next));
@@ -599,7 +599,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                         {place.position} · {ROLE_LABEL[place.role]}
                       </span>
                       <Select
-                        disabled={blocked}
+                        disabled={previewBlocked}
                         aria-label={`선발 ${slot + 1} ${place.position}`}
                         value={draft[slot] || ''}
                         onValueChange={(value) => {

@@ -11,6 +11,16 @@
       "id": "pixel",
       "label": "픽셀아트",
       "resource": "pixel.json"
+    },
+    {
+      "id": "matchday-print",
+      "label": "매치데이 인쇄",
+      "resource": "matchday-print.json"
+    },
+    {
+      "id": "sticker-club",
+      "label": "스티커 풋볼클럽",
+      "resource": "sticker-club.json"
     }
   ]
 }

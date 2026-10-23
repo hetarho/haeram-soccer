@@ -148,6 +148,45 @@ export function leagueFixtures(w: World, ids: string[]): Fixture[] {
   );
 }
 
+/** The calendar weeks a league's `fixtures` are played in, in order: its own rounds (→WEB-18). */
+export function leagueRounds(fixtures: readonly Fixture[]): number[] {
+  return [...new Set(fixtures.map((f) => f.round))].sort((a, b) => a - b);
+}
+/**
+ * Where calendar week `week` falls in a league's `rounds`: a fixture's week gives its round, the
+ * last settled week the rounds played. A week the league sits out changes nothing.
+ */
+export function divisionRound(rounds: readonly number[], week: number): number {
+  return rounds.filter((round) => round <= week).length;
+}
+/** Our division's rounds played this season and its season total (→WEB-18). */
+export function ownDivisionRound(w: World): { played: number; total: number } {
+  const rounds = leagueRounds(leagueFixtures(w, ownLeagueIds(w)));
+  return { played: divisionRound(rounds, w.round), total: rounds.length };
+}
+/**
+ * Only the snapshots after rounds the league played: a week it sat out repeats the previous
+ * table, and one before its first round is empty.
+ */
+function playedRounds<T extends LeagueRound>(timeline: T[]): T[] {
+  const same = (a: T, b: T) =>
+    a.rows.length === b.rows.length &&
+    a.rows.every((row, i) => {
+      const other = b.rows[i]!;
+      return (
+        row.id === other.id &&
+        row.points === other.points &&
+        row.gf === other.gf &&
+        row.ga === other.ga
+      );
+    });
+  return timeline.filter(
+    (round, i) =>
+      round.rows.some((row) => row.points || row.gf || row.ga) &&
+      (i === 0 || !same(round, timeline[i - 1]!)),
+  );
+}
+
 export function sameMembers(a: string[], b: string[]): boolean {
   const members = new Set(a);
   return members.size === new Set(b).size && b.every((id) => members.has(id));
@@ -161,27 +200,29 @@ export interface ArchivedRound extends LeagueRound {
 
 /** The standings our league kept after each played round of `year`, in round order. */
 export function archivedTimeline(w: World, year: number): ArchivedRound[] {
-  return (w.rankHistory || [])
-    .filter(
-      (snapshot) =>
-        snapshot.year === year &&
-        snapshot.round > 0 &&
-        snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
-    )
-    .map((snapshot) => ({
-      year: snapshot.year,
-      round: snapshot.round,
-      tier: snapshot.tier,
-      group: snapshot.group,
-      rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
-        id: w.clubs[index].id,
-        rank: i + 1,
-        points,
-        gf,
-        ga,
-      })),
-    }))
-    .sort((a, b) => a.round - b.round);
+  return playedRounds(
+    (w.rankHistory || [])
+      .filter(
+        (snapshot) =>
+          snapshot.year === year &&
+          snapshot.round > 0 &&
+          snapshot.rows.some(([index]) => w.clubs[index]?.id === w.playerClub),
+      )
+      .map((snapshot) => ({
+        year: snapshot.year,
+        round: snapshot.round,
+        tier: snapshot.tier,
+        group: snapshot.group,
+        rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
+          id: w.clubs[index].id,
+          rank: i + 1,
+          points,
+          gf,
+          ga,
+        })),
+      }))
+      .sort((a, b) => a.round - b.round),
+  );
 }
 
 /**
@@ -255,9 +296,11 @@ export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
     };
   });
   // A migrated save can start saving snapshots midseason; retain its earlier scores.
-  return [
-    ...new Map([...reconstructed, ...savedRounds].map((round) => [round.round, round])).values(),
-  ].sort((a, b) => a.round - b.round);
+  return playedRounds(
+    [
+      ...new Map([...reconstructed, ...savedRounds].map((round) => [round.round, round])).values(),
+    ].sort((a, b) => a.round - b.round),
+  );
 }
 
 export function rankChange(timeline: LeagueRound[], id: string): number | undefined {
@@ -325,6 +368,8 @@ export function leagueOverviewModel(w: World) {
     /** The latest result and how many matches in a row (of the last five) ended that way. */
     streak: { result: last, length: run < 0 ? form.length : run },
     lastMatch,
+    /** The latest result's round of our division. */
+    lastRound: lastMatch ? divisionRound(leagueRounds(fixtures), lastMatch.round) : 0,
     ownGoals,
     opponentGoals,
     matchPoints:

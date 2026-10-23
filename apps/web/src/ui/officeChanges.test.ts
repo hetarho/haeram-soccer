@@ -6,7 +6,12 @@ import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { applyOfficeChange, officeProposal, officeSettings } from './officeChanges';
+import {
+  applyOfficeChange,
+  officeBulkChange,
+  officeProposal,
+  officeSettings,
+} from './officeChanges';
 vi.mock('../../../../packages/engine/src/pending-work-preview', () => ({
   pendingWorkPreview: vi.fn(() => []),
 }));
@@ -30,6 +35,61 @@ function ports(idle = async () => {}) {
   return { command, controller, client: { command, whenIdle: idle } as unknown as GameClient };
 }
 describe('reviewed office changes', () => {
+  it('rejects a report change during play without implicitly stopping the clock', async () => {
+    const p = ports();
+    const proposal = officeProposal(world(), { observations: { matchEve: false } });
+    gameStore.setState({ clockRunning: true });
+    await expect(applyOfficeChange(p.client, p.controller, proposal)).rejects.toThrow('정지');
+    expect(p.controller.pause).not.toHaveBeenCalled();
+    expect(p.command).not.toHaveBeenCalled();
+  });
+  it.each(['direct', 'delegated'] as const)(
+    'applies a reviewed bulk %s choice to observations and business while preserving fresh mode',
+    async (value) => {
+      const w = world(),
+        before = structuredClone(w),
+        change = officeBulkChange(w, value)!;
+      const proposal = officeProposal(w, change);
+      expect(w).toEqual(before);
+      const p = ports(async () => publish({ ...w, settings: { ...w.settings!, mode: 'manual' } }));
+      await applyOfficeChange(p.client, p.controller, proposal);
+      const applied = gameStore.getState().view!.world;
+      expect(
+        Object.values(applied.settings!.responsibilities).every((item) => item === value),
+      ).toBe(true);
+      expect(applied.settings!.observations).toEqual({
+        matchEve: value === 'direct',
+        windowOpen: value === 'direct',
+      });
+      expect(applied.settings!.mode).toBe('manual');
+      expect(p.command).toHaveBeenCalledTimes(1);
+      expect(officeBulkChange(applied, value)).toBeUndefined();
+    },
+  );
+  it.each(['direct', 'delegated'] as const)(
+    'includes observation-only bulk %s changes when all business settings already match',
+    (value) => {
+      const w = world();
+      w.settings = officeSettings(w, officeBulkChange(w, value)!);
+      w.settings.observations = { matchEve: value !== 'direct', windowOpen: value !== 'direct' };
+      expect(officeBulkChange(w, value)).toEqual({
+        responsibilities: {},
+        observations: { matchEve: value === 'direct', windowOpen: value === 'direct' },
+      });
+    },
+  );
+  it('rejects a bulk confirmation when a reviewed report choice changes before apply', async () => {
+    const w = world(),
+      proposal = officeProposal(w, officeBulkChange(w, 'delegated')!),
+      p = ports(async () => {
+        publish({
+          ...w,
+          settings: { ...w.settings!, observations: { matchEve: false, windowOpen: false } },
+        });
+      });
+    await expect(applyOfficeChange(p.client, p.controller, proposal)).rejects.toThrow('이미 설정');
+    expect(p.command).not.toHaveBeenCalled();
+  });
   it('prepares without mutating, then preserves unrelated fresh settings on confirmation', async () => {
     const w = world(),
       before = structuredClone(w);

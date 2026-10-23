@@ -1,6 +1,6 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import {
   openCoachSheet,
@@ -57,7 +57,7 @@ export function RemedySheet({
   onClose: () => void;
   onPrepare?: () => void;
 }) {
-  const acting = useGameState((state) => !!state.pendingActions || state.readonly);
+  const acting = useGameState(gameActionsBlocked);
   const run = useRemedyRunner(client, () => {
     onClose();
     onPrepare?.();

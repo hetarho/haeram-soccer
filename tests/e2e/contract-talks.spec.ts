@@ -14,6 +14,7 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { eventCard } from './events';
 import { continueSlot } from './slots';
+import { savedWorld } from './club-identity-helpers';
 
 /**
  * A club on 1 January 1951 whose owner answers contract talks: one player in his contract's final
@@ -32,6 +33,7 @@ async function talking() {
     type: 'settings',
     settings: {
       ...w.settings!,
+      mode: 'manual',
       responsibilities: {
         ...w.settings!.responsibilities,
         contracts: 'direct',
@@ -68,9 +70,7 @@ async function talking() {
   return {
     raw: await encode(w, 1, 0),
     name: player.name,
-    round: w.round,
-    // Six weeks unhappy from today end in this league round.
-    due: Math.ceil((currentDay(w) + UNHAPPY_CONFIG.requestDays) / ROUND_INTERVAL_DAYS),
+    dueDay: currentDay(w) + UNHAPPY_CONFIG.requestDays,
   };
 }
 async function seed(page: Page, raw: string) {
@@ -94,9 +94,9 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   browserName,
 }) => {
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
-  // Seven league rounds of the whole world are played in the browser.
+  // Six weeks of real match events are played in the browser.
   test.slow();
-  const { raw, name, round, due } = await talking();
+  const { raw, name, dueDay } = await talking();
   await seed(page, raw);
   await page.goto('/');
   await continueSlot(page);
@@ -129,7 +129,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(
     page.getByRole('region', { name: '계약 협상 위임' }).getByTestId('decision-owner-contracts'),
-  ).toContainText('직접 결정');
+  ).toContainText('보고받기');
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
@@ -137,10 +137,15 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(card).toHaveCount(0);
 
   // Six weeks later he hands in a transfer request.
-  for (let next = round + 1; next <= due; next++) {
+  let day = currentDay(await savedWorld(page));
+  const maxMatches = Math.ceil(UNHAPPY_CONFIG.requestDays / ROUND_INTERVAL_DAYS) + 1;
+  for (let match = 0; day < dueDay && match < maxMatches; match++) {
     await advanceOneRound(page);
-    await expect(page.getByTestId('game-round')).toHaveText(String(next));
+    const nextDay = currentDay(await savedWorld(page));
+    expect(nextDay).toBeGreaterThan(day);
+    day = nextDay;
   }
+  expect(day).toBeGreaterThanOrEqual(dueDay);
   await page.keyboard.press('Escape');
   await expect(card).toHaveCount(0);
   await page.getByTestId('communications-button').click();
@@ -170,7 +175,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
-  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접 결정');
+  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('보고받기');
   await expect(talks.getByRole('button', { name: /^재정 기조 · 표준/ })).toBeVisible();
   await expect(talks).toContainText('시장가의 110%까지');
   await expect(talks).toContainText('32세부터 1시즌');

@@ -60,7 +60,7 @@
 .bid div {
   padding: 6px 10px;
   border-radius: var(--card-radius);
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--inset-fill, rgba(0, 0, 0, 0.25));
 }
 .bid dt {
   font-size: 12px;

@@ -6,10 +6,12 @@ import { kindLabel, seasonName } from './format';
 import {
   archivedTimeline,
   divisionName,
+  divisionRound,
   finalZones,
   formFor,
   leagueFixtures,
   leagueOverviewModel,
+  leagueRounds,
   leagueRules,
   leagueTimeline,
   orderIds,
@@ -239,6 +241,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
     cushion,
     streak,
     lastMatch,
+    lastRound,
     ownGoals,
     opponentGoals,
     matchPoints,
@@ -260,7 +263,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
       {lastMatch && (
         <p className={s.lastResult}>
           <b>
-            {lastMatch.round}라운드 · {ownGoals}–{opponentGoals}{' '}
+            {lastRound}라운드 · {ownGoals}–{opponentGoals}{' '}
             {matchPoints === RESULT_POINTS.win
               ? '승리'
               : matchPoints === RESULT_POINTS.draw
@@ -551,10 +554,10 @@ export function RankHistoryGraph({
         <>
           <figure className={s.chart}>
             <RankChart
-              label={`${name(primary)} 순위 추이: ${timeline.map((r) => `${r.round}라운드 ${r.rows.find((row) => row.id === primary)?.rank}위`).join(', ')}`}
+              label={`${name(primary)} 순위 추이: ${timeline.map((r, i) => `${i + 1}라운드 ${r.rows.find((row) => row.id === primary)?.rank}위`).join(', ')}`}
               axis={axis}
-              first={timeline[0].round}
-              last={timeline.at(-1)!.round}
+              first={1}
+              last={timeline.length}
             >
               {[...series].reverse().map((id) => (
                 <g key={id} opacity={choice === 'all' && id !== primary ? 0.35 : 1}>
@@ -583,7 +586,7 @@ export function RankHistoryGraph({
                             fill={id === primary ? '#28654b' : '#b57f54'}
                           >
                             <title>
-                              {name(id)} · {round.round}라운드 {row.rank}위 · {row.points}점
+                              {name(id)} · {i + 1}라운드 {row.rank}위 · {row.points}점
                             </title>
                           </circle>
                         )
@@ -624,9 +627,9 @@ export function RankHistoryGraph({
                   </tr>
                 </thead>
                 <tbody>
-                  {timeline.map((round) => (
+                  {timeline.map((round, i) => (
                     <tr key={round.round}>
-                      <th scope="row">{round.round}</th>
+                      <th scope="row">{i + 1}</th>
                       {series.map((id) => {
                         const row = round.rows.find((row) => row.id === id);
                         return <td key={id}>{row ? `${row.rank}위 · ${row.points}점` : '—'}</td>;
@@ -653,7 +656,7 @@ export function RoundResults({
   fixtures?: Fixture[];
 }) {
   const fixtures = read ?? leagueFixtures(w, ids),
-    rounds = [...new Set(fixtures.map((f) => f.round))].sort((a, b) => a - b);
+    rounds = leagueRounds(fixtures);
   const completed = fixtures.filter((f) => f.score),
     defaultRound = completed.length ? Math.max(...completed.map((f) => f.round)) : rounds[0];
   const [selected, setSelected] = useState<number>();
@@ -689,7 +692,8 @@ export function RoundResults({
           >
             {rounds.map((r) => (
               <option key={r} value={r}>
-                {r}라운드{fixtures.some((f) => f.round === r && f.score) ? ' · 종료' : ' · 예정'}
+                {rounds.indexOf(r) + 1}라운드
+                {fixtures.some((f) => f.round === r && f.score) ? ' · 종료' : ' · 예정'}
               </option>
             ))}
           </Select>
@@ -731,7 +735,9 @@ export function LeagueInsights({ w, ids = ownLeagueIds(w) }: { w: World; ids?: s
             <h3>{rules ? `${rules.cp.name} · ${rules.first.tier + 1}부 순위표` : '리그 순위표'}</h3>
             <span>{seasonName(w.year)} · 승점이 같으면 골득실로 순위를 가릅니다</span>
           </div>
-          <span className={s.roundTag}>{w.round}라운드</span>
+          <span className={s.roundTag}>
+            {divisionRound(leagueRounds(leagueFixtures(w, ids)), w.round)}라운드
+          </span>
         </div>
         <Standings w={w} ids={ids} />
       </section>

@@ -36,6 +36,38 @@ export function exit(
   );
 }
 
+let copies = 0;
+/**
+ * A detached copy for an exit animation. Its ids gain a suffix and its own `url(#…)` and `#…`
+ * references follow them, so the fading copy never repeats an id of the page beneath it (a crest's
+ * clip path did while a match opened, CI 39952590526).
+ */
+export function detachedCopy<T extends Element>(element: T): T {
+  const copy = element.cloneNode(true) as T;
+  const nodes = [copy, ...copy.querySelectorAll('[id]')];
+  const renamed = new Map<string, string>();
+  const suffix = `-leaving-${++copies}`;
+  for (const node of nodes)
+    if (node.id) {
+      renamed.set(node.id, node.id + suffix);
+      node.id += suffix;
+    }
+  if (renamed.size)
+    for (const node of [copy, ...copy.querySelectorAll('*')])
+      for (const attribute of node.attributes) {
+        const value = retarget(attribute.value, renamed);
+        if (value !== attribute.value) attribute.value = value;
+      }
+  return copy;
+}
+/** An attribute value with its `url(#id)` and `#id` references to renamed ids rewritten. */
+export function retarget(value: string, renamed: ReadonlyMap<string, string>) {
+  if (value.startsWith('#')) return `#${renamed.get(value.slice(1)) ?? value.slice(1)}`;
+  return value.replace(/url\((['"]?)#([^'")]+)\1\)/g, (match, quote: string, id: string) =>
+    renamed.has(id) ? `url(${quote}#${renamed.get(id)}${quote})` : match,
+  );
+}
+
 /**
  * Keeps content mounted briefly after it disappears so it can animate out.
  * Returns the content to render and whether it is leaving.
@@ -76,7 +108,7 @@ export function fadeOutOnRemove(keyframes: Keyframe[], duration = 180) {
       // Freeze their viewport geometry before moving the copy into the body.
       const bounds = element.getBoundingClientRect();
       if (!bounds.width || !bounds.height) return;
-      const ghost = element.cloneNode(true) as HTMLElement;
+      const ghost = detachedCopy(element);
       Object.assign(ghost.style, {
         position: 'fixed',
         top: `${bounds.top}px`,

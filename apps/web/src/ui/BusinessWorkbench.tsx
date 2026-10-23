@@ -15,7 +15,7 @@ import { ratio } from '../../../../packages/engine/src/primitives';
 import { CAMPAIGNS } from '../../../../packages/engine/src/ops-commercial';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import type { ClientState, GameClient } from '../runtime/client';
-import { useGameState } from '../runtime/store';
+import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { FacilityParts } from './FacilityParts';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
@@ -159,10 +159,7 @@ function MoneyWorkbench({
     club = clubOf(w),
     finance = state.view!.finance || financialBreakdown(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
-  const acting = useGameState((current) => !!current.pendingActions);
-  const readonly = useGameState((current) => current.readonly);
-  const error = useGameState((current) => current.error);
-  const blocked = acting || readonly || !!error;
+  const blocked = useGameState(gameActionsBlocked);
   const tab = part;
   const [sheet, setSheet] = useState<'ledger' | 'legacy'>();
   const [message, setMessage] = useState('');

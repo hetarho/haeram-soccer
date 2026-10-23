@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HAERAM · 매치데이 인쇄 / 스티커 풋볼클럽</title>
+    <style>
+      @font-face {
+        font-family: Pretendard;
+        src: url('/fonts/Pretendard-Regular.woff2');
+        font-weight: 400 500;
+      }
+      @font-face {
+        font-family: Pretendard;
+        src: url('/fonts/Pretendard-Bold.woff2');
+        font-weight: 600 900;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #eeeee8;
+        color: #25342d;
+        font-family: Pretendard, sans-serif;
+      }
+      main {
+        max-width: 2100px;
+        margin: auto;
+      }
+      .overview,
+      section {
+        padding: 36px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #5c6a5e;
+      }
+      h1 {
+        font-size: 34px;
+        letter-spacing: -1px;
+        margin: 14px 0;
+      }
+      p {
+        line-height: 1.6;
+      }
+      .lead {
+        color: #59665c;
+        font-size: 16px;
+      }
+      .homes,
+      .families,
+      .comparison {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+      }
+      .home,
+      .family,
+      .scene {
+        overflow: hidden;
+        border: 1px solid #cdd4c8;
+        border-radius: 12px;
+        background: #fbfbf6;
+      }
+      .home header {
+        padding: 20px;
+      }
+      .home h2 {
+        font-size: 24px;
+        margin: 0 0 8px;
+      }
+      .home p {
+        margin: 0;
+        color: #61705f;
+        font-size: 14px;
+      }
+      .home img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .overview footer {
+        margin-top: 22px;
+        color: #566653;
+        font-size: 14px;
+      }
+      section:not(.overview) {
+        border-top: 1px solid #cdd4c8;
+      }
+      h2 {
+        font-size: 26px;
+      }
+      .family {
+        padding: 22px;
+      }
+      .family.print {
+        background: #f6eedb;
+        --icon-paper: #f6eedb;
+        color: #262820;
+      }
+      .family.sticker {
+        background: #fff3da;
+        color: #17382b;
+      }
+      .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .icon-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 2px;
+      }
+      .icon-cell svg {
+        width: 32px;
+        height: 32px;
+      }
+      .icon-cell span {
+        font-size: 11px;
+        overflow-wrap: anywhere;
+        text-align: center;
+      }
+      .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 24px 0;
+      }
+      select {
+        font: inherit;
+        padding: 10px 16px;
+        border: 1px solid #9eac98;
+        border-radius: 6px;
+        background: #fbfbf6;
+        color: #25342d;
+      }
+      .scene {
+        margin: 0 0 18px;
+      }
+      .scene img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .scene figcaption {
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #52634c;
+      }
+      .catalog-label {
+        font-size: 15px;
+        margin-top: 24px;
+      }
+      a {
+        color: #326447;
+      }
+      .intro-link {
+        float: right;
+        font-size: 14px;
+      }
+      @media (max-width: 900px) {
+        .homes,
+        .families,
+        .comparison {
+          grid-template-columns: 1fr;
+        }
+        .overview,
+        section {
+          padding: 24px 16px;
+        }
+        h1 {
+          font-size: 27px;
+        }
+        .icon-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      body[data-board] section:not(.overview) {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="overview">
+        <a class="intro-link" href="/">게임 열기 ↗</a>
+        <p class="eyebrow">HAERAM FOOTBALL · SHIPPED THEME PACKS</p>
+        <h1>매치데이 인쇄 / 스티커 풋볼클럽</h1>
+        <p class="lead">
+          실제 앱의 같은 홈에서 비교했습니다. 삽화 · 아이콘 · 버튼과 패널이 하나의 스타일로
+          바뀝니다.
+        </p>
+        <div class="homes">
+          <article class="home">
+            <header>
+              <h2>매치데이 인쇄</h2>
+              <p>목판화 · 도장 아이콘 · 인쇄 티켓 · 따뜻한 신문지</p>
+            </header>
+            <img
+              src="./captures/matchday-print-desktop.png"
+              width="1380"
+              height="920"
+              alt="실제 앱의 매치데이 인쇄 홈"
+            />
+          </article>
+          <article class="home">
+            <header>
+              <h2>스티커 풋볼클럽</h2>
+              <p>평면 카툰 · 채색 스티커 아이콘 · 뱃지 버튼 · 크림색 테두리</p>
+            </header>
+            <img
+              src="./captures/sticker-club-desktop.png"
+              width="1380"
+              height="920"
+              alt="실제 앱의 스티커 풋볼클럽 홈"
+            />
+          </article>
+        </div>
+        <footer id="metrics">본문·제목·숫자는 Pretendard · 설정 → 테마 변경에서 선택</footer>
+      </section>
+      <section>
+        <h2>아이콘 전체</h2>
+        <p class="lead">
+          같은 의미의 아이콘을 각 스타일로 그렸습니다. 트로피는 획득 / 미획득을 함께 보여줍니다.
+        </p>
+        <div class="families" id="icons"></div>
+      </section>
+      <section>
+        <h2>시설 삽화 전체</h2>
+        <p class="lead">시대와 완공 단계를 함께 비교할 수 있습니다.</p>
+        <div class="filters">
+          <label
+            >시대
+            <select id="era">
+              <option value="heritage">1950–1969</option>
+              <option value="terraces">1970–1999</option>
+              <option value="contemporary">2000 이후</option>
+            </select></label
+          ><label
+            >시설
+            <select id="kind">
+              <option value="stadium">구장</option>
+              <option value="locker">라커룸</option>
+              <option value="training">훈련장</option>
+              <option value="academy">유소년</option>
+              <option value="manager">감독실</option>
+              <option value="staff">스태프실</option>
+            </select></label
+          >
+        </div>
+        <div id="artwork"></div>
+      </section>
+    </main>
+    <script type="module">
+      if (new URLSearchParams(location.search).has('board')) document.body.dataset.board = '';
+      const themes = [
+        { id: 'matchday-print', label: '매치데이 인쇄', className: 'print' },
+        { id: 'sticker-club', label: '스티커 풋볼클럽', className: 'sticker' },
+      ];
+      for (const theme of themes) {
+        theme.pack = await (await fetch(`/presentation/themes/${theme.id}.json`)).json();
+        theme.art = await (await fetch(`/art/${theme.id}/generation.json`)).json();
+        const family = document.createElement('article');
+        family.className = `family ${theme.className}`;
+        const heading = document.createElement('h3');
+        heading.textContent = theme.label;
+        family.append(heading);
+        const grid = document.createElement('div');
+        grid.className = 'icon-grid';
+        family.append(grid);
+        for (const [role, entry] of Object.entries(theme.pack.icons))
+          for (const [state, icon] of [
+            ['', entry.default],
+            ...Object.entries(entry.variants ?? {}),
+          ]) {
+            const cell = document.createElement('div');
+            cell.className = 'icon-cell';
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', icon.viewBox);
+            for (const layer of icon.layers) {
+              const path = document.createElementNS(svg.namespaceURI, 'path');
+              for (const [key, value] of Object.entries(layer))
+                path.setAttribute(
+                  key.replace(/[A-Z]/g, (l) => `-${l.toLowerCase()}`),
+                  String(value),
+                );
+              svg.append(path);
+            }
+            const label = document.createElement('span');
+            label.textContent = role + (state ? ' / ' + state : '');
+            cell.append(svg, label);
+            grid.append(cell);
+          }
+        document.getElementById('icons').append(family);
+      }
+      document.getElementById('metrics').textContent =
+        `각 테마 시설 삽화 ${themes[0].art.jobs.length}장 · 아이콘 ${Object.keys(themes[0].pack.icons).length}종 · 본문·제목·숫자는 Pretendard · 설정 → 테마 변경에서 선택`;
+      function showArtwork() {
+        const era = document.getElementById('era').value,
+          kind = document.getElementById('kind').value;
+        const container = document.getElementById('artwork');
+        container.replaceChildren();
+        const jobs = themes[0].art.jobs.filter(
+          (job) => job.kind === kind && (job.era === era || job.era === 'neutral'),
+        );
+        for (const job of jobs) {
+          const label = document.createElement('p');
+          label.className = 'catalog-label';
+          label.textContent = `${job.kind} · ${job.era} · ${job.stage}단계`;
+          container.append(label);
+          const row = document.createElement('div');
+          row.className = 'comparison';
+          for (const theme of themes) {
+            const figure = document.createElement('figure');
+            figure.className = 'scene';
+            const image = document.createElement('img');
+            image.src = `/art/${theme.id}/${job.asset}.webp`;
+            image.width = 1440;
+            image.height = 480;
+            image.loading = 'lazy';
+            image.alt = `${theme.label} ${job.id}`;
+            const caption = document.createElement('figcaption');
+            caption.textContent = theme.label;
+            figure.append(image, caption);
+            row.append(figure);
+          }
+          container.append(row);
+        }
+      }
+      document.getElementById('era').addEventListener('change', showArtwork);
+      document.getElementById('kind').addEventListener('change', showArtwork);
+      showArtwork();
+      document.body.dataset.ready = 'true';
+    </script>
+  </body>
+</html>
