@@ -142,9 +142,9 @@ interface CandidateDigests {
  * 154eab38d6802ddc, bb480703c224e4f4, 2024 c8c6d976c6ac856d, 2a73e0f73d8d166e and positions 1975
  * fc8d1b66ff7b5740, 397d33c5de64493c, 1995 c5e8589ea6648cc8, 8a83f7b4ae156ff4, 2024
  * cd4e3d64a4838ca2, 8a3e5ad1de8591d2. T399's flank beside a back three and blocked crosses moved
- * every value but 1995's extra-time facts and the knockout ties (rescanned above); before it,
- * facts 1975 f18bf8e3760b007e, 5205f721945a3dd3, cb5d17e452857e45, 1995 53a69e70e2832073,
- * 471df82c3b8c4d4e, 2024 75d48ef3225697f0, 31069e56fe8ce463, 02ca3d882eee3a48 and positions 1975
+ * every value but 1995's and 2024's extra-time facts and the knockout ties (rescanned above);
+ * before it, facts 1975 f18bf8e3760b007e, 5205f721945a3dd3, cb5d17e452857e45, 1995
+ * 53a69e70e2832073, 471df82c3b8c4d4e, 2024 75d48ef3225697f0, 02ca3d882eee3a48 and positions 1975
  * 567f7d852fa17324, df35f3035429b034, 1995 81faf4ead6e2e1b4, 3d6d09b74f59c4c0, 2024
  * 11990ef8c06e3a19, e20dade414ad7a86.
  */
