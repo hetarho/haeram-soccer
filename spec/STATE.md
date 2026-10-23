@@ -273,6 +273,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 fix ui (c9v3): fading copies of removed dialogs and cards rename their ids and their own url(#…) references; a closing card's copy duplicated a crest clip-path id as a match opened (match-core:94 on Chromium, Firefox and WebKit CI; 0 duplicates in 12 probes after)
 - 261023 fix ui (c9v3): the view scroller restores with scrollTo({ top }); WebKit ignored scrollTo(0, 0) from a 2 px offset, so home at 1380 kept the office's scroll (management-surfaces:22 on WebKit CI)
 - 261023 fix e2e (c9v3): openOffice dismisses the decision outcome toast that covered the office tab; Firefox CI 39952590526 waited 7.5 s there in both attempts and ran recovery.spec:28/:59 past 30 s (Chromium hit the same toast in 39909381793)
 - 261023 fix e2e (c9v3): mobile.spec:113 imports its low-screen fixture once founding is enabled, since an import before the client is ready is dropped (Chromium and WebKit failed it under load)

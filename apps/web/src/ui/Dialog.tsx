@@ -2,7 +2,7 @@ import { PixelIcon } from './PixelIcon';
 import { Children, isValidElement, useLayoutEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import s from './App.module.css';
-import { exit, play, reducedMotion } from './motion';
+import { detachedCopy, exit, play, reducedMotion } from './motion';
 
 const sheet = () => {
   try {
@@ -184,7 +184,7 @@ export function Dialog({
       unlock();
       // Every close path unmounts; a detached copy fades out so no dialog vanishes abruptly.
       if (!reducedMotion()) {
-        const ghost = layer.cloneNode(true) as HTMLElement;
+        const ghost = detachedCopy(layer);
         ghost.setAttribute('aria-hidden', 'true');
         ghost.inert = true;
         ghost.style.pointerEvents = 'none';
