@@ -724,6 +724,65 @@ describe('full match-model activation (→SAVE-23)', () => {
   });
 });
 
+describe('manager-history reads (→HIST-18, WEB-92)', () => {
+  it('reads a page in a read-only tab without the command queue, a write or a view', async () => {
+    await start();
+    const stored = new Map(storage.data);
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+          callback(null),
+      },
+    });
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    const view = reader.state.view!;
+    expect(view.managerHistoryKey).toEqual(expect.any(String));
+    expect(view.world).not.toHaveProperty('managerHistory');
+    const page = await reader.managerHistory();
+    expect(page.rows).toEqual([
+      expect.objectContaining({
+        kind: 'tenure',
+        current: true,
+        manager: expect.objectContaining({ id: view.world.manager.id }),
+      }),
+    ]);
+    expect(page.nextCursor).toBeNull();
+    const worker = WorkerPort.instances[1],
+      read = worker.replies.findLast(({ request }) => request.body.type === 'manager-history')!;
+    // The read names the career it shows and comes back without a view to take.
+    expect(read.request.body).toEqual({ type: 'manager-history', world: view.world.id });
+    expect(read.reply.view).toBeUndefined();
+    expect(read.reply.viewDelta).toBeUndefined();
+    expect(reader.state.view).toBe(view);
+    expect(reader.state.busy).toBe(false);
+    expect(worker.requests.some((request) => ['command', 'save'].includes(request.body.type))).toBe(
+      false,
+    );
+    expect(storage.data).toEqual(stored);
+  });
+
+  it('refuses a page for any career but the one this tab shows', async () => {
+    const client = await start();
+    const worker = WorkerPort.instances[0],
+      shown = worker.host.world!;
+    // The worker has moved to another game before this tab heard of it.
+    worker.host.world = { ...shown, id: 'world:another' };
+    await expect(client.managerHistory()).rejects.toThrow('다른 커리어');
+    worker.host.world = shown;
+    expect((await client.managerHistory()).rows).toHaveLength(1);
+    // This tab moved to another game while the page was on its way.
+    const pending = client.managerHistory();
+    client.state.view = {
+      ...client.state.view!,
+      world: { ...client.state.view!.world, id: 'world:next' },
+    };
+    await expect(pending).rejects.toThrow('다른 커리어');
+  });
+});
+
 describe('earlier-rules and future saves: compatibility recovery', () => {
   it('resets recognized earlier gameplay on writer activation (→SAVE-18)', async () => {
     await legacyCheckpoint();

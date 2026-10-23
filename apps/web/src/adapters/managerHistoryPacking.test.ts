@@ -29,7 +29,13 @@ import { checkpointContainerFor, type PackedManagerHistory } from './managerHist
  */
 function career(): World {
   const w = simulatedWorld(
-    { country: 'ENG', name: 'Packed Tenures', color: '#335577', seed: 'manager-packing', level: 'easy' },
+    {
+      country: 'ENG',
+      name: 'Packed Tenures',
+      color: '#335577',
+      seed: 'manager-packing',
+      level: 'easy',
+    },
     { rounds: 2 },
   );
   w.cash = '999999999999';
@@ -37,11 +43,15 @@ function career(): World {
   operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
   w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
   operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+  // The owner replaces the interim the resignation left in charge.
+  operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
   captureCupTitle(w, 'cup');
   const club = w.clubs.find((c) => c.id === w.playerClub)!;
   captureSeasonClose(w, { tier: club.tier + 1, group: 0 });
   w.managerHistory!.tenures[0] = { ...w.managerHistory!.tenures[0]!, person: w.players[0]!.id };
-  advanceRound(w, undefined, false);
+  // Play on to the next own result, settled under the latest tenure.
+  const settled = w.ownMatches.length;
+  for (let n = 0; n < 4 && w.ownMatches.length === settled; n++) advanceRound(w, undefined, false);
   return w;
 }
 const roundTrip = (w: World) => unpack(JSON.parse(JSON.stringify(pack(w))));

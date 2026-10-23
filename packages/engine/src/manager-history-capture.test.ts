@@ -2,12 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
-import {
-  cachedWorld,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../tests/fixtures/worlds';
-import { advanceRound, managerCandidates, operate, simulateSeason } from './index';
+import { cachedWorld, simulatedWorld, withoutManagerHistory } from '../../../tests/fixtures/worlds';
+import { advanceRound, createWorld, managerCandidates, operate, simulateSeason } from './index';
 import {
   attributeOwnMatch,
   captureCupTitle,
@@ -15,6 +11,7 @@ import {
   ensureManagerHistory,
 } from './manager-history-capture';
 import { yearlyStaff } from './ops-staff';
+import { finishCups } from './cups';
 import { legacySettings } from './responsibilities';
 import { careerDate } from './person-careers';
 import { currentDay } from './calendar';
@@ -141,8 +138,39 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
     hire(w);
     captureCupTitle(w, 'cup');
     expect(facts(w).outcomes).toEqual([
-      { source: { kind: 'cup-title', year: w.year, competition: 'cup' }, tenure: first, at: careerDate(w) },
-      { source: { kind: 'cup-title', year: w.year, competition: 'super' }, tenure: first, at: careerDate(w) },
+      {
+        source: { kind: 'cup-title', year: w.year, competition: 'cup' },
+        tenure: first,
+        at: careerDate(w),
+      },
+      {
+        source: { kind: 'cup-title', year: w.year, competition: 'super' },
+        tenure: first,
+        at: careerDate(w),
+      },
+    ]);
+  });
+
+  it('credits a domestic cup as its final is decided in play', () => {
+    // An overwhelming own squad, the cups played out as the close does; the first seeded career
+    // whose final we win is the scene (a lost final still happens even then).
+    const won = ['manager-cup-2', 'manager-cup-3', 'manager-cup-4']
+      .map((seed) => {
+        const w = createWorld({ ...FOUNDING, seed });
+        for (const p of w.players)
+          for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
+        finishCups(w);
+        return w;
+      })
+      .find((w) => w.cups!.some((c) => c.winner === w.playerClub));
+    expect(won).toBeDefined();
+    const w = won!;
+    expect(facts(w).outcomes).toEqual([
+      {
+        source: { kind: 'cup-title', year: w.year, competition: 'cup' },
+        tenure: facts(w).tenures[0]!.id,
+        at: careerDate(w),
+      },
     ]);
   });
 

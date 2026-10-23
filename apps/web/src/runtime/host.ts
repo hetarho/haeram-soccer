@@ -25,8 +25,20 @@ import {
   ensureManagerHistory,
   MATCH_MODEL_RELEASE,
   BANKRUPT_MESSAGE,
+  clubOf,
+  domesticCupName,
+  fixtureDay,
+  ownLeagueClubs,
+  ranked,
+  ROUND_INTERVAL_DAYS,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
+import { managerHistoryPage } from '../../../../packages/engine/src/manager-achievements';
+import { managerHistoryDateKey } from '../../../../packages/contracts/src/manager-history';
+import type {
+  ManagerHistorySeason,
+  ManagerHistorySource,
+} from '../../../../packages/contracts/src/manager-history-view';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
   isSaveCompatibilityError,
@@ -48,6 +60,8 @@ import {
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
 import { tallies } from '../ui/playerAnalysis';
+import { divisionName } from '../ui/careerRecords';
+import { kindLabel } from '../ui/format';
 /**
  * KIT-15: a copy of the validated candidate with only its missing club identities installed (each
  * club's legacy crest and colour kept), or the candidate itself when none is missing. The revision
@@ -74,6 +88,148 @@ function settledAhead(live: World | undefined, candidate: World) {
   if (live?.id !== candidate.id) return false;
   const held = new Set(candidate.ownMatches.map((m) => m.id));
   return live.ownMatches.some((m) => !held.has(m.id));
+}
+/** The own club's place in its league this season once a league match is played, else none. */
+function provisionalPlace(w: World) {
+  const own = clubOf(w);
+  if (!w.tables[own.id]?.played) return undefined;
+  return ranked(w, ownLeagueClubs(w)).findIndex((club) => club.id === own.id) + 1;
+}
+/**
+ * The manager-history query's explicit sources (→HIST-18/19, WEB-92), read from the live world:
+ * the canonical facts; every retained own match at its fixture day in settlement order; one
+ * snapshot per closed season (its final table, its cup winners and a promotion, the division it
+ * led to being the next season's) and this season's decided cups and provisional place; and the
+ * readable personnel events from before tracking began, keyed by their place in the event log.
+ * Nothing is parsed from a name or kept: every read builds the sources again.
+ */
+function managerHistorySource(w: World): ManagerHistorySource {
+  const own = clubOf(w),
+    code = own.country,
+    facts = w.managerHistory;
+  const division = (tier: number, group: number) => ({ country: code, tier, group });
+  const seasons: ManagerHistorySeason[] = w.history.map((h, index) => {
+    const next = w.history[index + 1] ?? (h.year === w.year - 1 ? own : undefined),
+      domestic = h.champions.find((entry) => entry.country === code)?.cup;
+    return {
+      year: h.year,
+      league: {
+        division: division(h.tier, h.group),
+        name: divisionName(code, h.tier, h.group),
+        rank: h.rank,
+        final: true,
+      },
+      cups: [
+        ...(domestic
+          ? [{ competition: 'cup', name: domesticCupName(code), winner: domestic, final: true }]
+          : []),
+        ...h.europe.map((e) => ({
+          competition: e.kind,
+          name: e.name,
+          winner: e.winner,
+          final: true,
+        })),
+      ],
+      promotions:
+        next && next.tier < h.tier
+          ? [
+              {
+                club: own.id,
+                from: division(h.tier, h.group),
+                to: division(next.tier, next.group),
+                fromName: divisionName(code, h.tier, h.group),
+                toName: divisionName(code, next.tier, next.group),
+                final: true,
+              },
+            ]
+          : [],
+    };
+  });
+  if (!w.history.some((h) => h.year === w.year)) {
+    const place = provisionalPlace(w),
+      cup = w.cups?.find((entry) => entry.country === code);
+    seasons.push({
+      year: w.year,
+      ...(place
+        ? {
+            league: {
+              division: division(own.tier, own.group),
+              name: divisionName(code, own.tier, own.group),
+              rank: place,
+              final: false,
+            },
+          }
+        : {}),
+      cups: [
+        ...(cup?.winner
+          ? [{ competition: 'cup', name: cup.name, winner: cup.winner, final: true }]
+          : []),
+        ...w.europe.flatMap((t) =>
+          t.winner ? [{ competition: t.key, name: t.name, winner: t.winner, final: true }] : [],
+        ),
+      ],
+      promotions: [],
+    });
+  }
+  // Events from the tracked period are the tenures' own story; only older ones stay readable rows.
+  const tracked = facts && managerHistoryDateKey(facts.trackedFrom);
+  return {
+    ...(facts ? { facts } : {}),
+    club: own.id,
+    currentManager: {
+      id: w.manager.id,
+      name: w.manager.name,
+      interim: w.manager.interim,
+      ...(w.manager.person ? { person: w.manager.person } : {}),
+      since: w.manager.since,
+    },
+    matches: w.ownMatches.map((match, order) => ({
+      match,
+      at: { year: match.year, day: Math.max(0, fixtureDay(match)) },
+      order,
+      competition: kindLabel[match.kind] ?? match.kind,
+    })),
+    seasons,
+    personnelEvents: w.events.flatMap((event, index) =>
+      (event.kind === 'manager-hire' || event.kind === 'manager-departure') &&
+      (tracked === undefined ||
+        managerHistoryDateKey({ year: event.year, day: event.round * ROUND_INTERVAL_DAYS }) <
+          tracked)
+        ? [
+            {
+              id: `event:${index}`,
+              order: index,
+              event: {
+                year: event.year,
+                round: event.round,
+                kind: event.kind,
+                title: event.title,
+                detail: event.detail,
+              },
+            },
+          ]
+        : [],
+    ),
+  };
+}
+/**
+ * What the manager-history read depends on, short enough to publish daily (→HIST-18): the facts'
+ * tracking boundary, appointments and outcomes, the settled own matches, the closed seasons, the
+ * manager in charge and this season's provisional place. A same-round cup final or appointment
+ * moves it; a day without any of them does not.
+ */
+function managerHistoryKey(w: World) {
+  const facts = w.managerHistory;
+  return [
+    facts
+      ? `${facts.trackedFrom.revision}.${facts.serial}.${facts.tenures.length}.${facts.outcomes.length}`
+      : '-',
+    w.ownMatches.length,
+    w.history.length,
+    w.manager.id,
+    w.manager.interim ? 1 : 0,
+    provisionalPlace(w) ?? 0,
+  ].join(':');
 }
 /** A view part as JSON, to compare with the last one sent; none when it cannot be written so. */
 function partText(value: unknown) {
@@ -157,7 +313,8 @@ export class Host {
       type === 'league-fixtures' ||
       type === 'full-stats' ||
       type === 'club-records' ||
-      type === 'archive'
+      type === 'archive' ||
+      type === 'manager-history'
     )
       return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
@@ -252,6 +409,7 @@ export class Host {
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
       news: this.news(w),
+      managerHistoryKey: managerHistoryKey(w),
     };
   }
   /**
@@ -328,6 +486,15 @@ export class Host {
             managers: w.events.filter((e) => e.kind.startsWith('manager-')),
           },
         };
+      if (body.type === 'manager-history') {
+        if (body.world !== undefined && body.world !== w.id)
+          throw new Error('다른 커리어의 감독 이력 요청입니다.');
+        return {
+          requestId: request.requestId,
+          ok: true,
+          managerHistory: managerHistoryPage(managerHistorySource(w), body.cursor),
+        };
+      }
       if (body.type === 'league-fixtures') {
         const key = `${body.country}:${body.tier}:${body.group}`;
         return {

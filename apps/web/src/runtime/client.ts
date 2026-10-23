@@ -652,6 +652,23 @@ export class GameClient {
     if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
     return reply.clubRecords;
   }
+  /**
+   * One page of our managers' history (→HIST-18/19, WEB-92), summarised from every own match the
+   * worker keeps and read like head-to-head without the command queue; `cursor` is the previous
+   * page's. It names the career this tab shows, and a page for any other career is refused: one
+   * answered after the worker switched games or landing after this tab did.
+   */
+  async managerHistory(cursor?: string) {
+    const world = this.state.view?.world.id;
+    const reply = await this.rpc({
+      type: 'manager-history',
+      ...(cursor !== undefined ? { cursor } : {}),
+      ...(world !== undefined ? { world } : {}),
+    });
+    if (!reply.managerHistory) throw new Error(reply.error ?? '감독 이력 응답이 없습니다.');
+    if (this.state.view?.world.id !== world) throw new Error('다른 커리어의 감독 이력입니다.');
+    return reply.managerHistory;
+  }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
   async leagueFixtures(league: { code: string; tier: number; group: number }) {
     const reply = await this.rpc({
