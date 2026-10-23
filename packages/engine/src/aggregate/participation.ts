@@ -78,7 +78,7 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
   const ratio = p / (1 - p),
     u = r();
   let k = 0,
-    pk = (1 - p) ** n,
+    pk = noneOf(1 - p, n),
     cdf = pk;
   while (u > cdf && k < n) {
     pk *= ((n - k) / (k + 1)) * ratio;
@@ -88,20 +88,39 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
   return k;
 }
 /**
+ * `q ** n`, the chance that none of `n` trials succeeds: one or two trials by product, which
+ * equals the power exactly (IEEE pow returns x for y = 1 and x·x for y = 2), without the power's
+ * cost on the many groups of one or two (T326).
+ */
+export const noneOf = (q: number, n: number) => (n === 1 ? q : n === 2 ? q * q : q ** n);
+/**
  * Splits `n` over `weights` exactly, all of it when any weight is positive: unit by unit when
  * there are fewer units than weights, otherwise by sequential binomials.
  */
 export function multinomialDraw(r: Rng, n: number, weights: ArrayLike<number>): number[] {
-  const out = Array<number>(weights.length).fill(0);
+  return multinomialInto(r, n, weights, Array<number>(weights.length).fill(0));
+}
+/**
+ * `multinomialDraw` into a caller's buffer of the weights' length, zeroed first: the same draws,
+ * without a new array for each split (T326).
+ */
+export function multinomialInto(
+  r: Rng,
+  n: number,
+  weights: ArrayLike<number>,
+  out: number[],
+): number[] {
   let rest = 0,
     positive = 0,
     last = -1;
-  for (let i = 0; i < weights.length; i++)
+  for (let i = 0; i < weights.length; i++) {
+    out[i] = 0;
     if (weights[i]! > 0) {
       rest += weights[i]!;
       positive++;
       last = i;
     }
+  }
   if (n <= 0 || last < 0) return out;
   if (n <= positive) {
     for (let k = 0; k < n; k++) {

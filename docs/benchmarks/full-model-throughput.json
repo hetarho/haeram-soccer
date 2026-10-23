@@ -1472,5 +1472,306 @@
       "waitedMinutes": 27,
       "note": "blocking scratch script from 16:07; T336's grid-bands --jobs 4 validation corpus and other sessions' test runs kept load1 at 8-23 until about 16:33"
     }
+  },
+  "aggregateFixtureT326": {
+    "task": "T326",
+    "note": "Exploration evidence for T286 on a shared, loaded machine: the aggregate fixture made faster with every record bit-identical (packages/engine/src/full-model-throughput.test.ts digests unchanged; 400-record hashes of the century baseline world, founded(2024) and founded(1950) equal before and after). No draw-changing option was kept, so docs/benchmarks/aggregate-model-calibration.json stays valid. Timings on this host are context only; ARCH-31 measures on its recorded reference machine (Apple M1 Max) and no budget is claimed here.",
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "logicalCpus": 12,
+      "memoryBytes": 33577496576,
+      "role": "the machine these numbers ran on, shared with a T374 calibration worker and a batch gate; not the ARCH-31 reference machine"
+    },
+    "toolchain": {
+      "node": "v24.22.1",
+      "pnpm": "pnpm@10.34.6",
+      "typescript": "5.9.3",
+      "tsx": "4.23.15"
+    },
+    "sources": {
+      "before": {
+        "commit": "5c9f0120",
+        "role": "candidate model after T369 (the aggregate T326 starts from)"
+      },
+      "after": {
+        "commit": "58e98e96ee22787fe78b20403587ad3100facb50",
+        "role": "candidate model with T326 speed-ups",
+        "fingerprint": {
+          "algorithm": "sha256",
+          "sha256": "5a0a610b657b300a488b8cb5c526582dde6f8e7c77586ff8f2ea5ed000f7bbbe",
+          "files": 399,
+          "scope": "scripts/match-model-baseline.ts SOURCE_SCOPE"
+        }
+      },
+      "t285": {
+        "commit": "7640c0d",
+        "role": "T285's measured tree, re-run here to relate this host to T285's M1 Max reading (0.820 ms)"
+      }
+    },
+    "method": "Fixture: simulateAggregate on the first 300 non-own fixtures (round, then ID order) of the century baseline world (createWorld seed release-century-baseline, 1950) and of founded(2024) (substitutes in play), squads prepared and 50 fixtures played as warm-up first; each fixture timed 3 times, its median taken, then the median over fixtures. Every tree (base, T285, HEAD, each an exported checkout) runs in its own process per repetition, order rotated each repetition; reported: median, quartiles and range of the per-run medians and the median and quartiles of the paired per-repetition ratio to base. Stages: scripts/season-throughput.ts --stages 300 --reps 3 in each tree, interleaved the same way. Profiles: V8 CPU profiles of esbuild bundles of the probe.",
+    "fixture1950": {
+      "base": {
+        "median": 2.1477,
+        "p25": 2.1249,
+        "p75": 2.2267,
+        "min": 2.0575,
+        "max": 2.6922,
+        "pairedRatioMedian": 1,
+        "pairedRatioP25P75": [
+          1,
+          1
+        ]
+      },
+      "t285": {
+        "median": 2.1929,
+        "p25": 2.166,
+        "p75": 2.2891,
+        "min": 2.1328,
+        "max": 2.6302,
+        "pairedRatioMedian": 1.022,
+        "pairedRatioP25P75": [
+          1.002,
+          1.047
+        ]
+      },
+      "head": {
+        "median": 1.7711,
+        "p25": 1.7206,
+        "p75": 1.8408,
+        "min": 1.6979,
+        "max": 2.2137,
+        "pairedRatioMedian": 0.821,
+        "pairedRatioP25P75": [
+          0.808,
+          0.853
+        ]
+      },
+      "reps": 12,
+      "load1": {
+        "min": 5.11,
+        "median": 7.58,
+        "max": 9.36
+      }
+    },
+    "fixture2024": {
+      "base": {
+        "median": 2.8657,
+        "p25": 2.7771,
+        "p75": 3.3203,
+        "min": 2.7166,
+        "max": 3.4068,
+        "pairedRatioMedian": 1,
+        "pairedRatioP25P75": [
+          1,
+          1
+        ]
+      },
+      "t285": {
+        "median": 2.932,
+        "p25": 2.8083,
+        "p75": 3.4255,
+        "min": 2.756,
+        "max": 3.5043,
+        "pairedRatioMedian": 1.023,
+        "pairedRatioP25P75": [
+          1.006,
+          1.039
+        ]
+      },
+      "head": {
+        "median": 2.304,
+        "p25": 2.2919,
+        "p75": 2.4699,
+        "min": 2.1835,
+        "max": 2.8082,
+        "pairedRatioMedian": 0.807,
+        "pairedRatioP25P75": [
+          0.773,
+          0.828
+        ]
+      },
+      "reps": 12,
+      "load1": {
+        "min": 6.44,
+        "median": 7.72,
+        "max": 9.59
+      }
+    },
+    "stages1950": {
+      "base": {
+        "prepare": {
+          "median": 0.0646,
+          "min": 0.051,
+          "max": 0.0863
+        },
+        "plan+input": {
+          "median": 0.0117,
+          "min": 0.0089,
+          "max": 0.0142
+        },
+        "participation": {
+          "median": 0.1782,
+          "min": 0.1516,
+          "max": 0.2159
+        },
+        "access": {
+          "median": 0.0095,
+          "min": 0.0082,
+          "max": 0.0118
+        },
+        "teamFacts": {
+          "median": 0.7356,
+          "min": 0.6563,
+          "max": 0.8244
+        },
+        "attribution": {
+          "median": 1.2027,
+          "min": 1.0928,
+          "max": 1.3469
+        },
+        "record+validate": {
+          "median": 0.0829,
+          "min": 0.0672,
+          "max": 0.1041
+        },
+        "simulateAggregate": {
+          "median": 2.2779,
+          "min": 2.022,
+          "max": 2.6054
+        }
+      },
+      "head": {
+        "prepare": {
+          "median": 0.0582,
+          "min": 0.0506,
+          "max": 0.0768
+        },
+        "plan+input": {
+          "median": 0.0107,
+          "min": 0.0088,
+          "max": 0.0133
+        },
+        "participation": {
+          "median": 0.1592,
+          "min": 0.1507,
+          "max": 0.2021
+        },
+        "access": {
+          "median": 0.0077,
+          "min": 0.0069,
+          "max": 0.0102
+        },
+        "teamFacts": {
+          "median": 0.6616,
+          "min": 0.6271,
+          "max": 0.7408
+        },
+        "attribution": {
+          "median": 0.7873,
+          "min": 0.7565,
+          "max": 0.9001
+        },
+        "record+validate": {
+          "median": 0.0693,
+          "min": 0.0648,
+          "max": 0.0941
+        },
+        "simulateAggregate": {
+          "median": 1.7314,
+          "min": 1.6535,
+          "max": 2.0069
+        }
+      },
+      "ratios": {
+        "head/base": {
+          "prepare": 0.901,
+          "plan+input": 0.915,
+          "participation": 0.893,
+          "access": 0.811,
+          "teamFacts": 0.899,
+          "attribution": 0.655,
+          "record+validate": 0.836,
+          "simulateAggregate": 0.76
+        }
+      },
+      "reps": 10,
+      "load1": {
+        "min": 8.23,
+        "median": 8.73,
+        "max": 9.81
+      }
+    },
+    "referenceEstimate": {
+      "hostOverT285M1Max": 2.67,
+      "estimatedHeadMsOnM1Max1950": 0.662,
+      "estimatedBaseMsOnM1Max1950": 0.803,
+      "estimatedHeadMsOnM1Max2024": 0.862,
+      "estimatedBaseMsOnM1Max2024": 1.072,
+      "budgetMs": 1,
+      "status": "estimate only: T285 measured 7640c0d at 0.820 ms on the M1 Max in a quiet window; this host re-ran 7640c0d under load, so the factor mixes machine and load. Not release evidence (ARCH-31)."
+    },
+    "options": {
+      "kept": [
+        "attribution splits into reused per-side buffers (multinomialInto, within)",
+        "move traits cached by kind and cells",
+        "action weights and presence per minute read once per match",
+        "weights as plain double arrays instead of Float64Array",
+        "skill access indexed by line (stints, scales, drain)",
+        "a substitute's slot levels computed on first read",
+        "binomials of one or two trials by product instead of Math.pow (exact for exponents 1 and 2)",
+        "corners won counted incrementally in the set-piece loop"
+      ],
+      "pooledDefensiveSplits": {
+        "what": "balls won and offsides split once a period per role instead of per move group (the same distribution; draws change)",
+        "pairedRatio": 1.027,
+        "pairedRatioP25P75": [
+          1.011,
+          1.044
+        ],
+        "verdict": "slower (pooled counts leave the unit-by-unit path for sequential binomials); reverted, never validated"
+      },
+      "coarserMoveGroups": {
+        "what": "AGGREGATE_CONFIG.forward.drift 0.4 -> 0: move groups 423 -> 374 a match (-11.6%), flow draws -14%",
+        "pairedRatio": 0.99,
+        "pairedRatioP25P75": [
+          0.937,
+          1.01
+        ],
+        "accuracyScreen": "calibration round 44, core + 16 tactics + 17 gap buckets x 2,000 matches, same seeds as the current settings: MATCH-30 20/1/0 both (box entries 15.18 -> 14.76, xT 2.77 -> 2.81), MATCH-23 core 29/0/3 -> 31/0/1, MATCH-29 22/0/3 -> 23/0/2, curve 1.61 -> 1.40, but xG a shot 0.113 -> 0.118 in core and 5 gap-bucket rows inside -> outside (xG a shot above 0.12 at -35, +25, +30, +35, +40); 0 invariant failures",
+        "verdict": "cost gain within noise and a band lost without recalibration; reverted"
+      },
+      "internalGuardsOff": {
+        "what": "probe only: assertLedger in deriveTeamFacts, assertParticipation in planParticipation and the participation check in generateTeamFacts skipped (the final validateFullMatchRecord kept); records bit-identical when no guard fires",
+        "pairedRatio": 0.915,
+        "pairedRatioP25P75": [
+          0.864,
+          0.934
+        ],
+        "verdict": "not applied: the guards are the internal MATCH-27 checks; left for T286 to decide"
+      },
+      "optionLoad1": {
+        "pooledDefensiveSplits": {
+          "min": 14.61,
+          "median": 16.36,
+          "max": 17.94
+        },
+        "coarserMoveGroupsAndGuards": {
+          "min": 6.25,
+          "median": 7.2,
+          "max": 12.05
+        }
+      }
+    },
+    "workCounts1950": {
+      "moveGroups": 423.1,
+      "singleAttemptGroups": 171.5,
+      "attempts": 1207.9,
+      "shots": 23.8,
+      "flowDraws": 1438.7,
+      "attributionDraws": 1920.3,
+      "note": "per fixture, both sides, first 200 non-own fixtures of the century baseline world"
+    }
   }
 }

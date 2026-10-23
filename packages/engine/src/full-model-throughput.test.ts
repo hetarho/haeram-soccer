@@ -67,7 +67,10 @@ const facts = (w: World) => ({
  * wide of it, lateral passes beside the box kept on the flank, the cut-back zones played inward
  * less, the box shot rate, territory and touchline outs recalibrated, forwards' shot share 2.2 →
  * 2.0) changed both again, re-recorded on T367's merged tree with the aggregate calibration
- * artifact (the grid untouched by T369); 4f190f1b1d803d86 and 53d5f04e2624eb4e before.
+ * artifact (the grid untouched by T369); 4f190f1b1d803d86 and 53d5f04e2624eb4e before. T326's
+ * speed-ups (attribution splits into reused buffers, cached move traits, action weights and
+ * presence, the skill access indexed by line, a substitute's slot levels read on demand) left
+ * both digests unchanged.
  */
 const BEFORE = {
   aggregateRecords: 'd6a5c7feb76176f3',
