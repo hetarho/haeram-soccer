@@ -17,6 +17,7 @@
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
 
 ## inbox
+- 261023 decided T384 MATCH-18 MATCH-23: the owner drops honest positional offside: a drawn call stays, the receiver's 판단력 sets it (lowest quarter at least 3× the highest per reception from an offside position — the 3× and the quarter measure are this session's pick), and calls average 1.7–1.9 a team (Premier League 2016/17–2025/26 mean 1.80 from StatMuse team tables, `docs/MATCH-BASELINES.md`); MATCH r21, task T384 after T370 and before T371 so T371 calibrates finishing on the final offside (alt: put T384 before T370, rejected: T370 is running | ratio 2×)
 - 261023 decided T376 MATCH-12 WEB-95: the owner's playback report (kick-off not from the centre, ball turning in open space, no carrier while passing) is fixed on the pre-feature path that players watch while `MATCH_MODEL_RELEASE` is off, with explicit frame times, samples at every snapshot and kick, flights 0.25× their motion-second duration (matching the candidate's ~0.9 s median) and recorded ball holders read first by the possession cue → MATCH-12 and WEB-95 already require it, so no SSOT change; it touches only playback and the cue, beside T375's football in `work/w6p4` (alt: wait for T286's activation, which fixes sync but not the cue)
 - 261023 decided T374 T326: session r5n2 runs T374 and T326 side by side with session subagents in their own worktrees (both explore, so no work group, as q8m5 did for T325/T345), integrates each on main behind a batch gate and pushes it (T369 first, once its gate passed); validation rounds 47–48 go to T374 and 49–50 to T326 (alt: one after the other on this checkout)
 - 261023 decided T326 MATCH-27: the aggregate's internal guards (`assertLedger`, `assertParticipation`, the team-facts participation check) stay on although switching them off is bit-identical and saves ~8.5% of a fixture → they are MATCH-27's internal defence and the estimate already fits the 1 ms budget; running them only in tests is for T286 or the owner (alt: off in play, on in tests)
@@ -227,7 +228,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 20 | 20 | - | 0 |
+| MATCH | 21 | 21 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -244,12 +245,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 | todo |
+| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T384 | todo |
 | T306 | Connect manager attribution to settled gameplay and checkpoints | HIST SAVE STAFF MATCH ARCH | T304 T286 | todo |
 | T307 | Connect the bounded manager-history query and records navigation | HIST SAVE WEB ARCH | T305 T306 | todo |
 | T308 | Verify manager-history journeys and lossless century capacity | WEB HIST SAVE ARCH | T307 | todo |
 | T370 | Give the grid fewer, better chances, carries after reception and pressing in the opponent's build-up | MATCH ARCH | T367 T368 T373 T374 | todo |
-| T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 | todo |
+| T371 | Bring the grid's goal kicks, forward goal share, penalty goals and balanced's xG conceded inside | MATCH STAFF ARCH | T370 T384 | todo |
+| T384 | Call offside 1.8 times a team a match, mostly on runners with poor 판단력 | MATCH ARCH | T370 | todo |
 | T372 | Measure MATCH-28 parity and both references at the pilot size on the final football | MATCH ARCH | T326 T367 T369 T371 | todo |
 
 ## work
@@ -269,6 +271,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 create-task MATCH r21 done (w6p4): T384 offside calls by 판단력 at the EPL mean, explore 3h, dep T370; T371 and T286 dep T384
+- 261023 update-ssot MATCH r21 done (w6p4): MATCH-18✎ offside is a drawn call set by the receiver's 판단력, MATCH-23✎ offsides 1.5–2.5→1.7–1.9; no doing task cites it on main (T370 runs in w6p4's worktree on MATCH@20, unaffected: offside is not its lever)
 - 261023 ideation own-club-match-edge start: owner's 1995 save measured (own matches 2.51 v 1.70 points a match on equal strengths, one-sided manager/morale context); directions A–D open for the owner
 - 261023 T383 done: rounds numbered by our division (19 / 38 in 1부), idle weeks unchanged, notices dated; units 737/737, Chromium management/recovery/staff 12/16 with 4 pre-existing load failures
 - 261023 create-task WEB r133 → T383
@@ -287,10 +291,3 @@
 - 261023 T379 done (o9r4): nine report/delegation pairs and topmost confirmed bulk controls, observation-only changes and stale/protected applications covered; type/lint/format, 33 unit tests and build pass; no commit/push requested
 - 261023 update-ssot WEB r132 and create-task T380: owner limits automatic/manual switching to home; office and other management views show no mode-change control; implementation follows T379
 - 261023 create-task WEB r131 → T379; implement-task T379 start (o9r4), standalone user-requested office UI scope, task-start 71e564e4
-- 261023 update-ssot WEB r131 done; WEB-45/79 unified report/delegation choices and nine-row bulk actions; no active implementation depends on these decisions
-- 261023 update-ssot WEB start: unify owner-office report and responsibility choices; standalone user-assigned work on main (work status: single, no current attempt)
-- 261023 r5n2 hand-off: session closes for another session; T369, T326 and T374 on main and pushed, nothing doing; next is the T374 follow-up plan, then T370
-- 261023 T374 done (r5n2; explore exit, not kept): T368's offside and held line restored with a candidate back line 12 m goal-side near the box (q12) passed screens on calibration round 41 but failed on validation rounds 47+48 (MF goals outside, MATCH-29 21 → 9 inside); engine reverted, evidence in `docs/benchmarks/t368-handoff/t374-*`; own match 1.3–1.5× slower with the held line
-- 261023 T326 done (r5n2; explore exit, kept): eight bit-identical aggregate speed-ups (fixture 0.81–0.82×, attribution 0.66× on this loaded host, digests and record hashes unchanged); no draw-changing option kept (coarser move groups lost five gap-bucket xG rows), calibration artifact still valid, rounds 49–50 unspent; reference-machine estimate ~0.66/0.86 ms (1950/2024 worlds) is context only, T286 times it on the M1 Max; MATCH-28 parity of the options left to T372
-- 261023 T369 done (r5n2; explore exit, kept, from q8m5's record on `origin/work/q8m5-T369`): merged over T373 on main (one comment conflict in `full-model-throughput.test.ts`, digests unchanged by T373); aggregate, throughput and calibration tests 74/74 on the merged tree; batch gate before the push
-- 261023 hand-off (q8m5): session closes for the owner's other machine; T369 finished and kept on `origin/work/q8m5-T369` (aggregate box entries 26.96 → 15.22, cut-backs 0.82 → 0.49 inside, MATCH-30 18/3/0 → 20/1/0, pooled curve 1.65 → 1.67), awaiting the batch gate

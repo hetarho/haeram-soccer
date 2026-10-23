@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r20 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r21 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -124,7 +124,9 @@
   - free kicks within shooting range may be shot directly or crossed; corners and wide free kicks are delivered into the box for aerial duels and second balls.
   - during corners and delivered free kicks, both sides act through preparation, the delivery and the second ball. Defenders track attacking runs, protect goal-side space and cover one another; the goalkeeper adjusts to the delivery. Their intentions follow the ball and runners after the kick, with continuous recorded movement (→MATCH-12/17), rather than ending at initial placement. Holding a useful position is valid; freezing the defensive side solely because a set piece is in progress is not.
   - a penalty is the taker's 슈팅 and 침착성 against the keeper's 선방.
-  - offside: a receiving teammate in the opponent's half and beyond both the ball and the second-last opponent when the pass is played is offside; an indirect free kick restarts play. A high line can catch runners; a runner's 판단력 times his run.
+  - offside: a receiving teammate in the opponent's half and beyond both the ball and the second-last opponent when the pass is played stands offside, and a draw decides whether he is called; a call restarts play with an indirect free kick. ← a line that always calls the position lets press's high line hold without risk (→MATCH-29)
+    - the receiver's 판단력 sets the chance: per reception from an offside position, the receivers in the lowest 판단력 quarter are called at least three times as often as those in the highest. A linebreaker is called less often; a high line catches more runners.
+    - calls average 1.7–1.9 a team a match (→MATCH-23).
   - the manager names the set-piece and penalty takers by their attributes.
 - MATCH-19 [o] Cards and suspensions follow one English-style rule in every league and every era (→MATCH-23 for rates). ← realistic and explainable with one rule
   - a yellow card for a reckless foul, a tactical foul stopping a counter or dissent; a red card for serious foul play or violent conduct, for denying an obvious goal-scoring opportunity, or for a second yellow; a sent-off player leaves his side a man short.
@@ -173,7 +175,7 @@
   | take-ons / successful | 14–20 / 40–60% |
   | tackles + interceptions | 22–30 |
   | throw-ins / corners / goal kicks | 17–23 / 4–6 / 7–9 |
-  | fouls / offsides | 10–13 / 1.5–2.5 |
+  | fouls / offsides | 10–13 / 1.7–1.9 |
   | yellow / red cards (a match, both sides, modern era) | 3.3–4.3 / 0.08–0.15 |
   | goals (a match, both sides) | 2.6–2.9 |
   | goals from set pieces without penalties / from penalties / headed | 20–28 / 6–9 / 14–20% |
@@ -223,6 +225,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r21 261023 MATCH-18✎ offside position always offside, 판단력 times the run→the position is called by a draw whose chance the receiver's 판단력 sets (lowest quarter ≥3× the highest per reception), a linebreaker less, a high line more; MATCH-23✎ offsides 1.5–2.5→1.7–1.9 a team (Premier League 2016/17–2025/26 mean 1.80)
 - r20 261022 MATCH-12✎ explicit transitions limited to seeking/period breaks→+goal-feedback holds outside simulated time; MATCH-18✎ set-piece delivery/duels→+continuous defensive tracking, cover, goalkeeper and second-ball responses
 - r19 261022 MATCH-3✎ possession unspecified (the detailed engine measured time on the ball)→a side's share of both sides' attempted passes, the published convention
 - r18 261022 MATCH-13✎ high turnover ball won in the opponent's defensive third→a sequence starting with an open-play ball won within 40 m of its goal; PPDA own two thirds ÷ tackles+interceptions→own 60% ÷ tackles, interceptions, challenges and fouls (published conventions)
