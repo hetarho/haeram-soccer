@@ -9,6 +9,8 @@ test.use({ viewport: { width: 390, height: 844 } });
 test('surveys every management destination during uninterrupted calendar play', async ({
   page,
 }) => {
+  // This survey waits for real dates across every management destination.
+  test.slow();
   const world = createWorld({
     country: 'ENG',
     name: 'Calendar Audit',
@@ -32,7 +34,7 @@ test('surveys every management destination during uninterrupted calendar play', 
     const before = await date.innerText();
     await expect(date).not.toHaveText(before);
   };
-  for (const name of ['리그', '컵', '클럽 기록실']) {
+  for (const name of ['리그', '컵 대회', '클럽 기록실']) {
     await nav.getByRole('button', { name, exact: true }).click();
     await continues();
   }
