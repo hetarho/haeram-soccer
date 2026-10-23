@@ -1,0 +1,25 @@
+T370 validation, round 52: base = T373's football (e578fc90), cand = h6 on 91bdfec7
+(patch {"duel":{"candidate":{"intercept":{"share":{"possession":0.175,"press":0.195,"counter":0.155,"balanced":0.175}}}},"decide":{"candidate":{"shotScale":0.45,"longShotScale":3.5,"shotQuality":{"ref":0.3,"power":0.5,"most":1}}}})
+report.mts --root <cand tree> --base v52-base.json --cand v52-h6.json (moved rows only)
+
+base: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: unresolved 1, inside 5, outside 15, unbanded 2
+  MATCH-23: inside 33, outside 2, unresolved 3
+  MATCH-29: insufficient 9, inside 15, outside 1
+  curve 1.65 (-35 5.8, -30 3.9, -25 2.1, -20 4.9, -15 11.7, -10 9.8, -5 3.9, 0 4.6, 5 2.4, 10 4.1, 15 9.4, 20 5.5, 25 5.4, 30 0.2, 35 4.1, 40 5.0); points possession 1.289, press 1.445, counter 1.467, balanced 1.277
+cand: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: inside 9, outside 11, unresolved 1, unbanded 2
+  MATCH-23: inside 31, unresolved 5, outside 2
+  MATCH-29: insufficient 5, inside 19, outside 1
+  curve 1.54 (-35 4.7, -30 6.2, -25 3.7, -20 7.1, -15 11.1, -10 9.2, -5 4.2, 0 2.7, 5 4.6, 10 3.7, 15 5.2, 20 3.9, 25 2.2, 30 2.3, 35 6.2, 40 6.6); points possession 1.315, press 1.456, counter 1.430, balanced 1.296
+* 30:keyPasses                     10.696 [10.592, 10.800] unresolved           → 10.216 [10.115, 10.318] inside
+* 30:bigChancesScored              0.331 [0.315, 0.348] outside                 → 0.396 [0.377, 0.414] unresolved
+* 30:boxShots                      7.887 [7.803, 7.970] outside                 → 7.308 [7.226, 7.390] inside
+* 30:highTurnovers                 5.535 [5.456, 5.614] outside                 → 7.175 [7.079, 7.271] inside
+* 30:ppda                          17.122 [16.986, 17.258] outside              → 13.866 [13.764, 13.968] inside
+* 23:shotsGoalArea                 8.264 [8.044, 8.485] inside                  → 8.950 [8.718, 9.182] unresolved
+* 23:shotsOutside                  39.145 [38.710, 39.581] inside               → 41.595 [41.149, 42.041] unresolved
+* 29:draws:possession-press        0.282 [0.257, 0.308] insufficient            → 0.242 [0.218, 0.267] inside
+* 29:draws:possession-balanced     0.275 [0.250, 0.300] insufficient            → 0.257 [0.232, 0.281] inside
+* 29:winShareGap:press-balanced    0.073 [0.026, 0.121] insufficient            → 0.060 [0.011, 0.109] inside
+* 29:winShareGap:counter-balanced  0.110 [0.062, 0.158] insufficient            → 0.063 [0.015, 0.111] inside

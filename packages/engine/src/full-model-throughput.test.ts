@@ -70,11 +70,13 @@ const facts = (w: World) => ({
  * artifact (the grid untouched by T369); 4f190f1b1d803d86 and 53d5f04e2624eb4e before. T326's
  * speed-ups (attribution splits into reused buffers, cached move traits, action weights and
  * presence, the skill access indexed by line, a substitute's slot levels read on demand) left
- * both digests unchanged.
+ * both digests unchanged. T370's grid shot selection in the box and the tactics' build-up
+ * interceptions changed the candidate rounds (aggregate records unchanged), re-recorded with its
+ * calibration artifact; 0e9f347a953ed3e1 before.
  */
 const BEFORE = {
   aggregateRecords: 'd6a5c7feb76176f3',
-  candidateRounds: '0e9f347a953ed3e1',
+  candidateRounds: 'c1e07cfffabede5d',
 };
 
 describe('complete-result throughput (T285)', () => {

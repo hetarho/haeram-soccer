@@ -119,14 +119,18 @@ export const DUEL_CONFIG = {
     /**
      * Pressing in the opponent's build-up (T370, →MATCH-8, MATCH-13): of the failed passes played
      * from below `upTo` m, the defending side's tactic intercepts this share in place of
-     * `pass.lost.intercepted`, taken from the loose balls, so as many still leave play.
+     * `pass.lost.intercepted`, taken from the loose balls, so as many still leave play. Press reads
+     * the build-up most and counter, engaging around halfway, least; PPDA and high turnovers come
+     * inside MATCH-30's bands with tackles and interceptions still inside MATCH-23's.
      */
     intercept: {
       upTo: 70,
-      share: { possession: 0.07, press: 0.07, counter: 0.07, balanced: 0.07 } satisfies Record<
-        Tactic,
-        number
-      >,
+      share: {
+        possession: 0.175,
+        press: 0.195,
+        counter: 0.155,
+        balanced: 0.175,
+      } satisfies Record<Tactic, number>,
     },
   },
 } as const;
