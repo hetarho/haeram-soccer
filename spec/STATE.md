@@ -273,6 +273,7 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 fix e2e (c9v3): openOffice dismisses the decision outcome toast that covered the office tab; Firefox CI 39952590526 waited 7.5 s there in both attempts and ran recovery.spec:28/:59 past 30 s (Chromium hit the same toast in 39909381793)
 - 261023 fix e2e (c9v3): mobile.spec:113 imports its low-screen fixture once founding is enabled, since an import before the client is ready is dropped (Chromium and WebKit failed it under load)
 - 261023 fix-ci start (c9v3): main CI red since 7a6581e0 (last 39952590526 at b388356f: Chromium mobile.spec:113, Firefox recovery.spec:28/:59, WebKit management-surfaces:22 standard and match-core:94 360); engine chain T372→ stays with w6p4
 - 261023 T389 done (k7p2): preserve the return clock during loading and retry on readiness; three regressions fail before/pass after, 80 affected units and rebuilt hidden/away/writer-reload journeys pass

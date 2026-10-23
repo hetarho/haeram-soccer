@@ -26,11 +26,23 @@ export async function dismissMatchReport(page: Page) {
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
   if (!(await page.getByTestId('owner-office').isVisible())) {
+    await dismissSettingsToast(page);
     await page
       .getByRole('navigation')
       .getByRole('button', { name: '구단 운영', exact: true })
       .click();
-    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
+    const tab = page.getByRole('tab', { name: '구단주 사무실', exact: true });
+    for (let attempt = 0; ; attempt++) {
+      // A decision's outcome toast can cover the tab until it hides, and it may appear just after
+      // the decision lands: CI 39952590526 waited 7.5 s there and ran recovery out of time.
+      await dismissSettingsToast(page);
+      try {
+        await tab.click({ timeout: 2000 });
+        break;
+      } catch (error) {
+        if (attempt >= 3) throw error;
+      }
+    }
   }
   await expect(page.getByTestId('owner-office')).toBeVisible();
   return page.getByTestId('owner-office');
