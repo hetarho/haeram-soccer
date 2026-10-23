@@ -926,6 +926,7 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
 export function App() {
   const { t } = useLocale();
   const importBlocked = useGameState((state) => gameActionsBlocked(state, { recovery: true }));
+  const progressionBlocked = useGameState(gameActionsBlocked);
   const worldId = useGameState((state) => state.view?.world.id);
   const state = gameStore.getSnapshot();
   const [client, setClient] = useState<GameClient>(),
@@ -1002,8 +1003,8 @@ export function App() {
     if (playing) loadRich().catch(() => undefined);
   }, [playing]);
   useEffect(() => {
-    if (playing && worldId) controller?.resumeAway();
-  }, [playing, worldId, controller]);
+    if (playing && worldId && !progressionBlocked) controller?.resumeAway();
+  }, [playing, worldId, controller, progressionBlocked]);
   useTabTitle(controller);
   // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
   const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);

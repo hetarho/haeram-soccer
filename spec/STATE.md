@@ -272,6 +272,8 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261023 T389 done (k7p2): preserve the return clock during loading and retry on readiness; three regressions fail before/pass after, 80 affected units and rebuilt hidden/away/writer-reload journeys pass
+- 261023 T389 start (k7p2): publication away-return failure exposes an armed clock consumed during client loading; defer until command readiness and retry once, with controller regressions and the real return journey
 - 261023 T388 done (k7p2): calendar-day contract checks, loaded office choices, expanded finance support, elapsed playback bounds and immediate celebration checks; five affected Chromium cases plus type/lint/format/spec checks pass
 - 261023 T388 start (k7p2): publication batch exposed stale week/round comparisons, lazy and collapsed control queries, playback timing assumptions and a celebration-expiry detour; escalate four-file test repair from lightweight fix
 - 261023 T387 done (k7p2): both complete themes registered with 184 original scenes and two icon families; full unit 1956+4 skips, contract 39, catalogs/assets/build pass; 247 current Chromium scenarios covered across batch and targeted fixes; owner authorizes main commit and push
@@ -290,5 +292,3 @@
 - 261023 T383 done: rounds numbered by our division (19 / 38 in 1부), idle weeks unchanged, notices dated; units 737/737, Chromium management/recovery/staff 12/16 with 4 pre-existing load failures
 - 261023 create-task WEB r133 → T383
 - 261023 update-ssot WEB start
-- 261023 update-ssot WEB r133 WEB-18✎ division round → create-task WEB
-- 261023 office pushed (o9r4; T379–T382): implementation 7a6581e0 on origin/main; combined typecheck/build and 65 affected units pass. CI 39909381793 remains pending with no jobs started; local watcher stopped, remote workflow stays queued, no CI pass claimed

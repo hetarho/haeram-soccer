@@ -300,6 +300,9 @@ export class ProgressionController {
    * closed plays the time away (within the away limit), then carries on.
    */
   resumeAway() {
+    // A loaded view can arrive before its loading command settles.
+    const state = gameStore.getSnapshot();
+    if (state.busy || state.processing || state.pendingActions) return;
     const record = this.armed;
     this.armed = undefined;
     if (this.mode !== 'automatic' || !record || this.store.getState().running) return;

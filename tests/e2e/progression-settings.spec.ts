@@ -198,10 +198,14 @@ test('a page that closed with the clock running plays the time away on return an
       'haeram-soccor:background',
       JSON.stringify({ hidden: true, away: 'month' }),
     );
-    localStorage.setItem(
-      'haeram-soccor:clock',
-      JSON.stringify({ [worldId]: { running: true, pace: 'x1', at: Date.now() - 600_000 } }),
-    );
+    const clocks = JSON.parse(localStorage.getItem('haeram-soccor:clock') || '{}');
+    clocks[worldId] = {
+      ...clocks[worldId],
+      running: true,
+      pace: 'x1',
+      at: Date.now() - 600_000,
+    };
+    localStorage.setItem('haeram-soccor:clock', JSON.stringify(clocks));
   }, worldId);
   await page.reload();
   const summary = page.getByRole('dialog', { name: '자리를 비운 동안' });
