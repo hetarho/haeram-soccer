@@ -14,18 +14,15 @@ import {
 } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  MATCH_MODEL_REVISION,
-  type MatchModelState,
-} from '../../packages/contracts/src/match-model';
+import type { MatchModelState } from '../../packages/contracts/src/match-model';
 import type { Founding, World } from '../../packages/contracts/src/types';
 import {
+  activateMatchModel,
   advanceRound,
   createWorld,
-  currentDay,
-  openNpcSeason,
+  MATCH_MODEL_RELEASE,
   simulateSeason,
-  trackingBoundary,
+  type MatchModelRelease,
 } from '../../packages/engine/src/index';
 
 /**
@@ -233,25 +230,20 @@ export function simulatedWorld(input: Founding, span: Simulated = {}): World {
   );
 }
 
+/** The release switch turned on, for tests and measurements; production keeps it off. */
+export const ENABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: true };
+
 /**
  * `w` on the candidate match model (→SAVE-23), for tests and measurements while the release switch
- * stays off: the model recorded at the world's current boundary with its season's complete
- * aggregates opened there — the engine state a writer activation leaves (T286 owns that writer).
- * `coverage` is `founding` for a world straight from `createWorld`, `activation` otherwise.
+ * stays off: production's `activateMatchModel` with an enabled release, so the model is recorded at
+ * the world's current boundary with its season's complete aggregates opened there — `founding`
+ * coverage for a world straight from `createWorld`, `activation` otherwise. A world already on a
+ * model keeps it. `coverage`, when given, is what the caller expects and throws when it differs.
  */
-export function withCandidateModel(
-  w: World,
-  coverage: MatchModelState['coverage'] = w.round === 0 && w.ownMatches.length === 0
-    ? 'founding'
-    : 'activation',
-): World {
-  const trackedFrom = trackingBoundary(w);
-  w.matchModel = {
-    revision: MATCH_MODEL_REVISION,
-    activated: { year: w.year, day: currentDay(w), revision: w.revision },
-    trackedFrom,
-    coverage,
-  };
-  openNpcSeason(w, trackedFrom);
+export function withCandidateModel(w: World, coverage?: MatchModelState['coverage']): World {
+  activateMatchModel(w, ENABLED_RELEASE);
+  if (!w.matchModel) throw new Error(`world on rules ${w.engine} cannot take the candidate model`);
+  if (coverage !== undefined && w.matchModel.coverage !== coverage)
+    throw new Error(`candidate model coverage ${w.matchModel.coverage}, expected ${coverage}`);
   return w;
 }

@@ -284,13 +284,23 @@ export class GameClient {
     }
     const result = await this.saves.load();
     if (result) {
+      const playback = this.state.playback,
+        career = this.state.view?.world.id;
       const reply = await this.rpc({
         type: 'inspect',
         raw: result.raw,
         activate: true,
         upgrade: !this.state.readonly,
       });
-      this.state.playback = undefined;
+      // A revealed playback of this career whose match the checkpoint holds finishes under the
+      // model it was settled with, even when this load activates a newer one (→SAVE-23).
+      const world = this.state.view?.world;
+      this.state.playback =
+        playback &&
+        world?.id === career &&
+        world?.ownMatches.some((match) => match.id === playback.record.id)
+          ? playback
+          : undefined;
       this.state.savedRevision = result.world.revision;
       this.savedCheckpoint = {
         raw: result.raw,
@@ -312,7 +322,8 @@ export class GameClient {
             revision: this.state.view!.world.revision,
           };
           this.state.savedAt = Date.now();
-          // A catalog pin or missing club designs (→SAVE-21) are updated, never the gameplay rules.
+          // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
+          // updated, never the gameplay rules or a settled fact.
           notificationStore.add(SAVE_DATA_UPDATED);
           this.channel.postMessage({
             revision: this.state.savedRevision,
