@@ -170,10 +170,13 @@ export const DECISION_CONFIG = {
     trailingPush: 1.6,
     /**
      * Shot selection in the box (T370, →MATCH-16): a shot's weight there is scaled by its chance's
-     * xG against `ref` to the power `power` (0 leaves it alone) while he stands below `upTo` m, so
-     * a carrier passes up a weak angle or a pressured look for a better chance.
+     * xG against `ref` to the power `power` (0 leaves it alone), at most `most` times, while he
+     * stands below `upTo` m, so a carrier passes up a weak angle or a pressured look for a better
+     * chance.
      */
-    shotQuality: { ref: 0.15, power: 0, upTo: 105 },
+    shotQuality: { ref: 0.15, power: 0, most: 1000, upTo: 105 },
+    /** The final ball from the cut-back zones (T370): the share of crosses played back, in place of `cutBackShare`. */
+    cutBackShare: 0.1,
     /**
      * Carrying after a reception (T370, →MATCH-16): an unpressured carrier below `upTo` m carries
      * `open` times as often and `length` ([base, spread] m) in place of `carry.length`, so the
@@ -267,13 +270,14 @@ export function actionMix(
         : C.holdUp.base,
     clearance: cell.clearance,
   };
+  const candidate = s.setup.model !== undefined;
   if (inCutBack) {
-    mix.cutBack = C.cutBackShare * mix.cross;
-    mix.cross *= 1 - C.cutBackShare;
+    const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
+    mix.cutBack = share * mix.cross;
+    mix.cross *= 1 - share;
   }
   // The position's habits against the league's overall.
   const profile = POSITION_PROFILES[profileKey(slot.position)];
-  const candidate = s.setup.model !== undefined;
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
@@ -327,12 +331,15 @@ export function actionMix(
     c[0] < C.candidate.shotQuality.upTo &&
     C.candidate.shotQuality.power !== 0
   )
-    mix.shot *= s.math.exp(
-      C.candidate.shotQuality.power *
-        s.math.log(
-          chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) /
-            C.candidate.shotQuality.ref,
-        ),
+    mix.shot *= Math.min(
+      C.candidate.shotQuality.most,
+      s.math.exp(
+        C.candidate.shotQuality.power *
+          s.math.log(
+            chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) /
+              C.candidate.shotQuality.ref,
+          ),
+      ),
     );
   if (tags.pressure >= 1) {
     mix.carry *= C.pressure.carry;
