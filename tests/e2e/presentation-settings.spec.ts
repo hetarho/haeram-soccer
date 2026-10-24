@@ -13,7 +13,7 @@ import {
 import { chooseOption, selectOptions } from './select';
 import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
-import { expectHomeBounds, settle } from './layout';
+import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
 import { textContrast } from './contrast';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
@@ -162,6 +162,7 @@ for (const width of [390, 1380])
       });
       expect(homeSkin.frame).toContain(assetPath);
       expect(homeSkin.fill).toContain(assetPath);
+      await expectHomeSceneRatio(page);
 
       await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
       await page.getByRole('tab', { name: '순위표', exact: true }).click();

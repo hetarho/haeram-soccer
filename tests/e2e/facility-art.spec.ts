@@ -5,7 +5,7 @@ import { advanceDays, createWorld, operate, prepareSeason } from '../../packages
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
-import { expectHomeBounds, settle } from './layout';
+import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { createThemeResolver } from '../../apps/web/src/presentation/theme';
 import {
@@ -134,6 +134,11 @@ for (const scenario of [
       artWorld(scenario.year, scenario.stadium, scenario.training, scenario.academy),
     );
     await expectArt(page, 'stadium', scenario.era, scenario.stadium);
+    const panorama = await expectHomeSceneRatio(page);
+    await page.setViewportSize({ width: scenario.width, height: scenario.height + 160 });
+    const taller = await expectHomeSceneRatio(page);
+    expect(taller.height).toBeCloseTo(panorama.height, 2);
+    await page.setViewportSize({ width: scenario.width, height: scenario.height });
     await expectHomeBounds(page);
     await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });

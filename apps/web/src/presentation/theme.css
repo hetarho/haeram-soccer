@@ -1,17 +1,27 @@
 /* Shared presentation mechanics; each pack supplies values and visual resources. */
 :root {
   --control-min-height: 44px;
-  --control-padding-block: 10px;
-  --control-padding-inline: 16px;
-  --control-gap: 8px;
-  --panel-padding: 16px;
-  --row-padding: 12px;
+  --control-padding-block: 6px;
+  --control-padding-inline: 12px;
+  --control-gap: 6px;
+  --panel-padding: 12px;
+  --row-padding: 8px;
   --settings-toast-clearance: 80px;
   --event-access-clearance: 56px;
 }
 body {
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Keep every game surface scrollable without native scrollbar chrome. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 html body {

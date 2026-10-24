@@ -1,8 +1,32 @@
 import { watchNext } from './watch';
 import { delegateSales } from './events';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { chooseOption, optionList } from './select';
 import { horizontalOverflow, settle } from './layout';
+
+async function controlGeometry(control: Locator) {
+  return control.evaluate((element) => {
+    const style = getComputedStyle(element),
+      bounds = element.getBoundingClientRect();
+    const value = element.querySelector('span')!;
+    return {
+      width: bounds.width,
+      height: bounds.height,
+      x: bounds.x,
+      y: bounds.y,
+      border: style.borderTopWidth,
+      frame: style.borderImageSource,
+      filter: style.filter,
+      transform: style.transform,
+      whiteSpace: getComputedStyle(value).whiteSpace,
+      lineHeight: parseFloat(getComputedStyle(value).lineHeight),
+      valueWidth: value.clientWidth,
+      textWidth: value.scrollWidth,
+      valueHeight: value.clientHeight,
+      textHeight: value.scrollHeight,
+    };
+  });
+}
 
 test('selects by keyboard, exposes selection and dismisses without committing previews', async ({
   page,
@@ -49,6 +73,60 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
+  test(`keeps text season controls steady and selected competition on one line at ${viewport.width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await page
+      .getByRole('button', { name: '클럽 기록실', exact: true })
+      .filter({ visible: true })
+      .first()
+      .click();
+    await page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true }).click();
+    const season = page.getByRole('combobox', { name: '기록 시즌', exact: true });
+    const competition = page.getByRole('combobox', { name: '기록 대회 범위', exact: true });
+    await settle(page);
+    for (const trigger of [season, competition]) {
+      const before = await controlGeometry(trigger);
+      await trigger.hover();
+      const immediate = await controlGeometry(trigger);
+      await settle(page);
+      const settled = await controlGeometry(trigger);
+      await page.mouse.down();
+      const pressed = await controlGeometry(trigger);
+      await page.mouse.up();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      const opened = await controlGeometry(trigger);
+      for (const state of [before, immediate, settled, pressed, opened]) {
+        expect(state.width).toBe(before.width);
+        expect(state.height).toBe(before.height);
+        expect(state.x).toBe(before.x);
+        expect(state.y).toBe(before.y);
+        expect(state.height).toBe(44);
+        expect(state.border).toBe('0px');
+        expect(state.frame).toBe('none');
+        expect(state.filter).toBe('none');
+        expect(state.transform).toBe('none');
+        expect(state.whiteSpace).toBe('nowrap');
+        expect(state.textWidth).toBeLessThanOrEqual(state.valueWidth);
+        expect(state.textHeight).toBeLessThanOrEqual(state.valueHeight);
+        expect(state.valueHeight).toBeLessThanOrEqual(Math.ceil(state.lineHeight));
+      }
+      await trigger.press('Escape');
+    }
+    await chooseOption(competition, 'playoff');
+    await expect(competition).toContainText('승격 플레이오프');
+    const long = await controlGeometry(competition);
+    expect(long.height).toBe(44);
+    expect(long.whiteSpace).toBe('nowrap');
+    expect(long.valueHeight).toBeLessThanOrEqual(Math.ceil(long.lineHeight));
+    expect(long.textWidth).toBeLessThanOrEqual(long.valueWidth);
+    expect(long.textHeight).toBeLessThanOrEqual(long.valueHeight);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  });
+
   test(`keeps long dropdowns within the viewport and Escape inside preparation at ${viewport.width}`, async ({
     page,
   }) => {

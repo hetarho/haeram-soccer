@@ -12,7 +12,7 @@ html[data-theme] {
   }
 
   [data-ui='game-shell'] > main {
-    --gutter: 28px;
+    --gutter: 20px;
     background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: var(--image-material-size, 512px);
   }
@@ -20,10 +20,6 @@ html[data-theme] {
   button,
   [data-select-trigger] {
     box-shadow: none;
-  }
-
-  button:where(:active:not(:disabled)):not([data-ui='link'], [data-ui='term'], [data-money]) {
-    transform: translateY(2px);
   }
 
   button:focus-visible,
@@ -202,9 +198,9 @@ html[data-theme] {
   }
 
   [data-ui='game-shell'] > main > header {
-    min-height: 72px;
-    padding-top: 8px;
-    padding-bottom: 10px;
+    min-height: 52px;
+    padding-top: 4px;
+    padding-bottom: 4px;
     margin-bottom: 0;
     background: none;
     border: 0;
@@ -278,7 +274,7 @@ html[data-theme] {
   }
 
   [data-testid='view-scroller'] {
-    padding-top: 12px;
+    padding-top: 4px;
     background: none;
   }
 
@@ -289,10 +285,10 @@ html[data-theme] {
   }
 
   [data-ui='season-overview'] {
-    min-height: 66px;
+    min-height: 48px;
     margin: 0;
-    padding: 0 2px 12px;
-    gap: 24px;
+    padding: 0 2px 4px;
+    gap: 12px;
   }
 
   [data-testid='calendar'] {
@@ -326,10 +322,10 @@ html[data-theme] {
   }
 
   [data-ui='progress-mode'] {
-    min-height: 60px;
-    padding: 6px 12px;
-    gap: 16px;
-    border: 9px solid transparent;
+    min-height: 44px;
+    padding: 2px 6px;
+    gap: 8px;
+    border: 4px solid transparent;
     border-image: var(--image-primary-frame) var(--image-frame-slice, 52) / 12px stretch;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
@@ -357,9 +353,9 @@ html[data-theme] {
   }
 
   [data-home-part='fixture'] {
-    min-height: 108px;
-    padding: 9px 14px;
-    border: 12px solid transparent;
+    min-height: 84px;
+    padding: 6px 10px;
+    border: 6px solid transparent;
     border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 17px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
@@ -391,9 +387,9 @@ html[data-theme] {
   }
 
   [data-home-part='fixture'] > div:last-child > button {
-    min-height: 60px;
-    padding: 10px 14px;
-    border: 9px solid transparent;
+    min-height: 44px;
+    padding: 4px 10px;
+    border: 4px solid transparent;
     border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 13px stretch;
     border-radius: var(--image-radius, 0px);
     color: var(--image-on-primary);
@@ -443,10 +439,7 @@ html[data-theme] {
   }
 
   [data-home-part='stage'] {
-    --scene-stats-height: 108px;
     isolation: isolate;
-    height: clamp(310px, 37vh, 440px);
-    min-height: 310px;
   }
 
   [data-home-part='stage']::after {
@@ -465,10 +458,6 @@ html[data-theme] {
     border: 0;
     border-radius: var(--image-radius, 0px);
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-  }
-
-  [data-home-part='scene'] > [data-facility-art] {
-    inset: 0 0 calc(var(--scene-stats-height) - 6px);
   }
 
   [data-home-part='scene-caption'] {
@@ -514,14 +503,12 @@ html[data-theme] {
 
   [data-home-part='stage-label'] {
     right: 10px;
-    bottom: calc(var(--scene-stats-height) + 6px);
+    bottom: 6px;
     letter-spacing: 0;
   }
 
   [data-home-part='season-stats'] {
-    inset: auto 6px 6px;
-    width: calc(100% - 12px);
-    height: calc(var(--scene-stats-height) - 6px);
+    margin: 0 6px 6px;
     gap: 0;
     border: 0;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
@@ -530,7 +517,7 @@ html[data-theme] {
 
   [data-home-part='season-stats'] > div {
     align-content: center;
-    padding: 8px 20px;
+    padding: 6px 12px;
     gap: 2px;
     border: 0;
     background: none;
@@ -548,7 +535,7 @@ html[data-theme] {
 
   [data-home-part='season-stats'] b,
   [data-home-part='season-stats'] b > span {
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -1px;
     line-height: 1.1;
@@ -698,11 +685,11 @@ html[data-theme] {
   }
 
   [data-ui='season-transport'] {
-    min-height: 58px;
-    margin: 0 0 8px;
-    padding: 0 14px;
-    gap: 12px;
-    border: 7px solid transparent;
+    min-height: 50px;
+    margin: 0 0 4px;
+    padding: 0 8px;
+    gap: 8px;
+    border: 3px solid transparent;
     border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 10px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
@@ -726,12 +713,11 @@ html[data-theme] {
     height: 44px;
     min-height: 44px;
     min-width: 78px;
-    padding-inline: 10px;
-    padding-block: 4px;
-    gap: 8px;
-    border: 4px solid transparent;
-    border-color: transparent;
-    border-image: var(--image-dark-frame) var(--image-frame-slice, 54) / 6px stretch;
+    padding-inline: 6px;
+    padding-block: 1px;
+    gap: 4px;
+    border: 1px solid var(--image-on-dark-muted);
+    border-image: none;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
     background-size: var(--image-material-size, 256px);
@@ -776,7 +762,7 @@ html[data-theme] {
     [data-ui='game-shell']:has(> [data-ui='sidebar']) {
       grid-template-columns: 220px minmax(0, 1fr);
     }
-    main {
+    [data-ui='game-shell'] > main {
       --gutter: 20px;
     }
     [data-ui='game-shell'] > [data-ui='sidebar'] {
@@ -823,16 +809,16 @@ html[data-theme] {
       grid-template-columns: minmax(0, 1fr);
     }
     body {
-      --mobile-nav-clearance: calc(82px + env(safe-area-inset-bottom));
+      --mobile-nav-clearance: calc(68px + env(safe-area-inset-bottom));
     }
-    main {
-      --gutter: 12px;
+    [data-ui='game-shell'] > main {
+      --gutter: 8px;
     }
     [data-ui='game-shell'] > main > header {
-      min-height: 62px;
+      min-height: 48px;
       gap: 4px;
-      padding-top: calc(5px + env(safe-area-inset-top));
-      padding-bottom: 7px;
+      padding-top: calc(2px + env(safe-area-inset-top));
+      padding-bottom: 2px;
       background-size: calc(100% - 24px) 2px;
     }
     [data-ui='game-shell'] > main > header > button:first-child {
@@ -864,7 +850,7 @@ html[data-theme] {
       font-size: 16px;
     }
     [data-testid='view-scroller'] {
-      padding-top: 10px;
+      padding-top: 4px;
     }
     [data-testid='view-scroller']:has([data-home-active='true']) {
       display: flex;
@@ -879,9 +865,9 @@ html[data-theme] {
       padding-bottom: 10px;
     }
     [data-ui='season-overview'] {
-      min-height: 64px;
-      padding-bottom: 10px;
-      gap: 12px;
+      min-height: 44px;
+      padding-bottom: 2px;
+      gap: 8px;
     }
     [data-testid='calendar'] small,
     [data-testid='game-date'] {
@@ -907,10 +893,10 @@ html[data-theme] {
       font-size: var(--image-small-size, 11px);
     }
     [data-ui='progress-mode'] {
-      min-height: 52px;
+      min-height: 44px;
       gap: 8px;
       padding: 2px 7px;
-      border-width: 8px;
+      border-width: 4px;
       border-image-width: 10px;
     }
     [data-ui='progress-mode'] b {
@@ -929,9 +915,9 @@ html[data-theme] {
     [data-home-part='fixture'] {
       flex-wrap: nowrap;
       min-height: 0;
-      padding: 7px 8px;
+      padding: 4px 6px;
       gap: 8px;
-      border-width: 9px;
+      border-width: 5px;
       border-image-width: 12px;
     }
     [data-home-part='fixture'] > div:first-child {
@@ -958,7 +944,7 @@ html[data-theme] {
     [data-home-part='fixture'] > div:last-child > button {
       min-height: 44px;
       padding: 4px 10px;
-      border-width: 7px;
+      border-width: 4px;
       border-image-width: 10px;
       font-size: 12px;
     }
@@ -971,19 +957,11 @@ html[data-theme] {
     [data-home-part='season-meter'] progress {
       height: 10px;
     }
-    [data-home-part='stage'] {
-      --scene-stats-height: 76px;
-      flex: none;
-      height: clamp(245px, 65vw, 330px);
-      min-height: 245px;
-      max-height: none;
-    }
     [data-home-part='stage']::after {
       border-image-width: 8px;
     }
     [data-home-part='scene'] {
-      margin: 5px;
-      max-height: none;
+      margin: 4px;
     }
     [data-home-part='scene-caption'] {
       inset: 6px 5px auto;
@@ -1002,17 +980,15 @@ html[data-theme] {
       display: none;
     }
     [data-home-part='stage-label'] {
-      bottom: calc(var(--scene-stats-height) + 3px);
+      bottom: 3px;
       right: 6px;
     }
     [data-home-part='season-stats'] {
-      inset: auto 5px 5px;
-      width: calc(100% - 10px);
-      height: calc(var(--scene-stats-height) - 5px);
+      margin: 0 4px 4px;
     }
     [data-home-part='season-stats'] > div {
-      padding: 7px 9px;
-      gap: 3px;
+      padding: 5px 8px;
+      gap: 2px;
     }
     [data-home-part='season-stats'] span {
       font-size: var(--image-caption-size, 10px);
@@ -1034,25 +1010,25 @@ html[data-theme] {
     }
     [data-home-part='conditions'] {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px;
+      gap: 6px;
     }
     [data-condition] > button {
-      grid-template-columns: 44px minmax(0, 1fr);
-      column-gap: 8px;
-      min-height: 83px;
-      padding: 4px 7px;
-      border-width: 7px;
+      grid-template-columns: 32px minmax(0, 1fr);
+      column-gap: 6px;
+      min-height: 66px;
+      padding: 3px 6px;
+      border-width: 4px;
       border-image-width: 9px;
     }
     [data-condition] > button::before {
-      width: 44px;
-      height: 49px;
+      width: 32px;
+      height: 36px;
     }
     [data-condition] > button > span {
       font-size: var(--image-small-size, 11px);
     }
     [data-condition] > button > b {
-      font-size: 25px;
+      font-size: 22px;
     }
     [data-condition] > button > small {
       font-size: var(--image-small-size, 11px);
@@ -1063,10 +1039,10 @@ html[data-theme] {
       line-height: 1.6;
     }
     [data-ui='season-transport'] {
-      min-height: 56px;
+      min-height: 50px;
       padding: 0 6px;
       margin-bottom: 3px;
-      border-width: 6px;
+      border-width: 3px;
       border-image-width: 8px;
       gap: 5px;
     }
@@ -1077,9 +1053,9 @@ html[data-theme] {
       bottom: calc(6px + env(safe-area-inset-bottom));
       left: 8px;
       right: 8px;
-      padding: 3px 2px;
+      padding: 1px 2px;
       gap: 0;
-      border: 6px solid transparent;
+      border: 4px solid transparent;
       border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 9px stretch;
       border-radius: var(--image-radius, 0px);
       background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
@@ -1089,9 +1065,9 @@ html[data-theme] {
     }
     [data-ui='game-shell'] > nav button {
       min-width: 0;
-      min-height: 52px;
+      min-height: 48px;
       gap: 3px;
-      padding: 4px 0;
+      padding: 2px 0;
       color: var(--image-on-dark);
       font-size: var(--image-caption-size, 10px);
     }
@@ -1118,6 +1094,12 @@ html[data-theme] {
   }
 
   @media (max-width: 359px) {
+    [data-ui='game-shell'] > nav {
+      left: 0;
+      right: 0;
+      padding-inline: 1px;
+      border-width: 2px;
+    }
     [data-condition] > button {
       grid-template-columns: 36px minmax(0, 1fr);
       column-gap: 5px;

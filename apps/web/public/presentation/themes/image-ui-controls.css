@@ -123,29 +123,14 @@ html[data-theme] {
   }
 
   @media (max-width: 760px) {
-    [data-testid='match-score'] > span {
-      flex-wrap: wrap;
-      align-content: center;
-      justify-content: center;
-      gap: 2px 4px;
-    }
-
-    [data-testid='match-score'] > span > b[aria-hidden='true'] {
-      flex: 0 0 auto;
+    [data-ui='match-team-identity'] > b[aria-hidden='true'] {
       font-size: 12px;
-      white-space: nowrap;
-    }
-
-    [data-testid='match-score'] > span > [data-ui='possession-cue'] {
-      order: 4;
-      flex-basis: 100%;
-      justify-content: center;
-      padding: 1px 3px;
     }
   }
 
-  --control-hover-filter: brightness(0.96);
-  --control-active-filter: brightness(0.9);
+  --control-hover-filter: none;
+  --control-active-filter: none;
+  --image-control-edge: color-mix(in srgb, var(--image-ink-color) 75%, transparent);
   --ovr-bronze: var(--image-ovr-bronze);
   --ovr-silver: var(--image-ovr-silver);
 
@@ -154,13 +139,14 @@ html[data-theme] {
       [data-ui='link'],
       [data-ui='icon'],
       [data-ui='navigation'],
+      [role='tab'],
       [data-ui='badge'],
       [data-home-part],
       [data-select-trigger]
     )
   ) {
-    border: 6px solid transparent;
-    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
+    border: 1px solid var(--image-control-edge);
+    border-image: none;
     border-radius: var(--image-radius, 0px);
     background-image: var(--image-quiet-material);
     background-color: var(--image-quiet);
@@ -172,14 +158,14 @@ html[data-theme] {
   button[data-ui='primary'],
   button[type='submit'],
   button[aria-pressed='true'],
-  button[aria-selected='true'] {
+  button[aria-selected='true']:not([role='tab']) {
     --text: var(--image-on-primary);
     --text-muted: var(--image-on-primary);
     --text-faint: var(--image-on-primary-muted);
     --accent-text: var(--image-on-primary);
     --gold: var(--image-on-primary);
     color: var(--image-on-primary);
-    border-width: 6px;
+    border-width: 3px;
     border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
     background-image: var(--image-primary-material);
     background-color: var(--image-primary);
@@ -202,8 +188,8 @@ html[data-theme] {
   }
 
   [data-ui='icon'] {
-    border: 4px solid transparent;
-    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border: 1px solid var(--image-control-edge);
+    border-image: none;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
@@ -217,8 +203,8 @@ html[data-theme] {
     textarea,
     select
   ) {
-    border: 5px solid transparent;
-    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 7px stretch;
+    border: 1px solid var(--image-control-edge);
+    border-image: none;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
@@ -230,9 +216,25 @@ html[data-theme] {
     --text: var(--image-ink-color);
     --text-muted: var(--image-muted);
     --text-faint: var(--image-faint);
-    padding: 10px 14px;
-    gap: 10px;
-    line-height: 1.5;
+    padding: 1px 8px;
+    gap: 4px;
+    line-height: 1.2;
+  }
+
+  [data-ui='text-select'][data-select-trigger][role='combobox'] {
+    border: 0;
+    border-image: none;
+    background: none;
+    box-shadow: none;
+    padding: 1px 4px;
+    gap: 2px;
+    filter: none;
+    transform: none;
+    transition: color 140ms;
+  }
+
+  [data-ui='season-picker'] [data-ui='text-select'][data-select-trigger] {
+    font-size: 18px;
   }
 
   :is(input, textarea)::placeholder {
@@ -304,7 +306,7 @@ html[data-theme] {
 
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'] {
-    border: 8px solid transparent;
+    border: 4px solid transparent;
     border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
@@ -335,26 +337,51 @@ html[data-theme] {
     background-size: var(--image-material-size, 512px);
   }
 
-  [role='tablist'],
   [data-ui='choices'] {
     gap: 6px;
     border: 0;
     border-radius: var(--image-radius, 0px);
     background: none;
-    padding: 4px 0 8px;
+    padding: 2px 0;
+  }
+
+  [role='tablist'] {
+    gap: 4px;
+    padding: 0;
+    border-bottom: 1px solid var(--image-table-line);
+    border-radius: 0;
+    background: none;
+  }
+
+  [role='tab'] {
+    min-height: 44px;
+    padding: 2px 8px;
+    border: 0;
+    border-image: none;
+    border-radius: 0;
+    background: none;
+    color: var(--image-muted);
+    box-shadow: none;
+  }
+
+  [role='tab'][aria-selected='true'] {
+    color: var(--image-accent);
+    border: 0 !important;
+    border-image: none !important;
+    background: none !important;
+    box-shadow: inset 0 -2px var(--image-accent);
   }
 
   [role='radiogroup'] {
     gap: 6px;
   }
 
-  [role='tab'],
   [data-ui='choices'] > button,
   [role='radiogroup'] > button {
     flex-shrink: 0;
     min-height: 44px;
-    border: 6px solid transparent;
-    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
+    border: 1px solid var(--image-control-edge);
+    border-image: none;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
@@ -363,7 +390,6 @@ html[data-theme] {
     box-shadow: none;
   }
 
-  [role='tab'][aria-selected='true'],
   [data-ui='choices'] > button[aria-pressed='true'],
   [role='radio'][aria-checked='true'] {
     --text: var(--image-on-primary);
@@ -371,8 +397,8 @@ html[data-theme] {
     --text-faint: var(--image-on-primary-muted);
     color: var(--image-on-primary);
     /* The shared .selected utility forces a border; replace that complete border here. */
-    border: 6px solid transparent !important;
-    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch !important;
+    border: 1px solid var(--image-control-edge) !important;
+    border-image: none !important;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
   }
@@ -656,7 +682,7 @@ html[data-theme] {
 
   @media (max-width: 760px) {
     [data-surface='panel'] {
-      border-width: 6px;
+      border-width: 4px;
       border-image-width: 8px;
     }
     [data-ui='dialog'] {

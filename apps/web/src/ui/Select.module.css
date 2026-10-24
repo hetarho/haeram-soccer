@@ -2,12 +2,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px;
   width: 100%;
   min-width: 44px;
   max-width: 100%;
   min-height: var(--control-min-height);
-  padding: var(--control-padding-block) var(--control-padding-inline);
+  padding: 1px 8px;
   border: 1px solid var(--popover-edge);
   border-radius: var(--control-radius);
   background: var(--surface-grain, none) var(--surface-deep);
@@ -15,9 +15,9 @@
   box-shadow: none;
   text-align: left;
   font-weight: 500;
+  line-height: 1.2;
   transition:
-    border-color 140ms,
-    background 140ms,
+    background-color 140ms,
     box-shadow 140ms;
 }
 .trigger.trigger:hover:not(:disabled),
@@ -37,6 +37,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  line-height: 1.2;
 }
 .chevron {
   flex: 0 0 16px;

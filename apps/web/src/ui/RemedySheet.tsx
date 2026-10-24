@@ -70,6 +70,7 @@ export function RemedySheet({
           {current.label} {current.value} · {current.status}
         </span>
       </header>
+      {current.advice && <p className={s.remedyAdvice}>{current.advice.text}</p>}
       <ul className={s.remedies}>
         {remedies(w, key).map((remedy) => (
           <li key={remedy.id} className={remedy.unavailable ? s.remedyOff : undefined}>

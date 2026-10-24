@@ -4,7 +4,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { savedWorld } from './club-identity-helpers';
 import { textContrast } from './contrast';
-import { horizontalOverflow } from './layout';
+import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
 import { watchNext } from './watch';
@@ -108,6 +108,7 @@ for (const width of [360, 1380])
         expect((await text.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
       }
       const cue = page.getByTestId('possession-cue');
+      await expectStablePossessionLayout(page);
       if (await cue.count()) {
         await expect(cue).toContainText('소유');
         expect((await cue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);

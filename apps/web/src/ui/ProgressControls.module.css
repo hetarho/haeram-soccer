@@ -4,8 +4,8 @@
   display: flex;
   align-items: center;
   flex: none;
-  gap: 12px;
-  min-height: 62px;
+  gap: 8px;
+  min-height: 50px;
   margin: 0;
   padding: var(--control-gap) var(--row-padding);
   border-top: 1px solid var(--popover-edge);

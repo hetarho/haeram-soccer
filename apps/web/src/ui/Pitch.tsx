@@ -556,23 +556,24 @@ export function Pitch({
       {value}
     </i>
   );
-  // The side controlling the ball: a ball glyph and a word beside its name, not colour alone.
-  const possessionBadge = (side: 0 | 1) =>
-    possession.side === side && (
-      <i
-        className={t.possession}
-        data-ui="possession-cue"
-        role="img"
-        aria-label={tr('match.possession.side')}
-        data-testid="possession-cue"
-        data-state={possession.state}
-      >
-        <i aria-hidden="true" className={t.possessionBall} />
-        <i aria-hidden="true" className={t.possessionWord}>
-          {tr('match.possession.word')}
-        </i>
+  // Both slots stay in the layout when possession clears or switches sides.
+  const possessionBadge = (side: 0 | 1) => (
+    <i
+      className={t.possession}
+      data-ui="possession-cue"
+      role="img"
+      aria-label={tr('match.possession.side')}
+      aria-hidden={possession.side !== side}
+      style={{ visibility: possession.side === side ? 'visible' : 'hidden' }}
+      data-testid={possession.side === side ? 'possession-cue' : undefined}
+      data-state={possession.state}
+    >
+      <i aria-hidden="true" className={t.possessionBall} />
+      <i aria-hidden="true" className={t.possessionWord}>
+        {tr('match.possession.word')}
       </i>
-    );
+    </i>
+  );
   const playLabel = finished ? '다시 보기' : paused ? '재생' : '일시정지';
   // One red mark per player sent off up to the presented minute (→WEB-50).
   const redMarks = (side: 0 | 1) =>
@@ -607,19 +608,21 @@ export function Pitch({
         data-possession-side={possession.side}
       >
         {lead}
-        <span className={t.team}>
-          {home && look && (
-            <CrestMark
-              crest={look.sides[0].crest}
-              size={24}
-              label={look.recorded ? undefined : `${home.name} 엠블럼 미기록`}
-            />
-          )}
-          <b className={t.fullName}>{home?.name || 'HOME'}</b>
-          <b className={t.shortName} aria-hidden="true">
-            {home?.short || 'HOME'}
-          </b>
-          {redMarks(0)}
+        <span className={t.team} data-ui="match-team" data-side="home">
+          <i className={t.teamIdentity} data-ui="match-team-identity">
+            {home && look && (
+              <CrestMark
+                crest={look.sides[0].crest}
+                size={24}
+                label={look.recorded ? undefined : `${home.name} 엠블럼 미기록`}
+              />
+            )}
+            <b className={t.fullName}>{home?.name || 'HOME'}</b>
+            <b className={t.shortName} aria-hidden="true">
+              {home?.short || 'HOME'}
+            </b>
+            {redMarks(0)}
+          </i>
           {possessionBadge(0)}
         </span>
         {frame ? (
@@ -634,20 +637,22 @@ export function Pitch({
         ) : (
           <strong>— : —</strong>
         )}
-        <span className={`${t.team} ${t.awayTeam}`}>
+        <span className={`${t.team} ${t.awayTeam}`} data-ui="match-team" data-side="away">
           {possessionBadge(1)}
-          {redMarks(1)}
-          <b className={t.fullName}>{away?.name || 'AWAY'}</b>
-          <b className={t.shortName} aria-hidden="true">
-            {away?.short || 'AWAY'}
-          </b>
-          {away && look && (
-            <CrestMark
-              crest={look.sides[1].crest}
-              size={24}
-              label={look.recorded ? undefined : `${away.name} 엠블럼 미기록`}
-            />
-          )}
+          <i className={t.teamIdentity} data-ui="match-team-identity">
+            {away && look && (
+              <CrestMark
+                crest={look.sides[1].crest}
+                size={24}
+                label={look.recorded ? undefined : `${away.name} 엠블럼 미기록`}
+              />
+            )}
+            <b className={t.fullName}>{away?.name || 'AWAY'}</b>
+            <b className={t.shortName} aria-hidden="true">
+              {away?.short || 'AWAY'}
+            </b>
+            {redMarks(1)}
+          </i>
         </span>
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`} data-ui="match-meta">

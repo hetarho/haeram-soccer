@@ -259,7 +259,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 20 | 20 | - | 2 |
-| WEB | 140 | 140 | - | 0 |
+| WEB | 147 | 147 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -298,26 +298,26 @@
 | v9n4-release | 4 | 11 | 8 | 3 | 0 | 0 | 0 | 2026-10-24T14:33:15.579Z | [history](work/v9n4-release.json) |
 
 ## next
-- inspect work board for remaining tasks
+- Inspect the live work board before claiming the remaining engine tasks; UI work is complete.
 
 ## log
-- 261024 T420 integrated
-- 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
-- 261024 T421 T422 integrated
-- 261024 T416 integrated
-- 261024 T419 integrated
-- 261024 T418 integrated
-- 261024 T417 integrated
-- 261024 decide T416 (v9n4): no settlement writer bug; T416 lands as the corrected test file plus the activated-world guard
-- 261024 T415 integrated
-- 261024 create-task WEB r140 MATCH r24 + T286 split (v9n4): T415 (explicit test releases, release-on probe) → T416 settlement records, T417 engine tests, T418 web tests, T419 guards (lanes) → T420 release-on tier → T286; viewing pace T421 → T422 (lane); T286 base WEB@140 MATCH@24, dep + T420 T422; T410 base MATCH@24 (no content change)
-- 261024 update-ssot WEB r140 MATCH r24 (v9n4): ideation match-viewing-pace-and-freedom v1 — 1x 12 s per open-play minute, matches open at 2x, the corner/free-kick/goal-kick preparation drawn in about 1.5 real s; T286 (todo) cites WEB-32 and MATCH-12, its continuity journey and frame checks follow the new pacing; the freedom bundle stays the model revision after T286
-- 261024 v9n4 start (autopilot, orchestrator): merged origin/main 5bd03574; removed 145 finished worktrees (branches kept; orphan and dirty heads under refs/archive/worktrees/*), disk 3.9 → 19 GiB free; stale active rows d4n8, k2r7, m8p2 ended (owner: no other session runs)
-- 261024 T286 probe (t5q2): the release switch on fails 105 unit tests in 31 files and takes the unit tier to about 20 minutes, with invalid records in activated seasons (season.settle) as the first blocker; findings in T286's impl notes, the flip on wip/t5q2; T286 back to todo for the next session
-- 261024 T412 done (m8p2): image-built match surfaces/icons and themed live/replay/preview/analysis grounds; source 341b83cf + 43174387, verified integrated source 09c85daa. Full units 2039+4 skips, contracts39, type/lint/format/build/catalogs/resources pass. Merged Chromium263/265 then both ENOSPC artifact failures pass2/2 after obsolete-cache cleanup; core theme/legacy cases pass across all browsers, 25 manual states reviewed. WEB139; ARCH base19→20 unrelated ARCH-31 planning delta. Sources/provenance retained; 792 scratch files removed. Origin pulled including neutral T411/recovery changes, main publication authorized; hosted CI deferred by owner.
-- 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
-- 261024 update-ssot MATCH-28 SAVE-23 ARCH-31 + create-task T286 T410 (t5q2): activation gated by throughput, capacity and continuity, accuracy reported (MATCH r23, SAVE r52, ARCH r20); T286 is the release, T410 follows it
-- 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
-- 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
-- 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
-- 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
+- 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
+- 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
+- 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch
+- 261025 T430 done (u6p2): compact 44px season rows with current background/rule; 12 manual previews pass; full units 2057+4 skips, contracts39 and task checks pass; publication browser batch running
+- 261025 T286 freshness reviewed (u6p2): WEB base 140→147; display changes preserve observation timing, continuity and release gates; no executing attempt in this checkout
+- 261025 pulled origin/main 2f8d95af (u6p2): preserved T420 integration, MATCH r25 and engine T426; restored the UI batch from its safety stash and merged STATE
+- 261025 create-task WEB r147 and start T430 (u6p2): compact current-season rows; pull, verify and publish the accumulated UI batch
+- 261025 update-ssot WEB r147 (u6p2): current-season text badge to background/leading rule; user authorizes pull/commit/push
+- 261025 reconcile uncommitted UI task T426 to T429 (u6p2): origin/main independently allocated T426 to carrier-in-stride; preserve that remote task
+- 261024 T428 done (u6p2): single-line unboxed season/filter controls, application-bundled skin, stable hover/press strokes; 16 manual control previews and 12 density previews, changed units 81 and task checks pass; browser spec queued for batch; uncommitted
+- 261024 create-task WEB r146 and start T428 (u6p2): one-line text season/filter controls, application-bundled skin and stable hover/press rendering
+- 261024 update-ssot WEB r146 (u6p2): wrapping labels to single-line text selectors, shared skin ownership and stable interaction; remaining release tasks do not own the affected controls
+- 261024 update-ssot WEB start (u6p2): correct record filter height and lingering stroke flicker
+- 261024 T427 done (u6p2): clean 1px controls, no hover brightness filtering, full/wrapping selected labels; twelve manual theme/viewport previews preserve 7/8 phone standings rows; changed units 81, type/lint/format/build/resources pass; browser spec queued for batch; uncommitted
+- 261024 create-task WEB r145 and start T427 (u6p2): crisp 1px control borders, no hover filtering, compact wrapping selected values
+- 261024 update-ssot WEB r145 (u6p2): clean ordinary-control edges and readable selected labels; existing pending tasks do not own the changed controls
+- 261024 update-ssot WEB start (u6p2): stable clean control borders and readable selected dropdown labels
+- 261024 T429 done (u6p2): compact shared controls, text navigation, 7/8 phone standings rows, content-sized home card; manual Chromium across four themes and 320px checks; changed units 68, type/lint/format/build/resources pass; browser specs queued for batch; uncommitted
+- 261024 create-task WEB r144 and start T429 (u6p2): compact management surfaces with measured before/after previews
+- 261024 update-ssot WEB r144 (u6p2): shared content density, text navigation and normal-flow home card; existing tasks do not own these areas
