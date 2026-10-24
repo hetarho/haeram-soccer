@@ -74,6 +74,7 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       actions reachable beside their fixture text. Preserve keyboard focus and reduced motion.
 - [ ] Leave visible gaps between framed rows and inset their text/icons. Inspect settings,
       segmented controls and popups after hover too. A control's frame must not touch its neighbor.
+      Keep group spacing separate from outer padding so compact match controls still fit 360×740.
 - [ ] Use decoration that fits the concept: ink rules/stamps for print, cream rims/color cues for
       stickers. Avoid redundant dotted link borders and duplicate label/control focus rings.
       Keep one clear keyboard focus indicator and meaningful chart/status distinctions.

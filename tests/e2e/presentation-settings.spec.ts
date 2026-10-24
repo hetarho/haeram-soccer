@@ -95,6 +95,7 @@ for (const theme of ['matchday-print', 'sticker-club'])
 
       await page.getByRole('button', { name: '설정', exact: true }).click();
       const menu = page.getByTestId('app-menu');
+      await settle(page);
       const rows = menu.locator('[data-ui="menu-row"]');
       const spacing = await rows.evaluateAll((items) => {
         const first = items[0].getBoundingClientRect(),
@@ -106,7 +107,8 @@ for (const theme of ['matchday-print', 'sticker-club'])
           height: first.height,
         };
       });
-      expect(spacing.gap).toBeGreaterThanOrEqual(8);
+      // Firefox can report an 8px gap as 7.99998px; allow one layout subpixel.
+      expect(spacing.gap).toBeGreaterThanOrEqual(8 - 1 / 64);
       expect(spacing.inset).toBeGreaterThanOrEqual(8);
       expect(spacing.height).toBeGreaterThanOrEqual(44);
       await expect
@@ -115,7 +117,13 @@ for (const theme of ['matchday-print', 'sticker-club'])
       await rows.filter({ hasText: '테마 변경' }).click();
       const choice = page.getByTestId('presentation-theme');
       await expect(choice).toBeVisible();
-      await choice.focus();
+      await page
+        .getByRole('dialog')
+        .filter({ has: choice })
+        .getByRole('button', { name: '창 닫기', exact: true })
+        .focus();
+      await page.keyboard.press('Tab');
+      await expect(choice).toBeFocused();
       await choice.press('ArrowDown');
       await choice.press('Escape');
       const focus = await choice.evaluate((control) => ({

@@ -192,13 +192,16 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [role='tablist'],
-  [data-ui='choices'],
-  [role='radiogroup'] {
+  [data-ui='choices'] {
     gap: 6px;
     border: 0;
     border-radius: var(--image-radius, 0px);
     background: none;
     padding: 4px 0 8px;
+  }
+
+  [role='radiogroup'] {
+    gap: 6px;
   }
 
   [role='tab'],
