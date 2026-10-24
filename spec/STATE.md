@@ -16,6 +16,9 @@
 | v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:52Z | 2026-10-24T09:52Z | - |
 
 ## inbox
+- 261025 decided MATCH-12 T426: with a 3 m shielding radius 58% of passes still came from a receiver standing on the ball (pressers stand 1.2 m goal-side) and frozen opponents lifted goals 2.89 → 3.17 → MATCH r27: a pressed carrier shields on the move away from the nearest opponent and everyone moves on his intention during the carry; only hold-ups, lay-offs, keepers and restart takers stand; T426's target restated on its drawn-hold measure without those spells, at most 0.05 (alt: keep the 3 m shield with everyone moving, about 0.34 | keep the spec with frozen opponents and leave the goals to T410)
+- 261025 decided MATCH-17 STAFF-46 PLAYER-26 SAVE-23 T430 T431 T432 T433 ideation/match-viewing-pace-and-freedom: the freedom bundle's open points → it ships as match-model revision 2 that careers on revision 1 take prospectively at the next safe boundary, settled matches replaying under their own revision (alt: keep revision 1 careers on it for good); freedom = manager flexibility × role creativity × 판단력, an interim giving the neutral flexibility 50; 예측력 sets reaction time, 위치선정 position and 판단력 decisions so nothing counts twice; post-match views stay touch-based heat maps and pass network (alt: retain off-ball average positions, more saved data per match); T410's re-read waits for T433 (alt: re-read revision 1 first)
+- 261025 decided ideation/own-club-match-edge T434: tasks before the owner's A/B/C/D choice → only the probe on the released model (T434, explore 3 h), which records the figures and a recommendation; the choice stays open (alt: decide B, symmetric context, now)
 - 261024 decided MATCH-12 T426 T286: the owner reports that a player on the ball always stops (measured: candidate holds still for most of 11.3% of holds, the live pre-feature path 24%; the engine waits on the ball until the kick so the ball lands as the action ends) → MATCH r25: he takes it in stride and the action is resolved from the kick spot, on the candidate before T286's flip, so the release measures the final model and no model revision follows it (alt: after activation as a model revision | a playback-only carry, which would kick from a spot the engine never recorded)
 - 261024 decided T416 T286: T416 found no engine path writing invalid records in an activated world (the probe's five season.settle failures were the test's own hand-edited records; whole activated 1950 and 2024 seasons settled valid records) → accept: item 1 guards the writers instead of failing on the unfixed source, no engine change, T286's blocker note corrected (alt: search more countries, eras and ties for a faulty writer | require the guard to catch an injected bad record)
 - 261024 decided T286 T415 T416 T417 T418 T419 T420 ARCH-30 SAVE-23: how to make 105 failing unit tests (31 files) pass with the release switch on without one serial 20-minute task → every test names its release (DISABLED_RELEASE for the pre-feature path that never-activating careers keep, ENABLED_RELEASE for new-career behaviour) and a release-on vitest config proves each file under both switch states, in four parallel lanes plus a timed whole-tier step before T286 flips (alt: flip in T286 and fix all 31 files there | pin every shared fixture world off, leaving most tests on a path new careers no longer play)
@@ -253,7 +256,7 @@
 | manager-achievements | converted@261021 |
 | set-piece-defence-and-goal-feedback | converted@261022 |
 | own-club-match-edge | open@261023 |
-| match-viewing-pace-and-freedom | ready@261024 |
+| match-viewing-pace-and-freedom | converted@261025 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -263,14 +266,14 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 25 | 25 | - | 0 |
+| MATCH | 27 | 27 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
-| STAFF | 34 | 34 | - | 0 |
+| STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 17 | 17 | - | 0 |
-| SAVE | 52 | 52 | - | 0 |
-| PLAYER | 9 | 9 | - | 0 |
+| SAVE | 53 | 53 | - | 0 |
+| PLAYER | 10 | 10 | - | 0 |
 
 ## review
 | id | st |
@@ -281,9 +284,15 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 | todo |
-| T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T427 | todo |
+| T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
 | T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
+| T427 | The promotion playoff's own material reduced at the season close | MATCH HIST SAVE ARCH | - | todo |
+| T430 | Match-model revision 2 and its prospective upgrade | SAVE MATCH ARCH | T286 | todo |
+| T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF MATCH WEB ARCH | T430 | todo |
+| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 | todo |
+| T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
+| T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -301,6 +310,9 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
+- 261025 update-ssot MATCH r26 STAFF r35 PLAYER r10 SAVE r53 + create-task T430–T434 (v9n4): the freedom bundle as model revision 2 (T430 → T431 → T432 explore → T433 explore, after T286), the own-club edge probe T434 (explore, after T286); T410 dep + T433; ideation match-viewing-pace-and-freedom converted
+- 261025 create-task T427 (v9n4): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T427
 - 261024 T420 integrated
 - 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
 - 261024 T421 T422 integrated
@@ -318,6 +330,3 @@
 - 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
 - 261024 update-ssot MATCH-28 SAVE-23 ARCH-31 + create-task T286 T410 (t5q2): activation gated by throughput, capacity and continuity, accuracy reported (MATCH r23, SAVE r52, ARCH r20); T286 is the release, T410 follows it
 - 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
-- 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
-- 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
-- 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)

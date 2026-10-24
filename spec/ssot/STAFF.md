@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r34 | Define the browser-demo rules for manager demands and personality.
+> r35 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -255,12 +255,16 @@
   - compare cumulative time with each recorded mentor during actual coaching employment, including playing-coach service; among equal totals choose the most recent mentor. Use the mentor's actual school (→STAFF-14), not an owner-requested tactic.
   - retain the dated mentor/school exposure as career facts (→HIST-14). Do not invent unobserved or pre-start mentors; if no school is recorded, use the existing new-manager school-generation method (→STAFF-14).
   - assign the school once at first managerial candidacy and retain it across declined offers/re-entry. Ordinary school effects, contract terms and non-ability profile rules remain in force; actual age and initial manager OVR/POT remain →STAFF-42.
+- STAFF-46 [o] The manager gives each of his players a positional freedom: his flexibility (→STAFF-14) × how creative the slot's role is (a trequartista or false nine freer than a holding midfielder or centre-back, →PLAYER-5) × the player's 판단력; the same manager gives different players different freedom. ← real managers give a star a free role, and the owner shapes it through whom he hires
+  - nobody instructs a single player: the owner has no freedom control and acts through the manager (→STAFF-19/22).
+  - clubs nobody owns use their named manager's flexibility the same way; the founding manager and an interim give the neutral freedom of his flexibility band's middle.
 
 ## flow
 
 - Second career: active-player aptitude evaluation → retirement announcement and optional one-time encouragement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r35 261025 STAFF-46+ the manager gives each player a positional freedom from his flexibility × the role's creativity × the player's 판단력; no owner control
 - r34 261019 STAFF-14✎ +styles bend decision tables and duels in the grid engine, re-measured; STAFF-21✎ 동기부여형 체력→체력/침착성, 데이터 헤드코치 시야/위치선정→판단력/위치선정; STAFF-22✎ +each slot's place in the formation's shape per phase; STAFF-45+ substitution habits by style and selection trait
 - r33 261016 STAFF-11✎ traits +closer (속전속결, the 단장's); STAFF-13✎ +window-close call-ups skip readiness and the promotion floor; STAFF-20✎ negotiator his only trait→negotiator, closer or none, setting how he bids (→CLUB-41)
 - r32 261016 STAFF-17/27/28✎ candidate admission/contract transitions open→additional retained coaching/manager candidates, expired NPC coaches return to job search, employed coaches eligible for promotion/recruitment with 1.5× current coach wage compensation

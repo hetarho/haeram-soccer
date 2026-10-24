@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r9 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r10 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -178,12 +178,17 @@
 - PLAYER-25 [o] Coaching and managerial aptitude are fixed qualities assigned when the player is generated; they persist with the same person through clubs and roles (→WORLD-10).
   - match appearances, training, owner encouragement, coaching employment and managerial appointment do not raise or reroll aptitude.
   - actual coach/manager ability develops after employment under the existing staff growth/ageing rules (→STAFF-16). Aptitude and currently learned staff ability are distinct; these rules do not change the existing playing model.
+- PLAYER-26 [o] Every player has four play tendencies shown in the match inspector — 자유도, 규율, 압박 성향, 예측력 — each from his attributes plus a stable personality of his own drawn once from his identity, never rerolled by a fixture, and each drives his movement on the pitch (→MATCH-17). ← a shown number must do what it says, and equal attributes still make different players
+  - the 자유도 shown is the freedom his manager gives him (→STAFF-46), not his personality alone.
+  - 규율 is how firmly he keeps his place in the shape, 압박 성향 how readily he presses, 예측력 how early he reads a pass or a run; 예측력 sets when he reacts, 위치선정 where he stands and 판단력 what he decides, so no attribute counts twice.
+  - they are not formal attributes: no growth, training, adaptation or OVR weight.
 
 ## flow
 - a player's season: joins (start by PLAYER-11) → starts and training raise adaptation (PLAYER-12) and attributes (PLAYER-15) → a manager change costs adaptation (PLAYER-13) → still below 0.50 after 23 rounds: 적응 실패 (PLAYER-14) → past potential only at 0.90+ (PLAYER-16) → ageing by group (PLAYER-17)
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r10 261025 PLAYER-26+ four inspector tendencies (자유도 from the manager, 규율, 압박 성향, 예측력) from attributes and a stable personality drive movement; not formal attributes
 - r9 261019 PLAYER-1✎ PLAYER-2✎ 14→16 attributes, +정신 판단력 and 침착성 (young players about 5 lower at generation), 몸싸움 +aerial challenges, 크로스 +set-piece deliveries; PLAYER-5✎ +roles set positions, movement and favoured actions; PLAYER-6✎ +판단력/침착성 in every position's weights, 앵커 none→판단력, 딥라잉 시야→시야/판단력, 포처 위치선정→위치선정/침착성; PLAYER-9✎ attempt their action more often→bend decisions and runs; PLAYER-15✎ assistant 패스/시야→+판단력/침착성; PLAYER-17✎ +판단력/침착성 in the 32/33/−0.5 group; PLAYER-19✎ match attributes 14 with personality as the mental model→16 with 판단력/침착성, personality off-pitch; PLAYER-20✎ +the 16 attributes start new careers (→SAVE-19)
 - r8 261016 PLAYER-22✎ initial components/calculation open→equal professionalism/understanding/teaching mean for coaching and understanding/team-judgement mean for management, existing five-grade generation distribution, fixed person-specific qualities
 - r7 261016 PLAYER-21/22✎ aptitude evolution open→fixed under PLAYER-25, initial calculation remains open; PLAYER-25+ fixed generation-time aptitude distinct from actual staff ability growth
