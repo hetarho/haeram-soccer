@@ -231,6 +231,8 @@ const INTENTION_STATE: Record<IntentionKind, (typeof MOTION_STATES)[number]> = {
   carry: 'carry',
   restart: 'shape',
   exit: 'recover',
+  // Standing in a lane is marking it; the inspector names the screen itself (T442).
+  screen: 'mark',
 };
 
 /** The motion state the engine gives a player now (design §10.2); an intention shows as its own. */

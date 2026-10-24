@@ -16,6 +16,7 @@ import type {
   MatchEvent,
   MatchPlayback,
   MatchFrame,
+  PlayerMotion,
   PlayerMotionState,
   World,
 } from '../../../../packages/contracts/src/types';
@@ -70,6 +71,13 @@ const stateLabels: Record<PlayerMotionState, string> = {
   carry: '볼 운반',
   keeper: '골문 보호',
 };
+/** Intentions the inspector names by their own label rather than their motion state's (→MATCH-32). */
+const intentionLabels: Partial<Record<NonNullable<PlayerMotion['intention']>['kind'], string>> = {
+  screen: '길목 차단',
+};
+/** What the inspector says a player is doing: an intention he still holds that has a label, else his motion state. */
+const motionLabel = ({ state, intention }: PlayerMotion) =>
+  (intention && !intention.ended && intentionLabels[intention.kind]) || stateLabels[state];
 /**
  * An archived match without motion stands each side in this fixed shape: an illustration of its
  * shirts, not of any recorded player, with the keeper on his line.
@@ -890,8 +898,7 @@ export function Pitch({
             <p>
               {selectedMotion ? (
                 <>
-                  <b>{stateLabels[selectedMotion.state]}</b> · 점선은 이 선수가 선택한 이동
-                  목표입니다.
+                  <b>{motionLabel(selectedMotion)}</b> · 점선은 이 선수가 선택한 이동 목표입니다.
                 </>
               ) : (
                 `지금은 경기장에 없는 선수입니다${selectedId && gone.has(selectedId) ? ` (${gone.get(selectedId)})` : ''}.`

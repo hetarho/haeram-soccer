@@ -95,10 +95,12 @@ const facts = (w: World) => ({
  * candidate rounds only (the aggregate path untouched); e307acad9c517fe3 before. T441's passes
  * cut out only where they are reached (calibration round 69: completion 77.32 → 77.43%,
  * interceptions 13.6 → 7.5 a team) changed the candidate rounds only; 525b895cc4a040c2 before.
+ * T442's shut lanes (cover shadow and screen; calibration round 70: completion 77.50 → 77.74%,
+ * interceptions 7.75 → 7.68 a team) changed the candidate rounds only; 5c21d584c8efd809 before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: '5c21d584c8efd809',
+  candidateRounds: 'd1930531c407a468',
 };
 
 describe('complete-result throughput (T285)', () => {

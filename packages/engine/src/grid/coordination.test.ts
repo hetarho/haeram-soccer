@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { lineOf } from '../player';
 import {
   closedAt,
   COORDINATION_CONFIG,
   planCoordination,
   pressReach,
+  screenable,
+  screenPoint,
   type CoordinationPlan,
 } from './coordination';
 import { combination } from './decide';
@@ -15,6 +18,7 @@ import {
   applyCoordination,
   defendSetPiece,
   depart,
+  inDanger,
   INTENTION_REASONS,
   restartTaken,
   setIntention,
@@ -22,9 +26,10 @@ import {
   updateIntentions,
   type Intention,
 } from './intentions';
-import { attackFrame, type Point } from './pitch';
-import { setPieceTargets, SHAPE_CONFIG, shapePlace } from './shape';
-import { createState, onPitch, type GridPlayer, type GridState } from './state';
+import { SHADOW_CONFIG } from './lanes';
+import { attackFrame, PITCH, type Point } from './pitch';
+import { lineX, setPieceTargets, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
+import { createState, onPitch, slotOf, type GridPlayer, type GridState } from './state';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
@@ -798,5 +803,221 @@ describe('grid coordination', () => {
     } finally {
       SR.odds.possession = odds;
     }
+  });
+});
+
+describe('shutting the carrier’s lanes (→MATCH-32, T442)', () => {
+  /** How far `p` stands from the line through `a` and `b`. */
+  const offLine = (p: readonly number[], a: readonly number[], b: readonly number[]) =>
+    Math.abs((b[0]! - a[0]!) * (p[1]! - a[1]!) - (b[1]! - a[1]!) * (p[0]! - a[0]!)) / gap(a, b);
+  /**
+   * Side 0's carrier 7 in midfield, pressed 4 m goal-side by balanced's box-to-box midfielder;
+   * side 0's 9 ahead of him in the left half-space, a nearby option nobody reaches.
+   */
+  const shadowScene = (tactic: Tactic = 'balanced') => {
+    const s = scene(['possession', tactic], 7, [62, 34]);
+    put(s, 1, 7, [66, 34]);
+    put(s, 0, 9, [75, 22]);
+    return s;
+  };
+
+  it('the presser approaches between the carrier and his dangerous option', () => {
+    const s = shadowScene();
+    const carrier = s.players[0][7]!;
+    const presser = s.players[1][7]!;
+    const press = jobsOf(planCoordination(s, false), 'press');
+    expect(press).toMatchObject([
+      { side: 1, idx: 7, intention: { priority: 'tactical', shadow: 9 } },
+    ]);
+    applyCoordination(s, planCoordination(s, false));
+    const target = presser.intention!.target;
+    // He turns from straight goal-side of the carrier onto the line to the option, as close.
+    const goalSide: Point = [62 + SHAPE_CONFIG.pressGoalSide, 34];
+    expect(offLine(goalSide, carrier.pos, s.players[0][9]!.pos)).toBeGreaterThan(0.5);
+    expect(offLine(target, carrier.pos, s.players[0][9]!.pos)).toBeLessThan(1e-9);
+    expect(gap(target, carrier.pos)).toBeCloseTo(SHAPE_CONFIG.pressGoalSide, 9);
+    expect(gap(target, goalSide)).toBeLessThanOrEqual(SHADOW_CONFIG.curve);
+    // Between them: on the option's side of the carrier.
+    const toOption = [75 - 62, 22 - 34];
+    expect((target[0] - 62) * toOption[0]! + (target[1] - 34) * toOption[1]!).toBeGreaterThan(0);
+    // Movement goes there, and every step after follows the carrier the same way.
+    expect(targetOf(s, 1, 7)).toEqual(target);
+    put(s, 0, 7, [63, 35]);
+    expect(offLine(targetOf(s, 1, 7), carrier.pos, s.players[0][9]!.pos)).toBeLessThan(1e-9);
+    put(s, 0, 7, [62, 34]);
+    // With the option gone back behind the carrier there is none: straight goal-side again.
+    put(s, 0, 9, [55, 40]);
+    const cleared = planCoordination(s, false);
+    expect(cleared.shadows).toEqual([{ side: 1, idx: 7 }]);
+    applyCoordination(s, cleared);
+    expect(presser.intention!.shadow).toBeUndefined();
+    expect(presser.intention!.target[0]).toBeCloseTo(goalSide[0], 9);
+    expect(presser.intention!.target[1]).toBe(34);
+  });
+
+  it('each tactic shadows from its own press reach', () => {
+    const TACTICS: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
+    /** Whether a presser already on the carrier, `d` m from him, keeps the option in his shadow. */
+    const shadows = (tactic: Tactic, d: number, lost: boolean) => {
+      const s = shadowScene(tactic);
+      put(s, 1, 7, [62 + d, 34]);
+      setIntention(s, s.players[1][7]!, {
+        kind: 'press',
+        priority: 'tactical',
+        target: [62 + d, 34],
+        opponent: 7,
+        until: s.elapsed + 6,
+      });
+      if (lost) s.lastLoss = { side: 1, at: s.elapsed - 1 };
+      return planCoordination(s, false).shadows.some((sh) => sh.option === 9);
+    };
+    // Press reaches 16 m, the others 11–12; just after a loss possession and press reach 18.
+    expect(TACTICS.map((t) => shadows(t, 10, false))).toEqual([true, true, true, true]);
+    expect(TACTICS.map((t) => shadows(t, 14, false))).toEqual([false, true, false, false]);
+    expect(TACTICS.map((t) => shadows(t, 14, true))).toEqual([true, true, false, false]);
+  });
+
+  /**
+   * Balanced's block standing in its shape against side 0's carrier 7 at [40, 34], whom its
+   * striker 10 presses from 4 m; every other player of side 0 is parked at his own end.
+   */
+  function screening() {
+    const s = scene(['possession', 'balanced'], 7, [40, 34]);
+    for (const gp of s.players[1]) gp.pos = shapePlace(s, 1, gp.idx);
+    put(s, 1, 10, [43, 36.5]);
+    return s;
+  }
+  const isScreener = (s: GridState, gp: GridPlayer) =>
+    ['MF', 'DF'].includes(lineOf(slotOf(s, gp).position));
+
+  it('one free midfielder screens the lane to a receiver between the lines', () => {
+    const s = screening();
+    const carrier = s.players[0][7]!;
+    const receiver = s.players[0][9]!;
+    const df = PITCH.length - lineX(s, 1, 'DF');
+    expect(PITCH.length - lineX(s, 1, 'MF')).toBeLessThan(df - 2);
+    put(s, 0, 9, [df - 2, 34]);
+    expect(screenable(s, carrier, receiver)).toBe(true);
+    // Further than a nearby option, so no presser shadows him.
+    expect(gap(carrier.pos, receiver.pos)).toBeGreaterThan(SHADOW_CONFIG.near);
+    const plan = planCoordination(s, false);
+    expect(jobsOf(plan, 'press').map((j) => j.idx)).toEqual([10]);
+    const screens = jobsOf(plan, 'screen');
+    expect(screens).toMatchObject([
+      { side: 1, intention: { kind: 'screen', priority: 'tactical', opponent: 7, shadow: 9 } },
+    ]);
+    const screen = screens[0]!;
+    const gp = s.players[1][screen.idx]!;
+    expect(lineOf(slotOf(s, gp).position)).toBe('MF');
+    // He stands in the lane, no further than his step from his shape place.
+    const home = shapePlace(s, 1, gp.idx);
+    expect(gap(screen.intention.target, home)).toBeLessThanOrEqual(SHADOW_CONFIG.screen.step);
+    expect(offLine(screen.intention.target, carrier.pos, receiver.pos)).toBeLessThan(1e-9);
+    // The nearest of the men whose shape place lies by the lane takes it.
+    const cost = gap(gp.pos, screen.intention.target);
+    for (const o of s.players[1]) {
+      const at = o !== gp && isScreener(s, o) && screenPoint(s, o, carrier, receiver);
+      if (at) expect(gap(o.pos, at)).toBeGreaterThanOrEqual(cost);
+    }
+    // One job per player and one screen per carrier: nobody else takes the lane once it is given.
+    applyCoordination(s, plan);
+    expect(gp.intention).toMatchObject({ kind: 'screen', opponent: 7, shadow: 9 });
+    expect(jobsOf(planCoordination(s, false), 'screen')).toEqual([]);
+    // An ordinary update keeps him in the lane as the receiver moves.
+    put(s, 0, 9, [df - 2, 37]);
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    expect(gp.intention?.kind).toBe('screen');
+    expect(gp.intention!.target).toEqual(screenPoint(s, gp, carrier, receiver));
+    // Outside the press reach the block waits: a press held 14 m off (balanced's reach 12) screens
+    // nothing, one 10 m off does.
+    const reach = (d: number) => {
+      const t = screening();
+      put(t, 0, 9, [df - 2, 34]);
+      put(t, 1, 10, [40 + d, 34]);
+      setIntention(t, t.players[1][10]!, {
+        kind: 'press',
+        priority: 'tactical',
+        target: [40 + d, 34],
+        opponent: 7,
+        until: t.elapsed + 6,
+      });
+      return jobsOf(planCoordination(t, false), 'screen').length;
+    };
+    expect(reach(14)).toBe(0);
+    expect(reach(10)).toBe(1);
+  });
+
+  it("no screen leaves the last defender or a marker's runner", () => {
+    const s = screening();
+    // A receiver in the left half-space ahead of the carrier, 34 m away.
+    put(s, 0, 9, [72, 22]);
+    const [screen] = jobsOf(planCoordination(s, false), 'screen');
+    expect(screen).toBeDefined();
+    const x = screen!.idx;
+    // Every other man of the shape already has a job: he is the only one free to screen.
+    for (const gp of s.players[1])
+      if (gp.slot > 0 && gp.idx !== x && gp.idx !== 10)
+        setIntention(s, gp, {
+          kind: 'recover',
+          priority: 'tactical',
+          target: [gp.pos[0], gp.pos[1]],
+          until: s.elapsed + 6,
+        });
+    expect(jobsOf(planCoordination(s, false), 'screen').map((j) => j.idx)).toEqual([x]);
+    // Standing deepest of his side he is its last man: nobody screens.
+    const home: Point = [s.players[1][x]!.pos[0], s.players[1][x]!.pos[1]];
+    put(s, 1, x, [100, 34]);
+    expect(jobsOf(planCoordination(s, false), 'screen')).toEqual([]);
+    put(s, 1, x, home);
+    // A runner beside him: he marks the runner, and nobody screens.
+    put(s, 0, 10, [home[0] - 4, home[1]]);
+    setIntention(s, s.players[0][10]!, {
+      kind: 'run',
+      run: 'behind',
+      priority: 'tactical',
+      target: [90, home[1]],
+      until: s.elapsed + 6,
+    });
+    const marking = planCoordination(s, false);
+    expect(jobsOf(marking, 'mark').map((j) => j.idx)).toEqual([x]);
+    expect(jobsOf(marking, 'screen')).toEqual([]);
+    // Holding that mark, he still never leaves the runner for the lane.
+    applyCoordination(s, marking);
+    expect(jobsOf(planCoordination(s, false), 'screen')).toEqual([]);
+  });
+
+  it('an urgent press keeps its goal-side target', () => {
+    const s = shadowScene();
+    const presser = s.players[1][7]!;
+    applyCoordination(s, planCoordination(s, false));
+    expect(presser.intention).toMatchObject({ kind: 'press', priority: 'tactical', shadow: 9 });
+    // The carrier runs on to 25 m from goal, his option still ahead of him: an urgent danger.
+    put(s, 0, 7, [80, 34]);
+    s.ball = [80, 34];
+    put(s, 1, 7, [84, 34]);
+    put(s, 0, 9, [90, 26]);
+    expect(inDanger(s, 1)).toBe(true);
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    expect(presser.intention).toMatchObject({ kind: 'press', priority: 'danger', opponent: 7 });
+    expect(presser.intention!.shadow).toBeUndefined();
+    // Straight goal-side of him, 1.2 m toward the goal, and movement goes there.
+    const goalSide = (st: GridState, gp: GridPlayer) => {
+      expect(gp.intention!.target[0]).toBeCloseTo(80 + SHAPE_CONFIG.pressGoalSide, 9);
+      expect(gp.intention!.target[1]).toBe(34);
+      expect(targetOf(st, gp.side, gp.idx)).toEqual(gp.intention!.target);
+    };
+    goalSide(s, presser);
+    // A press that starts in the danger takes no shadow either.
+    const t = shadowScene();
+    put(t, 0, 7, [80, 34]);
+    t.ball = [80, 34];
+    put(t, 1, 7, [84, 34]);
+    put(t, 0, 9, [90, 26]);
+    updateIntentions(t);
+    expect(t.players[1][7]!.intention).toMatchObject({ kind: 'press', priority: 'danger' });
+    expect(t.players[1][7]!.intention!.shadow).toBeUndefined();
+    goalSide(t, t.players[1][7]!);
   });
 });
