@@ -43,16 +43,21 @@ import {
 } from './index';
 import { BUILD_OPTIONS, BUILD_SLOTS } from '../../contracts/src/build';
 import { clubBuildSchema } from '../../contracts/src/schema';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
+/** The club on the pre-feature path: strategy cards, not the match model, are the subject. */
 const world = (seed = 'build-cards') =>
-  simulatedWorld({
-    country: 'ENG',
-    name: 'Build FC',
-    color: '#2a4d3c',
-    seed,
-    level: 'easy' as const,
-  });
+  simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Build FC',
+      color: '#2a4d3c',
+      seed,
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
 
 describe('manager styles', () => {
   it('offers four different schools a season, each a stable seeded order of all eight', () => {
@@ -277,14 +282,17 @@ describe('club builds', () => {
 
   it('founds with a preset as its direction; absent stays 기본 방향, unknown is refused', () => {
     const plain = world('founding-direction');
-    const founded = createWorld({
-      country: 'ENG',
-      name: 'Build FC',
-      color: '#2a4d3c',
-      seed: 'founding-direction',
-      level: 'easy' as const,
-      preset: 'youth-academy',
-    });
+    const founded = createWorld(
+      {
+        country: 'ENG',
+        name: 'Build FC',
+        color: '#2a4d3c',
+        seed: 'founding-direction',
+        level: 'easy' as const,
+        preset: 'youth-academy',
+      },
+      DISABLED_RELEASE,
+    );
     expect(matchingPreset(founded)?.id).toBe('youth-academy');
     // One direction event after the founding facts, none for the rows it implies.
     const added = founded.events.slice(plain.events.length);
@@ -294,14 +302,17 @@ describe('club builds', () => {
     expect(plain.build).toBeUndefined();
     expect(plain.direction).toBeUndefined();
     expect(() =>
-      createWorld({
-        country: 'ENG',
-        name: 'Build FC',
-        color: '#2a4d3c',
-        seed: 'founding-direction',
-        level: 'easy' as const,
-        preset: 'galacticos',
-      }),
+      createWorld(
+        {
+          country: 'ENG',
+          name: 'Build FC',
+          color: '#2a4d3c',
+          seed: 'founding-direction',
+          level: 'easy' as const,
+          preset: 'galacticos',
+        },
+        DISABLED_RELEASE,
+      ),
     ).toThrow('구단 방향');
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import { advanceRound, cupKey, legsOf, tieAggregate } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { archiveLastRound, closedSeason, founded, toLastRound } from './season.testkit';
 
 describe('closed season archive', () => {
@@ -54,7 +54,8 @@ describe('closed season archive', () => {
 
   it('keeps no partial scorer table or rank series from a season tracked midway', () => {
     const w = cachedWorld('tracked-midway-last-round', () => {
-      const w = founded();
+      // The archive's records, not the match model, are the subject.
+      const w = founded(undefined, DISABLED_RELEASE);
       advanceRound(w, undefined, false);
       advanceRound(w, undefined, false);
       // An older save starts both records at the next round.

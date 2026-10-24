@@ -17,16 +17,20 @@ import { movePerson } from './npc-continuity';
 import { openNeed, openNeeds, takeWindowNeeds } from './replacements';
 import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
+/** The club on the pre-feature path: replacement needs, not the match model, are the subject. */
 function found(count: number) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Replacement Rovers',
-    color: '#224433',
-    seed: 'replacement-needs',
-    level: 'easy',
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Replacement Rovers',
+      color: '#224433',
+      seed: 'replacement-needs',
+      level: 'easy',
+    },
+    DISABLED_RELEASE,
+  );
   w.cash = w.income = '999999999999';
   w.calendar = { day: 1 };
   w.settings!.responsibilities.recruitment = 'delegated';

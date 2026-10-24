@@ -9,12 +9,14 @@ import {
   simulateMatch,
   TACTICS,
 } from './index';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { baseline, sample, scenario } from './build.testkit';
 
+// Tactical builds on the pre-feature path, as build.tradeoffs guards them (T419).
 describe('tactical roster tradeoffs', () => {
   it('turns midfield passing into actual possession and pass completion', () => {
-    const weak = scenario({ ...baseline, passing: 20 });
-    const strong = scenario({ ...baseline, passing: 95 });
+    const weak = scenario({ ...baseline, passing: 20 }, 'balanced', DISABLED_RELEASE);
+    const strong = scenario({ ...baseline, passing: 95 }, 'balanced', DISABLED_RELEASE);
     const low = sample(weak.w, weak.fixture, 'possession');
     const high = sample(strong.w, strong.fixture, 'possession');
     expect(high.possession).toBeGreaterThan(low.possession);
@@ -22,8 +24,8 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('uses defender quality to suppress actual opposing shot creation', () => {
-    const weak = scenario({ ...baseline, defense: 20 });
-    const strong = scenario({ ...baseline, defense: 95 });
+    const weak = scenario({ ...baseline, defense: 20 }, 'balanced', DISABLED_RELEASE);
+    const strong = scenario({ ...baseline, defense: 95 }, 'balanced', DISABLED_RELEASE);
     expect(sample(strong.w, strong.fixture, 'balanced').concededShots).toBeLessThan(
       sample(weak.w, weak.fixture, 'balanced').concededShots,
     );
@@ -47,7 +49,7 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('keeps seeded football facts identical with observation and manual preparation', () => {
-    const { w, fixture } = scenario(baseline, 'press');
+    const { w, fixture } = scenario(baseline, 'press', DISABLED_RELEASE);
     for (const tactic of TACTICS) {
       w.tactic = tactic;
       const fast = simulateMatch(w, fixture, false, true);
@@ -59,7 +61,7 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('settles recorded tactic fatigue and leaves past match facts unchanged by later builds', () => {
-    const { w, fixture } = scenario(baseline);
+    const { w, fixture } = scenario(baseline, 'balanced', DISABLED_RELEASE);
     w.tactic = 'press';
     const match = simulateMatch(w, fixture, false, true);
     w.tactic = 'balanced';
@@ -80,13 +82,16 @@ describe('tactical roster tradeoffs', () => {
 
 describe('the operating strategy applied at once (→ECON-22)', () => {
   const club = (day: number) => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Strategy Lockers',
-      color: '#445566',
-      seed: 'strategy-locks',
-      level: 'normal' as const,
-    });
+    const w = createWorld(
+      {
+        country: 'ENG',
+        name: 'Strategy Lockers',
+        color: '#445566',
+        seed: 'strategy-locks',
+        level: 'normal' as const,
+      },
+      DISABLED_RELEASE,
+    );
     w.calendar = { day };
     return w;
   };

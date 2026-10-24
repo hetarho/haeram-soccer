@@ -4,7 +4,7 @@ import { Host } from '../../../apps/web/src/runtime/host';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { createWorld, currentDay, advanceDays } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { command, facts, readAndReload } from './feature-replay.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -16,17 +16,22 @@ for (const retained of [true])
   it(
     `keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (${retained ? 'retained' : 'new'} career)`,
     async () => {
-      // The starting career is setup, built once; the replays below are the test.
+      // The starting career is setup, built once; the replays below are the test. The retained
+      // career is one the release never activated, kept by hosts whose release is off: the
+      // pre-feature path end to end, while feature-replay.test replays a new career on the model.
       const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
         const seed = retained
-          ? retainedWorkload().w
-          : createWorld({
-              country: 'ENG',
-              name: 'Feature Replay',
-              color: '#224466',
-              seed: 'feature-replay',
-              level: 'easy',
-            });
+          ? retainedWorkload(DISABLED_RELEASE).w
+          : createWorld(
+              {
+                country: 'ENG',
+                name: 'Feature Replay',
+                color: '#224466',
+                seed: 'feature-replay',
+                level: 'easy',
+              },
+              DISABLED_RELEASE,
+            );
         for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
         // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
         if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);
@@ -34,9 +39,9 @@ for (const retained of [true])
       });
       seed.settings!.mode = 'manual';
       seed.settings!.observations = { matchEve: true, windowOpen: false };
-      const manual = new Host(),
-        daily = new Host(),
-        batch = new Host();
+      const manual = new Host(undefined, { release: DISABLED_RELEASE }),
+        daily = new Host(undefined, { release: DISABLED_RELEASE }),
+        batch = new Host(undefined, { release: DISABLED_RELEASE });
       for (const host of [manual, daily, batch]) host.world = structuredClone(seed);
       batch.world!.settings!.mode = 'automatic';
       for (let stop = 0; stop < 4; stop++) {

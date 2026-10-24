@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PersonCareer } from '../../contracts/src/types';
 import { createWorld } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import {
   atCareerDate,
   careerDate,
@@ -13,14 +13,18 @@ import {
   openEmployment,
   syncMentorExposures,
 } from './person-careers';
+/** The club on the pre-feature path: coaching service, not the match model, is the subject. */
 const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Coaching Service',
-    color: '#224466',
-    seed: 'service',
-    level: 'easy',
-  });
+  createWorld(
+    {
+      country: 'ENG',
+      name: 'Coaching Service',
+      color: '#224466',
+      seed: 'service',
+      level: 'easy',
+    },
+    DISABLED_RELEASE,
+  );
 function person() {
   const w = world(),
     p = w.people![w.players[0].id];

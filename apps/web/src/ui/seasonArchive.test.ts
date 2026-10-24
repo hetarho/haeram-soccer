@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
 import { finalRows, seasonSnapshots } from './seasonArchive';
 
+// Every season here is played on the pre-feature path: the archived tables, not the match model,
+// are the subject.
 const input = {
   country: 'ENG' as const,
   name: 'Haeram Archive',
@@ -15,7 +17,7 @@ const input = {
 
 describe('closed season tables', () => {
   it('reads an amateur season from its last snapshot only', () => {
-    const w = simulatedWorld(input, { seasons: 1 }),
+    const w = simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE),
       season = w.history[0];
     expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
       Array.from({ length: 46 }, (_, i) => i + 1),
@@ -32,7 +34,7 @@ describe('closed season tables', () => {
 
   it('rebuilds a professional table from the archived standings in the engine order', () => {
     const w = cachedWorld('professional-season', () =>
-        simulateSeason(professionalStart(createWorld(input))),
+        simulateSeason(professionalStart(createWorld(input, DISABLED_RELEASE))),
       ),
       season = w.history[0];
     const kept = finalRows(w, season, season.standings)!;
@@ -79,7 +81,7 @@ describe('closed season tables', () => {
   });
 
   it('marks a closed Italian amateur season for the six places three Serie C groups open', () => {
-    const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }),
+    const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }, DISABLED_RELEASE),
       season = w.history[0];
     const rows = finalRows(w, season, season.standings)!;
     expect(rows).toHaveLength(16);

@@ -13,12 +13,14 @@ import {
 } from './discipline';
 import type { Point } from './pitch';
 import { gridKit } from './testkit';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
 import { M } from './record';
 import { buildGridSetup } from './setup';
 
-const kit = gridKit();
+// The pre-feature path's discipline mechanics, as the other grid files pin them (T417).
+const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
 /** All players parked in the far corners; the home side (0) is fouled by side 1 unless a test says otherwise. */
 function field() {
   const s = kit.state;
@@ -103,13 +105,16 @@ describe('grid discipline (work in progress)', () => {
       s.players[1][3]!.base.fill(80);
       return s;
     };
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Booked Lab',
-      color: '#2a5d8f',
-      seed: 'booked',
-      level: 'normal',
-    });
+    const w = createWorld(
+      {
+        country: 'ENG',
+        name: 'Booked Lab',
+        color: '#2a5d8f',
+        seed: 'booked',
+        level: 'normal',
+      },
+      DISABLED_RELEASE,
+    );
     expect(w.clubs.length).toBeGreaterThan(1);
     const foulRate = (booked: boolean) => {
       const s = run(booked);
@@ -123,13 +128,16 @@ describe('grid discipline (work in progress)', () => {
   });
 
   it('plays on with ten men after a red card and keeps cards at plausible rates', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Grid Cards Lab',
-      color: '#2a5d8f',
-      seed: 'grid-cards',
-      level: 'normal',
-    });
+    const w = createWorld(
+      {
+        country: 'ENG',
+        name: 'Grid Cards Lab',
+        color: '#2a5d8f',
+        seed: 'grid-cards',
+        level: 'normal',
+      },
+      DISABLED_RELEASE,
+    );
     const [home, away] = w.clubs.filter(
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
     );

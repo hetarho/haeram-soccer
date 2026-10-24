@@ -37,7 +37,7 @@ import {
 } from './index';
 import { sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {
@@ -311,13 +311,16 @@ describe('earned, auditable club finances', () => {
   });
 
   it('writes money in the one notation of the app', () => {
-    const spain = createWorld({
-      country: 'ESP',
-      name: 'Notation CF',
-      color: '#335544',
-      seed: 'notation',
-      level: 'easy' as const,
-    });
+    const spain = createWorld(
+      {
+        country: 'ESP',
+        name: 'Notation CF',
+        color: '#335544',
+        seed: 'notation',
+        level: 'easy' as const,
+      },
+      DISABLED_RELEASE,
+    );
     const euro = { ...spain, year: 2001 },
       sterling = { ...world(), year: 1950 };
     const eur = (euros: number) => moneyLabel(euro, String(Math.round(euros * 100)));

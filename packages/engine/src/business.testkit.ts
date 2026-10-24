@@ -1,15 +1,20 @@
 import type { World } from '../../contracts/src/types';
 import { legacySettings } from './responsibilities';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
+/** The business club on the pre-feature path: the business, not the match model, is the subject. */
 export function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
-  const w = simulatedWorld({
-    country,
-    name: 'Ledger Town',
-    color: '#335544',
-    seed,
-    level: 'easy' as const,
-  });
+  const w = simulatedWorld(
+    {
+      country,
+      name: 'Ledger Town',
+      color: '#335544',
+      seed,
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
   w.settings = legacySettings(2);
   return w;
 }

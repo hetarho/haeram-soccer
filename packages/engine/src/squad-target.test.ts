@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 import { activePlayers, makePlayer, npcSquad, clubOf, formationOf } from './index';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { closeSeason } from './season';
@@ -17,7 +17,8 @@ const FOUNDING = {
   seed: 'squad-target',
   level: 'easy',
 } as const;
-const world = (rounds = 0) => simulatedWorld(FOUNDING, { rounds });
+/** The club on the pre-feature path: the squad target, not the match model, is the subject. */
+const world = (rounds = 0) => simulatedWorld(FOUNDING, { rounds }, DISABLED_RELEASE);
 function prospect(w: World, id: string, position: Position, age = 18, skill = 1) {
   const p = makePlayer(
     'ENG',

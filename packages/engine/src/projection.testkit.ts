@@ -1,15 +1,19 @@
 import type { World } from '../../contracts/src/types';
 import { advanceRound, createWorld, operate, operatingCosts } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 
+/** The forecast club on the pre-feature path: the budget forecast, not the match model, is the subject. */
 export function world(seed = 'projection') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Forecast Rovers',
-    color: '#335544',
-    seed,
-    level: 'easy' as const,
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Forecast Rovers',
+      color: '#335544',
+      seed,
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   // The squad stays fixed, so every realised bill can be compared exactly.
   return w;
 }
