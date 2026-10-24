@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T18:53:59.339Z",
-  "sourceCommit": "83a36bb5e98c5ba90ceedcfbd2c8d15c59369893",
+  "snapshotAt": "2026-10-24T19:46:34.918Z",
+  "sourceCommit": "baaf367dfe27e853e36c9333caa3b80e550a73d1",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,12 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "60072b0223c9acfd78a4147d5a9c8a56118a09bf",
+      "commit": "8ac4426b0d3701e6aa7db621384fb751a9021f7b",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T17:54:22.924Z"
+      "at": "2026-10-24T19:12:35.705Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
       "adapter": "builtin",
       "providers": {
@@ -43,40 +43,21 @@
         }
       ],
       "startedAt": "2026-10-24T17:15:44.068Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "e75c188b-d82a-4d4c-9549-9ec8604213a9",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-24T17:14:03.947Z",
-      "stoppedAt": "2026-10-24T17:14:07.182Z",
-      "dispatched": 0,
+      "stoppedAt": "2026-10-24T19:46:34.250Z",
+      "dispatched": 7,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "c5718a8f-acf7-488c-a840-7c23a953237d",
+          "attempt": "c50d2e45-b255-4c43-9091-8f4c2729a66c",
+          "submissionId": "e73bcf28-5d19-4996-aeea-cf8fdcaf1e6d",
+          "commit": "43a38481dc0536a8374398e5d914ea7366ea8c7c",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
           "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+          "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
         }
       ],
       "autopilot": true,
@@ -87,9 +68,9 @@
     "total": 23,
     "completed": 11,
     "remaining": 12,
-    "running": 1,
+    "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 11
   },
   "tasks": [
@@ -211,7 +192,7 @@
       "dep": [
         "T426"
       ],
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T442",
@@ -1323,6 +1304,8 @@
       "submittedBase": "83a36bb5e98c5ba90ceedcfbd2c8d15c59369893",
       "submissionId": "e73bcf28-5d19-4996-aeea-cf8fdcaf1e6d",
       "submittedAt": "2026-10-24T18:17:15.062Z",
+      "integratedCommit": "8ac4426b0d3701e6aa7db621384fb751a9021f7b",
+      "integratedAt": "2026-10-24T19:12:33.987Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1394,6 +1377,13 @@
           "startedAt": "2026-10-24T18:13:19.472Z",
           "finishedAt": "2026-10-24T18:17:14.583Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T18:53:59.456Z",
+          "finishedAt": "2026-10-24T19:12:33.736Z"
+        }
       ]
     },
     {
@@ -1408,19 +1398,100 @@
       "contributors": [
         "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1"
       ],
-      "status": "doing",
+      "status": "blocked",
+      "reason": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
       "createdAt": "2026-10-24T18:17:15.369Z",
       "startCommit": "83a36bb5e98c5ba90ceedcfbd2c8d15c59369893",
+      "submittedBase": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+      "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+      "submittedAt": "2026-10-24T19:17:07.757Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "606 changed lines (limit 300)",
+          "outside touches: packages/engine/src/material.test.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 606,
+        "files": 11
+      },
       "dispatch": {
-        "id": "8c0405d5-1b62-47aa-8980-bc5193eb7f91",
+        "id": "d94d2fc9-e446-402a-a754-639726728461",
         "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-24T18:17:17.329Z"
-      }
+        "status": "finished",
+        "startedAt": "2026-10-24T19:26:41.445Z",
+        "finishedAt": "2026-10-24T19:46:33.027Z",
+        "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "All five review findings on T441 are fixed and the task checks pass. The pre-feature path is still unchanged: its digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **P2, keeper distributions (`resolve.ts`):** on the candidate, a keeper's pass now plays against the defender nearest the lane again, as MATCH-11's keeper row says. Every other pass plays against the first opponent who reaches its path, or an even 60 if nobody does. The lane term and who cuts the ball out still use the reach rule for all candidate passes. A new test shows a keeper's completion drops as that defender's 위치선정 rises even when he can't reach the path, while an outfielder's pass down the same lane is unaffected. Candidate digests are re-recorded:\n  - grid-throughput: 1975 unchanged; the 1995 extra-time tie is now `knockout-1995-2`; 2024 league facts and observed positions changed.\n  - full-model-throughput: `52d8ce752a4579f5`.\n- **P3, the \"could not reach\" test is now strong enough to catch the old rule.** It spies on `Tally.prototype.interception` to read each interceptor's position, velocity and top speed at the kick. It then checks he could actually get within reach of the point before the ball arrives at pass speed, accelerating from his real speed. With the old nearest-man rule switched back in temporarily, this check failed (one interceptor was 0.47 m short); the edit is reverted.\n- **P3, `passLosses`:** the same test now checks the four counts against the trace for each side. `laneWeight` and `runSeconds` are no longer exported.\n- **P3, the `LANE_CONFIG.risk` comment** now matches the measured figure.\n- **P3, hand-offs for T437** (the spare-time reading, cut-outs at the passer's feet, the deflection's 50/50 and playback) are written into the result's limits.\n\n**Round-69 calibration on the final source** (120 matches, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| completion | 77.32% | 77.34% |\n| interceptions | 13.6 | 7.6 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.4 |\n| high turnovers | 7.4 | 5.9 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions fall below MATCH-23's 22–30 band and PPDA moves further above MATCH-30's 12–14; both are left for T437. Of failed open-play passes, 5.5% are won in the lane, 4.7% deflected, 75.6% lost at the receiver and 12.8% go out. bands.test's guards pass without widening (3.48 and 2.98 goals).\n\n**Two edits outside touches, both test-only.** The keeper fix moved seeded fixtures in `playback.test.ts`:\n- The extra-time seed is now `candidate-et-1`, because `candidate-et-2` now finishes in 90 minutes.\n- The set-piece job check failed because a defender is injured at the instant a corner lands in `candidate-1`. It now drops players who leave the pitch from the expected jobs. That is a fixture edge case, not an engine defect.\n\n**Checks run:** typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards: 219 files, 1705 tests passed, 4 skipped. The touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not done:**\n- The workspace is still on the first submission without the base's T431. I can't merge here; T431 changes no engine facts or frames, so the digests should hold after integration.\n- The paired timing (+4.4% per observed match) was measured before the keeper fix and not repeated.\n- The batch gate, CI and ARCH-31's reference-machine benchmarks were not run."
+      },
+      "reviewHistory": [
+        {
+          "id": "5fad4fe6-f956-49ea-ad42-2f23bf9ce502",
+          "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T441 does what MATCH-31 asks on the candidate model. lanes.ts has its reach scan in closed form with a bounded range and imports nothing from resolve.ts. A pass is now cut out only by an opponent who reaches its path: he wins it or deflects it at his reach point, and a pass nobody reaches is lost at the receiver or goes out. choosePass reads the same reach, the flight ends at the reach point and motionOf gets the interceptor there. The pre-feature path and its digests are unchanged, and the runner's checks passed (typecheck, lint, format:check, vitest --changed: 219 files, 1704 tests). The material.test.ts edit outside touches is test-only and justified: it stops the test depending on where the season's football puts the club. T431, merged on the base since, only changes playback and tendencies and does not clash with this. One contract problem blocks approval. On the candidate model, keeper distributions now use the first opponent who reaches the path (or a flat 60) as the defender they play against. MATCH-11 r28 changed that wording only for ordinary passes; for keeper distributions it still says \"the defender nearest the lane\". The other findings are minor (P3).",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/grid/resolve.ts:409-418 (T441)",
+              "message": "On the candidate model, `marker` is dropped for every pass, and `markerSkill` becomes the first reacher's 위치선정, or 60 when nobody reaches the path. resolvePass also handles keeper distributions: decide.ts:877 sends a keeper's open-play pass through play(), and restarts.ts:324 sends goal kicks (`keeper` = GK). MATCH-11 r28 changed only the short/long/switch pass row to 'the opponent who reaches its path first'. The keeper distribution row still says 'the defender nearest the lane'. With P.marker at 1/300, the nearest defender's 위치선정 moves a keeper pass's completion by up to about ±10 points, and a keeper ball with no reacher now ignores him entirely. Fix: on the candidate, when `keeper` is true, keep `nearestToSegment(...)`'s 위치선정 as the marker. Leave the lane term and the cut-out on `reachOnPath`. Add a resolve test that a keeper's completion follows the defender nearest the lane even when nobody reaches the path, then re-record the candidate digests. If planning wants keeper distributions on the reach rule too, MATCH-11's keeper row must change first; this is for the planner to decide, not the worker."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.test.ts:287 (T441)",
+              "message": "'nobody cuts out a pass he could not reach' cannot fail under the old rule; the worker's limit (5) says so. motionOf lengthens the action until the new owner reaches the ball, so the next play always starts at the reach point. The carry-only check uses the fastest anyone runs, with no acceleration or read. A stronger version would rebuild each interception from its kick-time places and check that the interceptor gets within `stretch` of `at` by the ball's pass-speed arrival. That would let the fixture test catch an interception by someone who could not have got there."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:96-103,691-702 (T441)",
+              "message": "`diagnostics.passLosses` and the `PassLosses` export are written but nothing in the repo reads them; the round-69 shares came from scratch probes. Either pin them with a test (in one fixture, the four counts add up to that side's failed open-play passes) or have the calibration scripts report them, so T437 can use them. Otherwise remove them. `laneWeight` and `runSeconds` are also exported with no reader outside lanes.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/lanes.ts:23 (T441)",
+              "message": "The `LANE_CONFIG.risk` comment says '77.6% at 0.033', but the task result and MATCH-ENGINE-DESIGN §7.1 give the final source as 77.4%. Make the comment match the figure that was recorded."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/lanes.ts:153, resolve.ts:443 (T441)",
+              "message": "Hand-off for the owner/T437, not a fix. `spare` is the most time he has anywhere on the path from his first reach point on, but the ball meets him at that first point, where he arrives with almost no time (the scan's boundary). So a runner who only just reaches the path there can still win it cleanly because of time he would have further down. The worker documented this reading. 14% of reached passes are met at the passer's feet, and for first-time balls those count as interceptions with no flight. Also, a deflection's 50/50 is drawn from where players stand now, and the deflector is not sent to the deflection point in playback. Please confirm these readings against MATCH-31/MATCH-12 when T437 recalibrates."
+            }
+          ],
+          "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+          "baseCommit": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+          "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+          "createdAt": "2026-10-24T19:17:08.788Z",
+          "finishedAt": "2026-10-24T19:26:41.299Z",
+          "invalidatedAt": "2026-10-24T19:26:41.360Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T441",
+          "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+          "at": "2026-10-24T19:17:07.713Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T19:14:40.075Z",
+              "finishedAt": "2026-10-24T19:17:07.327Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T19:14:40.075Z",
+          "finishedAt": "2026-10-24T19:17:07.327Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -7875,6 +7946,522 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1139,
+      "at": "2026-10-24T19:12:33.915Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c50d2e45-b255-4c43-9091-8f4c2729a66c",
+      "taskId": "T431",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T18:53:59.456Z",
+            "finishedAt": "2026-10-24T19:12:33.736Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1140,
+      "at": "2026-10-24T19:12:33.987Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c50d2e45-b255-4c43-9091-8f4c2729a66c",
+      "taskId": "T431",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "8ac4426b0d3701e6aa7db621384fb751a9021f7b",
+        "integratedAt": "2026-10-24T19:12:33.987Z"
+      }
+    },
+    {
+      "sequence": 1141,
+      "at": "2026-10-24T19:12:35.715Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "8ac4426b0d3701e6aa7db621384fb751a9021f7b",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T19:12:35.705Z"
+        }
+      }
+    },
+    {
+      "sequence": 1142,
+      "at": "2026-10-24T19:14:39.022Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1143,
+      "at": "2026-10-24T19:14:39.710Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1144,
+      "at": "2026-10-24T19:14:39.753Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1145,
+      "at": "2026-10-24T19:17:07.757Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "05480a6123bfc2f4479899e667263bac7df708e2",
+        "submittedBase": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+        "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+        "submittedAt": "2026-10-24T19:17:07.757Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "606 changed lines (limit 300)",
+            "outside touches: packages/engine/src/material.test.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 606,
+          "files": 11
+        },
+        "steps": [
+          {
+            "taskId": "T441",
+            "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+            "at": "2026-10-24T19:17:07.713Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T19:14:40.075Z",
+                "finishedAt": "2026-10-24T19:17:07.327Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T19:14:40.075Z",
+            "finishedAt": "2026-10-24T19:17:07.327Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1146,
+      "at": "2026-10-24T19:17:07.778Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "8c0405d5-1b62-47aa-8980-bc5193eb7f91",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T18:17:17.329Z",
+          "finishedAt": "2026-10-24T19:17:07.778Z",
+          "error": null,
+          "summary": "T441 is done on the candidate model. A pass is now cut out only by an opponent who can reach its path before the ball passes. The pre-feature path is unchanged: its three digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **New `grid/lanes.ts`** (no `resolve.ts` import), with `LANE_CONFIG` and `reachOnPath(s, side, from, to, kickAt)`. For each opponent it finds the first point on the path he can get within 1.2 m of (or 2.2 m at full stretch) before the ball, at 20 m/s. He keeps his velocity until T324's read, then runs in closed form within the acceleration rules and his top speed with fatigue. Only the part of the path he could reach at top speed is scanned. It returns the opponent the ball meets first, his spare time (the most time in hand from that point on) and the summed weights of everyone who reaches the path.\n- **`resolvePass`**:\n  - The marker is now the first reacher, on his 위치선정 (60 when nobody reaches), as MATCH-11 r28's pass row says.\n  - The lane term is `LANE_CONFIG.risk` × the summed weights.\n  - On failure, the existing intercept draw (the tactic's build-up share) now needs a reacher instead of the nearest man to the line. That is how I read \"the build-up shares now split only failures that have a reaching opponent\". The reacher wins it at his reach point with ≥ 0.25 s to spare, or deflects it loose there. With nobody reaching it, the ball is lost at the receiver or goes out.\n- **`passOptions`/`choosePass`** use the same reach weight as their risk term, so better 판단력 avoids reached lanes more surely.\n- **`playGrid`** passes the kick time: 0 after an in-stride carry, otherwise the wind-up. It also records `diagnostics.passLosses` (failed open-play passes by where they ended).\n- `LANE_CONFIG.risk` is set to 0.033, which keeps completion at its frame (77.3% → 77.4%).\n\n**Calibration round 69** (core condition, 120 observed matches, same fixtures, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| passes | 407.2 | 407.0 |\n| completion | 77.3% | 77.4% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| failed open-play passes won in the lane | 12.6% | 5.4% |\n| … deflected | – | 4.7% |\n| … lost at the receiver | 73.1% | 75.7% |\n| … out | 12.5% | 12.6% |\n| PPDA | 14.5 | 18.2 |\n| high turnovers | 7.4 | 6.0 |\n| final-third passes | 141 | 137 |\n| box entries | 33.8 | 32.0 |\n| shots | 14.5 | 13.8 |\n| xG | 1.82 | 1.73 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions dropped below MATCH-23's 22–30 band, and PPDA moved further above MATCH-30's 12–14. Both are left for T437 to tune. The candidate's observed-match time went 158.9 → 166.3 ms (+4.4%), measured paired on the same matches on this machine. bands.test's coarse guards pass as written (3.46 and 3.33 goals), so none was widened.\n\n**Tests**: all the tests the acceptance names are added, and every record they play validates. Candidate digests were re-recorded with the measured change in the comment, and the knockout ties were rescanned to 13/8, 3/0 and 18/0.\n\n**Checks run**: typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards (219 files, 1704 tests, 4 skipped). The base went in as an argument because the `HAERAM_DIFF_BASE=` prefix is denied here. The touched unit files pass under both the default and release-on configs (99 of 99 each).\n\n**Limits** (details in the task result):\n- I edited one file outside touches: `material.test.ts`. Its playoff test assumed the club reaches a promotion-playoff place in its simulated season, and the new lanes moved it out. The test now places the club there itself.\n- Restart passes still read reach as if kicked at once, because restarts.ts is outside touches.\n- The fixture-level interception test passes on the old rule too: the engine stretches the action until the new owner arrives, and the trace has no velocities. The unit tests are what fail the old rule.\n- docs/CALIBRATION.md does not record round 69's use.\n- Not run: the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's benchmarks on the reference machine."
+        }
+      }
+    },
+    {
+      "sequence": 1147,
+      "at": "2026-10-24T19:17:08.788Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5fad4fe6-f956-49ea-ad42-2f23bf9ce502",
+          "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+          "status": "reviewing",
+          "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+          "baseCommit": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+          "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+          "createdAt": "2026-10-24T19:17:08.788Z"
+        }
+      }
+    },
+    {
+      "sequence": 1148,
+      "at": "2026-10-24T19:17:10.411Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7f89e0ad-e95c-45ac-a8eb-87e0efbd023f",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T19:17:10.411Z"
+        }
+      }
+    },
+    {
+      "sequence": 1149,
+      "at": "2026-10-24T19:17:10.430Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7f89e0ad-e95c-45ac-a8eb-87e0efbd023f",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T19:17:10.411Z"
+        }
+      }
+    },
+    {
+      "sequence": 1150,
+      "at": "2026-10-24T19:26:41.299Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T441 does what MATCH-31 asks on the candidate model. lanes.ts has its reach scan in closed form with a bounded range and imports nothing from resolve.ts. A pass is now cut out only by an opponent who reaches its path: he wins it or deflects it at his reach point, and a pass nobody reaches is lost at the receiver or goes out. choosePass reads the same reach, the flight ends at the reach point and motionOf gets the interceptor there. The pre-feature path and its digests are unchanged, and the runner's checks passed (typecheck, lint, format:check, vitest --changed: 219 files, 1704 tests). The material.test.ts edit outside touches is test-only and justified: it stops the test depending on where the season's football puts the club. T431, merged on the base since, only changes playback and tendencies and does not clash with this. One contract problem blocks approval. On the candidate model, keeper distributions now use the first opponent who reaches the path (or a flat 60) as the defender they play against. MATCH-11 r28 changed that wording only for ordinary passes; for keeper distributions it still says \"the defender nearest the lane\". The other findings are minor (P3).",
+        "review": {
+          "id": "5fad4fe6-f956-49ea-ad42-2f23bf9ce502",
+          "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T441 does what MATCH-31 asks on the candidate model. lanes.ts has its reach scan in closed form with a bounded range and imports nothing from resolve.ts. A pass is now cut out only by an opponent who reaches its path: he wins it or deflects it at his reach point, and a pass nobody reaches is lost at the receiver or goes out. choosePass reads the same reach, the flight ends at the reach point and motionOf gets the interceptor there. The pre-feature path and its digests are unchanged, and the runner's checks passed (typecheck, lint, format:check, vitest --changed: 219 files, 1704 tests). The material.test.ts edit outside touches is test-only and justified: it stops the test depending on where the season's football puts the club. T431, merged on the base since, only changes playback and tendencies and does not clash with this. One contract problem blocks approval. On the candidate model, keeper distributions now use the first opponent who reaches the path (or a flat 60) as the defender they play against. MATCH-11 r28 changed that wording only for ordinary passes; for keeper distributions it still says \"the defender nearest the lane\". The other findings are minor (P3).",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/grid/resolve.ts:409-418 (T441)",
+              "message": "On the candidate model, `marker` is dropped for every pass, and `markerSkill` becomes the first reacher's 위치선정, or 60 when nobody reaches the path. resolvePass also handles keeper distributions: decide.ts:877 sends a keeper's open-play pass through play(), and restarts.ts:324 sends goal kicks (`keeper` = GK). MATCH-11 r28 changed only the short/long/switch pass row to 'the opponent who reaches its path first'. The keeper distribution row still says 'the defender nearest the lane'. With P.marker at 1/300, the nearest defender's 위치선정 moves a keeper pass's completion by up to about ±10 points, and a keeper ball with no reacher now ignores him entirely. Fix: on the candidate, when `keeper` is true, keep `nearestToSegment(...)`'s 위치선정 as the marker. Leave the lane term and the cut-out on `reachOnPath`. Add a resolve test that a keeper's completion follows the defender nearest the lane even when nobody reaches the path, then re-record the candidate digests. If planning wants keeper distributions on the reach rule too, MATCH-11's keeper row must change first; this is for the planner to decide, not the worker."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.test.ts:287 (T441)",
+              "message": "'nobody cuts out a pass he could not reach' cannot fail under the old rule; the worker's limit (5) says so. motionOf lengthens the action until the new owner reaches the ball, so the next play always starts at the reach point. The carry-only check uses the fastest anyone runs, with no acceleration or read. A stronger version would rebuild each interception from its kick-time places and check that the interceptor gets within `stretch` of `at` by the ball's pass-speed arrival. That would let the fixture test catch an interception by someone who could not have got there."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:96-103,691-702 (T441)",
+              "message": "`diagnostics.passLosses` and the `PassLosses` export are written but nothing in the repo reads them; the round-69 shares came from scratch probes. Either pin them with a test (in one fixture, the four counts add up to that side's failed open-play passes) or have the calibration scripts report them, so T437 can use them. Otherwise remove them. `laneWeight` and `runSeconds` are also exported with no reader outside lanes.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/lanes.ts:23 (T441)",
+              "message": "The `LANE_CONFIG.risk` comment says '77.6% at 0.033', but the task result and MATCH-ENGINE-DESIGN §7.1 give the final source as 77.4%. Make the comment match the figure that was recorded."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/lanes.ts:153, resolve.ts:443 (T441)",
+              "message": "Hand-off for the owner/T437, not a fix. `spare` is the most time he has anywhere on the path from his first reach point on, but the ball meets him at that first point, where he arrives with almost no time (the scan's boundary). So a runner who only just reaches the path there can still win it cleanly because of time he would have further down. The worker documented this reading. 14% of reached passes are met at the passer's feet, and for first-time balls those count as interceptions with no flight. Also, a deflection's 50/50 is drawn from where players stand now, and the deflector is not sent to the deflection point in playback. Please confirm these readings against MATCH-31/MATCH-12 when T437 recalibrates."
+            }
+          ],
+          "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+          "baseCommit": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+          "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+          "createdAt": "2026-10-24T19:17:08.788Z",
+          "finishedAt": "2026-10-24T19:26:41.299Z"
+        }
+      }
+    },
+    {
+      "sequence": 1151,
+      "at": "2026-10-24T19:26:41.317Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "7f89e0ad-e95c-45ac-a8eb-87e0efbd023f",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T19:17:10.411Z",
+          "finishedAt": "2026-10-24T19:26:41.317Z",
+          "error": null,
+          "summary": "T441 does what MATCH-31 asks on the candidate model. lanes.ts has its reach scan in closed form with a bounded range and imports nothing from resolve.ts. A pass is now cut out only by an opponent who reaches its path: he wins it or deflects it at his reach point, and a pass nobody reaches is lost at the receiver or goes out. choosePass reads the same reach, the flight ends at the reach point and motionOf gets the interceptor there. The pre-feature path and its digests are unchanged, and the runner's checks passed (typecheck, lint, format:check, vitest --changed: 219 files, 1704 tests). The material.test.ts edit outside touches is test-only and justified: it stops the test depending on where the season's football puts the club. T431, merged on the base since, only changes playback and tendencies and does not clash with this. One contract problem blocks approval. On the candidate model, keeper distributions now use the first opponent who reaches the path (or a flat 60) as the defender they play against. MATCH-11 r28 changed that wording only for ordinary passes; for keeper distributions it still says \"the defender nearest the lane\". The other findings are minor (P3)."
+        }
+      }
+    },
+    {
+      "sequence": 1152,
+      "at": "2026-10-24T19:26:41.360Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "5fad4fe6-f956-49ea-ad42-2f23bf9ce502",
+            "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T441 does what MATCH-31 asks on the candidate model. lanes.ts has its reach scan in closed form with a bounded range and imports nothing from resolve.ts. A pass is now cut out only by an opponent who reaches its path: he wins it or deflects it at his reach point, and a pass nobody reaches is lost at the receiver or goes out. choosePass reads the same reach, the flight ends at the reach point and motionOf gets the interceptor there. The pre-feature path and its digests are unchanged, and the runner's checks passed (typecheck, lint, format:check, vitest --changed: 219 files, 1704 tests). The material.test.ts edit outside touches is test-only and justified: it stops the test depending on where the season's football puts the club. T431, merged on the base since, only changes playback and tendencies and does not clash with this. One contract problem blocks approval. On the candidate model, keeper distributions now use the first opponent who reaches the path (or a flat 60) as the defender they play against. MATCH-11 r28 changed that wording only for ordinary passes; for keeper distributions it still says \"the defender nearest the lane\". The other findings are minor (P3).",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/grid/resolve.ts:409-418 (T441)",
+                "message": "On the candidate model, `marker` is dropped for every pass, and `markerSkill` becomes the first reacher's 위치선정, or 60 when nobody reaches the path. resolvePass also handles keeper distributions: decide.ts:877 sends a keeper's open-play pass through play(), and restarts.ts:324 sends goal kicks (`keeper` = GK). MATCH-11 r28 changed only the short/long/switch pass row to 'the opponent who reaches its path first'. The keeper distribution row still says 'the defender nearest the lane'. With P.marker at 1/300, the nearest defender's 위치선정 moves a keeper pass's completion by up to about ±10 points, and a keeper ball with no reacher now ignores him entirely. Fix: on the candidate, when `keeper` is true, keep `nearestToSegment(...)`'s 위치선정 as the marker. Leave the lane term and the cut-out on `reachOnPath`. Add a resolve test that a keeper's completion follows the defender nearest the lane even when nobody reaches the path, then re-record the candidate digests. If planning wants keeper distributions on the reach rule too, MATCH-11's keeper row must change first; this is for the planner to decide, not the worker."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/resolve.test.ts:287 (T441)",
+                "message": "'nobody cuts out a pass he could not reach' cannot fail under the old rule; the worker's limit (5) says so. motionOf lengthens the action until the new owner reaches the ball, so the next play always starts at the reach point. The carry-only check uses the fastest anyone runs, with no acceleration or read. A stronger version would rebuild each interception from its kick-time places and check that the interceptor gets within `stretch` of `at` by the ball's pass-speed arrival. That would let the fixture test catch an interception by someone who could not have got there."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/engine.ts:96-103,691-702 (T441)",
+                "message": "`diagnostics.passLosses` and the `PassLosses` export are written but nothing in the repo reads them; the round-69 shares came from scratch probes. Either pin them with a test (in one fixture, the four counts add up to that side's failed open-play passes) or have the calibration scripts report them, so T437 can use them. Otherwise remove them. `laneWeight` and `runSeconds` are also exported with no reader outside lanes.ts."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/lanes.ts:23 (T441)",
+                "message": "The `LANE_CONFIG.risk` comment says '77.6% at 0.033', but the task result and MATCH-ENGINE-DESIGN §7.1 give the final source as 77.4%. Make the comment match the figure that was recorded."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/lanes.ts:153, resolve.ts:443 (T441)",
+                "message": "Hand-off for the owner/T437, not a fix. `spare` is the most time he has anywhere on the path from his first reach point on, but the ball meets him at that first point, where he arrives with almost no time (the scan's boundary). So a runner who only just reaches the path there can still win it cleanly because of time he would have further down. The worker documented this reading. 14% of reached passes are met at the passer's feet, and for first-time balls those count as interceptions with no flight. Also, a deflection's 50/50 is drawn from where players stand now, and the deflector is not sent to the deflection point in playback. Please confirm these readings against MATCH-31/MATCH-12 when T437 recalibrates."
+              }
+            ],
+            "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
+            "baseCommit": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
+            "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
+            "createdAt": "2026-10-24T19:17:08.788Z",
+            "finishedAt": "2026-10-24T19:26:41.299Z",
+            "invalidatedAt": "2026-10-24T19:26:41.360Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1153,
+      "at": "2026-10-24T19:26:41.445Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d94d2fc9-e446-402a-a754-639726728461",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T19:26:41.445Z"
+        }
+      }
+    },
+    {
+      "sequence": 1154,
+      "at": "2026-10-24T19:26:41.623Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "d94d2fc9-e446-402a-a754-639726728461",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T19:26:41.445Z"
+        }
+      }
+    },
+    {
+      "sequence": 1155,
+      "at": "2026-10-24T19:46:32.748Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1156,
+      "at": "2026-10-24T19:46:32.988Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1157,
+      "at": "2026-10-24T19:46:33.027Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "d94d2fc9-e446-402a-a754-639726728461",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T19:26:41.445Z",
+          "finishedAt": "2026-10-24T19:46:33.027Z",
+          "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "All five review findings on T441 are fixed and the task checks pass. The pre-feature path is still unchanged: its digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **P2, keeper distributions (`resolve.ts`):** on the candidate, a keeper's pass now plays against the defender nearest the lane again, as MATCH-11's keeper row says. Every other pass plays against the first opponent who reaches its path, or an even 60 if nobody does. The lane term and who cuts the ball out still use the reach rule for all candidate passes. A new test shows a keeper's completion drops as that defender's 위치선정 rises even when he can't reach the path, while an outfielder's pass down the same lane is unaffected. Candidate digests are re-recorded:\n  - grid-throughput: 1975 unchanged; the 1995 extra-time tie is now `knockout-1995-2`; 2024 league facts and observed positions changed.\n  - full-model-throughput: `52d8ce752a4579f5`.\n- **P3, the \"could not reach\" test is now strong enough to catch the old rule.** It spies on `Tally.prototype.interception` to read each interceptor's position, velocity and top speed at the kick. It then checks he could actually get within reach of the point before the ball arrives at pass speed, accelerating from his real speed. With the old nearest-man rule switched back in temporarily, this check failed (one interceptor was 0.47 m short); the edit is reverted.\n- **P3, `passLosses`:** the same test now checks the four counts against the trace for each side. `laneWeight` and `runSeconds` are no longer exported.\n- **P3, the `LANE_CONFIG.risk` comment** now matches the measured figure.\n- **P3, hand-offs for T437** (the spare-time reading, cut-outs at the passer's feet, the deflection's 50/50 and playback) are written into the result's limits.\n\n**Round-69 calibration on the final source** (120 matches, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| completion | 77.32% | 77.34% |\n| interceptions | 13.6 | 7.6 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.4 |\n| high turnovers | 7.4 | 5.9 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions fall below MATCH-23's 22–30 band and PPDA moves further above MATCH-30's 12–14; both are left for T437. Of failed open-play passes, 5.5% are won in the lane, 4.7% deflected, 75.6% lost at the receiver and 12.8% go out. bands.test's guards pass without widening (3.48 and 2.98 goals).\n\n**Two edits outside touches, both test-only.** The keeper fix moved seeded fixtures in `playback.test.ts`:\n- The extra-time seed is now `candidate-et-1`, because `candidate-et-2` now finishes in 90 minutes.\n- The set-piece job check failed because a defender is injured at the instant a corner lands in `candidate-1`. It now drops players who leave the pitch from the expected jobs. That is a fixture edge case, not an engine defect.\n\n**Checks run:** typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards: 219 files, 1705 tests passed, 4 skipped. The touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not done:**\n- The workspace is still on the first submission without the base's T431. I can't merge here; T431 changes no engine facts or frames, so the digests should hold after integration.\n- The paired timing (+4.4% per observed match) was measured before the keeper fix and not repeated.\n- The batch gate, CI and ARCH-31's reference-machine benchmarks were not run."
+        }
+      }
+    },
+    {
+      "sequence": 1158,
+      "at": "2026-10-24T19:46:34.250Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T17:15:44.068Z",
+          "stoppedAt": "2026-10-24T19:46:34.250Z",
+          "dispatched": 7,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "c50d2e45-b255-4c43-9091-8f4c2729a66c",
+              "submissionId": "e73bcf28-5d19-4996-aeea-cf8fdcaf1e6d",
+              "commit": "43a38481dc0536a8374398e5d914ea7366ea8c7c",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+              "role": "worker",
+              "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
