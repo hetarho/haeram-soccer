@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r138 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r139 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -452,7 +452,8 @@
   - Floating feedback in the standard theme uses a restrained shadow and subtle edge to remain distinct from underlying content even when their surface colours match. Preserve its scroll bounds, action reachability and semantic status colours; pixel retains its existing flat appearance.
   - Adding a theme uses its registry entry, JSON resource, optional stylesheet and assets, without adding or editing TSX components. Shared facility artwork can use pack-specific image treatment.
   - Themes resolve the same stadium, locker-room and training-ground image roles for the eras and completed facility stages in →WEB-72. Keep the actual year/stage selection common; the selected theme supplies the resource paths and visual treatment.
-  - Theme changes leave the engine-driven live pitch, match trajectories, clock mapping, club colours, recorded shirts/crests and game data intact. They do not replace the playback renderer or introduce theme-dependent football rules.
+  - Match observation, replay, shirt previews and analytical pitch diagrams share the selected theme's ground colours, static material and line/marker treatment. Print uses warm paper and ink, sticker uses clear grass and outlined shapes, pixel uses discrete grid materials and crisp scaling, and standard uses natural deep-green turf. Keep the ball, player numbers, possession cues and meaningful analytical marks distinct from decoration.
+  - Theme changes preserve the engine-driven pitch geometry, match trajectories, interpolation, clock mapping, replay position, club colours, recorded shirts/crests and game data. Visual ground materials and marker outlines may change through shared presentation roles; theme-dependent football rules, fabricated motion and recolouring recorded kits are excluded.
   - Preserve semantic status meanings, readable data, accessible HTML labels, keyboard/touch behavior, reduced-motion support and the supported layout bounds in every theme (→WEB-10/17/38/46/73). Missing resources and loading failures follow the shared pack policy (→ARCH-32).
 
 - WEB-92 [o] The records room's 감독 이력 shows what each manager achieved at our club alongside his service period (→HIST-18/19), retaining the appointment/departure story and current manager from →WEB-54.
@@ -498,6 +499,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r139 261024 WEB-91✎ fixed live-pitch styling→theme-driven ground materials, markings and marker outlines across observation/replay/previews/analytical pitches; engine geometry, timing, identity and saved facts preserved
 - r138 261024 WEB-91✎ image-built coverage print/sticker→all registered themes, including standard/pixel; pixel flat CSS surfaces→crisp stepped image frames/materials; standard absent decorative edges→restrained image-built seams; single standard grain tile→reusable static materials, existing typography/art/palettes/default/preferences preserved.
 - r137 261024 WEB-91✎ all-screen image-built controls and surfaces: matchday-print only→matchday-print and sticker-club; retain their distinct materials, frames and icon families, with matchday-print still the registry default.
 - r136 261023 WEB-91✎ standard registry default and home-only image study→matchday-print default with reusable image-built surfaces and controls across every screen; valid stored selections and live semantic content retained
