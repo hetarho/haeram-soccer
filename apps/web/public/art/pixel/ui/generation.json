@@ -1,0 +1,194 @@
+{
+  "method": "Native pixel-grid SVG sources and existing semantic glyph paths; lossless Chromium PNG encoding",
+  "date": "2026-10-24",
+  "sources": "apps/web/design/pixel-ui",
+  "geometry": "128px stepped frames use a 16px nine-slice region; 32px discrete materials repeat independently. Live text remains HTML.",
+  "assets": [
+    {
+      "file": "frame-panel.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-panel",
+      "bytes": 1058,
+      "sha256": "ebe8ef10f1775205337f8b7bd38f7885c1bbf60ee420d3166904902127f01ad1"
+    },
+    {
+      "file": "frame-primary.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-primary",
+      "bytes": 1058,
+      "sha256": "ff7222dc38a9796ae62333add839a401a6153b9cfcc5b27df8471d740ba05718"
+    },
+    {
+      "file": "frame-dark.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-dark",
+      "bytes": 1058,
+      "sha256": "9203dd83d2e556462a4b81175a89a7118917e58c58877317b18cf6789f33148c"
+    },
+    {
+      "file": "frame-tile.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-tile",
+      "bytes": 1055,
+      "sha256": "f9300560e427e9d4498803ad7ba9f55063025981cca3d3fb164c40300a3b8900"
+    },
+    {
+      "file": "frame-button.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-button",
+      "bytes": 1057,
+      "sha256": "6852366a25020a736c2d2bfb1114ca22b37b18c6283399ceee8e7a490fd5b623"
+    },
+    {
+      "file": "frame-selected.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-selected",
+      "bytes": 1062,
+      "sha256": "ca493f9c05730f0ef3d907ee56978423a229041ab8ecc06b40382c20ffedd056"
+    },
+    {
+      "file": "icon-home.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-home",
+      "bytes": 1616,
+      "sha256": "ce6774af2948f66148a787328cf0d878931337ea4249a10637c0b86484659dec"
+    },
+    {
+      "file": "icon-league.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-league",
+      "bytes": 1633,
+      "sha256": "5a88b4112c5ebfdfcd7903411ebc160f66638502eb4b3539e12cee1b729fce0b"
+    },
+    {
+      "file": "icon-cup.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-cup",
+      "bytes": 1634,
+      "sha256": "25d2e9a0e1e3c4d257d200b6cfc17d33730d4c4cf05ab1d48ebffbf1b3907252"
+    },
+    {
+      "file": "icon-history.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-history",
+      "bytes": 1606,
+      "sha256": "0e2c16b9add45043be239485c87f78768f4ce00eabb29431ccea48b7a013e15b"
+    },
+    {
+      "file": "icon-people.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-people",
+      "bytes": 1610,
+      "sha256": "626ac46e3699d3917de0ce69d940cd1d8151a3d1c07ca3c25220e359abe25093"
+    },
+    {
+      "file": "icon-training.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-training",
+      "bytes": 1613,
+      "sha256": "7d65b9518c912c203208b307ca100b23b1fc46fc20c137ce782adcba33397953"
+    },
+    {
+      "file": "icon-office.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-office",
+      "bytes": 1604,
+      "sha256": "5d8a868520eb4aa76cc2a8932843d237aa97008d8ba6eed77b6ce91ee2958e4f"
+    },
+    {
+      "file": "icon-boot.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-boot",
+      "bytes": 1604,
+      "sha256": "aac7ab1659546b2d5b1c77ce26ac68e7b3e0fa118f89936d356ebde6e5611037"
+    },
+    {
+      "file": "icon-supporters.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-supporters",
+      "bytes": 1642,
+      "sha256": "898f47cb03c2d3f931a077291af4e9719c3a5f48609ca7a4a584f7f6e100a585"
+    },
+    {
+      "file": "icon-manager.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-manager",
+      "bytes": 1683,
+      "sha256": "05468983989f3c4ea4cd327d2ab5b6eefc596c047cdbbd3c98a08e5f7323aceb"
+    },
+    {
+      "file": "icon-shirt.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-shirt",
+      "bytes": 1597,
+      "sha256": "d7db5b658d74876c3e267def47ae12b5ae59116e2a8442f4c09fb6244fface80"
+    },
+    {
+      "file": "icon-bell.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-bell",
+      "bytes": 1595,
+      "sha256": "872d457e56aaf2ad887203d1a25a166c343cddbefe921c0d3b65759e2ca79593"
+    },
+    {
+      "file": "icon-menu.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-menu",
+      "bytes": 1585,
+      "sha256": "3ebb58550624e59941f1a3a471c13870d419e8e68b6c58978b1d5149edc1dba9"
+    },
+    {
+      "file": "icon-switch.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-switch",
+      "bytes": 1643,
+      "sha256": "6806cf636bca3c4cccc9cad15d96dd327bb71ed0ae7f2135757676dd5ef3b228"
+    },
+    {
+      "file": "icon-play.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-play",
+      "bytes": 1606,
+      "sha256": "26c79bc429f69258c707dac4d50a37618d0fc607932cfa943d1c6dd210973a2d"
+    },
+    {
+      "file": "icon-heart.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-heart",
+      "bytes": 1599,
+      "sha256": "03b4145dc4c934a47eb5b0a2cfec570a0a695d26db0cecf83d61b8622debe68b"
+    },
+    {
+      "file": "canvas.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#canvas",
+      "bytes": 197,
+      "sha256": "259c4e1c9a4605062b70dc81c72d1891e7a88fd8eb420ff7a441dab07db30741"
+    },
+    {
+      "file": "quiet.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#quiet",
+      "bytes": 199,
+      "sha256": "4f975a65cc956307116acebe61cb77f636315baa3762c742873a2602e2f4decb"
+    },
+    {
+      "file": "dark.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#dark",
+      "bytes": 197,
+      "sha256": "43acb58fcc39bbaa5296815dcd63842fd71e173cbfe121f2a5fe1780567ff937"
+    },
+    {
+      "file": "primary.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#primary",
+      "bytes": 197,
+      "sha256": "93f2d16be26227dae22cd840c0ac9aef8b2018c53761639b305b3dda3f3d08c1"
+    },
+    {
+      "file": "masthead.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#masthead",
+      "bytes": 2219,
+      "sha256": "3361ce5eb5fd49bf9378fb508fa8f9de244f4cd92c1875cef72820d1894c3980"
+    },
+    {
+      "file": "sidebar-terrace.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#sidebar-terrace",
+      "bytes": 3119,
+      "sha256": "892ea502426631b4be83a8b2f06b47a642a3935fb96f88b35a44d73454ffc5bf"
+    },
+    {
+      "file": "rule-dark.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#rule-dark",
+      "bytes": 105,
+      "sha256": "6c60efe056b7ff30642ae70a72d3b6f5bc20a9c195ad1a1b7d0669eb7dd77382"
+    },
+    {
+      "file": "rule-light.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#rule-light",
+      "bytes": 105,
+      "sha256": "9085da5405fce5c0e83393aa44c9558a84335341344d0093832d5755244e08c3"
+    },
+    {
+      "file": "rule-light-vertical.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#rule-light-vertical",
+      "bytes": 117,
+      "sha256": "744361605157c1493ade2c360aec942e183c36c334d39447c2b08d80fbe39207"
+    }
+  ]
+}

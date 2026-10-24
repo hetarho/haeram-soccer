@@ -1,5 +1,5 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
-html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
+html[data-theme] {
   --control-hover-filter: brightness(0.96);
   --control-active-filter: brightness(0.9);
   --ovr-bronze: var(--image-ovr-bronze);
@@ -16,11 +16,11 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     )
   ) {
     border: 6px solid transparent;
-    border-image: var(--image-button-frame) 54 / 8px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
     border-radius: var(--image-radius, 0px);
     background-image: var(--image-quiet-material);
     background-color: var(--image-quiet);
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     background-clip: padding-box;
     box-shadow: none;
   }
@@ -36,17 +36,17 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     --gold: var(--image-on-primary);
     color: var(--image-on-primary);
     border-width: 6px;
-    border-image: var(--image-primary-frame) 54 / 9px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
     background-image: var(--image-primary-material);
     background-color: var(--image-primary);
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     background-clip: padding-box;
   }
 
   button[data-ui='primary'] {
     background-image: var(--image-primary-material) !important;
     color: var(--image-on-primary);
-    border-image: var(--image-primary-frame) 54 / 9px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
   }
 
   [data-ui='link'] {
@@ -59,26 +59,97 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   [data-ui='icon'] {
     border: 4px solid transparent;
-    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: none;
   }
 
-  [data-select-trigger],
+  [data-select-trigger][role='combobox'],
+  [data-select-trigger][role='combobox']:is(:hover, [data-state='open']),
   :where(
     input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
     textarea,
     select
   ) {
     border: 5px solid transparent;
-    border-image: var(--image-button-frame) 54 / 7px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 7px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
     box-shadow: none;
+  }
+
+  [data-select-trigger][role='combobox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    padding: 10px 14px;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  :is(input, textarea)::placeholder {
+    color: var(--image-muted);
+    opacity: 1;
+  }
+
+  :is(
+    button:disabled,
+    [data-select-trigger]:disabled,
+    [role='option'][data-disabled],
+    fieldset:disabled
+  ) {
+    opacity: 1;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
+
+  :is(button[data-ui='link'] > span, button[data-money], button[data-ui='term']:not(:disabled)) {
+    text-decoration-line: var(--image-link-decoration, underline);
+    text-decoration-style: solid;
+    text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  :is(button[data-ui='link']:hover > span, button[data-money]:hover, button[data-ui='term']:hover) {
+    text-decoration-line: underline;
+    text-decoration-color: currentColor;
+  }
+
+  [data-testid='app-menu'] section {
+    display: grid;
+    gap: var(--image-menu-gap, 10px);
+  }
+
+  [data-testid='app-menu'] h3 {
+    margin: 0;
+    color: var(--image-muted);
+  }
+
+  [data-ui='menu-row'] {
+    min-height: 68px;
+    padding: 12px 14px;
+    gap: 12px;
+    line-height: 1.5;
+    color: var(--image-ink-color);
+  }
+
+  [data-ui='menu-row'] > span {
+    padding: 0;
+  }
+
+  [data-ui='menu-row'] small {
+    color: var(--image-muted);
+    line-height: 1.5;
+  }
+
+  [data-ui='menu-row']:hover:not(:disabled) {
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
   }
 
   input[type='checkbox'],
@@ -90,10 +161,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'] {
     border: 8px solid transparent;
-    border-image: var(--image-tile-frame) 54 / 10px stretch;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: none;
   }
 
@@ -108,16 +179,16 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-surface='tile'],
   [data-ui='game-shell'] [data-surface='tile'] {
     border: 4px solid transparent;
-    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: none;
   }
 
   [data-ui='toolbar'] {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: 512px;
+    background-size: var(--image-material-size, 512px);
   }
 
   [role='tablist'],
@@ -129,16 +200,20 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     padding: 4px 0 8px;
   }
 
+  [role='radiogroup'] {
+    gap: 6px;
+  }
+
   [role='tab'],
   [data-ui='choices'] > button,
   [role='radiogroup'] > button {
     flex-shrink: 0;
     min-height: 44px;
     border: 6px solid transparent;
-    border-image: var(--image-button-frame) 54 / 8px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
     font-weight: 700;
     box-shadow: none;
@@ -153,9 +228,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     color: var(--image-on-primary);
     /* The shared .selected utility forces a border; replace that complete border here. */
     border: 6px solid transparent !important;
-    border-image: var(--image-primary-frame) 54 / 9px stretch !important;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch !important;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
   }
 
   [role='tab']::after,
@@ -165,12 +240,12 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   table {
     background: var(--image-quiet) var(--image-quiet-material) repeat;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   thead {
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     --text: var(--image-on-dark);
     --text-muted: var(--image-on-dark);
     --text-faint: var(--image-canvas);
@@ -181,7 +256,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   table thead :is(th, td),
   table[aria-label] thead :is(th, td) {
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-dark);
     border-bottom-color: transparent;
     font-weight: 700;
@@ -193,10 +268,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   [data-tier] {
     border: 4px solid transparent;
-    border-image: var(--image-button-frame) 54 / 5px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 5px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   tbody tr:nth-child(even) {
@@ -207,7 +282,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   table tbody :is(th, td),
   table[aria-label] tbody :is(th, td) {
     background: var(--image-quiet) var(--image-quiet-material) repeat;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   table tbody tr:nth-child(even) > :is(th, td) {
@@ -217,16 +292,16 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   table tbody tr[data-own='true'] > :is(th, td) {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: 512px;
+    background-size: var(--image-material-size, 512px);
   }
 
   [data-ui='badge'],
   [data-ui='count'] {
     border: 4px solid transparent;
-    border-image: var(--image-primary-frame) 54 / 6px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 6px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-primary);
     font-weight: 700;
     white-space: nowrap;
@@ -259,10 +334,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   [data-ui='dialog'] {
     border: 10px solid transparent;
-    border-image: var(--image-panel-frame) 54 / 13px stretch;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 13px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: 0 8px 48px var(--image-dialog-shadow);
   }
 
@@ -274,7 +349,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     border: 0;
     padding: 10px 16px;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-dark);
   }
 
@@ -306,36 +381,67 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
 
   [data-ui='dialog-body'] {
     background: var(--image-quiet) var(--image-quiet-material) repeat;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   [data-ui='dialog-actions'] {
     border: 0;
     background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   [role='listbox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    --accent-text: var(--image-accent);
     border: 8px solid transparent;
-    border-image: var(--image-tile-frame) 54 / 10px stretch;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
     border-radius: var(--image-radius, 0px);
-    padding: 4px;
+    padding: 6px;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: 2px 4px 0 var(--image-popover-shadow);
     color: var(--image-ink-color);
   }
 
   [role='option'] {
+    min-height: 44px;
+    padding: 10px 36px 10px 12px;
+    margin-block: 3px;
+    border: 3px solid transparent;
+    border-image: none;
     border-radius: var(--image-radius, 0px);
+    background: transparent;
+    color: var(--image-ink-color);
+    line-height: 1.5;
   }
 
-  :where([role='option'][data-highlighted], [role='option'][data-state='checked']) {
-    --text: var(--image-on-primary);
-    --text-muted: var(--image-on-primary);
-    color: var(--image-on-primary);
-    background: var(--image-primary) var(--image-primary-material) repeat;
-    background-size: 256px;
+  [role='option'] small {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  [role='option'][data-highlighted]:not([data-state='checked']) {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    color: var(--image-ink-color);
+    background: var(--image-canvas) var(--image-canvas-material) repeat padding-box;
+    outline: 2px solid var(--image-option-hover, var(--image-accent));
+    outline-offset: -3px;
+  }
+
+  [role='option'][data-state='checked'],
+  [role='option'][data-state='checked'][data-highlighted] {
+    --text: var(--image-option-text, var(--image-on-primary));
+    --text-muted: var(--image-option-muted, var(--image-on-primary));
+    --text-faint: var(--text-muted);
+    color: var(--text);
+    background: var(--image-option-fill, var(--image-primary))
+      var(--image-option-material, var(--image-primary-material)) repeat padding-box;
+    border-image: var(--image-option-frame, var(--image-primary-frame))
+      var(--image-frame-slice, 54) / 6px stretch;
+    background-size: var(--image-material-size, 256px);
   }
 
   [data-testid='action-outcome'],
@@ -345,17 +451,17 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-testid='runtime-alerts'] > div,
   [data-testid='team-state-alert'] > div {
     border: 8px solid transparent;
-    border-image: var(--image-panel-frame) 54 / 10px stretch;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     box-shadow: none;
   }
 
   [data-testid='event-pill'] {
-    border-image: var(--image-primary-frame) 54 / 9px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-primary);
   }
 
@@ -385,21 +491,21 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-testid='club-founding'] form {
     padding: 24px;
     border: 10px solid transparent;
-    border-image: var(--image-panel-frame) 54 / 13px stretch;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 13px stretch;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
   }
 
   [data-testid='facility-overview'] {
-    border-image: var(--image-tile-frame) 54 / 10px stretch;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
   }
 
   label:has(input[type='file']) {
     border: 3px solid transparent;
-    border-image: var(--image-button-frame) 54 / 6px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     min-height: 44px;
     padding: 2px 8px;
   }
@@ -461,6 +567,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     }
     [data-testid='club-founding'] :is(input, [data-select-trigger]) {
       min-height: 44px;
+    }
+    [data-testid='club-founding'] [data-select-trigger][role='combobox'] {
+      padding: 5px 10px;
     }
     [data-testid='club-founding'] fieldset button {
       min-width: 0;
