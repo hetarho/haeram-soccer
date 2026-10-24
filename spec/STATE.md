@@ -15,7 +15,8 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T400 |
+| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T405 | Rebuild Pixel Art and Stadium Green with image-built UI resources | WEB ARCH | T404 | doing@261024.m8p2 |
+| T400 |
 
 ## inbox
 - 261024 decided T399 MATCH-29 MATCH-23 MATCH-30: which validated setting to keep → p5 (the ball-side wing-back of a back three closes 0.4 of the way to the ball's line, the wide centre-back steps 3 m out, a pressed cross loses 0.15 × the crosser's pressure): balanced's xG conceded −0.041 outside → −0.017 insufficient, MATCH-29 20 → 23, MATCH-30 9 → 10, MATCH-23 36 → 35 (tackles+interceptions inside → unresolved), curve 2.23 → 2.15, nothing inside → outside pooled or per round (alt: p4 (0.5, 3 m, 0.2), which puts counter ≥ press inside at 0.043 but leaves balanced's xG conceded outside pooled and on round 62 with the curve 2.43 (2.72 on round 62) | the base, by the strict reading that counter ≥ press moved 0.032 → 0.026, a fifth of its interval's half-width and insufficient on both settings per round) — the exit's intent is the two rows, and p5 takes the only outside one out of outside while p4 leaves it there
@@ -248,7 +249,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 19 | 19 | - | 2 |
-| WEB | 137 | 137 | - | 0 |
+| WEB | 138 | 138 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -292,6 +293,9 @@
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 WEB r138 tasked as T405 doing (m8p2): retain pixel/standard typography, icon/facility families and palettes; rebuild UI skins/materials across all screens using shared image assembly and per-pack assets. No TSX theme branches or registry/default changes. T286 base WEB@137→138, unrelated WEB-91 delta only; gameplay tasks otherwise unchanged.
+- 261024 WEB r138 planned (m8p2): image-built coverage extends from print/sticker to standard/pixel while preserving each established direction. Standard uses low-contrast material seams; pixel keeps crisp angular geometry. Pending WEB-91✎; T286/T400/T401 do not cite this decision, so their gameplay scope is unchanged.
+- 261024 update-ssot WEB start (m8p2): owner requests pixel and stadium-green rebuilt with the image-theme production method, retaining their existing feel, then commit/push. Origin pulled at ebcdac46; current checkout explicitly assigned, no questions requested. Preserve print/sticker, registry default, stable preferences, game data and live pitch. Spec CLI unavailable; use direct spec checks.
 - 261024 T404 done (m8p2): readable dropdowns/transport, inset and separated controls, distinct print/sticker cues and single solid focus; compact match overflow corrected. Code 7c054050 + 5d92a965; type/lint/format/build, 2025 units + 4 skips, 39 contracts, catalogs/presentation/assets pass. Chromium audit 164 states; new checks 12/12 across all browsers; full Chromium 258/259 then corrected match specs 9/9 cover all 259. Checklist updated; no SSOT policy change. Origin pulled, publication authorized; hosted CI deferred by owner.
 - 261024 T404 start (m8p2): owner requests readable text, breathing room and concept-appropriate detail in both image-built themes. Origin pulled at 76daccd9; current checkout explicitly assigned, spec CLI unavailable. Enforce existing WEB-10/38/91: isolate popup colors, fix selected-state specificity, inset/separate menu rows, remove duplicate focus outlines and replace generic dotted decoration with theme-specific cues. Preserve keyboard focus and meaningful diagram/status distinctions; no policy change.
 - 261024 fix e2e (t5q2): CI on 76daccd9 failed two journeys the change does not reach — live-state's scorer-trend click lost to the match eve's backdrop on a slow WebKit run, and styled-select's player inspector listed 21 after a dismissal in the founded world's random match; the click now stops once the eve's dialog is up and the inspector needs at least 20; both specs 18/18 on Chromium, WebKit and Firefox
@@ -309,6 +313,3 @@
 - 261024 print maintenance done (m8p2): pulled origin; removed 110 tracked review/capture files plus local print scratch (372 files, 178 MiB total), retaining approved references, atlases, prompts, production assets and regenerators. Added docs/THEME-CHECKLIST.md and source README; fixed resource documentation and retained verification summaries. Type/lint/format/build, presentation 380, 31 asset hashes, concept generators and 6 doc links pass. Application/engine/deployed resources/tests/dependencies/configuration match 6a6bafab, so its passing 1968-unit/39-contract/247-Chromium batch is reused; no product policy or SSOT revision change. Existing T391 hosted-CI block remains recorded.
 - 261024 create-task T307 T308 base WEB@112→136 (t5q2): r113–r136 change theming (WEB-38/73), the owner office (WEB-74) and other screens, none of the records query, navigation or capacity they cite; no content change
 - 261024 T391 publication (m8p2): pulled origin including T384, committed/pushed 6a6bafab; merged unit 1968+4 skips, contract 39 and Chromium 247 all pass. CI 7/8 jobs pass; WebKit 2/2 install is stalled and cancellation returns admin-required 403, so only hosted verification remains blocked pending an authorized account.
-- 261024 T396 start (t5q2): base 4ee082ed; MATCH-29 rows get paired 95% intervals in the parity runner, tooling only
-- 261024 create-task T286 split done (t5q2): T402 prospective activation (lane history-activation with T306–T308, runnable now); T286 keeps the final gate, dep + T402 T308, base WEB@136; T306 dep T304 T402, base MATCH@22; T308's notes name the new order
-- 261024 merge wip/w6p4 (t5q2): w6p4's T372 (4389396a, validation round 55) and its MATCH r22 plan join main after c9v3's T384; w6p4's T390–T395 become T396–T401 because main's T390/T391 are m8p2's print theme; w6p4's later uncommitted T384 attempt (checkpoints 3befde45, d4216431) is dropped for main's done T384; the detailed artifact stays T384's refresh, the aggregate and parity artifacts are T372's
