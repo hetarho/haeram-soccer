@@ -13,6 +13,8 @@ async function surface(locator: Locator) {
       radius: css.borderTopLeftRadius,
       cardRadius: css.getPropertyValue('--card-radius').trim(),
       background: css.backgroundColor,
+      material: css.backgroundImage,
+      frame: css.borderImageSource,
       overflow: element.scrollWidth - element.clientWidth,
     };
   });
@@ -75,6 +77,8 @@ for (const themeId of ['standard', 'pixel']) {
       expect(card.padding).toBeGreaterThanOrEqual(12);
       expect(card.radius).toBe(card.cardRadius);
       expect(card.background).not.toBe('rgba(0, 0, 0, 0)');
+      expect(card.material).toContain(`/art/${themeId}/ui/`);
+      expect(card.frame).toContain(`/art/${themeId}/ui/`);
       expect(card.overflow).toBeLessThanOrEqual(0);
       await expect(
         fixture.getByRole('button', { name: '전술·선발 준비', exact: true }),
@@ -108,9 +112,9 @@ for (const themeId of ['standard', 'pixel']) {
       }
       // Keyboard enters the profile link first; its focus indicator follows the whole row.
       const name = row.getByRole('button', { name: /선수 기록$/ }).first();
-      await name.focus();
+      // Safari's default Tab policy skips ordinary buttons; establish keyboard modality first.
       await page.keyboard.press('Tab');
-      await page.keyboard.press('Shift+Tab');
+      await name.focus();
       await expect(name).toBeFocused();
       expect(await row.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid');
       const stance = row.getByRole('button', { name: /이적 상태 .*바꾸기$/ });

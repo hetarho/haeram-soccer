@@ -15,7 +15,9 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       command. Matchday Print UI sources are in `apps/web/design/home-print/`; the original print
       and sticker references are in `apps/web/design/home-themes/`. Sticker UI sources are in
       `apps/web/design/sticker-club/`; both packs reuse the shared image-UI stylesheets and media
-      preparation helper while retaining separate resource bindings.
+      preparation helper while retaining separate resource bindings. Pixel UI sources live in
+      `apps/web/design/pixel-ui/`; Stadium Green UI sources/prompts live in
+      `apps/web/design/standard-ui/`. Their preparation commands follow the same `--check` convention.
 - [ ] Separate artwork from live HTML text, numbers, forms, tables and accessible labels. Keep
       theme changes independent of engine facts, club identity and the live-pitch renderer.
 
@@ -32,7 +34,9 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
 - [ ] Check transparent atlas gutters, crop bounds, repeat seams, image density and text contrast.
       Grain belongs behind text; it must not filter or distort the text itself.
       Generated atlas grids can drift: inspect full silhouettes before cropping to avoid clipped
-      sticker rims. Render colorful stickers as images rather than monochrome masks.
+      sticker rims. Render colorful stickers as images rather than monochrome masks. Preserve native
+      grid shapes and use lossless raster output for pixel assets; do not soften them with a
+      generated smooth icon family. Smooth packs may reuse their established licensed vectors.
 - [ ] Encode appropriately sized production assets, keep shared materials reusable and record
       checksums. Keep a readable fallback when decorative CSS images cannot load.
 
@@ -72,11 +76,14 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       missing images. Keep explanatory copy readable; do not hide it to force a layout to fit.
 - [ ] Keep required touch targets at least 44px, related transport controls aligned and preparation
       actions reachable beside their fixture text. Preserve keyboard focus and reduced motion.
+      Test card links from their padding as well as their text. A generic press transform on an
+      inline link can move its extended hit area and cancel the click; preserve the card's own behavior.
 - [ ] Leave visible gaps between framed rows and inset their text/icons. Inspect settings,
       segmented controls and popups after hover too. A control's frame must not touch its neighbor.
       Keep group spacing separate from outer padding so compact match controls still fit 360×740.
 - [ ] Use decoration that fits the concept: ink rules/stamps for print, cream rims/color cues for
-      stickers. Avoid redundant dotted link borders and duplicate label/control focus rings.
+      stickers, stepped corners for pixel, tonal green seams for Stadium Green. Keep selected icons
+      readable on pale actions too. Avoid redundant dotted link borders and duplicate label/control focus rings.
       Keep one clear keyboard focus indicator and meaningful chart/status distinctions.
 - [ ] Open, scroll, close and reopen bottom sheets and reports. Header, body and action footer
       must retain their intended scroll bounds; actions must stay reachable.

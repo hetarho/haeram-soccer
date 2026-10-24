@@ -7,16 +7,25 @@ The application discovers presentation choices from JSON served with the static 
 The current product inventory is one locale, `ko-KR` (한국어), and four registered themes:
 `matchday-print` (기본 · 매치데이 인쇄), the default, `standard` (스타디움 그린), `pixel` (픽셀아트),
 and `sticker-club` (스티커 풋볼클럽). Existing valid browser
-preferences remain selected. The standard theme uses self-hosted Pretendard and a deep
-stadium-green palette: subdued page/navigation backgrounds, quieter content surfaces and stronger
-green controls/selection. A fine static monochrome grain tile paints page and UI backgrounds;
-it does not filter text/art, add an overlay layer or change layout. The active standard stylesheet
-supplies optional `--surface-grain`, which shared background declarations compose with semantic
-fill colours. Other themes fall back to `none`; the texture is not inherited from default JSON
-tokens. One 160×160 grayscale/alpha PNG is reused instead of live turbulence filters or animated
-noise. Retain page-only grain if surface texturing materially worsens rendering performance.
-Surface luminance and saturation provide hierarchy. Decorative outlines are transparent; table
-rows, selected navigation and keyboard focus remain clear.
+preferences remain selected. Pixel and Stadium Green retain their established fonts, palette,
+semantic icon families and facility scenes, with new image-built controls and surfaces. Pixel uses
+crisp native grid sources, stepped fixed-corner frames, discrete charcoal/grass materials and
+lossless PNG. Stadium Green keeps self-hosted Pretendard, deep green hierarchy, pale-green actions
+and smooth Lucide geometry, with quiet rounded image seams and matte grain materials.
+
+All four shipped packs import the shared image-UI shell/control stylesheets. Their geometry and
+resource bindings stay in each pack; only the selected stylesheet is active. The imported rules
+use a generic `html[data-theme]` scope with the same specificity as the previous scoped selector;
+shared application code has no supported-theme list. Optional `--image-frame-slice`,
+`--image-material-size`, `--image-small-size` and `--image-caption-size` let pixel resources keep
+integer corners and discrete texture while preserving the print/sticker defaults.
+
+The standard skin composites the existing reusable 160×160 static grain into its background
+materials. Grain never filters text/art, adds an overlay layer or changes interaction. Shared
+component backgrounds still accept optional `--surface-grain` with a `none` fallback; the four
+image skins provide their own material tiles. Surface luminance and saturation provide hierarchy,
+with restrained tonal seams, functional table rows, clear selected navigation and keyboard focus.
+Retain page-only grain if surface texturing materially worsens rendering performance.
 Standard corners are semantic: controls 8px, panels 12px, badges 4px and dialogs 18px;
 the home scene clips to the panel radius. Pixel retains its original angular values.
 Edge-aligned mobile sheets and underlined bottom navigation use square corners.
@@ -56,13 +65,13 @@ These are the current contents, not a permanent limit or a supported-ID list in 
 
 The print and sticker concepts replace complete resource sets rather than only accent colours.
 Both retain licensed Pretendard for body, display and score roles and the common responsive layouts.
-The print and sticker packs import shared `image-ui-shell.css` and `image-ui-controls.css` rules.
+Every shipped pack imports shared `image-ui-shell.css` and `image-ui-controls.css` rules.
 Each pack binds its own fixed-corner image frames, independently tiled materials and pictograms
 through scoped CSS variables across all screens. Print retains its paper/ink/red materials and
 stamped silhouettes; sticker uses cream/forest/orange materials, rounded die-cut frames and full-color
 stickers without monochrome masking. Generic `data-surface="panel"`
 and `data-ui` roles mark reusable panels, primary actions, inline links, icon controls, dialogs, the
-game shell and its sidebar; these attributes contain no theme IDs and do not affect alternative packs. Live text,
+game shell and its sidebar; these attributes contain no theme IDs; a pack opts in through its stylesheet imports. Live text,
 tables, inputs and engine-owned diagrams retain their HTML and game behavior. Shell-only artwork
 targets the shell sidebar explicitly; it never matches event/feedback `aside` elements. Dialog
 headers, bodies, action footers and popup lists keep independent scrolling and hit targets. Home-only
@@ -82,7 +91,16 @@ directory's [README](../apps/web/design/home-print/README.md) for prerequisites 
 Sticker sources and exact prompts live in `apps/web/design/sticker-club`; its 31 deployed UI assets
 and provenance live in `apps/web/public/art/sticker-club/ui`. Run
 `node scripts/prepare-sticker-ui.mjs` to regenerate them or append `--check` to verify their hashes.
-Both preparation commands use `scripts/ui-art-resources.mjs` for decoding, cropping and WebP encoding.
+All UI preparation commands use `scripts/ui-art-resources.mjs` for media conversion and checksum
+verification. Pixel's editable grid source and rationale live in `apps/web/design/pixel-ui/`;
+`node scripts/prepare-pixel-ui.mjs` rasterizes its 31 UI resources to
+`apps/web/public/art/pixel/ui/` without changing the existing `/art/scenes/` facility paths.
+Stadium Green's generated source atlas/sidebar and exact built-in-tool prompts live in
+`apps/web/design/standard-ui/`; `node scripts/prepare-standard-ui.mjs` prepares 31 UI resources
+in `apps/web/public/art/standard/ui/`, reusing pinned Lucide paths and the static grain.
+Append `--check` to either command to verify deployed hashes. Native pixel sources encode to
+lossless PNG; smooth standard resources encode to WebP. Sources and provenance stay in the repo.
+The skin's nearest-neighbor treatment never changes the live-pitch renderer.
 Sticker silhouettes are isolated before cropping, so minor generated grid-gutter offsets do not
 clip their cream rims. Keep the pinned project toolchain, Playwright Chromium, `ffmpeg` and `ffprobe`
 available for regeneration; hash checks only need Node and the deployed resources.
@@ -90,7 +108,7 @@ Small inset tiles, sticky toolbars and count/status badges use the same material
 headers and pinned cells paint their own opaque ink/paper tiles so horizontal scrolling preserves
 the print treatment and text contrast. Shared selected controls allow pack styles to supply their
 frames instead of forcing a plain fill. Disposable review galleries, capture scripts and browser
-profiles have been removed after verification. Keep new review captures under ignored `.tmp/`,
+profiles are disposable after verification. Keep review captures under ignored `.tmp/`,
 use isolated browser saves and retain the verification summary in the task result.
 Matchday-print combines warm newsprint, charcoal and vermilion with woodcut/halftone facility scenes,
 solid stamped pictograms and printed-ticket edges. Sticker-club combines flat cartoon facility scenes,

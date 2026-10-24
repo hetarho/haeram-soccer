@@ -1,9 +1,9 @@
 /* Shared image-built shell and home. Artwork supplies surfaces; HTML retains live content.
    Frames use fixed nine-slice corners, independent material tiles and independent icons. */
-html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
+html[data-theme] {
   body {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: 512px;
+    background-size: var(--image-material-size, 512px);
     color: var(--text);
   }
 
@@ -14,7 +14,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-ui='game-shell'] > main {
     --gutter: 28px;
     background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: 512px;
+    background-size: var(--image-material-size, 512px);
   }
 
   button,
@@ -22,7 +22,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     box-shadow: none;
   }
 
-  button:active:not(:disabled) {
+  button:where(:active:not(:disabled)):not([data-ui='link'], [data-ui='term'], [data-money]) {
     transform: translateY(2px);
   }
 
@@ -55,9 +55,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     overflow-x: hidden;
     color: var(--image-on-dark);
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: 320px;
+    background-size: var(--image-material-size, 320px);
     border-right: 6px solid transparent;
-    border-image: var(--image-dark-frame) 40 / 0 4px 0 0 stretch;
+    border-image: var(--image-dark-frame) var(--image-frame-slice, 40) / 0 4px 0 0 stretch;
     --text: var(--image-on-dark);
     --text-muted: var(--image-on-dark);
     --text-faint: var(--image-on-dark-muted);
@@ -126,9 +126,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page'] {
-    border-image: var(--image-selected-frame) 48 / 10px stretch;
+    border-image: var(--image-selected-frame) var(--image-frame-slice, 48) / 10px stretch;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-primary);
   }
 
@@ -330,9 +330,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     padding: 6px 12px;
     gap: 16px;
     border: 9px solid transparent;
-    border-image: var(--image-primary-frame) 52 / 12px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 52) / 12px stretch;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     border-radius: var(--image-radius, 0px);
     color: var(--image-on-primary);
   }
@@ -343,7 +343,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [data-ui='progress-mode'] small {
-    font-size: 11px;
+    font-size: var(--image-small-size, 11px);
     color: var(--image-on-primary);
   }
 
@@ -360,10 +360,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     min-height: 108px;
     padding: 9px 14px;
     border: 12px solid transparent;
-    border-image: var(--image-panel-frame) 54 / 17px stretch;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 17px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     gap: 18px;
   }
 
@@ -394,11 +394,11 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     min-height: 60px;
     padding: 10px 14px;
     border: 9px solid transparent;
-    border-image: var(--image-primary-frame) 54 / 13px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 13px stretch;
     border-radius: var(--image-radius, 0px);
     color: var(--image-on-primary);
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     font-size: 16px;
     font-weight: 750;
   }
@@ -422,7 +422,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   [data-home-part='season-meter'] progress {
     height: 13px;
     border: 2px solid transparent;
-    border-image: var(--image-button-frame) 42 / 3px stretch;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 42) / 3px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat;
   }
@@ -456,7 +456,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     inset: 0;
     pointer-events: none;
     border: 8px solid transparent;
-    border-image: var(--image-tile-frame) 50 / 11px stretch;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 50) / 11px stretch;
   }
 
   [data-home-part='scene'] {
@@ -484,10 +484,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     min-height: 32px;
     padding: 5px 9px;
     border: 5px solid transparent;
-    border-image: var(--image-dark-frame) 46 / 7px stretch;
+    border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 7px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-dark);
     font-size: 13px;
     line-height: 1.2;
@@ -600,9 +600,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     min-height: 88px;
     padding: 6px 12px;
     border: 9px solid transparent;
-    border-image: var(--image-tile-frame) 52 / 12px stretch;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: 384px;
+    background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
   }
 
@@ -681,11 +681,11 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     margin: 0;
     padding: 5px 12px;
     border: 7px solid transparent;
-    border-image: var(--image-dark-frame) 48 / 10px stretch;
+    border-image: var(--image-dark-frame) var(--image-frame-slice, 48) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-dark);
     font-size: 13px;
     font-weight: 700;
@@ -703,10 +703,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     padding: 0 14px;
     gap: 12px;
     border: 7px solid transparent;
-    border-image: var(--image-dark-frame) 46 / 10px stretch;
+    border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 10px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
     color: var(--image-on-dark);
   }
 
@@ -731,10 +731,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     gap: 8px;
     border: 4px solid transparent;
     border-color: transparent;
-    border-image: var(--image-dark-frame) 54 / 6px stretch;
+    border-image: var(--image-dark-frame) var(--image-frame-slice, 54) / 6px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
   }
 
   [data-ui='season-transport'] > i {
@@ -750,10 +750,10 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     min-height: 44px;
     padding: 0;
     border: 6px solid transparent;
-    border-image: var(--image-primary-frame) 54 / 8px stretch;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 8px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-    background-size: 256px;
+    background-size: var(--image-material-size, 256px);
   }
 
   [data-ui='season-transport']
@@ -885,7 +885,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     }
     [data-testid='calendar'] small,
     [data-testid='game-date'] {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-ui='season-overview'] > div:nth-child(2) {
       display: flex;
@@ -897,14 +897,14 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     }
     [data-ui='season-overview'] > div:nth-child(2) > small:first-child {
       flex-basis: 100%;
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
       line-height: 1;
     }
     [data-testid='game-round'] {
       font-size: 29px;
     }
     [data-testid='game-round-total'] {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-ui='progress-mode'] {
       min-height: 52px;
@@ -917,7 +917,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       font-size: 13px;
     }
     [data-ui='progress-mode'] small {
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
     }
     [data-ui='progress-mode'] [data-pixel-icon] {
       width: 22px;
@@ -939,7 +939,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       min-width: 0;
     }
     [data-home-part='fixture'] > div:first-child > small {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
       letter-spacing: 0.3px;
     }
     [data-home-part='fixture'] h3 {
@@ -948,7 +948,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       margin: 3px 0;
     }
     [data-home-part='fixture'] p {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-home-part='fixture'] > div:last-child {
       flex: 0 0 auto;
@@ -963,7 +963,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       font-size: 12px;
     }
     [data-home-part='season-meter'] > span {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-home-part='season-meter'] b {
       font-size: 12px;
@@ -996,7 +996,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       padding: 3px 4px;
       border-width: 4px;
       border-image-width: 5px;
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
     }
     [data-home-part='scene-caption'] > b {
       display: none;
@@ -1015,7 +1015,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       gap: 3px;
     }
     [data-home-part='season-stats'] span {
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
       white-space: nowrap;
     }
     [data-home-part='season-stats'] b,
@@ -1024,7 +1024,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       letter-spacing: -0.7px;
     }
     [data-home-part='season-stats'] b > small {
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
       margin-left: 1px;
     }
     [data-home-part='season-stats'] > i {
@@ -1049,17 +1049,17 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       height: 49px;
     }
     [data-condition] > button > span {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-condition] > button > b {
       font-size: 25px;
     }
     [data-condition] > button > small {
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
     }
     [data-testid='team-state'] > p {
       display: block;
-      font-size: 11px;
+      font-size: var(--image-small-size, 11px);
       line-height: 1.6;
     }
     [data-ui='season-transport'] {
@@ -1071,7 +1071,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       gap: 5px;
     }
     [data-ui='season-transport'] small {
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
     }
     [data-ui='game-shell'] > nav {
       bottom: calc(6px + env(safe-area-inset-bottom));
@@ -1080,11 +1080,11 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       padding: 3px 2px;
       gap: 0;
       border: 6px solid transparent;
-      border-image: var(--image-dark-frame) 46 / 9px stretch;
+      border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 9px stretch;
       border-radius: var(--image-radius, 0px);
       background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
         padding-box;
-      background-size: 256px;
+      background-size: var(--image-material-size, 256px);
       box-shadow: none;
     }
     [data-ui='game-shell'] > nav button {
@@ -1093,13 +1093,13 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       gap: 3px;
       padding: 4px 0;
       color: var(--image-on-dark);
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
     }
     [data-ui='game-shell'] > nav button[aria-current='page'] {
       border: 4px solid transparent;
-      border-image: var(--image-selected-frame) 48 / 6px stretch;
+      border-image: var(--image-selected-frame) var(--image-frame-slice, 48) / 6px stretch;
       background: var(--image-primary) var(--image-primary-material) repeat padding-box;
-      background-size: 256px;
+      background-size: var(--image-material-size, 256px);
       color: var(--image-on-primary);
     }
     [data-ui='game-shell'] > nav [data-pixel-icon] > path {
@@ -1132,7 +1132,7 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
       font-size: 22px;
     }
     [data-testid='game-date'] {
-      font-size: 10px;
+      font-size: var(--image-caption-size, 10px);
     }
     [data-ui='season-overview'] {
       gap: 8px;

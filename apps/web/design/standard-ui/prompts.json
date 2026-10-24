@@ -1,0 +1,19 @@
+{
+  "method": "built-in image_gen",
+  "purpose": "Image-built Stadium Green UI, retaining the deep green hierarchy, Pretendard, Lucide and painted sports-comic facilities.",
+  "assets": [
+    {
+      "file": "frames.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: production nine-slice game UI frame atlas. Create ONE 1536x1024 transparent atlas, exactly 3 columns x 2 rows, six equal 512x512 cells. Within each cell center one empty horizontal rounded rectangular plate, identical outer bounds about x=34..478 and y=108..404. Clean modern indie football management game, restrained deep stadium forest greens, matte painted enamel and extremely fine static material grain. Not a mobile app mockup. Every plate has straight uninterrupted middle edges and quiet rounded corners about radius 32px; only a fine tonal inset seam and subtle lighter top edge, no heavy border, no drop shadow, no raised card, no ornament. TOP ROW: 1 deep forest-green panel #203a2d with a quiet sage-green edge; 2 pale grass-green primary plate #98e4a7 with a darker green seam; 3 darkest green charcoal plate #10251b with a restrained forest edge. BOTTOM ROW: 4 quieter evergreen inset plate #1b3327 with barely visible green seam; 5 forest secondary control plate #294d37 with a fine mid-green seam; 6 rich medium green selected plate #345b3d with a thin pale-green inset line. Inside faces remain EMPTY and nearly uniform for live HTML labels; all texture stays very fine and low contrast. Keep all six silhouettes completely separated in their cells with large transparent gutters and true alpha outside plates. No text, numbers, letters, icons, symbols, guides, checkerboard, white background, paper edges, stickers, gold trim, chrome, glossy highlights, bevelled 3D blocks or pixel art. Cohesive tactile game surfaces, understated and readable.",
+      "generatorAsset": "01a168ff-7b19-7f83-b53a-a625ec51331d/exec-8d4faef0-0f60-404c-b9c8-f8159722f536.png"
+    },
+    {
+      "file": "sidebar.png",
+      "transparent": false,
+      "reference": "apps/web/public/art/standard/heritage/stadium-1.webp",
+      "prompt": "Use case: illustration-story. Image 1 is STYLE REFERENCE ONLY: the existing Stadium Green painted football facility illustration. Create ONE wide 3:2 supporting game-sidebar vignette. Preserve the reference's expressive Western sports-comic brush inking, layered gouache colour, tactile material detail and convincing architecture, with a restrained deep forest green palette. Scene: a modest old English football terrace roof, a tiny ground entrance and one floodlight mast, very low along the bottom edge, mostly silhouettes with a few warm cream painted details. Top two thirds and side edges blend smoothly into nearly uniform dark forest #10251b so the vignette sits below live navigation text. No foreground foliage or large objects behind copy. Original quiet football atmosphere, warm natural light on the small terrace against deep green. No letters, words, numbers, logos, UI, frames, mockup, sticker outlines, pixel art, photorealistic shine or loud decorative details.",
+      "generatorAsset": "01a168ff-7b19-7f83-b53a-a625ec51331d/exec-7ce51d43-c1c6-4522-8d3d-70ed67a8e206.png"
+    }
+  ]
+}

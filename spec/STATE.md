@@ -15,8 +15,8 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T405 | Rebuild Pixel Art and Stadium Green with image-built UI resources | WEB ARCH | T404 | doing@261024.m8p2 |
-| T400 |
+| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T400 |
+| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T01:53Z | T405 |
 
 ## inbox
 - 261024 decided T399 MATCH-29 MATCH-23 MATCH-30: which validated setting to keep → p5 (the ball-side wing-back of a back three closes 0.4 of the way to the ball's line, the wide centre-back steps 3 m out, a pressed cross loses 0.15 × the crosser's pressure): balanced's xG conceded −0.041 outside → −0.017 insufficient, MATCH-29 20 → 23, MATCH-30 9 → 10, MATCH-23 36 → 35 (tackles+interceptions inside → unresolved), curve 2.23 → 2.15, nothing inside → outside pooled or per round (alt: p4 (0.5, 3 m, 0.2), which puts counter ≥ press inside at 0.043 but leaves balanced's xG conceded outside pooled and on round 62 with the curve 2.43 (2.72 on round 62) | the base, by the strict reading that counter ≥ press moved 0.032 → 0.026, a fifth of its interval's half-width and insufficient on both settings per round) — the exit's intent is the two rows, and p5 takes the only outside one out of outside while p4 leaves it there
@@ -272,6 +272,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 | todo |
+| T405 | Rebuild Pixel Art and Stadium Green with image-built UI resources | WEB ARCH | T404 | doing@261024.m8p2 |
 | T400 | Couple the aggregate to the score state and recalibrate it to the final grid | MATCH ARCH | T399 | doing@261024.t5q2 |
 | T401 | Measure both references and MATCH-28 parity at the pilot size on the football T286 would release | MATCH ARCH | T384 T396 T397 T398 T399 T400 | todo |
 

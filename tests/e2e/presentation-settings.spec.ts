@@ -47,7 +47,7 @@ async function closeSettings(page: Page) {
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 
-for (const theme of ['matchday-print', 'sticker-club'])
+for (const { id: theme } of baseline.themeRegistry.entries)
   for (const width of [390, 1380])
     test(`${theme}: readable transport choices and inset settings rows at ${width}`, async ({
       page,
@@ -142,17 +142,19 @@ for (const width of [390, 1380])
   test(`image-built themes cover home, pinned table cells and detail sheets without advancing play ${width}`, async ({
     page,
   }) => {
+    // Each case stages and revisits every shipped pack, including both bitmap font families.
+    test.slow();
     await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
     await observeCommands(page);
     await loadPausedGame(page);
     const date = await page.getByTestId('game-date').innerText();
     const sent = await commands(page);
-    for (const theme of ['matchday-print', 'sticker-club']) {
+    for (const { id: theme } of baseline.themeRegistry.entries) {
       await openSettings(page);
       await chooseOption(page.getByTestId('presentation-theme'), theme);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await closeSettings(page);
-      const assetPath = `/art/${theme}/${theme === 'sticker-club' ? 'ui' : 'home'}/`;
+      const assetPath = `/art/${theme}/${theme === 'matchday-print' ? 'home' : 'ui'}/`;
       const homeSkin = await page.getByTestId('club-hub').evaluate((hub) => {
         const fixture = hub.querySelector('[data-home-part="fixture"]')!;
         const style = getComputedStyle(fixture);
@@ -162,6 +164,7 @@ for (const width of [390, 1380])
       expect(homeSkin.fill).toContain(assetPath);
 
       await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
+      await page.getByRole('tab', { name: '순위표', exact: true }).click();
       const table = page.getByRole('table', { name: '리그 순위표', exact: true });
       await expect(table).toBeVisible();
       for (const selector of ['thead th', 'tbody th']) {
@@ -188,6 +191,25 @@ for (const width of [390, 1380])
       expect(sheet.right).toBeLessThanOrEqual(sheet.viewport);
       await detail.getByRole('button', { name: '창 닫기', exact: true }).click();
       await expect(table).toBeVisible();
+      await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+      const ownBadge = page.getByText('우리 팀', { exact: true }).filter({ visible: true }).first();
+      await expect(ownBadge).toBeVisible();
+      await expect
+        .poll(async () => (await ownBadge.evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: '선수단·스태프', exact: true })
+        .click();
+      const roster = page.locator('section').filter({
+        has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }),
+      });
+      await roster
+        .locator('article')
+        .first()
+        .click({ position: { x: 8, y: 8 } });
+      await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
+      await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
       await page
         .getByRole('navigation')
         .getByRole('button', { name: '클럽 홈', exact: true })
@@ -197,7 +219,10 @@ for (const width of [390, 1380])
       expect(await commands(page)).toBe(sent);
     }
     await page.reload();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'sticker-club');
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme',
+      baseline.themeRegistry.entries.at(-1)!.id,
+    );
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });

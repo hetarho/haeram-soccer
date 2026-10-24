@@ -23,6 +23,22 @@ export const UI_PICTOGRAMS = [
   'heart',
 ];
 
+export function uiSvg(width, height, content, pixel = false) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"${pixel ? ' shape-rendering="crispEdges"' : ''}>${content}</svg>`;
+}
+
+/** Raster UI glyphs retain the existing pack's exact native paths and optical weight. */
+export function uiIconSvg(icon, color = '#ffffff') {
+  const attributes = (layer) =>
+    Object.entries(layer)
+      .map(
+        ([key, value]) =>
+          `${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}="${value}"`,
+      )
+      .join(' ');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="${icon.viewBox}" shape-rendering="${icon.shapeRendering}" color="${color}">${icon.layers.map((layer) => `<path ${attributes(layer)}/>`).join('')}</svg>`;
+}
+
 export async function verifyUiAssets(output) {
   const manifest = JSON.parse(await readFile(resolve(output, 'generation.json'), 'utf8'));
   for (const asset of manifest.assets) {
@@ -41,6 +57,32 @@ export async function createUiArtPipeline({ sources, output }) {
   const page = await browser.newPage();
   const assets = [];
   const hash = (data) => createHash('sha256').update(data).digest('hex');
+  const rasterize = async (data, format = 'webp') =>
+    Buffer.from(
+      await page.evaluate(
+        async ({ data, format }) => {
+          const image = new Image();
+          image.src = data;
+          await image.decode();
+          const canvas = document.createElement('canvas');
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          canvas.getContext('2d').drawImage(image, 0, 0);
+          return canvas.toDataURL(`image/${format}`, 0.91).split(',')[1];
+        },
+        { data, format },
+      ),
+      'base64',
+    );
+  const encodeSvg = async (svg, name, source, format = 'webp') => {
+    const data = await rasterize(
+      `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+      format,
+    );
+    const file = `${name}.${format}`;
+    await writeFile(resolve(output, file), data);
+    assets.push({ file, source, bytes: data.length, sha256: hash(data) });
+  };
   const decode = (file) => {
     const source = resolve(sources, file);
     const { width, height } = JSON.parse(
@@ -113,22 +155,12 @@ export async function createUiArtPipeline({ sources, output }) {
       ],
       { maxBuffer: 16 * 1024 * 1024 },
     );
-    const encoded = await page.evaluate(async (base64) => {
-      const image = new Image();
-      image.src = `data:image/png;base64,${base64}`;
-      await image.decode();
-      const canvas = document.createElement('canvas');
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      canvas.getContext('2d').drawImage(image, 0, 0);
-      return canvas.toDataURL('image/webp', 0.91).split(',')[1];
-    }, png.toString('base64'));
-    const data = Buffer.from(encoded, 'base64');
+    const data = await rasterize(`data:image/png;base64,${png.toString('base64')}`);
     await writeFile(resolve(output, file), data);
     assets.push({ file, source, crop, filter, bytes: data.length, sha256: hash(data) });
   };
 
-  return { assets, decode, bounds, encode, close: () => browser.close() };
+  return { assets, decode, bounds, encode, encodeSvg, close: () => browser.close() };
 }
 
 /** Find complete sticker silhouettes even when a generated atlas strays across grid gutters. */
