@@ -249,6 +249,7 @@
 | manager-achievements | converted@261021 |
 | set-piece-defence-and-goal-feedback | converted@261022 |
 | own-club-match-edge | open@261023 |
+| match-viewing-pace-and-freedom | ready@261024 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -293,12 +294,15 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 
 ## next
+- update-ssot WEB-32 MATCH-12 (owner, ideation/match-viewing-pace-and-freedom): 1x = 12 s per open-play minute, matches open at 2x, the set-piece walk-in drawn fast (owner reviews it in play before further dead-ball compression); then update-ssot MATCH-17 STAFF PLAYER WEB for the freedom bundle as the model revision after T286's activation. WEB is at r139 (T412's plan); T412 (doing, m8p2) touches all of apps/web/src/ui, where the 1x clock lives (`presentationClock.ts` WATCH_MINUTE_MS) — task the speed change after T412 or with a dep on it
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
 - resume (t5q2 261024): T372 is done as measured on 4389396a (w6p4; context only, not release evidence) and T384 is done on main; the history-activation lane (T402, T306–T308) is done and integrated; the calibration chain T396 → T397 → T398 → T399 (grid) → T400 (aggregate, MATCH r22 segments) → T401 (pilot-size parity on the M1 Max, no condition equivalent) is done; its follow-ups T408 (grid MATCH-30 flow, nothing kept) and T409 (aggregate added time kept) are done; T411 (how the grid's attacks end in the final third) → T410 (re-read) come before T286's final gate. Validation rounds spent: 11–26, 30–34, 40, 44, 46–67; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384, 57 by T397, 58 by T398, 59 by T399, 60 by T400, 61 by T408, 62 by T409.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
+- 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
 - 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.
 - 261024 T409 done (t5q2; explore, kept k1): the aggregate credits 20 s / 30 s of added time it left out; validation round 67: core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside; second-yellow factor by tactic neutral; aggregate artifact refreshed
 - 261024 T408 done (t5q2; explore exit, nothing kept): fewer forward passes into the final third moved final-third passes 167 → 145, box entries 27.6 → 24–26, xT 4.72 → 4.2–4.4 on validation rounds 65+66 but took offsides, ball in play and MATCH-29's high-regain ordering outside; neutral `finalThird` hooks kept; follow-up T411
