@@ -118,8 +118,11 @@ for (const viewport of VIEWPORTS)
     await expect(badge).toHaveAccessibleName('볼 소유');
 
     // At 16x every running minute lasts 750 ms; only a goal's hold (→WEB-94) takes time out. The
-    // whole match at that speed is the slowest part of this journey.
-    test.info().setTimeout(test.info().timeout + next.watchMs);
+    // whole match at that speed is the slowest part of this journey. The pitch advances its clock
+    // at most 60 ms a frame (Pitch.tsx), so a slow CI browser (WebKit's frames run past 100 ms)
+    // takes up to about three times the nominal watch.
+    const watchBudgetMs = 3 * next.watchMs;
+    test.info().setTimeout(test.info().timeout + watchBudgetMs);
     const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
     await speeds.getByRole('radio', { name: `${FAST_SPEED}×`, exact: true }).click();
     const before = { minute: await minuteNow(page), cues: (await seen()).cues.length };
@@ -127,12 +130,14 @@ for (const viewport of VIEWPORTS)
     await page.waitForTimeout(8 * FAST_MINUTE_MS);
     const covered = (await minuteNow(page)) - before.minute;
     const holds = (await seen()).cues.length - before.cues + held;
+    // Below its nominal rate on a slow browser, three of the eight nominal minutes still tell a
+    // running 16x clock from a stalled or 1x one (1x would cover half a minute).
     expect(covered).toBeGreaterThanOrEqual(
-      5 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
+      3 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
     );
     expect(covered).toBeLessThanOrEqual(10);
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
-      timeout: next.watchMs + 10_000,
+      timeout: watchBudgetMs + 10_000,
     });
     await expect(page.getByTestId('goal-cue')).toHaveCount(0, { timeout: 3000 });
 

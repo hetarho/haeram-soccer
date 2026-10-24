@@ -47,12 +47,20 @@ export async function expectCompressedPreparation(
   await timeline.fill(String(before));
   await expect(timeline).toHaveValue(String(before));
   const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
-  await expect
-    .poll(async () => Number(await canvas.getAttribute('data-seconds')))
-    .toBeCloseTo(times[before]!, 1);
+  // The page samples its own playback, which Firefox and WebKit may sample a few points apart from
+  // the Node reference, so the seek is checked by match time: step back until it is before the
+  // dead ball with time to spare.
+  const shown = async () => Number(await canvas.getAttribute('data-seconds'));
+  await expect.poll(shown).toBeGreaterThan(0);
+  for (let step = 0; step < 40 && (await shown()) > from - 1; step++) {
+    await timeline.press('ArrowLeft');
+    await page.waitForTimeout(50);
+  }
+  const sought = await shown();
+  expect(sought, 'the seek lands before the dead ball').toBeLessThanOrEqual(from - 1);
   // The recorder starts on the paused seek, so it holds the clock's place before the dead ball
   // whatever the click costs; selecting a speed then resumes the seek (→WEB-32).
-  const recordMs = presentationMs(times[before]!, to, 1, [preparation]) + RECORD_SLACK_MS;
+  const recordMs = presentationMs(sought, to, 1, [preparation]) + RECORD_SLACK_MS;
   const recording = canvas.evaluate(
     (element, ms) =>
       new Promise<[number, number][]>((resolve) => {
