@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
 import { defendSetPiece, restartTaken, takeBall, updateIntentions } from './intentions';
@@ -25,6 +26,7 @@ import { ROLE_SHIFT, SPOTS } from './spots';
 import { gridKit } from './testkit';
 
 const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
+// Every kit below plays the pre-feature path; candidate cases set the setup's model.
 /** Side 0's targets in its own attack frame, which is the engine frame. */
 const targets = (kit: ReturnType<typeof gridKit>, side: 0 | 1 = 0) =>
   kit.state.players[side]
@@ -37,7 +39,7 @@ const outfieldMeanX = (kit: ReturnType<typeof gridKit>) => {
 
 const gap = (a: readonly number[], b: readonly number[]) =>
   Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
-const setPieceKit = gridKit(['balanced', 'possession'], 'set-piece-lab');
+const setPieceKit = gridKit(['balanced', 'possession'], 'set-piece-lab', DISABLED_RELEASE);
 /**
  * A candidate corner kick by side 0 from [105, 0.5] (T348): everyone stands on his scene place, as
  * the preparation leaves them, and the kick is taken.
@@ -68,7 +70,7 @@ function deliver(s: GridState, gp: GridPlayer, taker: number) {
 describe('grid shape and movement', () => {
   it("holds each tactic's defensive line inside its bounds, dropping goal-side of a ball played behind it", () => {
     for (const tactic of TACTICS) {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       const { line } = SHAPE_CONFIG.tactic[tactic];
       const slots = FORMATIONS[tactic].slots;
       kit.state.possession = 1;
@@ -89,7 +91,7 @@ describe('grid shape and movement', () => {
   });
 
   it('sends the best headers into the box for a set piece, marked goal-side, and holds them there', () => {
-    const kit = gridKit();
+    const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
     const s = kit.state;
     const taker = 9;
     setPieceShape(s, 0, taker, s.elapsed + 30);
@@ -208,7 +210,7 @@ describe('grid shape and movement', () => {
 
   it('pushes the possession and press shapes higher than counter', () => {
     const mean = (tactic: Tactic, inPossession: boolean) => {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       kit.state.ball = [52.5, 34];
       kit.state.possession = inPossession ? 0 : 1;
       kit.state.owner = [inPossession ? 0 : 1, 9];
@@ -226,7 +228,7 @@ describe('grid shape and movement', () => {
 
   it('keeps the MATCH-8 order of the candidate shapes wherever the ball is (T324)', () => {
     const mean = (tactic: Tactic, inPossession: boolean, x: number) => {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
       kit.state.ball = [inPossession ? x : 105 - x, 34];
       kit.state.possession = inPossession ? 0 : 1;
@@ -254,7 +256,7 @@ describe('grid shape and movement', () => {
     // The opponents on the ball 30 m from counter's goal: its back four stand at the floor or
     // higher on the candidate model, deeper on the pre-feature one.
     const defenders = (candidate: boolean) => {
-      const kit = gridKit(['counter', 'balanced']);
+      const kit = gridKit(['counter', 'balanced'], undefined, DISABLED_RELEASE);
       if (candidate) kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
       kit.state.ball = [30, 34];
       kit.state.possession = 1;
@@ -271,7 +273,7 @@ describe('grid shape and movement', () => {
     expect(SHAPE_CONFIG.candidate.tactic.counter!.upfield).toBe(0);
     // Counter without the ball, the opponents on it in their own half (ball x from counter's goal).
     const outfield = (candidate: boolean, bx: number) => {
-      const kit = gridKit(['counter', 'balanced']);
+      const kit = gridKit(['counter', 'balanced'], undefined, DISABLED_RELEASE);
       if (candidate) kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
       kit.state.ball = [bx, 34];
       kit.state.possession = 1;
@@ -287,7 +289,7 @@ describe('grid shape and movement', () => {
 
   it('plays the candidate shape of a tactic on the candidate model only', () => {
     for (const tactic of TACTICS) {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       expect(tacticShape(kit.state, 0)).toBe(SHAPE_CONFIG.tactic[tactic]);
       kit.state.ball = [52.5, 34];
       kit.state.possession = 0;
@@ -311,7 +313,7 @@ describe('grid shape and movement', () => {
     ).length;
   };
   const setUp = (tactic: Tactic) => {
-    const kit = gridKit([tactic, 'balanced']);
+    const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
     const s = kit.state;
     s.possession = 1;
     s.owner = [1, 7];
@@ -338,7 +340,7 @@ describe('grid shape and movement', () => {
   });
 
   it('counter-presses for five seconds after a loss', () => {
-    const kit = gridKit(['possession', 'balanced']);
+    const kit = gridKit(['possession', 'balanced'], undefined, DISABLED_RELEASE);
     const s = kit.state;
     s.possession = 1;
     s.owner = [1, 7];
@@ -363,7 +365,7 @@ describe('grid shape and movement', () => {
       slots.forEach((slot, i) => {
         const shift = ROLE_SHIFT[slot.role];
         if (!shift || i === 0) return;
-        const kit = gridKit([tactic, 'balanced']);
+        const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
         const s = kit.state;
         s.ball = [52.5, 34];
         const spot = SPOTS[tactic][i]!;
@@ -393,7 +395,7 @@ describe('grid shape and movement', () => {
   });
 
   it('shifts the block toward the ball side', () => {
-    const kit = gridKit(['balanced', 'balanced']);
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
     const s = kit.state;
     s.possession = 1;
     s.owner = [1, 9];
@@ -411,7 +413,7 @@ describe('grid shape and movement', () => {
 
   it('starts runs in behind for forwards and overlaps for overlapping full-backs', () => {
     const play = () => {
-      const kit = gridKit(['possession', 'balanced'], 'run-seed');
+      const kit = gridKit(['possession', 'balanced'], 'run-seed', DISABLED_RELEASE);
       const s = kit.state;
       const r = random('run-draws');
       s.ball = [62, 34];
@@ -446,7 +448,7 @@ describe('grid shape and movement', () => {
   });
 
   it("sends a 4-4-2's wide midfielders in behind only while it breaks on the candidate model (T324)", () => {
-    const kit = gridKit(['counter', 'balanced']);
+    const kit = gridKit(['counter', 'balanced'], undefined, DISABLED_RELEASE);
     const s = kit.state;
     s.ball = [40, 34];
     s.possession = 0;
@@ -462,7 +464,7 @@ describe('grid shape and movement', () => {
   });
 
   it('never moves a player faster than his pace allows', () => {
-    const kit = gridKit(['press', 'counter']);
+    const kit = gridKit(['press', 'counter'], undefined, DISABLED_RELEASE);
     const s = kit.state;
     s.ball = [60, 20];
     s.possession = 1;
@@ -478,7 +480,7 @@ describe('grid shape and movement', () => {
     });
     const carrier = s.players[1][9]!;
     expect(carrier.pos).toEqual(before[s.players[0].length + 9]);
-    const fresh = gridKit(['press', 'counter']).state;
+    const fresh = gridKit(['press', 'counter'], undefined, DISABLED_RELEASE).state;
     expect(speedOf(s, s.players[0][4]!)).toBeLessThan(
       speedOf(fresh, fresh.players[0][4]!) * SHAPE_CONFIG.recoverySpeed,
     );
@@ -488,7 +490,7 @@ describe('grid shape and movement', () => {
     const sweeper = TACTICS.find((t) => FORMATIONS[t].slots[0]!.role === 'sweeperKeeper')!;
     const stopper = TACTICS.find((t) => FORMATIONS[t].slots[0]!.role !== 'sweeperKeeper')!;
     const keeperX = (tactic: Tactic) => {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       const s = kit.state;
       s.possession = 1;
       s.owner = [1, 9];
@@ -507,7 +509,7 @@ describe('grid shape and movement', () => {
 
 describe('the flank beside a back three (T399)', () => {
   it('a wing-back in a back three defends the channel beside his centre-back when the ball is on his flank, on the candidate model only', () => {
-    const kit = gridKit(['balanced', 'possession'], 'flank-lab');
+    const kit = gridKit(['balanced', 'possession'], 'flank-lab', DISABLED_RELEASE);
     const F = SHAPE_CONFIG.candidate.flank as { follow: number; channel: number };
     const kept = { follow: F.follow, channel: F.channel };
     // Side 0 plays balanced's 3-5-2 (slot 1 the left wing-back, slot 2 the left centre-back) and

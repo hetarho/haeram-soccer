@@ -283,7 +283,6 @@
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
 | T416 | Valid full records from every settlement path of an activated world | MATCH SAVE HIST ARCH | T415 | todo |
-| T417 | Engine path tests build their worlds with an explicit release | MATCH SAVE ARCH | T415 | todo |
 | T418 | Web runtime and persistence tests name the container they expect | SAVE WEB ARCH | T415 | todo |
 | T419 | Digests and calibration guards fix the model they guard | MATCH SAVE ARCH | T415 | todo |
 | T420 | The unit tier green and timed with the release switch on | SAVE ARCH | T416 T417 T418 T419 | todo |
@@ -300,12 +299,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 10 | 1 | 9 | 0 | 0 | 2 | 2026-10-24T10:18:31.376Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 10 | 2 | 8 | 5 | 0 | 0 | 2026-10-24T10:50:29.985Z | [history](work/v9n4-release.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261024 T417 integrated
 - 261024 decide T416 (v9n4): no settlement writer bug; T416 lands as the corrected test file plus the activated-world guard
 - 261024 T415 integrated
 - 261024 create-task WEB r140 MATCH r24 + T286 split (v9n4): T415 (explicit test releases, release-on probe) → T416 settlement records, T417 engine tests, T418 web tests, T419 guards (lanes) → T420 release-on tier → T286; viewing pace T421 → T422 (lane); T286 base WEB@140 MATCH@24, dep + T420 T422; T410 base MATCH@24 (no content change)
@@ -325,4 +325,3 @@
 - 261024 create-task T408 T409 T410 (t5q2): T401's residual differences become T286's prerequisites — the grid's MATCH-30 attacking flow, the aggregate's levels, distributions and pairings, and the pilot-size re-read; T286 dep + T408 T409 T410; T408 claimed
 - 261024 T401 done (t5q2; measurement): final football 5abb70a2 on validation round 64 at pilot size (11,148–22,972 a condition, 446,354 matches a path): no condition equivalent, core 42 equivalent / 47 different / 16 insufficient (relationships 6 / 1 / 0), MATCH-29 paired 16 / 7 / 2; both references refreshed; follow-ups named for T286 (grid MATCH-30 flow, aggregate levels and pairings, re-read)
 - 261024 T400 done (t5q2; explore, kept p1): the aggregate draws regulation as six score-state segments (volume 0.4, risk 0.4) and fits the grid's crosses, throw-ins, goal kicks, interceptions, corners, shot scale and tactic guards; validation round 63: core different 49 → 42 (shots~goals 0.495 → 0.253 against 0.219), all reference conditions 1,354 → 1,280, MATCH-29 22/3/0, MATCH-30 20/0/1, curve 1.55, fixture ×1.036 against T326; digests and aggregate artifact re-recorded
-- 261024 T405 done (m8p2): rebuilt pixel/standard as image UI while retaining fonts, icon/facility families and palettes; code a41a6c38, 62 assets with editable sources/prompts and checklist updates. WEB138/ARCH19; type/lint/format/build, 54 changed units, 2025 full units + 4 skips, 39 contracts, catalogs/presentation/assets pass. Reviewed 172 states; Chromium 259/263 initially, all four failures resolved by focused checks, final 24/24 affected cases pass across three browsers. Removed task-owned scratch; origin pulled and main publication authorized. Hosted CI deferred by owner.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T10:18:31.376Z",
-  "sourceCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+  "snapshotAt": "2026-10-24T10:50:29.985Z",
+  "sourceCommit": "57ddd1cadbedf5ef91d42e295b1fa3556e32c631",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -14,6 +14,12 @@
     },
     "push": "main",
     "review": "risky",
+    "pushed": {
+      "commit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "branch": "main",
+      "remote": "origin",
+      "at": "2026-10-24T10:35:42.427Z"
+    },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
       "adapter": "builtin",
@@ -43,12 +49,12 @@
   },
   "summary": {
     "total": 10,
-    "completed": 1,
-    "remaining": 9,
-    "running": 0,
+    "completed": 2,
+    "remaining": 8,
+    "running": 5,
     "review": 0,
-    "blocked": 2,
-    "unassigned": 7
+    "blocked": 0,
+    "unassigned": 3
   },
   "tasks": [
     {
@@ -118,16 +124,7 @@
         "T415"
       ],
       "lane": "release-settle",
-      "status": "todo"
-    },
-    {
-      "id": "T417",
-      "title": "Engine path tests build their worlds with an explicit release",
-      "dep": [
-        "T415"
-      ],
-      "lane": "release-grid",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T418",
@@ -136,7 +133,7 @@
         "T415"
       ],
       "lane": "release-web",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T419",
@@ -145,7 +142,7 @@
         "T415"
       ],
       "lane": "release-guards",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T420",
@@ -163,7 +160,7 @@
       "title": "1x at 12 seconds a match minute, matches opening at 2x",
       "dep": [],
       "lane": "viewing-pace",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T422",
@@ -172,7 +169,7 @@
         "T421"
       ],
       "lane": "viewing-pace",
-      "status": "blocked"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -196,6 +193,8 @@
       "submittedBase": "fe1508d34e03da875baaa4382b4373908cc440ed",
       "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
       "submittedAt": "2026-10-24T10:15:07.319Z",
+      "integratedCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "integratedAt": "2026-10-24T10:35:40.665Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -261,6 +260,13 @@
           "startedAt": "2026-10-24T10:13:38.215Z",
           "finishedAt": "2026-10-24T10:15:06.892Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T10:18:31.635Z",
+          "finishedAt": "2026-10-24T10:35:39.339Z"
+        }
       ]
     },
     {
@@ -276,22 +282,189 @@
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
       ],
-      "status": "blocked",
-      "reason": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-24T10:04:40.994Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
       "dispatch": {
-        "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+        "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
         "role": "worker",
         "slot": 2,
         "provider": "claude",
         "model": null,
+        "status": "running",
+        "startedAt": "2026-10-24T10:47:47.621Z"
+      }
+    },
+    {
+      "id": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "group": "v9n4-release",
+      "taskId": "T416",
+      "tasks": [
+        "T416"
+      ],
+      "lane": "release-settle",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "doing",
+      "reason": null,
+      "createdAt": "2026-10-24T10:35:42.873Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "dispatch": {
+        "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T10:04:42.192Z",
-        "finishedAt": "2026-10-24T10:15:07.660Z",
-        "error": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-        "summary": "T421 is done. At 1x a match minute now takes 12 real seconds (`WATCH_MINUTE_MS` = 12000), and every match opens at 2x (`WATCH_DEFAULT_SPEED` = 2 in `presentationClock.ts`). `Pitch.tsx` starts at that speed and resets to it whenever a new match record loads, so live watching and archived replays both open with the 2x chip selected.\n\nUnit tests:\n- The clock tests now include \"1x lasts 12 s a match minute\" and \"matches open at 2x\".\n- The goal-feedback and possession-cue tests read `WATCH_MINUTE_MS` instead of assuming 4 s minutes. The possession test's offsets had relied on 4 s and would otherwise have failed.\n- The goal hold is still 1 real second at every speed, and the existing speed-change cases pass.\n\nChecks that passed: the 3 affected test files (30 tests), `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `vitest run --changed fe1508d3` (4 files, 42 tests) and `pnpm run build`. I did not run any browser specs; they wait for the batch run.\n\nBrowser specs updated to take their waits from the constants:\n- In touches: `stable-controls-and-pacing.spec.ts` and `tests/fixtures/full-model-continuity.ts`.\n- Outside touches, because the 2x default or the slower 16x minute (now 750 ms) would break them: `full-model-continuity.spec.ts` (the timing is in the spec, not the fixture), `match-core.spec.ts` and `mobile-match-presentation.spec.ts`. No other open task touches these files, and T286 depends on T422, so I see no clash. The scope check may still flag them.\n\nThings to know before the batch run:\n- `set-piece-defence.spec.ts` is unchanged. It only jumps to paused moments and has no timed waits; T422 adds its set-piece assertions.\n- Journeys that watch a whole match at 16x now spend about 72 s watching instead of 24 s. Their timeouts and test time limits were raised to match.\n- All of this is written in the task result's limits."
+        "startedAt": "2026-10-24T10:35:44.105Z",
+        "finishedAt": "2026-10-24T10:48:19.779Z",
+        "error": null,
+        "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
+      }
+    },
+    {
+      "id": "138003fd-55f5-4585-989a-d711c6916372",
+      "group": "v9n4-release",
+      "taskId": "T417",
+      "tasks": [
+        "T417"
+      ],
+      "lane": "release-grid",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-24T10:35:44.782Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "verifiedCommit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+      "submittedBase": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+      "submittedAt": "2026-10-24T10:47:47.479Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "outside touches: packages/engine/src/grid/testkit.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 205,
+        "files": 13
+      },
+      "dispatch": {
+        "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:47:50.945Z",
+        "finishedAt": "2026-10-24T10:50:27.805Z",
+        "error": null,
+        "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above."
+      },
+      "review": {
+        "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/testkit.ts:21 (T417)",
+            "message": "gridKit gained an optional `release` parameter (default MATCH_MODEL_RELEASE), which is outside T417's touches. It is needed so the eight kit-only files can name a release, the default is unchanged, and the result's limits disclose it. No fix needed; noted so the integrator knows the touches list was exceeded on purpose."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/{discipline,tags,movement,shootout}.test.ts, packages/engine/src/aggregate/engine.test.ts (T417 limits → T420)",
+            "message": "The other five gridKit users still read the switch's default. They pass under both states today, but T420's acceptance only fixes files that are still failing, so after T286 flips the switch these files would quietly move to the candidate path. Planning (T420 owner) should decide whether they pin a release explicitly. This is not a T417 defect."
+          }
+        ],
+        "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+        "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+        "createdAt": "2026-10-24T10:47:49.456Z",
+        "finishedAt": "2026-10-24T10:50:27.788Z"
+      },
+      "steps": [
+        {
+          "taskId": "T417",
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "at": "2026-10-24T10:47:47.438Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T10:46:48.423Z",
+              "finishedAt": "2026-10-24T10:47:47.094Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T10:46:48.423Z",
+          "finishedAt": "2026-10-24T10:47:47.094Z"
+        }
+      ]
+    },
+    {
+      "id": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "group": "v9n4-release",
+      "taskId": "T418",
+      "tasks": [
+        "T418"
+      ],
+      "lane": "release-web",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-24T10:35:46.355Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "dispatch": {
+        "id": "92509307-20ec-4105-bdc6-5730928901e5",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 4,
+        "provider": "claude",
+        "model": null,
+        "status": "running",
+        "startedAt": "2026-10-24T10:35:47.173Z"
+      }
+    },
+    {
+      "id": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "group": "v9n4-release",
+      "taskId": "T419",
+      "tasks": [
+        "T419"
+      ],
+      "lane": "release-guards",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-24T10:47:48.032Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "dispatch": {
+        "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 3,
+        "provider": "claude",
+        "model": null,
+        "status": "running",
+        "startedAt": "2026-10-24T10:47:49.214Z"
       }
     }
   ],
@@ -857,6 +1030,800 @@
       "group": "v9n4-release",
       "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
       "taskId": "T415",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 880,
+      "at": "2026-10-24T10:23:46.756Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 881,
+      "at": "2026-10-24T10:35:40.180Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T10:18:31.635Z",
+            "finishedAt": "2026-10-24T10:35:39.339Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 882,
+      "at": "2026-10-24T10:35:40.665Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "integratedAt": "2026-10-24T10:35:40.665Z"
+      }
+    },
+    {
+      "sequence": 883,
+      "at": "2026-10-24T10:35:42.446Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T10:35:42.427Z"
+        }
+      }
+    },
+    {
+      "sequence": 884,
+      "at": "2026-10-24T10:35:42.873Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "cb8f4011-c362-4baa-9208-b06e471ca337",
+        "group": "v9n4-release",
+        "taskId": "T416",
+        "tasks": [
+          "T416"
+        ],
+        "lane": "release-settle",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:42.873Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 885,
+      "at": "2026-10-24T10:35:43.601Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 886,
+      "at": "2026-10-24T10:35:44.105Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:44.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 887,
+      "at": "2026-10-24T10:35:44.303Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:44.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 888,
+      "at": "2026-10-24T10:35:44.357Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 889,
+      "at": "2026-10-24T10:35:44.782Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "138003fd-55f5-4585-989a-d711c6916372",
+        "group": "v9n4-release",
+        "taskId": "T417",
+        "tasks": [
+          "T417"
+        ],
+        "lane": "release-grid",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:44.782Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 890,
+      "at": "2026-10-24T10:35:45.453Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 891,
+      "at": "2026-10-24T10:35:45.848Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:45.848Z"
+        }
+      }
+    },
+    {
+      "sequence": 892,
+      "at": "2026-10-24T10:35:46.024Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:45.848Z"
+        }
+      }
+    },
+    {
+      "sequence": 893,
+      "at": "2026-10-24T10:35:46.355Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+        "group": "v9n4-release",
+        "taskId": "T418",
+        "tasks": [
+          "T418"
+        ],
+        "lane": "release-web",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:46.355Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 894,
+      "at": "2026-10-24T10:35:47.077Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 895,
+      "at": "2026-10-24T10:35:47.173Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92509307-20ec-4105-bdc6-5730928901e5",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:47.173Z"
+        }
+      }
+    },
+    {
+      "sequence": 896,
+      "at": "2026-10-24T10:35:47.359Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92509307-20ec-4105-bdc6-5730928901e5",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:47.173Z"
+        }
+      }
+    },
+    {
+      "sequence": 897,
+      "at": "2026-10-24T10:42:54.746Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 898,
+      "at": "2026-10-24T10:46:47.344Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 899,
+      "at": "2026-10-24T10:46:48.031Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 900,
+      "at": "2026-10-24T10:46:48.072Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 901,
+      "at": "2026-10-24T10:47:47.479Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+        "submittedBase": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+        "submittedAt": "2026-10-24T10:47:47.479Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "outside touches: packages/engine/src/grid/testkit.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 205,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T417",
+            "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+            "at": "2026-10-24T10:47:47.438Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T10:46:48.423Z",
+                "finishedAt": "2026-10-24T10:47:47.094Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T10:46:48.423Z",
+            "finishedAt": "2026-10-24T10:47:47.094Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 902,
+      "at": "2026-10-24T10:47:47.497Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:35:45.848Z",
+          "finishedAt": "2026-10-24T10:47:47.497Z",
+          "error": null,
+          "summary": "T417 is done: all twelve touched test files now pass with the release switch both off and on (167 tests each way). With the switch on, they had 55 failures before the change, matching the per-file counts in the task.\n\nWhat changed (test code only, no engine source):\n- Every world in the twelve files is now built with `DISABLED_RELEASE`. Each case tests how the pre-feature path works, and the candidate cases already switch to the new model per fixture by setting `model: MATCH_MODEL_REVISION` on the setup.\n- No case was moved to candidate expectations, no expectation or recorded digest changed, and no case needed a source change, so none is left for T420.\n- Where a file calls `createWorld` directly (engine, playback, state, record's 60-match case, summary), it now passes `DISABLED_RELEASE` as the second argument.\n- Where a file gets its world from `gridKit` (decide, record, shape, resolve, intentions, restarts, coordination, portable-math), the call is now `gridKit(tactics, seed, DISABLED_RELEASE)`.\n\nOne edit is outside the task's touches: `packages/engine/src/grid/testkit.ts`. Eight of the twelve files get their world only through `gridKit`, so there was no other way for them to name a release short of copying the kit builder. `gridKit` now takes an optional third `release` argument whose default is the same as `createWorld`'s, so its other users behave exactly as before. FORMAT's review policy sends this unit to review because of that file. The five other `gridKit` users (discipline, tags, movement, shootout, aggregate/engine tests) pass with the switch both ways (60 tests) but don't name a release yet. T420 or T419 may pin them.\n\nChecks run:\n- typecheck, lint and format:check passed.\n- `vitest run --changed 2737e84a7471 --passWithNoTests` ran 17 files (the twelve plus the five other `gridKit` users), and all 227 tests passed.\n\nNot run here: `test:unit`, `test:contract`, `validate:catalogs`, `build` and the Chromium playwright run are left to the unit gate, and the whole switch-on tier belongs to T420. The task file's acceptance boxes are checked and its result is filled in."
+        }
+      }
+    },
+    {
+      "sequence": 903,
+      "at": "2026-10-24T10:47:47.621Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:47.621Z"
+        }
+      }
+    },
+    {
+      "sequence": 904,
+      "at": "2026-10-24T10:47:47.790Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:47.621Z"
+        }
+      }
+    },
+    {
+      "sequence": 905,
+      "at": "2026-10-24T10:47:48.032Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "12007006-d7e0-4fdc-8b46-31b557432d56",
+        "group": "v9n4-release",
+        "taskId": "T419",
+        "tasks": [
+          "T419"
+        ],
+        "lane": "release-guards",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:47:48.032Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 906,
+      "at": "2026-10-24T10:47:48.658Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 907,
+      "at": "2026-10-24T10:47:49.214Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:49.214Z"
+        }
+      }
+    },
+    {
+      "sequence": 908,
+      "at": "2026-10-24T10:47:49.391Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:49.214Z"
+        }
+      }
+    },
+    {
+      "sequence": 909,
+      "at": "2026-10-24T10:47:49.456Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+          "createdAt": "2026-10-24T10:47:49.456Z"
+        }
+      }
+    },
+    {
+      "sequence": 910,
+      "at": "2026-10-24T10:47:50.945Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:50.945Z"
+        }
+      }
+    },
+    {
+      "sequence": 911,
+      "at": "2026-10-24T10:47:50.961Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:50.945Z"
+        }
+      }
+    },
+    {
+      "sequence": 912,
+      "at": "2026-10-24T10:48:19.764Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: T416 assumes the release-on probe found an engine path that writes invalid records in an activated world, but there isn't one: the 5 failures came from season.settle.test.ts's own hand-edited records. Acceptance item 1 requires the new case to fail on the unfixed source, which can't happen without such a bug. How should T416 close?"
+      }
+    },
+    {
+      "sequence": 913,
+      "at": "2026-10-24T10:48:19.779Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:35:44.105Z",
+          "finishedAt": "2026-10-24T10:48:19.779Z",
+          "error": null,
+          "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
+        }
+      }
+    },
+    {
+      "sequence": 914,
+      "at": "2026-10-24T10:49:26.037Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 915,
+      "at": "2026-10-24T10:50:27.788Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/testkit.ts:21 (T417)",
+              "message": "gridKit gained an optional `release` parameter (default MATCH_MODEL_RELEASE), which is outside T417's touches. It is needed so the eight kit-only files can name a release, the default is unchanged, and the result's limits disclose it. No fix needed; noted so the integrator knows the touches list was exceeded on purpose."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/{discipline,tags,movement,shootout}.test.ts, packages/engine/src/aggregate/engine.test.ts (T417 limits → T420)",
+              "message": "The other five gridKit users still read the switch's default. They pass under both states today, but T420's acceptance only fixes files that are still failing, so after T286 flips the switch these files would quietly move to the candidate path. Planning (T420 owner) should decide whether they pin a release explicitly. This is not a T417 defect."
+            }
+          ],
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+          "createdAt": "2026-10-24T10:47:49.456Z",
+          "finishedAt": "2026-10-24T10:50:27.788Z"
+        }
+      }
+    },
+    {
+      "sequence": 916,
+      "at": "2026-10-24T10:50:27.805Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:47:50.945Z",
+          "finishedAt": "2026-10-24T10:50:27.805Z",
+          "error": null,
+          "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above."
+        }
+      }
+    },
+    {
+      "sequence": 917,
+      "at": "2026-10-24T10:50:27.854Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

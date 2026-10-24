@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type PlayTrait } from '../../../contracts/src/player';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { actionWeight } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
@@ -28,9 +29,12 @@ import type { Tactic } from '../../../contracts/src/types';
 const CM = 7;
 const ST = 9;
 
-/** A side-0 carrier at `at`; everyone else parked far away unless a test places them. */
+/**
+ * A side-0 carrier at `at` on the pre-feature path (candidate cases set the setup's model);
+ * everyone else parked far away unless a test places them.
+ */
 function scene(slot: number, at: Point, tactics: [Tactic, Tactic] = ['balanced', 'balanced']) {
-  const kit = gridKit(tactics);
+  const kit = gridKit(tactics, undefined, DISABLED_RELEASE);
   const s = kit.state;
   for (const side of s.players)
     for (const gp of side) gp.pos = [gp.side === 0 ? 3 : 102, gp.side === 0 ? 2 : 66];
@@ -767,7 +771,7 @@ describe('grid decisions', () => {
 
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
     const share = (tactic: Tactic) => {
-      const kit = gridKit([tactic, 'balanced']);
+      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       kit.state.owner = [0, 0];
       const r = random(`keeper-${tactic}`);
       let short = 0;
