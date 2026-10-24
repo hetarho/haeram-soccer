@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { random } from '../primitives';
 import { interruptAll, takeBall, updateIntentions, type IntentionReason } from './intentions';
 import { prepareOnClock, type MotionKnot } from './movement';
@@ -19,8 +20,11 @@ import { SHAPE_CONFIG, type SetPieceScene } from './shape';
 import { createState, type GridPlayer, type GridState } from './state';
 import { gridKit } from './testkit';
 
-/** One world for the whole file (building it is slow); every call resets it: all players at 60, no shift, parked in the far corners. */
-const kit = gridKit();
+/**
+ * One world for the whole file (building it is slow), on the pre-feature path (candidate cases set
+ * the setup's model); every call resets it: all players at 60, no shift, parked in the far corners.
+ */
+const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
 function field() {
   const s = kit.state;
   for (const side of s.players)

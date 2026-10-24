@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T10:18:31.376Z",
-  "sourceCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+  "snapshotAt": "2026-10-24T11:14:45.379Z",
+  "sourceCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -14,6 +14,12 @@
     },
     "push": "main",
     "review": "risky",
+    "pushed": {
+      "commit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+      "branch": "main",
+      "remote": "origin",
+      "at": "2026-10-24T11:08:14.602Z"
+    },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
       "adapter": "builtin",
@@ -43,12 +49,12 @@
   },
   "summary": {
     "total": 10,
-    "completed": 1,
-    "remaining": 9,
+    "completed": 3,
+    "remaining": 7,
     "running": 0,
-    "review": 0,
-    "blocked": 2,
-    "unassigned": 7
+    "review": 1,
+    "blocked": 3,
+    "unassigned": 3
   },
   "tasks": [
     {
@@ -118,25 +124,7 @@
         "T415"
       ],
       "lane": "release-settle",
-      "status": "todo"
-    },
-    {
-      "id": "T417",
-      "title": "Engine path tests build their worlds with an explicit release",
-      "dep": [
-        "T415"
-      ],
-      "lane": "release-grid",
-      "status": "todo"
-    },
-    {
-      "id": "T418",
-      "title": "Web runtime and persistence tests name the container they expect",
-      "dep": [
-        "T415"
-      ],
-      "lane": "release-web",
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T419",
@@ -145,7 +133,7 @@
         "T415"
       ],
       "lane": "release-guards",
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T420",
@@ -196,6 +184,8 @@
       "submittedBase": "fe1508d34e03da875baaa4382b4373908cc440ed",
       "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
       "submittedAt": "2026-10-24T10:15:07.319Z",
+      "integratedCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "integratedAt": "2026-10-24T10:35:40.665Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -261,6 +251,13 @@
           "startedAt": "2026-10-24T10:13:38.215Z",
           "finishedAt": "2026-10-24T10:15:06.892Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T10:18:31.635Z",
+          "finishedAt": "2026-10-24T10:35:39.339Z"
+        }
       ]
     },
     {
@@ -277,22 +274,296 @@
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
       ],
       "status": "blocked",
-      "reason": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "reason": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요.",
       "createdAt": "2026-10-24T10:04:40.994Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
       "dispatch": {
-        "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+        "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
         "role": "worker",
         "slot": 2,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T10:04:42.192Z",
-        "finishedAt": "2026-10-24T10:15:07.660Z",
-        "error": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-        "summary": "T421 is done. At 1x a match minute now takes 12 real seconds (`WATCH_MINUTE_MS` = 12000), and every match opens at 2x (`WATCH_DEFAULT_SPEED` = 2 in `presentationClock.ts`). `Pitch.tsx` starts at that speed and resets to it whenever a new match record loads, so live watching and archived replays both open with the 2x chip selected.\n\nUnit tests:\n- The clock tests now include \"1x lasts 12 s a match minute\" and \"matches open at 2x\".\n- The goal-feedback and possession-cue tests read `WATCH_MINUTE_MS` instead of assuming 4 s minutes. The possession test's offsets had relied on 4 s and would otherwise have failed.\n- The goal hold is still 1 real second at every speed, and the existing speed-change cases pass.\n\nChecks that passed: the 3 affected test files (30 tests), `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `vitest run --changed fe1508d3` (4 files, 42 tests) and `pnpm run build`. I did not run any browser specs; they wait for the batch run.\n\nBrowser specs updated to take their waits from the constants:\n- In touches: `stable-controls-and-pacing.spec.ts` and `tests/fixtures/full-model-continuity.ts`.\n- Outside touches, because the 2x default or the slower 16x minute (now 750 ms) would break them: `full-model-continuity.spec.ts` (the timing is in the spec, not the fixture), `match-core.spec.ts` and `mobile-match-presentation.spec.ts`. No other open task touches these files, and T286 depends on T422, so I see no clash. The scope check may still flag them.\n\nThings to know before the batch run:\n- `set-piece-defence.spec.ts` is unchanged. It only jumps to paused moments and has no timed waits; T422 adds its set-piece assertions.\n- Journeys that watch a whole match at 16x now spend about 72 s watching instead of 24 s. Their timeouts and test time limits were raised to match.\n- All of this is written in the task result's limits."
+        "startedAt": "2026-10-24T10:47:47.621Z",
+        "finishedAt": "2026-10-24T11:12:07.731Z",
+        "error": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요.",
+        "summary": "T422 is done and committed as a0094fd6 on the lane branch. The coordinator asked for the commit, even though the general instructions say not to commit.\n\nWhat changed:\n- **Clock in match seconds.** The match clock now counts match seconds instead of real milliseconds at 1x. Running play advances at speed × 60 / 12000 seconds per real ms. Inside a set-piece preparation it runs at the larger of that rate and span / `SET_PIECE_PREPARATION_MS` (1500).\n- **Where preparations come from.** `setPiecePreparations(frames)` finds the dead interval before every corner, free kick and goal kick.\n- **What reads the clock.** Goal feedback and `Pitch.tsx` (seeking, progress bar, possession cue) now use match seconds. The old `presentationLength`, `clockAt` and `runningSeconds` are gone. `possessionCue.ts` already took seconds and is unchanged.\n- **Test hook.** The pitch canvas exposes the current match second as `data-seconds`, so browser journeys can time the clock.\n\n**One departure from the impl note.** The note says the kick is the restart event's own time. On both models that time is actually when the delivery lands, so following it would also speed up the delivery, which WEB-32 and MATCH-12 keep at the selected speed. Instead the kick is read from data both models carry:\n- pre-feature: the moment the taker takes the ball, from `holders`\n- candidate: its recorded kick sample, the last sample with phase 'restart'\n\nEither must fall more than 0.1 s before the landing, so a taker passing to himself isn't read as the kick. On the pre-feature this gives the note's own \"32 s dead, 3.2 s kick\". This doesn't change the spec, so I didn't raise it as a blocker.\n\n**Measured on the real engine** (four seeded first matches per model):\n- Every corner, free kick and goal kick got a preparation.\n- Deliveries stay at running speed (0.15–5.6 s).\n- A whole match takes about 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, down from 19 and 9.5. That is slightly longer than WEB-32's \"about 13–14 / 7 minutes\"; it's for your in-play review of the 1500 ms value.\n\n**Checks that passed:** the three affected test files (38 tests), typecheck, lint, format:check, `vitest run --changed d1ae3485` (4 files, 50 tests) and the build.\n\n**Not run (batch):**\n- `set-piece-defence.spec.ts` (candidate scene) and a new test in `stable-controls-and-pacing.spec.ts` (pre-feature, seed `stable-pace`). Both seek to just before a dead ball, resume at 1x, and check the preparation is drawn in 1.4–2.5 s with the players still moving and no jumps.\n- They share a new helper, `tests/e2e/preparation.ts`, which is outside touches.\n- The existing pace journeys still need the batch run too.\n\nThe task result records all of this."
       }
+    },
+    {
+      "id": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "group": "v9n4-release",
+      "taskId": "T416",
+      "tasks": [
+        "T416"
+      ],
+      "lane": "release-settle",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release",
+      "createdAt": "2026-10-24T10:35:42.873Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "dispatch": {
+        "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:35:44.105Z",
+        "finishedAt": "2026-10-24T10:48:19.779Z",
+        "error": null,
+        "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
+      }
+    },
+    {
+      "id": "138003fd-55f5-4585-989a-d711c6916372",
+      "group": "v9n4-release",
+      "taskId": "T417",
+      "tasks": [
+        "T417"
+      ],
+      "lane": "release-grid",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-24T10:35:44.782Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "verifiedCommit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+      "submittedBase": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+      "submittedAt": "2026-10-24T10:47:47.479Z",
+      "integratedCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+      "integratedAt": "2026-10-24T11:08:10.154Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "outside touches: packages/engine/src/grid/testkit.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 205,
+        "files": 13
+      },
+      "dispatch": {
+        "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:47:50.945Z",
+        "finishedAt": "2026-10-24T10:50:27.805Z",
+        "error": null,
+        "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above."
+      },
+      "review": {
+        "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/testkit.ts:21 (T417)",
+            "message": "gridKit gained an optional `release` parameter (default MATCH_MODEL_RELEASE), which is outside T417's touches. It is needed so the eight kit-only files can name a release, the default is unchanged, and the result's limits disclose it. No fix needed; noted so the integrator knows the touches list was exceeded on purpose."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/{discipline,tags,movement,shootout}.test.ts, packages/engine/src/aggregate/engine.test.ts (T417 limits → T420)",
+            "message": "The other five gridKit users still read the switch's default. They pass under both states today, but T420's acceptance only fixes files that are still failing, so after T286 flips the switch these files would quietly move to the candidate path. Planning (T420 owner) should decide whether they pin a release explicitly. This is not a T417 defect."
+          }
+        ],
+        "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+        "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+        "createdAt": "2026-10-24T10:47:49.456Z",
+        "finishedAt": "2026-10-24T10:50:27.788Z"
+      },
+      "steps": [
+        {
+          "taskId": "T417",
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "at": "2026-10-24T10:47:47.438Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T10:46:48.423Z",
+              "finishedAt": "2026-10-24T10:47:47.094Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T10:46:48.423Z",
+          "finishedAt": "2026-10-24T10:47:47.094Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T10:50:30.357Z",
+          "finishedAt": "2026-10-24T11:08:09.920Z"
+        }
+      ]
+    },
+    {
+      "id": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "group": "v9n4-release",
+      "taskId": "T418",
+      "tasks": [
+        "T418"
+      ],
+      "lane": "release-web",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-24T10:35:46.355Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "verifiedCommit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+      "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+      "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
+      "submittedAt": "2026-10-24T11:09:12.789Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "301 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 301,
+        "files": 7
+      },
+      "dispatch": {
+        "id": "ea3b4d33-c311-47c9-8585-a2672b97b2f3",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T11:09:14.438Z",
+        "finishedAt": "2026-10-24T11:14:43.009Z",
+        "error": null,
+        "summary": "T418 (e04a04aa against base fada6e6d, merge-base 2737e84a) changes only the seven touched test files and the task file. No runtime or adapter source changed. Neither risk reason is a problem in T418: (1) 301 lines is one over the 300-line limit, and most of the count is the SAVE-24 main case re-indented into `it.each`; (2) the autopilot decision waiting on the owner is T416's, on the group board, and this attempt has none of its own. The commits between the merge-base and the base (T417/T416, engine grid tests) don't overlap these files.\n\nAcceptance 1 is met. Pre-model fixtures now build with `DISABLED_RELEASE`: legacyReset `saved`, matchModelPacking `career`, the container-selection case in managerHistoryPacking, the untracked case in persistence.history, persistence `unmodelled` for the container-1/2 cases, the `modelCareer` bases and the failed-write predecessor, client `legacyCheckpoint`/`identitylessCheckpoint`/`preModelCheckpoint`, and host `preIdentity`/model-block `career`/`older`. The shared `preIdentityCareer()` sits outside this task's touches; persistence.test strips its model explicitly with `withoutMatchModel`, which removes the same three fields that `carriesMatchModel` checks. Every case that loads a career as the writer (identity adoption, combined upgrades, the ledger read, the recorded-model load, SAVE-24 tracking) now builds its host with an explicit `release`, either directly or through `WorkerPort.release`, which `beforeEach` resets. The cases left on the default host only do read-only loads, inspections or compatibility refusals, so they don't depend on the switch.\n\nAcceptance 2 is met. The default-host founding expects `founding` coverage exactly when `MATCH_MODEL_RELEASE.enabled` is true, and the exact-inspection metadata carries `source.matchModel` with an exact presence check. Coverage also got wider: 'moves the revision once' now runs with the release on and asserts `matchModel.activated.revision === 10`, and the main SAVE-24 case runs under both releases.\n\nThese rules follow T402 (no load gate; activation only on the writer path) and the 261024 decision that every test names its release. I checked the codec's container ordering (`readCheckpoint`) to confirm the schema-2 damage cases left on the default world hold in both switch states.\n\nVerification: the runner's task check (typecheck, lint, format:check, `vitest --changed`: 7 files, 157 passed) covers the switch-off state only. The release-on run (157 passed) and the build are the worker's own claims. I didn't re-run either: the review checkout has no node_modules, and installing them would change the checkout. T420 and the unit gate run the release-on tier. The worker handed the browser specs that assume the switch is off to T286, as the impl notes ask."
+      },
+      "review": {
+        "id": "24e0e951-619f-459b-8b93-410d40ccf92f",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T418 (e04a04aa against base fada6e6d, merge-base 2737e84a) changes only the seven touched test files and the task file. No runtime or adapter source changed. Neither risk reason is a problem in T418: (1) 301 lines is one over the 300-line limit, and most of the count is the SAVE-24 main case re-indented into `it.each`; (2) the autopilot decision waiting on the owner is T416's, on the group board, and this attempt has none of its own. The commits between the merge-base and the base (T417/T416, engine grid tests) don't overlap these files.\n\nAcceptance 1 is met. Pre-model fixtures now build with `DISABLED_RELEASE`: legacyReset `saved`, matchModelPacking `career`, the container-selection case in managerHistoryPacking, the untracked case in persistence.history, persistence `unmodelled` for the container-1/2 cases, the `modelCareer` bases and the failed-write predecessor, client `legacyCheckpoint`/`identitylessCheckpoint`/`preModelCheckpoint`, and host `preIdentity`/model-block `career`/`older`. The shared `preIdentityCareer()` sits outside this task's touches; persistence.test strips its model explicitly with `withoutMatchModel`, which removes the same three fields that `carriesMatchModel` checks. Every case that loads a career as the writer (identity adoption, combined upgrades, the ledger read, the recorded-model load, SAVE-24 tracking) now builds its host with an explicit `release`, either directly or through `WorkerPort.release`, which `beforeEach` resets. The cases left on the default host only do read-only loads, inspections or compatibility refusals, so they don't depend on the switch.\n\nAcceptance 2 is met. The default-host founding expects `founding` coverage exactly when `MATCH_MODEL_RELEASE.enabled` is true, and the exact-inspection metadata carries `source.matchModel` with an exact presence check. Coverage also got wider: 'moves the revision once' now runs with the release on and asserts `matchModel.activated.revision === 10`, and the main SAVE-24 case runs under both releases.\n\nThese rules follow T402 (no load gate; activation only on the writer path) and the 261024 decision that every test names its release. I checked the codec's container ordering (`readCheckpoint`) to confirm the schema-2 damage cases left on the default world hold in both switch states.\n\nVerification: the runner's task check (typecheck, lint, format:check, `vitest --changed`: 7 files, 157 passed) covers the switch-off state only. The release-on run (157 passed) and the build are the worker's own claims. I didn't re-run either: the review checkout has no node_modules, and installing them would change the checkout. T420 and the unit gate run the release-on tier. The worker handed the browser specs that assume the switch is off to T286, as the impl notes ask.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/host.test.ts:1040 (T418)",
+            "message": "`writer()` defaults to `DISABLED_RELEASE`, so three SAVE-24 cases test only a host with the release off: 'waits for a queued or revealed own match before tracking starts' (:1091), 'never tracks from a read-only load or an inspection' (:1113) and 'keeps the previous checkpoint and the tracked career exportable when the write fails' (:1125). Only the main case runs under both releases. Once T286 flips the switch, a writer loading an older career will record the model and start tracking in the same activation. Nothing here proves those two upgrades wait for the same safe boundary and survive a failed write together, beyond T402's model-only cases. Optional follow-up for T420/T286: run the queued and failed-write cases under `it.each([DISABLED_RELEASE, ENABLED_RELEASE])` too."
+          }
+        ],
+        "commit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+        "baseCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+        "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
+        "createdAt": "2026-10-24T11:09:13.222Z",
+        "finishedAt": "2026-10-24T11:14:42.994Z"
+      },
+      "steps": [
+        {
+          "taskId": "T418",
+          "commit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+          "at": "2026-10-24T11:09:12.747Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T11:08:15.792Z",
+              "finishedAt": "2026-10-24T11:09:12.396Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T11:08:15.792Z",
+          "finishedAt": "2026-10-24T11:09:12.396Z"
+        }
+      ]
+    },
+    {
+      "id": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "group": "v9n4-release",
+      "taskId": "T419",
+      "tasks": [
+        "T419"
+      ],
+      "lane": "release-guards",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-24T10:47:48.032Z",
+      "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "verifiedCommit": "f3307678f269132877a1800418c05a81cac826d2",
+      "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+      "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
+      "submittedAt": "2026-10-24T11:11:04.348Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "outside touches: packages/engine/src/build.testkit.ts packages/engine/src/calibration.testkit.ts packages/engine/src/season.testkit.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 184,
+        "files": 9
+      },
+      "dispatch": {
+        "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 3,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:47:49.214Z",
+        "finishedAt": "2026-10-24T11:11:04.366Z",
+        "error": null,
+        "summary": "T419 is done. All ten guard files now build their worlds with an explicit release, and they pass with the switch both off and on (release-on config). Nothing is committed; the runner commits.\n\n**What changed**\n- **Pinned to the old path (`DISABLED_RELEASE`), recorded values unchanged:**\n  - grid-throughput (the candidate model is still set explicitly per match, so its stored values stay the same)\n  - the four calibration files, via the shared guard world in `calibration.testkit.ts`\n  - build.tradeoffs\n  - material's season-close test\n- **Candidate tests:** in season.test and npc-stats, the candidate world is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the model starts at the 2024 founding. Before, with the switch on, `founded(2024)` had recorded it in 1950, before the year was moved.\n- **Never-activated worlds** (`plain`, npc-stats' tracking-boundary world, feature-replay's activation fixture) are built off. feature-replay's new-career replay is built with `ENABLED_RELEASE`.\n- **No values re-recorded:** every candidate value already came from a world activated explicitly.\n- **Switch check:** `season.test.ts` no longer checks that the switch is off. It now checks that the candidate's coverage is `founding` and that `plain` has no model. Only `match-model.test.ts` keeps the switch's exact value.\n\n**Edits outside the task's file list:** `season.testkit.ts`, `build.testkit.ts` and `calibration.testkit.ts`. The guards build their worlds there, so there was no way around it. `founded` and `scenario` gain an optional release argument whose default is unchanged. No other lane's file list includes these testkits. The runner will flag the unit for review because of this; it does not reject it.\n\n**Checks run:** typecheck, lint and format:check are clean. Each of the ten files passed in both configs. Before the edits, four of them failed 5 tests with the switch on, matching the probe. `vitest run --changed 2737e84a` passed in two shards (20 files). The last edit after those runs was a comment rewrap; prettier and eslint passed on it afterwards.\n\n**For T420 and T410:**\n- **Engine bug (needs a source fix, which this test-only task can't make):** `closeSeason` clears the season's match material (`season.ts:737`) before `promote` plays the promotion playoff (`season.ts:743`). An own club in the playoff keeps that match's material forever, against MATCH-5. On the candidate, the material test's club reaches the playoff, and two matches keep their material. That is why this test stays pinned off.\n- **Calibration misses on the candidate** (measured on the same guard clubs, recorded in `calibration.testkit.ts`):\n  - grid: a +20 favourite wins 87.5% (band ≤85%), equal sides score 3.12 goals (≤3.1), a +39 giant's matches have 4.03 goals (<4)\n  - summary samples (the aggregate plays them on the candidate): equal sides draw 20.9% (≥22%), the giant's matches have 4.27 goals\n  - build.tradeoffs: the press case only ties another tactic, 181 against 181\n\n  No band was widened; these stay as figures for T410.\n\n**Not run (left to the batch gate and T420):** `test:unit`, `test:unit:release-on`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright. The ten other files that import the edited testkits were run with the switch off only."
+      },
+      "steps": [
+        {
+          "taskId": "T419",
+          "commit": "f3307678f269132877a1800418c05a81cac826d2",
+          "at": "2026-10-24T11:11:04.306Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T11:09:50.306Z",
+              "finishedAt": "2026-10-24T11:11:03.949Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T11:09:50.306Z",
+          "finishedAt": "2026-10-24T11:11:03.949Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -857,6 +1128,1288 @@
       "group": "v9n4-release",
       "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
       "taskId": "T415",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 880,
+      "at": "2026-10-24T10:23:46.756Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 881,
+      "at": "2026-10-24T10:35:40.180Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T10:18:31.635Z",
+            "finishedAt": "2026-10-24T10:35:39.339Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 882,
+      "at": "2026-10-24T10:35:40.665Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "integratedAt": "2026-10-24T10:35:40.665Z"
+      }
+    },
+    {
+      "sequence": 883,
+      "at": "2026-10-24T10:35:42.446Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T10:35:42.427Z"
+        }
+      }
+    },
+    {
+      "sequence": 884,
+      "at": "2026-10-24T10:35:42.873Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "cb8f4011-c362-4baa-9208-b06e471ca337",
+        "group": "v9n4-release",
+        "taskId": "T416",
+        "tasks": [
+          "T416"
+        ],
+        "lane": "release-settle",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:42.873Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 885,
+      "at": "2026-10-24T10:35:43.601Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 886,
+      "at": "2026-10-24T10:35:44.105Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:44.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 887,
+      "at": "2026-10-24T10:35:44.303Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:44.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 888,
+      "at": "2026-10-24T10:35:44.357Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 889,
+      "at": "2026-10-24T10:35:44.782Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "138003fd-55f5-4585-989a-d711c6916372",
+        "group": "v9n4-release",
+        "taskId": "T417",
+        "tasks": [
+          "T417"
+        ],
+        "lane": "release-grid",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:44.782Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 890,
+      "at": "2026-10-24T10:35:45.453Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 891,
+      "at": "2026-10-24T10:35:45.848Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:45.848Z"
+        }
+      }
+    },
+    {
+      "sequence": 892,
+      "at": "2026-10-24T10:35:46.024Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:45.848Z"
+        }
+      }
+    },
+    {
+      "sequence": 893,
+      "at": "2026-10-24T10:35:46.355Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+        "group": "v9n4-release",
+        "taskId": "T418",
+        "tasks": [
+          "T418"
+        ],
+        "lane": "release-web",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-4"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:35:46.355Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 894,
+      "at": "2026-10-24T10:35:47.077Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 895,
+      "at": "2026-10-24T10:35:47.173Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92509307-20ec-4105-bdc6-5730928901e5",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:35:47.173Z"
+        }
+      }
+    },
+    {
+      "sequence": 896,
+      "at": "2026-10-24T10:35:47.359Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92509307-20ec-4105-bdc6-5730928901e5",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:35:47.173Z"
+        }
+      }
+    },
+    {
+      "sequence": 897,
+      "at": "2026-10-24T10:42:54.746Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 898,
+      "at": "2026-10-24T10:46:47.344Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 899,
+      "at": "2026-10-24T10:46:48.031Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 900,
+      "at": "2026-10-24T10:46:48.072Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 901,
+      "at": "2026-10-24T10:47:47.479Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+        "submittedBase": "2737e84a74712700c88d36afac2bd41751b7465e",
+        "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+        "submittedAt": "2026-10-24T10:47:47.479Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "outside touches: packages/engine/src/grid/testkit.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 205,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T417",
+            "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+            "at": "2026-10-24T10:47:47.438Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T10:46:48.423Z",
+                "finishedAt": "2026-10-24T10:47:47.094Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T10:46:48.423Z",
+            "finishedAt": "2026-10-24T10:47:47.094Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 902,
+      "at": "2026-10-24T10:47:47.497Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "ce359d97-dbee-4efb-8743-97d944a3becc",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:35:45.848Z",
+          "finishedAt": "2026-10-24T10:47:47.497Z",
+          "error": null,
+          "summary": "T417 is done: all twelve touched test files now pass with the release switch both off and on (167 tests each way). With the switch on, they had 55 failures before the change, matching the per-file counts in the task.\n\nWhat changed (test code only, no engine source):\n- Every world in the twelve files is now built with `DISABLED_RELEASE`. Each case tests how the pre-feature path works, and the candidate cases already switch to the new model per fixture by setting `model: MATCH_MODEL_REVISION` on the setup.\n- No case was moved to candidate expectations, no expectation or recorded digest changed, and no case needed a source change, so none is left for T420.\n- Where a file calls `createWorld` directly (engine, playback, state, record's 60-match case, summary), it now passes `DISABLED_RELEASE` as the second argument.\n- Where a file gets its world from `gridKit` (decide, record, shape, resolve, intentions, restarts, coordination, portable-math), the call is now `gridKit(tactics, seed, DISABLED_RELEASE)`.\n\nOne edit is outside the task's touches: `packages/engine/src/grid/testkit.ts`. Eight of the twelve files get their world only through `gridKit`, so there was no other way for them to name a release short of copying the kit builder. `gridKit` now takes an optional third `release` argument whose default is the same as `createWorld`'s, so its other users behave exactly as before. FORMAT's review policy sends this unit to review because of that file. The five other `gridKit` users (discipline, tags, movement, shootout, aggregate/engine tests) pass with the switch both ways (60 tests) but don't name a release yet. T420 or T419 may pin them.\n\nChecks run:\n- typecheck, lint and format:check passed.\n- `vitest run --changed 2737e84a7471 --passWithNoTests` ran 17 files (the twelve plus the five other `gridKit` users), and all 227 tests passed.\n\nNot run here: `test:unit`, `test:contract`, `validate:catalogs`, `build` and the Chromium playwright run are left to the unit gate, and the whole switch-on tier belongs to T420. The task file's acceptance boxes are checked and its result is filled in."
+        }
+      }
+    },
+    {
+      "sequence": 903,
+      "at": "2026-10-24T10:47:47.621Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:47.621Z"
+        }
+      }
+    },
+    {
+      "sequence": 904,
+      "at": "2026-10-24T10:47:47.790Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:47.621Z"
+        }
+      }
+    },
+    {
+      "sequence": 905,
+      "at": "2026-10-24T10:47:48.032Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "12007006-d7e0-4fdc-8b46-31b557432d56",
+        "group": "v9n4-release",
+        "taskId": "T419",
+        "tasks": [
+          "T419"
+        ],
+        "lane": "release-guards",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:47:48.032Z",
+        "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e"
+      }
+    },
+    {
+      "sequence": 906,
+      "at": "2026-10-24T10:47:48.658Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 907,
+      "at": "2026-10-24T10:47:49.214Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:49.214Z"
+        }
+      }
+    },
+    {
+      "sequence": 908,
+      "at": "2026-10-24T10:47:49.391Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:49.214Z"
+        }
+      }
+    },
+    {
+      "sequence": 909,
+      "at": "2026-10-24T10:47:49.456Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+          "createdAt": "2026-10-24T10:47:49.456Z"
+        }
+      }
+    },
+    {
+      "sequence": 910,
+      "at": "2026-10-24T10:47:50.945Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:47:50.945Z"
+        }
+      }
+    },
+    {
+      "sequence": 911,
+      "at": "2026-10-24T10:47:50.961Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:47:50.945Z"
+        }
+      }
+    },
+    {
+      "sequence": 912,
+      "at": "2026-10-24T10:48:19.764Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: T416 assumes the release-on probe found an engine path that writes invalid records in an activated world, but there isn't one: the 5 failures came from season.settle.test.ts's own hand-edited records. Acceptance item 1 requires the new case to fail on the unfixed source, which can't happen without such a bug. How should T416 close?"
+      }
+    },
+    {
+      "sequence": 913,
+      "at": "2026-10-24T10:48:19.779Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:35:44.105Z",
+          "finishedAt": "2026-10-24T10:48:19.779Z",
+          "error": null,
+          "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
+        }
+      }
+    },
+    {
+      "sequence": 914,
+      "at": "2026-10-24T10:49:26.037Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 915,
+      "at": "2026-10-24T10:50:27.788Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ae45a888-2a77-4ffc-ae52-98def000386e",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/testkit.ts:21 (T417)",
+              "message": "gridKit gained an optional `release` parameter (default MATCH_MODEL_RELEASE), which is outside T417's touches. It is needed so the eight kit-only files can name a release, the default is unchanged, and the result's limits disclose it. No fix needed; noted so the integrator knows the touches list was exceeded on purpose."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/{discipline,tags,movement,shootout}.test.ts, packages/engine/src/aggregate/engine.test.ts (T417 limits → T420)",
+              "message": "The other five gridKit users still read the switch's default. They pass under both states today, but T420's acceptance only fixes files that are still failing, so after T286 flips the switch these files would quietly move to the candidate path. Planning (T420 owner) should decide whether they pin a release explicitly. This is not a T417 defect."
+            }
+          ],
+          "commit": "ce152a9b989f5a4ea3b4999e647f97a8dc9c5390",
+          "baseCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+          "submissionId": "c5a4af90-d5f8-4265-a23e-ba6a508af10d",
+          "createdAt": "2026-10-24T10:47:49.456Z",
+          "finishedAt": "2026-10-24T10:50:27.788Z"
+        }
+      }
+    },
+    {
+      "sequence": 916,
+      "at": "2026-10-24T10:50:27.805Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "6bae7b06-b121-4c05-9d75-6f5c35001c77",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:47:50.945Z",
+          "finishedAt": "2026-10-24T10:50:27.805Z",
+          "error": null,
+          "summary": "T417 (ce152a9b vs 2737e84a) is approved. All twelve touched files now found every world under DISABLED_RELEASE. Five call createWorld(input, DISABLED_RELEASE) directly; the gridKit callers pass gridKit(tactics, seed, DISABLED_RELEASE). DISABLED_RELEASE is exactly the current off switch ({revision, enabled:false}), so the default run's behaviour cannot change and no expectation or digest was edited. Engine source reads the release default only in createWorld, the host and the testkit default, and none of the twelve files reaches any of those now. Their release-on behaviour is therefore identical to switch-off by construction, which agrees with the worker's reported release-on run (167 passed; the before-run's 55 failures match the listed per-file counts). The candidate cases still opt in deliberately through the setup's model (engine.test `candidate`, playback.test's candidate flag, shape/coordination/state model overrides), so no case is on both paths by accident. The first risk reason, the change outside touches in grid/testkit.ts, is disclosed in limits and minimal: one optional `release` parameter whose default is the same as before. It overlaps no sibling lane's touches (T416/T418/T419). For the second risk reason, the only coordinator decision on the board concerns T416, and T417's result makes no provisional planning decision. No engine source was changed. Host verification ran typecheck, lint, format:check and `vitest run --changed` (17 files, 227 passed). I did not re-run the release-on probe: this checkout has no node_modules, and installing them would modify the read-only review workspace, so that run rests on the worker's record plus the static argument above."
+        }
+      }
+    },
+    {
+      "sequence": 917,
+      "at": "2026-10-24T10:50:27.854Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 918,
+      "at": "2026-10-24T11:08:10.094Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T10:50:30.357Z",
+            "finishedAt": "2026-10-24T11:08:09.920Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 919,
+      "at": "2026-10-24T11:08:10.154Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "138003fd-55f5-4585-989a-d711c6916372",
+      "taskId": "T417",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+        "integratedAt": "2026-10-24T11:08:10.154Z"
+      }
+    },
+    {
+      "sequence": 920,
+      "at": "2026-10-24T11:08:14.611Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T11:08:14.602Z"
+        }
+      }
+    },
+    {
+      "sequence": 921,
+      "at": "2026-10-24T11:08:14.672Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 922,
+      "at": "2026-10-24T11:08:15.386Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 923,
+      "at": "2026-10-24T11:08:15.427Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 924,
+      "at": "2026-10-24T11:09:12.789Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+        "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+        "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
+        "submittedAt": "2026-10-24T11:09:12.789Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "301 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 301,
+          "files": 7
+        },
+        "steps": [
+          {
+            "taskId": "T418",
+            "commit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+            "at": "2026-10-24T11:09:12.747Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:08:15.792Z",
+                "finishedAt": "2026-10-24T11:09:12.396Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T11:08:15.792Z",
+            "finishedAt": "2026-10-24T11:09:12.396Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 925,
+      "at": "2026-10-24T11:09:12.808Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "92509307-20ec-4105-bdc6-5730928901e5",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 4,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:35:47.173Z",
+          "finishedAt": "2026-10-24T11:09:12.808Z",
+          "error": null,
+          "summary": "T418 is done, and only test files changed. With the release switch on, the seven files first showed 28 failures (the same counts as the probe). They now pass with the switch off and with it on: 157 tests each time, one more than before because one case now runs under both releases.\n\n**What was wrong:** test worlds standing for older saves were built with whatever the switch said, so with it on they already carried the full model. Some hosts also used the default release in cases about the switch or about activating a career on load.\n\n**What changed:**\n- **Older-save worlds are now built with the release off (`DISABLED_RELEASE`):**\n  - legacyReset `saved()`; matchModelPacking `career()`.\n  - managerHistoryPacking and persistence.history: their helpers take a release, pinned off in the cases about the older container.\n  - persistence.test: a new `unmodelled(rounds)` world for the container 1/2 cases, the earlier-rules save and every `modelCareer` base.\n  - client: `legacyCheckpoint`, `identitylessCheckpoint`, `preModelCheckpoint`.\n  - host: `preIdentity()`, the model block's `career()` and `older()`.\n- **One shared fixture is stripped instead:** `preIdentityCareer()` lives in `tests/fixtures/club-identity.ts`, outside this lane's files, so persistence.test removes its model with a local `withoutMatchModel`.\n- **Hosts now name their release in these cases:**\n  - Identity adoption runs with the release off, so the new designs are its only upgrade.\n  - \"Moves the revision once whatever upgrades together\" runs with it on and checks the model lands in that same single upgrade.\n  - The ledger read, \"loads a recorded full-model career while the release is off\", and the plain found/load use the release off.\n  - The manager-history tracking cases use a writer host that is off by default. \"Whatever the release switch\" now runs under both releases.\n- **New careers check the switch:** a career founded on the default host must have model data exactly when the switch is on. The exact-inspection case expects the same of its metadata.\n\n**Checks run:**\n- The seven files with the switch off (33 s) and on (65 s).\n- typecheck, lint, format:check, and `vitest run --changed` against the task start commit `2737e84a7471`, written out because env-prefixed commands are denied here.\n- `pnpm run build`.\n\nNo case needed a source change.\n\n**Not run:** the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, Chromium playwright) and the whole release-on tier. Those belong to the unit gate and T420.\n\n**Left for T420/T286 (in the task's limits):**\n- `preIdentityCareer()` should itself build with the release off; after that, the local `withoutMatchModel` can be deleted.\n- These browser specs look like they assume the switch is off. I haven't run them; T286's batch run should check:\n  - `club-identity-continuity`\n  - `manager-history` (\"starts tracking an older career at the writer\")\n  - `full-model-continuity`\n  - `save-upgrade`"
+        }
+      }
+    },
+    {
+      "sequence": 926,
+      "at": "2026-10-24T11:09:12.966Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release"
+      }
+    },
+    {
+      "sequence": 927,
+      "at": "2026-10-24T11:09:13.222Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "24e0e951-619f-459b-8b93-410d40ccf92f",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+          "baseCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+          "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
+          "createdAt": "2026-10-24T11:09:13.222Z"
+        }
+      }
+    },
+    {
+      "sequence": 928,
+      "at": "2026-10-24T11:09:14.438Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ea3b4d33-c311-47c9-8585-a2672b97b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T11:09:14.438Z"
+        }
+      }
+    },
+    {
+      "sequence": 929,
+      "at": "2026-10-24T11:09:14.454Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ea3b4d33-c311-47c9-8585-a2672b97b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T11:09:14.438Z"
+        }
+      }
+    },
+    {
+      "sequence": 930,
+      "at": "2026-10-24T11:09:49.191Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 931,
+      "at": "2026-10-24T11:09:49.910Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 932,
+      "at": "2026-10-24T11:09:49.955Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 933,
+      "at": "2026-10-24T11:11:04.348Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "f3307678f269132877a1800418c05a81cac826d2",
+        "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+        "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
+        "submittedAt": "2026-10-24T11:11:04.348Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "outside touches: packages/engine/src/build.testkit.ts packages/engine/src/calibration.testkit.ts packages/engine/src/season.testkit.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 184,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T419",
+            "commit": "f3307678f269132877a1800418c05a81cac826d2",
+            "at": "2026-10-24T11:11:04.306Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:09:50.306Z",
+                "finishedAt": "2026-10-24T11:11:03.949Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T11:09:50.306Z",
+            "finishedAt": "2026-10-24T11:11:03.949Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 934,
+      "at": "2026-10-24T11:11:04.366Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:47:49.214Z",
+          "finishedAt": "2026-10-24T11:11:04.366Z",
+          "error": null,
+          "summary": "T419 is done. All ten guard files now build their worlds with an explicit release, and they pass with the switch both off and on (release-on config). Nothing is committed; the runner commits.\n\n**What changed**\n- **Pinned to the old path (`DISABLED_RELEASE`), recorded values unchanged:**\n  - grid-throughput (the candidate model is still set explicitly per match, so its stored values stay the same)\n  - the four calibration files, via the shared guard world in `calibration.testkit.ts`\n  - build.tradeoffs\n  - material's season-close test\n- **Candidate tests:** in season.test and npc-stats, the candidate world is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the model starts at the 2024 founding. Before, with the switch on, `founded(2024)` had recorded it in 1950, before the year was moved.\n- **Never-activated worlds** (`plain`, npc-stats' tracking-boundary world, feature-replay's activation fixture) are built off. feature-replay's new-career replay is built with `ENABLED_RELEASE`.\n- **No values re-recorded:** every candidate value already came from a world activated explicitly.\n- **Switch check:** `season.test.ts` no longer checks that the switch is off. It now checks that the candidate's coverage is `founding` and that `plain` has no model. Only `match-model.test.ts` keeps the switch's exact value.\n\n**Edits outside the task's file list:** `season.testkit.ts`, `build.testkit.ts` and `calibration.testkit.ts`. The guards build their worlds there, so there was no way around it. `founded` and `scenario` gain an optional release argument whose default is unchanged. No other lane's file list includes these testkits. The runner will flag the unit for review because of this; it does not reject it.\n\n**Checks run:** typecheck, lint and format:check are clean. Each of the ten files passed in both configs. Before the edits, four of them failed 5 tests with the switch on, matching the probe. `vitest run --changed 2737e84a` passed in two shards (20 files). The last edit after those runs was a comment rewrap; prettier and eslint passed on it afterwards.\n\n**For T420 and T410:**\n- **Engine bug (needs a source fix, which this test-only task can't make):** `closeSeason` clears the season's match material (`season.ts:737`) before `promote` plays the promotion playoff (`season.ts:743`). An own club in the playoff keeps that match's material forever, against MATCH-5. On the candidate, the material test's club reaches the playoff, and two matches keep their material. That is why this test stays pinned off.\n- **Calibration misses on the candidate** (measured on the same guard clubs, recorded in `calibration.testkit.ts`):\n  - grid: a +20 favourite wins 87.5% (band ≤85%), equal sides score 3.12 goals (≤3.1), a +39 giant's matches have 4.03 goals (<4)\n  - summary samples (the aggregate plays them on the candidate): equal sides draw 20.9% (≥22%), the giant's matches have 4.27 goals\n  - build.tradeoffs: the press case only ties another tactic, 181 against 181\n\n  No band was widened; these stay as figures for T410.\n\n**Not run (left to the batch gate and T420):** `test:unit`, `test:unit:release-on`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright. The ten other files that import the edited testkits were run with the switch off only."
+        }
+      }
+    },
+    {
+      "sequence": 935,
+      "at": "2026-10-24T11:12:07.441Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 936,
+      "at": "2026-10-24T11:12:07.699Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요."
+      }
+    },
+    {
+      "sequence": 937,
+      "at": "2026-10-24T11:12:07.731Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:47:47.621Z",
+          "finishedAt": "2026-10-24T11:12:07.731Z",
+          "error": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요.",
+          "summary": "T422 is done and committed as a0094fd6 on the lane branch. The coordinator asked for the commit, even though the general instructions say not to commit.\n\nWhat changed:\n- **Clock in match seconds.** The match clock now counts match seconds instead of real milliseconds at 1x. Running play advances at speed × 60 / 12000 seconds per real ms. Inside a set-piece preparation it runs at the larger of that rate and span / `SET_PIECE_PREPARATION_MS` (1500).\n- **Where preparations come from.** `setPiecePreparations(frames)` finds the dead interval before every corner, free kick and goal kick.\n- **What reads the clock.** Goal feedback and `Pitch.tsx` (seeking, progress bar, possession cue) now use match seconds. The old `presentationLength`, `clockAt` and `runningSeconds` are gone. `possessionCue.ts` already took seconds and is unchanged.\n- **Test hook.** The pitch canvas exposes the current match second as `data-seconds`, so browser journeys can time the clock.\n\n**One departure from the impl note.** The note says the kick is the restart event's own time. On both models that time is actually when the delivery lands, so following it would also speed up the delivery, which WEB-32 and MATCH-12 keep at the selected speed. Instead the kick is read from data both models carry:\n- pre-feature: the moment the taker takes the ball, from `holders`\n- candidate: its recorded kick sample, the last sample with phase 'restart'\n\nEither must fall more than 0.1 s before the landing, so a taker passing to himself isn't read as the kick. On the pre-feature this gives the note's own \"32 s dead, 3.2 s kick\". This doesn't change the spec, so I didn't raise it as a blocker.\n\n**Measured on the real engine** (four seeded first matches per model):\n- Every corner, free kick and goal kick got a preparation.\n- Deliveries stay at running speed (0.15–5.6 s).\n- A whole match takes about 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, down from 19 and 9.5. That is slightly longer than WEB-32's \"about 13–14 / 7 minutes\"; it's for your in-play review of the 1500 ms value.\n\n**Checks that passed:** the three affected test files (38 tests), typecheck, lint, format:check, `vitest run --changed d1ae3485` (4 files, 50 tests) and the build.\n\n**Not run (batch):**\n- `set-piece-defence.spec.ts` (candidate scene) and a new test in `stable-controls-and-pacing.spec.ts` (pre-feature, seed `stable-pace`). Both seek to just before a dead ball, resume at 1x, and check the preparation is drawn in 1.4–2.5 s with the players still moving and no jumps.\n- They share a new helper, `tests/e2e/preparation.ts`, which is outside touches.\n- The existing pace journeys still need the batch run too.\n\nThe task result records all of this."
+        }
+      }
+    },
+    {
+      "sequence": 938,
+      "at": "2026-10-24T11:14:42.995Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "24e0e951-619f-459b-8b93-410d40ccf92f",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T418 (e04a04aa against base fada6e6d, merge-base 2737e84a) changes only the seven touched test files and the task file. No runtime or adapter source changed. Neither risk reason is a problem in T418: (1) 301 lines is one over the 300-line limit, and most of the count is the SAVE-24 main case re-indented into `it.each`; (2) the autopilot decision waiting on the owner is T416's, on the group board, and this attempt has none of its own. The commits between the merge-base and the base (T417/T416, engine grid tests) don't overlap these files.\n\nAcceptance 1 is met. Pre-model fixtures now build with `DISABLED_RELEASE`: legacyReset `saved`, matchModelPacking `career`, the container-selection case in managerHistoryPacking, the untracked case in persistence.history, persistence `unmodelled` for the container-1/2 cases, the `modelCareer` bases and the failed-write predecessor, client `legacyCheckpoint`/`identitylessCheckpoint`/`preModelCheckpoint`, and host `preIdentity`/model-block `career`/`older`. The shared `preIdentityCareer()` sits outside this task's touches; persistence.test strips its model explicitly with `withoutMatchModel`, which removes the same three fields that `carriesMatchModel` checks. Every case that loads a career as the writer (identity adoption, combined upgrades, the ledger read, the recorded-model load, SAVE-24 tracking) now builds its host with an explicit `release`, either directly or through `WorkerPort.release`, which `beforeEach` resets. The cases left on the default host only do read-only loads, inspections or compatibility refusals, so they don't depend on the switch.\n\nAcceptance 2 is met. The default-host founding expects `founding` coverage exactly when `MATCH_MODEL_RELEASE.enabled` is true, and the exact-inspection metadata carries `source.matchModel` with an exact presence check. Coverage also got wider: 'moves the revision once' now runs with the release on and asserts `matchModel.activated.revision === 10`, and the main SAVE-24 case runs under both releases.\n\nThese rules follow T402 (no load gate; activation only on the writer path) and the 261024 decision that every test names its release. I checked the codec's container ordering (`readCheckpoint`) to confirm the schema-2 damage cases left on the default world hold in both switch states.\n\nVerification: the runner's task check (typecheck, lint, format:check, `vitest --changed`: 7 files, 157 passed) covers the switch-off state only. The release-on run (157 passed) and the build are the worker's own claims. I didn't re-run either: the review checkout has no node_modules, and installing them would change the checkout. T420 and the unit gate run the release-on tier. The worker handed the browser specs that assume the switch is off to T286, as the impl notes ask.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/host.test.ts:1040 (T418)",
+              "message": "`writer()` defaults to `DISABLED_RELEASE`, so three SAVE-24 cases test only a host with the release off: 'waits for a queued or revealed own match before tracking starts' (:1091), 'never tracks from a read-only load or an inspection' (:1113) and 'keeps the previous checkpoint and the tracked career exportable when the write fails' (:1125). Only the main case runs under both releases. Once T286 flips the switch, a writer loading an older career will record the model and start tracking in the same activation. Nothing here proves those two upgrades wait for the same safe boundary and survive a failed write together, beyond T402's model-only cases. Optional follow-up for T420/T286: run the queued and failed-write cases under `it.each([DISABLED_RELEASE, ENABLED_RELEASE])` too."
+            }
+          ],
+          "commit": "e04a04aaa66e2a9e320ae9a2cfdf87879a1e3679",
+          "baseCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+          "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
+          "createdAt": "2026-10-24T11:09:13.222Z",
+          "finishedAt": "2026-10-24T11:14:42.994Z"
+        }
+      }
+    },
+    {
+      "sequence": 939,
+      "at": "2026-10-24T11:14:43.009Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "ea3b4d33-c311-47c9-8585-a2672b97b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T11:09:14.438Z",
+          "finishedAt": "2026-10-24T11:14:43.009Z",
+          "error": null,
+          "summary": "T418 (e04a04aa against base fada6e6d, merge-base 2737e84a) changes only the seven touched test files and the task file. No runtime or adapter source changed. Neither risk reason is a problem in T418: (1) 301 lines is one over the 300-line limit, and most of the count is the SAVE-24 main case re-indented into `it.each`; (2) the autopilot decision waiting on the owner is T416's, on the group board, and this attempt has none of its own. The commits between the merge-base and the base (T417/T416, engine grid tests) don't overlap these files.\n\nAcceptance 1 is met. Pre-model fixtures now build with `DISABLED_RELEASE`: legacyReset `saved`, matchModelPacking `career`, the container-selection case in managerHistoryPacking, the untracked case in persistence.history, persistence `unmodelled` for the container-1/2 cases, the `modelCareer` bases and the failed-write predecessor, client `legacyCheckpoint`/`identitylessCheckpoint`/`preModelCheckpoint`, and host `preIdentity`/model-block `career`/`older`. The shared `preIdentityCareer()` sits outside this task's touches; persistence.test strips its model explicitly with `withoutMatchModel`, which removes the same three fields that `carriesMatchModel` checks. Every case that loads a career as the writer (identity adoption, combined upgrades, the ledger read, the recorded-model load, SAVE-24 tracking) now builds its host with an explicit `release`, either directly or through `WorkerPort.release`, which `beforeEach` resets. The cases left on the default host only do read-only loads, inspections or compatibility refusals, so they don't depend on the switch.\n\nAcceptance 2 is met. The default-host founding expects `founding` coverage exactly when `MATCH_MODEL_RELEASE.enabled` is true, and the exact-inspection metadata carries `source.matchModel` with an exact presence check. Coverage also got wider: 'moves the revision once' now runs with the release on and asserts `matchModel.activated.revision === 10`, and the main SAVE-24 case runs under both releases.\n\nThese rules follow T402 (no load gate; activation only on the writer path) and the 261024 decision that every test names its release. I checked the codec's container ordering (`readCheckpoint`) to confirm the schema-2 damage cases left on the default world hold in both switch states.\n\nVerification: the runner's task check (typecheck, lint, format:check, `vitest --changed`: 7 files, 157 passed) covers the switch-off state only. The release-on run (157 passed) and the build are the worker's own claims. I didn't re-run either: the review checkout has no node_modules, and installing them would change the checkout. T420 and the unit gate run the release-on tier. The worker handed the browser specs that assume the switch is off to T286, as the impl notes ask."
+        }
+      }
+    },
+    {
+      "sequence": 940,
+      "at": "2026-10-24T11:14:43.056Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { levelFactor, FORMATIONS, lineOf } from '../player';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
@@ -8,13 +9,17 @@ import { cellOf } from './pitch';
 import { buildGridSetup } from './setup';
 import { createState, enterSlot, minutesOn, skill, STRENGTH_CONFIG } from './state';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Grid State Lab',
-  color: '#2a5d8f',
-  seed: 'grid-state',
-  level: 'normal' as const,
-});
+// The pre-feature path's world: candidate cases set the setup's model.
+const w = createWorld(
+  {
+    country: 'ENG',
+    name: 'Grid State Lab',
+    color: '#2a5d8f',
+    seed: 'grid-state',
+    level: 'normal' as const,
+  },
+  DISABLED_RELEASE,
+);
 const own = w.fixtures.find((f) => f.home === w.playerClub)!;
 // The fixture's season only picks the era's bench: 2022 names nine substitutes.
 const setup = () =>

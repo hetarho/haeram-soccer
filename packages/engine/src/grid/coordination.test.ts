@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import {
   closedAt,
   COORDINATION_CONFIG,
@@ -27,10 +28,13 @@ import { createState, onPitch, type GridPlayer, type GridState } from './state';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
-/** One synthetic world per tactic pair, shared by the situations below. */
+/**
+ * One synthetic world per tactic pair on the pre-feature path, shared by the situations below;
+ * candidate situations set the setup's model.
+ */
 const kitOf = (tactics: [Tactic, Tactic]) => {
   const key = tactics.join('-');
-  if (!kits.has(key)) kits.set(key, gridKit(tactics, 'coordination-lab'));
+  if (!kits.has(key)) kits.set(key, gridKit(tactics, 'coordination-lab', DISABLED_RELEASE));
   return kits.get(key)!;
 };
 
@@ -785,7 +789,8 @@ describe('grid coordination', () => {
     // Only possession is listed: the other tactics' settled runs are as they were.
     expect(Object.keys(SR.odds)).toEqual(['possession']);
     // The pre-feature model never plans coordination, so its matches do not read the odds.
-    const record = () => playGrid(gridKit(['possession', 'balanced'], 'settled-runs').setup).record;
+    const record = () =>
+      playGrid(gridKit(['possession', 'balanced'], 'settled-runs', DISABLED_RELEASE).setup).record;
     const before = record();
     SR.odds.possession = 1;
     try {

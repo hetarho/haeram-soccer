@@ -15,10 +15,12 @@ import {
   operate,
   prepareSeason,
   simulateSeason,
+  type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
 import {
   cachedWorld,
+  DISABLED_RELEASE,
   simulatedWorld,
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
@@ -79,8 +81,11 @@ it('roundtrips one transferred league scorer with both real club contributions',
 });
 
 describe('own-manager history checkpoints (→SAVE-24)', () => {
-  /** A tracked career two rounds in, with a hire, a cup and a closed league finish recorded. */
-  function tracked(): World {
+  /**
+   * A tracked career two rounds in, with a hire, a cup and a closed league finish recorded, founded
+   * under `release` (the switch as it stands unless given).
+   */
+  function tracked(release?: MatchModelRelease): World {
     const w = simulatedWorld(
       {
         country: 'ENG',
@@ -90,6 +95,7 @@ describe('own-manager history checkpoints (→SAVE-24)', () => {
         level: 'easy',
       },
       { rounds: 2 },
+      release,
     );
     w.cash = '999999999999';
     operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
@@ -117,7 +123,9 @@ describe('own-manager history checkpoints (→SAVE-24)', () => {
   });
 
   it('keeps an untracked career in its older container with attribution absent', async () => {
-    const w = withoutManagerHistory(tracked());
+    // A career saved before both features: no manager history and, played with the release off,
+    // no full model.
+    const w = withoutManagerHistory(tracked(DISABLED_RELEASE));
     const loaded = await decode(await encode(w));
     expect(loaded.envelope.schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
     expect(loaded.world).not.toHaveProperty('managerHistory');

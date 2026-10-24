@@ -13,8 +13,10 @@ import {
   captureSeasonClose,
   managerCandidates,
   operate,
+  type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import {
+  DISABLED_RELEASE,
   simulatedWorld,
   withCandidateModel,
   withoutManagerHistory,
@@ -25,9 +27,10 @@ import { checkpointContainerFor, type PackedManagerHistory } from './managerHist
 /**
  * A tracked career two rounds in whose facts hold every field shape: an owner hire, a resignation
  * with an interim, a person-linked manager, all three outcome kinds, and the first record treated
- * as settled before tracking (unattributed).
+ * as settled before tracking (unattributed). Founded under `release`, the switch as it stands
+ * unless given.
  */
-function career(): World {
+function career(release?: MatchModelRelease): World {
   const w = simulatedWorld(
     {
       country: 'ENG',
@@ -37,6 +40,7 @@ function career(): World {
       level: 'easy',
     },
     { rounds: 2 },
+    release,
   );
   w.cash = '999999999999';
   delete w.ownMatches[0]!.managerTenure;
@@ -91,7 +95,8 @@ describe('manager-history packing (→SAVE-24)', () => {
   });
 
   it('selects the manager-history container whether or not the full model is active', () => {
-    const w = career();
+    // Founded with the release off: the full model is active only where the case records it.
+    const w = career(DISABLED_RELEASE);
     expect(checkpointContainerFor(w)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     const modelled = withCandidateModel(structuredClone(w));
     expect(checkpointContainerFor(modelled)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
