@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r22 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r23 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -201,7 +201,7 @@
   - MATCH-2/23's intended targets remain authoritative where detailed play currently misses them. Fix and remeasure the reference rather than reproducing a known defect in the aggregate model. Recalibrate after movement, intentions, tactics or result-model changes; do not loosen targets to claim success.
   - a metric both paths hold at the same value is equivalent by that zero difference and stays listed as constant; a constant reference whose candidate holds another value or leaves the margin is a difference.
   - a metric a condition's own rules make impossible (extra time and shoot-outs outside →MATCH-6 ties, substitutions in →MATCH-20 eras without them) is declared not applicable for that condition, listed, and left out of its verdict. Applicability comes only from these rules, never from measured absence.
-  - exact record invariants (→MATCH-27) have no statistical tolerance. Full-model activation requires the measured accuracy, compatibility, storage and speed gates together (→SAVE-23 and →ARCH-31).
+  - exact record invariants (→MATCH-27) have no statistical tolerance. Equivalence and the intended targets are measured and reported for the released full model but do not gate its activation (→SAVE-23, →ARCH-31); its residual differences are recorded and calibrated on the released model.
 - MATCH-29 [o] Both engines hold the tactic tradeoffs of →MATCH-8 within these bands for equal top-tier sides, each tactic pairing measured at both venues and pooled under →MATCH-28's seeds and 95% intervals. ← the owner's only tactical control must be a real choice whose fit matters without deciding the match alone
   | measure (equal strength, venues pooled) | band |
   |---|---|
@@ -226,6 +226,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r23 261024 MATCH-28✎ full-model activation required the accuracy, compatibility, storage and speed gates together→accuracy measured and reported with the release, not an activation gate; residual differences calibrated afterwards
 - r22 261024 MATCH-22✎ aggregate path one undivided joint draw (no per-minute chance loop)→may draw a match as at most six time segments whose reached score shapes later shot volume and risk, still no per-minute loop, within ARCH-31's fixture budget
 - r21 261023 MATCH-18✎ offside position always offside, 판단력 times the run→the position is called by a draw whose chance the receiver's 판단력 sets (lowest quarter ≥3× the highest per reception), a linebreaker less, a high line more; MATCH-23✎ offsides 1.5–2.5→1.7–1.9 a team (Premier League 2016/17–2025/26 mean 1.80)
 - r20 261022 MATCH-12✎ explicit transitions limited to seeking/period breaks→+goal-feedback holds outside simulated time; MATCH-18✎ set-piece delivery/duels→+continuous defensive tracking, cover, goalkeeper and second-ball responses

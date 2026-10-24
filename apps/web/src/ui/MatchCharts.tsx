@@ -15,7 +15,7 @@ const CHARTS: [Chart, string][] = [
 ];
 /** Minutes in the rolling possession window. */
 const WINDOW = 10;
-/** The chart surface (`--surface-deep`); series must clear 3:1 against it. */
+/** Legacy dark-chart fallback; callers supply the installed pitch chart material color. */
 const SURFACE = '#07110e';
 const W = 320,
   H = 92,
@@ -35,9 +35,9 @@ function mix(hex: string, amount: number) {
  * A kit colour lifted until it reads as a line on the dark chart surface. Only the chart line
  * changes: the lifted colour is a new value, never written back to a shirt or a snapshot.
  */
-export function seriesColour(kit: string) {
+export function seriesColour(kit: string, surface = SURFACE) {
   let colour = kit;
-  for (let step = 1; step <= 10 && contrast(colour, SURFACE) < 3; step++)
+  for (let step = 1; step <= 10 && contrast(colour, surface) < 3; step++)
     colour = mix(kit, step * 0.1);
   return colour;
 }
@@ -51,12 +51,13 @@ const FALLBACK_SERIES = ['#ff9257', '#f6f1e1'] as const;
 export function seriesColours(
   kits: [string, string],
   away: Pick<Crest, 'secondary' | 'accent'>,
+  surface = SURFACE,
 ): [string, string] {
-  const home = seriesColour(kits[0]);
-  let line = seriesColour(kits[1]);
+  const home = seriesColour(kits[0], surface);
+  let line = seriesColour(kits[1], surface);
   for (const candidate of [away.secondary, away.accent, ...FALLBACK_SERIES]) {
     if (colourDistance(home, line) >= 120) break;
-    if (candidate !== undefined) line = seriesColour(candidate);
+    if (candidate !== undefined) line = seriesColour(candidate, surface);
   }
   return [home, line];
 }
@@ -65,12 +66,16 @@ export function seriesColours(
  * The series' lines follow each side's worn shirt (lifted for contrast) and differ in dash as well,
  * so colour is never the only link from a line to its team (WEB-49): home solid, away dashed.
  */
-export function chartLines(look: MatchLook) {
+export function chartLines(look: MatchLook, surface = SURFACE) {
   const [home, away] = look.sides;
-  const colours = seriesColours([home.shirt.primary, away.shirt.primary], {
-    secondary: away.shirt.secondary,
-    accent: away.shirt.trim,
-  });
+  const colours = seriesColours(
+    [home.shirt.primary, away.shirt.primary],
+    {
+      secondary: away.shirt.secondary,
+      accent: away.shirt.trim,
+    },
+    surface,
+  );
   return colours.map((colour, side) => ({ colour, dash: side ? '5 3' : undefined })) as [
     { colour: string; dash: string | undefined },
     { colour: string; dash: string | undefined },
@@ -98,6 +103,7 @@ export function chartSeries(playback: MatchPlayback, shown: number, chart: Chart
 
 /** Live charts of the presented match: possession share, cumulative xG and shots (→WEB-50). */
 export function MatchCharts({
+  groundColor = SURFACE,
   playback,
   shown: presented,
   look,
@@ -111,6 +117,7 @@ export function MatchCharts({
   shown: number;
   /** What both sides wore, from the record (KIT-12). */
   look: MatchLook;
+  groundColor?: string;
   names: [string, string];
   details: boolean;
   detailsId: string;
@@ -122,7 +129,7 @@ export function MatchCharts({
     () => chartSeries(playback, presented, chart),
     [playback, presented, chart],
   );
-  const lines = useMemo(() => chartLines(look), [look]);
+  const lines = useMemo(() => chartLines(look, groundColor), [look, groundColor]);
   const colours = lines.map((line) => line.colour);
   const max =
     chart === 'possession'
@@ -167,7 +174,7 @@ export function MatchCharts({
   };
   const title = CHARTS.find(([id]) => id === chart)![1];
   return (
-    <section className={t.charts} aria-label="경기 흐름 그래프">
+    <section className={t.charts} data-ui="match-chart" aria-label="경기 흐름 그래프">
       <header>
         <div role="tablist" aria-label="그래프 종류">
           {CHARTS.map(([id, text]) => (

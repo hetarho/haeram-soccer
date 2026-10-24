@@ -69,6 +69,11 @@ async function openKit(page: Page, opener: Locator) {
   await expect(
     kit.getByRole('radiogroup', { name: '이 경기 우리 유니폼', exact: true }),
   ).toBeVisible();
+  const preview = kit.getByRole('img', { name: '경기장 유니폼 미리보기', exact: true });
+  await expect(preview).toBeVisible();
+  await expect
+    .poll(() => preview.evaluate((node) => getComputedStyle(node).backgroundImage))
+    .toContain('/art/');
   return { dialog, kit };
 }
 const radio = (kit: Locator, role: KitRole) =>

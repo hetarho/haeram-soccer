@@ -6,12 +6,13 @@
 }
 /* The live pitch's 1.9:1 shape (WEB-50), as wide as its holder. */
 .canvas {
+  background-image: var(--pitch-texture, none);
   display: block;
   width: 100%;
   aspect-ratio: 1.9;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
-  background: #253b31;
+  background-color: var(--pitch-ground, #253b31);
 }
 .caption {
   display: grid;

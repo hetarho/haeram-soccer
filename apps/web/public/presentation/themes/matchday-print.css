@@ -2,6 +2,27 @@
 @import './image-ui-controls.css';
 
 html[data-theme='matchday-print'] {
+  /* Pitch materials are presentation roles; kits, motion and clocks remain recorded facts. */
+  --pitch-ground: #e7d9ad;
+  --pitch-stripe: #d5c590;
+  --pitch-stripe-alt: #ded0a1;
+  --pitch-line: #403d31;
+  --pitch-goal: #8b3428;
+  --pitch-marker-outline: #2b2922;
+  --pitch-ball: #fff9e7;
+  --pitch-ball-edge: #24241f;
+  --pitch-ball-seam: #b8402c;
+  --pitch-carrier: #b33524;
+  --pitch-selection: #a82f23;
+  --pitch-idle-text: #403d31;
+  --pitch-line-width: 1.3;
+  --pitch-marker-width: 1.7;
+  --pitch-pixel-size: 0;
+  --pitch-texture-opacity: 0.48;
+  --pitch-texture-size: 320;
+  --pitch-texture: var(--image-canvas-material);
+  --pitch-chart-ground: var(--image-dark-fill, var(--image-ink-color));
+
   --image-art-frame-button: url('../../art/matchday-print/home/frame-button.webp');
   --image-art-frame-dark: url('../../art/matchday-print/home/frame-dark.webp');
   --image-art-frame-selected: url('../../art/matchday-print/home/frame-selected.webp');

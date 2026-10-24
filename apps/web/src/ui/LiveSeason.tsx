@@ -129,7 +129,12 @@ function MatchFeedback({ finished }: { finished: boolean }) {
   const ownGoals = side === 0 ? record?.score.home : record?.score.away;
   const otherGoals = side === 0 ? record?.score.away : record?.score.home;
   return (
-    <div className={t.feedback} data-testid="match-feedback" aria-label="경기 결과와 다음 준비">
+    <div
+      className={t.feedback}
+      data-ui="match-feedback"
+      data-testid="match-feedback"
+      aria-label="경기 결과와 다음 준비"
+    >
       {finished && record ? (
         <div className={t.result} data-testid="match-result-summary">
           <strong>
@@ -206,12 +211,17 @@ const MatchPane = memo(function MatchPane({
             onFinish={onFinish}
             onPresentationChange={onPresentationChange}
             lead={
-              <button className={t.back} aria-label="홈" onClick={() => setPage('dashboard')}>
-                <span aria-hidden="true">‹</span>
+              <button
+                data-ui="icon"
+                className={t.back}
+                aria-label="홈"
+                onClick={() => setPage('dashboard')}
+              >
+                <PixelIcon name="chevronLeft" size={22} />
               </button>
             }
             actions={(controls) => (
-              <div className={t.coreActions}>
+              <div className={t.coreActions} data-ui="match-actions">
                 <MatchFeedback finished={finished} />
                 <div className={t.nextActions}>
                   <button onClick={onPrepare}>전술·선발 준비</button>

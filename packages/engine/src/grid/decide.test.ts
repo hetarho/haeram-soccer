@@ -723,6 +723,24 @@ describe('grid decisions', () => {
     expect(forward(1)).toBeGreaterThan(forward(0));
   });
 
+  it('ends a long spell around the box sooner, on the candidate model only (T411)', () => {
+    const patience = { seconds: 30, pass: 0.5, shot: 2, cross: 2 };
+    const ratio = (candidate: boolean, held: number, set: typeof patience) =>
+      withCandidate({ patience: set }, () => {
+        const sc = scene(CM, centre(5, 2));
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        sc.s.possessionSince = sc.s.elapsed - held;
+        const mix = actionMix(sc.s, 0, CM, sc.tags());
+        return mix.pass / mix.shot;
+      });
+    const neutral = { seconds: 30, pass: 1, shot: 1, cross: 1 };
+    // Past the patience: passes halved against shots doubled.
+    expect(ratio(true, 40, patience) / ratio(true, 40, neutral)).toBeCloseTo(0.25, 9);
+    // Within it, and on the pre-feature model, no change.
+    expect(ratio(true, 10, patience)).toBeCloseTo(ratio(true, 10, neutral), 12);
+    expect(ratio(false, 40, patience)).toBeCloseTo(ratio(false, 40, neutral), 12);
+  });
+
   it('weighs a forward pass into the final third and stretches a carry outside the box, on the candidate model only (T408)', () => {
     const neutral = { from: 70, lateral: 1, back: 1, entry: 1, carry: 1, pass: 1 };
     // A forward pass from the middle band to a man past 70 m: its prior scaled by `entry`.

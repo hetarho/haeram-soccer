@@ -26,6 +26,8 @@ const advanceRound = async (page: import('@playwright/test').Page) => {
   return revision;
 };
 test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {
+  // A founding, a second tab, a round and a reload: Firefox CI 40077037075 ran past 30 s twice.
+  test.slow();
   await found(page);
   const second = await context.newPage();
   await second.goto('/');
@@ -124,6 +126,8 @@ test('recovers prior checkpoint after active corruption without clearing another
 test('quota failure preserves disk save, exports actual memory progress and retries', async ({
   page,
 }) => {
+  // A founding, a round, an export and a retry: 42 s in a local Firefox run against 30 s.
+  test.slow();
   await page.addInitScript(() => {
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = function (k, v) {

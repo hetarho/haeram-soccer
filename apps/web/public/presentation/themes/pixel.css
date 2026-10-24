@@ -2,6 +2,27 @@
 @import './image-ui-controls.css';
 
 html[data-theme='pixel'] {
+  /* Pitch materials are presentation roles; kits, motion and clocks remain recorded facts. */
+  --pitch-ground: #172b21;
+  --pitch-stripe: #244630;
+  --pitch-stripe-alt: #2b5035;
+  --pitch-line: #c7d4b3;
+  --pitch-goal: #f1f0d8;
+  --pitch-marker-outline: #e4e9cd;
+  --pitch-ball: #f4f0dc;
+  --pitch-ball-edge: #0c1510;
+  --pitch-ball-seam: #29472c;
+  --pitch-carrier: #a9d58c;
+  --pitch-selection: #f1f0e8;
+  --pitch-idle-text: #c7d4b3;
+  --pitch-line-width: 1.4;
+  --pitch-marker-width: 1.2;
+  --pitch-pixel-size: 2;
+  --pitch-texture-opacity: 0.22;
+  --pitch-texture-size: 32;
+  --pitch-texture: var(--image-canvas-material);
+  --pitch-chart-ground: var(--image-dark-fill, var(--image-ink-color));
+
   --image-art-frame-button: url('../../art/pixel/ui/frame-button.png');
   --image-art-frame-dark: url('../../art/pixel/ui/frame-dark.png');
   --image-art-frame-selected: url('../../art/pixel/ui/frame-selected.png');
@@ -136,16 +157,6 @@ html[data-theme='pixel'] {
   /* Raster skin assembly never changes the live pitch's rendering. */
   canvas {
     image-rendering: auto;
-  }
-
-  @media (max-width: 760px) {
-    [data-testid='match-score'] > span {
-      gap: 4px;
-    }
-    [data-testid='match-score'] > span > b[aria-hidden='true'] {
-      font-size: 12px;
-      white-space: nowrap;
-    }
   }
 
   @media (max-width: 380px) and (max-height: 760px) {
