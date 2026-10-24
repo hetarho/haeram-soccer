@@ -97,10 +97,14 @@ const facts = (w: World) => ({
  * interceptions 13.6 → 7.5 a team) changed the candidate rounds only; 525b895cc4a040c2 before.
  * T442's shut lanes (cover shadow and screen; calibration round 70: completion 77.50 → 77.74%,
  * interceptions 7.75 → 7.68 a team) changed the candidate rounds only; 5c21d584c8efd809 before.
+ * T443's box scene (the attack's runs to the near post, far post, spot and edge, the defence's
+ * line drop and zone guards; calibration round 71, core, 600 observed matches: crosses with an
+ * attacker at the near post as the ball arrives 7.2 → 31.4%, goals 3.52 → 3.72 a match) changed
+ * the candidate rounds only; d1930531c407a468 before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: 'd1930531c407a468',
+  candidateRounds: '71af67206af43161',
 };
 
 describe('complete-result throughput (T285)', () => {
