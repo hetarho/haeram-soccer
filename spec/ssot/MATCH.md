@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r28 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r29 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -45,7 +45,7 @@
   | hold-up play, lay-off | 몸싸움 | 몸싸움 and 태클 |
   | aerial duel | 공중볼 and 몸싸움 | 공중볼 and 몸싸움 |
   | shot, header | 슈팅 (공중볼 for a header) and 침착성 | blocker 위치선정; keeper 선방 |
-  | keeper distribution | 발밑 | the defender nearest the lane |
+  | keeper distribution | 발밑 | the opponent who reaches its path first (→MATCH-31) |
   - key duels and finishing against the keeper use margins that flatten past about 15 points (30 × tanh(margin/30)).
   - shot quality is the chance's place and situation: its cell and distance, the angle, pressure, the bodies between the ball and the goal (→MATCH-35), a header or a foot, a cut-back or a cross.
   - recorded xG is that chance's goal probability for the match level's average finisher and keeper, so goals minus xG measures finishing and xGA minus goals against measures keeping.
@@ -257,6 +257,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r29 261025 MATCH-11✎ keeper distribution against the defender nearest the lane→the opponent who reaches its path first (→MATCH-31)
 - r28 261025 MATCH-11✎ pass against the defender nearest the lane→the opponent who reaches its path first; shot quality + the bodies between ball and goal · MATCH-31+ a pass cut out only where reached · MATCH-32+ lanes shut · MATCH-33+ box zones attacked and delivered into · MATCH-34+ box defended goal-side · MATCH-35+ shots blocked before the keeper, second balls contested
 - r27 261025 MATCH-12✎ a pressed carrier stood on the ball to shield it→shields it on the move away from the nearest opponent, everyone else moving meanwhile; standing only to hold up or lay off, distribute as keeper or take a restart
 - r26 261025 MATCH-17✎ movement from slot, role, traits and attributes→also manager-given positional freedom with its trade-off, situational disorder, position swaps and the four tendencies
