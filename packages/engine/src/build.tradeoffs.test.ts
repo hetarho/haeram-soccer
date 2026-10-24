@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { TACTICS } from './index';
 import { sample, scenario } from './build.testkit';
 
@@ -8,8 +9,11 @@ describe('tactical roster tradeoffs', () => {
   // wait for that tuning. T278 measured the same on the candidate model (press 66–79% at home
   // against counter and balanced, docs/CALIBRATION.md) and leaves them skipped. T321 and T324
   // narrowed it on the candidate model but press still beats counter there (MATCH-29 verdicts in
-  // docs/benchmarks/detailed-model-calibration.json), and these cases play the active pre-feature
-  // model, so they stay skipped until the candidate holds MATCH-29 and is activated (T286).
+  // docs/benchmarks/detailed-model-calibration.json), and these cases play the pre-feature model
+  // (`DISABLED_RELEASE`, whatever the switch), so they stay skipped until the candidate holds
+  // MATCH-29 and is activated (T286). On the candidate the press case below only ties another
+  // tactic's goal margin (181 against 181 over 160 matches, T419's release-on probe), a residual
+  // for T410.
   const tradeoffs = [
     {
       name: 'passing midfield against balanced opponents',
@@ -38,7 +42,7 @@ describe('tactical roster tradeoffs', () => {
   ];
 
   const favors = ({ build, opponent, preferred }: (typeof tradeoffs)[number]) => {
-    const { w, fixture } = scenario(build, opponent);
+    const { w, fixture } = scenario(build, opponent, DISABLED_RELEASE);
     const outcomes = TACTICS.map((tactic) => ({ tactic, ...sample(w, fixture, tactic) }));
     const winner = outcomes.find((outcome) => outcome.tactic === preferred)!;
     for (const alternative of outcomes.filter((outcome) => outcome.tactic !== preferred))

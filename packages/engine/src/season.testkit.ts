@@ -9,6 +9,8 @@ import {
   createWorld,
   finishCups,
   finishEurope,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
   ownLeagueClubs,
   prepareSeason,
   ranked,
@@ -16,15 +18,23 @@ import {
 import { professionalStart } from './testing';
 import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
 
-/** A club whose first season is `year`, with a squad and manager of that time. */
-export function founded(year?: number) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Archive Rovers',
-    color: '#2a4d3a',
-    seed: 'season-archive',
-    level: 'normal' as const,
-  });
+/**
+ * A club whose first season is `year`, with a squad and manager of that time, founded under
+ * `release` (default the switch as it stands). An enabled release records the model before the
+ * year moves, so a candidate founded in `year` is
+ * `withCandidateModel(founded(year, DISABLED_RELEASE))`.
+ */
+export function founded(year?: number, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Archive Rovers',
+      color: '#2a4d3a',
+      seed: 'season-archive',
+      level: 'normal' as const,
+    },
+    release,
+  );
   w.settings = legacySettings(2);
   if (!year) return w;
   w.year = year;

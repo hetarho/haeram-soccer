@@ -1,17 +1,26 @@
 import type { Club, Fixture } from '../../contracts/src/types';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { playGrid } from './grid/engine';
 import { buildGridSetup } from './grid/setup';
 import { createWorld, rating, simulateMatch } from './index';
 
 // Coarse guards on the calibrated strength curve (docs/CALIBRATION.md, scripts/calibrate.ts):
 // one rating point ≈ 16 Elo, draws and upsets as in long-run European top-flight football.
-export const w = createWorld({
-  country: 'ENG',
-  name: 'Calibration Guard',
-  color: '#335577',
-  seed: 'calibration-guard',
-  level: 'normal' as const,
-});
+// The guard world never activates the model, whatever the switch: the summary and grid samples
+// play the model a world carries, so they guard the pre-feature figures recorded with them. On the
+// candidate (T419, same clubs and counts) the grid's +20 favourite wins 87.5%, equal sides score
+// 3.12 and a +39 giant's matches 4.03 goals, and the summary samples, which the aggregate plays
+// there, give equal sides 20.9% draws and the giant's matches 4.27 goals: residuals for T410.
+export const w = createWorld(
+  {
+    country: 'ENG',
+    name: 'Calibration Guard',
+    color: '#335577',
+    seed: 'calibration-guard',
+    level: 'normal' as const,
+  },
+  DISABLED_RELEASE,
+);
 let serial = 0;
 /** Eight clubs per strength, so tactics and generated squads vary across the sample. */
 function clubs(strength: number) {

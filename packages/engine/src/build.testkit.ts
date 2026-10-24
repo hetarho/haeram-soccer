@@ -1,6 +1,15 @@
 import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
-import { clubOf, createWorld, npcTactic, setLineup, simulateMatch, startingSquad } from './index';
+import {
+  clubOf,
+  createWorld,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
+  npcTactic,
+  setLineup,
+  simulateMatch,
+  startingSquad,
+} from './index';
 
 interface Build {
   passing: number;
@@ -10,14 +19,22 @@ interface Build {
   fatigue?: number;
 }
 
-export function scenario(build: Build, opponentTactic: Tactic = 'balanced') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Build Laboratory',
-    color: '#112233',
-    seed: 'build-samples',
-    level: 'normal' as const,
-  });
+/** The build laboratory founded under `release` (default the switch as it stands). */
+export function scenario(
+  build: Build,
+  opponentTactic: Tactic = 'balanced',
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
+) {
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Build Laboratory',
+      color: '#112233',
+      seed: 'build-samples',
+      level: 'normal' as const,
+    },
+    release,
+  );
   w.manager.ability = 50;
   // Every outfielder plays every outfield position alike, so each tactic's formation reads the
   // build's qualities whoever fills a slot: finishing, passing, defending and stamina.
