@@ -312,6 +312,8 @@
 - 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
 - 261025 update-ssot MATCH r26 STAFF r35 PLAYER r10 SAVE r53 + create-task T431–T435 (v9n4): the freedom bundle as model revision 2 (T435 → T431 → T432 explore → T433 explore, after T286), the own-club edge probe T434 (explore, after T286); T410 dep + T433; ideation match-viewing-pace-and-freedom converted
 - 261025 create-task T436 (v9n4, created as T427, renumbered after u6p2's T427): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T436
+- 261025 fix e2e milestones (u6p2): assert native DOM height instead of Firefox protocol quad subtraction (44px reported as 43.999992px); two phone journeys pass on Firefox, type/lint/format pass; unit selection empty because application code is unchanged. c20e4f3e CI passes all other seven jobs; publish the test-only correction.
+- 261025 fix e2e precision start (u6p2): c20e4f3e CI 40107002410 passes checks, every unit shard, Chromium and both WebKit shards; only two Firefox milestone cases read 44px as 43.999992px through the protocol; use native DOM height, preserve application code
 - 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
 - 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
 - 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch
@@ -326,5 +328,3 @@
 - 261024 T421 T422 integrated
 - 261024 T416 integrated
 - 261024 T419 integrated
-- 261024 T418 integrated
-- 261024 T417 integrated

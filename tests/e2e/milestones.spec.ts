@@ -51,9 +51,8 @@ for (const viewport of [
     expect(Math.abs(cardBox.width - hubBox.width)).toBeLessThanOrEqual(1);
     expect(Math.abs(cardBox.x - hubBox.x)).toBeLessThanOrEqual(1);
     const titleBox = (await nextCard.locator('h3').boundingBox())!;
-    const prepareBox = (await nextCard
-      .getByRole('button', { name: '전술·선발 준비' })
-      .boundingBox())!;
+    const prepare = nextCard.getByRole('button', { name: '전술·선발 준비', exact: true });
+    const prepareBox = (await prepare.boundingBox())!;
     expect(cardBox.height).toBeLessThanOrEqual(152);
     const progressBox = (await hub
       .getByRole('progressbar', { name: '시즌 진행률', exact: true })
@@ -65,9 +64,11 @@ for (const viewport of [
     expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width);
     expect(prepareBox.y).toBeLessThan(titleBox.y + titleBox.height);
     expect(prepareBox.y + prepareBox.height).toBeGreaterThan(titleBox.y);
-    expect(prepareBox.height).toBeGreaterThanOrEqual(44);
+    // Firefox's protocol rounds 44px at fractional positions below 44; read the DOM size itself.
+    expect(
+      await prepare.evaluate((element) => element.getBoundingClientRect().height),
+    ).toBeGreaterThanOrEqual(44);
     // Notifications sit in the HUD; preparation stays usable across the full home content.
-    const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
     await prepare.scrollIntoViewIfNeeded();
     await settle(page);
     await prepare.click({ trial: true });
