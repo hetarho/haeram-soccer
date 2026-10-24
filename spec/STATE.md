@@ -307,9 +307,13 @@
 | v9n4-release | 4 | 11 | 8 | 3 | 0 | 0 | 0 | 2026-10-24T14:33:15.579Z | [history](work/v9n4-release.json) |
 
 ## next
-- Inspect the live work board before claiming the remaining engine tasks; UI work is complete.
+- resume work group v9n4-release (hand-off from v9n4, 261025 01:30): `npx haeram-spec-creator work status --json` and `work board --work v9n4-release --json`; if the runner is gone, `work runner-recover --work v9n4-release`, then run `work run --work v9n4-release --autopilot --provider claude --decision-wait-ms 900000 --json` in the background and coordinate with `work next --work v9n4-release --owner v9n4 --coordinator --autopilot --wait 540 --json` (the coordinator tag stays v9n4)
+- remaining in the group: T426 (carrier in stride, MATCH r27; resumed with the shielding-on-the-move decision) and T436 (promotion playoff material at the close; reuse 0969b77c on task/v9n4-release/T427-9420e805) → T286 (flip `MATCH_MODEL_RELEASE`, benchmarks on a quiet machine, accuracy report, docs; start from its switch-on probe notes)
+- after T286: T435 (match-model revision 2) → T431 → T432 (explore 6 h, main session) → T433 (explore 4 h, main session) → T410 (explore, re-read on the released model); T434 (explore 3 h, own-club edge probe on the released model, then the owner chooses A/B/C/D)
+- owner: review T422's set-piece pace in play before any further dead-ball compression (throw-ins, retrieval, penalties, cards, injuries, substitutions keep the running speed)
 
 ## log
+- 261025 v9n4 hand-off at 01:30: group v9n4-release continues in a new session (STATE next); integrated T415–T422 and T420 with green CI after two e2e fixes; planned T426, T431–T436 and MATCH r25–r27, STAFF r35, PLAYER r10, SAVE r53
 - 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
 - 261025 update-ssot MATCH r26 STAFF r35 PLAYER r10 SAVE r53 + create-task T431–T435 (v9n4): the freedom bundle as model revision 2 (T435 → T431 → T432 explore → T433 explore, after T286), the own-club edge probe T434 (explore, after T286); T410 dep + T433; ideation match-viewing-pace-and-freedom converted
 - 261025 create-task T436 (v9n4, created as T427, renumbered after u6p2's T427): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T436
@@ -329,4 +333,3 @@
 - 261024 T419 integrated
 - 261024 T418 integrated
 - 261024 T417 integrated
-- 261024 decide T416 (v9n4): no settlement writer bug; T416 lands as the corrected test file plus the activated-world guard
