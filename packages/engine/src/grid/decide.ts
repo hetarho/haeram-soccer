@@ -221,6 +221,14 @@ export const DECISION_CONFIG = {
      */
     finalThird: { from: 70, lateral: 1, back: 1, entry: 1, carry: 1, pass: 1 },
     /**
+     * A settled attack's patience (T411, →MATCH-13, MATCH-16): once a side has kept the ball
+     * `seconds` and its carrier is in the final third (`finalThird.from`), he passes `pass`
+     * times as often and shoots and crosses `shot` and `cross` times as often: a long spell
+     * around the box ends. Neutral at 1. T411 kept none: like T408's `pass`, fewer passes there
+     * lost passes and added shots and goals, and took offsides and tackles outside.
+     */
+    patience: { seconds: 30, pass: 1, shot: 1, cross: 1 },
+    /**
      * A pass into the box or a cut-back (T398, →MATCH-17): a teammate arriving on a box run scores
      * this much more. Neutral at 0.
      */
@@ -320,7 +328,16 @@ export function actionMix(
   };
   const candidate = s.setup.model !== undefined;
   // Fewer passes kept in the final third (candidate model, T408).
-  if (candidate && c[0] >= C.candidate.finalThird.from) mix.pass *= C.candidate.finalThird.pass;
+  if (candidate && c[0] >= C.candidate.finalThird.from) {
+    mix.pass *= C.candidate.finalThird.pass;
+    // A long spell around the box ends (T411).
+    const W = C.candidate.patience;
+    if (s.elapsed - s.possessionSince > W.seconds) {
+      mix.pass *= W.pass;
+      mix.shot *= W.shot;
+      mix.cross *= W.cross;
+    }
+  }
   if (inCutBack) {
     const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
     mix.cutBack = share * mix.cross;
