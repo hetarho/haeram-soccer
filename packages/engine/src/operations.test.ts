@@ -12,15 +12,19 @@ import {
   staffCandidates,
   transferOffers,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+/** The club on the pre-feature path: owner operations, not the match model, are the subject. */
 const world = () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Owners Athletic',
-    color: '#125544',
-    seed: 'ops',
-    level: 'easy' as const,
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Owners Athletic',
+      color: '#125544',
+      seed: 'ops',
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   w.settings = legacySettings(2);
   return w;
 };

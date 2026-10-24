@@ -5,15 +5,20 @@ import { divisionLevel, finishTerm, settleReputation, awardReputation } from './
 import { leagueFinishes } from './season';
 import { tieFixtures } from './knockout';
 import type { KnockoutRound, EuropeTournament } from '../../contracts/src/types';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+/** The club on the pre-feature path: reputation, not the match model, is the subject. */
 const world = () =>
-  simulatedWorld({
-    country: 'ENG',
-    name: 'Standing Reputation',
-    color: '#224466',
-    seed: 'standing-reputation',
-    level: 'normal',
-  });
+  simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Standing Reputation',
+      color: '#224466',
+      seed: 'standing-reputation',
+      level: 'normal',
+    },
+    {},
+    DISABLED_RELEASE,
+  );
 describe('standing-based reputation for every club', () => {
   it('uses next-division levels and symmetric champion/middle/last finish terms', () => {
     expect([0, 1, 2, 3, 4, 5].map((t) => divisionLevel(t, 4))).toEqual([75, 60, 45, 30, 8, 8]);

@@ -36,7 +36,7 @@ import {
   yearlyStaff,
 } from './index';
 import { ratio } from './primitives';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 const founding = (seed: string): Founding => ({
   country: 'ENG',
@@ -45,7 +45,8 @@ const founding = (seed: string): Founding => ({
   seed,
   level: 'easy' as const,
 });
-const world = (seed = 'market') => simulatedWorld(founding(seed));
+/** The club on the pre-feature path: the manager market, not the match model, is the subject. */
+const world = (seed = 'market') => simulatedWorld(founding(seed), {}, DISABLED_RELEASE);
 
 describe('manager market (STAFF-17)', () => {
   it('opens with the season four and drops the man the owner hires', () => {
@@ -118,8 +119,12 @@ describe('manager market (STAFF-17)', () => {
 
   it('moves every four rounds within 4-8 free agents, the same for the same seed', () => {
     // One run comes from the shared cache, built in its own pass; the other is played here.
-    const a = simulatedWorld(founding('moving'), { rounds: MARKET_REFRESH_ROUNDS * 3 }),
-      b = createWorld(founding('moving'));
+    const a = simulatedWorld(
+        founding('moving'),
+        { rounds: MARKET_REFRESH_ROUNDS * 3 },
+        DISABLED_RELEASE,
+      ),
+      b = createWorld(founding('moving'), DISABLED_RELEASE);
     for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) advanceRound(b, undefined, false);
     expect(a.managerMarket).toBeDefined();
     expect(a.managerMarket!.round).toBe(MARKET_REFRESH_ROUNDS * 3);
