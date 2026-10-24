@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r19 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r20 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -197,12 +197,12 @@
   - a work group maps task → `--task-verify`, batch → `--verify`, and omits `--group-verify`: CI is the group gate.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
-- ARCH-31 [o] The continuous-match and full probabilistic-result release has paired accuracy, throughput and capacity gates (→MATCH-28 and →SAVE-23).
+- ARCH-31 [o] The continuous-match and full probabilistic-result release has throughput and capacity gates (→SAVE-23); its accuracy (→MATCH-28) is measured and reported with the release, not a gate. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
   - throughput budgets are absolute, on a recorded reference machine (its CPU model, cores, memory and runtime named in the benchmark artifact, timed in a quiet window): a fixture without the own club takes at most 1 ms median with full numerical records enabled, and complete-season engine time at most 15 s median for both existing century workload profiles; do not skip clubs, competitions, calendar effects, player records or business actions to meet them. ← the complete model records about 30 times the facts of the summary path, so a ratio to that path cannot hold
   - compare paired runs with the same world scenarios and report the ratio to the baseline summary path as context, not as a gate; measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
-  - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending does not make the model pass its release gate.
-  - the final combined movement, intention and aggregate model must pass together. Reusing a reference measured before a relevant football change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
+  - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending never reports a failing metric as passing.
+  - the final combined movement, intention and aggregate model passes the throughput and capacity gates together. Reusing a measurement taken before a relevant change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
 
 - ARCH-32 [o] Locale and theme packs are data loaded through browser presentation adapters, independently of simulation and game checkpoints (→WEB-90/91).
   - `apps/web/public/presentation/locales/index.json` is the sole list of available locales; `apps/web/public/presentation/themes/index.json` is the sole list of available themes. Each registry declares its default and entries with stable IDs, display labels and relative resource URLs. Shared consumers derive choices and loaders from these registries; supported-ID unions, component-specific lists and per-ID branches are not additional registries.
@@ -233,6 +233,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r20 261024 ARCH-31✎ paired accuracy, throughput and capacity release gates→throughput and capacity gates with accuracy measured and reported, not a gate; a timebox ending does not pass the release gate→never reports a failing metric as passing
 - r19 261022 ARCH-31✎ throughput gates NPC fixture ≤50% and season engine time ≤80% of the same-machine pre-change baseline→absolute budgets on a recorded reference machine (fixture ≤1 ms median, season engine time ≤15 s median for both century profiles); the paired ratio becomes context
 - r18 261022 ARCH-32✎ fixed single-theme inventory→registry-owned inventory and progressive transition adapter with synchronous guarded commit
 - r17 261021 ARCH-32+ runtime JSON registries and presentation-only pack boundaries, resource-only extension, isolated preferences and one-pack foundation
