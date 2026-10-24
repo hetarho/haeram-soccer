@@ -8,7 +8,12 @@ import {
 import { canonical } from '../../contracts/src/index';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { upgradeWorldRules } from '../../contracts/src/versions';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import {
+  declaredRelease,
+  DISABLED_RELEASE,
+  ENABLED_RELEASE,
+  simulatedWorld,
+} from '../../../tests/fixtures/worlds';
 import { currentDay } from './calendar';
 import { M } from './grid/record';
 import { createWorld } from './index';
@@ -87,7 +92,9 @@ function fullRecord(): FullMatchRecord {
 
 describe('the full match record (→MATCH-13, MATCH-27)', () => {
   it('keeps production activation off and plays the pre-feature model without metadata', () => {
-    expect(MATCH_MODEL_RELEASE).toEqual({ revision: MATCH_MODEL_REVISION, enabled: false });
+    // The switch as the source declares it, which the release-on probe keeps before turning it on.
+    expect(declaredRelease()).toEqual({ revision: MATCH_MODEL_REVISION, enabled: false });
+    expect(MATCH_MODEL_RELEASE.revision).toBe(MATCH_MODEL_REVISION);
     expect(activeMatchModel({})).toBeUndefined();
     expect(validateFullMatchRecord(fullRecord())).toEqual([]);
     expect(() => assertFullMatchRecord(fullRecord())).not.toThrow();
@@ -246,12 +253,11 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
     seed: 'match-model',
     level: 'normal' as const,
   };
-  const enabled = { ...MATCH_MODEL_RELEASE, enabled: true };
-
   it('records the model from founding or from the next unplayed day', () => {
-    const founded = simulatedWorld(founding);
+    // Careers founded before the release, then activated by it.
+    const founded = simulatedWorld(founding, {}, DISABLED_RELEASE);
     const boundary = trackingBoundary(founded);
-    expect(activateMatchModel(founded, enabled)).toBe(true);
+    expect(activateMatchModel(founded, ENABLED_RELEASE)).toBe(true);
     expect(founded.matchModel).toEqual({
       revision: MATCH_MODEL_REVISION,
       activated: { year: founded.year, day: currentDay(founded), revision: founded.revision },
@@ -265,12 +271,12 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
       competitions: [],
     });
     // Founding with the switch on is the same career recorded from its first day.
-    expect(canonical(createWorld(founding, enabled))).toBe(canonical(founded));
-    expect(createWorld(founding).matchModel).toBeUndefined();
+    expect(canonical(createWorld(founding, ENABLED_RELEASE))).toBe(canonical(founded));
+    expect(createWorld(founding, DISABLED_RELEASE).matchModel).toBeUndefined();
     // Mid-season only the model and its empty ledger are added; every settled fact stays.
-    const played = simulatedWorld(founding, { rounds: 2 });
+    const played = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);
     const before = structuredClone(played);
-    expect(activateMatchModel(played, enabled)).toBe(true);
+    expect(activateMatchModel(played, ENABLED_RELEASE)).toBe(true);
     expect(played.matchModel).toMatchObject({
       trackedFrom: trackingBoundary(before),
       coverage: 'activation',
@@ -285,17 +291,17 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
   });
 
   it('activateMatchModel leaves a disabled release, a modelled world and earlier rules untouched', () => {
-    const untouched = (w: World, release = enabled) => {
+    const untouched = (w: World, release = ENABLED_RELEASE) => {
       const before = canonical(w);
       expect(activateMatchModel(w, release)).toBe(false);
       expect(canonical(w)).toBe(before);
     };
-    const w = simulatedWorld(founding, { rounds: 2 });
-    untouched(w, MATCH_MODEL_RELEASE);
+    const w = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);
+    untouched(w, DISABLED_RELEASE);
     expect(w.matchModel).toBeUndefined();
     // A recorded model is the career's model: never moved to a later boundary.
     const modelled = structuredClone(w);
-    activateMatchModel(modelled, enabled);
+    activateMatchModel(modelled, ENABLED_RELEASE);
     modelled.round++;
     untouched(modelled);
     // Any model data counts, a single full record included.
