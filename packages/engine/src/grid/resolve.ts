@@ -27,6 +27,7 @@ import {
 } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
+import { LANE_CONFIG, reachOnPath, TMP_SWITCH } from './lanes';
 
 type Kind = NonNullable<Decision['kind']>;
 type Ref = [0 | 1, number];
@@ -351,6 +352,7 @@ export function looseBall(
   return { kind: 'foul', by: by.idx, at, on: winner };
 }
 
+export const TMP_PROBE: number[][] = [];
 /** Where a ball played from `from` through `to` first leaves the pitch (engine frame). */
 function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch' | 'byline' } {
   const dx = to[0] - from[0],
@@ -368,6 +370,14 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
  * A pass. Draws, in order: completion; on failure the split; for a loose ball the winner.
  * Offside is checked by the caller before this resolves (T210). `at` (engine frame) is where the
  * ball is played when not to the receiver's feet: a through ball into his path (T324).
+ *
+ * On the candidate model (→MATCH-11, MATCH-31, T441) the lane is who reaches the ball's path,
+ * kicked `kickAt` seconds from now (`reachOnPath`): the marker is the opponent it meets first, on
+ * his 위치선정 (none: an even 60), and the lane term `LANE_CONFIG.risk` × the reaching opponents'
+ * summed weights. A failed pass the split gives to an interception is that opponent's, and only
+ * when one reaches it: he wins it at his reach point within `LANE_CONFIG.reach` with
+ * `LANE_CONFIG.sure` to spare, else deflects it loose there; with nobody reaching it the ball is
+ * lost at its receiver (or out) instead.
  */
 export function resolvePass(
   s: GridState,
@@ -380,6 +390,7 @@ export function resolvePass(
   r: () => number,
   bonus = 0,
   at?: readonly [number, number],
+  kickAt = 0,
 ): Outcome {
   const P = DUEL_CONFIG.pass;
   const from = attackFrame(side, s.players[side][idx]!.pos);
@@ -393,15 +404,23 @@ export function resolvePass(
     : long
       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
       : skill(s, side, idx, 'passing');
-  const marker = nearestToSegment(s, side, from, to);
-  const markerSkill = marker ? skill(s, other(side), marker.gp.idx, 'positioning') : 60;
+  const lane = onCandidate(s) && !TMP_SWITCH.off
+    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
+    : undefined;
+  const marker = lane ? undefined : nearestToSegment(s, side, from, to);
+  const first = lane?.first;
+  const markerSkill = first
+    ? skill(s, other(side), first.gp.idx, 'positioning')
+    : marker
+      ? skill(s, other(side), marker.gp.idx, 'positioning')
+      : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
       P.base +
       (passer - 60) * P.passer -
       (markerSkill - 60) * P.marker -
-      P.risk * laneRisk(s, side, from, to) -
+      (lane ? LANE_CONFIG.risk * lane.weight : P.risk * laneRisk(s, side, from, to)) -
       Math.max(0, dist - 20) * P.distance -
       P.pressure * tags.pressure +
       s.setup.bends[side].pass / 100 +
@@ -414,11 +433,17 @@ export function resolvePass(
     P.min,
     P.max,
   );
-  if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
+  const done = r() < p;
+  if (lane) TMP_PROBE.push([dist, first ? first.along : -1, first ? first.spare : -1, first?.stretch ? 1 : 0, lane.weight, done ? 1 : 0, kickAt]);
+  if (done) return { kind: 'complete', to: toEngine(side, to), receiver: target };
   const u = r();
   const I = DUEL_CONFIG.candidate.intercept;
   const intercepted =
     onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
+  if (u < intercepted && first)
+    return !first.stretch && first.spare >= LANE_CONFIG.sure
+      ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
+      : looseBall(s, first.at, r, [side, target]);
   if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
