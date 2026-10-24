@@ -34,7 +34,8 @@ import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
 import { assertFullMatchRecord } from './match-model';
-export { MATCH_MOTION_CONFIG, motionTraits, teamMotionProfile } from './grid/playback';
+export { MATCH_MOTION_CONFIG, teamMotionProfile } from './grid/playback';
+export { matchdayRole, playerTendencies } from './grid/tendencies';
 export const METRICS = [
   '득점',
   '도움',
