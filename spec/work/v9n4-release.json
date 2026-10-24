@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T17:13:07.824Z",
-  "sourceCommit": "5670d040ef2f52c672d5476371f4b9706ad1d4a4",
+  "snapshotAt": "2026-10-24T17:14:09.498Z",
+  "sourceCommit": "b58803d1fbe33fd88d6e445416429f8ccfc85c1b",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,13 +15,13 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "1e060b3bc35b19aae6c0a4c8f9f7a107731b38ee",
+      "commit": "b58803d1fbe33fd88d6e445416429f8ccfc85c1b",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T16:46:38.641Z"
+      "at": "2026-10-24T17:13:11.503Z"
     },
     "lastRun": {
-      "id": "1949a3c7-d67d-40ad-8177-e3c94378bd45",
+      "id": "e75c188b-d82a-4d4c-9549-9ec8604213a9",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -42,15 +42,15 @@
           "version": "2.1.310 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-24T17:12:32.653Z",
-      "stoppedAt": "2026-10-24T17:13:05.319Z",
-      "dispatched": 1,
+      "startedAt": "2026-10-24T17:14:03.947Z",
+      "stoppedAt": "2026-10-24T17:14:07.182Z",
+      "dispatched": 0,
       "outcome": "needs-attention",
       "failures": [
         {
           "attempt": "c5718a8f-acf7-488c-a840-7c23a953237d",
           "role": "worker",
-          "error": "T426: 태스크 result에 limits 기록이 필요합니다."
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
         }
       ],
       "autopilot": true,
@@ -972,13 +972,14 @@
         "T426"
       ],
       "lane": null,
-      "owner": "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1",
+      "owner": "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1",
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
-        "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1"
+        "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1",
+        "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1"
       ],
       "status": "blocked",
-      "reason": "T426: 태스크 result에 limits 기록이 필요합니다.",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
       "createdAt": "2026-10-24T14:51:13.055Z",
       "startCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
       "dispatch": {
@@ -6557,6 +6558,151 @@
               "attempt": "c5718a8f-acf7-488c-a840-7c23a953237d",
               "role": "worker",
               "error": "T426: 태스크 result에 limits 기록이 필요합니다."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1092,
+      "at": "2026-10-24T17:13:11.515Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "b58803d1fbe33fd88d6e445416429f8ccfc85c1b",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T17:13:11.503Z"
+        }
+      }
+    },
+    {
+      "sequence": 1093,
+      "at": "2026-10-24T17:13:48.984Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1094,
+      "at": "2026-10-24T17:14:03.985Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "e75c188b-d82a-4d4c-9549-9ec8604213a9",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T17:14:03.947Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1095,
+      "at": "2026-10-24T17:14:04.083Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+          "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1",
+          "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1096,
+      "at": "2026-10-24T17:14:04.196Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1097,
+      "at": "2026-10-24T17:14:07.182Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "e75c188b-d82a-4d4c-9549-9ec8604213a9",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T17:14:03.947Z",
+          "stoppedAt": "2026-10-24T17:14:07.182Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "c5718a8f-acf7-488c-a840-7c23a953237d",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
             }
           ],
           "autopilot": true,
