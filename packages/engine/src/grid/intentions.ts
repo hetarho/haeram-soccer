@@ -22,6 +22,8 @@ import {
   planCoordination,
   pressReach,
   rank,
+  screenable,
+  screenPoint,
   type CoordinationPlan,
 } from './coordination';
 import { attackFrame, PITCH, toEngine } from './pitch';
@@ -36,7 +38,10 @@ export type IntentionEnd = (typeof INTENTION_ENDS)[number];
 export const INTENTION_REASONS = {
   /** He stands on its target (a reception, a run's end, a restart place). */
   arrival: 'achieved',
-  /** What it answered is over: the danger passed, the runner stopped, the presser stopped. */
+  /**
+   * What it answered is over: the danger passed, the runner stopped, the presser stopped; for a
+   * screen, the carrier played the ball or the receiver left the lane (T442).
+   */
   cleared: 'achieved',
   expiry: 'expired',
   /** He cannot reach its target before it expires, or lost the man he tracked. */
@@ -69,8 +74,13 @@ export interface Intention {
   target: [number, number];
   /** Roster index of the teammate it serves: the carrier he shows for, the presser he covers, the passer. */
   teammate?: number;
-  /** Roster index of the opponent it tracks: the carrier he presses, the runner he marks. */
+  /** Roster index of the opponent it tracks: the carrier he presses or screens, the runner he marks. */
   opponent?: number;
+  /**
+   * Roster index of the carrier's teammate whose lane from the carrier (`opponent`) it shuts
+   * (→MATCH-32, T442): the option a tactical press keeps in his cover shadow, a screen's receiver.
+   */
+  shadow?: number;
   /** A run's kind; an overlap's teammate is the carrier it combines with. */
   run?: 'behind' | 'overlap' | 'box';
   /** A support's job: showing to receive, or stepping out of the lane the ball would take. */
@@ -106,6 +116,7 @@ export const INTENTION_CONFIG = {
     cover: 6,
     recover: 6,
     restart: 300,
+    screen: 6,
   },
   /** Metres within which a fixed target is reached. */
   arrive: 1,
@@ -187,8 +198,13 @@ export function depart(
   for (const side of [0, 1] as const)
     for (const p of s.players[side]) {
       const i = p.intention;
-      if (i && (side === gp.side ? i.teammate : i.opponent) === gp.idx)
-        endIntention(s, p, 'departed');
+      if (!i) continue;
+      if ((side === gp.side ? i.teammate : i.opponent) === gp.idx) endIntention(s, p, 'departed');
+      // A lane's receiver (T442): a screen ends with him, a press only loses its cover shadow.
+      else if (side !== gp.side && i.shadow === gp.idx) {
+        if (i.kind === 'screen') endIntention(s, p, 'departed');
+        else delete i.shadow;
+      }
     }
 }
 
@@ -390,6 +406,15 @@ function verdict(
       // A set-piece guard holds until the second ball is over (T348).
       if (i.zone) return secondBallOver(s, other(gp.side)) ? 'cleared' : undefined;
       return mate?.intention?.kind === 'press' ? undefined : 'cleared';
+    case 'screen': {
+      // He stands in the lane until the carrier plays the ball or the receiver leaves it (T442).
+      const receiver = i.shadow === undefined ? undefined : s.players[other(gp.side)][i.shadow];
+      if (receiver && !onPitch(receiver)) return 'departed';
+      if (!foe || !receiver || !isOwner(s, foe)) return 'cleared';
+      return screenable(s, foe, receiver) && screenPoint(s, gp, foe, receiver)
+        ? undefined
+        : 'cleared';
+    }
   }
   const d = gap(gp.pos, i.target);
   if (d <= C.arrive) return 'arrival';
@@ -435,9 +460,15 @@ export function updateIntentions(s: GridState, inFlight = false): void {
       if (reason) endIntention(s, gp, reason);
     }
   for (const roster of s.players)
-    for (const gp of roster)
-      if (gp.intention && TRACKING.has(gp.intention.kind))
-        gp.intention.target = inside(intentionTarget(s, gp));
+    for (const gp of roster) {
+      const i = gp.intention;
+      if (i && TRACKING.has(i.kind)) i.target = inside(intentionTarget(s, gp));
+      // A screen keeps to the lane as its carrier and receiver move, once an action (T442).
+      else if (i?.kind === 'screen') {
+        const foes = s.players[other(gp.side)];
+        i.target = inside(screenPoint(s, gp, foes[i.opponent!]!, foes[i.shadow!]!) ?? i.target);
+      }
+    }
   // With no carrier `planCoordination` plans nothing (its empty plan), so it is not asked.
   if (!inFlight) applyCoordination(s, planCoordination(s, danger));
 }
@@ -456,6 +487,12 @@ export function applyCoordination(s: GridState, plan: CoordinationPlan): void {
     const gp = s.players[h.side][h.from]!;
     endIntention(s, gp, 'handover');
     gp.ended!.teammate = h.to;
+  }
+  for (const { side, idx, option } of plan.shadows) {
+    const gp = s.players[side][idx]!;
+    if (option === undefined) delete gp.intention!.shadow;
+    else gp.intention!.shadow = option;
+    gp.intention!.target = inside(intentionTarget(s, gp));
   }
   for (const job of plan.jobs) {
     const gp = s.players[job.side][job.idx]!;

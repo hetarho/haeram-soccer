@@ -1,11 +1,14 @@
 /**
  * Who reaches a ball's path before it has passed (→MATCH-31, T441): the shared reach module a pass
  * reads for its lane and its interceptor, and deliveries and second balls after it. It imports
- * nothing from `resolve.ts`, so the resolutions can all read it. Candidate model only: it reads the
- * players' velocities, and its distances are square roots of sums of squares, IEEE-754 basic
- * operations that give the same bits on every host (→ARCH-9).
+ * nothing from `resolve.ts`, so the resolutions can all read it. The defending side reads it too,
+ * to shut the carrier's lanes (→MATCH-32, T442). Candidate model only: it reads the players'
+ * velocities, and its distances are square roots of sums of squares, IEEE-754 basic operations that
+ * give the same bits on every host (→ARCH-9).
  */
+import { CELL_BASELINES } from './baselines';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG, readAt } from './movement';
+import { attackFrame, cellOf, type Point } from './pitch';
 import { speedOf } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 
@@ -34,6 +37,89 @@ export const LANE_CONFIG = {
   /** Halvings that place the first reach between two scanned points (to 1/32 of `step`). */
   refine: 5,
 } as const;
+
+/** Initial values (T442, →MATCH-32); T437 calibrates them. */
+export const SHADOW_CONFIG = {
+  /** Metres from the carrier within which a teammate is a nearby option (`dangerousOption`). */
+  near: 25,
+  /** Metres at most a presser's target moves toward the line to the option he shadows (`coverShadow`). */
+  curve: 1.5,
+  /**
+   * A screen: a defending midfielder or defender whose shape place is within `reach` m of a lane
+   * stands in it, at most `step` m from that place.
+   */
+  screen: { reach: 10, step: 6 },
+} as const;
+
+/** The threat `side` gains passing from `from` to `to` (engine frame): the xT of their cells. */
+export function threatGain(
+  side: 0 | 1,
+  from: readonly [number, number],
+  to: readonly [number, number],
+): number {
+  return (
+    CELL_BASELINES[cellOf(attackFrame(side, to))]!.xT -
+    CELL_BASELINES[cellOf(attackFrame(side, from))]!.xT
+  );
+}
+
+/**
+ * Whether `option`, a teammate of `side`'s `carrier`, is a nearby option that gains threat: on the
+ * pitch, within `SHADOW_CONFIG.near` m of him and in a cell of higher xT (`threatGain`).
+ */
+export function nearbyThreat(
+  side: 0 | 1,
+  carrier: GridPlayer,
+  option: GridPlayer,
+): boolean {
+  if (option === carrier || !onPitch(option)) return false;
+  const dx = option.pos[0] - carrier.pos[0],
+    dy = option.pos[1] - carrier.pos[1];
+  return (
+    Math.sqrt(dx * dx + dy * dy) <= SHADOW_CONFIG.near &&
+    threatGain(side, carrier.pos, option.pos) > 0
+  );
+}
+
+/**
+ * The carrier's most dangerous nearby option (→MATCH-32): among `side`'s teammates of `carrier`
+ * that are nearby options gaining threat (`nearbyThreat`), the one with the highest gain (equal
+ * gains by player ID) whose path no opponent reaches as everyone stands (`reachOnPath`, kicked
+ * now), or none.
+ */
+export function dangerousOption(
+  s: GridState,
+  side: 0 | 1,
+  carrier: GridPlayer,
+): GridPlayer | undefined {
+  const options: { gp: GridPlayer; gain: number }[] = [];
+  for (const gp of s.players[side])
+    if (nearbyThreat(side, carrier, gp))
+      options.push({ gp, gain: threatGain(side, carrier.pos, gp.pos) });
+  options.sort((a, b) => b.gain - a.gain || (a.gp.player.id < b.gp.player.id ? -1 : 1));
+  return options.find(({ gp }) => !reachOnPath(s, side, carrier.pos, gp.pos, 0).first)?.gp;
+}
+
+/**
+ * The cover shadow (→MATCH-32): `point`, where a presser goes for `carrier`, moved by at most
+ * `SHADOW_CONFIG.curve` m toward the point of the line from `carrier` to `option` that lies as far
+ * from the carrier (never past the option), so the presser approaches between the carrier and that
+ * option and keeps it behind him. Any frame the three points share.
+ */
+export function coverShadow(point: Point, carrier: Point, option: Point): [number, number] {
+  const ox = option[0] - carrier[0],
+    oy = option[1] - carrier[1];
+  const length = Math.sqrt(ox * ox + oy * oy);
+  if (length === 0) return [point[0], point[1]];
+  const px = point[0] - carrier[0],
+    py = point[1] - carrier[1];
+  const r = Math.min(length, Math.sqrt(px * px + py * py));
+  const sx = (ox / length) * r - px,
+    sy = (oy / length) * r - py;
+  const d = Math.sqrt(sx * sx + sy * sy);
+  const k = d > SHADOW_CONFIG.curve ? SHADOW_CONFIG.curve / d : 1;
+  return [point[0] + sx * k, point[1] + sy * k];
+}
 
 /** An opponent who reaches a ball's path before it has passed (engine frame, seconds from now). */
 export interface LaneReach {
