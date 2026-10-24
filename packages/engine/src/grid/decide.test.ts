@@ -358,6 +358,36 @@ describe('grid decisions', () => {
     expect(hits / 2000).toBeCloseTo(bestShare(sc), 1);
   });
 
+  it('a reached lane is chosen less often (T441)', () => {
+    // Two receivers 17 m out at ±45°; a defender stands 6 m into the left one's lane, too far from
+    // the carrier to press him and from both receivers to mark them.
+    const lane = (decisions: number, defender: boolean) => {
+      const sc = scene(CM, [60, 34]);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      setSkills(sc.s, CM, { decisions, composure: 60 });
+      place(sc.s, 1, [72, 22]);
+      place(sc.s, 2, [72, 46]);
+      if (defender) sc.s.players[1][3]!.pos = [64.24, 29.76];
+      const tags = sc.tags();
+      expect(tags.pressure).toBe(0);
+      const options = passOptions(sc.s, 0, CM, tags);
+      const p = passProbabilities(options, temperature(sc.s, 0, CM, tags), sc.s.math);
+      const of = (target: number) => p[options.findIndex((o) => o.target === target)]!;
+      const r = random(`t441-lane-${decisions}-${defender}`);
+      let chosen = 0;
+      for (let i = 0; i < 4000; i++) if (choosePass(sc.s, 0, CM, tags, r)!.target === 1) chosen++;
+      return { odds: of(1) / of(2), chosen: chosen / 4000 };
+    };
+    const open = lane(60, false);
+    const reached = lane(60, true);
+    expect(reached.chosen).toBeLessThan(open.chosen - 0.05);
+    expect(reached.odds).toBeLessThan(open.odds * 0.8);
+    // A better head (a cooler temperature) avoids the reached lane more surely.
+    const sharp = lane(90, true).odds / lane(90, false).odds;
+    const dull = lane(30, true).odds / lane(30, false).odds;
+    expect(sharp).toBeLessThan(dull);
+  });
+
   it("lets pressure scatter a low-composure player's choices", () => {
     const calm = bestShare(choiceScene(60, 90), 2);
     const shaky = bestShare(choiceScene(60, 30), 2);

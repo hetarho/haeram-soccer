@@ -88,12 +88,19 @@ export const ADDED_CONFIG = {
   ],
 } as const;
 
+/**
+ * Candidate model (→MATCH-31, T441): each side's failed open-play passes by where they ended — won
+ * in the lane by an opponent who reached it, deflected loose there, lost at the receiver (a 50/50
+ * there included) or out of play. Offsides are flagged before a pass is played and are not here.
+ */
+export type PassLosses = Record<'intercepted' | 'deflected' | 'receiver' | 'out', [number, number]>;
+
 export interface GridResult {
   record: MatchRecord;
   trace?: TraceEntry[];
   /** Match seconds played, dead time included. */
   elapsed: number;
-  diagnostics: GridDiagnostics;
+  diagnostics: GridDiagnostics & { passLosses?: PassLosses };
 }
 
 type Ref = [0 | 1, number];
@@ -147,6 +154,9 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The take-on that came immediately before the current action (an assist needs a pass, not a dribble). */
   let prevBeat: Ref | undefined;
   let holdBias = false;
+  const passLosses: PassLosses | undefined = candidate
+    ? { intercepted: [0, 0], deflected: [0, 0], receiver: [0, 0], out: [0, 0] }
+    : undefined;
   /** When the last corner or free kick was taken, and whether the current restart is a penalty. */
   let setPieceAt: number | undefined;
   let penalty = false;
@@ -597,11 +607,18 @@ export function playGrid(setup: GridSetup): GridResult {
     return reads;
   }
 
-  /** One decision by the player on the ball; returns the timing key of what was played and its outcome. */
+  /**
+   * One decision by the player on the ball; returns the timing key of what was played and its
+   * outcome. `jitter` is the action's drawn time factor and `carry` his in-stride carry before it
+   * (candidate model): after a carry he kicks at once, else after the wind-up his flight leaves of
+   * the action, which is when the opponents' reach of a pass is read from (→MATCH-31, T441).
+   */
   function play(
     side: 0 | 1,
     idx: number,
     d: Decision,
+    jitter = 0,
+    carry?: Carry,
   ): { key: ActionKey; outcome: Outcome | 'offside' } {
     // His first touch has been decided (T397).
     s.received = undefined;
@@ -648,7 +665,16 @@ export function playGrid(setup: GridSetup): GridResult {
         // On the candidate model a through ball goes into the runner's path (T324).
         const lead =
           candidate && d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
-        const to = attackFrame(side, lead ?? s.players[side][d.target]!.pos);
+        const end = lead ?? s.players[side][d.target]!.pos;
+        const to = attackFrame(side, end);
+        const kickAt =
+          candidate && !carry
+            ? Math.max(
+                0,
+                secondsOf(d.kind ?? 'short') * jitter -
+                  flightSeconds(s.players[side][idx]!.pos, end, 'pass'),
+              )
+            : 0;
         const o = resolvePass(
           s,
           side,
@@ -660,7 +686,21 @@ export function playGrid(setup: GridSetup): GridResult {
           r,
           0,
           lead,
+          kickAt,
         );
+        if (passLosses && o.kind !== 'complete') {
+          // A loose ball (or a foul in its 50/50) anywhere but the pass's end was deflected in the lane.
+          const at = o.kind === 'loose' || o.kind === 'foul' ? o.at : undefined;
+          const where =
+            o.kind === 'intercepted'
+              ? 'intercepted'
+              : o.kind === 'out'
+                ? 'out'
+                : at && s.math.hypot(at[0] - end[0], at[1] - end[1]) > 1e-6
+                  ? 'deflected'
+                  : 'receiver';
+          passLosses[where][side]++;
+        }
         tally.passEvent(side, idx, {
           from,
           to,
@@ -896,7 +936,7 @@ export function playGrid(setup: GridSetup): GridResult {
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
-        const played = play(owner[0], owner[1], d);
+        const played = play(owner[0], owner[1], d, jitter, carry);
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
@@ -1006,6 +1046,10 @@ export function playGrid(setup: GridSetup): GridResult {
     record,
     ...(setup.observe ? { trace: tracer.entries } : {}),
     elapsed: s.elapsed,
-    diagnostics: { ...tally.diagnostics, freshness: [sideFreshness(s, 0), sideFreshness(s, 1)] },
+    diagnostics: {
+      ...tally.diagnostics,
+      freshness: [sideFreshness(s, 0), sideFreshness(s, 1)],
+      ...(passLosses ? { passLosses } : {}),
+    },
   };
 }

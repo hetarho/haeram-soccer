@@ -18,7 +18,13 @@ import {
   shotContext,
   type Outcome,
 } from './resolve';
+import { playGrid } from './engine';
+import { LANE_CONFIG } from './lanes';
+import { validateFullMatchRecord } from '../match-model';
+import { GRID_BALL_CONFIG } from './movement';
 import type { Point } from './pitch';
+import { buildGridSetup } from './setup';
+import { SHAPE_CONFIG } from './shape';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
 import { strengthScaled, type GridState } from './state';
@@ -220,6 +226,112 @@ describe('grid open-play resolution', () => {
       expect(lost(out + 1e-6, 40, tactic, true)).toBe('out');
       expect(lost(out - 1e-6, 40, tactic, true)).not.toBe('out');
     }
+  });
+
+  /** A failing candidate pass from [60, 34] to [75, 34], drawn `n` times; `foe` stands where given. */
+  const failing = (n: number, seed: string, foe?: Point) => {
+    const sc = scene(7, [60, 34], ['balanced', 'press']);
+    sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+    sc.s.players[0][8]!.pos = [75, 34];
+    if (foe) sc.s.players[1][3]!.pos = [...foe];
+    set(sc.s, 0, 7, 'passing', 0);
+    const r = random(seed);
+    const tags = sc.tags();
+    return Array.from({ length: n }, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r));
+  };
+  const lostAt = (o: Outcome) => (o.kind === 'loose' || o.kind === 'foul' ? o.at : undefined);
+
+  it('a pass whose lane nobody reaches is never intercepted (T441)', () => {
+    const outcomes = failing(20000, 't441-open');
+    const kinds = tally(outcomes.length, (i) => outcomes[i]!);
+    expect(kinds.intercepted ?? 0).toBe(0);
+    expect(kinds.loose).toBeGreaterThan(1000);
+    expect(kinds.out).toBeGreaterThan(100);
+    // Lost only at its receiver: every loose ball and 50/50 foul is where he stands.
+    for (const o of outcomes) {
+      const at = lostAt(o);
+      if (at) expect(at).toEqual([75, 34]);
+    }
+  });
+
+  it('a failed pass is won where the man in the lane meets it, or deflected there at full stretch (T441)', () => {
+    // Standing in the lane 5 m out: he wins the build-up's share of the failed passes cleanly.
+    const inLane = failing(20000, 't441-lane', [65, 34]);
+    const won = inLane.filter((o) => o.kind === 'intercepted');
+    expect(won.length).toBeGreaterThan(200);
+    for (const o of won) {
+      expect(o).toMatchObject({ kind: 'intercepted', by: 3 });
+      const [x, y] = (o as Extract<Outcome, { kind: 'intercepted' }>).at;
+      // Where the ball first comes within his reach, a step before him at most.
+      expect(y).toBeCloseTo(34, 9);
+      expect(65 - x).toBeGreaterThan(0);
+      expect(65 - x).toBeLessThan(LANE_CONFIG.reach + 1);
+    }
+    // 2 m off the line he gets a touch at full stretch only: the same share is deflected loose there.
+    const stretched = failing(20000, 't441-lane', [67, 36]);
+    expect(stretched.filter((o) => o.kind === 'intercepted')).toHaveLength(0);
+    const deflected = stretched.filter((o) => {
+      const at = lostAt(o);
+      return at && (at[0] !== 75 || at[1] !== 34);
+    });
+    expect(Math.abs(deflected.length - won.length)).toBeLessThan(won.length * 0.25);
+    for (const o of deflected) {
+      const [x, y] = lostAt(o)!;
+      // On the line, where a step toward it takes him within stretch before the ball.
+      expect(y).toBeCloseTo(34, 9);
+      expect(x).toBeLessThanOrEqual(67);
+      expect(x).toBeGreaterThan(64);
+    }
+  });
+
+  it('nobody cuts out a pass he could not reach (T441)', () => {
+    const kit = gridKit(['press', 'possession'], undefined, DISABLED_RELEASE);
+    /** The fastest any player runs: full pace, fresh, recovering after a turnover (m/s). */
+    const TOP = (SHAPE_CONFIG.speed.base + SHAPE_CONFIG.speed.pace) * SHAPE_CONFIG.recoverySpeed;
+    let checked = 0,
+      fromKick = 0;
+    for (const id of ['lanes-1', 'lanes-2', 'lanes-3']) {
+      const result = playGrid(
+        buildGridSetup(
+          kit.w,
+          { ...kit.f, id },
+          { observe: true, recordPlayers: true, model: MATCH_MODEL_REVISION },
+        ),
+      );
+      expect(validateFullMatchRecord(result.record), id).toEqual([]);
+      const trace = result.trace!;
+      trace.forEach((e, n) => {
+        if (e.action !== 'pass' || e.outcome !== 'intercepted') return;
+        const [foe, by] = e.by!;
+        const reachAt = e.to!;
+        // The flight ends at his reach point (none when he meets it as it is played).
+        const landing = e.knots?.at(-1);
+        if (landing) expect(landing.ball).toEqual(reachAt);
+        // Where he is when it arrives: where his next play starts (his carry, or he plays it there).
+        const next = trace.slice(n + 1).find((x) => x.outcome !== 'incident');
+        if (next?.side === foe && next.idx === by && next.from) {
+          const carry = next.knots?.[0]?.kind === 'carry' ? next.knots[0].ball : next.from;
+          expect(Math.hypot(carry[0] - reachAt[0], carry[1] - reachAt[1])).toBeLessThanOrEqual(
+            LANE_CONFIG.stretch,
+          );
+          checked++;
+        }
+        // After an in-stride carry the trace's places are those at the kick: he could get within
+        // reach of the point before the ball, at the fastest anyone runs.
+        const kick = e.knots?.find((k) => k.kind === 'kick');
+        if (e.knots?.[0]?.kind !== 'carry' || !kick) return;
+        const slot = [...e.slots.subarray(foe * 11, foe * 11 + 11)].indexOf(by);
+        const at = [e.positions[(foe * 11 + slot) * 2]!, e.positions[(foe * 11 + slot) * 2 + 1]!];
+        const flight =
+          Math.hypot(reachAt[0] - kick.ball[0], reachAt[1] - kick.ball[1]) / GRID_BALL_CONFIG.pass;
+        expect(
+          Math.hypot(at[0]! - reachAt[0], at[1]! - reachAt[1]) - LANE_CONFIG.reach,
+        ).toBeLessThanOrEqual(TOP * flight + 0.01);
+        fromKick++;
+      });
+    }
+    expect(checked).toBeGreaterThan(10);
+    expect(fromKick).toBeGreaterThan(10);
   });
 
   it('lets the keeper gather a share of the failed crosses running out on the candidate model only (T371)', () => {

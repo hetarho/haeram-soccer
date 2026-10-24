@@ -92,11 +92,13 @@ const facts = (w: World) => ({
  * candidate rounds through their aggregate fixtures); a8d299718d0919a0 and 93e1b3f124830eb1
  * before. T409's added seconds a half (the aggregate's stoppages left uncredited) changed the
  * aggregate records only; e1a19359f49581e0 before. T426's in-stride carry on the grid changed the
- * candidate rounds only (the aggregate path untouched); e307acad9c517fe3 before.
+ * candidate rounds only (the aggregate path untouched); e307acad9c517fe3 before. T441's passes
+ * cut out only where they are reached (calibration round 69: completion 77.3 → 77.4%,
+ * interceptions 13.6 → 7.5 a team) changed the candidate rounds only; 525b895cc4a040c2 before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: '525b895cc4a040c2',
+  candidateRounds: '5c21d584c8efd809',
 };
 
 describe('complete-result throughput (T285)', () => {
