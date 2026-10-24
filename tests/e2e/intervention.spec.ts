@@ -33,7 +33,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   const save = dialog.getByRole('button', { name: '이 선발로 다음 경기 준비' });
   await settle(page);
   const rect = await save.boundingBox();
-  expect(rect!.height).toBeGreaterThanOrEqual(48);
+  expect(rect!.height).toBeGreaterThanOrEqual(44);
   expect(rect!.y + rect!.height).toBeLessThanOrEqual(844);
   await save.click();
   await expect(

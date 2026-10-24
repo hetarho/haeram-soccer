@@ -4,11 +4,11 @@
 }
 /* League tabs stay reachable while long tables below them scroll. */
 .navigation {
-  margin-bottom: 14px;
+  margin-bottom: 4px;
   position: sticky;
   top: var(--task-offset, -2px);
   z-index: 6;
-  padding: 4px 0 6px;
+  padding: 0;
   /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters
      the whole band on every league visit, about 20 times the cost of any other tab. */
   background: var(--surface-grain, none) var(--hud);
@@ -22,17 +22,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 0;
+  margin-bottom: 4px;
 }
 .seasonPicker .seasonSelect.seasonSelect {
-  flex: 0 1 200px;
-  min-width: 0;
+  flex: 0 0 104px;
+  width: 104px;
+  min-width: 104px;
   font-weight: 700;
 }
 .seasonSelect > span:first-child {
   flex: 1;
   text-align: center;
+}
+.seasonSelect > :last-child {
+  flex-basis: 10px;
+  width: 10px;
+  height: 10px;
+}
+.seasonStep > :first-child {
+  width: 14px;
+  height: 14px;
 }
 .seasonStep {
   flex: none;
@@ -156,7 +166,7 @@
     margin-bottom: 5px;
   }
   .seasonPicker {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .tabs {
     flex: 1;
@@ -251,8 +261,8 @@
   }
   .tabs.tabs button {
     min-width: 0;
-    min-height: 48px;
-    padding: 4px 1px;
+    min-height: 44px;
+    padding: 2px 1px;
     font-size: 12px;
     line-height: 1.2;
     white-space: normal;

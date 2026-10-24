@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
-import { horizontalOverflow } from './layout';
+import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
@@ -198,6 +198,7 @@ for (const viewport of [
     const badge = page.getByTestId('match-score').getByTestId('possession-cue');
     await expect(badge).toHaveCount(1, { timeout: 10_000 });
     await expect(badge).toHaveAccessibleName('볼 소유');
+    await expectStablePossessionLayout(page);
     const badgeBox = (await badge.boundingBox())!;
     expect(badgeBox.x).toBeGreaterThanOrEqual(0);
     expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(viewport.width);

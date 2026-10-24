@@ -1,0 +1,3 @@
+/* Bundle shared skins once; active pack stylesheets supply their visual resources. */
+@import '../../public/presentation/themes/image-ui-shell.css';
+@import '../../public/presentation/themes/image-ui-controls.css';

@@ -239,7 +239,8 @@ test('opens club seasons in records and retains the detail scope through league 
   await found(page);
   await nav(page).getByRole('button', { name: '클럽 기록실', exact: true }).click();
   const list = page.getByRole('table', { name: '시즌별 기록' });
-  await expect(list).toContainText('진행 중');
+  await expect(list.locator('tr[aria-current="true"]')).toHaveCount(1);
+  await expect(list).not.toContainText('진행 중');
   await list.getByRole('button').first().click();
   await page
     .getByRole('group', { name: '시즌 기록 보기' })

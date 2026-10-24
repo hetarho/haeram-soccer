@@ -71,23 +71,24 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  min-height: 280px;
+  min-height: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--scene-radius);
   background: var(--surface-grain, none) var(--surface-deep);
 }
 .scene > .sceneArt {
-  position: absolute;
-  inset: 0 0 var(--scene-stats-height);
+  position: relative;
   display: block;
+  flex: none;
   width: 100%;
   height: auto;
+  aspect-ratio: 3 / 1;
 }
 .stageLabel {
   position: absolute;
   right: 12px;
-  bottom: calc(var(--scene-stats-height) + 8px);
+  bottom: 8px;
   z-index: 1;
   padding: 2px 5px;
   font-size: 12px;
@@ -248,15 +249,9 @@
     flex-direction: column;
     gap: 16px;
   }
-  /* The club's stage stays readable; spare height grows it, and home scrolls when needed. */
-  .scene {
-    flex: 1 1 auto;
-    min-height: 180px;
-    max-height: 280px;
-  }
   .stageLabel {
     right: 8px;
-    bottom: 64px;
+    bottom: 8px;
     font-size: 12px;
     font-family: var(--display);
   }
@@ -277,9 +272,6 @@
   }
   .resources b {
     font-size: 18px;
-  }
-  .scene {
-    min-height: 180px;
   }
   .fixture {
     gap: var(--control-gap);
@@ -355,7 +347,7 @@
   color: inherit;
 }
 
-/* Team condition: states, not statistics, with a remedy for the most urgent one. */
+/* Each condition opens its own explanation and remedies. */
 .state {
   grid-area: state;
   padding: 10px 0;
@@ -419,6 +411,27 @@
   color: var(--text-faint);
   font-family: var(--display);
 }
+.stateLabel {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  gap: 4px;
+}
+.state li .warningBadge {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
 .state li b {
   font-size: 16px;
   font-weight: 700;
@@ -459,45 +472,6 @@
 .bad small,
 .bad b {
   color: var(--danger);
-}
-.advice {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: 12px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-  animation: rise 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-.advice.bad {
-  background: var(--surface-grain, none) var(--warm-soft) !important;
-}
-.advice p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--text);
-  font-family: var(--display);
-}
-.advice div {
-  display: flex;
-  gap: 6px;
-}
-.advice div button {
-  flex: 1 1 0;
-  min-width: 0;
-}
-.advice div .moreRemedies {
-  flex: 0 0 auto;
-  padding: 4px 10px;
-  color: var(--accent-text);
-}
-.advice button {
-  min-height: 44px;
-  padding: 4px 8px;
-  font-size: 12px;
-  font-family: var(--display);
 }
 .calm {
   margin: 6px 0 0;
@@ -562,6 +536,16 @@ button.resources:active:not(:disabled) {
 }
 .remedyHead .good {
   color: var(--positive);
+}
+.remedyAdvice {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid var(--danger);
+  background: var(--surface-grain, none) var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 .remedies {
   list-style: none;
@@ -639,27 +623,35 @@ button.resources:active:not(:disabled) {
   color: var(--on-accent);
 }
 
-/* Stage: the club scene with the season numbers laid over its lower edge. */
-.stage {
-  --scene-stats-height: 86px;
+/* Both rows participate in layout, so no empty scene spacer survives image resizing. */
+.hub .stage.stage {
   grid-area: stage;
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto;
+  height: auto;
+  flex: none;
   min-height: 0;
+  max-height: none;
 }
-.stage > .scene {
-  flex: 1 1 auto;
+.hub .stage > .scene.scene {
+  flex: none;
+  height: auto;
+  min-height: 0;
+  max-height: none;
 }
-.stage > .resources {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.hub .stage > .resources.resources {
+  position: relative;
+  inset: auto;
+  height: auto;
+  min-height: 0;
   z-index: 1;
-  width: 100%;
+  width: auto;
   gap: 0;
   border-top: 1px solid var(--line);
+}
+.hub .scene .stageLabel {
+  bottom: 8px;
 }
 .stage > .resources > div {
   padding: 7px 14px;
@@ -671,16 +663,6 @@ button.resources:active:not(:disabled) {
   right: 6px;
 }
 @media (max-width: 760px) {
-  .stage {
-    --scene-stats-height: 56px;
-    flex: 1 1 auto;
-    min-height: 210px;
-    max-height: 300px;
-  }
-  .stage > .scene {
-    min-height: 0;
-    max-height: none;
-  }
   .stage > .resources > div > small {
     display: none;
   }
@@ -693,11 +675,6 @@ button.resources:active:not(:disabled) {
   }
   .play {
     min-height: 44px;
-  }
-}
-@media (max-width: 760px) and (max-height: 780px) {
-  .stage {
-    min-height: 180px;
   }
 }
 @media (max-width: 760px) {

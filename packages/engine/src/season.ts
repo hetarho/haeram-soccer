@@ -733,14 +733,15 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     runs: cupRuns(w),
     ...seasonRecords(w, order, oldTier, oldGroup),
   });
-  // The season's own match material becomes one heat map per own player (→MATCH-5).
-  reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
   // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
+  // The season's own match material, the playoff's included, becomes one heat map per own player
+  // (→MATCH-5).
+  reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).
   captureSeasonClose(w, { tier: oldTier, group: oldGroup });
   retireAtClose(w);

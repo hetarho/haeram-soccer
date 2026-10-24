@@ -194,34 +194,54 @@ export function RecordsRoom({ state, client }: Props) {
           ) : (
             <>
               <div className={s.recordControls}>
-                {managers.opened && (
-                  <button type="button" onClick={returnToManagers}>
-                    ← 감독 이력으로
-                    {openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}
+                <div className={s.recordLinks}>
+                  {managers.opened && (
+                    <button
+                      data-ui="link"
+                      className={s.textButton}
+                      type="button"
+                      onClick={returnToManagers}
+                    >
+                      ← 감독 이력으로
+                      {openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}
+                    </button>
+                  )}
+                  <button
+                    data-ui="link"
+                    className={s.textButton}
+                    type="button"
+                    aria-label="← 시즌 목록으로"
+                    onClick={() => {
+                      leaveManagerSeason(w.id);
+                      setYear(undefined);
+                      history.pushState(null, '', '/history');
+                      recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
+                    }}
+                  >
+                    ← 시즌 목록
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    leaveManagerSeason(w.id);
-                    setYear(undefined);
-                    history.pushState(null, '', '/history');
-                    recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
-                  }}
-                >
-                  ← 시즌 목록으로
-                </button>
+                  <button
+                    data-ui="link"
+                    className={s.textButton}
+                    type="button"
+                    aria-label="이 시즌 리그 순위표"
+                    onClick={() => openLeagueSeason(year)}
+                  >
+                    리그 순위표
+                  </button>
+                  <button
+                    data-ui="link"
+                    className={s.textButton}
+                    type="button"
+                    aria-label="이 시즌 컵 대회 기록"
+                    onClick={() => openCupSeason(year)}
+                  >
+                    컵 대회 기록
+                  </button>
+                </div>
                 <h3>
                   {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
                 </h3>
-                <div className={s.playerActions}>
-                  <button type="button" onClick={() => openLeagueSeason(year)}>
-                    이 시즌 리그 순위표
-                  </button>
-                  <button type="button" onClick={() => openCupSeason(year)}>
-                    이 시즌 컵 대회 기록
-                  </button>
-                </div>
               </div>
               <SeasonRecords
                 key={year}
@@ -502,11 +522,12 @@ function SeasonRecords({
         <div className={s.seasonBar}>
           <div
             className={`${t.seasonPicker} ${s.recordSeason}`}
+            data-ui="season-picker"
             role="group"
             aria-label="기록 시즌 선택"
           >
             <button
-              data-ui="icon"
+              data-ui="link"
               type="button"
               className={t.seasonStep}
               aria-label="이전 기록 시즌"
@@ -516,6 +537,7 @@ function SeasonRecords({
               <PixelIcon name="chevronLeft" size={20} />
             </button>
             <Select
+              data-ui="text-select"
               aria-label="기록 시즌"
               className={t.seasonSelect}
               value={year}
@@ -524,12 +546,11 @@ function SeasonRecords({
               {[...years].reverse().map((y) => (
                 <option key={y} value={y}>
                   {seasonName(y)}
-                  {y === w.year ? ' 진행 중' : ''}
                 </option>
               ))}
             </Select>
             <button
-              data-ui="icon"
+              data-ui="link"
               type="button"
               className={t.seasonStep}
               aria-label="다음 기록 시즌"
@@ -539,9 +560,10 @@ function SeasonRecords({
               <PixelIcon name="chevronRight" size={20} />
             </button>
           </div>
-          <label>
-            대회 범위{' '}
+          <label className={s.recordScope}>
+            <span className={s.srOnly}>대회 범위</span>
             <Select
+              data-ui="text-select"
               aria-label="기록 대회 범위"
               value={filter}
               onValueChange={(value) => setFilter(value)}

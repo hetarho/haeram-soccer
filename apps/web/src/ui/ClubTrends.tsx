@@ -364,6 +364,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
           <tbody>
             <tr
               className={`${t.currentSeason} ${onSeason ? s.seasonRow : ''}`}
+              aria-current="true"
               onClick={onSeason && (() => onSeason(w.year))}
             >
               <td>
@@ -372,13 +373,13 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   type="button"
                   className={s.seasonRowLink}
                   aria-label={`${seasonName(w.year)} 구단 시즌 기록 보기`}
+                  aria-description="현재 진행 중인 시즌"
                   onClick={(event) => {
                     event.stopPropagation();
                     onSeason?.(w.year);
                   }}
                 >
                   <span className={t.cellText}>{seasonName(w.year)}</span>
-                  <small>진행 중</small>
                 </button>
               </td>
               <td data-label="리그">

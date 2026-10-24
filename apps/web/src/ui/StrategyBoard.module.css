@@ -626,7 +626,6 @@ legend.domainHead + * {
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     padding-bottom: 6px;
-    scrollbar-width: thin;
   }
   .preset {
     scroll-snap-align: start;

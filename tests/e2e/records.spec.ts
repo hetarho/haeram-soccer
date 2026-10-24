@@ -136,12 +136,33 @@ for (const [label, viewport] of [
 
       // 시즌별 기록: a season's row opens that season on the league page, on its final table.
       await tab('시즌별 기록').click();
-      await expect(page.getByRole('table', { name: '시즌별 기록' })).toContainText('1950/51');
+      const seasons = page.getByRole('table', { name: '시즌별 기록' });
+      await expect(seasons).toContainText('1950/51');
+      const currentSeason = seasons.locator('tr[aria-current="true"]');
+      await expect(currentSeason).not.toContainText('진행 중');
+      await expect(currentSeason.locator('td').first()).toHaveCSS('box-shadow', /inset/);
+      await settle(page);
+      for (const season of await seasons.locator('tbody tr').all()) {
+        expect(await season.evaluate((element) => element.getBoundingClientRect().height)).toBe(44);
+      }
       const row = page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true });
       // Centred, so the floating news button and the tab bar stay clear of the row.
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
       await row.click();
       await expect(page).toHaveURL(/\/history\?season=1950/);
+      const contextButtons = [
+        page.getByRole('button', { name: '← 시즌 목록으로', exact: true }),
+        page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }),
+        page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }),
+      ];
+      const buttonBounds = await Promise.all(contextButtons.map((button) => button.boundingBox()));
+      expect(buttonBounds.every((box) => box && box.height >= 44)).toBe(true);
+      expect(buttonBounds.every((box) => box!.y === buttonBounds[0]!.y)).toBe(true);
+      for (const button of contextButtons) {
+        expect(await button.evaluate((element) => getComputedStyle(element).borderTopWidth)).toBe(
+          '0px',
+        );
+      }
       await page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }).click();
       await expect(page).toHaveURL(/\/leagues\?.*season=1950&tab=table/);
       await expect(
