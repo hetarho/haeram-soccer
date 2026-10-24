@@ -74,7 +74,8 @@ for (const viewport of [
     await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
     const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
     const players = await optionList(inspector);
-    await expect(players.getByRole('option')).toHaveCount(22);
+    // Both sides on the pitch: 22, fewer after a dismissal in the founded world's random match.
+    await expect.poll(() => players.getByRole('option').count()).toBeGreaterThanOrEqual(20);
     await settle(page);
     const bounds = await players.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);

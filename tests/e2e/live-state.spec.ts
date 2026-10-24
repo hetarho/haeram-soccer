@@ -65,12 +65,20 @@ test('keeps league views and nodes across silent progression from home and updat
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
-  await page
+  // A match eve opens its dialog automatically from every management view. On a slow browser
+  // the run reaches it before the view switch: then its backdrop takes the click, so stop trying.
+  const eveDialog = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
+  const scorerTrend = page
     .getByRole('group', { name: '선수 기록 보기' })
-    .getByRole('button', { name: '득점왕 추이', exact: true })
-    .click();
-  // A match eve opens its dialog automatically from every management view.
-  await expect(page.getByRole('dialog', { name: 'NEXT MATCH', exact: true })).toBeVisible();
+    .getByRole('button', { name: '득점왕 추이', exact: true });
+  while (!(await eveDialog.isVisible()))
+    try {
+      await scorerTrend.click({ timeout: 1000 });
+      break;
+    } catch {
+      // Covered by the eve's backdrop, or not yet actionable: look again.
+    }
+  await expect(eveDialog).toBeVisible();
   await expect(date).toHaveText('1950년 8월 7일');
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
