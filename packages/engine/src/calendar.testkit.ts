@@ -1,17 +1,31 @@
 import { expect } from 'vitest';
 import { canonical, type World } from '../../contracts/src/index';
 import { legacySettings } from './responsibilities';
-import { advanceDays, advanceRound, createWorld, currentDay } from './index';
+import {
+  advanceDays,
+  advanceRound,
+  createWorld,
+  currentDay,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
+} from './index';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
-export function world(country: 'ENG' | 'BEL' = 'ENG') {
-  const w = createWorld({
-    country,
-    name: 'Calendar United',
-    color: '#223344',
-    seed: 'calendar',
-    level: 'easy' as const,
-  });
+/** The calendar club founded under `release` (default the switch as it stands). */
+export function world(
+  country: 'ENG' | 'BEL' = 'ENG',
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
+) {
+  const w = createWorld(
+    {
+      country,
+      name: 'Calendar United',
+      color: '#223344',
+      seed: 'calendar',
+      level: 'easy' as const,
+    },
+    release,
+  );
   w.settings = legacySettings(2);
   w.cash = '999999999999';
   return w;
