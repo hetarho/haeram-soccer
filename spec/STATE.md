@@ -282,7 +282,6 @@
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
-| T416 | Valid full records from every settlement path of an activated world | MATCH SAVE HIST ARCH | T415 | todo |
 | T420 | The unit tier green and timed with the release switch on | SAVE ARCH | T416 T417 T418 T419 | todo |
 | T421 | 1x at 12 seconds a match minute, matches opening at 2x | WEB MATCH | - | todo |
 | T422 | Set-piece preparation drawn in about 1.5 real seconds | WEB MATCH | T421 | todo |
@@ -297,12 +296,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 10 | 4 | 6 | 0 | 3 | 0 | 2026-10-24T11:36:22.186Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 10 | 5 | 5 | 0 | 2 | 0 | 2026-10-24T12:11:26.724Z | [history](work/v9n4-release.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261024 T416 integrated
 - 261024 T419 integrated
 - 261024 T418 integrated
 - 261024 T417 integrated
@@ -322,4 +322,3 @@
 - 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.
 - 261024 T409 done (t5q2; explore, kept k1): the aggregate credits 20 s / 30 s of added time it left out; validation round 67: core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside; second-yellow factor by tactic neutral; aggregate artifact refreshed
 - 261024 T408 done (t5q2; explore exit, nothing kept): fewer forward passes into the final third moved final-third passes 167 → 145, box entries 27.6 → 24–26, xT 4.72 → 4.2–4.4 on validation rounds 65+66 but took offsides, ball in play and MATCH-29's high-regain ordering outside; neutral `finalThird` hooks kept; follow-up T411
-- 261024 create-task T408 T409 T410 (t5q2): T401's residual differences become T286's prerequisites — the grid's MATCH-30 attacking flow, the aggregate's levels, distributions and pairings, and the pilot-size re-read; T286 dep + T408 T409 T410; T408 claimed

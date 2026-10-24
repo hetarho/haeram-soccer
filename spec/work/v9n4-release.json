@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T11:36:22.186Z",
-  "sourceCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+  "snapshotAt": "2026-10-24T12:11:26.724Z",
+  "sourceCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+      "commit": "58e259bddb7363dfac22d412fa51a79397995ea3",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T11:31:40.810Z"
+      "at": "2026-10-24T11:53:13.235Z"
     },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
@@ -49,10 +49,10 @@
   },
   "summary": {
     "total": 10,
-    "completed": 4,
-    "remaining": 6,
+    "completed": 5,
+    "remaining": 5,
     "running": 0,
-    "review": 3,
+    "review": 2,
     "blocked": 0,
     "unassigned": 3
   },
@@ -118,15 +118,6 @@
       "status": "todo"
     },
     {
-      "id": "T416",
-      "title": "Valid full records from every settlement path of an activated world",
-      "dep": [
-        "T415"
-      ],
-      "lane": "release-settle",
-      "status": "ready"
-    },
-    {
       "id": "T420",
       "title": "The unit tier green and timed with the release switch on",
       "dep": [
@@ -168,7 +159,7 @@
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
       ],
       "status": "integrated",
-      "reason": null,
+      "reason": "ignored 파일을 포함해 남은 파일이 있습니다. 확인 후 정리하세요.",
       "createdAt": "2026-10-24T10:04:39.726Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
       "verifiedCommit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
@@ -260,41 +251,91 @@
         "T422"
       ],
       "lane": "viewing-pace",
-      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
       "contributors": [
-        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
       ],
       "status": "ready",
       "reason": null,
       "createdAt": "2026-10-24T10:04:40.994Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
-      "verifiedCommit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
-      "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
-      "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
-      "submittedAt": "2026-10-24T11:32:31.741Z",
+      "verifiedCommit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+      "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
+      "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
+      "submittedAt": "2026-10-24T12:11:13.422Z",
       "risk": {
         "risky": true,
         "reasons": [
-          "1040 changed lines (limit 300)",
+          "1135 changed lines (limit 300)",
           "outside touches: tests/e2e/full-model-continuity.spec.ts tests/e2e/match-core.spec.ts tests/e2e/mobile-match-presentation.spec.ts tests/e2e/preparation.ts",
+          "reworked after a review or integration failure",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 1040,
+        "lines": 1135,
         "files": 13
       },
       "dispatch": {
-        "id": "92b03286-3a97-4e0d-b551-498fa284dd80",
+        "id": "6529d580-504f-4095-b8c1-db1fffc24f28",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
         "role": "worker",
-        "slot": 2,
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T11:31:41.314Z",
-        "finishedAt": "2026-10-24T11:32:31.759Z",
+        "startedAt": "2026-10-24T12:01:37.425Z",
+        "finishedAt": "2026-10-24T12:11:13.440Z",
         "error": null,
-        "summary": "Nothing changed this run, as the coordinator asked: I didn't edit or commit anything, so the lane is ready for the runner to submit. The working tree is clean. The lane branch has T421 (9537ddd2) and T422 (a0094fd6), plus the group-branch merge 71e66601.\n\nBoth task files already have their acceptance items marked `[v]` and their results filled in. Their task-tier checks all passed: typecheck, lint, format:check, `vitest run --changed` and the build.\n\nStill to be run in the batch (none of these have run yet):\n- **For T422:** the new set-piece checks in `set-piece-defence.spec.ts` and `stable-controls-and-pacing.spec.ts`, using the new helper `tests/e2e/preparation.ts`.\n- **For T421:** the specs updated for the slower pace — `match-core`, `mobile-match-presentation` and `full-model-continuity`, plus the continuity fixture."
+        "summary": "I fixed both P2 findings and all four P3s from the review. The task checks pass. No browser spec has been run: the reviewer asked for one chromium run, but ARCH-30 keeps browser specs out of the task tier, so it waits for the batch.\n\n- **P2: a delivery could be taken for the kick.** The fix is in `presentationClock.ts`. On the candidate model the ball keeps the 'restart' phase while the delivery is in the air, so a sample at a minute's end could be read as the kick. Part of that delivery was then drawn at the faster preparation rate. Now a restart sample counts as the kick only if the ball is still on the restart spot (the event's `from`).\n  - Real matches, four seeds per model: this happened once in 80 restarts in one candidate match before the fix, and never after.\n  - New unit test: \"a delivery sampled in the air at a minute end is not the kick\".\n- **P2: the browser helper could start recording too late.** `tests/e2e/preparation.ts` now seeks to a sample at least 3 match seconds before the ball goes dead. It starts recording while the match is still paused, then clicks 1×. The two waits are now named constants, `LEAD_SECONDS` and `RECORD_SLACK_MS`, so no literal 1500 sits beside `SET_PIECE_PREPARATION_MS`.\n  - Instead of a browser run, I replayed the page's clock and the helper in Node. Both journeys passed every assertion with frames of 16.7–50 ms and clicks landing 50–800 ms late. The preparation was drawn in 1517–1550 ms, against 4800 and 6406 ms of plain 1x play.\n- **P3: free kicks and goal kicks recorded as a foul or offside.** These now get a preparation too. Every entry carrying `restart` counts, and their kick comes from the on-spot sample, since their actor isn't the taker. There are 1–2 per candidate match and none on the pre-feature model. This goes beyond the acceptance's literal `kind: 'restart'`, because WEB-32 covers every free kick and goal kick; the T422 result says so. New unit test covers it.\n- **P3: the opening test's first-minute check.** The \"opens at 2x\" test in `stable-controls-and-pacing.spec.ts` now watches the seeded `stable-pace` career instead of a UI founding, whose seed is random. It computes the first minute's real length with the match's preparations. That comes to 5768 ms at 2x, because this match's first minute contains a 32 s preparation. I reworded the comment, and both tests in the file now share one career builder.\n- **P3: decisions for you.** The T422 result now hands you two choices for your in-play review of `SET_PIECE_PREPARATION_MS`; I left the number at 1500.\n  - The kick is read from the taker taking the ball, not from the restart event's own time.\n  - A whole match now takes about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x. That is a bit longer than WEB-32's \"about 13–14 / 7\".\n\nChecks that passed: the three affected test files (40 tests), typecheck, lint, format:check, `vitest run --changed 71e66601` (4 files, 52 tests) and the build. I updated both task results (`at: 71e66601 + review correction`) and left the acceptance marks at `[v]`."
       },
+      "reviewHistory": [
+        {
+          "id": "58c66b2f-a8f6-437c-b742-2024e6e8aa27",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T421 does what it says. WATCH_MINUTE_MS is 12000, WATCH_DEFAULT_SPEED is 2, and Pitch.tsx opens and resets every live or archived playback at 2x. The unit tests and browser specs now read the constants instead of literals. The edits to files outside touches (match-core, mobile-match-presentation, full-model-continuity spec, preparation.ts) were needed because of the 2x default, and their new waits and budgets are correct. T422's clock rewrite is sound. Running seconds are the clock's state. presentationAdvance and presentationMs give rate max(running, D/1500) inside a preparation. The goal hold, seeking and speed changes keep match time. Reading the kick from the taker's take, not from the restart event's t (which is the landing), matches WEB-32 better than the impl note's literal reading; the owner still has to confirm it. Two P2 defects block approval. (1) On the candidate model, when a minute boundary falls inside a set-piece delivery, the preparation runs past the kick: part of the delivery is drawn at the faster preparation rate, which breaks WEB-32 (\"the kick and delivery play at the selected speed\"). (2) The new browser helper starts recording after the clock has resumed, while the seek often lands only milliseconds of 1x play before the dead ball, so the new stable-controls journey is likely to fail in the batch run. This review is from reading the code: the worktree has no node_modules, and I did not install them in a read-only review. The worker's record shows typecheck, lint, format:check, `vitest run --changed` and build passing; no browser spec has been run.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/presentationClock.ts:105 (T422)",
+              "message": "The fallback kick is 'the last phase:restart sample more than 0.1 s before the landing'. But the engine also gives the delivery flight phase 'restart': legsOf returns `phase: restart ? 'restart' : …` for spot entries, and knotted's flights use that leg phase. Every candidate minute also keeps a sample at its own end (instants keeps `to` = start+60). On the candidate the taker is never a holder before the kick (the kick knot adds a `rest`, not a `hold`), so the fallback is the main path there. Whenever a minute boundary falls between the kick and the landing, the minute-end sample becomes `to`. The kick→boundary part of the delivery (and the T359 kick sample) is then drawn at D/1500. At 1x a 25–30 s preparation makes that part 3–4× faster; at 2x, 1.7–2×. This breaks WEB-32 and the task goal ('nothing else on the timeline changed'). With deliveries of 0.15–5.6 s and about 70 prepared restarts per candidate match, this should happen about once or twice a match. Fix: count only restart samples where the ball is still on its spot (e.g. sample `ball` within a small tolerance of the restart event's `from`, which is its mirrored spot), or read the kick from the ball track. Add a unit case where a candidate corner's delivery crosses a minute end (restart sample at 60 with the ball off the spot) and assert that `to` is the kick sample."
+            },
+            {
+              "priority": "P2",
+              "where": "tests/e2e/preparation.ts:38-64 (T422, used by stable-controls-and-pacing and set-piece-defence)",
+              "message": "The helper seeks to the last sample at or before `from`, clicks 1× (which resumes playback), and only then starts the rAF recorder in a separate `canvas.evaluate`. On the pre-feature path there is always a sample at the ball going dead (P.times are kept), and the event's t is that time rounded to a tenth. About half the time that sample lies 0–0.05 s before `from`, which is under 10 ms at 1x. The first recorded `data-seconds` is then already past `from`, `enteredAt` is -1, and 'the clock reached the dead ball' fails. Even otherwise the margin is the gap to the previous sample (≈1 s of match time, about 200 ms at 1x), close to a click plus a CDP round trip. Seeds are fixed, so the new stable-pace journey would fail every time in the pre-push batch rather than flake. Seek to a sample a few match seconds before `from` (e.g. `times.findLastIndex(t => t <= from - 3)`), or start the recorder before clicking 1× and collect afterwards. Run the journey once on chromium before handing it to the batch."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/presentationClock.ts:67 (T422)",
+              "message": "kindOf checks the outcome before the spot. A restart entry whose delivery is flagged offside, or ends in a foul, is recorded as kind 'offside'/'foul' while still carrying `restart: 'freeKick'` (playback.ts sets ev.restart for any spot entry). Its actor is then the receiver or the fouler, not the taker. The `kind === 'restart'` filter skips these free kicks, so their preparation keeps running speed even though WEB-32 covers every free kick. The acceptance itself names `kind: 'restart'`, so this is a planning gap: either key on `event.restart` and resolve the taker another way, or record the exception in the task or SSOT."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/stable-controls-and-pacing.spec.ts:201-204 (T421/T422)",
+              "message": "The comment 'Every minute takes exactly 12 s at 1x, whatever happens in it' stopped being true once T422 added preparations. At 2x, a corner, free kick or goal kick preparation of 39 s or more inside the first minute would end '1′' before the 3.6 s check. That is rare but possible if the founding seed varies. Reword the comment, and either pick the first minute knowing it has no long preparation or derive the bound with presentationMs and the playback's preparations."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/preparation.ts:49 (T422)",
+              "message": "The recording slack is the literal `+ 1500`, the same value as SET_PIECE_PREPARATION_MS, which the impl note wants to stay the only preparation number. It reads as the preparation time. Name it as slack (or derive it from SET_PIECE_PREPARATION_MS) so the owner's later tuning cannot leave a stale twin."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off)",
+              "message": "Two autopilot decisions are waiting for the owner, as the risk flags note. (a) The kick is read from the taker's take or the last restart sample, not the restart event's t (the impl note's literal 'kick = the restart event's own time' would compress the delivery). (b) Measured match lengths are 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. Neither blocks the code. Hand both to the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom) instead of changing the number here."
+            }
+          ],
+          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+          "createdAt": "2026-10-24T11:53:14.075Z",
+          "finishedAt": "2026-10-24T12:01:37.285Z",
+          "invalidatedAt": "2026-10-24T12:01:37.346Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T421",
@@ -310,13 +351,13 @@
         },
         {
           "taskId": "T422",
-          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
-          "at": "2026-10-24T11:32:31.699Z",
+          "commit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+          "at": "2026-10-24T12:11:13.380Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-24T11:31:59.726Z",
-              "finishedAt": "2026-10-24T11:32:31.361Z"
+              "startedAt": "2026-10-24T12:10:41.978Z",
+              "finishedAt": "2026-10-24T12:11:13.029Z"
             }
           ]
         }
@@ -324,8 +365,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-24T11:31:59.726Z",
-          "finishedAt": "2026-10-24T11:32:31.361Z"
+          "startedAt": "2026-10-24T12:10:41.978Z",
+          "finishedAt": "2026-10-24T12:11:13.029Z"
         }
       ]
     },
@@ -337,49 +378,94 @@
         "T416"
       ],
       "lane": "release-settle",
-      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
       "contributors": [
-        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-24T10:35:42.873Z",
       "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
-      "verifiedCommit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
-      "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
-      "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
-      "submittedAt": "2026-10-24T11:34:59.043Z",
+      "verifiedCommit": "638407bb4b3688358bd33249f29fd13b204589f6",
+      "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
+      "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
+      "submittedAt": "2026-10-24T12:08:27.510Z",
       "risk": {
         "risky": true,
         "reasons": [
+          "outside touches: packages/engine/src/season.testkit.ts",
+          "reworked after a review or integration failure",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 156,
-        "files": 1
+        "lines": 191,
+        "files": 2
       },
       "dispatch": {
-        "id": "3fd86099-f7cb-4c59-914b-98ede4e59c82",
+        "id": "75459bd3-aa96-4c3c-8601-a5b1cff75978",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T11:31:40.978Z",
-        "finishedAt": "2026-10-24T11:34:59.062Z",
+        "startedAt": "2026-10-24T12:08:29.431Z",
+        "finishedAt": "2026-10-24T12:11:24.860Z",
         "error": null,
-        "summary": "T416 is finished: the guard case meets the reworded item 1, and all four acceptance items are now marked [v]. No engine source changed.\n\n**Change this turn.** I tightened the guard case \"an activated world settles only valid full records\" in `season.settle.test.ts` so it checks item 1 explicitly. It now keeps the league records and the cup records apart and asserts that each group includes:\n- an own match played in the detailed (grid) engine, and\n- another club's match on the aggregate path.\n\nIt still asserts that the cup round has at least one extra-time record and one shoot-out. The setup is the same as before:\n- the 1950 world built with `ENABLED_RELEASE`;\n- the own league's (1950:ENG:4) first two rounds;\n- the ENG cup's first round, 44 ties, the own club's 1950:cup:ENG:k0:43 among them, played through `playFixture` with `{ awayGoals: false }`;\n- every record passing `validateFullMatchRecord`.\n\n**Task file.** Item 1 is marked [v], and the outcome, at, verified and limits lines are updated. The limit about the unmet \"fails on the unfixed source\" clause is gone, since the 261024 decision reworded item 1.\n\n**Checks**, run on 838318fd (which includes the merged T417 and T418 lanes) plus this change:\n- `season.settle.test.ts` passes under the default config and the release-on config, 6 of 6 each.\n- typecheck, lint and format:check pass.\n- `vitest run --changed 2737e84a… --passWithNoTests` passed 25 files, 390 tests; that range also covers the merged T417/T418 files.\n\n**Not run here:** the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate, and the whole release-on unit tier to T420. I did not commit; the changed files are `packages/engine/src/season.settle.test.ts` and `spec/tasks/T416.activated-settlement-records.md`."
+        "summary": "T416 approved. The P2 from the last review is fixed. `modern` is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the substitute and fatigue cases record the model after the year moves to 2024, under either switch setting. That matches T419's convention on baseCommit. Every world in season.settle.test.ts now names its release, so acceptance item 3 holds.\n\nI checked the three risk reasons first:\n1. Outside touch: `season.testkit.ts`. The lane does not contain baseCommit 58e259bd; its merge base is e2f0dddc. The worker copied T419's `founded(year?, release = MATCH_MODEL_RELEASE)` hunk instead of merging. `git diff 58e259bd 638407bb -- packages/engine/src/season.testkit.ts` is empty, so integration merges identical lines without conflict. The default argument keeps behaviour for every other caller, and the result's limits record the extra file.\n2. Rework: the only finding of review 04065647 is resolved.\n3. Autopilot decision: the work follows the 261024 STATE decision for T416 and T286. That decision found no faulty engine writer and changed item 1 to guard the writers; the worker changed no engine source and did not relax the validator. Whether that decision stands is for the owner to confirm, not for this review.\n\nI confirmed the guard case against the code. `simulateMatch` sends an activated world's own fixtures to `candidateMatch`, which builds a grid record and asserts it. All other fixtures go through `simulateAggregate`/`aggregateRecord`, which asserts at line 485. `recordMatch` checks again at season.ts:290. `playFixture` records each cup tie. The ENG cup is single-leg (cups.ts:63), so the hard-coded `{ awayGoals: false }` is the same rule `tieRule` gives in production. The new case validates every record from league rounds 1–2 and cup round k0. It asserts that both league and cup include an own match and another club's match, and that the cup round has at least one extra-time record and one shoot-out.\n\nThe edits in `played()` match what the validator checks: incidents stay in minute order, a red is counted in `PD`/`TD`, and the starter's minutes are set to the stamp minus one, which is how the timeline check computes the exit. The worker did not touch STATE or other tasks.\n\nI did not run any tests: there is no node_modules and this session is read-only. The worker's record lists both settle runs (default and release-on config, 6 passed each), typecheck, lint, format:check, and `vitest --changed` over the correction (12 files, 49 passed) and over the first submission (25 files, 390 passed)."
       },
+      "review": {
+        "id": "32a33871-c996-4975-8711-aee3de14ce20",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T416 approved. The P2 from the last review is fixed. `modern` is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the substitute and fatigue cases record the model after the year moves to 2024, under either switch setting. That matches T419's convention on baseCommit. Every world in season.settle.test.ts now names its release, so acceptance item 3 holds.\n\nI checked the three risk reasons first:\n1. Outside touch: `season.testkit.ts`. The lane does not contain baseCommit 58e259bd; its merge base is e2f0dddc. The worker copied T419's `founded(year?, release = MATCH_MODEL_RELEASE)` hunk instead of merging. `git diff 58e259bd 638407bb -- packages/engine/src/season.testkit.ts` is empty, so integration merges identical lines without conflict. The default argument keeps behaviour for every other caller, and the result's limits record the extra file.\n2. Rework: the only finding of review 04065647 is resolved.\n3. Autopilot decision: the work follows the 261024 STATE decision for T416 and T286. That decision found no faulty engine writer and changed item 1 to guard the writers; the worker changed no engine source and did not relax the validator. Whether that decision stands is for the owner to confirm, not for this review.\n\nI confirmed the guard case against the code. `simulateMatch` sends an activated world's own fixtures to `candidateMatch`, which builds a grid record and asserts it. All other fixtures go through `simulateAggregate`/`aggregateRecord`, which asserts at line 485. `recordMatch` checks again at season.ts:290. `playFixture` records each cup tie. The ENG cup is single-leg (cups.ts:63), so the hard-coded `{ awayGoals: false }` is the same rule `tieRule` gives in production. The new case validates every record from league rounds 1–2 and cup round k0. It asserts that both league and cup include an own match and another club's match, and that the cup round has at least one extra-time record and one shoot-out.\n\nThe edits in `played()` match what the validator checks: incidents stay in minute order, a red is counted in `PD`/`TD`, and the starter's minutes are set to the stamp minus one, which is how the timeline check computes the exit. The worker did not touch STATE or other tasks.\n\nI did not run any tests: there is no node_modules and this session is read-only. The worker's record lists both settle runs (default and release-on config, 6 passed each), typecheck, lint, format:check, and `vitest --changed` over the correction (12 files, 49 passed) and over the first submission (25 files, 390 passed).",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.settle.test.ts:52-64 (T416)",
+            "message": "Optional hardening. `played()` adds one incident to the grid's own incidents but does not check that the chosen player (`squads[side][1|2|4]`) has no later card or injury. The NPC-injury and ban cases also assume the grid added no injury or red of its own: they assert `out` has length 1 and `bans` equals one entry. Both hold for the 'settle-match' seed today. A change to the grid or to the seed could break these cases with a timeline error such as 'names X off the pitch' or an extra ban, and that failure would look like a settlement regression. Asserting these assumptions first, or choosing the player by them, would make such a failure easier to read. Not required for this task."
+          }
+        ],
+        "commit": "638407bb4b3688358bd33249f29fd13b204589f6",
+        "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+        "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
+        "createdAt": "2026-10-24T12:08:28.129Z",
+        "finishedAt": "2026-10-24T12:11:24.845Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "04065647-ae6f-40f5-98d4-3e4582e32f0a",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T416 follows the owner's 261024 autopilot decision, which was the risk reason. The writers are guarded, not reproduced, and no engine source or validator changed. The new case \"an activated world settles only valid full records\" covers league rounds 1 and 2 and the first cup round of the ENABLED_RELEASE 1950 world. It checks both result paths: own matches go to the grid through candidateMatch, other fixtures go to the aggregate path. It also asserts extra time and a shoot-out. The injury, NPC-injury and ban cases now build explicit ENABLED_RELEASE worlds, and their incident edits keep the records valid. One gap remains in acceptance item 3. The substitute and fatigue cases build `modern = () => withCandidateModel(founded(2024))` on the default switch. That conflicts with the T419 convention on baseCommit, which is the convention for building a world on the candidate model.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/season.settle.test.ts:34 (T416)",
+              "message": "Acceptance item 3 says this file's other worlds build with an explicit release, but `modern = () => withCandidateModel(founded(2024))` uses the default MATCH_MODEL_RELEASE. Under `vitest.release-on.config.ts`, `founded(2024)` calls `createWorld` with the switch on. That activates the model at the 1950 founding (`activated.year` 1950, NPC season opened at the 1950 boundary) before `founded` moves the year to 2024. `withCandidateModel` then keeps that model. So the substitute-gain and fatigue cases play a different world depending on the switch. With the switch on, the comment's claim (\"on the model a new career plays\") is false. T419 documents exactly this case: \"under the switch, `founded(2024)` had recorded it in 1950 before the year moved\". On baseCommit 58e259bd, `founded(year?, release)` takes a release, and every other candidate world is built as `withCandidateModel(founded(2024, DISABLED_RELEASE))`. After integration this file would be the only candidate world that still follows the switch. Fix: merge the group base and change `modern` to `withCandidateModel(founded(2024, DISABLED_RELEASE))`. Then re-run `pnpm exec vitest run packages/engine/src/season.settle.test.ts` and the same run with `--config vitest.release-on.config.ts`, and record that both runs pass."
+            }
+          ],
+          "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+          "createdAt": "2026-10-24T12:01:38.267Z",
+          "finishedAt": "2026-10-24T12:04:08.552Z",
+          "invalidatedAt": "2026-10-24T12:04:08.609Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T416",
-          "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
-          "at": "2026-10-24T11:34:59.000Z",
+          "commit": "638407bb4b3688358bd33249f29fd13b204589f6",
+          "at": "2026-10-24T12:08:27.473Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-24T11:34:25.358Z",
-              "finishedAt": "2026-10-24T11:34:58.642Z"
+              "startedAt": "2026-10-24T12:07:35.941Z",
+              "finishedAt": "2026-10-24T12:08:27.130Z"
             }
           ]
         }
@@ -387,8 +473,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-24T11:34:25.358Z",
-          "finishedAt": "2026-10-24T11:34:58.642Z"
+          "startedAt": "2026-10-24T12:07:35.941Z",
+          "finishedAt": "2026-10-24T12:08:27.130Z"
         }
       ]
     },
@@ -601,6 +687,8 @@
       "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
       "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
       "submittedAt": "2026-10-24T11:11:04.348Z",
+      "integratedCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+      "integratedAt": "2026-10-24T11:53:11.287Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -671,6 +759,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T11:09:50.306Z",
           "finishedAt": "2026-10-24T11:11:03.949Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T11:36:22.286Z",
+          "finishedAt": "2026-10-24T11:53:11.033Z"
         }
       ]
     }
@@ -3098,6 +3193,982 @@
       "group": "v9n4-release",
       "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
       "taskId": "T419",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 966,
+      "at": "2026-10-24T11:53:11.210Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T11:36:22.286Z",
+            "finishedAt": "2026-10-24T11:53:11.033Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 967,
+      "at": "2026-10-24T11:53:11.287Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+        "integratedAt": "2026-10-24T11:53:11.287Z"
+      }
+    },
+    {
+      "sequence": 968,
+      "at": "2026-10-24T11:53:13.250Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T11:53:13.235Z"
+        }
+      }
+    },
+    {
+      "sequence": 969,
+      "at": "2026-10-24T11:53:14.075Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "58c66b2f-a8f6-437c-b742-2024e6e8aa27",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+          "createdAt": "2026-10-24T11:53:14.075Z"
+        }
+      }
+    },
+    {
+      "sequence": 970,
+      "at": "2026-10-24T11:53:15.356Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "22775b21-f636-4ab1-912e-4395a374b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T11:53:15.356Z"
+        }
+      }
+    },
+    {
+      "sequence": 971,
+      "at": "2026-10-24T11:53:15.372Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "22775b21-f636-4ab1-912e-4395a374b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T11:53:15.356Z"
+        }
+      }
+    },
+    {
+      "sequence": 972,
+      "at": "2026-10-24T11:55:06.039Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 973,
+      "at": "2026-10-24T11:55:06.206Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": "ignored 파일을 포함해 남은 파일이 있습니다. 확인 후 정리하세요."
+      }
+    },
+    {
+      "sequence": 974,
+      "at": "2026-10-24T12:01:37.285Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T421 does what it says. WATCH_MINUTE_MS is 12000, WATCH_DEFAULT_SPEED is 2, and Pitch.tsx opens and resets every live or archived playback at 2x. The unit tests and browser specs now read the constants instead of literals. The edits to files outside touches (match-core, mobile-match-presentation, full-model-continuity spec, preparation.ts) were needed because of the 2x default, and their new waits and budgets are correct. T422's clock rewrite is sound. Running seconds are the clock's state. presentationAdvance and presentationMs give rate max(running, D/1500) inside a preparation. The goal hold, seeking and speed changes keep match time. Reading the kick from the taker's take, not from the restart event's t (which is the landing), matches WEB-32 better than the impl note's literal reading; the owner still has to confirm it. Two P2 defects block approval. (1) On the candidate model, when a minute boundary falls inside a set-piece delivery, the preparation runs past the kick: part of the delivery is drawn at the faster preparation rate, which breaks WEB-32 (\"the kick and delivery play at the selected speed\"). (2) The new browser helper starts recording after the clock has resumed, while the seek often lands only milliseconds of 1x play before the dead ball, so the new stable-controls journey is likely to fail in the batch run. This review is from reading the code: the worktree has no node_modules, and I did not install them in a read-only review. The worker's record shows typecheck, lint, format:check, `vitest run --changed` and build passing; no browser spec has been run.",
+        "review": {
+          "id": "58c66b2f-a8f6-437c-b742-2024e6e8aa27",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T421 does what it says. WATCH_MINUTE_MS is 12000, WATCH_DEFAULT_SPEED is 2, and Pitch.tsx opens and resets every live or archived playback at 2x. The unit tests and browser specs now read the constants instead of literals. The edits to files outside touches (match-core, mobile-match-presentation, full-model-continuity spec, preparation.ts) were needed because of the 2x default, and their new waits and budgets are correct. T422's clock rewrite is sound. Running seconds are the clock's state. presentationAdvance and presentationMs give rate max(running, D/1500) inside a preparation. The goal hold, seeking and speed changes keep match time. Reading the kick from the taker's take, not from the restart event's t (which is the landing), matches WEB-32 better than the impl note's literal reading; the owner still has to confirm it. Two P2 defects block approval. (1) On the candidate model, when a minute boundary falls inside a set-piece delivery, the preparation runs past the kick: part of the delivery is drawn at the faster preparation rate, which breaks WEB-32 (\"the kick and delivery play at the selected speed\"). (2) The new browser helper starts recording after the clock has resumed, while the seek often lands only milliseconds of 1x play before the dead ball, so the new stable-controls journey is likely to fail in the batch run. This review is from reading the code: the worktree has no node_modules, and I did not install them in a read-only review. The worker's record shows typecheck, lint, format:check, `vitest run --changed` and build passing; no browser spec has been run.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/presentationClock.ts:105 (T422)",
+              "message": "The fallback kick is 'the last phase:restart sample more than 0.1 s before the landing'. But the engine also gives the delivery flight phase 'restart': legsOf returns `phase: restart ? 'restart' : …` for spot entries, and knotted's flights use that leg phase. Every candidate minute also keeps a sample at its own end (instants keeps `to` = start+60). On the candidate the taker is never a holder before the kick (the kick knot adds a `rest`, not a `hold`), so the fallback is the main path there. Whenever a minute boundary falls between the kick and the landing, the minute-end sample becomes `to`. The kick→boundary part of the delivery (and the T359 kick sample) is then drawn at D/1500. At 1x a 25–30 s preparation makes that part 3–4× faster; at 2x, 1.7–2×. This breaks WEB-32 and the task goal ('nothing else on the timeline changed'). With deliveries of 0.15–5.6 s and about 70 prepared restarts per candidate match, this should happen about once or twice a match. Fix: count only restart samples where the ball is still on its spot (e.g. sample `ball` within a small tolerance of the restart event's `from`, which is its mirrored spot), or read the kick from the ball track. Add a unit case where a candidate corner's delivery crosses a minute end (restart sample at 60 with the ball off the spot) and assert that `to` is the kick sample."
+            },
+            {
+              "priority": "P2",
+              "where": "tests/e2e/preparation.ts:38-64 (T422, used by stable-controls-and-pacing and set-piece-defence)",
+              "message": "The helper seeks to the last sample at or before `from`, clicks 1× (which resumes playback), and only then starts the rAF recorder in a separate `canvas.evaluate`. On the pre-feature path there is always a sample at the ball going dead (P.times are kept), and the event's t is that time rounded to a tenth. About half the time that sample lies 0–0.05 s before `from`, which is under 10 ms at 1x. The first recorded `data-seconds` is then already past `from`, `enteredAt` is -1, and 'the clock reached the dead ball' fails. Even otherwise the margin is the gap to the previous sample (≈1 s of match time, about 200 ms at 1x), close to a click plus a CDP round trip. Seeds are fixed, so the new stable-pace journey would fail every time in the pre-push batch rather than flake. Seek to a sample a few match seconds before `from` (e.g. `times.findLastIndex(t => t <= from - 3)`), or start the recorder before clicking 1× and collect afterwards. Run the journey once on chromium before handing it to the batch."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/presentationClock.ts:67 (T422)",
+              "message": "kindOf checks the outcome before the spot. A restart entry whose delivery is flagged offside, or ends in a foul, is recorded as kind 'offside'/'foul' while still carrying `restart: 'freeKick'` (playback.ts sets ev.restart for any spot entry). Its actor is then the receiver or the fouler, not the taker. The `kind === 'restart'` filter skips these free kicks, so their preparation keeps running speed even though WEB-32 covers every free kick. The acceptance itself names `kind: 'restart'`, so this is a planning gap: either key on `event.restart` and resolve the taker another way, or record the exception in the task or SSOT."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/stable-controls-and-pacing.spec.ts:201-204 (T421/T422)",
+              "message": "The comment 'Every minute takes exactly 12 s at 1x, whatever happens in it' stopped being true once T422 added preparations. At 2x, a corner, free kick or goal kick preparation of 39 s or more inside the first minute would end '1′' before the 3.6 s check. That is rare but possible if the founding seed varies. Reword the comment, and either pick the first minute knowing it has no long preparation or derive the bound with presentationMs and the playback's preparations."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/preparation.ts:49 (T422)",
+              "message": "The recording slack is the literal `+ 1500`, the same value as SET_PIECE_PREPARATION_MS, which the impl note wants to stay the only preparation number. It reads as the preparation time. Name it as slack (or derive it from SET_PIECE_PREPARATION_MS) so the owner's later tuning cannot leave a stale twin."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off)",
+              "message": "Two autopilot decisions are waiting for the owner, as the risk flags note. (a) The kick is read from the taker's take or the last restart sample, not the restart event's t (the impl note's literal 'kick = the restart event's own time' would compress the delivery). (b) Measured match lengths are 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. Neither blocks the code. Hand both to the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom) instead of changing the number here."
+            }
+          ],
+          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+          "createdAt": "2026-10-24T11:53:14.075Z",
+          "finishedAt": "2026-10-24T12:01:37.285Z"
+        }
+      }
+    },
+    {
+      "sequence": 975,
+      "at": "2026-10-24T12:01:37.303Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "22775b21-f636-4ab1-912e-4395a374b2f3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T11:53:15.356Z",
+          "finishedAt": "2026-10-24T12:01:37.303Z",
+          "error": null,
+          "summary": "T421 does what it says. WATCH_MINUTE_MS is 12000, WATCH_DEFAULT_SPEED is 2, and Pitch.tsx opens and resets every live or archived playback at 2x. The unit tests and browser specs now read the constants instead of literals. The edits to files outside touches (match-core, mobile-match-presentation, full-model-continuity spec, preparation.ts) were needed because of the 2x default, and their new waits and budgets are correct. T422's clock rewrite is sound. Running seconds are the clock's state. presentationAdvance and presentationMs give rate max(running, D/1500) inside a preparation. The goal hold, seeking and speed changes keep match time. Reading the kick from the taker's take, not from the restart event's t (which is the landing), matches WEB-32 better than the impl note's literal reading; the owner still has to confirm it. Two P2 defects block approval. (1) On the candidate model, when a minute boundary falls inside a set-piece delivery, the preparation runs past the kick: part of the delivery is drawn at the faster preparation rate, which breaks WEB-32 (\"the kick and delivery play at the selected speed\"). (2) The new browser helper starts recording after the clock has resumed, while the seek often lands only milliseconds of 1x play before the dead ball, so the new stable-controls journey is likely to fail in the batch run. This review is from reading the code: the worktree has no node_modules, and I did not install them in a read-only review. The worker's record shows typecheck, lint, format:check, `vitest run --changed` and build passing; no browser spec has been run."
+        }
+      }
+    },
+    {
+      "sequence": 976,
+      "at": "2026-10-24T12:01:37.347Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "58c66b2f-a8f6-437c-b742-2024e6e8aa27",
+            "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T421 does what it says. WATCH_MINUTE_MS is 12000, WATCH_DEFAULT_SPEED is 2, and Pitch.tsx opens and resets every live or archived playback at 2x. The unit tests and browser specs now read the constants instead of literals. The edits to files outside touches (match-core, mobile-match-presentation, full-model-continuity spec, preparation.ts) were needed because of the 2x default, and their new waits and budgets are correct. T422's clock rewrite is sound. Running seconds are the clock's state. presentationAdvance and presentationMs give rate max(running, D/1500) inside a preparation. The goal hold, seeking and speed changes keep match time. Reading the kick from the taker's take, not from the restart event's t (which is the landing), matches WEB-32 better than the impl note's literal reading; the owner still has to confirm it. Two P2 defects block approval. (1) On the candidate model, when a minute boundary falls inside a set-piece delivery, the preparation runs past the kick: part of the delivery is drawn at the faster preparation rate, which breaks WEB-32 (\"the kick and delivery play at the selected speed\"). (2) The new browser helper starts recording after the clock has resumed, while the seek often lands only milliseconds of 1x play before the dead ball, so the new stable-controls journey is likely to fail in the batch run. This review is from reading the code: the worktree has no node_modules, and I did not install them in a read-only review. The worker's record shows typecheck, lint, format:check, `vitest run --changed` and build passing; no browser spec has been run.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/presentationClock.ts:105 (T422)",
+                "message": "The fallback kick is 'the last phase:restart sample more than 0.1 s before the landing'. But the engine also gives the delivery flight phase 'restart': legsOf returns `phase: restart ? 'restart' : …` for spot entries, and knotted's flights use that leg phase. Every candidate minute also keeps a sample at its own end (instants keeps `to` = start+60). On the candidate the taker is never a holder before the kick (the kick knot adds a `rest`, not a `hold`), so the fallback is the main path there. Whenever a minute boundary falls between the kick and the landing, the minute-end sample becomes `to`. The kick→boundary part of the delivery (and the T359 kick sample) is then drawn at D/1500. At 1x a 25–30 s preparation makes that part 3–4× faster; at 2x, 1.7–2×. This breaks WEB-32 and the task goal ('nothing else on the timeline changed'). With deliveries of 0.15–5.6 s and about 70 prepared restarts per candidate match, this should happen about once or twice a match. Fix: count only restart samples where the ball is still on its spot (e.g. sample `ball` within a small tolerance of the restart event's `from`, which is its mirrored spot), or read the kick from the ball track. Add a unit case where a candidate corner's delivery crosses a minute end (restart sample at 60 with the ball off the spot) and assert that `to` is the kick sample."
+              },
+              {
+                "priority": "P2",
+                "where": "tests/e2e/preparation.ts:38-64 (T422, used by stable-controls-and-pacing and set-piece-defence)",
+                "message": "The helper seeks to the last sample at or before `from`, clicks 1× (which resumes playback), and only then starts the rAF recorder in a separate `canvas.evaluate`. On the pre-feature path there is always a sample at the ball going dead (P.times are kept), and the event's t is that time rounded to a tenth. About half the time that sample lies 0–0.05 s before `from`, which is under 10 ms at 1x. The first recorded `data-seconds` is then already past `from`, `enteredAt` is -1, and 'the clock reached the dead ball' fails. Even otherwise the margin is the gap to the previous sample (≈1 s of match time, about 200 ms at 1x), close to a click plus a CDP round trip. Seeds are fixed, so the new stable-pace journey would fail every time in the pre-push batch rather than flake. Seek to a sample a few match seconds before `from` (e.g. `times.findLastIndex(t => t <= from - 3)`), or start the recorder before clicking 1× and collect afterwards. Run the journey once on chromium before handing it to the batch."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/ui/presentationClock.ts:67 (T422)",
+                "message": "kindOf checks the outcome before the spot. A restart entry whose delivery is flagged offside, or ends in a foul, is recorded as kind 'offside'/'foul' while still carrying `restart: 'freeKick'` (playback.ts sets ev.restart for any spot entry). Its actor is then the receiver or the fouler, not the taker. The `kind === 'restart'` filter skips these free kicks, so their preparation keeps running speed even though WEB-32 covers every free kick. The acceptance itself names `kind: 'restart'`, so this is a planning gap: either key on `event.restart` and resolve the taker another way, or record the exception in the task or SSOT."
+              },
+              {
+                "priority": "P3",
+                "where": "tests/e2e/stable-controls-and-pacing.spec.ts:201-204 (T421/T422)",
+                "message": "The comment 'Every minute takes exactly 12 s at 1x, whatever happens in it' stopped being true once T422 added preparations. At 2x, a corner, free kick or goal kick preparation of 39 s or more inside the first minute would end '1′' before the 3.6 s check. That is rare but possible if the founding seed varies. Reword the comment, and either pick the first minute knowing it has no long preparation or derive the bound with presentationMs and the playback's preparations."
+              },
+              {
+                "priority": "P3",
+                "where": "tests/e2e/preparation.ts:49 (T422)",
+                "message": "The recording slack is the literal `+ 1500`, the same value as SET_PIECE_PREPARATION_MS, which the impl note wants to stay the only preparation number. It reads as the preparation time. Name it as slack (or derive it from SET_PIECE_PREPARATION_MS) so the owner's later tuning cannot leave a stale twin."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off)",
+                "message": "Two autopilot decisions are waiting for the owner, as the risk flags note. (a) The kick is read from the taker's take or the last restart sample, not the restart event's t (the impl note's literal 'kick = the restart event's own time' would compress the delivery). (b) Measured match lengths are 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. Neither blocks the code. Hand both to the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom) instead of changing the number here."
+              }
+            ],
+            "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+            "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+            "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+            "createdAt": "2026-10-24T11:53:14.075Z",
+            "finishedAt": "2026-10-24T12:01:37.285Z",
+            "invalidatedAt": "2026-10-24T12:01:37.346Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 977,
+      "at": "2026-10-24T12:01:37.425Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6529d580-504f-4095-b8c1-db1fffc24f28",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:01:37.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 978,
+      "at": "2026-10-24T12:01:37.600Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6529d580-504f-4095-b8c1-db1fffc24f28",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:01:37.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 979,
+      "at": "2026-10-24T12:01:38.267Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "04065647-ae6f-40f5-98d4-3e4582e32f0a",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+          "createdAt": "2026-10-24T12:01:38.267Z"
+        }
+      }
+    },
+    {
+      "sequence": 980,
+      "at": "2026-10-24T12:01:39.142Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "adca594f-824d-4536-ba14-bba2c5a01d5e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:01:39.142Z"
+        }
+      }
+    },
+    {
+      "sequence": 981,
+      "at": "2026-10-24T12:01:39.160Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "adca594f-824d-4536-ba14-bba2c5a01d5e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:01:39.142Z"
+        }
+      }
+    },
+    {
+      "sequence": 982,
+      "at": "2026-10-24T12:04:08.552Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T416 follows the owner's 261024 autopilot decision, which was the risk reason. The writers are guarded, not reproduced, and no engine source or validator changed. The new case \"an activated world settles only valid full records\" covers league rounds 1 and 2 and the first cup round of the ENABLED_RELEASE 1950 world. It checks both result paths: own matches go to the grid through candidateMatch, other fixtures go to the aggregate path. It also asserts extra time and a shoot-out. The injury, NPC-injury and ban cases now build explicit ENABLED_RELEASE worlds, and their incident edits keep the records valid. One gap remains in acceptance item 3. The substitute and fatigue cases build `modern = () => withCandidateModel(founded(2024))` on the default switch. That conflicts with the T419 convention on baseCommit, which is the convention for building a world on the candidate model.",
+        "review": {
+          "id": "04065647-ae6f-40f5-98d4-3e4582e32f0a",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T416 follows the owner's 261024 autopilot decision, which was the risk reason. The writers are guarded, not reproduced, and no engine source or validator changed. The new case \"an activated world settles only valid full records\" covers league rounds 1 and 2 and the first cup round of the ENABLED_RELEASE 1950 world. It checks both result paths: own matches go to the grid through candidateMatch, other fixtures go to the aggregate path. It also asserts extra time and a shoot-out. The injury, NPC-injury and ban cases now build explicit ENABLED_RELEASE worlds, and their incident edits keep the records valid. One gap remains in acceptance item 3. The substitute and fatigue cases build `modern = () => withCandidateModel(founded(2024))` on the default switch. That conflicts with the T419 convention on baseCommit, which is the convention for building a world on the candidate model.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/season.settle.test.ts:34 (T416)",
+              "message": "Acceptance item 3 says this file's other worlds build with an explicit release, but `modern = () => withCandidateModel(founded(2024))` uses the default MATCH_MODEL_RELEASE. Under `vitest.release-on.config.ts`, `founded(2024)` calls `createWorld` with the switch on. That activates the model at the 1950 founding (`activated.year` 1950, NPC season opened at the 1950 boundary) before `founded` moves the year to 2024. `withCandidateModel` then keeps that model. So the substitute-gain and fatigue cases play a different world depending on the switch. With the switch on, the comment's claim (\"on the model a new career plays\") is false. T419 documents exactly this case: \"under the switch, `founded(2024)` had recorded it in 1950 before the year moved\". On baseCommit 58e259bd, `founded(year?, release)` takes a release, and every other candidate world is built as `withCandidateModel(founded(2024, DISABLED_RELEASE))`. After integration this file would be the only candidate world that still follows the switch. Fix: merge the group base and change `modern` to `withCandidateModel(founded(2024, DISABLED_RELEASE))`. Then re-run `pnpm exec vitest run packages/engine/src/season.settle.test.ts` and the same run with `--config vitest.release-on.config.ts`, and record that both runs pass."
+            }
+          ],
+          "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+          "createdAt": "2026-10-24T12:01:38.267Z",
+          "finishedAt": "2026-10-24T12:04:08.552Z"
+        }
+      }
+    },
+    {
+      "sequence": 983,
+      "at": "2026-10-24T12:04:08.568Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "adca594f-824d-4536-ba14-bba2c5a01d5e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:01:39.142Z",
+          "finishedAt": "2026-10-24T12:04:08.568Z",
+          "error": null,
+          "summary": "T416 follows the owner's 261024 autopilot decision, which was the risk reason. The writers are guarded, not reproduced, and no engine source or validator changed. The new case \"an activated world settles only valid full records\" covers league rounds 1 and 2 and the first cup round of the ENABLED_RELEASE 1950 world. It checks both result paths: own matches go to the grid through candidateMatch, other fixtures go to the aggregate path. It also asserts extra time and a shoot-out. The injury, NPC-injury and ban cases now build explicit ENABLED_RELEASE worlds, and their incident edits keep the records valid. One gap remains in acceptance item 3. The substitute and fatigue cases build `modern = () => withCandidateModel(founded(2024))` on the default switch. That conflicts with the T419 convention on baseCommit, which is the convention for building a world on the candidate model."
+        }
+      }
+    },
+    {
+      "sequence": 984,
+      "at": "2026-10-24T12:04:08.609Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "04065647-ae6f-40f5-98d4-3e4582e32f0a",
+            "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T416 follows the owner's 261024 autopilot decision, which was the risk reason. The writers are guarded, not reproduced, and no engine source or validator changed. The new case \"an activated world settles only valid full records\" covers league rounds 1 and 2 and the first cup round of the ENABLED_RELEASE 1950 world. It checks both result paths: own matches go to the grid through candidateMatch, other fixtures go to the aggregate path. It also asserts extra time and a shoot-out. The injury, NPC-injury and ban cases now build explicit ENABLED_RELEASE worlds, and their incident edits keep the records valid. One gap remains in acceptance item 3. The substitute and fatigue cases build `modern = () => withCandidateModel(founded(2024))` on the default switch. That conflicts with the T419 convention on baseCommit, which is the convention for building a world on the candidate model.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/season.settle.test.ts:34 (T416)",
+                "message": "Acceptance item 3 says this file's other worlds build with an explicit release, but `modern = () => withCandidateModel(founded(2024))` uses the default MATCH_MODEL_RELEASE. Under `vitest.release-on.config.ts`, `founded(2024)` calls `createWorld` with the switch on. That activates the model at the 1950 founding (`activated.year` 1950, NPC season opened at the 1950 boundary) before `founded` moves the year to 2024. `withCandidateModel` then keeps that model. So the substitute-gain and fatigue cases play a different world depending on the switch. With the switch on, the comment's claim (\"on the model a new career plays\") is false. T419 documents exactly this case: \"under the switch, `founded(2024)` had recorded it in 1950 before the year moved\". On baseCommit 58e259bd, `founded(year?, release)` takes a release, and every other candidate world is built as `withCandidateModel(founded(2024, DISABLED_RELEASE))`. After integration this file would be the only candidate world that still follows the switch. Fix: merge the group base and change `modern` to `withCandidateModel(founded(2024, DISABLED_RELEASE))`. Then re-run `pnpm exec vitest run packages/engine/src/season.settle.test.ts` and the same run with `--config vitest.release-on.config.ts`, and record that both runs pass."
+              }
+            ],
+            "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+            "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+            "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+            "createdAt": "2026-10-24T12:01:38.267Z",
+            "finishedAt": "2026-10-24T12:04:08.552Z",
+            "invalidatedAt": "2026-10-24T12:04:08.609Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 985,
+      "at": "2026-10-24T12:04:08.691Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5966edfa-ea32-48fa-9740-0a07bb6437b3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:04:08.691Z"
+        }
+      }
+    },
+    {
+      "sequence": 986,
+      "at": "2026-10-24T12:04:08.882Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5966edfa-ea32-48fa-9740-0a07bb6437b3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:04:08.691Z"
+        }
+      }
+    },
+    {
+      "sequence": 987,
+      "at": "2026-10-24T12:07:34.926Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 988,
+      "at": "2026-10-24T12:07:35.560Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 989,
+      "at": "2026-10-24T12:07:35.602Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 990,
+      "at": "2026-10-24T12:08:27.510Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
+        "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
+        "submittedAt": "2026-10-24T12:08:27.510Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "outside touches: packages/engine/src/season.testkit.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 191,
+          "files": 2
+        },
+        "steps": [
+          {
+            "taskId": "T416",
+            "commit": "638407bb4b3688358bd33249f29fd13b204589f6",
+            "at": "2026-10-24T12:08:27.473Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T12:07:35.941Z",
+                "finishedAt": "2026-10-24T12:08:27.130Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T12:07:35.941Z",
+            "finishedAt": "2026-10-24T12:08:27.130Z"
+          }
+        ],
+        "verifiedCommit": "638407bb4b3688358bd33249f29fd13b204589f6"
+      }
+    },
+    {
+      "sequence": 991,
+      "at": "2026-10-24T12:08:27.528Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "5966edfa-ea32-48fa-9740-0a07bb6437b3",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:04:08.691Z",
+          "finishedAt": "2026-10-24T12:08:27.528Z",
+          "error": null,
+          "summary": "The review's P2 finding is fixed. The substitute and fatigue cases now build their 2024 world as `withCandidateModel(founded(2024, DISABLED_RELEASE))`. With the release switch on or off, the model is now recorded after the year moves to 2024, not at the 1950 founding. That is T419's convention.\n\nOne step differs from the reviewer's instructions: I did not merge the group base. My lane did not contain 58e259bd, where T419 added the `release` parameter to `founded`, and this session is not allowed to run `git merge`. Instead I copied T419's change to `founded` into `packages/engine/src/season.testkit.ts` byte for byte; `git diff 58e259bd` on that file is empty. When the lane is integrated, both sides carry the same lines, so they should merge without conflict. This file is outside the task's listed files, and the result says so.\n\nChecks run on this correction:\n- `season.settle.test.ts` passes under the default config and under `vitest.release-on.config.ts`, 6 of 6 each.\n- typecheck, lint and format:check pass.\n- `vitest run --changed fbd25c40… --passWithNoTests` passed 12 files, 49 tests: the settle file plus the test files that import `season.testkit.ts`.\n\nThe task file's result lines are updated, and all four acceptance items stay marked [v]. The batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) was not run; it is left to the unit gate, and the whole release-on unit tier to T420. Nothing is committed: the changed files are `season.settle.test.ts`, `season.testkit.ts` and the T416 task file."
+        }
+      }
+    },
+    {
+      "sequence": 992,
+      "at": "2026-10-24T12:08:28.129Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "32a33871-c996-4975-8711-aee3de14ce20",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "638407bb4b3688358bd33249f29fd13b204589f6",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
+          "createdAt": "2026-10-24T12:08:28.129Z"
+        }
+      }
+    },
+    {
+      "sequence": 993,
+      "at": "2026-10-24T12:08:29.431Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "75459bd3-aa96-4c3c-8601-a5b1cff75978",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:08:29.431Z"
+        }
+      }
+    },
+    {
+      "sequence": 994,
+      "at": "2026-10-24T12:08:29.450Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "75459bd3-aa96-4c3c-8601-a5b1cff75978",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:08:29.431Z"
+        }
+      }
+    },
+    {
+      "sequence": 995,
+      "at": "2026-10-24T12:10:41.097Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 996,
+      "at": "2026-10-24T12:10:41.659Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 997,
+      "at": "2026-10-24T12:10:41.698Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 998,
+      "at": "2026-10-24T12:11:13.422Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
+        "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
+        "submittedAt": "2026-10-24T12:11:13.422Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1135 changed lines (limit 300)",
+            "outside touches: tests/e2e/full-model-continuity.spec.ts tests/e2e/match-core.spec.ts tests/e2e/mobile-match-presentation.spec.ts tests/e2e/preparation.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1135,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T421",
+            "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+            "at": "2026-10-24T11:32:31.699Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:31:59.726Z",
+                "finishedAt": "2026-10-24T11:32:31.361Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T422",
+            "commit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+            "at": "2026-10-24T12:11:13.380Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T12:10:41.978Z",
+                "finishedAt": "2026-10-24T12:11:13.029Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T12:10:41.978Z",
+            "finishedAt": "2026-10-24T12:11:13.029Z"
+          }
+        ],
+        "verifiedCommit": "75c3e1b8ffca48486499e66e179b270bdef615cc"
+      }
+    },
+    {
+      "sequence": 999,
+      "at": "2026-10-24T12:11:13.440Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "6529d580-504f-4095-b8c1-db1fffc24f28",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:01:37.425Z",
+          "finishedAt": "2026-10-24T12:11:13.440Z",
+          "error": null,
+          "summary": "I fixed both P2 findings and all four P3s from the review. The task checks pass. No browser spec has been run: the reviewer asked for one chromium run, but ARCH-30 keeps browser specs out of the task tier, so it waits for the batch.\n\n- **P2: a delivery could be taken for the kick.** The fix is in `presentationClock.ts`. On the candidate model the ball keeps the 'restart' phase while the delivery is in the air, so a sample at a minute's end could be read as the kick. Part of that delivery was then drawn at the faster preparation rate. Now a restart sample counts as the kick only if the ball is still on the restart spot (the event's `from`).\n  - Real matches, four seeds per model: this happened once in 80 restarts in one candidate match before the fix, and never after.\n  - New unit test: \"a delivery sampled in the air at a minute end is not the kick\".\n- **P2: the browser helper could start recording too late.** `tests/e2e/preparation.ts` now seeks to a sample at least 3 match seconds before the ball goes dead. It starts recording while the match is still paused, then clicks 1×. The two waits are now named constants, `LEAD_SECONDS` and `RECORD_SLACK_MS`, so no literal 1500 sits beside `SET_PIECE_PREPARATION_MS`.\n  - Instead of a browser run, I replayed the page's clock and the helper in Node. Both journeys passed every assertion with frames of 16.7–50 ms and clicks landing 50–800 ms late. The preparation was drawn in 1517–1550 ms, against 4800 and 6406 ms of plain 1x play.\n- **P3: free kicks and goal kicks recorded as a foul or offside.** These now get a preparation too. Every entry carrying `restart` counts, and their kick comes from the on-spot sample, since their actor isn't the taker. There are 1–2 per candidate match and none on the pre-feature model. This goes beyond the acceptance's literal `kind: 'restart'`, because WEB-32 covers every free kick and goal kick; the T422 result says so. New unit test covers it.\n- **P3: the opening test's first-minute check.** The \"opens at 2x\" test in `stable-controls-and-pacing.spec.ts` now watches the seeded `stable-pace` career instead of a UI founding, whose seed is random. It computes the first minute's real length with the match's preparations. That comes to 5768 ms at 2x, because this match's first minute contains a 32 s preparation. I reworded the comment, and both tests in the file now share one career builder.\n- **P3: decisions for you.** The T422 result now hands you two choices for your in-play review of `SET_PIECE_PREPARATION_MS`; I left the number at 1500.\n  - The kick is read from the taker taking the ball, not from the restart event's own time.\n  - A whole match now takes about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x. That is a bit longer than WEB-32's \"about 13–14 / 7\".\n\nChecks that passed: the three affected test files (40 tests), typecheck, lint, format:check, `vitest run --changed 71e66601` (4 files, 52 tests) and the build. I updated both task results (`at: 71e66601 + review correction`) and left the acceptance marks at `[v]`."
+        }
+      }
+    },
+    {
+      "sequence": 1000,
+      "at": "2026-10-24T12:11:24.845Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "32a33871-c996-4975-8711-aee3de14ce20",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T416 approved. The P2 from the last review is fixed. `modern` is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the substitute and fatigue cases record the model after the year moves to 2024, under either switch setting. That matches T419's convention on baseCommit. Every world in season.settle.test.ts now names its release, so acceptance item 3 holds.\n\nI checked the three risk reasons first:\n1. Outside touch: `season.testkit.ts`. The lane does not contain baseCommit 58e259bd; its merge base is e2f0dddc. The worker copied T419's `founded(year?, release = MATCH_MODEL_RELEASE)` hunk instead of merging. `git diff 58e259bd 638407bb -- packages/engine/src/season.testkit.ts` is empty, so integration merges identical lines without conflict. The default argument keeps behaviour for every other caller, and the result's limits record the extra file.\n2. Rework: the only finding of review 04065647 is resolved.\n3. Autopilot decision: the work follows the 261024 STATE decision for T416 and T286. That decision found no faulty engine writer and changed item 1 to guard the writers; the worker changed no engine source and did not relax the validator. Whether that decision stands is for the owner to confirm, not for this review.\n\nI confirmed the guard case against the code. `simulateMatch` sends an activated world's own fixtures to `candidateMatch`, which builds a grid record and asserts it. All other fixtures go through `simulateAggregate`/`aggregateRecord`, which asserts at line 485. `recordMatch` checks again at season.ts:290. `playFixture` records each cup tie. The ENG cup is single-leg (cups.ts:63), so the hard-coded `{ awayGoals: false }` is the same rule `tieRule` gives in production. The new case validates every record from league rounds 1–2 and cup round k0. It asserts that both league and cup include an own match and another club's match, and that the cup round has at least one extra-time record and one shoot-out.\n\nThe edits in `played()` match what the validator checks: incidents stay in minute order, a red is counted in `PD`/`TD`, and the starter's minutes are set to the stamp minus one, which is how the timeline check computes the exit. The worker did not touch STATE or other tasks.\n\nI did not run any tests: there is no node_modules and this session is read-only. The worker's record lists both settle runs (default and release-on config, 6 passed each), typecheck, lint, format:check, and `vitest --changed` over the correction (12 files, 49 passed) and over the first submission (25 files, 390 passed).",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.settle.test.ts:52-64 (T416)",
+              "message": "Optional hardening. `played()` adds one incident to the grid's own incidents but does not check that the chosen player (`squads[side][1|2|4]`) has no later card or injury. The NPC-injury and ban cases also assume the grid added no injury or red of its own: they assert `out` has length 1 and `bans` equals one entry. Both hold for the 'settle-match' seed today. A change to the grid or to the seed could break these cases with a timeline error such as 'names X off the pitch' or an extra ban, and that failure would look like a settlement regression. Asserting these assumptions first, or choosing the player by them, would make such a failure easier to read. Not required for this task."
+            }
+          ],
+          "commit": "638407bb4b3688358bd33249f29fd13b204589f6",
+          "baseCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+          "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
+          "createdAt": "2026-10-24T12:08:28.129Z",
+          "finishedAt": "2026-10-24T12:11:24.845Z"
+        }
+      }
+    },
+    {
+      "sequence": 1001,
+      "at": "2026-10-24T12:11:24.860Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "75459bd3-aa96-4c3c-8601-a5b1cff75978",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:08:29.431Z",
+          "finishedAt": "2026-10-24T12:11:24.860Z",
+          "error": null,
+          "summary": "T416 approved. The P2 from the last review is fixed. `modern` is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the substitute and fatigue cases record the model after the year moves to 2024, under either switch setting. That matches T419's convention on baseCommit. Every world in season.settle.test.ts now names its release, so acceptance item 3 holds.\n\nI checked the three risk reasons first:\n1. Outside touch: `season.testkit.ts`. The lane does not contain baseCommit 58e259bd; its merge base is e2f0dddc. The worker copied T419's `founded(year?, release = MATCH_MODEL_RELEASE)` hunk instead of merging. `git diff 58e259bd 638407bb -- packages/engine/src/season.testkit.ts` is empty, so integration merges identical lines without conflict. The default argument keeps behaviour for every other caller, and the result's limits record the extra file.\n2. Rework: the only finding of review 04065647 is resolved.\n3. Autopilot decision: the work follows the 261024 STATE decision for T416 and T286. That decision found no faulty engine writer and changed item 1 to guard the writers; the worker changed no engine source and did not relax the validator. Whether that decision stands is for the owner to confirm, not for this review.\n\nI confirmed the guard case against the code. `simulateMatch` sends an activated world's own fixtures to `candidateMatch`, which builds a grid record and asserts it. All other fixtures go through `simulateAggregate`/`aggregateRecord`, which asserts at line 485. `recordMatch` checks again at season.ts:290. `playFixture` records each cup tie. The ENG cup is single-leg (cups.ts:63), so the hard-coded `{ awayGoals: false }` is the same rule `tieRule` gives in production. The new case validates every record from league rounds 1–2 and cup round k0. It asserts that both league and cup include an own match and another club's match, and that the cup round has at least one extra-time record and one shoot-out.\n\nThe edits in `played()` match what the validator checks: incidents stay in minute order, a red is counted in `PD`/`TD`, and the starter's minutes are set to the stamp minus one, which is how the timeline check computes the exit. The worker did not touch STATE or other tasks.\n\nI did not run any tests: there is no node_modules and this session is read-only. The worker's record lists both settle runs (default and release-on config, 6 passed each), typecheck, lint, format:check, and `vitest --changed` over the correction (12 files, 49 passed) and over the first submission (25 files, 390 passed)."
+        }
+      }
+    },
+    {
+      "sequence": 1002,
+      "at": "2026-10-24T12:11:24.904Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
