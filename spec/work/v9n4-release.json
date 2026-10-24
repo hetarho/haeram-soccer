@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T12:11:26.724Z",
-  "sourceCommit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+  "snapshotAt": "2026-10-24T12:36:44.579Z",
+  "sourceCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "58e259bddb7363dfac22d412fa51a79397995ea3",
+      "commit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T11:53:13.235Z"
+      "at": "2026-10-24T12:28:20.826Z"
     },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
@@ -49,12 +49,12 @@
   },
   "summary": {
     "total": 10,
-    "completed": 5,
-    "remaining": 5,
-    "running": 0,
-    "review": 2,
+    "completed": 7,
+    "remaining": 3,
+    "running": 1,
+    "review": 0,
     "blocked": 0,
-    "unassigned": 3
+    "unassigned": 2
   },
   "tasks": [
     {
@@ -126,23 +126,7 @@
         "T418",
         "T419"
       ],
-      "status": "todo"
-    },
-    {
-      "id": "T421",
-      "title": "1x at 12 seconds a match minute, matches opening at 2x",
-      "dep": [],
-      "lane": "viewing-pace",
-      "status": "ready"
-    },
-    {
-      "id": "T422",
-      "title": "Set-piece preparation drawn in about 1.5 real seconds",
-      "dep": [
-        "T421"
-      ],
-      "lane": "viewing-pace",
-      "status": "ready"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -256,7 +240,7 @@
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-24T10:04:40.994Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
@@ -276,17 +260,41 @@
         "files": 13
       },
       "dispatch": {
-        "id": "6529d580-504f-4095-b8c1-db1fffc24f28",
+        "id": "c355b623-d5cc-429a-9da2-f25350751d55",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T12:01:37.425Z",
-        "finishedAt": "2026-10-24T12:11:13.440Z",
+        "startedAt": "2026-10-24T12:28:24.406Z",
+        "finishedAt": "2026-10-24T12:36:41.407Z",
         "error": null,
-        "summary": "I fixed both P2 findings and all four P3s from the review. The task checks pass. No browser spec has been run: the reviewer asked for one chromium run, but ARCH-30 keeps browser specs out of the task tier, so it waits for the batch.\n\n- **P2: a delivery could be taken for the kick.** The fix is in `presentationClock.ts`. On the candidate model the ball keeps the 'restart' phase while the delivery is in the air, so a sample at a minute's end could be read as the kick. Part of that delivery was then drawn at the faster preparation rate. Now a restart sample counts as the kick only if the ball is still on the restart spot (the event's `from`).\n  - Real matches, four seeds per model: this happened once in 80 restarts in one candidate match before the fix, and never after.\n  - New unit test: \"a delivery sampled in the air at a minute end is not the kick\".\n- **P2: the browser helper could start recording too late.** `tests/e2e/preparation.ts` now seeks to a sample at least 3 match seconds before the ball goes dead. It starts recording while the match is still paused, then clicks 1×. The two waits are now named constants, `LEAD_SECONDS` and `RECORD_SLACK_MS`, so no literal 1500 sits beside `SET_PIECE_PREPARATION_MS`.\n  - Instead of a browser run, I replayed the page's clock and the helper in Node. Both journeys passed every assertion with frames of 16.7–50 ms and clicks landing 50–800 ms late. The preparation was drawn in 1517–1550 ms, against 4800 and 6406 ms of plain 1x play.\n- **P3: free kicks and goal kicks recorded as a foul or offside.** These now get a preparation too. Every entry carrying `restart` counts, and their kick comes from the on-spot sample, since their actor isn't the taker. There are 1–2 per candidate match and none on the pre-feature model. This goes beyond the acceptance's literal `kind: 'restart'`, because WEB-32 covers every free kick and goal kick; the T422 result says so. New unit test covers it.\n- **P3: the opening test's first-minute check.** The \"opens at 2x\" test in `stable-controls-and-pacing.spec.ts` now watches the seeded `stable-pace` career instead of a UI founding, whose seed is random. It computes the first minute's real length with the match's preparations. That comes to 5768 ms at 2x, because this match's first minute contains a 32 s preparation. I reworded the comment, and both tests in the file now share one career builder.\n- **P3: decisions for you.** The T422 result now hands you two choices for your in-play review of `SET_PIECE_PREPARATION_MS`; I left the number at 1500.\n  - The kick is read from the taker taking the ball, not from the restart event's own time.\n  - A whole match now takes about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x. That is a bit longer than WEB-32's \"about 13–14 / 7\".\n\nChecks that passed: the three affected test files (40 tests), typecheck, lint, format:check, `vitest run --changed 71e66601` (4 files, 52 tests) and the build. I updated both task results (`at: 71e66601 + review correction`) and left the acceptance marks at `[v]`."
+        "summary": "The rework fixes both P2 defects and closes all four P3s from the last review. (1) T422: a restart-phase sample counts as the kick only when the drawn ball is within SPOT_REACH (0.5) of the restart event's `from`. On the engine side, `from` is mirror(units(e.spot)) because restart trace entries carry no `from`, and the drawn ball is mirror(ballAt().at) in the same period. Both are in one frame, so the check holds for home and away. Saves don't persist frames, so only live engine frames reach it, unrounded. A delivery sampled in the air at a minute's end no longer ends the preparation; the new unit case 'a delivery sampled in the air at a minute end is not the kick' covers it. (2) tests/e2e/preparation.ts now seeks to a sample at least LEAD_SECONDS = 3 before the dead ball and starts the rAF recorder while paused. Only then does it click 1x, and it asserts that the first record is at or before `from`. Pitch.tsx matches what the helper assumes: slider onChange seeks and pauses, a speed chip calls setSpeed and setPaused(false), and each frame's elapsed is capped at 60 ms, which can only make drawnMs longer. (3) The `kind === 'restart'` filter is gone. Any event whose `restart` is a corner, free kick or goal kick counts, and the taker is read only from a restart entry's actor. A free kick or goal kick recorded as a foul or offside therefore takes its kick from the on-spot sample (new unit case). Throw-ins, kick-offs, penalties and dropped balls are still excluded, matching WEB-32's 'every free kick' and the earlier P3. (4) The opening journey now watches the seeded `stable-pace` pre-feature match. Its first-minute bound is presentationMs(0, first sample of frame 1, 2x, preparations), which is right because the minute label follows samples[sampleIndex].frame. The slack literal is now RECORD_SLACK_MS, the stale comment is reworded, and the owner hand-off sits in the T422 result. The base moved after the worker's last merge: 18db8f59 is not an ancestor. The only additions are T416 and T419 (engine test kits, tests and spec bookkeeping), with no overlap in app, e2e or engine sources, so the seeded matches are unchanged. The T421 work reviewed before (12000 ms minutes, 2x default, journeys reading the constants) is untouched by the rework. This verdict comes from reading the code. The review checkout has no node_modules, and installing them would modify a read-only checkout. The worker's record shows typecheck, lint, format:check, `vitest run --changed 71e66601` (52 tests) and build passing. No browser spec has run; the pre-push chromium batch is their first real run, with a Node replay of the browser helper offered in its place."
+      },
+      "review": {
+        "id": "c7bacea8-0d51-47cb-ba7c-f5db2a22facc",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "The rework fixes both P2 defects and closes all four P3s from the last review. (1) T422: a restart-phase sample counts as the kick only when the drawn ball is within SPOT_REACH (0.5) of the restart event's `from`. On the engine side, `from` is mirror(units(e.spot)) because restart trace entries carry no `from`, and the drawn ball is mirror(ballAt().at) in the same period. Both are in one frame, so the check holds for home and away. Saves don't persist frames, so only live engine frames reach it, unrounded. A delivery sampled in the air at a minute's end no longer ends the preparation; the new unit case 'a delivery sampled in the air at a minute end is not the kick' covers it. (2) tests/e2e/preparation.ts now seeks to a sample at least LEAD_SECONDS = 3 before the dead ball and starts the rAF recorder while paused. Only then does it click 1x, and it asserts that the first record is at or before `from`. Pitch.tsx matches what the helper assumes: slider onChange seeks and pauses, a speed chip calls setSpeed and setPaused(false), and each frame's elapsed is capped at 60 ms, which can only make drawnMs longer. (3) The `kind === 'restart'` filter is gone. Any event whose `restart` is a corner, free kick or goal kick counts, and the taker is read only from a restart entry's actor. A free kick or goal kick recorded as a foul or offside therefore takes its kick from the on-spot sample (new unit case). Throw-ins, kick-offs, penalties and dropped balls are still excluded, matching WEB-32's 'every free kick' and the earlier P3. (4) The opening journey now watches the seeded `stable-pace` pre-feature match. Its first-minute bound is presentationMs(0, first sample of frame 1, 2x, preparations), which is right because the minute label follows samples[sampleIndex].frame. The slack literal is now RECORD_SLACK_MS, the stale comment is reworded, and the owner hand-off sits in the T422 result. The base moved after the worker's last merge: 18db8f59 is not an ancestor. The only additions are T416 and T419 (engine test kits, tests and spec bookkeeping), with no overlap in app, e2e or engine sources, so the seeded matches are unchanged. The T421 work reviewed before (12000 ms minutes, 2x default, journeys reading the constants) is untouched by the rework. This verdict comes from reading the code. The review checkout has no node_modules, and installing them would modify a read-only checkout. The worker's record shows typecheck, lint, format:check, `vitest run --changed 71e66601` (52 tests) and build passing. No browser spec has run; the pre-push chromium batch is their first real run, with a Node replay of the browser helper offered in its place.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/replay.ts:8 (T421)",
+            "message": "The archive-playback comment still says 'the clock spends 4 s on each' minute. Since T421, an archived minute (no events or motion, so no preparation) takes WATCH_MINUTE_MS = 12 s at 1x, 6 s at the 2x default. Reword it to refer to WATCH_MINUTE_MS so the next pace change cannot leave it stale. It is a comment only and the file is outside touches, so it can ride with T286 or the next presentation task."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for manage-work)",
+            "message": "The result still records two autopilot decisions that need the owner. (a) The kick is read from the taker's take or the on-spot restart sample, not from the restart event's own time as the impl note literally says. (b) Measured match lengths are about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. The worker cannot write STATE, so whoever integrates should carry both into the STATE inbox for the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom). Leave the constant unchanged."
+          }
+        ],
+        "commit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+        "baseCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+        "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
+        "createdAt": "2026-10-24T12:28:22.968Z",
+        "finishedAt": "2026-10-24T12:36:41.382Z"
       },
       "reviewHistory": [
         {
@@ -391,6 +399,8 @@
       "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
       "submissionId": "91cfff31-c986-4888-8ee6-77ee68723fbf",
       "submittedAt": "2026-10-24T12:08:27.510Z",
+      "integratedCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+      "integratedAt": "2026-10-24T12:28:18.967Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -475,6 +485,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T12:07:35.941Z",
           "finishedAt": "2026-10-24T12:08:27.130Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T12:11:27.210Z",
+          "finishedAt": "2026-10-24T12:28:18.732Z"
         }
       ]
     },
@@ -768,6 +785,32 @@
           "finishedAt": "2026-10-24T11:53:11.033Z"
         }
       ]
+    },
+    {
+      "id": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "group": "v9n4-release",
+      "taskId": "T420",
+      "tasks": [
+        "T420"
+      ],
+      "lane": null,
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-24T12:28:21.051Z",
+      "startCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+      "dispatch": {
+        "id": "fd9ecd0d-fde1-41a3-9af8-860679f39232",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "running",
+        "startedAt": "2026-10-24T12:28:22.145Z"
+      }
     }
   ],
   "history": [
@@ -4169,6 +4212,304 @@
       "group": "v9n4-release",
       "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
       "taskId": "T416",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1003,
+      "at": "2026-10-24T12:28:18.910Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T12:11:27.210Z",
+            "finishedAt": "2026-10-24T12:28:18.732Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1004,
+      "at": "2026-10-24T12:28:18.967Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+        "integratedAt": "2026-10-24T12:28:18.967Z"
+      }
+    },
+    {
+      "sequence": 1005,
+      "at": "2026-10-24T12:28:20.839Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T12:28:20.826Z"
+        }
+      }
+    },
+    {
+      "sequence": 1006,
+      "at": "2026-10-24T12:28:21.051Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+        "group": "v9n4-release",
+        "taskId": "T420",
+        "tasks": [
+          "T420"
+        ],
+        "lane": null,
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T12:28:21.051Z",
+        "startCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc"
+      }
+    },
+    {
+      "sequence": 1007,
+      "at": "2026-10-24T12:28:21.604Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1008,
+      "at": "2026-10-24T12:28:22.145Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "fd9ecd0d-fde1-41a3-9af8-860679f39232",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:28:22.145Z"
+        }
+      }
+    },
+    {
+      "sequence": 1009,
+      "at": "2026-10-24T12:28:22.309Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "fd9ecd0d-fde1-41a3-9af8-860679f39232",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:28:22.145Z"
+        }
+      }
+    },
+    {
+      "sequence": 1010,
+      "at": "2026-10-24T12:28:22.968Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c7bacea8-0d51-47cb-ba7c-f5db2a22facc",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+          "baseCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+          "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
+          "createdAt": "2026-10-24T12:28:22.968Z"
+        }
+      }
+    },
+    {
+      "sequence": 1011,
+      "at": "2026-10-24T12:28:24.406Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c355b623-d5cc-429a-9da2-f25350751d55",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T12:28:24.406Z"
+        }
+      }
+    },
+    {
+      "sequence": 1012,
+      "at": "2026-10-24T12:28:24.423Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c355b623-d5cc-429a-9da2-f25350751d55",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T12:28:24.406Z"
+        }
+      }
+    },
+    {
+      "sequence": 1013,
+      "at": "2026-10-24T12:36:41.382Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "c7bacea8-0d51-47cb-ba7c-f5db2a22facc",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "The rework fixes both P2 defects and closes all four P3s from the last review. (1) T422: a restart-phase sample counts as the kick only when the drawn ball is within SPOT_REACH (0.5) of the restart event's `from`. On the engine side, `from` is mirror(units(e.spot)) because restart trace entries carry no `from`, and the drawn ball is mirror(ballAt().at) in the same period. Both are in one frame, so the check holds for home and away. Saves don't persist frames, so only live engine frames reach it, unrounded. A delivery sampled in the air at a minute's end no longer ends the preparation; the new unit case 'a delivery sampled in the air at a minute end is not the kick' covers it. (2) tests/e2e/preparation.ts now seeks to a sample at least LEAD_SECONDS = 3 before the dead ball and starts the rAF recorder while paused. Only then does it click 1x, and it asserts that the first record is at or before `from`. Pitch.tsx matches what the helper assumes: slider onChange seeks and pauses, a speed chip calls setSpeed and setPaused(false), and each frame's elapsed is capped at 60 ms, which can only make drawnMs longer. (3) The `kind === 'restart'` filter is gone. Any event whose `restart` is a corner, free kick or goal kick counts, and the taker is read only from a restart entry's actor. A free kick or goal kick recorded as a foul or offside therefore takes its kick from the on-spot sample (new unit case). Throw-ins, kick-offs, penalties and dropped balls are still excluded, matching WEB-32's 'every free kick' and the earlier P3. (4) The opening journey now watches the seeded `stable-pace` pre-feature match. Its first-minute bound is presentationMs(0, first sample of frame 1, 2x, preparations), which is right because the minute label follows samples[sampleIndex].frame. The slack literal is now RECORD_SLACK_MS, the stale comment is reworded, and the owner hand-off sits in the T422 result. The base moved after the worker's last merge: 18db8f59 is not an ancestor. The only additions are T416 and T419 (engine test kits, tests and spec bookkeeping), with no overlap in app, e2e or engine sources, so the seeded matches are unchanged. The T421 work reviewed before (12000 ms minutes, 2x default, journeys reading the constants) is untouched by the rework. This verdict comes from reading the code. The review checkout has no node_modules, and installing them would modify a read-only checkout. The worker's record shows typecheck, lint, format:check, `vitest run --changed 71e66601` (52 tests) and build passing. No browser spec has run; the pre-push chromium batch is their first real run, with a Node replay of the browser helper offered in its place.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/replay.ts:8 (T421)",
+              "message": "The archive-playback comment still says 'the clock spends 4 s on each' minute. Since T421, an archived minute (no events or motion, so no preparation) takes WATCH_MINUTE_MS = 12 s at 1x, 6 s at the 2x default. Reword it to refer to WATCH_MINUTE_MS so the next pace change cannot leave it stale. It is a comment only and the file is outside touches, so it can ride with T286 or the next presentation task."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for manage-work)",
+              "message": "The result still records two autopilot decisions that need the owner. (a) The kick is read from the taker's take or the on-spot restart sample, not from the restart event's own time as the impl note literally says. (b) Measured match lengths are about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. The worker cannot write STATE, so whoever integrates should carry both into the STATE inbox for the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom). Leave the constant unchanged."
+            }
+          ],
+          "commit": "75c3e1b8ffca48486499e66e179b270bdef615cc",
+          "baseCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+          "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
+          "createdAt": "2026-10-24T12:28:22.968Z",
+          "finishedAt": "2026-10-24T12:36:41.382Z"
+        }
+      }
+    },
+    {
+      "sequence": 1014,
+      "at": "2026-10-24T12:36:41.407Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "c355b623-d5cc-429a-9da2-f25350751d55",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:28:24.406Z",
+          "finishedAt": "2026-10-24T12:36:41.407Z",
+          "error": null,
+          "summary": "The rework fixes both P2 defects and closes all four P3s from the last review. (1) T422: a restart-phase sample counts as the kick only when the drawn ball is within SPOT_REACH (0.5) of the restart event's `from`. On the engine side, `from` is mirror(units(e.spot)) because restart trace entries carry no `from`, and the drawn ball is mirror(ballAt().at) in the same period. Both are in one frame, so the check holds for home and away. Saves don't persist frames, so only live engine frames reach it, unrounded. A delivery sampled in the air at a minute's end no longer ends the preparation; the new unit case 'a delivery sampled in the air at a minute end is not the kick' covers it. (2) tests/e2e/preparation.ts now seeks to a sample at least LEAD_SECONDS = 3 before the dead ball and starts the rAF recorder while paused. Only then does it click 1x, and it asserts that the first record is at or before `from`. Pitch.tsx matches what the helper assumes: slider onChange seeks and pauses, a speed chip calls setSpeed and setPaused(false), and each frame's elapsed is capped at 60 ms, which can only make drawnMs longer. (3) The `kind === 'restart'` filter is gone. Any event whose `restart` is a corner, free kick or goal kick counts, and the taker is read only from a restart entry's actor. A free kick or goal kick recorded as a foul or offside therefore takes its kick from the on-spot sample (new unit case). Throw-ins, kick-offs, penalties and dropped balls are still excluded, matching WEB-32's 'every free kick' and the earlier P3. (4) The opening journey now watches the seeded `stable-pace` pre-feature match. Its first-minute bound is presentationMs(0, first sample of frame 1, 2x, preparations), which is right because the minute label follows samples[sampleIndex].frame. The slack literal is now RECORD_SLACK_MS, the stale comment is reworded, and the owner hand-off sits in the T422 result. The base moved after the worker's last merge: 18db8f59 is not an ancestor. The only additions are T416 and T419 (engine test kits, tests and spec bookkeeping), with no overlap in app, e2e or engine sources, so the seeded matches are unchanged. The T421 work reviewed before (12000 ms minutes, 2x default, journeys reading the constants) is untouched by the rework. This verdict comes from reading the code. The review checkout has no node_modules, and installing them would modify a read-only checkout. The worker's record shows typecheck, lint, format:check, `vitest run --changed 71e66601` (52 tests) and build passing. No browser spec has run; the pre-push chromium batch is their first real run, with a Node replay of the browser helper offered in its place."
+        }
+      }
+    },
+    {
+      "sequence": 1015,
+      "at": "2026-10-24T12:36:41.590Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

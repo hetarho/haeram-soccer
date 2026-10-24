@@ -2,9 +2,17 @@ import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
-import { createWorld } from '../../packages/engine/src/index';
+import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import {
+  presentationMs,
+  presentationSamples,
+  setPiecePreparations,
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
+} from '../../apps/web/src/ui/presentationClock';
+import { expectCompressedPreparation, longPreparation } from './preparation';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('surveys every management destination during uninterrupted calendar play', async ({
@@ -178,31 +186,60 @@ test('keeps browsing available and management edits locked over real automatic t
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
 });
 
-test('defaults to one minute per four seconds and provides five replay speeds', async ({
+/**
+ * Marked synthetic career on the pre-feature path the build plays (its release switch stays off),
+ * every responsibility delegated so nothing holds the watch: a reference run in Node plays the same
+ * seeded match the page watches.
+ */
+function paceCareer() {
+  const world = createWorld({
+    country: 'ENG',
+    name: 'Preparation Pace',
+    color: '#224466',
+    seed: 'stable-pace',
+    level: 'easy',
+  });
+  for (const key of Object.keys(world.settings!.responsibilities) as (keyof NonNullable<
+    typeof world.settings
+  >['responsibilities'])[])
+    world.settings!.responsibilities[key] = 'delegated';
+  return world;
+}
+
+test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', async ({
   page,
 }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  await delegateSales(page);
+  // The page plays the reference run's recorded match, so the first minute's real length is known.
+  const playback = advanceToNextMatch(paceCareer())!;
+  await importResponsibilityCareer(page, paceCareer());
   await watchNext(page);
   const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
-  await expect(speeds.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
+  await expect(
+    speeds.getByRole('radio', { name: `${WATCH_DEFAULT_SPEED}×`, exact: true }),
+  ).toHaveAttribute('aria-checked', 'true');
   await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  // Every minute takes exactly 4 s at 1x, whatever happens in it (→WEB-32): the first is still on
-  // after 2.5 s and over by 4 s plus slack.
-  await page.waitForTimeout(2500);
+  // Running play takes 12 s a minute at 1x (→WEB-32), so 6 s at the 2x the match opens at; only a
+  // set-piece preparation inside it would draw the minute shorter. The first minute shows until
+  // the second minute's first sample: still on after 60% of that and over by its end plus slack.
+  const { samples } = presentationSamples(playback.frames);
+  const secondMinute = samples.find((sample) => sample.frame === 1)!.time;
+  const openingMinuteMs = presentationMs(
+    0,
+    secondMinute,
+    WATCH_DEFAULT_SPEED,
+    setPiecePreparations(playback.frames),
+  );
+  await page.waitForTimeout(openingMinuteMs * 0.6);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', { timeout: 4000 });
+  await expect(page.getByTestId('pitch-theatre')).toContainText('2′', {
+    timeout: openingMinuteMs,
+  });
   const minuteNow = async () =>
     Number(
       (await page.getByTestId('match-latest-event').locator('span').innerText()).match(/\d+/)![0],
     );
-  for (const value of ['2×', '4×', '8×', '16×']) {
+  for (const value of ['1×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
     // Account for play time spent handling the click, including at the fastest rate.
     const beforeAt = await page.evaluate(() => performance.now());
@@ -215,9 +252,11 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
     expect(after).toBeGreaterThanOrEqual(before);
     expect(after).toBeLessThanOrEqual(before + Math.max(2, elapsedMinutes));
   }
-  // At 16x every minute lasts 250 ms, restarts and chances alike: 2 s cover about 8 minutes,
+  // At 16x every minute lasts 750 ms, restarts and chances alike: 6 s cover about 8 minutes,
   // never a slowed set piece nor a skipped spell.
   // A goal's hold (→WEB-94) is real time outside running play: each one met takes its 1 s out.
+  const fastMinuteMs = WATCH_MINUTE_MS / 16;
+  const holdMinutes = GOAL_FEEDBACK_CONFIG.holdMs / fastMinuteMs;
   await page.evaluate(() => {
     const seen = { cues: 0 };
     new MutationObserver((records) => {
@@ -231,13 +270,13 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
     });
   });
   const from = await minuteNow();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(8 * fastMinuteMs);
   const covered = (await minuteNow()) - from;
   const holds = await page.evaluate(() => {
     const state = window as unknown as { goalSeen: { cues: number }; goalHeld: boolean };
     return state.goalSeen.cues + (state.goalHeld ? 1 : 0);
   });
-  expect(covered).toBeGreaterThanOrEqual(5 - 4 * holds);
+  expect(covered).toBeGreaterThanOrEqual(5 - holdMinutes * holds);
   expect(covered).toBeLessThanOrEqual(10);
   await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
@@ -269,4 +308,22 @@ test('defaults to one minute per four seconds and provides five replay speeds', 
   await expect
     .poll(async () => Number(await timeline.inputValue()))
     .toBeGreaterThan(Number(sought));
+});
+
+test('draws a set-piece preparation in about 1.5 s with the players travelling', async ({
+  page,
+}) => {
+  // A reference run of the same seeded match finds a long corner, free kick or goal kick
+  // preparation, and the page plays that recorded match (→WEB-32, MATCH-7/12).
+  test.slow();
+  const playback = advanceToNextMatch(paceCareer())!;
+  const preparation = longPreparation(playback);
+  await importResponsibilityCareer(page, paceCareer());
+  await watchNext(page);
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toHaveAttribute(
+    'max',
+    String(presentationSamples(playback.frames).samples.length - 1),
+  );
+  await expectCompressedPreparation(page, playback, preparation);
 });

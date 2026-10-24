@@ -9,7 +9,7 @@ import {
   type GoalFeedbackState,
   type GoalInstant,
 } from './goalFeedback';
-import { clockAt, presentationLength, WATCH_MINUTE_MS, WATCH_SPEEDS } from './presentationClock';
+import { presentationMs, runningLength, runningRate, WATCH_SPEEDS } from './presentationClock';
 
 const goalEvent = (t: number, side: 0 | 1): MatchEvent => ({
   t,
@@ -68,7 +68,7 @@ const rec = record([
 ]);
 const starts = frames.map((_, i) => i * 60);
 const goals = goalInstants(rec, frames, starts);
-const lengthMs = presentationLength(frames.length);
+const length = runningLength(frames.length);
 
 /** Runs the clock in display updates of `stepMs` until `until` holds or `limitMs` of real time. */
 function run(
@@ -80,34 +80,29 @@ function run(
   list: readonly GoalInstant[] = goals,
 ) {
   for (let spent = 0; spent < limitMs && !until(state); spent += stepMs)
-    state = advanceGoalFeedback(state, list, { elapsedMs: stepMs, speed, lengthMs, running: true });
+    state = advanceGoalFeedback(state, list, { elapsedMs: stepMs, speed, length, running: true });
   return state;
 }
-const start: GoalFeedbackState = { clockMs: 0, next: 0 };
+const start: GoalFeedbackState = { seconds: 0, next: 0 };
 
 describe('goal feedback', () => {
   it('stops at the earliest crossed goal at every speed', () => {
-    expect(goals.map((goal) => goal.clockMs)).toEqual([
-      clockAt(150),
-      clockAt(370),
-      clockAt(400),
-      clockAt(600),
-    ]);
+    expect(goals.map((goal) => goal.seconds)).toEqual([150, 370, 400, 600]);
     for (const speed of WATCH_SPEEDS)
       for (const step of [16, 60, 1000]) {
         const held = run(start, speed, step, (state) => !!state.cue);
         expect(held.cue?.goal).toBe(0);
-        expect(held.clockMs).toBe(goals[0]!.clockMs);
+        expect(held.seconds).toBe(goals[0]!.seconds);
         expect(goalsShown(held)).toBe(1);
       }
     // One update spanning the whole match still stops at the first goal.
     const jump = advanceGoalFeedback(start, goals, {
-      elapsedMs: lengthMs,
+      elapsedMs: presentationMs(0, length, 16),
       speed: 16,
-      lengthMs,
+      length,
       running: true,
     });
-    expect(jump).toMatchObject({ clockMs: goals[0]!.clockMs, next: 1, cue: { goal: 0 } });
+    expect(jump).toMatchObject({ seconds: goals[0]!.seconds, next: 1, cue: { goal: 0 } });
   });
 
   it('two goals in one minute keep separate running scores', () => {
@@ -117,12 +112,12 @@ describe('goal feedback', () => {
       { side: 0, home: 2, away: 1, scorer: 'Jack Hill' },
       { side: 0, home: 3, away: 1, scorer: 'Sam Reed' },
     ]);
-    const first = run(seekGoalFeedback(goals, clockAt(300)), 16, 1000, (state) => !!state.cue);
+    const first = run(seekGoalFeedback(goals, 300), 16, 1000, (state) => !!state.cue);
     expect(first.cue?.goal).toBe(1);
     expect(goalsShown(first)).toBe(2);
     // The update that ends the first hold may reach the second goal, which then holds on its own.
     const second = run(first, 16, 1000, (state) => state.cue?.goal === 2);
-    expect(second.clockMs).toBe(goals[2]!.clockMs);
+    expect(second.seconds).toBe(goals[2]!.seconds);
     expect(goalsShown(second)).toBe(3);
   });
 
@@ -131,11 +126,11 @@ describe('goal feedback', () => {
     let state = held;
     let spent = 0;
     while (state.cue) {
-      expect(state.clockMs).toBe(held.clockMs);
+      expect(state.seconds).toBe(held.seconds);
       state = advanceGoalFeedback(state, goals, {
         elapsedMs: 16,
         speed: 4,
-        lengthMs,
+        length,
         running: true,
       });
       spent += 16;
@@ -143,19 +138,19 @@ describe('goal feedback', () => {
     // The hold took its configured real time and the clock ran on only by what was left after it.
     expect(spent).toBeGreaterThanOrEqual(GOAL_FEEDBACK_CONFIG.holdMs);
     expect(spent).toBeLessThan(GOAL_FEEDBACK_CONFIG.holdMs + 16);
-    expect(state.clockMs - held.clockMs).toBeLessThanOrEqual(16 * 4);
+    expect(state.seconds - held.seconds).toBeLessThanOrEqual(16 * runningRate(4));
   });
 
   it('speed change and rerender do not repeat a cue', () => {
     const held = run(start, 1, 16, (state) => !!state.cue);
     // A rerender reads the same state; an update with no time keeps the same cue and hold.
     expect(
-      advanceGoalFeedback(held, goals, { elapsedMs: 0, speed: 1, lengthMs, running: true }),
+      advanceGoalFeedback(held, goals, { elapsedMs: 0, speed: 1, length, running: true }),
     ).toEqual(held);
     const faster = advanceGoalFeedback(held, goals, {
       elapsedMs: 100,
       speed: 16,
-      lengthMs,
+      length,
       running: true,
     });
     expect(faster.cue).toEqual({ goal: 0, remainingMs: GOAL_FEEDBACK_CONFIG.holdMs - 100 });
@@ -166,15 +161,15 @@ describe('goal feedback', () => {
 
   it('seek clears without celebrating skipped goals', () => {
     const held = run(start, 1, 16, (state) => !!state.cue);
-    const sought = seekGoalFeedback(goals, clockAt(450));
-    expect(sought).toEqual({ clockMs: clockAt(450), next: 3 });
+    const sought = seekGoalFeedback(goals, 450);
+    expect(sought).toEqual({ seconds: 450, next: 3 });
     expect(goalsShown(sought)).toBe(3);
     expect(held.cue).toBeDefined();
     const onward = run(sought, 16, 16, (state) => !!state.cue);
     expect(onward.cue?.goal).toBe(3);
     // Seeking onto a goal's own instant counts it as shown without a cue.
-    expect(seekGoalFeedback(goals, goals[0]!.clockMs)).toEqual({
-      clockMs: goals[0]!.clockMs,
+    expect(seekGoalFeedback(goals, goals[0]!.seconds)).toEqual({
+      seconds: goals[0]!.seconds,
       next: 1,
     });
   });
@@ -192,24 +187,24 @@ describe('goal feedback', () => {
     const half = advanceGoalFeedback(held, goals, {
       elapsedMs: 400,
       speed: 2,
-      lengthMs,
+      length,
       running: true,
     });
     const paused = advanceGoalFeedback(half, goals, {
       elapsedMs: 5000,
       speed: 2,
-      lengthMs,
+      length,
       running: false,
     });
     expect(paused).toBe(half);
     const resumed = advanceGoalFeedback(paused, goals, {
       elapsedMs: 400,
       speed: 2,
-      lengthMs,
+      length,
       running: true,
     });
     expect(resumed.cue?.remainingMs).toBe(GOAL_FEEDBACK_CONFIG.holdMs - 800);
-    expect(resumed.clockMs).toBe(held.clockMs);
+    expect(resumed.seconds).toBe(held.seconds);
   });
 
   it('hidden time does not consume the cue', () => {
@@ -219,26 +214,26 @@ describe('goal feedback', () => {
       state = advanceGoalFeedback(state, goals, {
         elapsedMs: 60,
         speed: 8,
-        lengthMs,
+        length,
         running: false,
       });
     expect(state).toEqual(held);
   });
 
   it('final goal completes before finish', () => {
-    const last = run(seekGoalFeedback(goals, clockAt(500)), 16, 60, (state) => !!state.cue);
-    expect(last).toMatchObject({ clockMs: lengthMs, next: 4, cue: { goal: 3 } });
+    const last = run(seekGoalFeedback(goals, 500), 16, 60, (state) => !!state.cue);
+    expect(last).toMatchObject({ seconds: length, next: 4, cue: { goal: 3 } });
     // At the final whistle the cue still runs its whole hold before it clears.
     const midway = advanceGoalFeedback(last, goals, {
       elapsedMs: GOAL_FEEDBACK_CONFIG.holdMs - 1,
       speed: 16,
-      lengthMs,
+      length,
       running: true,
     });
     expect(midway.cue?.remainingMs).toBe(1);
     expect(
-      advanceGoalFeedback(midway, goals, { elapsedMs: 1, speed: 16, lengthMs, running: true }),
-    ).toEqual({ clockMs: lengthMs, next: 4 });
+      advanceGoalFeedback(midway, goals, { elapsedMs: 1, speed: 16, length, running: true }),
+    ).toEqual({ seconds: length, next: 4 });
   });
 
   it('shootout is excluded', () => {
@@ -249,8 +244,8 @@ describe('goal feedback', () => {
     const level = [frame(0, 0, 0), frame(1, 1, 0), frame(2, 1, 1)];
     // A sparse archived minute holds at the boundary where its frame starts to show.
     expect(goalInstants(cup, level, [0, 120, 180])).toEqual([
-      { id: 0, clockMs: clockAt(120), side: 0, home: 1, away: 0, scorer: 'Walter Turner' },
-      { id: 1, clockMs: clockAt(180), side: 1, home: 1, away: 1, scorer: undefined },
+      { id: 0, seconds: 120, side: 0, home: 1, away: 0, scorer: 'Walter Turner' },
+      { id: 1, seconds: 180, side: 1, home: 1, away: 1, scorer: undefined },
     ]);
   });
 
@@ -260,6 +255,23 @@ describe('goal feedback', () => {
     run(start, 16, 16, (state) => state.next === again.length && !state.cue, 120_000, again);
     expect(JSON.stringify({ rec, frames })).toBe(before);
     expect(again).toEqual(goals);
-    expect(WATCH_MINUTE_MS).toBe(4000);
+    expect(length).toBe(frames.length * 60);
+  });
+
+  it('a set-piece preparation before a goal is drawn faster and the hold stays real time', () => {
+    // A 120 s preparation from 10 s to 130 s ahead of the 2′ 30 s goal: 1.5 s instead of 24 s at 1x.
+    const preparations = [{ from: 10, to: 130 }];
+    const toGoal = presentationMs(0, 150, 1, preparations);
+    expect(toGoal).toBeCloseTo(10 / runningRate(1) + 1500 + 20 / runningRate(1), 6);
+    const input = { speed: 1, length, running: true, preparations };
+    const before = advanceGoalFeedback(start, goals, { ...input, elapsedMs: toGoal - 50 });
+    expect(before.cue).toBeUndefined();
+    expect(before.seconds).toBeLessThan(150);
+    const held = advanceGoalFeedback(start, goals, { ...input, elapsedMs: toGoal + 10 });
+    expect(held).toEqual({
+      seconds: 150,
+      next: 1,
+      cue: { goal: 0, remainingMs: GOAL_FEEDBACK_CONFIG.holdMs },
+    });
   });
 });

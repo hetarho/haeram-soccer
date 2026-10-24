@@ -9,9 +9,9 @@ import { advanceGoalFeedback, goalInstants } from './goalFeedback';
 import { possessionKey, resolvePossessionCue } from './possessionCue';
 import {
   locate,
-  presentationLength,
   presentationSamples,
-  runningSeconds,
+  runningLength,
+  setPiecePreparations,
   type PresentationSample,
 } from './presentationClock';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
@@ -162,23 +162,34 @@ describe('possession cue', () => {
     const { samples, times, sampleBreak } = presentationSamples(frames);
     const record = { highlights: [{ minute: 1, side: 0, player: 'H9', action: '골' }] };
     const goals = goalInstants(record as unknown as MatchRecord, frames, [10, 65]);
-    const held = advanceGoalFeedback({ clockMs: 0, next: 0 }, goals, {
+    // The clock the pitch runs: running seconds, with the playback's set-piece preparations.
+    const held = advanceGoalFeedback({ seconds: 0, next: 0 }, goals, {
       elapsedMs: 10_000,
       speed: 16,
-      lengthMs: presentationLength(2),
+      length: runningLength(2),
       running: true,
+      preparations: setPiecePreparations(frames),
     });
     expect(held.cue).toBeDefined();
-    const at = (clockMs: number) => {
-      const now = runningSeconds(clockMs);
+    const at = (now: number) => {
       const shown = samples[Math.floor(locate(times, now, sampleBreak) + 1e-6)];
       return resolvePossessionCue(shown, frames[shown!.frame], now - shown!.frame * 60);
     };
-    // Held at the goal: the scoring shot is the presented action, not the kick-off after it.
-    expect(at(held.clockMs)).toEqual({ state: 'flight', side: 0 });
-    expect(at(held.clockMs - 1000)).toEqual({ state: 'carrier', side: 0, carrierId: 'h9' });
-    // A seek into the next minute reads that instant's action.
-    expect(at(presentationLength(1) + 400)).toEqual({ state: 'carrier', side: 1, carrierId: 'a4' });
+    // Held at the goal: the scoring shot is the presented action, not the kick-off after it; 15 s
+    // earlier home still carries.
+    expect(held.seconds).toBe(30);
+    expect(at(held.seconds)).toEqual({ state: 'flight', side: 0 });
+    expect(at(held.seconds - 15)).toEqual({
+      state: 'carrier',
+      side: 0,
+      carrierId: 'h9',
+    });
+    // A seek 6 s into the next minute reads that instant's action.
+    expect(at(runningLength(1) + 6)).toEqual({
+      state: 'carrier',
+      side: 1,
+      carrierId: 'a4',
+    });
   });
 
   it('minute leader is not current possession', () => {

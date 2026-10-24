@@ -1,6 +1,6 @@
 import type { MatchFrame, MatchRecord } from '../../../../packages/contracts/src/types';
 import { recordedGoals } from './moments';
-import { clockAt, presentationAdvance } from './presentationClock';
+import { presentationAdvance, type Preparation } from './presentationClock';
 
 /**
  * The goal-feedback transition (→WEB-94): how long the presented match holds at a recorded goal in
@@ -13,8 +13,8 @@ export const GOAL_FEEDBACK_CONFIG = { holdMs: 1000, pulses: 2 } as const;
 export interface GoalInstant {
   /** Its place among the match's goals: the identity of its cue. */
   id: number;
-  /** The 1x presentation clock at the goal. */
-  clockMs: number;
+  /** The presentation clock at the goal, in running seconds. */
+  seconds: number;
   side: 0 | 1;
   /** The running score with this goal. */
   home: number;
@@ -62,7 +62,7 @@ export function goalInstants(
       else away++;
       goals.push({
         id: goals.length,
-        clockMs: clockAt(seconds),
+        seconds,
         side,
         home,
         away,
@@ -77,7 +77,8 @@ export function goalInstants(
 
 /** The presentation clock with its goal feedback: what a running clock carries between updates. */
 export interface GoalFeedbackState {
-  clockMs: number;
+  /** The presented instant in running seconds (→WEB-32). */
+  seconds: number;
   /** Index of the first goal not yet reached. */
   next: number;
   /** The goal being held and the visible real ms its hold has left. */
@@ -85,16 +86,23 @@ export interface GoalFeedbackState {
 }
 
 /**
- * Advances the presentation clock by `elapsedMs` of real time at `speed` and stops at the earliest
- * recorded goal it crosses (→WEB-94). A held goal spends real time only, the same at every speed, and
- * the clock stays put meanwhile, so nothing beyond the goal shows and no catch-up builds; when the
- * hold ends the rest of that update runs on. A clock that is not running (paused, hidden) keeps its
- * remaining hold.
+ * Advances the presentation clock by `elapsedMs` of real time at `speed` — set-piece preparations
+ * drawn faster (→WEB-32) — and stops at the earliest recorded goal it crosses (→WEB-94). A held goal
+ * spends real time only, the same at every speed, and the clock stays put meanwhile, so nothing
+ * beyond the goal shows and no catch-up builds; when the hold ends the rest of that update runs on.
+ * A clock that is not running (paused, hidden) keeps its remaining hold.
  */
 export function advanceGoalFeedback(
   state: GoalFeedbackState,
   goals: readonly GoalInstant[],
-  input: { elapsedMs: number; speed: number; lengthMs: number; running: boolean },
+  input: {
+    elapsedMs: number;
+    speed: number;
+    /** The playback's length in running seconds. */
+    length: number;
+    running: boolean;
+    preparations?: readonly Preparation[];
+  },
   config: { holdMs: number } = GOAL_FEEDBACK_CONFIG,
 ): GoalFeedbackState {
   if (!input.running) return state;
@@ -104,27 +112,33 @@ export function advanceGoalFeedback(
     if (left > 0) return { ...state, cue: { ...state.cue, remainingMs: left } };
     real = -left;
   }
-  const target = presentationAdvance(state.clockMs, real, input.speed, input.lengthMs);
+  const target = presentationAdvance(
+    state.seconds,
+    real,
+    input.speed,
+    input.length,
+    input.preparations,
+  );
   const goal = goals[state.next];
-  if (goal && goal.clockMs <= target)
+  if (goal && goal.seconds <= target)
     return {
-      clockMs: Math.max(state.clockMs, goal.clockMs),
+      seconds: Math.max(state.seconds, goal.seconds),
       next: state.next + 1,
       cue: { goal: state.next, remainingMs: config.holdMs },
     };
-  return { clockMs: target, next: state.next };
+  return { seconds: target, next: state.next };
 }
 
 /**
- * A seek: no cue, and the goals up to the new place count as passed, so skipped goals are never
- * celebrated while a goal still ahead can be.
+ * A seek to running second `seconds`: no cue, and the goals up to the new place count as passed, so
+ * skipped goals are never celebrated while a goal still ahead can be.
  */
 export function seekGoalFeedback(
   goals: readonly GoalInstant[],
-  clockMs: number,
+  seconds: number,
 ): GoalFeedbackState {
-  const next = goals.findIndex((goal) => goal.clockMs > clockMs);
-  return { clockMs, next: next < 0 ? goals.length : next };
+  const next = goals.findIndex((goal) => goal.seconds > seconds);
+  return { seconds, next: next < 0 ? goals.length : next };
 }
 
 /** How many goals the presentation shows at `state`: those reached, the held one included. */

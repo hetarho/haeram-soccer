@@ -45,11 +45,11 @@ import {
 import { useLocale } from '../presentation/react';
 import { possessionKey, resolvePossessionCue, type PossessionCue } from './possessionCue';
 import {
-  clockAt,
   locate,
-  presentationLength,
   presentationSamples,
-  runningSeconds,
+  runningLength,
+  setPiecePreparations,
+  WATCH_DEFAULT_SPEED,
   WATCH_SPEEDS,
 } from './presentationClock';
 import s from './App.module.css';
@@ -145,10 +145,10 @@ export function Pitch({
   const skin = usePitchSkin(canvas);
   const [ground] = useState(() => createGroundPainter());
   /**
-   * Presentation time in ms at 1x, every match minute lasting 4000 ms (→WEB-32), with the recorded
-   * goal it holds at (→WEB-94).
+   * The presented instant in running match seconds (→WEB-32), with the recorded goal it holds at
+   * (→WEB-94).
    */
-  const clock = useRef<GoalFeedbackState>({ clockMs: 0, next: 0 });
+  const clock = useRef<GoalFeedbackState>({ seconds: 0, next: 0 });
   const last = useRef(0);
   const lastUi = useRef(0);
   const [sampleIndex, setSampleIndex] = useState(0);
@@ -159,7 +159,7 @@ export function Pitch({
   // Who has the ball at the presented instant, shared by the scoreboard and the pitch (→WEB-95).
   const [possession, setPossession] = useState<PossessionCue>({ state: 'unknown' });
   const possessionShown = useRef('');
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState<number>(WATCH_DEFAULT_SPEED);
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
   const [details, setDetails] = useState(false);
@@ -168,7 +168,9 @@ export function Pitch({
   // Every sample and recorded ball position at its match time, so a pass flies at its real speed.
   const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
   const { samples, track } = timed;
-  const length = presentationLength(p?.frames.length ?? 0);
+  const length = runningLength(p?.frames.length ?? 0);
+  // The dead intervals before corners, free kicks and goal kicks, drawn faster (→WEB-32).
+  const preparations = useMemo(() => setPiecePreparations(p?.frames ?? []), [p]);
   const goals = useMemo(() => {
     if (!p) return [];
     const starts: number[] = [];
@@ -252,7 +254,7 @@ export function Pitch({
   }, [finished, p?.record.id, samples.length, onFinish]);
 
   useLayoutEffect(() => {
-    clock.current = { clockMs: 0, next: 0 };
+    clock.current = { seconds: 0, next: 0 };
     lastUi.current = 0;
     setSampleIndex(0);
     setCue(undefined);
@@ -263,6 +265,8 @@ export function Pitch({
     setSelection('0:8');
     setDetails(false);
     setInspect(false);
+    // Every presentation opens at the default speed, live or archived (→WEB-32).
+    setSpeed(WATCH_DEFAULT_SPEED);
     setPaused(
       document.hidden || (summary && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
     );
@@ -315,14 +319,15 @@ export function Pitch({
         clock.current = advanceGoalFeedback(clock.current, goals, {
           elapsedMs: elapsed,
           speed,
-          lengthMs: length,
+          length,
           running: !paused && !document.hidden,
+          preparations,
         });
         // Only a new cue or goal re-renders; a held goal keeps one cue however often this runs.
         setCue(clock.current.cue?.goal);
         setShownGoals(goalsShown(clock.current));
       }
-      const now = runningSeconds(clock.current.clockMs);
+      const now = clock.current.seconds;
       const position = Math.min(end, locate(timed.times, now, timed.sampleBreak));
       const index = Math.min(end, Math.floor(position + 1e-6));
       const shown = samples[index];
@@ -340,6 +345,9 @@ export function Pitch({
         setPossession(ownership);
       }
       const element = canvas.current;
+      // The presented running second on the canvas, read by journeys that time the clock (→WEB-32).
+      const presented = now.toFixed(2);
+      if (element && element.dataset.seconds !== presented) element.dataset.seconds = presented;
       // Keep replay time, but leave hidden/inert views out of layout and painting work. The final
       // whistle still lands, so home knows an unwatched match has ended.
       if (element?.closest('[hidden], [inert]')) {
@@ -506,6 +514,7 @@ export function Pitch({
     samples,
     timed,
     length,
+    preparations,
     goals,
     track,
     numbers,
@@ -523,7 +532,7 @@ export function Pitch({
   const seek = (index: number) => {
     const target = Math.max(0, Math.min(samples.length - 1, index));
     // A seek ends any cue and passes the goals up to its place without celebrating them.
-    clock.current = seekGoalFeedback(goals, clockAt(samples[Math.floor(target)]?.time ?? 0));
+    clock.current = seekGoalFeedback(goals, samples[Math.floor(target)]?.time ?? 0);
     setCue(undefined);
     setShownGoals(goalsShown(clock.current));
     setSampleIndex(Math.floor(target));

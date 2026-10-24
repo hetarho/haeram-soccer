@@ -14,6 +14,7 @@ import {
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { expectViewFits, settle } from './layout';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 import { openRecordedMatch } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 
@@ -141,10 +142,9 @@ for (const viewport of [
         return new Set(ids).size === ids.length;
       }),
     ).toBe(true);
-    await expect(page.getByRole('radio', { name: '1×', exact: true })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    );
+    await expect(
+      page.getByRole('radio', { name: `${WATCH_DEFAULT_SPEED}×`, exact: true }),
+    ).toHaveAttribute('aria-checked', 'true');
     await expect(page.getByRole('radiogroup', { name: '관전 속도' }).getByRole('radio')).toHaveText(
       ['1×', '2×', '4×', '8×', '16×'],
     );
@@ -163,7 +163,7 @@ for (const viewport of [
       '슈팅',
     ]);
     // Speed changes keep the presented minute, and 16x runs every minute, restarts included, in
-    // 250 ms (→WEB-32): a second covers several minutes without slowing at a dead ball.
+    // 750 ms (→WEB-32): four of them cover several minutes without slowing at a dead ball.
     const minuteNow = async () =>
       Number(
         (await page.getByTestId('match-latest-event').locator('span').innerText()).match(
@@ -173,8 +173,8 @@ for (const viewport of [
     const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     expect(await minuteNow()).toBeGreaterThanOrEqual(before);
-    // A goal's hold (→WEB-94) is real time outside running play, so it may sit inside the second.
-    await page.waitForTimeout(1000 + GOAL_FEEDBACK_CONFIG.holdMs);
+    // A goal's hold (→WEB-94) is real time outside running play, so it may sit inside the wait.
+    await page.waitForTimeout((4 * WATCH_MINUTE_MS) / 16 + GOAL_FEEDBACK_CONFIG.holdMs);
     expect((await minuteNow()) - before).toBeGreaterThanOrEqual(2);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
@@ -327,8 +327,10 @@ for (const viewport of [
 test('an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes', async ({
   page,
 }) => {
-  // Two goal crossings at 1x on the archived clock: about 8 s, then 4 s after a seek.
+  // Two goal crossings at the speed the archived replay opens at: two minutes of the clock (12 s
+  // at 2x), then one after a seek (6 s); the replay has no speed chips to raise it.
   test.slow();
+  const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
   // The first match of this founding scored 2′ (home), 46′ and 66′ (away).
@@ -346,7 +348,7 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
   const score = replay.getByTestId('match-score').locator('strong');
-  await expect(cue).toBeVisible({ timeout: 15_000 });
+  await expect(cue).toBeVisible({ timeout: 2 * replayMinuteMs + 5000 });
   await expect(cue).toContainText(played.highlights[0]!.player);
   await expect(score).toHaveText('1 : 0');
   // A pause during the hold keeps the cue until playback resumes.
@@ -366,7 +368,7 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await scrubber.fill('44');
   await expect(score).toHaveText('1 : 0');
   await replay.getByRole('button', { name: '재생', exact: true }).click();
-  await expect(cue).toBeVisible({ timeout: 10_000 });
+  await expect(cue).toBeVisible({ timeout: replayMinuteMs + 4000 });
   await expect(score).toHaveText('1 : 1');
   await expect(replay.getByTestId('goal-score')).toHaveText('1');
 });

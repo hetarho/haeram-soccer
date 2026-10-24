@@ -5,6 +5,8 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 
 const defaultThemeId = readPresentationBaselines().themeEntry.id;
 
@@ -157,7 +159,8 @@ for (const viewport of [
   { width: 1280, height: 800 },
 ])
   test(`goal cue and ball ownership in the normal view at ${viewport.width}`, async ({ page }) => {
-    // The first goal lands about 7 s into the match at 1x; the 360 run then plays it out at 16x.
+    // The first goal lands 1¾ minutes in, about 10 s at the 2x the match opens at; the 360 run then
+    // plays it out at 16x.
     test.slow();
     await page.emulateMedia({ reducedMotion: viewport.width === 390 ? 'reduce' : 'no-preference' });
     await page.setViewportSize(viewport);
@@ -199,7 +202,9 @@ for (const viewport of [
     expect(badgeBox.x).toBeGreaterThanOrEqual(0);
     expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(viewport.width);
     const cue = page.getByTestId('goal-cue');
-    await expect(cue).toBeVisible({ timeout: 15_000 });
+    await expect(cue).toBeVisible({
+      timeout: (2 * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
+    });
     await expect(cue).toContainText('GOAL');
     await expect(cue).toContainText('득점');
     const score = page.getByTestId('match-score').locator('strong');
@@ -223,9 +228,12 @@ for (const viewport of [
     await expect(cue).toHaveCount(0, { timeout: 3000 });
     await expect(score).toHaveText('1 : 0');
     if (viewport.width !== 360) return;
-    // At 16x each later goal still holds once, and the last whistle follows the last cue.
+    // At 16x each later goal still holds once, and the last whistle follows the last cue: up to
+    // 100 running minutes at 750 ms and both holds.
+    const restMs = (100 * WATCH_MINUTE_MS) / 16 + 2 * GOAL_FEEDBACK_CONFIG.holdMs;
+    test.info().setTimeout(test.info().timeout + restMs);
     await page.getByRole('radio', { name: '16×', exact: true }).click();
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: 40_000 });
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: restMs });
     await expect(score).toHaveText('1 : 2');
     await expect(cue).toHaveCount(0);
     const seen = await cues();

@@ -6,7 +6,12 @@ import {
   createWorld,
   fullStatsRead,
 } from '../../packages/engine/src/index';
-import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import {
+  presentationSamples,
+  WATCH_MINUTE_MS,
+  WATCH_SPEEDS,
+} from '../../apps/web/src/ui/presentationClock';
 import { fullStatsCoverage, leagueStatsScope } from '../../apps/web/src/ui/fullStatsView';
 import { ENABLED_RELEASE } from './worlds';
 
@@ -20,6 +25,10 @@ import { ENABLED_RELEASE } from './worlds';
  */
 export const ROUNDS_BEFORE = 3;
 const SEEDS = ['full-model-continuity', 'full-model-continuity-2', 'full-model-continuity-3'];
+/** The speed the journey plays the match out at: the fastest offered (→WEB-32). */
+export const FAST_SPEED = WATCH_SPEEDS.at(-1)!;
+/** Real ms one running minute lasts at `FAST_SPEED`. */
+export const FAST_MINUTE_MS = WATCH_MINUTE_MS / FAST_SPEED;
 
 /** A player as the inspector names him: his side and his index in the matchday squad. */
 export interface Who {
@@ -44,6 +53,8 @@ export interface ContinuityCareer {
     sides: (0 | 1)[];
     /** Presentation samples on the page's timeline. */
     samples: number;
+    /** Real ms the whole match runs at `FAST_SPEED`, every goal's hold (→WEB-94) included. */
+    watchMs: number;
     /** A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348). */
     setPiece: { index: number; label: string; marker: Who };
   };
@@ -131,6 +142,8 @@ export function continuityCareer(): ContinuityCareer {
         scores,
         sides: goals.map((goal) => goal.side),
         samples: scene.samples,
+        watchMs:
+          playback.frames.length * FAST_MINUTE_MS + goals.length * GOAL_FEEDBACK_CONFIG.holdMs,
         setPiece: scene.shot,
       },
     };
