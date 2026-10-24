@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  DISABLED_RELEASE,
   ENABLED_RELEASE,
   simulatedWorld,
   withoutManagerHistory,
@@ -543,9 +544,10 @@ describe('background worker publication', () => {
 });
 
 async function legacyCheckpoint(withHistory = false) {
-  // Earlier rules never tracked manager history (→SAVE-24), so they never used its container.
+  // Earlier rules never recorded the full model or tracked manager history (→SAVE-23/24), so they
+  // never used either container.
   const legacy = withoutManagerHistory(
-    simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 }),
+    simulatedWorld(founding, withHistory ? { seasons: 1 } : { rounds: 2 }, DISABLED_RELEASE),
   );
   legacy.engine = '1.0.0';
   legacy.revision = 17;
@@ -567,9 +569,12 @@ function withoutIdentities(w: World) {
   for (const match of w.ownMatches) delete match.appearance;
   return w;
 }
-/** That career committed as the game in play, generation 7. */
+/**
+ * That career, from before the full model too (played with the release off), committed as the
+ * game in play, generation 7.
+ */
 async function identitylessCheckpoint() {
-  const legacy = withoutIdentities(simulatedWorld(founding, { rounds: 2 }));
+  const legacy = withoutIdentities(simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE));
   const raw = await encode(legacy, 7, 6);
   storage.setItem('haeram-soccor:slot:a', raw);
   storage.setItem(
@@ -581,6 +586,8 @@ async function identitylessCheckpoint() {
 
 describe('supported-career identity adoption (→SAVE-21)', () => {
   it('adoption commits through the existing save repository', async () => {
+    // With the release off, so the designs are the only upgrade the writer commits.
+    WorkerPort.release = DISABLED_RELEASE;
     const { legacy, raw } = await identitylessCheckpoint();
     const client = new GameClient(() => {});
     clients.push(client);
@@ -607,6 +614,7 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
   });
 
   it('failure preserves old raw data and export access', async () => {
+    WorkerPort.release = DISABLED_RELEASE;
     const { legacy, raw } = await identitylessCheckpoint();
     const manifest = storage.getItem('haeram-soccor:manifest');
     storage.fail = 'haeram-soccor:manifest';
@@ -629,9 +637,12 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
   });
 });
 
-/** A supported career from before the full match model, the game in play at generation 7. */
+/**
+ * A supported career from before the full match model (played with the release off), the game in
+ * play at generation 7.
+ */
 async function preModelCheckpoint() {
-  const career = simulatedWorld(founding, { rounds: 2 });
+  const career = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);
   const raw = await encode(career, 7, 6);
   storage.setItem('haeram-soccor:slot:a', raw);
   storage.setItem(
