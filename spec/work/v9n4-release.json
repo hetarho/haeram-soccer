@@ -1,0 +1,867 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-24T10:18:31.376Z",
+  "sourceCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+  "group": {
+    "id": "v9n4-release",
+    "branch": "work/v9n4-release",
+    "status": "active",
+    "createdAt": "2026-10-24T10:04:24.864Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": "main",
+    "review": "risky",
+    "runner": {
+      "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-24T10:04:39.403Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 10,
+    "completed": 1,
+    "remaining": 9,
+    "running": 0,
+    "review": 0,
+    "blocked": 2,
+    "unassigned": 7
+  },
+  "tasks": [
+    {
+      "id": "T286",
+      "title": "Release the complete model with its throughput, capacity and continuity checks",
+      "dep": [
+        "T275",
+        "T283",
+        "T284",
+        "T285",
+        "T321",
+        "T323",
+        "T324",
+        "T325",
+        "T326",
+        "T328",
+        "T334",
+        "T336",
+        "T345",
+        "T348",
+        "T349",
+        "T350",
+        "T356",
+        "T357",
+        "T358",
+        "T359",
+        "T365",
+        "T366",
+        "T367",
+        "T368",
+        "T369",
+        "T370",
+        "T371",
+        "T372",
+        "T373",
+        "T374",
+        "T375",
+        "T384",
+        "T396",
+        "T397",
+        "T398",
+        "T399",
+        "T400",
+        "T401",
+        "T402",
+        "T308",
+        "T408",
+        "T409",
+        "T411",
+        "T420",
+        "T422"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T410",
+      "title": "Re-read both references and MATCH-28 parity at the pilot size on the released model",
+      "dep": [
+        "T286"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T416",
+      "title": "Valid full records from every settlement path of an activated world",
+      "dep": [
+        "T415"
+      ],
+      "lane": "release-settle",
+      "status": "todo"
+    },
+    {
+      "id": "T417",
+      "title": "Engine path tests build their worlds with an explicit release",
+      "dep": [
+        "T415"
+      ],
+      "lane": "release-grid",
+      "status": "todo"
+    },
+    {
+      "id": "T418",
+      "title": "Web runtime and persistence tests name the container they expect",
+      "dep": [
+        "T415"
+      ],
+      "lane": "release-web",
+      "status": "todo"
+    },
+    {
+      "id": "T419",
+      "title": "Digests and calibration guards fix the model they guard",
+      "dep": [
+        "T415"
+      ],
+      "lane": "release-guards",
+      "status": "todo"
+    },
+    {
+      "id": "T420",
+      "title": "The unit tier green and timed with the release switch on",
+      "dep": [
+        "T416",
+        "T417",
+        "T418",
+        "T419"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T421",
+      "title": "1x at 12 seconds a match minute, matches opening at 2x",
+      "dep": [],
+      "lane": "viewing-pace",
+      "status": "blocked"
+    },
+    {
+      "id": "T422",
+      "title": "Set-piece preparation drawn in about 1.5 real seconds",
+      "dep": [
+        "T421"
+      ],
+      "lane": "viewing-pace",
+      "status": "blocked"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "group": "v9n4-release",
+      "taskId": "T415",
+      "tasks": [
+        "T415"
+      ],
+      "lane": null,
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-24T10:04:39.726Z",
+      "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+      "verifiedCommit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+      "submittedBase": "fe1508d34e03da875baaa4382b4373908cc440ed",
+      "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
+      "submittedAt": "2026-10-24T10:15:07.319Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 81,
+        "files": 5
+      },
+      "dispatch": {
+        "id": "ac7c8aca-dbd1-4c4f-82c4-095105653407",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:15:10.376Z",
+        "finishedAt": "2026-10-24T10:18:28.895Z",
+        "error": null,
+        "summary": "I'm approving T415 (91d2f6c0 against fe1508d3). It meets every acceptance item and changes no engine or web code. I didn't run any tests myself because this review session is read-only. The runner's own check passed: typecheck, lint, format:check and `vitest --changed` (98 files, 810 tests), all under the default config. The worker reports that worlds.test.ts also passes (4 tests) under the release-on config; the runner didn't run that, and I checked it by reading the code instead.\n\nThe risk reason was the autopilot decision of 2026-10-24 that is still waiting for the owner: every test names its release, and a release-on vitest config checks each file with the switch both on and off. The change follows that decision exactly, adds no new planning decisions, and only touches test setup, so it doesn't lock out the alternatives.\n\nWhat I checked in the code:\n- `DISABLED_RELEASE` and `ENABLED_RELEASE` are copies of the release object, so they keep their own on/off value whatever the switch is.\n- `simulatedWorld(input, span, release = MATCH_MODEL_RELEASE)` puts the release in its cache ID and passes it through every nested build. The engine only reads the release in `createWorld` and the host constructor, and season rollover never reads it, so a world built with a given release stays on that release.\n- `cached` reads `MATCH_MODEL_RELEASE.enabled` when it runs and adds it to the key for both the memory and the disk cache.\n- The engine's release object isn't frozen, and the setup file and the tests import the same object.\n- `vitest.release-on.config.ts` merges the base config, which has no setupFiles, workspaces or projects. The tsconfig includes root `*.ts` files and allows `.ts` imports. The `package.json` script matches the acceptance text exactly.\n- The cache-separation test flips the switch inside one case and restores it in `finally`. That is safe because cases in a file run one after another and the base config keeps each file in its own worker. The task notes say only the setup file should change the switch; this test-only flip goes beyond that, but the worker disclosed it, it is scoped to one case, and it proves the separation within a single run.\n\nThere are two optional suggestions and nothing that needs fixing."
+      },
+      "review": {
+        "id": "e6d6ea8d-cd33-4e5d-b854-fd8099298861",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "I'm approving T415 (91d2f6c0 against fe1508d3). It meets every acceptance item and changes no engine or web code. I didn't run any tests myself because this review session is read-only. The runner's own check passed: typecheck, lint, format:check and `vitest --changed` (98 files, 810 tests), all under the default config. The worker reports that worlds.test.ts also passes (4 tests) under the release-on config; the runner didn't run that, and I checked it by reading the code instead.\n\nThe risk reason was the autopilot decision of 2026-10-24 that is still waiting for the owner: every test names its release, and a release-on vitest config checks each file with the switch both on and off. The change follows that decision exactly, adds no new planning decisions, and only touches test setup, so it doesn't lock out the alternatives.\n\nWhat I checked in the code:\n- `DISABLED_RELEASE` and `ENABLED_RELEASE` are copies of the release object, so they keep their own on/off value whatever the switch is.\n- `simulatedWorld(input, span, release = MATCH_MODEL_RELEASE)` puts the release in its cache ID and passes it through every nested build. The engine only reads the release in `createWorld` and the host constructor, and season rollover never reads it, so a world built with a given release stays on that release.\n- `cached` reads `MATCH_MODEL_RELEASE.enabled` when it runs and adds it to the key for both the memory and the disk cache.\n- The engine's release object isn't frozen, and the setup file and the tests import the same object.\n- `vitest.release-on.config.ts` merges the base config, which has no setupFiles, workspaces or projects. The tsconfig includes root `*.ts` files and allows `.ts` imports. The `package.json` script matches the acceptance text exactly.\n- The cache-separation test flips the switch inside one case and restores it in `finally`. That is safe because cases in a file run one after another and the base config keeps each file in its own worker. The task notes say only the setup file should change the switch; this test-only flip goes beyond that, but the worker disclosed it, it is scoped to one case, and it proves the separation within a single run.\n\nThere are two optional suggestions and nothing that needs fixing.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/fixtures/worlds.ts:186 (T415)",
+            "message": "The global `MATCH_MODEL_RELEASE.enabled` goes into every cache key, including `simulatedWorld` calls that pass an explicit release. Those worlds don't depend on the global switch, so the switch-off and release-on runs can't share them. That includes the `DISABLED_RELEASE` worlds that T417 will use for most shared engine worlds. Running both test tiers therefore builds and stores each of these worlds twice, which matters given the known problem of the world cache filling the disk. This follows the acceptance as written and doesn't affect T420's cold-vs-cold gate. Optional, for T420 to weigh against its warm timings: hash the effective release instead, i.e. the explicit one for `simulatedWorld` and the default for `cachedWorld`."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/fixtures/worlds.test.ts:39 (T415)",
+            "message": "The test \"simulatedWorld pins the release it is given\" only covers a world on its founding day. If the release were dropped from the nested `simulatedWorld(…, release)` calls for seasons or rounds, the default would quietly take over, and none of the tests would catch it under either config. Optional: add a cheap case such as `simulatedWorld(input, { rounds: 1 }, DISABLED_RELEASE).matchModel` toBeUndefined, which fails under the release-on config if the release isn't passed down."
+          }
+        ],
+        "commit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+        "baseCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+        "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
+        "createdAt": "2026-10-24T10:15:08.608Z",
+        "finishedAt": "2026-10-24T10:18:28.880Z"
+      },
+      "steps": [
+        {
+          "taskId": "T415",
+          "commit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+          "at": "2026-10-24T10:15:07.273Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T10:13:38.215Z",
+              "finishedAt": "2026-10-24T10:15:06.892Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T10:13:38.215Z",
+          "finishedAt": "2026-10-24T10:15:06.892Z"
+        }
+      ]
+    },
+    {
+      "id": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "group": "v9n4-release",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "lane": "viewing-pace",
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "createdAt": "2026-10-24T10:04:40.994Z",
+      "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+      "dispatch": {
+        "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T10:04:42.192Z",
+        "finishedAt": "2026-10-24T10:15:07.660Z",
+        "error": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T421 is done. At 1x a match minute now takes 12 real seconds (`WATCH_MINUTE_MS` = 12000), and every match opens at 2x (`WATCH_DEFAULT_SPEED` = 2 in `presentationClock.ts`). `Pitch.tsx` starts at that speed and resets to it whenever a new match record loads, so live watching and archived replays both open with the 2x chip selected.\n\nUnit tests:\n- The clock tests now include \"1x lasts 12 s a match minute\" and \"matches open at 2x\".\n- The goal-feedback and possession-cue tests read `WATCH_MINUTE_MS` instead of assuming 4 s minutes. The possession test's offsets had relied on 4 s and would otherwise have failed.\n- The goal hold is still 1 real second at every speed, and the existing speed-change cases pass.\n\nChecks that passed: the 3 affected test files (30 tests), `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `vitest run --changed fe1508d3` (4 files, 42 tests) and `pnpm run build`. I did not run any browser specs; they wait for the batch run.\n\nBrowser specs updated to take their waits from the constants:\n- In touches: `stable-controls-and-pacing.spec.ts` and `tests/fixtures/full-model-continuity.ts`.\n- Outside touches, because the 2x default or the slower 16x minute (now 750 ms) would break them: `full-model-continuity.spec.ts` (the timing is in the spec, not the fixture), `match-core.spec.ts` and `mobile-match-presentation.spec.ts`. No other open task touches these files, and T286 depends on T422, so I see no clash. The scope check may still flag them.\n\nThings to know before the batch run:\n- `set-piece-defence.spec.ts` is unchanged. It only jumps to paused moments and has no timed waits; T422 adds its set-piece assertions.\n- Journeys that watch a whole match at 16x now spend about 72 s watching instead of 24 s. Their timeouts and test time limits were raised to match.\n- All of this is written in the task result's limits."
+      }
+    }
+  ],
+  "history": [
+    {
+      "sequence": 855,
+      "at": "2026-10-24T10:04:24.878Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "v9n4-release",
+        "branch": "work/v9n4-release",
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:04:24.864Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": "main",
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 856,
+      "at": "2026-10-24T10:04:25.486Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 857,
+      "at": "2026-10-24T10:04:39.415Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T10:04:39.403Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 858,
+      "at": "2026-10-24T10:04:39.726Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+        "group": "v9n4-release",
+        "taskId": "T415",
+        "tasks": [
+          "T415"
+        ],
+        "lane": null,
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:04:39.726Z",
+        "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed"
+      }
+    },
+    {
+      "sequence": 859,
+      "at": "2026-10-24T10:04:40.282Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 860,
+      "at": "2026-10-24T10:04:40.512Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "15673779-26c4-4c08-b603-49207cb011e1",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:04:40.512Z"
+        }
+      }
+    },
+    {
+      "sequence": 861,
+      "at": "2026-10-24T10:04:40.705Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "15673779-26c4-4c08-b603-49207cb011e1",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:04:40.512Z"
+        }
+      }
+    },
+    {
+      "sequence": 862,
+      "at": "2026-10-24T10:04:40.994Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+        "group": "v9n4-release",
+        "taskId": "T421",
+        "tasks": [
+          "T421",
+          "T422"
+        ],
+        "lane": "viewing-pace",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T10:04:40.994Z",
+        "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed"
+      }
+    },
+    {
+      "sequence": 863,
+      "at": "2026-10-24T10:04:41.621Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 864,
+      "at": "2026-10-24T10:04:42.192Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:04:42.192Z"
+        }
+      }
+    },
+    {
+      "sequence": 865,
+      "at": "2026-10-24T10:04:42.380Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:04:42.192Z"
+        }
+      }
+    },
+    {
+      "sequence": 866,
+      "at": "2026-10-24T10:13:37.202Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 867,
+      "at": "2026-10-24T10:13:37.861Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 868,
+      "at": "2026-10-24T10:13:37.896Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 869,
+      "at": "2026-10-24T10:15:07.319Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+        "submittedBase": "fe1508d34e03da875baaa4382b4373908cc440ed",
+        "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
+        "submittedAt": "2026-10-24T10:15:07.319Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 81,
+          "files": 5
+        },
+        "steps": [
+          {
+            "taskId": "T415",
+            "commit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+            "at": "2026-10-24T10:15:07.273Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T10:13:38.215Z",
+                "finishedAt": "2026-10-24T10:15:06.892Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T10:13:38.215Z",
+            "finishedAt": "2026-10-24T10:15:06.892Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 870,
+      "at": "2026-10-24T10:15:07.337Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "15673779-26c4-4c08-b603-49207cb011e1",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:04:40.512Z",
+          "finishedAt": "2026-10-24T10:15:07.337Z",
+          "error": null,
+          "summary": "T415 구현을 마쳤습니다. 커밋과 제출은 호스트 러너 몫으로 남겨 두었습니다. 엔진과 웹 코드는 손대지 않았습니다.\n\n변경 내용:\n- `tests/fixtures/worlds.ts`: `ENABLED_RELEASE` 옆에 `DISABLED_RELEASE`를 추가했습니다. `simulatedWorld(input, span, release = MATCH_MODEL_RELEASE)`는 받은 release를 `createWorld`와 하위 시즌/라운드 빌드까지 넘기고, 캐시 id에도 붙입니다. `cached`는 호출 시점의 `MATCH_MODEL_RELEASE.enabled`를 모든 캐시 키에 넣으므로, 스위치를 끈 채 만든 월드가 스위치를 켠 실행에 쓰이지 않습니다. 기존 디스크 캐시는 한 번씩 다시 빌드됩니다.\n- `tests/setup/release-on.ts`: 엔진의 `MATCH_MODEL_RELEASE.enabled`를 켭니다. readonly 캐스트는 이 setup 파일에만 둡니다.\n- `vitest.release-on.config.ts`: `vitest.config.ts`를 merge하고 위 setup 파일을 추가합니다.\n- `package.json`: `test:unit:release-on` 스크립트를 추가했습니다.\n- `tests/fixtures/worlds.test.ts`: \"simulatedWorld pins the release it is given\"과 \"the world cache separates the default release\" 두 테스트를 추가했습니다.\n\n검증 결과:\n- typecheck, lint, format:check 모두 통과했습니다.\n- worlds.test.ts는 기본 config와 release-on config에서 각각 4개 모두 통과했습니다.\n- setup 파일이 실제로 스위치를 켜는지 따로 확인했습니다. `match-model.test.ts`의 \"keeps production activation off\"가 release-on에서는 실패하고(`enabled: true`) 기본 config에서는 통과합니다.\n- `vitest run --changed fe1508d3`를 8개 shard로 나눠 돌려 98개 파일, 810개 테스트가 모두 통과했습니다. 대상은 worlds.ts를 import하는 파일 전부입니다.\n\n남은 일과 참고 사항:\n- release-on 전체 실행(`pnpm run test:unit:release-on`)은 impl notes 지시대로 돌리지 않았습니다. T416–T419 레인이 자기 파일을 맞추고 T420이 전체를 잴 때까지는 실패가 예상됩니다.\n- 캐시 분리 테스트는 한 번의 실행만으로 분리를 증명하려고, 그 테스트 하나 안에서 스위치를 잠깐 뒤집었다가 `finally`에서 되돌립니다. impl notes의 \"캐스트는 setup 파일에만\" 문구를 엄격히 읽으면 벗어나는 부분이라 task result limits에 적어 두었습니다. 실행 전체에 걸쳐 스위치를 켜는 건 여전히 setup 파일뿐입니다.\n- 묶음 관문 검사(test:unit, test:contract, validate:catalogs, build, Chromium playwright)는 unit 관문에 맡겼습니다.\n\n실제로 돌린 검사와 남긴 항목은 task result에 그대로 적었습니다."
+        }
+      }
+    },
+    {
+      "sequence": 871,
+      "at": "2026-10-24T10:15:07.387Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 872,
+      "at": "2026-10-24T10:15:07.631Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 873,
+      "at": "2026-10-24T10:15:07.660Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "0c51921e-c0b4-48d9-ab14-cadec5b51a18",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:04:42.192Z",
+          "finishedAt": "2026-10-24T10:15:07.660Z",
+          "error": "T421: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T421 is done. At 1x a match minute now takes 12 real seconds (`WATCH_MINUTE_MS` = 12000), and every match opens at 2x (`WATCH_DEFAULT_SPEED` = 2 in `presentationClock.ts`). `Pitch.tsx` starts at that speed and resets to it whenever a new match record loads, so live watching and archived replays both open with the 2x chip selected.\n\nUnit tests:\n- The clock tests now include \"1x lasts 12 s a match minute\" and \"matches open at 2x\".\n- The goal-feedback and possession-cue tests read `WATCH_MINUTE_MS` instead of assuming 4 s minutes. The possession test's offsets had relied on 4 s and would otherwise have failed.\n- The goal hold is still 1 real second at every speed, and the existing speed-change cases pass.\n\nChecks that passed: the 3 affected test files (30 tests), `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `vitest run --changed fe1508d3` (4 files, 42 tests) and `pnpm run build`. I did not run any browser specs; they wait for the batch run.\n\nBrowser specs updated to take their waits from the constants:\n- In touches: `stable-controls-and-pacing.spec.ts` and `tests/fixtures/full-model-continuity.ts`.\n- Outside touches, because the 2x default or the slower 16x minute (now 750 ms) would break them: `full-model-continuity.spec.ts` (the timing is in the spec, not the fixture), `match-core.spec.ts` and `mobile-match-presentation.spec.ts`. No other open task touches these files, and T286 depends on T422, so I see no clash. The scope check may still flag them.\n\nThings to know before the batch run:\n- `set-piece-defence.spec.ts` is unchanged. It only jumps to paused moments and has no timed waits; T422 adds its set-piece assertions.\n- Journeys that watch a whole match at 16x now spend about 72 s watching instead of 24 s. Their timeouts and test time limits were raised to match.\n- All of this is written in the task result's limits."
+        }
+      }
+    },
+    {
+      "sequence": 874,
+      "at": "2026-10-24T10:15:08.608Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e6d6ea8d-cd33-4e5d-b854-fd8099298861",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+          "baseCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+          "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
+          "createdAt": "2026-10-24T10:15:08.608Z"
+        }
+      }
+    },
+    {
+      "sequence": 875,
+      "at": "2026-10-24T10:15:10.376Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ac7c8aca-dbd1-4c4f-82c4-095105653407",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T10:15:10.376Z"
+        }
+      }
+    },
+    {
+      "sequence": 876,
+      "at": "2026-10-24T10:15:10.392Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ac7c8aca-dbd1-4c4f-82c4-095105653407",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T10:15:10.376Z"
+        }
+      }
+    },
+    {
+      "sequence": 877,
+      "at": "2026-10-24T10:18:28.880Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e6d6ea8d-cd33-4e5d-b854-fd8099298861",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "I'm approving T415 (91d2f6c0 against fe1508d3). It meets every acceptance item and changes no engine or web code. I didn't run any tests myself because this review session is read-only. The runner's own check passed: typecheck, lint, format:check and `vitest --changed` (98 files, 810 tests), all under the default config. The worker reports that worlds.test.ts also passes (4 tests) under the release-on config; the runner didn't run that, and I checked it by reading the code instead.\n\nThe risk reason was the autopilot decision of 2026-10-24 that is still waiting for the owner: every test names its release, and a release-on vitest config checks each file with the switch both on and off. The change follows that decision exactly, adds no new planning decisions, and only touches test setup, so it doesn't lock out the alternatives.\n\nWhat I checked in the code:\n- `DISABLED_RELEASE` and `ENABLED_RELEASE` are copies of the release object, so they keep their own on/off value whatever the switch is.\n- `simulatedWorld(input, span, release = MATCH_MODEL_RELEASE)` puts the release in its cache ID and passes it through every nested build. The engine only reads the release in `createWorld` and the host constructor, and season rollover never reads it, so a world built with a given release stays on that release.\n- `cached` reads `MATCH_MODEL_RELEASE.enabled` when it runs and adds it to the key for both the memory and the disk cache.\n- The engine's release object isn't frozen, and the setup file and the tests import the same object.\n- `vitest.release-on.config.ts` merges the base config, which has no setupFiles, workspaces or projects. The tsconfig includes root `*.ts` files and allows `.ts` imports. The `package.json` script matches the acceptance text exactly.\n- The cache-separation test flips the switch inside one case and restores it in `finally`. That is safe because cases in a file run one after another and the base config keeps each file in its own worker. The task notes say only the setup file should change the switch; this test-only flip goes beyond that, but the worker disclosed it, it is scoped to one case, and it proves the separation within a single run.\n\nThere are two optional suggestions and nothing that needs fixing.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/worlds.ts:186 (T415)",
+              "message": "The global `MATCH_MODEL_RELEASE.enabled` goes into every cache key, including `simulatedWorld` calls that pass an explicit release. Those worlds don't depend on the global switch, so the switch-off and release-on runs can't share them. That includes the `DISABLED_RELEASE` worlds that T417 will use for most shared engine worlds. Running both test tiers therefore builds and stores each of these worlds twice, which matters given the known problem of the world cache filling the disk. This follows the acceptance as written and doesn't affect T420's cold-vs-cold gate. Optional, for T420 to weigh against its warm timings: hash the effective release instead, i.e. the explicit one for `simulatedWorld` and the default for `cachedWorld`."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/worlds.test.ts:39 (T415)",
+              "message": "The test \"simulatedWorld pins the release it is given\" only covers a world on its founding day. If the release were dropped from the nested `simulatedWorld(…, release)` calls for seasons or rounds, the default would quietly take over, and none of the tests would catch it under either config. Optional: add a cheap case such as `simulatedWorld(input, { rounds: 1 }, DISABLED_RELEASE).matchModel` toBeUndefined, which fails under the release-on config if the release isn't passed down."
+            }
+          ],
+          "commit": "91d2f6c0a9347701ac6e46be8d3baa8a7be277e5",
+          "baseCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+          "submissionId": "eb2c5515-583c-46ae-aa50-35f0d550642b",
+          "createdAt": "2026-10-24T10:15:08.608Z",
+          "finishedAt": "2026-10-24T10:18:28.880Z"
+        }
+      }
+    },
+    {
+      "sequence": 878,
+      "at": "2026-10-24T10:18:28.895Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "ac7c8aca-dbd1-4c4f-82c4-095105653407",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T10:15:10.376Z",
+          "finishedAt": "2026-10-24T10:18:28.895Z",
+          "error": null,
+          "summary": "I'm approving T415 (91d2f6c0 against fe1508d3). It meets every acceptance item and changes no engine or web code. I didn't run any tests myself because this review session is read-only. The runner's own check passed: typecheck, lint, format:check and `vitest --changed` (98 files, 810 tests), all under the default config. The worker reports that worlds.test.ts also passes (4 tests) under the release-on config; the runner didn't run that, and I checked it by reading the code instead.\n\nThe risk reason was the autopilot decision of 2026-10-24 that is still waiting for the owner: every test names its release, and a release-on vitest config checks each file with the switch both on and off. The change follows that decision exactly, adds no new planning decisions, and only touches test setup, so it doesn't lock out the alternatives.\n\nWhat I checked in the code:\n- `DISABLED_RELEASE` and `ENABLED_RELEASE` are copies of the release object, so they keep their own on/off value whatever the switch is.\n- `simulatedWorld(input, span, release = MATCH_MODEL_RELEASE)` puts the release in its cache ID and passes it through every nested build. The engine only reads the release in `createWorld` and the host constructor, and season rollover never reads it, so a world built with a given release stays on that release.\n- `cached` reads `MATCH_MODEL_RELEASE.enabled` when it runs and adds it to the key for both the memory and the disk cache.\n- The engine's release object isn't frozen, and the setup file and the tests import the same object.\n- `vitest.release-on.config.ts` merges the base config, which has no setupFiles, workspaces or projects. The tsconfig includes root `*.ts` files and allows `.ts` imports. The `package.json` script matches the acceptance text exactly.\n- The cache-separation test flips the switch inside one case and restores it in `finally`. That is safe because cases in a file run one after another and the base config keeps each file in its own worker. The task notes say only the setup file should change the switch; this test-only flip goes beyond that, but the worker disclosed it, it is scoped to one case, and it proves the separation within a single run.\n\nThere are two optional suggestions and nothing that needs fixing."
+        }
+      }
+    },
+    {
+      "sequence": 879,
+      "at": "2026-10-24T10:18:28.943Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "db179536-4a9f-4d6c-9eaa-d9c18b2af865",
+      "taskId": "T415",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}
