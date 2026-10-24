@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r25 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r26 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -120,6 +120,11 @@
   - an intention retains its target and relevant teammate/opponent until achieved, no longer feasible or displaced by a higher-priority event. A turnover, pass, opponent movement, injury, dismissal or restart can trigger a reaction; changing circumstances may end a run before its original target.
   - teammates coordinate: a receiver shows while another opens a lane, a wide player combines with an overlap, one defender presses while another covers, and markers react to the runner they track. Multiple players do not independently claim the same support, pressing or covering job without accounting for one another.
   - role and trait differences remain observable across comparable situations. Movement follows continuous, speed-bounded paths (→MATCH-12); the four existing tactics and manager authority remain →MATCH-8/20.
+  - positional freedom (→STAFF-46): the freer a player is, the further his intentions take him from his slot when the football calls for it — an overlap or underlap, a forward dropping into midfield to join the build-up, a full-back stepping into the build-up or across to the far side, a winger coming inside — while teammates cover the space he leaves and the rest defence holds. ← the formation is where a player starts from, not a rail
+  - freedom trades in results: a free player joins attacks and creates more but leaves space behind him for counters, and one with poor 판단력 loses more than he gains.
+  - situational disorder: on a transition, when chasing a result late and straight after a set piece the shape loosens for every player whatever his freedom, then re-forms.
+  - position swaps: wingers switch flanks and a full-back and his winger rotate when their freedom allows, each doing the other's job until they swap back.
+  - the tendencies act in movement (→PLAYER-26): 규율 holds his place, 압박 성향 sets how often he presses, 예측력 how early he reads play.
 - MATCH-18 [o] Fouls, set pieces, restarts and offside are real scenes at their real spot. ← set pieces and penalties score about a quarter to a third of real goals
   - a challenge may be a foul, more often for a reckless 태클, under the press tactic and when stopping a counter, less often by a booked player; a foul gives a free kick at its spot, inside the box a penalty.
   - ball out of play: a throw-in at its touchline spot, a goal kick, or a corner when the defending side touched it last over its byline.
@@ -228,6 +233,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r26 261025 MATCH-17✎ movement from slot, role, traits and attributes→also manager-given positional freedom with its trade-off, situational disorder, position swaps and the four tendencies
 - r25 261024 MATCH-12✎ carrier unspecified (stood on the ball until his kick)→carries it in stride from reception to his action, played and resolved from there; stands only to shield, hold up or lay off, distribute as keeper or take a restart
 - r24 261024 MATCH-12✎ uniform speed in and out of play at 4 real s per minute→uniform running play at 12 real s per minute with the set-piece preparation a presentation transition scaling its routes by one factor
 - r23 261024 MATCH-28✎ full-model activation required the accuracy, compatibility, storage and speed gates together→accuracy measured and reported with the release, not an activation gate; residual differences calibrated afterwards

@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r52 | Define the browser-demo rules for browser persistence and protocol.
+> r53 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -78,6 +78,7 @@
   - Playback without historical identity information retains that absence and displays the unrecorded status; never backfill an invented historical kit from today's design.
 
 - SAVE-23 [o] The continuous-match and complete aggregate-result model (→MATCH-12/17/22/26/28) activates prospectively in supported rules-4.0.0 careers without resetting retained gameplay.
+  - a later match-model revision activates the same way: a career on an earlier revision moves to the new one prospectively at the next safe boundary, every settled match keeps the revision that settled it (its replay plays under that revision), and no match is resimulated. ← one football for every career going forward
   - persist a declared match-model revision and the first tracked boundary of newly available counters. New careers start with full coverage; supported older careers preserve settled scores, contributions, designs, money, dates, personnel and history, and use the new model only for future unsettled fixtures. No backfill or resimulation of settled matches is allowed.
   - model activation is one validated writer upgrade through →SAVE-3/6/10. A queued or already revealed own-match playback completes under its settled model; activation waits for that safe boundary. Read-only views do not write or switch a career's persisted model.
   - checkpoints carrying the new aggregates/model metadata declare a container version that an older reader must refuse instead of silently dropping fields. Preserve supported older container readers, future-version protection and failed-write/export recovery (→SAVE-5/11/13).
@@ -90,6 +91,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r53 261025 SAVE-23✎ one model revision→later revisions activate prospectively at the next safe boundary; settled matches keep and replay under their revision
 - r52 261024 SAVE-23✎ activation required →MATCH-28 and →ARCH-31 evidence→→ARCH-31 throughput and capacity evidence, →MATCH-28 accuracy reported, not a gate
 - r51 261021 SAVE-24+ prospective own-manager history activation, lossless attribution round trips and older-reader protection within existing budgets
 - r50 261020 SAVE-23+ prospective versioned full-match-model activation for supported careers, exact aggregates and coverage, safe playback boundary and older-reader protection
