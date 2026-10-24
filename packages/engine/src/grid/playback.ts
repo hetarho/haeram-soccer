@@ -11,7 +11,6 @@ import type {
   MatchFrame,
   MatchMotionSample,
   Metrics,
-  Player,
   PlayerMotion,
   PlayerMotionState,
   Tactic,
@@ -239,8 +238,8 @@ const unit = (n: number) => clamp(n, 0, 1);
 
 /**
  * What the UI draws beside the playback: each tactic's formation spots in pitch units (from
- * `SPOTS`, slot order, attacking left to right), the ball's peak height, and the implicit
- * tendencies the player inspector shows (`motionTraits`, `teamMotionProfile`).
+ * `SPOTS`, slot order, attacking left to right), the ball's peak height, and the implicit team
+ * tendencies (`teamMotionProfile`); a player's own are `playerTendencies` (grid/tendencies.ts).
  */
 export const MATCH_MOTION_CONFIG = {
   ball: { maxLoft: PLAYBACK_CONFIG.flight.maxLoft },
@@ -250,18 +249,6 @@ export const MATCH_MOTION_CONFIG = {
     counter: SPOTS.counter.map(units),
     press: SPOTS.press.map(units),
   } as Record<Tactic, readonly Units[]>,
-  traits: {
-    innateWeight: 0.25,
-    disciplineDefense: 0.42,
-    disciplinePassing: 0.18,
-    creativityAttack: 0.28,
-    creativityPassing: 0.3,
-    aggressionDefense: 0.28,
-    aggressionAttack: 0.2,
-    anticipationSkills: 0.5,
-    paceStamina: 0.45,
-    paceAttack: 0.15,
-  },
   manager: {
     appliedTacticWeight: 0.55,
     flexibilityWeight: 0.35,
@@ -303,56 +290,6 @@ export const MATCH_MOTION_CONFIG = {
     },
   },
 } as const;
-
-/** Stable implicit personality; a new fixture never rerolls a player's tendencies. */
-export function motionTraits(player: Player) {
-  const r = random(`personality:${player.id}`);
-  const innate = {
-    freedom: r(),
-    discipline: r(),
-    aggression: r(),
-    anticipation: r(),
-    creativity: r(),
-    pace: r(),
-  };
-  const c = MATCH_MOTION_CONFIG.traits;
-  const a = player.attrs;
-  const attack = unit((a.finishing + a.dribbling) / 200),
-    passing = unit(a.passing / 100),
-    defense = unit((a.tackling + a.positioning) / 200);
-  const endurance = unit(a.stamina / 100);
-  return {
-    freedom: unit(0.15 + attack * 0.28 + passing * 0.16 + innate.freedom * c.innateWeight),
-    discipline: unit(
-      0.18 +
-        defense * c.disciplineDefense +
-        passing * c.disciplinePassing +
-        innate.discipline * c.innateWeight,
-    ),
-    aggression: unit(
-      0.15 +
-        defense * c.aggressionDefense +
-        attack * c.aggressionAttack +
-        endurance * 0.1 +
-        innate.aggression * c.innateWeight,
-    ),
-    anticipation: unit(
-      0.16 +
-        ((passing + defense) / 2) * c.anticipationSkills +
-        innate.anticipation * c.innateWeight,
-    ),
-    creativity: unit(
-      0.15 +
-        attack * c.creativityAttack +
-        passing * c.creativityPassing +
-        innate.creativity * c.innateWeight,
-    ),
-    pace: unit(
-      0.18 + endurance * c.paceStamina + attack * c.paceAttack + innate.pace * c.innateWeight,
-    ),
-    endurance,
-  };
-}
 
 export function teamMotionProfile(
   tactic: Tactic,

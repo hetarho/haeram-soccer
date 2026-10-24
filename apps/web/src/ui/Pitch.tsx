@@ -19,7 +19,12 @@ import type {
   PlayerMotionState,
   World,
 } from '../../../../packages/contracts/src/types';
-import { MATCH_MOTION_CONFIG, motionTraits } from '../../../../packages/engine/src/match';
+import {
+  MATCH_MOTION_CONFIG,
+  matchdayRole,
+  playerTendencies,
+} from '../../../../packages/engine/src/match';
+import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { tacticLabel } from '../../../../packages/engine/src/world';
 import { percent } from './format';
 // The report only shows once a match is over: it loads then, keeping it out of the entry (→ARCH-28).
@@ -234,7 +239,22 @@ export function Pitch({
           ],
     ),
   );
-  const traits = selectedPlayer ? motionTraits(selectedPlayer) : undefined;
+  // The inspected player's tendencies (→PLAYER-26): 자유도 is what his club's manager gives him
+  // in his role (→STAFF-46), ours or the named manager of a club nobody owns.
+  const selectedClub = selectedSide === 0 ? home : away;
+  const traits =
+    p && selectedPlayer && selectedClub
+      ? playerTendencies(
+          selectedPlayer,
+          selectedClub.id === world.playerClub ? world.manager : clubManager(world, selectedClub),
+          matchdayRole(
+            p.record,
+            p.squads[selectedSide as 0 | 1],
+            selectedSide as 0 | 1,
+            selectedIndex,
+          ),
+        )
+      : undefined;
   const latestGoal = p?.record.highlights
     .filter((event) => event.minute <= (frame?.minute ?? 0))
     .at(-1);
@@ -843,7 +863,7 @@ export function Pitch({
             {inspect ? '선수 판단 접기' : '선수 판단 보기'}
           </button>
         )}
-        {inspect && selectedPlayer && traits && (
+        {inspect && selectedPlayer && (
           <div className={s.playerInspector}>
             <label>
               살펴볼 선수
@@ -893,24 +913,29 @@ export function Pitch({
                 )
               );
             })}
-            <div className={s.motionTraits}>
-              {(
-                [
-                  ['자유도', traits.freedom],
-                  ['규율', traits.discipline],
-                  ['압박 성향', traits.aggression],
-                  ['예측력', traits.anticipation],
-                ] as const
-              ).map(([label, value]) => (
-                <span key={label}>
-                  {label} {Math.round(value * 100)}
-                  <progress aria-label={label} max={1} value={value} />
-                </span>
-              ))}
-            </div>
-            <p className={s.muted}>
-              능력과 개인 성향에 전술·체력·주변 선수 위치가 함께 작용합니다.
-            </p>
+            {traits && (
+              <>
+                <div className={s.motionTraits}>
+                  {(
+                    [
+                      ['자유도', traits.freedom],
+                      ['규율', traits.discipline],
+                      ['압박 성향', traits.pressing],
+                      ['예측력', traits.anticipation],
+                    ] as const
+                  ).map(([label, value]) => (
+                    <span key={label}>
+                      {label} {Math.round(value * 100)}
+                      <progress aria-label={label} max={1} value={value} />
+                    </span>
+                  ))}
+                </div>
+                <p className={s.muted}>
+                  자유도는 감독이 역할과 판단력을 보고 주는 재량이고, 규율·압박 성향·예측력은 능력과
+                  개인 성향에서 나옵니다.
+                </p>
+              </>
+            )}
           </div>
         )}
         {frame && (!summary || finished) && (
