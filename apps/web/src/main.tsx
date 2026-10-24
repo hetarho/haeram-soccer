@@ -5,6 +5,7 @@ import { PresentationSettings } from './ui/PresentationSettings';
 import { setLocaleFormatters } from './ui/format';
 import { createBrowserThemeTransition } from './adapters/themeTransition';
 import './adapters/themeTransition.css';
+import './presentation/imageUi.css';
 import './presentation/theme.css';
 
 const root = createRoot(document.getElementById('root')!);

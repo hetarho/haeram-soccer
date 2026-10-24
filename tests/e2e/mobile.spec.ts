@@ -40,12 +40,26 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await scroller.evaluate((element) => element.scrollTo(0, 240));
   const before = await scroller.evaluate((element) => element.scrollTop);
   expect(before).toBeGreaterThan(0);
+  expect(await scroller.evaluate((element) => getComputedStyle(element).scrollbarWidth)).toBe(
+    'none',
+  );
+  // Wheel scrolling remains available without the native scroll thumb.
+  await scroller.evaluate((element) => element.scrollTo(0, 0));
+  await scroller.hover();
+  await page.mouse.wheel(0, 240);
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  await scroller.evaluate((element, top) => element.scrollTo(0, top), before);
   await more.focus();
   await more.click();
   const dialog = page.getByRole('dialog', { name: '설정' }),
     close = dialog.getByRole('button', { name: '창 닫기', exact: true });
   await expect(dialog).toBeVisible();
   await expect(close).toBeFocused();
+  expect(
+    await dialog
+      .locator('[data-ui="dialog-body"]')
+      .evaluate((element) => getComputedStyle(element).scrollbarWidth),
+  ).toBe('none');
   expect(await page.evaluate(() => document.body.style.position)).toBe('fixed');
   expect(await page.evaluate(() => document.getElementById('root')?.inert)).toBe(true);
   await settle(page);
@@ -100,7 +114,7 @@ test('keeps confirmation actions and its close control inside a small mobile vie
   await settle(page);
   for (const control of [close, confirm]) {
     const rect = await control.boundingBox();
-    expect(rect!.height).toBeGreaterThanOrEqual(48);
+    expect(rect!.height).toBeGreaterThanOrEqual(44);
     expect(rect!.x).toBeGreaterThanOrEqual(0);
     expect(rect!.x + rect!.width).toBeLessThanOrEqual(320);
     expect(rect!.y + rect!.height).toBeLessThanOrEqual(568);

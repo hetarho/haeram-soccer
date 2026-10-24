@@ -4,11 +4,11 @@ import { clubOf, rating, tacticLabel } from '../../../../packages/engine/src/wor
 import { nextOwnFixture, currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownLeagueIds } from './league';
 import { competitionLabel, number } from './format';
-import { cashState, teamStates, urgentState, type StateKey } from './teamState';
-import { RemedySheet, useRemedyRunner } from './RemedySheet';
+import { cashState, teamStates, type StateKey } from './teamState';
+import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
 import { useMatchView, useNavigation } from './state';
-import { gameActionsBlocked, useGameState } from '../runtime/store';
+import { useGameState } from '../runtime/store';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -16,7 +16,6 @@ import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
-import { FeedbackOverlay } from './FeedbackOverlay';
 
 /** Home can resume an existing match; only the eve dialog starts a new one. */
 export function MatchAction({ onReturn }: { onReturn: () => void }) {
@@ -92,11 +91,8 @@ export function NextMatchCard({
   );
 }
 
-/**
- * Club condition right now. The most urgent problem, cash included, gets two one-tap remedies;
- * every state opens a sheet with all of its choices, each stating cost and effect first (→WEB-44).
- */
-function TeamState({
+/** Current conditions reveal their explanation and remedies when the owner opens a tile. */
+export function TeamState({
   w,
   client,
   onPrepare,
@@ -105,26 +101,33 @@ function TeamState({
   client: GameClient;
   onPrepare: () => void;
 }) {
-  const acting = useGameState(gameActionsBlocked);
-  const runtimeError = useGameState((state) => !!state.error);
-  const home = useNavigation((state) => state.page === 'dashboard');
   const [sheet, setSheet] = useState<StateKey>();
-  const run = useRemedyRunner(client, onPrepare);
-  const states = teamStates(w),
-    urgent = urgentState(states, cashState(w));
+  const states = teamStates(w);
   return (
     <section className={s.state} aria-label="팀 상태" data-testid="team-state">
       <ul data-home-part="conditions">
         {states.map((state) => (
           <li key={state.key} className={s[state.tone]} data-condition={state.key}>
             <button
-              aria-label={`${state.label} ${state.value} · ${state.status} · 대처 방법 보기`}
+              aria-label={`${state.label} ${state.value} · ${state.status}${state.advice ? ' · 주의' : ''} · 대처 방법 보기`}
+              aria-haspopup="dialog"
               onClick={(event) => {
                 event.currentTarget.focus();
                 setSheet(state.key);
               }}
             >
-              <span>{state.label}</span>
+              <span className={s.stateLabel}>
+                {state.label}
+                {state.advice && (
+                  <span
+                    className={s.warningBadge}
+                    data-testid={`state-warning-${state.key}`}
+                    aria-hidden="true"
+                  >
+                    !
+                  </span>
+                )}
+              </span>
               <b>
                 <i key={state.value} className={s.bump}>
                   {state.value}
@@ -139,27 +142,7 @@ function TeamState({
           </li>
         ))}
       </ul>
-      {urgent?.advice ? (
-        home &&
-        !runtimeError &&
-        !w.critical && (
-          <FeedbackOverlay label="팀 상태 알림" testId="team-state-alert">
-            <div className={`${s.advice} ${s[urgent.tone]}`} role="status">
-              <p>{urgent.advice.text}</p>
-              <div>
-                {urgent.advice.actions.slice(0, 2).map((action) => (
-                  <button key={action.label} disabled={acting} onClick={() => run(action)}>
-                    {action.label}
-                  </button>
-                ))}
-                <button className={s.moreRemedies} onClick={() => setSheet(urgent.key)}>
-                  더 보기
-                </button>
-              </div>
-            </div>
-          </FeedbackOverlay>
-        )
-      ) : (
+      {!states.some((state) => state.advice) && !cashState(w).advice && (
         <p className={s.calm}>팀이 안정적이에요. 상태를 누르면 미리 챙길 방법을 볼 수 있어요.</p>
       )}
       {sheet && (

@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { expectHomeBounds, horizontalOverflow, settle } from './layout';
+import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
 
 async function navigate(page: Page, name: string) {
   await page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
@@ -65,7 +65,7 @@ for (const themeId of ['standard', 'pixel']) {
       expect(Math.abs(choices[0].width - choices[1].width)).toBeLessThanOrEqual(1);
       expect(
         choices.every(
-          (choice) => choice.height >= 44 && choice.padding >= 16 && choice.overflow <= 0,
+          (choice) => choice.height >= 44 && choice.padding >= 8 && choice.overflow <= 0,
         ),
       ).toBe(true);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -74,7 +74,7 @@ for (const themeId of ['standard', 'pixel']) {
       await expectHomeBounds(page);
       const fixture = page.getByRole('region', { name: '다음 경기', exact: true });
       const card = await surface(fixture);
-      expect(card.padding).toBeGreaterThanOrEqual(12);
+      expect(card.padding).toBeGreaterThanOrEqual(width <= 760 ? 4 : 6);
       expect(card.radius).toBe(card.cardRadius);
       expect(card.background).not.toBe('rgba(0, 0, 0, 0)');
       expect(card.material).toContain(`/art/${themeId}/ui/`);
@@ -94,6 +94,13 @@ for (const themeId of ['standard', 'pixel']) {
         transport.getByRole('button', { name: '다음 이벤트', exact: true }),
       ).toBeVisible();
 
+      if (width === 360 || width === 390) {
+        await navigate(page, '리그');
+        await page.getByRole('tab', { name: '순위표', exact: true }).click();
+        await page.getByTestId('view-scroller').evaluate((element) => element.scrollTo(0, 0));
+        await expectCompactStandings(page);
+      }
+
       await navigate(page, '선수단·스태프');
       const panel = page
         .locator('section')
@@ -104,7 +111,7 @@ for (const themeId of ['standard', 'pixel']) {
       await row.hover();
       await settle(page);
       const hovered = await surface(row);
-      expect(hovered.padding).toBeGreaterThanOrEqual(12);
+      expect(hovered.padding).toBeGreaterThanOrEqual(8);
       expect(hovered.radius).toBe(hovered.cardRadius);
       expect(hovered.overflow).toBeLessThanOrEqual(0);
       if (await page.evaluate(() => matchMedia('(hover: hover)').matches)) {

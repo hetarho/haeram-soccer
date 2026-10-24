@@ -3,7 +3,7 @@
   box-sizing: border-box;
 }
 :global(body) {
-  --mobile-nav-clearance: calc(82px + env(safe-area-inset-bottom));
+  --mobile-nav-clearance: calc(68px + env(safe-area-inset-bottom));
   margin: 0;
   min-height: 100vh;
   background: var(--surface-grain, none) var(--bg);
@@ -46,17 +46,14 @@
   padding: var(--control-padding-block) var(--control-padding-inline);
   font-weight: var(--control-weight);
   box-shadow: var(--control-shadow);
-  transition:
-    transform 0.08s,
-    filter 0.15s,
-    box-shadow 0.08s;
+  transition: box-shadow 0.08s;
   -webkit-tap-highlight-color: transparent;
 }
 :global(button:hover:not(:disabled)) {
-  filter: var(--control-hover-filter);
+  filter: none;
 }
 :global(button:active:not(:disabled)) {
-  filter: var(--control-active-filter);
+  filter: none;
   transform: none;
   box-shadow: none;
 }
@@ -295,14 +292,14 @@
 .stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 .stat {
   background: var(--surface-grain, none) var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
-  padding: 20px;
+  padding: var(--panel-padding);
   min-width: 0;
 }
 .stat .label {
@@ -327,7 +324,7 @@
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
-  gap: 22px;
+  gap: 14px;
   align-items: start;
 }
 .panel {
@@ -340,9 +337,9 @@
 .panelHead {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
-  padding: 19px 22px;
+  padding: var(--row-padding) var(--panel-padding);
   border-bottom: 1px solid var(--line);
 }
 .panelHead span {
@@ -352,10 +349,10 @@
   line-height: 1.6;
 }
 .panelBody {
-  padding: 20px 22px;
+  padding: var(--panel-padding);
 }
 .panelFoot {
-  padding: 14px 22px;
+  padding: var(--row-padding) var(--panel-padding);
   font-size: var(--label-size);
   background: var(--surface-grain, none) var(--surface-2);
   border-top: 1px solid var(--line);
@@ -442,9 +439,9 @@
 }
 .filters {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   align-items: center;
 }
 .empty {
@@ -1117,7 +1114,7 @@
   overflow-x: auto;
   overscroll-behavior-x: contain;
   padding: 0;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
   border-bottom: 1px solid var(--line);
   scrollbar-width: none;
 }
@@ -1127,8 +1124,8 @@
 .seasonTabs button {
   position: relative;
   flex: 0 0 auto;
-  min-height: 46px;
-  padding: 8px 14px;
+  min-height: 44px;
+  padding: 4px 10px;
   white-space: nowrap;
   border: 0;
   border-radius: 0;
@@ -1235,20 +1232,20 @@
   .modal :global(button),
   .layout .main :global([data-select-trigger]),
   .modal :global([data-select-trigger]) {
-    min-height: 48px;
+    min-height: 44px;
   }
   .layout .main :global(input:not([type='file'])),
   .modal :global(input:not([type='file'])) {
-    min-height: 48px;
+    min-height: 44px;
     font-size: var(--subheading-size);
   }
   .layout .main :global([data-select-trigger]),
   .modal :global([data-select-trigger]) {
     appearance: none;
-    height: 48px;
+    height: auto;
     min-width: 44px;
     font-size: var(--subheading-size);
-    padding: 10px 12px;
+    padding: 1px 8px;
   }
   .layout .main :global(input[type='range']),
   .modal :global(input[type='range']) {
@@ -1352,9 +1349,9 @@
     position: sticky;
     left: 34px;
     z-index: 2;
-    min-width: 0;
-    max-width: 150px;
-    white-space: normal;
+    min-width: 160px;
+    max-width: 190px;
+    white-space: nowrap;
     background: var(--surface-grain, none) var(--sticky-row-color);
     box-shadow: none;
   }
@@ -1722,9 +1719,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 60px;
-  margin: 0 calc(var(--gutter) * -1) 16px;
-  padding: calc(8px + env(safe-area-inset-top)) var(--gutter) 8px;
+  min-height: 48px;
+  margin: 0 calc(var(--gutter) * -1) 4px;
+  padding: calc(2px + env(safe-area-inset-top)) var(--gutter) 2px;
   background: var(--surface-grain, none) var(--hud);
   border-bottom: 1px solid var(--line);
   box-shadow: none;
@@ -1877,8 +1874,8 @@
 
 .pageHead {
   display: grid;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 .pageHead h2 {
   font-size: 24px;
@@ -1925,8 +1922,8 @@
   position: sticky;
   top: -2px;
   z-index: 6;
-  margin-bottom: 16px;
-  padding-top: 4px;
+  margin-bottom: 4px;
+  padding-top: 0;
   background: var(--surface-grain, none) var(--hud);
 }
 .recordsNav .seasonTabs {
@@ -1935,10 +1932,34 @@
 /* A records view's own choices sit together above it: season arrows, filters and segments. */
 .recordControls {
   display: grid;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.recordLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+}
+.textButton.textButton {
+  width: auto;
+  min-height: 44px;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+.recordControls > h3 {
+  margin: 0;
+  font-size: 14px;
 }
 .seasonBar .recordSeason {
+  flex: 0 0 192px;
+  min-width: 192px;
+  max-width: none;
   justify-content: flex-start;
   margin-bottom: 0;
 }
@@ -1950,17 +1971,32 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 12px;
+  gap: 0 4px;
 }
 .seasonBar > label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   white-space: nowrap;
   font-size: var(--label-size);
   font-weight: 700;
   color: var(--text-muted);
   font-family: var(--display);
+}
+.seasonBar > .recordScope {
+  flex: 1 0 140px;
+  min-width: 140px;
+  max-width: 200px;
+}
+.recordScope :global([data-select-trigger]) {
+  width: 100%;
+  min-width: 0;
+}
+.seasonBar > .pill {
+  flex-basis: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 .rosterSearch {
   white-space: nowrap;
@@ -1977,14 +2013,14 @@
 }
 @media (max-width: 760px) {
   .main {
-    --gutter: 12px;
+    --gutter: 8px;
     padding: 0 var(--gutter) calc(96px + env(safe-area-inset-bottom));
   }
   .hud {
-    min-height: 56px;
-    margin-bottom: 10px;
-    padding-top: calc(6px + env(safe-area-inset-top));
-    padding-bottom: 6px;
+    min-height: 48px;
+    margin-bottom: 0;
+    padding-top: calc(2px + env(safe-area-inset-top));
+    padding-bottom: 2px;
   }
   /* The start HUD shares its existing row with settings, keeping the full founding form in view. */
   .startLayout .hud {
@@ -2010,7 +2046,7 @@
     grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: end;
     gap: 2px;
-    padding: 6px 8px;
+    padding: 3px 4px;
     background: var(--surface-grain, none) var(--nav-surface);
     border: 1px solid var(--nav-edge);
     border-radius: var(--nav-radius);
@@ -2022,8 +2058,8 @@
     align-content: center;
     gap: 2px;
     min-width: 44px;
-    min-height: 52px;
-    padding: 4px 0;
+    min-height: 48px;
+    padding: 2px 0;
     border: 0;
     /* Keep the persistent selection underline straight across the bottom edge. */
     border-radius: 0;
@@ -2045,7 +2081,7 @@
   }
   .mobileNav .homeTab {
     margin-top: 0;
-    min-height: 52px;
+    min-height: 48px;
     color: var(--text-faint);
     background: transparent;
     border: 0;
@@ -2133,9 +2169,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   margin: 0 calc(var(--gutter) * -1);
-  padding: 2px var(--gutter) 32px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-strong) transparent;
+  padding: 2px var(--gutter) 8px;
 }
 /* Only views that must fill one screen lay out as a column; others keep natural height. */
 .startLayout .scroller {
@@ -2161,7 +2195,7 @@
   }
   /* Breathing room before the fixed mobile navigation. */
   .scroller {
-    padding-bottom: 30px;
+    padding-bottom: 8px;
   }
   .startLayout .scroller {
     padding-bottom: 8px;
@@ -2173,7 +2207,7 @@
   .coreLayout .scroller {
     display: flex;
     flex-direction: column;
-    padding-bottom: 26px;
+    padding-bottom: 8px;
   }
   .coreContent {
     flex: 1 1 auto;
@@ -2197,7 +2231,7 @@
 }
 .filters > label {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   font-size: var(--label-size);
   font-weight: 700;
   color: var(--text-muted);
@@ -2206,8 +2240,8 @@
 .filters > button,
 .filters :global([data-select-trigger]),
 .filters input {
-  height: 48px;
-  min-height: 48px;
+  height: 44px;
+  min-height: 44px;
 }
 .filters :global([data-select-trigger]) {
   font-size: 14px;
@@ -2368,8 +2402,6 @@
 }
 :global(button) {
   transition:
-    transform 0.08s,
-    filter 0.15s,
     box-shadow 0.08s,
     background-color 0.18s,
     border-color 0.18s,
@@ -2686,7 +2718,7 @@
 /* The records room's panels keep the page's gap; on phones each panel's own margin spaces them. */
 @media (min-width: 761px) {
   .recordStack > * + * {
-    margin-top: 22px;
+    margin-top: 10px;
   }
   .recordStack > .recordControls {
     margin-bottom: 0;
@@ -3066,7 +3098,12 @@
 }
 /* The league views' league choice (→WEB-65); the way back to ours sits beside the selects. */
 .leaguePicker {
-  margin-bottom: 14px;
+  margin-bottom: 0;
+  gap: 8px;
+}
+.leaguePicker > label {
+  flex: 1 1 120px;
+  min-width: 0;
 }
 .leagueHome.leagueHome {
   align-self: flex-end;
@@ -3166,8 +3203,8 @@
 
 .competitionScope {
   display: grid;
-  gap: 10px;
-  margin: 12px 0;
+  gap: 4px;
+  margin: 4px 0;
   font-size: var(--label-size);
 }
 .competitionScope > b {

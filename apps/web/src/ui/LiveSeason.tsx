@@ -376,7 +376,7 @@ const LeagueScope = memo(function LeagueScope({
   const w = useGameState(selectLeagueWorld)!;
   return (
     <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
-      <b>
+      <b className={s.srOnly}>
         {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
       </b>
       <LeaguePicker league={league} onLeague={onLeague} />
@@ -449,9 +449,14 @@ function SeasonPicker({
   const at = Math.max(0, years.indexOf(value ?? current));
   const go = (index: number) => onChange(years[index] === current ? undefined : years[index]);
   return (
-    <div className={t.seasonPicker} role="group" aria-label="리그 시즌 선택">
+    <div
+      className={t.seasonPicker}
+      data-ui="season-picker"
+      role="group"
+      aria-label="리그 시즌 선택"
+    >
       <button
-        data-ui="icon"
+        data-ui="link"
         type="button"
         className={t.seasonStep}
         aria-label="이전 시즌"
@@ -461,6 +466,7 @@ function SeasonPicker({
         <PixelIcon name="chevronLeft" size={20} />
       </button>
       <Select
+        data-ui="text-select"
         aria-label="리그 시즌"
         className={t.seasonSelect}
         value={value ?? 'current'}
@@ -473,7 +479,7 @@ function SeasonPicker({
         ))}
       </Select>
       <button
-        data-ui="icon"
+        data-ui="link"
         type="button"
         className={t.seasonStep}
         aria-label="다음 시즌"

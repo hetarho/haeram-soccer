@@ -2,10 +2,11 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
-import type { ClientState } from '../runtime/client';
+import type { ClientState, GameClient } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { MatchAction, NextMatchCard } from './ClubHub';
+import { MatchAction, NextMatchCard, TeamState } from './ClubHub';
+import { cashState, teamStates, type TeamStateItem } from './teamState';
 
 const matchView = vi.hoisted(() => ({ matchId: undefined as string | undefined, finished: false }));
 vi.mock('../runtime/store', async (importOriginal) => {
@@ -19,6 +20,11 @@ vi.mock('../runtime/store', async (importOriginal) => {
 vi.mock('./state', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./state')>()),
   useMatchView: () => matchView,
+}));
+vi.mock('./teamState', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./teamState')>()),
+  teamStates: vi.fn(),
+  cashState: vi.fn(),
 }));
 
 // Only the card/calendar fields; no generated world or season simulation is needed.
@@ -100,5 +106,77 @@ describe('contextual home match access', () => {
     const markup = renderToStaticMarkup(matchAction());
     expect(markup).toContain('aria-label="관전 이어보기"');
     expect(markup).not.toContain('다음 경기 관전');
+  });
+});
+
+describe('home condition warnings', () => {
+  beforeEach(() => {
+    vi.mocked(cashState).mockReturnValue({
+      key: 'cash',
+      label: '자금',
+      value: '충분',
+      status: '안정',
+      tone: 'good',
+    });
+  });
+  const states: TeamStateItem[] = [
+    { key: 'fatigue', label: '피로', value: '10', status: '상쾌', tone: 'good' },
+    {
+      key: 'squad',
+      label: '선수단',
+      value: '19/40',
+      status: '부족',
+      tone: 'warn',
+      advice: { text: '선수 19명 · 선발을 채우기 어려워요.', actions: [] },
+    },
+  ];
+
+  function renderConditions(items: TeamStateItem[]) {
+    vi.mocked(teamStates).mockReturnValue(items);
+    return renderToStaticMarkup(
+      createElement(TeamState, {
+        w: world(),
+        client: {} as GameClient,
+        onPrepare: vi.fn(),
+      }),
+    );
+  }
+
+  it('marks the affected tile and names its warning without automatically rendering advice', () => {
+    const markup = renderConditions(states);
+    expect(markup).toContain('data-testid="state-warning-squad"');
+    expect(markup).not.toContain('data-testid="state-warning-fatigue"');
+    expect(markup).toContain('aria-label="선수단 19/40 · 부족 · 주의 · 대처 방법 보기"');
+    expect(markup).toContain('aria-haspopup="dialog"');
+    expect(markup).not.toContain('선수 19명');
+    expect(markup).not.toContain('team-state-alert');
+  });
+
+  it('marks every affected condition at once and clears the badges when the conditions recover', () => {
+    const tired: TeamStateItem = {
+      ...states[0],
+      tone: 'bad',
+      advice: { text: '회복이 필요해요.', actions: [] },
+    };
+    const warnings = renderConditions([tired, states[1]]);
+    expect(warnings).toContain('data-testid="state-warning-fatigue"');
+    expect(warnings).toContain('data-testid="state-warning-squad"');
+    const recovered = renderConditions(states.map((state) => ({ ...state, advice: undefined })));
+    expect(recovered).not.toContain('state-warning-');
+    expect(recovered).toContain('팀이 안정적이에요.');
+  });
+
+  it('does not call the team stable when the HUD cash needs attention', () => {
+    vi.mocked(cashState).mockReturnValue({
+      key: 'cash',
+      label: '자금',
+      value: '부족',
+      status: '위기',
+      tone: 'bad',
+      advice: { text: '자금이 부족해요.', actions: [] },
+    });
+    expect(
+      renderConditions(states.map((state) => ({ ...state, advice: undefined }))),
+    ).not.toContain('팀이 안정적이에요.');
   });
 });

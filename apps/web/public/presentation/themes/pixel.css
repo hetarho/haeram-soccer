@@ -1,6 +1,3 @@
-@import './image-ui-shell.css';
-@import './image-ui-controls.css';
-
 html[data-theme='pixel'] {
   /* Pitch materials are presentation roles; kits, motion and clocks remain recorded facts. */
   --pitch-ground: #172b21;

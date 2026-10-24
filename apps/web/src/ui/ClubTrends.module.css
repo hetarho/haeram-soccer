@@ -10,6 +10,13 @@
   vertical-align: middle;
   overflow-wrap: anywhere;
 }
+.seasonHistory tbody tr {
+  height: 44px;
+}
+.seasonHistory td {
+  padding-block: 2px;
+  white-space: nowrap;
+}
 .seasonHistory th:nth-child(1) {
   width: 20%;
 }
@@ -46,6 +53,9 @@
     padding: 8px 4px;
     font: 12px/1.4 var(--display);
   }
+  .seasonHistory td {
+    padding-block: 2px;
+  }
   .seasonHistory th:first-child,
   .seasonHistory td:first-child {
     padding-left: 8px;
@@ -70,7 +80,10 @@
   }
 }
 
-.currentSeason > td {
-  background: var(--surface-grain, none) var(--surface-2);
+.seasonHistory .currentSeason[aria-current='true'] > td {
+  background: var(--surface-grain, none) color-mix(in srgb, var(--accent) 9%, var(--surface-2));
   color: var(--accent-text);
+}
+.seasonHistory .currentSeason > td:first-child {
+  box-shadow: inset 3px 0 var(--accent);
 }

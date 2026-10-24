@@ -66,7 +66,7 @@ export const LeaguePicker = memo(function LeaguePicker({
   return (
     <div className={`${s.filters} ${s.leaguePicker}`} role="group" aria-label="리그 선택">
       <label>
-        국가{' '}
+        <span className={s.srOnly}>국가</span>
         <Select
           aria-label="국가"
           value={shown.code}
@@ -80,7 +80,7 @@ export const LeaguePicker = memo(function LeaguePicker({
         </Select>
       </label>
       <label>
-        디비전{' '}
+        <span className={s.srOnly}>디비전</span>
         <Select
           aria-label="디비전"
           value={shown.tier}
@@ -104,7 +104,7 @@ export const LeaguePicker = memo(function LeaguePicker({
       </label>
       {cp.groups[shown.tier]?.length > 1 && (
         <label>
-          지역 그룹{' '}
+          <span className={s.srOnly}>지역 그룹</span>
           <Select
             aria-label="지역 그룹"
             value={shown.group}

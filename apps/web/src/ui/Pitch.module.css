@@ -45,11 +45,14 @@
     transform: scale(1.12);
   }
 }
-/* The side controlling the ball: a ball glyph with a word, boxed against the scoreboard. */
+/* Both cues keep their space when hidden, so ownership never moves the scoreboard. */
 .possession {
   display: inline-flex;
-  flex-shrink: 0;
+  flex: 0 0 52px;
+  height: 24px;
   align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   gap: 3px;
   padding: 1px 5px 1px 3px;
   border: 1px solid var(--gold-edge);
@@ -127,13 +130,26 @@
   gap: 8px;
   min-width: 0;
 }
+.teamIdentity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-style: normal;
+}
 .team b {
   min-width: 0;
+  max-width: 100%;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .awayTeam {
   justify-content: flex-end;
+}
+.awayTeam .teamIdentity {
+  flex-direction: row-reverse;
 }
 /* One red card per player sent off, beside the side's name. */
 .reds {
@@ -404,6 +420,17 @@
     font-size: 13px;
     line-height: 1.2;
   }
+  .team {
+    gap: 4px;
+  }
+  .teamIdentity,
+  .awayTeam .teamIdentity {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .possession {
+    flex-basis: 48px;
+  }
   /* Short team names leave room for the back control on phones. */
   .fullName {
     position: absolute;
@@ -450,9 +477,6 @@
   }
   .possession {
     padding: 1px 3px;
-  }
-  .possessionWord {
-    display: none;
   }
   .goalCue {
     max-width: calc(100% - 24px);
