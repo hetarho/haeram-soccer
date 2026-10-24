@@ -16,6 +16,7 @@
     "format": "prettier --write apps packages scripts tests *.json *.ts *.mjs .github",
     "format:check": "prettier --check apps packages scripts tests *.json *.ts *.mjs .github",
     "test:unit": "vitest run --exclude '**/*.contract.test.ts'",
+    "test:unit:release-on": "vitest run --config vitest.release-on.config.ts --exclude '**/*.contract.test.ts'",
     "test:contract": "vitest run .contract.test.ts",
     "validate:catalogs": "tsx scripts/validate-catalogs.ts",
     "validate:presentation": "tsx scripts/validate-presentation.ts",

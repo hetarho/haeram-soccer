@@ -34,9 +34,11 @@ import {
  * and on disk under `node_modules/.cache/haeram-worlds/<source hash>` for every other file and
  * run. The source hash covers every `.ts`/`.json` source under `packages/*\/src`, catalog data,
  * `apps/*\/src` and `tests/fixtures` except tests and testkits; the key adds the id, the
- * builder's code and the calling file with its testkit, so a changed engine, adapter, builder,
- * testkit or test rebuilds it. Directories of other source trees older than two days are
- * removed. Values must survive JSON (worlds do, exactly). Each call returns a fresh copy.
+ * builder's code, the calling file with its testkit and the default release switch, so a changed
+ * engine, adapter, builder, testkit or test rebuilds it, and a world built with the switch off is
+ * never served to a run with it on (`vitest.release-on.config.ts`). Directories of other source
+ * trees older than two days are removed. Values must survive JSON (worlds do, exactly). Each call
+ * returns a fresh copy.
  *
  * `HAERAM_WORLD_CACHE=off` keeps the cache in memory only; `HAERAM_WORLD_CACHE=<dir>` moves it.
  */
@@ -179,6 +181,9 @@ function cached<T>(id: string, build: () => T, scope: string | undefined): T {
     .update(build.toString())
     .update('\0')
     .update(scope ? scopeText(scope) : '')
+    .update('\0')
+    // `createWorld`'s default release is read at call time, and the release-on probe turns it on.
+    .update(String(MATCH_MODEL_RELEASE.enabled))
     .digest('hex');
   let json = memory.get(key);
   if (json === undefined) {
@@ -207,21 +212,26 @@ export interface Simulated {
 }
 
 /**
- * `createWorld(input)` after `seasons` closed seasons and `rounds` unobserved rounds — the same
- * world the inline calls give, shared by every file that asks for the same founding and span.
+ * `createWorld(input, release)` after `seasons` closed seasons and `rounds` unobserved rounds — the
+ * same world the inline calls give, shared by every file that asks for the same founding, span and
+ * release. `release` defaults to the switch as it stands (`MATCH_MODEL_RELEASE`).
  */
-export function simulatedWorld(input: Founding, span: Simulated = {}): World {
+export function simulatedWorld(
+  input: Founding,
+  span: Simulated = {},
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
+): World {
   const { seasons = 0, rounds = 0 } = span;
-  const id = `sim:${JSON.stringify(input)}:${seasons}:${rounds}`;
+  const id = `sim:${JSON.stringify(input)}:${seasons}:${rounds}:${JSON.stringify(release)}`;
   return cached(
     id,
     () => {
       const w =
         rounds > 0
-          ? simulatedWorld(input, { seasons })
+          ? simulatedWorld(input, { seasons }, release)
           : seasons > 0
-            ? simulatedWorld(input, { seasons: seasons - 1 })
-            : createWorld(input);
+            ? simulatedWorld(input, { seasons: seasons - 1 }, release)
+            : createWorld(input, release);
       if (rounds > 0) for (let n = 0; n < rounds; n++) advanceRound(w, undefined, false);
       else if (seasons > 0) simulateSeason(w);
       return w;
@@ -243,6 +253,13 @@ export function withoutManagerHistory<T extends World>(w: T): T {
 
 /** The release switch turned on, for tests and measurements; production keeps it off. */
 export const ENABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: true };
+
+/**
+ * The release switch turned off, whatever the default: for tests whose subject is the pre-feature
+ * path, which careers whose rules never activate the model keep playing (→SAVE-23). A test about
+ * what a new career plays uses `ENABLED_RELEASE` or `withCandidateModel`.
+ */
+export const DISABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: false };
 
 /**
  * `w` on the candidate match model (→SAVE-23), for tests and measurements while the release switch
