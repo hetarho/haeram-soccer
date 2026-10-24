@@ -216,12 +216,17 @@ describe('preview pitch drawing', () => {
   });
 
   it('uses no world, match simulation, command, storage or animation clock', () => {
-    for (const file of ['./identityPreview.ts', './KitPitchPreview.tsx']) {
+    for (const file of [
+      './identityPreview.ts',
+      './KitPitchPreview.tsx',
+      './pitchPainting.ts',
+      './usePitchSkin.ts',
+    ]) {
       const source = readFileSync(new URL(file, import.meta.url), 'utf8');
       const imports = [...source.matchAll(/from '([^']+)'/g)].map(([, path]) => path);
       for (const path of imports)
         expect(path).toMatch(
-          /^(react|\.\/(identityPreview|kitPainting|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/identity|engine\/src\/kit-selection))$/,
+          /^(react|\.\.\/presentation\/react|\.\/(identityPreview|kitPainting|pitchPainting|usePitchSkin|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/identity|engine\/src\/kit-selection))$/,
         );
       expect(source).not.toMatch(
         /createWorld|simulateMatch|GameClient|command\(|localStorage|indexedDB|requestAnimationFrame|setInterval/,

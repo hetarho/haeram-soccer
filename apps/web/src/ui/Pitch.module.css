@@ -55,7 +55,7 @@
   border: 1px solid var(--gold-edge);
   border-radius: 999px;
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.2;
   color: var(--text);
 }
@@ -192,6 +192,9 @@
 }
 .stage .canvas {
   aspect-ratio: 1.9;
+}
+.canvas {
+  background-image: var(--pitch-texture, none);
 }
 .playToggle {
   position: absolute;

@@ -19,7 +19,7 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       `apps/web/design/pixel-ui/`; Stadium Green UI sources/prompts live in
       `apps/web/design/standard-ui/`. Their preparation commands follow the same `--check` convention.
 - [ ] Separate artwork from live HTML text, numbers, forms, tables and accessible labels. Keep
-      theme changes independent of engine facts, club identity and the live-pitch renderer.
+      theme changes independent of engine facts, club identity, pitch geometry and playback timing.
 
 ## 2. Image-built components
 
@@ -85,6 +85,13 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       stickers, stepped corners for pixel, tonal green seams for Stadium Green. Keep selected icons
       readable on pale actions too. Avoid redundant dotted link borders and duplicate label/control focus rings.
       Keep one clear keyboard focus indicator and meaningful chart/status distinctions.
+- [ ] Check match theatre, result/readiness strip, charts, back controls and possession cues too.
+      Icons need a consistent optical size inside their target; keep short team names intact and
+      reflow the possession word before squeezing them. Check local text against dark chart materials.
+- [ ] Review actual live/replay, kit-preview and analytical pitch pixels in each pack. Keep static
+      material decode/cache preparation outside rAF; preserve geometry, kits, player numbers, ball
+      visibility, goalkeeper distinctions and the paused sample when switching themes. Test a failed
+      decorative texture and retain a readable solid ground.
 - [ ] Open, scroll, close and reopen bottom sheets and reports. Header, body and action footer
       must retain their intended scroll bounds; actions must stay reachable.
 - [ ] Check home column scrolling and focus restoration, plus the last row/action on every page.

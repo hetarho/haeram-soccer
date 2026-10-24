@@ -1,4 +1,4 @@
-import { useId, useMemo, useState, type MouseEvent, type ReactNode } from 'react';
+import { useId, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import {
   BAND_EDGES,
@@ -28,6 +28,7 @@ import { usePlayerSheet } from './state';
 import { Segments } from './Segments';
 import { Select } from './Select';
 import s from './MatchMaterial.module.css';
+import { usePitchSkin } from './usePitchSkin';
 import app from './App.module.css';
 
 type Tab = 'shots' | 'heat' | 'network' | 'report';
@@ -148,6 +149,9 @@ function MaterialPitch({
   legend?: ReactNode;
 }) {
   const [note, setNote] = useState<{ cell?: number; text: string }>();
+  const groundId = useId();
+  const pitch = useRef<SVGSVGElement>(null);
+  const skin = usePitchSkin(pitch);
   const tap = (event: MouseEvent<SVGSVGElement>) => {
     const marked = (event.target as Element).closest('[data-label]');
     if (marked) return setNote({ text: marked.getAttribute('data-label')! });
@@ -163,6 +167,7 @@ function MaterialPitch({
   return (
     <figure className={s.figure}>
       <svg
+        ref={pitch}
         className={s.pitch}
         viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
         role="img"
@@ -181,6 +186,31 @@ function MaterialPitch({
             height={FIELD.height}
           />
         ))}
+        {skin.textureUrl && (
+          <>
+            <defs>
+              <pattern
+                id={groundId}
+                width={skin.textureSize / 4}
+                height={skin.textureSize / 4}
+                patternUnits="userSpaceOnUse"
+              >
+                <image
+                  href={skin.textureUrl}
+                  width={skin.textureSize / 4}
+                  height={skin.textureSize / 4}
+                />
+              </pattern>
+            </defs>
+            <rect
+              width={VIEW.width}
+              height={VIEW.height}
+              fill={`url(#${groundId})`}
+              opacity={skin.textureOpacity}
+              pointerEvents="none"
+            />
+          </>
+        )}
         {cells?.map((c) => (
           <rect
             key={c.cell}

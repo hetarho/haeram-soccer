@@ -48,8 +48,8 @@ painted sports-comic facility illustrations. The selected art direction combines
 inking, layered gouache colour, warm natural light and tactile material detail. Each completed
 stadium/locker, training and academy stage in each era has distinct generated artwork; manager
 and staff offices use separate period-neutral interiors. Images remain in the existing 3:1 HTML
-slots, with 1440×480 self-hosted WebP resources and automatic image rendering. The live pitch and
-club identity retain their existing game-driven rendering.
+slots, with 1440×480 self-hosted WebP resources and automatic image rendering. The live pitch retains its game-driven geometry, motion and recorded club identity while the
+shared pitch presentation roles below supply its visual material.
 
 `node scripts/generate-standard-icons.mjs` imports icon resources from the pinned `lucide-static`
 development dependency. Original upstream paths and 2px round strokes are preserved; circles and
@@ -100,7 +100,7 @@ Stadium Green's generated source atlas/sidebar and exact built-in-tool prompts l
 in `apps/web/public/art/standard/ui/`, reusing pinned Lucide paths and the static grain.
 Append `--check` to either command to verify deployed hashes. Native pixel sources encode to
 lossless PNG; smooth standard resources encode to WebP. Sources and provenance stay in the repo.
-The skin's nearest-neighbor treatment never changes the live-pitch renderer.
+The shared pitch painter reads each pack's visual roles while preserving live coordinates and interpolation.
 Sticker silhouettes are isolated before cropping, so minor generated grid-gutter offsets do not
 clip their cream rims. Keep the pinned project toolchain, Playwright Chromium, `ffmpeg` and `ffprobe`
 available for regeneration; hash checks only need Node and the deployed resources.
@@ -157,6 +157,33 @@ to their declaring pack URL. Pack asset references can also begin at the deploym
 Shared URL validation keeps references local and same-origin. Use these helpers instead of
 joining paths or introducing another loader: `resolveRegistryUrl`, `resolvePackUrl` and
 `resolveResourceUrl` in `apps/web/src/presentation/registry.ts`.
+
+
+## Match surfaces and pitch materials
+
+Match theatre, metadata, result/readiness strip, actions, commentary, charts and possession/goal
+feedback expose neutral `data-ui` hooks and assemble each pack's existing image materials.
+Icon-only match controls use the pack's semantic glyph at an optical size inside a 44px target.
+Compact scoreboards reflow the possession word under the team rather than breaking short names.
+Charts keep a contrasting dark material and choose their series against its actual palette value;
+legend words, meaningful dash distinctions and recorded shirt swatches remain intact.
+
+Optional `--pitch-*` CSS roles supply `ground`, `stripe`, `stripe-alt`, `line`, `goal`,
+`marker-outline`, `ball`, `ball-edge`, `ball-seam`, `carrier`, `selection`, `idle-text` and
+`chart-ground` colors; `line-width`, `marker-width`, `pixel-size`, `texture-opacity` and
+`texture-size` control the treatment. Unitless dimensions are bounded by `pitchPainting.ts` and
+missing values retain the readable legacy defaults. `--pitch-texture` reuses a static same-origin
+material; Canvas/SVG background-image computation resolves the stylesheet-relative resource URL.
+A failed decorative decode retains the solid ground, geometry, labels and controls.
+
+`ui/usePitchSkin.ts` reacts to installed presentation resources and decodes that material outside
+animation. `ui/pitchPainting.ts` owns the common live/replay/kit-preview ground projection and one
+replaceable ground cache per mounted Canvas. Ordinary frames only blit the cached ground; size,
+density or skin changes repaint it. Pixel changes ground/sprite raster density and ball contour;
+all packs preserve the supplied positions, interpolation, marker bounds and selected shirt faces.
+Analytical SVG pitch grounds use the same palette/material roles beneath heat/shot/network facts.
+Theme changes preserve the paused sample, clock, recorded kits/crests, world and preference policy.
+Shirt editing and automatic clash selection remain owned by the identity/engine contracts.
 
 ## Locale packs
 

@@ -30,7 +30,8 @@ import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
 import { createKitPainter } from './kitPainting';
-import { markerRadius } from './KitPitchPreview';
+import { createGroundPainter, markerRadius, paintPitchBall } from './pitchPainting';
+import { usePitchSkin } from './usePitchSkin';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
 import {
@@ -81,8 +82,6 @@ const initialShape: { at: [number, number]; keeper?: true }[] = [
   { at: [76, 50] },
   { at: [72, 80] },
 ];
-/** The side outline every marker wears, as in the design preview (WEB-87). */
-const MARKER_OUTLINE = '#ffffffcc';
 /** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
 const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
 
@@ -143,6 +142,8 @@ export function Pitch({
   const detailsId = useId();
   const { t: tr } = useLocale();
   const canvas = useRef<HTMLCanvasElement>(null);
+  const skin = usePitchSkin(canvas);
+  const [ground] = useState(() => createGroundPainter());
   /**
    * Presentation time in ms at 1x, every match minute lasting 4000 ms (→WEB-32), with the recorded
    * goal it holds at (→WEB-94).
@@ -286,7 +287,7 @@ export function Pitch({
     const warm = () => {
       const width = element.clientWidth;
       if (!width) return;
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = skin.pixelSize ? 1 / skin.pixelSize : Math.min(2, window.devicePixelRatio || 1);
       const radius = markerRadius(width);
       for (const side of look.sides)
         for (const shirt of [side.shirt, side.keeper])
@@ -297,7 +298,7 @@ export function Pitch({
     const observer = new ResizeObserver(warm);
     observer.observe(element);
     return () => observer.disconnect();
-  }, [look, painter]);
+  }, [look, painter, skin]);
 
   useEffect(() => {
     let raf = 0;
@@ -305,9 +306,7 @@ export function Pitch({
     const pitchFont = canvas.current
       ? getComputedStyle(canvas.current).fontFamily
       : 'Galmuri11, sans-serif';
-    const carrierMark =
-      (canvas.current && getComputedStyle(canvas.current).getPropertyValue('--gold').trim()) ||
-      '#e8c15a';
+    const carrierMark = skin.carrier;
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
@@ -371,41 +370,20 @@ export function Pitch({
           element.height = Math.round(height * dpr);
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.fillStyle = '#253b31';
-        ctx.fillRect(0, 0, width, height);
+        ground.draw(ctx, width, height, dpr, skin);
+        ctx.imageSmoothingEnabled = !skin.pixelSize;
         const pad = width * 0.065;
         const fw = width - pad * 2;
         const fh = height - pad * 2;
         const x = (v: number) => pad + (fw * v) / 100;
         const y = (v: number) => pad + (fh * v) / 100;
-        // Mown stripes.
-        for (let stripe = 0; stripe < 10; stripe++) {
-          ctx.fillStyle = stripe % 2 ? '#2b4538' : '#304b3d';
-          ctx.fillRect(pad + (fw * stripe) / 10, pad, fw / 10 + 0.5, fh);
-        }
-        ctx.strokeStyle = '#d7dcc598';
-        ctx.lineWidth = 1.4;
-        ctx.strokeRect(pad, pad, fw, fh);
-        ctx.beginPath();
-        ctx.moveTo(x(50), pad);
-        ctx.lineTo(x(50), y(100));
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.ellipse(x(50), y(50), fw * 0.09, fh * 0.15, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        for (const side of [0, 1]) {
-          ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);
-          ctx.strokeRect(x(side === 0 ? 0 : 94), y(38), fw * 0.06, fh * 0.24);
-          // Goal mouths.
-          ctx.fillStyle = '#e8efe6aa';
-          ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
-        }
         if (p && current && look) {
           const radius = markerRadius(width);
           let carrierAt: [number, number] | undefined;
           const marker = {
-            dpr,
-            outline: MARKER_OUTLINE,
+            dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
+            outline: skin.markerOutline,
+            outlineWidth: skin.markerWidth,
             font: `${Math.max(8, width * 0.012)}px ${pitchFont}`,
           };
           for (const side of [0, 1] as const) {
@@ -436,7 +414,7 @@ export function Pitch({
               const py = position[1] * (1 - mix) + (target?.[1] ?? position[1]) * mix;
               const selected = inspect && !!motion && motion.id === selectedId;
               if (selected && motion) {
-                ctx.strokeStyle = '#f1f0e8';
+                ctx.strokeStyle = skin.selection;
                 ctx.lineWidth = 1.5;
                 ctx.setLineDash([4, 4]);
                 ctx.beginPath();
@@ -451,7 +429,7 @@ export function Pitch({
               if (selected) {
                 ctx.beginPath();
                 ctx.arc(x(px), y(py), radius + 4, 0, Math.PI * 2);
-                ctx.strokeStyle = '#f1f0e8';
+                ctx.strokeStyle = skin.selection;
                 ctx.lineWidth = 2;
                 ctx.stroke();
               }
@@ -511,15 +489,9 @@ export function Pitch({
           ctx.beginPath();
           ctx.ellipse(x(bx) + 1.5, y(by) + 2, shadowRadius, shadowRadius * 0.6, 0, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#fff';
-          ctx.beginPath();
-          ctx.arc(x(bx), y(by) - lift, ballRadius, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = '#21392a';
-          ctx.lineWidth = 1;
-          ctx.stroke();
+          paintPitchBall(ctx, x(bx), y(by) - lift, ballRadius, skin);
         } else {
-          ctx.fillStyle = '#d8e4d6';
+          ctx.fillStyle = skin.idleText;
           ctx.font = `14px ${pitchFont}`;
           ctx.textAlign = 'center';
           ctx.fillText('킥오프를 기다립니다', width / 2, height / 2);
@@ -542,6 +514,8 @@ export function Pitch({
     look,
     keepers,
     painter,
+    ground,
+    skin,
     inspect,
     selectedId,
   ]);
@@ -578,6 +552,7 @@ export function Pitch({
     possession.side === side && (
       <i
         className={t.possession}
+        data-ui="possession-cue"
         role="img"
         aria-label={tr('match.possession.side')}
         data-testid="possession-cue"
@@ -608,6 +583,7 @@ export function Pitch({
     <div
       className={`${s.pitch} ${t.pitch}`}
       data-testid="pitch-theatre"
+      data-ui="match-theatre"
       style={
         {
           '--goal-hold': `${GOAL_FEEDBACK_CONFIG.holdMs}ms`,
@@ -665,7 +641,7 @@ export function Pitch({
           )}
         </span>
       </div>
-      <div className={`${s.pitchMeta} ${t.pitchMeta}`}>
+      <div className={`${s.pitchMeta} ${t.pitchMeta}`} data-ui="match-meta">
         <span className={`${s.live} ${t.liveText}`}>
           {frame
             ? `${frame.label}′ · ${frame.action}${finished ? ' · 경기 종료' : ''}`
@@ -719,6 +695,7 @@ export function Pitch({
             <div
               key={heldGoal.id}
               className={t.goalCue}
+              data-ui="goal-cue"
               data-testid="goal-cue"
               data-side={heldGoal.side}
             >
@@ -759,7 +736,7 @@ export function Pitch({
           </span>
         )}
       </div>
-      <div className={t.latestEvent} data-testid="match-latest-event">
+      <div className={t.latestEvent} data-testid="match-latest-event" data-ui="match-commentary">
         <span>{frame ? `${frame.label}′` : '최근 장면'}</span>
         <p>
           {currentEvent
@@ -776,6 +753,7 @@ export function Pitch({
           playback={p}
           shown={(sample?.frame ?? 0) + 1}
           look={look}
+          groundColor={skin.chartGround}
           names={[home?.short || 'HOME', away?.short || 'AWAY']}
           details={details}
           detailsId={detailsId}

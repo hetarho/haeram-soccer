@@ -8,6 +8,7 @@
   min-width: 0;
 }
 .pitch {
+  background-image: var(--pitch-texture, none);
   display: block;
   width: 100%;
   aspect-ratio: 1.9;
@@ -18,22 +19,22 @@
   user-select: none;
 }
 .grass {
-  fill: #253b31;
+  fill: var(--pitch-ground, #253b31);
 }
 .stripe {
-  fill: #2b4538;
+  fill: var(--pitch-stripe, #2b4538);
 }
 .stripeAlt {
-  fill: #304b3d;
+  fill: var(--pitch-stripe-alt, #304b3d);
 }
 .lines {
   fill: none;
-  stroke: #d7dcc598;
+  stroke: var(--pitch-line, #d7dcc598);
   stroke-width: 0.45;
 }
 .arrow {
   fill: none;
-  stroke: #d7dcc5c0;
+  stroke: var(--pitch-line, #d7dcc5c0);
   stroke-width: 0.6;
 }
 .heat {

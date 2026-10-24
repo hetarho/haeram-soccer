@@ -6,6 +6,7 @@
 }
 /* The live pitch's 1.9:1 shape (WEB-50), as wide as its holder. */
 .canvas {
+  background-image: var(--pitch-texture, none);
   display: block;
   width: 100%;
   aspect-ratio: 1.9;
