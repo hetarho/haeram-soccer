@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
+import {
+  DISABLED_RELEASE,
+  simulatedWorld,
+  withoutManagerHistory,
+} from '../../../../tests/fixtures/worlds';
 import {
   envelopeEngine,
   FULL_MODEL_CHECKPOINT_SCHEMA,
@@ -39,15 +43,20 @@ class Parked implements ParkedStore {
   }
 }
 async function saved(engine: string) {
-  // Earlier rules never tracked manager history, so their checkpoints use the old containers.
+  // Earlier rules never recorded the match model or tracked manager history, so their
+  // checkpoints use the old containers.
   const w = withoutManagerHistory(
-    simulatedWorld({
-      country: 'ENG',
-      name: 'Legacy',
-      color: '#123456',
-      seed: 'reset',
-      level: 'easy',
-    }),
+    simulatedWorld(
+      {
+        country: 'ENG',
+        name: 'Legacy',
+        color: '#123456',
+        seed: 'reset',
+        level: 'easy',
+      },
+      {},
+      DISABLED_RELEASE,
+    ),
   );
   w.engine = engine;
   return encode(w);

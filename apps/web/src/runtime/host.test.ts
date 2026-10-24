@@ -18,6 +18,7 @@ import {
   createIdentityDraft,
   createWorld,
   identityOf,
+  MATCH_MODEL_RELEASE,
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
@@ -40,6 +41,7 @@ import { professionalStart } from '../../../../packages/engine/src/testing';
 import { npcCompetition, trackingBoundary } from '../../../../packages/engine/src/npc-stats';
 import {
   cachedWorld,
+  DISABLED_RELEASE,
   ENABLED_RELEASE,
   simulatedWorld,
   withCandidateModel,
@@ -458,12 +460,15 @@ function withoutIdentities(w: World) {
   for (const match of w.ownMatches) delete match.appearance;
   return w;
 }
+/** A career from before club identities, and so before the full model: founded with it off. */
+const preIdentity = (span?: { rounds: number }) =>
+  withoutIdentities(simulatedWorld(input, span, DISABLED_RELEASE));
 const activate = (id: string, raw: string, upgrade = true) =>
   req(id, -1, { type: 'inspect', raw, activate: true, upgrade });
 
 describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
   it('inspect/read-only activation does not install identities or increment revision', async () => {
-    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    const legacy = preIdentity({ rounds: 2 });
     const raw = await encode(legacy);
     const h = new Host();
     const inspected = await h.handle(req('inspect', -1, { type: 'inspect', raw }));
@@ -484,10 +489,11 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
   });
 
   it('writer adoption preserves exact legacy crests and sporting facts', async () => {
-    const legacy = withoutIdentities(simulatedWorld(input, { rounds: 2 }));
+    const legacy = preIdentity({ rounds: 2 });
     expect(legacy.ownMatches.length).toBeGreaterThan(0);
     const crests = legacyCrestMap({ ...legacy, clubs: legacy.clubs.slice() });
-    const h = new Host();
+    // With the release off, so the designs are the only upgrade; the next case adds the model.
+    const h = new Host(undefined, { release: DISABLED_RELEASE });
     const reply = await h.handle(activate('adopt', await encode(legacy)));
     expect(reply.ok, reply.error).toBe(true);
     expect(reply.upgraded).toBe(true);
@@ -509,7 +515,7 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     ).toBe(canonical(legacy));
     // The validated candidate the client commits is the adopted world.
     expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(w));
-    const again = new Host();
+    const again = new Host(undefined, { release: DISABLED_RELEASE });
     const repeat = await again.handle(activate('again', reply.raw!));
     expect(repeat.ok, repeat.error).toBe(true);
     expect(repeat.upgraded).toBeUndefined();
@@ -518,20 +524,22 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
   });
 
   it('moves the revision once whatever upgrades together, and never past a safe integer', async () => {
-    const pinned = withoutIdentities(simulatedWorld(input));
+    const pinned = preIdentity();
     pinned.revision = 9;
     pinned.catalog = '2026-demo-2';
     pinned.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-2'];
-    const h = new Host();
+    // With the release on, the full model is one more upgrade in the same writer activation.
+    const h = new Host(undefined, { release: ENABLED_RELEASE });
     const both = await h.handle(activate('both', await encode(pinned)));
     expect(both.ok, both.error).toBe(true);
     expect(both.upgraded).toBe(true);
     expect(h.world!.revision).toBe(10);
     expect(h.world!.catalog).toBe(CATALOG_VERSION);
     expect(h.world!.clubs.every((club) => club.identity)).toBe(true);
-    const top = withoutIdentities(simulatedWorld(input));
+    expect(h.world!.matchModel?.activated.revision).toBe(10);
+    const top = preIdentity();
     top.revision = Number.MAX_SAFE_INTEGER;
-    const full = new Host();
+    const full = new Host(undefined, { release: ENABLED_RELEASE });
     const refused = await full.handle(activate('top', await encode(top)));
     expect(refused.ok).toBe(false);
     expect(refused.error).toContain('revision');
@@ -539,7 +547,7 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
   });
 
   it('leaves earlier gameplay and future designs to their compatibility rules', async () => {
-    const earlier = withoutIdentities(simulatedWorld(input));
+    const earlier = preIdentity();
     earlier.engine = '3.0.0';
     const future = simulatedWorld(input);
     future.clubs[0].identity = { ...future.clubs[0].identity!, version: 2 as 1 };
@@ -652,7 +660,7 @@ describe('career view projection', () => {
 
 describe('complete statistics reads (→WEB-89, HIST-17)', () => {
   it('keeps the season ledger out of views and reads one competition on request', async () => {
-    const h = new Host();
+    const h = new Host(undefined, { release: DISABLED_RELEASE });
     await h.handle(req('full-found', -1, { type: 'found', input }));
     const w = h.world!;
     const f = w.fixtures.find(
@@ -746,7 +754,13 @@ it('consumes only an exact validated inspection without sharing a live world or 
     const metadata = await host.handle(
       req('inspect-metadata', -1, { type: 'inspect', raw, metadataOnly: true }),
     );
-    expect(metadata.worldMetadata).toEqual({ id: source.id, revision: source.revision });
+    // It carries the model, which a founding records exactly when the release is on.
+    expect(metadata.worldMetadata).toEqual({
+      id: source.id,
+      revision: source.revision,
+      matchModel: source.matchModel,
+    });
+    expect(metadata.worldMetadata!.matchModel !== undefined).toBe(MATCH_MODEL_RELEASE.enabled);
     expect(metadata.candidate).toBeUndefined();
     metadata.worldMetadata!.revision = 999;
     const activated = await host.handle(
@@ -832,6 +846,7 @@ it('reports supported match-model metadata and refuses a future one without acti
 
 describe('prospective match-model activation (→SAVE-23)', () => {
   const enabled = () => new Host(undefined, { release: ENABLED_RELEASE });
+  const disabled = () => new Host(undefined, { release: DISABLED_RELEASE });
   const load = (host: Host, id: string, raw: string, upgrade = true) =>
     host.handle(req(id, -1, { type: 'inspect', raw, activate: true, upgrade }));
   const round = (host: Host, id: string) =>
@@ -844,8 +859,11 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     void [_model, _season, _revision];
     return canonical(rest);
   };
-  /** Mid-season with two own results settled; the next round plays an own match. */
-  const career = () => simulatedWorld(input, { rounds: 3 });
+  /**
+   * A supported career saved before the full model (played with the release off): mid-season with
+   * two own results settled; the next round plays an own match.
+   */
+  const career = () => simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE);
 
   it('activates supported careers only prospectively', async () => {
     const source = career();
@@ -883,14 +901,20 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(canonical(again.world!.ownMatches.slice(0, source.ownMatches.length))).toBe(
       canonical(source.ownMatches),
     );
-    // A founding tracks from its first day; the default switch founds and loads without it.
+    // A founding tracks from its first day, and the default switch founds with the model exactly
+    // when it is on; a release that is off founds and loads without it.
     const founder = enabled();
     await founder.handle(req('model-found', -1, { type: 'found', input }));
     expect(founder.world!.matchModel?.coverage).toBe('founding');
-    const plain = new Host();
+    const founded = new Host();
+    await founded.handle(req('default-found', -1, { type: 'found', input }));
+    expect(founded.world!.matchModel?.coverage).toBe(
+      MATCH_MODEL_RELEASE.enabled ? 'founding' : undefined,
+    );
+    const plain = disabled();
     await plain.handle(req('plain-found', -1, { type: 'found', input }));
     expect(plain.world!.matchModel).toBeUndefined();
-    const unchanged = new Host();
+    const unchanged = disabled();
     expect((await load(unchanged, 'plain-load', await encode(source))).upgraded).toBeUndefined();
     expect(canonical(unchanged.world)).toBe(canonical(source));
   });
@@ -980,7 +1004,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
 
   it('loads a recorded full-model career while the release is off', async () => {
     const modelled = withCandidateModel(career());
-    const host = new Host();
+    const host = disabled();
     const loaded = await load(host, 'recorded-load', await encode(modelled));
     expect(loaded.ok, loaded.error).toBe(true);
     expect(loaded.upgraded).toBeUndefined();
@@ -1007,49 +1031,67 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     host.handle(
       req(id, host.world!.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
     );
-  /** A supported career saved before manager history; its next round plays an own match. */
-  const older = () => withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
+  /**
+   * A supported career saved before manager history, and so before the full model (played with
+   * the release off); its next round plays an own match.
+   */
+  const older = () => withoutManagerHistory(simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE));
+  /** A writer host; tracking is the cases' subject, so the release stays off unless named. */
+  const writer = (release = DISABLED_RELEASE) => new Host(undefined, { release });
 
-  it('starts a supported older career at its writer activation, whatever the release switch', async () => {
-    const source = older();
-    source.manager.since = source.year - 2;
-    const host = new Host();
-    const reply = await load(host, 'track-old', await encode(source));
-    expect(reply.ok, reply.error).toBe(true);
-    expect(reply.upgraded).toBe(true);
-    const w = host.world!;
-    expect(w.revision).toBe(source.revision + 1);
-    expect(w.managerHistory).toMatchObject({
-      coverage: 'activation',
-      trackedFrom: { year: source.year, day: currentDay(source), revision: source.revision + 1 },
-    });
-    // The known earlier service year stays; activation is no appointment date.
-    expect(w.managerHistory!.tenures[0]).toMatchObject({ knownSince: source.year - 2 });
-    expect(w.managerHistory!.tenures[0]).not.toHaveProperty('appointed');
-    // Older facts are kept as they were and old results stay unattributed.
-    const { managerHistory: _facts, revision: _revision, ...rest } = w;
-    void [_facts, _revision];
-    const { revision: _old, ...before } = source;
-    void _old;
-    expect(canonical(rest)).toBe(canonical(before));
-    expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
-    expect((await decode(reply.raw!)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
-    // New results are attributed; the heavy facts never travel in a view.
-    const played = await round(host, 'track-round');
-    expect(played.ok, played.error).toBe(true);
-    const added = host.world!.ownMatches.slice(source.ownMatches.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.managerTenure === w.managerHistory!.tenures[0]!.id)).toBe(true);
-    expect(reply.view!.world).not.toHaveProperty('managerHistory');
-    // Loaded again, a tracked career changes nothing.
-    const again = new Host();
-    expect((await load(again, 'track-again', reply.raw!)).upgraded).toBeUndefined();
-  });
+  it.each([DISABLED_RELEASE, ENABLED_RELEASE])(
+    'starts a supported older career at its writer activation, whatever the release switch (enabled: $enabled)',
+    async (release) => {
+      const source = older();
+      source.manager.since = source.year - 2;
+      const host = writer(release);
+      const reply = await load(host, 'track-old', await encode(source));
+      expect(reply.ok, reply.error).toBe(true);
+      expect(reply.upgraded).toBe(true);
+      const w = host.world!;
+      expect(w.revision).toBe(source.revision + 1);
+      expect(w.managerHistory).toMatchObject({
+        coverage: 'activation',
+        trackedFrom: { year: source.year, day: currentDay(source), revision: source.revision + 1 },
+      });
+      // An enabled release records the full model in the same upgrade, at the same revision.
+      expect(w.matchModel?.activated.revision).toBe(
+        release.enabled ? source.revision + 1 : undefined,
+      );
+      // The known earlier service year stays; activation is no appointment date.
+      expect(w.managerHistory!.tenures[0]).toMatchObject({ knownSince: source.year - 2 });
+      expect(w.managerHistory!.tenures[0]).not.toHaveProperty('appointed');
+      // Older facts are kept as they were and old results stay unattributed.
+      const {
+        managerHistory: _facts,
+        matchModel: _model,
+        npcSeason: _season,
+        revision: _revision,
+        ...rest
+      } = w;
+      void [_facts, _model, _season, _revision];
+      const { revision: _old, ...before } = source;
+      void _old;
+      expect(canonical(rest)).toBe(canonical(before));
+      expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
+      expect((await decode(reply.raw!)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+      // New results are attributed; the heavy facts never travel in a view.
+      const played = await round(host, 'track-round');
+      expect(played.ok, played.error).toBe(true);
+      const added = host.world!.ownMatches.slice(source.ownMatches.length);
+      expect(added.length).toBeGreaterThan(0);
+      expect(added.every((m) => m.managerTenure === w.managerHistory!.tenures[0]!.id)).toBe(true);
+      expect(reply.view!.world).not.toHaveProperty('managerHistory');
+      // Loaded again, a tracked career changes nothing.
+      const again = writer(release);
+      expect((await load(again, 'track-again', reply.raw!)).upgraded).toBeUndefined();
+    },
+  );
 
   it('waits for a queued or revealed own match before tracking starts', async () => {
     const source = older();
     const disk = await encode(source);
-    const host = new Host();
+    const host = writer();
     host.world = structuredClone(source);
     const [watched, loaded] = await Promise.all([
       round(host, 'track-queued'),
@@ -1071,7 +1113,7 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
   it('never tracks from a read-only load or an inspection', async () => {
     const source = older();
     const raw = await encode(source);
-    const host = new Host();
+    const host = writer();
     const inspected = await host.handle(req('track-inspect', -1, { type: 'inspect', raw }));
     expect(inspected.candidate).not.toHaveProperty('managerHistory');
     const readOnly = await load(host, 'track-read-only', raw, false);
@@ -1083,7 +1125,7 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
   it('keeps the previous checkpoint and the tracked career exportable when the write fails', async () => {
     const source = older();
     const disk = await encode(source);
-    const host = new Host();
+    const host = writer();
     const reply = await load(host, 'track-write', disk);
     expect(reply.upgraded).toBe(true);
     // The commit of `reply.raw` fails: the disk keeps `disk`, the tracked career stays live.
@@ -1095,7 +1137,7 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     expect(canonical(saved.world)).toBe(canonical(host.world));
     expect((await decode(disk)).world).not.toHaveProperty('managerHistory');
     // A retry from the kept checkpoint starts at the same boundary.
-    const retry = new Host();
+    const retry = writer();
     await load(retry, 'track-retry', disk);
     expect(canonical(retry.world)).toBe(canonical(host.world));
   });

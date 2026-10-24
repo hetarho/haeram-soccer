@@ -27,6 +27,7 @@ import {
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import {
   cachedWorld,
+  DISABLED_RELEASE,
   simulatedWorld,
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
@@ -94,6 +95,28 @@ const observed = (rounds: number): World =>
     advanceRound(w);
     return w;
   });
+/**
+ * `observed(rounds)` as a career saved before the full match model (→SAVE-23), as every container
+ * 1 and 2 checkpoint was: founded and played with the release off.
+ */
+const unmodelled = (rounds = 0): World =>
+  rounds === 0
+    ? simulatedWorld(FOUNDING, {}, DISABLED_RELEASE)
+    : cachedWorld(`unmodelled:${rounds}`, () => {
+        const w = unmodelled(rounds - 1);
+        advanceRound(w);
+        return w;
+      });
+/**
+ * `w` without the full model's data (→SAVE-23), for a shared fixture of an earlier container whose
+ * world follows the release switch: no model state, season aggregates or record revisions.
+ */
+function withoutMatchModel(w: World): World {
+  delete w.matchModel;
+  delete w.npcSeason;
+  for (const m of w.ownMatches) delete m.model;
+  return w;
+}
 const features = () => cachedWorld('feature-state', () => featureState());
 const sha256 = async (bytes: Uint8Array<ArrayBuffer>) =>
   Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
@@ -557,8 +580,9 @@ describe('checkpoint container schema 2', () => {
       MANAGER_HISTORY_CHECKPOINT_SCHEMA,
     ]);
     expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
-    // A career saved before manager history, which a new founding tracks (→SAVE-24).
-    const w = withoutManagerHistory(withIdentity(observed(1), IDENTITY));
+    // A career saved before the full model and manager history, which a new founding tracks
+    // (→SAVE-23/24).
+    const w = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
     const two = JSON.parse(await encode(w, 3, 2)),
       one = JSON.parse(await seal(w, pack(w), 1, 3, 2));
     expect(two.schema).toBe(2);
@@ -570,7 +594,7 @@ describe('checkpoint container schema 2', () => {
     expect(canonical(loaded.world)).toBe(canonical(w));
     expect(canonical((await decode(JSON.stringify(one))).world)).toBe(canonical(w));
     // Neither container is permission to read earlier gameplay rules.
-    const legacy = { ...world(), engine: '3.0.0' };
+    const legacy = { ...unmodelled(), engine: '3.0.0' };
     for (const raw of [await encode(legacy), await seal(legacy)])
       await expect(decode(raw)).rejects.toMatchObject({
         code: 'save-compatibility',
@@ -580,9 +604,10 @@ describe('checkpoint container schema 2', () => {
 
   it('reads a genuine current-rule schema-1 envelope without rewriting it, then writes and reloads schema 2', async () => {
     const port = new Memory();
-    // Careers from before manager history, which a new founding tracks (→SAVE-24).
-    const w = withoutManagerHistory(observed(1)),
-      next = withoutManagerHistory(observed(2));
+    // Careers from before the full model and manager history, which a new founding tracks
+    // (→SAVE-23/24).
+    const w = withoutManagerHistory(unmodelled(1)),
+      next = withoutManagerHistory(unmodelled(2));
     const raw = await seal(w);
     expect(JSON.parse(raw).schema).toBe(1);
     port.data.set('haeram-soccor:slot:a', raw);
@@ -740,7 +765,7 @@ function modelCareer(w: World): World {
 }
 describe('checkpoint container 3 (→SAVE-23)', () => {
   it('round trips a model career through the codec in container 3 only', async () => {
-    const w = modelCareer(observed(1));
+    const w = modelCareer(unmodelled(1));
     const raw = await encode(w, 2, 1);
     expect(JSON.parse(raw).schema).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
     const loaded = await decode(raw);
@@ -754,7 +779,7 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
         SaveCompatibilityError,
       );
     // Nor is a world without model data in container 3.
-    const plain = withoutManagerHistory(observed(1));
+    const plain = withoutManagerHistory(unmodelled(1));
     await expect(
       decode(await seal(plain, pack(plain), FULL_MODEL_CHECKPOINT_SCHEMA)),
     ).rejects.toBeInstanceOf(SaveCompatibilityError);
@@ -770,9 +795,9 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
 
   it('reads supported identity-era checkpoints', async () => {
     // Container 2 with identities and recorded appearances, and container 1 before identities,
-    // both written before manager history.
-    const identity = withoutManagerHistory(withIdentity(observed(1), IDENTITY));
-    const legacy = preIdentityCareer();
+    // both written before the full model and manager history.
+    const identity = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
+    const legacy = withoutMatchModel(preIdentityCareer());
     for (const [w, raw] of [
       [identity, await seal(identity, pack(identity), 2)],
       [legacy, await containerOneCheckpoint(legacy)],
@@ -791,7 +816,7 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
   });
 
   it('refuses a future model container', async () => {
-    const w = modelCareer(observed(1));
+    const w = modelCareer(unmodelled(1));
     const current = JSON.parse(await encode(w));
     // The next container is refused before decompression, and its header grants no reset.
     const next = JSON.stringify({ ...current, schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1 });
@@ -838,9 +863,9 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     const port = new Memory();
     const previous = new MemoryPrevious();
     const saves = new Saves(port, decode, previous);
-    const first = await saves.save(observed(1));
+    const first = await saves.save(unmodelled(1));
     const manifest = port.getItem(MANIFEST);
-    const w = modelCareer(observed(2));
+    const w = modelCareer(unmodelled(2));
     // A failed write of the active copy keeps the committed checkpoint and its verified copy.
     port.fail = SLOT[0];
     await expect(saves.save(w)).rejects.toThrow('Quota');
@@ -848,7 +873,7 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     expect(port.getItem(MANIFEST)).toBe(manifest);
     expect(previous.value).toBe(first);
     expect(canonical((await new Saves(port, decode, previous).load())!.world)).toBe(
-      canonical(observed(1)),
+      canonical(unmodelled(1)),
     );
     // The progress in memory still exports and imports whole.
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
@@ -983,7 +1008,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   });
 
   it('a pre-identity career in container 1 reads unchanged; adoption adds only designs, with the exact legacy crests', async () => {
-    const legacy = preIdentityCareer();
+    const legacy = withoutMatchModel(preIdentityCareer());
     const read = await decode(await containerOneCheckpoint(legacy));
     expect(read.envelope.schema).toBe(1);
     expect(canonical(read.world)).toBe(canonical(legacy));
@@ -1050,7 +1075,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   );
 
   it('a failed write of the adopted career keeps the original checkpoint loadable as its verified previous copy', async () => {
-    const legacy = preIdentityCareer();
+    const legacy = withoutMatchModel(preIdentityCareer());
     const raw = await containerOneCheckpoint(legacy);
     const port = new Memory();
     const previous = new MemoryPrevious();
