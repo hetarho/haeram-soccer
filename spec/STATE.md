@@ -10,7 +10,13 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| p4w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T17:03Z | 2026-10-24T17:03Z | - |
+
 ## inbox
+- 261025 decided T431 T435 T432 T286: the owner wants T431 to run right after T426 instead of waiting for T286 → T431 dep T426; its values are a pure function nothing in play reads, so it needs no revision gate and changes no digest, and the per-match computation on revision 2 moves to T435 (dep T286 T431); T432 dep T431 T435 keeps the freedom movement behind revision 2 (alt: keep T431 behind T435 | gate T431 on the candidate path instead of revision 2)
 - 261025 decided T426 T437 T286 MATCH-23 MATCH-28: MATCH r27 took the candidate's goals 2.89 → 4.10 a match and failed bands.test's coarse guard (3.6) → T426 restores the defenders' read of the decided pass during the carry (about 0.45 goals), widens the coarse guards only for what remains with the evidence, and T437 (explore 4 h) recalibrates the carry's scoring before T286 activates (alt: widen the guards and leave it to T410 after the release | recalibrate inside T426)
 - 261025 decided MATCH-12 T426: with a 3 m shielding radius 58% of passes still came from a receiver standing on the ball (pressers stand 1.2 m goal-side) and frozen opponents lifted goals 2.89 → 3.17 → MATCH r27: a pressed carrier shields on the move away from the nearest opponent and everyone moves on his intention during the carry; only hold-ups, lay-offs, keepers and restart takers stand; T426's target restated on its drawn-hold measure without those spells, at most 0.05 (alt: keep the 3 m shield with everyone moving, about 0.34 | keep the spec with frozen opponents and leave the goals to T410)
 - 261025 decided MATCH-17 STAFF-46 PLAYER-26 SAVE-23 T435 T431 T432 T433 ideation/match-viewing-pace-and-freedom: the freedom bundle's open points → it ships as match-model revision 2 that careers on revision 1 take prospectively at the next safe boundary, settled matches replaying under their own revision (alt: keep revision 1 careers on it for good); freedom = manager flexibility × role creativity × 판단력, an interim giving the neutral flexibility 50; 예측력 sets reaction time, 위치선정 position and 판단력 decisions so nothing counts twice; post-match views stay touch-based heat maps and pass network (alt: retain off-ball average positions, more saved data per match); T410's re-read waits for T433 (alt: re-read revision 1 first)
@@ -284,9 +290,9 @@
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
 | T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
 | T437 | Recalibrate the candidate's scoring after the in-stride carry | MATCH ARCH | T426 | todo |
-| T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH ARCH | T286 | todo |
-| T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF MATCH WEB ARCH | T435 | todo |
-| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 | todo |
+| T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
+| T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF WEB ARCH | T426 | todo |
+| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
@@ -306,6 +312,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
 - 261024 T436 integrated
 - 261025 decide T426 + create-task T437 (v9n4): goals 4.10 after MATCH r27; defenders' read restored in T426, T437 recalibrates before T286
 - 261025 v9n4 hand-off at 01:30: group v9n4-release continues in a new session (STATE next); integrated T415–T422 and T420 with green CI after two e2e fixes; planned T426, T431–T436 and MATCH r25–r27, STAFF r35, PLAYER r10, SAVE r53
@@ -325,4 +332,3 @@
 - 261025 reconcile uncommitted UI task T426 to T429 (u6p2): origin/main independently allocated T426 to carrier-in-stride; preserve that remote task
 - 261024 T420 integrated
 - 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
-- 261024 T421 T422 integrated
