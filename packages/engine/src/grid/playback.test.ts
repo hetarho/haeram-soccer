@@ -320,12 +320,13 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-0` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-19` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
-    // behind and first touches `candidate-et-2`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-0']) {
-      const extraTime = id === 'candidate-et-0';
+    // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
+    // flank beside a back three `candidate-et-1`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-19']) {
+      const extraTime = id === 'candidate-et-19';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -502,7 +503,11 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     let shown = 0,
       kept = 0,
       checked = 0;
-    for (const id of SCENES) {
+    // The scene matches, then further set-piece matches until the sample is large enough (T399's
+    // flank beside a back three left the four scene matches 154 shown jobs).
+    const more = Array.from({ length: 20 }, (_, i) => `set-piece-${i + 4}`);
+    for (const id of [...SCENES, ...more]) {
+      if (SCENES.indexOf(id) < 0 && kept > 0 && checked > 50 && shown > 200) break;
       const played = match(id);
       const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
       for (const { e, next, prepared, since, window } of deliveries(played)) {

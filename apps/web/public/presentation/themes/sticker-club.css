@@ -1,21 +1,171 @@
-html {
+@import './image-ui-shell.css';
+@import './image-ui-controls.css';
+
+html[data-theme='sticker-club'] {
+  --image-art-frame-button: url('../../art/sticker-club/ui/frame-button.webp');
+  --image-art-frame-dark: url('../../art/sticker-club/ui/frame-dark.webp');
+  --image-art-frame-selected: url('../../art/sticker-club/ui/frame-selected.webp');
+  --image-art-frame-stamp: url('../../art/sticker-club/ui/frame-primary.webp');
+  --image-art-frame-ticket: url('../../art/sticker-club/ui/frame-panel.webp');
+  --image-art-frame-tile: url('../../art/sticker-club/ui/frame-tile.webp');
+  --image-art-icon-bell: url('../../art/sticker-club/ui/icon-bell.webp');
+  --image-art-icon-boot: url('../../art/sticker-club/ui/icon-boot.webp');
+  --image-art-icon-cup: url('../../art/sticker-club/ui/icon-cup.webp');
+  --image-art-icon-heart: url('../../art/sticker-club/ui/icon-heart.webp');
+  --image-art-icon-history: url('../../art/sticker-club/ui/icon-history.webp');
+  --image-art-icon-home: url('../../art/sticker-club/ui/icon-home.webp');
+  --image-art-icon-league: url('../../art/sticker-club/ui/icon-league.webp');
+  --image-art-icon-manager: url('../../art/sticker-club/ui/icon-manager.webp');
+  --image-art-icon-menu: url('../../art/sticker-club/ui/icon-menu.webp');
+  --image-art-icon-office: url('../../art/sticker-club/ui/icon-office.webp');
+  --image-art-icon-people: url('../../art/sticker-club/ui/icon-people.webp');
+  --image-art-icon-play: url('../../art/sticker-club/ui/icon-play.webp');
+  --image-art-icon-shirt: url('../../art/sticker-club/ui/icon-shirt.webp');
+  --image-art-icon-supporters: url('../../art/sticker-club/ui/icon-supporters.webp');
+  --image-art-icon-switch: url('../../art/sticker-club/ui/icon-switch.webp');
+  --image-art-icon-training: url('../../art/sticker-club/ui/icon-training.webp');
+  --image-art-ink: url('../../art/sticker-club/ui/forest.webp');
+  --image-art-masthead: url('../../art/sticker-club/ui/masthead.webp');
+  --image-art-paper: url('../../art/sticker-club/ui/cream.webp');
+  --image-art-paper-quiet: url('../../art/sticker-club/ui/ivory.webp');
+  --image-art-rule-dark: url('../../art/sticker-club/ui/rule-dark.webp');
+  --image-art-rule-light: url('../../art/sticker-club/ui/rule-light.webp');
+  --image-art-rule-light-vertical: url('../../art/sticker-club/ui/rule-light-vertical.webp');
+  --image-art-sidebar-terrace: url('../../art/sticker-club/ui/sidebar-clubhouse.webp');
+  --image-art-vermilion: url('../../art/sticker-club/ui/orange.webp');
+  --image-canvas-material: var(--image-art-paper);
+  --image-quiet-material: var(--image-art-paper-quiet);
+  --image-dark-material: var(--image-art-ink);
+  --image-primary-material: var(--image-art-vermilion);
+  --image-panel-frame: var(--image-art-frame-ticket);
+  --image-primary-frame: var(--image-art-frame-stamp);
+  --image-dark-frame: var(--image-art-frame-dark);
+  --image-tile-frame: var(--image-art-frame-tile);
+  --image-button-frame: var(--image-art-frame-button);
+  --image-selected-frame: var(--image-art-frame-selected);
+  --image-canvas: #fff3da;
+  --image-quiet: #fffbef;
+  --image-ink-color: #17382b;
+  --image-muted: #405d47;
+  --image-faint: #4c614c;
+  --image-accent: #245d3d;
+  --image-focus: #246084;
+  --image-on-dark: #fff9e5;
+  --image-on-dark-muted: #f5efd9;
+  --image-primary: #b84620;
+  --image-on-primary: #fffae9;
+  --image-sidebar-hover: #fff3da14;
+  --image-heart: #e24b2c;
+  --image-on-primary-muted: #f5efd9;
+  --image-ovr-bronze: #875221;
+  --image-ovr-silver: #52665a;
+  --image-table-line: #35584133;
+  --image-table-hover: #226a4610;
+  --image-selected-row: #e8ecd0;
+  --image-dialog-shadow: #17382b40;
+  --image-popover-shadow: #17382b30;
+  --image-dark-fill: #174b35;
+  --image-radius: 12px;
   --page-grain: none;
   --surface-grain: none;
-}
-html[data-theme='sticker-club'] aside {
-  --surface-deep: #174b35;
-  --surface-2: #2b6547;
-  --text: #fff9e5;
-  --text-muted: #f5efd9;
-  --text-faint: #e5ddc3;
-  --nav-active: #fff0be;
-  --on-accent: #17382b;
-  --warm: #f8c866;
-  --control-fill: transparent;
-}
-html[data-theme='sticker-club'] aside nav button[aria-current='page'] {
-  --surface-2: var(--nav-active);
-  --text: #17382b;
-  --text-muted: #17382b;
-  --accent-text: #17382b;
+  --text: var(--image-ink-color);
+  --text-muted: var(--image-muted);
+  --text-faint: var(--image-faint);
+  --accent-text: var(--image-accent);
+  --focus: var(--image-focus);
+  --focus-width: var(--image-focus-width);
+  --focus-offset: var(--image-focus-offset);
+  --image-focus-width: 3px;
+  --image-focus-offset: 3px;
+  --image-menu-gap: 12px;
+  --image-link-decoration: none;
+  --image-option-fill: #fff0be;
+  --image-option-material: var(--image-canvas-material);
+  --image-option-frame: var(--image-selected-frame);
+  --image-option-text: #17382b;
+  --image-option-muted: #405d47;
+  --image-option-hover: #246084;
+
+  /* Full-color stickers keep their printed rim instead of becoming monochrome masks. */
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button::before,
+  [data-ui='game-shell'] > main > header :is([data-pixel-icon='menu'], [data-pixel-icon='bell']),
+  [data-ui='progress-mode'] [data-pixel-icon='switch'],
+  [data-ui='game-shell'] > nav [data-pixel-icon] {
+    mask: none;
+    background: var(--image-icon) center / contain no-repeat;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] {
+    --surface-deep: #174b35;
+    --surface-2: #2b6547;
+    --text: #fff9e5;
+    --text-muted: #f5efd9;
+    --text-faint: #e5ddc3;
+    --nav-active: #fff0be;
+    --warm: #f8c866;
+    --control-fill: transparent;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page'] {
+    --text: #17382b;
+    --text-muted: #17382b;
+    --accent-text: #17382b;
+    background: #fff0be var(--image-canvas-material) repeat padding-box;
+    color: #17382b;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] label:has(input[type='file']) {
+    color: #17382b;
+    min-height: 44px;
+  }
+
+  [data-home-part='fixture'] {
+    --text: #fff9e5;
+    --text-muted: #f5efd9;
+    --accent-text: #fff9e5;
+    border-image-source: var(--image-dark-frame);
+    background: #174b35 var(--image-dark-material) repeat padding-box;
+    color: #fff9e5;
+  }
+
+  [data-home-part='fixture'] > div:first-child > small {
+    color: #ffe393;
+  }
+
+  [data-home-part='fixture'] p {
+    color: #f5efd9;
+  }
+
+  [data-home-part='scene-caption'] i {
+    mask: none;
+    background: var(--image-art-icon-people) center / contain no-repeat;
+  }
+
+  [data-home-part='scene-caption'] > span:first-child i {
+    mask: none;
+    background: var(--image-art-icon-heart) center / contain no-repeat;
+  }
+
+  [data-home-part='season-stats'] > i,
+  [data-ui='season-transport'] button > [data-pixel-icon='play'] {
+    mask: none;
+    background: var(--image-art-icon-play) center / contain no-repeat;
+  }
+
+  [data-home-part='scene'] {
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  [data-home-part='season-meter'] progress::-webkit-progress-value,
+  [data-home-part='season-meter'] progress::-moz-progress-bar {
+    background: #174b35 var(--image-dark-material) repeat;
+  }
+
+  @media (max-width: 760px) {
+    [data-ui='game-shell'] > nav button[aria-current='page'] {
+      background: #fff0be var(--image-canvas-material) repeat padding-box;
+      color: #17382b;
+    }
+  }
 }

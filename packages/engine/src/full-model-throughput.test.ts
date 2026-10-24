@@ -25,10 +25,17 @@ const npcFixtures = (w: World, n: number) =>
     .filter((f) => !own(w, f))
     .sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1))
     .slice(0, n);
-/** The settled football facts of a candidate world: scores, own records, ledger and discipline. */
+/**
+ * The settled football facts of a candidate world: scores, own records, ledger and discipline. A
+ * record's manager-tenure link (→HIST-18) is attribution, not football, so it is left out.
+ */
 const facts = (w: World) => ({
   scores: w.fixtures.filter((f) => f.score).map((f) => [f.id, f.score]),
-  ownMatches: w.ownMatches,
+  ownMatches: w.ownMatches.map((m) => {
+    const { managerTenure: _tenure, ...football } = m;
+    void _tenure;
+    return football;
+  }),
   npcSeason: w.npcSeason,
   discipline: w.discipline,
 });
@@ -78,11 +85,13 @@ const facts = (w: World) => ({
  * aggregate path the share of failed passes ending offside (0.064 / 0.32) and the receivers they
  * are credited to; d6a5c7feb76176f3 and 29d9bb53ba9487ea before. T397's through-ball count (a
  * receiver not yet past the line) and its balls in behind, first touches and cut-backs changed the
- * candidate rounds only (the aggregate path untouched); 294f1d9b278a1461 before.
+ * candidate rounds only (the aggregate path untouched); 294f1d9b278a1461 before. T398's late box
+ * runs and shot scale changed them again; 8fd84923e38c3aa5 before. T399's flank beside a back three
+ * and pressed crosses left both unchanged: the two rounds' own grid matches settled the same facts.
  */
 const BEFORE = {
   aggregateRecords: 'a8d299718d0919a0',
-  candidateRounds: '8fd84923e38c3aa5',
+  candidateRounds: '93e1b3f124830eb1',
 };
 
 describe('complete-result throughput (T285)', () => {

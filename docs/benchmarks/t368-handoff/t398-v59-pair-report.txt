@@ -1,0 +1,20 @@
+base: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: inside 10, unresolved 3, outside 8, unbanded 2
+  MATCH-23: unresolved 5, inside 32, outside 1
+  MATCH-29: insufficient 7, inside 18
+  curve 2.38 (-35 7.5, -30 4.4, -25 1.6, -20 8.6, -15 9.6, -10 10.1, -5 5.3, 0 5.4, 5 3.7, 10 6.3, 15 9.9, 20 7.6, 25 4.5, 30 5.1, 35 6.6, 40 14.0); points possession 1.319, press 1.330, counter 1.490, balanced 1.353
+cand: core 2400, pairing 9600, gap 9600; invalid 0, invariant failures 0
+  MATCH-30: inside 9, unresolved 4, outside 8, unbanded 2
+  MATCH-23: inside 36, unresolved 2
+  MATCH-29: insufficient 2, inside 23
+  curve 2.31 (-35 11.6, -30 4.3, -25 4.8, -20 7.6, -15 6.1, -10 14.7, -5 5.3, 0 3.1, 5 7.3, 10 9.2, 15 7.0, 20 8.2, 25 4.0, 30 8.8, 35 3.9, 40 4.6); points possession 1.349, press 1.324, counter 1.426, balanced 1.411
+* 30:boxShots                      7.556 [7.474, 7.638] inside                  → 7.703 [7.619, 7.787] unresolved
+* 23:passes                        430.534 [429.630, 431.439] unresolved        → 431.316 [430.421, 432.212] inside
+* 23:goalKicks                     8.942 [8.858, 9.026] unresolved              → 8.892 [8.809, 8.974] inside
+* 23:goalsFW                       61.986 [60.757, 63.216] outside              → 57.612 [56.371, 58.852] inside
+* 23:goalsDF                       8.639 [7.957, 9.322] unresolved              → 9.099 [8.399, 9.799] inside
+* 29:draws:possession-counter      0.275 [0.250, 0.300] insufficient            → 0.255 [0.230, 0.280] inside
+* 29:draws:counter-counter         0.267 [0.231, 0.302] insufficient            → 0.263 [0.228, 0.299] inside
+* 29:winShareGap:possession-counter -0.080 [-0.127, -0.033] insufficient         → -0.015 [-0.063, 0.033] inside
+* 29:winShareGap:press-counter     -0.084 [-0.132, -0.036] insufficient         → -0.067 [-0.115, -0.018] inside
+* 29:points:counter                0.117 [0.075, 0.159] insufficient            → 0.048 [0.006, 0.091] inside

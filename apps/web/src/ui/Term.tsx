@@ -15,6 +15,7 @@ export function Term({ id, children }: { id: string; children?: ReactNode }) {
     <button
       type="button"
       className={s.term}
+      data-ui="term"
       aria-label={`${entry.abbr ? `${entry.abbr} ` : ''}${entry.term} 설명 보기`}
       onClick={(event) => {
         event.stopPropagation();

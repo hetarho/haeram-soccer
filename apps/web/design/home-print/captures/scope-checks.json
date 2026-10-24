@@ -1,6 +1,0 @@
-{
-  "home": "url(\"http://127.0.0.1:19501/art/matchday-print/home/ink.webp\")",
-  "league": "url(\"http://127.0.0.1:19501/art/matchday-print/home/ink.webp\")",
-  "sharedPrintShell": true,
-  "alternativesVerified": "../screens/checks.json"
-}

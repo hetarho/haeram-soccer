@@ -20,8 +20,24 @@ import {
   europeanCoefficient,
   clubNews,
   installMissingIdentities,
+  activateMatchModel,
+  activatesMatchModel,
+  ensureManagerHistory,
+  MATCH_MODEL_RELEASE,
   BANKRUPT_MESSAGE,
+  clubOf,
+  domesticCupName,
+  fixtureDay,
+  ownLeagueClubs,
+  ranked,
+  ROUND_INTERVAL_DAYS,
+  type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
+import { managerHistoryPage } from '../../../../packages/engine/src/manager-achievements';
+import type {
+  ManagerHistorySeason,
+  ManagerHistorySource,
+} from '../../../../packages/contracts/src/manager-history-view';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
   isSaveCompatibilityError,
@@ -43,6 +59,8 @@ import {
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
 import { tallies } from '../ui/playerAnalysis';
+import { divisionName } from '../ui/careerRecords';
+import { kindLabel } from '../ui/format';
 /**
  * KIT-15: a copy of the validated candidate with only its missing club identities installed (each
  * club's legacy crest and colour kept), or the candidate itself when none is missing. The revision
@@ -58,6 +76,165 @@ function adoptIdentities(w: World, revised: boolean): World {
     candidate.revision++;
   }
   return candidate;
+}
+/**
+ * Whether `live` has settled an own match that `candidate`, a checkpoint of the same career, does
+ * not hold yet: a queued or revealed playback (or a day step's result) still ahead of that
+ * checkpoint. Loading the checkpoint replays the fixture, and it must replay under the model it
+ * was settled with, so the match-model activation waits for a checkpoint that holds it (→SAVE-23).
+ */
+function settledAhead(live: World | undefined, candidate: World) {
+  if (live?.id !== candidate.id) return false;
+  const held = new Set(candidate.ownMatches.map((m) => m.id));
+  return live.ownMatches.some((m) => !held.has(m.id));
+}
+/** The own club's place in its league this season once a league match is played, else none. */
+function provisionalPlace(w: World) {
+  const own = clubOf(w);
+  if (!w.tables[own.id]?.played) return undefined;
+  return ranked(w, ownLeagueClubs(w)).findIndex((club) => club.id === own.id) + 1;
+}
+/**
+ * The manager-history query's explicit sources (→HIST-18/19, WEB-92), read from the live world:
+ * the canonical facts; every retained own match at its fixture day in settlement order; one
+ * snapshot per closed season (its final table, its cup winners and a promotion, the division it
+ * led to being the next season's) and this season's decided cups and provisional place; and the
+ * readable personnel events of the league rounds over before tracking began, keyed by their place
+ * in the event log.
+ * Nothing is parsed from a name or kept: every read builds the sources again.
+ */
+function managerHistorySource(w: World): ManagerHistorySource {
+  const own = clubOf(w),
+    code = own.country,
+    facts = w.managerHistory;
+  const division = (tier: number, group: number) => ({ country: code, tier, group });
+  const seasons: ManagerHistorySeason[] = w.history.map((h, index) => {
+    const next = w.history[index + 1] ?? (h.year === w.year - 1 ? own : undefined),
+      domestic = h.champions.find((entry) => entry.country === code)?.cup;
+    return {
+      year: h.year,
+      league: {
+        division: division(h.tier, h.group),
+        name: divisionName(code, h.tier, h.group),
+        rank: h.rank,
+        final: true,
+      },
+      cups: [
+        ...(domestic
+          ? [{ competition: 'cup', name: domesticCupName(code), winner: domestic, final: true }]
+          : []),
+        ...h.europe.map((e) => ({
+          competition: e.kind,
+          name: e.name,
+          winner: e.winner,
+          final: true,
+        })),
+      ],
+      promotions:
+        next && next.tier < h.tier
+          ? [
+              {
+                club: own.id,
+                from: division(h.tier, h.group),
+                to: division(next.tier, next.group),
+                fromName: divisionName(code, h.tier, h.group),
+                toName: divisionName(code, next.tier, next.group),
+                final: true,
+              },
+            ]
+          : [],
+    };
+  });
+  if (!w.history.some((h) => h.year === w.year)) {
+    const place = provisionalPlace(w),
+      cup = w.cups?.find((entry) => entry.country === code);
+    seasons.push({
+      year: w.year,
+      ...(place
+        ? {
+            league: {
+              division: division(own.tier, own.group),
+              name: divisionName(code, own.tier, own.group),
+              rank: place,
+              final: false,
+            },
+          }
+        : {}),
+      cups: [
+        ...(cup?.winner
+          ? [{ competition: 'cup', name: cup.name, winner: cup.winner, final: true }]
+          : []),
+        ...w.europe.flatMap((t) =>
+          t.winner ? [{ competition: t.key, name: t.name, winner: t.winner, final: true }] : [],
+        ),
+      ],
+      promotions: [],
+    });
+  }
+  // Events from the tracked period are the tenures' own story; only older ones stay readable rows.
+  // An event carries the league round its day falls in (round r covers days 7r to 7r + 6, the
+  // round's own day included), not its day, so only a round over before the tracking day is wholly
+  // older. The round tracking began in may hold changes on either side of it, so its events are
+  // left to the tenures (the 감독들이 남긴 계절 panel still shows every event as written).
+  const tracked = facts?.trackedFrom;
+  const older = (event: { year: number; round: number }) =>
+    !tracked ||
+    event.year < tracked.year ||
+    (event.year === tracked.year && event.round < Math.floor(tracked.day / ROUND_INTERVAL_DAYS));
+  return {
+    ...(facts ? { facts } : {}),
+    club: own.id,
+    currentManager: {
+      id: w.manager.id,
+      name: w.manager.name,
+      interim: w.manager.interim,
+      ...(w.manager.person ? { person: w.manager.person } : {}),
+      since: w.manager.since,
+    },
+    matches: w.ownMatches.map((match, order) => ({
+      match,
+      at: { year: match.year, day: Math.max(0, fixtureDay(match)) },
+      order,
+      competition: kindLabel[match.kind] ?? match.kind,
+    })),
+    seasons,
+    personnelEvents: w.events.flatMap((event, index) =>
+      (event.kind === 'manager-hire' || event.kind === 'manager-departure') && older(event)
+        ? [
+            {
+              id: `event:${index}`,
+              order: index,
+              event: {
+                year: event.year,
+                round: event.round,
+                kind: event.kind,
+                title: event.title,
+                detail: event.detail,
+              },
+            },
+          ]
+        : [],
+    ),
+  };
+}
+/**
+ * What the manager-history read depends on, short enough to publish daily (→HIST-18): the facts'
+ * tracking boundary, appointments and outcomes, the settled own matches, the closed seasons, the
+ * manager in charge and this season's provisional place. A same-round cup final or appointment
+ * moves it; a day without any of them does not.
+ */
+function managerHistoryKey(w: World) {
+  const facts = w.managerHistory;
+  return [
+    facts
+      ? `${facts.trackedFrom.revision}.${facts.serial}.${facts.tenures.length}.${facts.outcomes.length}`
+      : '-',
+    w.ownMatches.length,
+    w.history.length,
+    w.manager.id,
+    w.manager.interim ? 1 : 0,
+    provisionalPlace(w) ?? 0,
+  ].join(':');
 }
 /** A view part as JSON, to compare with the last one sent; none when it cannot be written so. */
 function partText(value: unknown) {
@@ -88,7 +265,47 @@ export class Host {
   cancelled = false;
   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
   codec?: { postMessage(job: CodecJob): void };
-  constructor(private progress: (reply: Reply) => void = () => {}) {}
+  /** Whether founding and writer activation record the full match model; only tests set it. */
+  private release: MatchModelRelease;
+  constructor(
+    private progress: (reply: Reply) => void = () => {},
+    options: { release?: MatchModelRelease } = {},
+  ) {
+    this.release = options.release ?? MATCH_MODEL_RELEASE;
+  }
+  /**
+   * SAVE-23: a copy of the validated candidate on the full match model, or the candidate itself
+   * when the release is off, it already carries model data (its recorded model is kept whatever
+   * the switch says), its rules are earlier or this career's live world has settled an own match
+   * the checkpoint lacks (activation then waits for a checkpoint that holds it). Like identity
+   * adoption, the revision moves once, and the model records the revision it is written in.
+   */
+  private adoptModel(w: World, revised: boolean): World {
+    if (!activatesMatchModel(w, this.release) || settledAhead(this.world, w)) return w;
+    const candidate = structuredClone(w);
+    if (!revised) {
+      if (!Number.isSafeInteger(candidate.revision + 1))
+        throw new Error('저장 revision 범위를 초과했습니다.');
+      candidate.revision++;
+    }
+    activateMatchModel(candidate, this.release);
+    return candidate;
+  }
+  /**
+   * SAVE-24: the validated candidate with own-manager tracking started at this writer boundary, or
+   * the candidate itself when it is already tracked or this career's live world has settled an
+   * own match the checkpoint lacks (tracking then waits, as the model does). Independent of the
+   * release switch and its football metadata; older facts and service years stay as stored, and
+   * only the facts and the revision (once) are added.
+   */
+  private adoptManagerHistory(w: World, revised: boolean): World {
+    if (w.managerHistory || settledAhead(this.world, w)) return w;
+    if (!revised && !Number.isSafeInteger(w.revision + 1))
+      throw new Error('저장 revision 범위를 초과했습니다.');
+    const candidate = { ...w, revision: revised ? w.revision : w.revision + 1 };
+    ensureManagerHistory(candidate);
+    return candidate;
+  }
   handle(input: unknown): Promise<Reply> {
     // A read is answered at once, between a command's simulation steps: queued behind a long
     // command, its watchdog would run out while only the command reports progress.
@@ -101,7 +318,8 @@ export class Host {
       type === 'league-fixtures' ||
       type === 'full-stats' ||
       type === 'club-records' ||
-      type === 'archive'
+      type === 'archive' ||
+      type === 'manager-history'
     )
       return Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
@@ -132,10 +350,12 @@ export class Host {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
-    // The season's complete statistics are read on request (`full-stats`), not sent every day.
-    const { people: _people, npcSeason: _season, ...projected } = w;
+    // The season's complete statistics are read on request (`full-stats`), not sent every day, and
+    // so are the manager-history facts.
+    const { people: _people, npcSeason: _season, managerHistory: _history, ...projected } = w;
     void _people;
     void _season;
+    void _history;
     return {
       coaches: staffMarket(w),
       careers: Object.fromEntries(
@@ -194,6 +414,7 @@ export class Host {
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
       news: this.news(w),
+      managerHistoryKey: managerHistoryKey(w),
     };
   }
   /**
@@ -270,6 +491,15 @@ export class Host {
             managers: w.events.filter((e) => e.kind.startsWith('manager-')),
           },
         };
+      if (body.type === 'manager-history') {
+        if (body.world !== undefined && body.world !== w.id)
+          throw new Error('다른 커리어의 감독 이력 요청입니다.');
+        return {
+          requestId: request.requestId,
+          ok: true,
+          managerHistory: managerHistoryPage(managerHistorySource(w), body.cursor),
+        };
+      }
       if (body.type === 'league-fixtures') {
         const key = `${body.country}:${body.tier}:${body.group}`;
         return {
@@ -348,12 +578,16 @@ export class Host {
         const rules = r.body.upgrade
           ? upgradeWorldRules(result.world, CURRENT_CATALOG)
           : result.world;
-        // Only the writer's activation adopts missing identities (→SAVE-21); inspection and
-        // read-only tabs keep the career exactly as stored.
-        const activated =
-          r.body.activate && r.body.upgrade
-            ? adoptIdentities(rules, rules !== result.world)
-            : rules;
+        // Only the writer's activation adopts missing identities (→SAVE-21) and records the full
+        // match model (→SAVE-23); inspection and read-only tabs keep the career exactly as stored.
+        const writer = r.body.activate && r.body.upgrade;
+        const identified = writer ? adoptIdentities(rules, rules !== result.world) : rules;
+        const modelled = writer
+          ? this.adoptModel(identified, identified !== result.world)
+          : identified;
+        const activated = writer
+          ? this.adoptManagerHistory(modelled, modelled !== result.world)
+          : modelled;
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
@@ -363,7 +597,7 @@ export class Host {
       } else if (r.body.type === 'found') {
         if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
-        this.world = createWorld(r.body.input);
+        this.world = createWorld(r.body.input, this.release);
         changed = true;
       } else {
         const w = this.world;

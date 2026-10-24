@@ -504,3 +504,38 @@ describe('grid shape and movement', () => {
     expect(keeperX(sweeper)).toBeLessThanOrEqual(SHAPE_CONFIG.keeperMax.sweeperKeeper);
   });
 });
+
+describe('the flank beside a back three (T399)', () => {
+  it('a wing-back in a back three defends the channel beside his centre-back when the ball is on his flank, on the candidate model only', () => {
+    const kit = gridKit(['balanced', 'possession'], 'flank-lab');
+    const F = SHAPE_CONFIG.candidate.flank as { follow: number; channel: number };
+    const kept = { follow: F.follow, channel: F.channel };
+    // Side 0 plays balanced's 3-5-2 (slot 1 the left wing-back, slot 2 the left centre-back) and
+    // defends; side 1 has the ball at `ball` (side 0's frame), every opponent far from the back line.
+    const place = (candidate: boolean, ball: Point, follow: number, channel: number) => {
+      Object.assign(F, { follow, channel });
+      try {
+        const st = createState(
+          candidate ? { ...kit.setup, model: MATCH_MODEL_REVISION } : kit.setup,
+        );
+        st.possession = 1;
+        st.owner = undefined;
+        st.ball = [ball[0], ball[1]];
+        for (const gp of st.players[1]) gp.pos = [100, 34];
+        return [1, 2].map((i) => attackFrame(0, targetOf(st, 0, i)));
+      } finally {
+        Object.assign(F, kept);
+      }
+    };
+    const flank: Point = [30, 6];
+    const [wb0, cb0] = place(true, flank, 0, 0);
+    const [wb, cb] = place(true, flank, 0.5, 5);
+    // The wing-back closes half the way toward the ball's line, the wide centre-back steps out 5 m.
+    expect(wb![1]).toBeCloseTo(wb0![1] + (flank[1] - wb0![1]) * 0.5, 9);
+    expect(cb![1]).toBeCloseTo(cb0![1] - 5, 9);
+    // The ball in the middle, or the pre-feature model: nothing moves.
+    const middle: Point = [30, 34];
+    expect(place(true, middle, 0.5, 5)).toEqual(place(true, middle, 0, 0));
+    expect(place(false, flank, 0.5, 5)).toEqual(place(false, flank, 0, 0));
+  });
+});

@@ -1,0 +1,407 @@
+{
+  "method": "Built-in image_gen; deterministic isolated-silhouette slicing and Chromium WebP encoding",
+  "date": "2026-10-24",
+  "reference": "apps/web/design/home-themes/captures/sticker.png",
+  "sources": "apps/web/design/sticker-club/sources",
+  "prompts": "apps/web/design/sticker-club/prompts.json",
+  "geometry": "Nine-slice frames retain fixed die-cut corners; independent matte materials tile behind live HTML.",
+  "assets": [
+    {
+      "file": "frame-panel.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 31,
+        "y": 123,
+        "width": 476,
+        "height": 329
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 8088,
+      "sha256": "d1c1e0bd5f26a28545fd0059e162925987a6a1a1420808d7bd23898bd4690d63"
+    },
+    {
+      "file": "frame-primary.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 527,
+        "y": 124,
+        "width": 491,
+        "height": 329
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 9196,
+      "sha256": "df6c3c52a707671c0fc437fbbe285a3bccfb86fd173272e07dd07c1fbbff5fb6"
+    },
+    {
+      "file": "frame-dark.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 1034,
+        "y": 124,
+        "width": 481,
+        "height": 330
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 10044,
+      "sha256": "fb1ee78ca4fe26b551d7ea0d508beaf0d7812bf4c2503d21780fae33b9e4c572"
+    },
+    {
+      "file": "frame-tile.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 31,
+        "y": 528,
+        "width": 476,
+        "height": 329
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 7366,
+      "sha256": "11e6285f000ba998e39236290e1d0f4906afcb9a72660f80d0dcd4f9f490dbaa"
+    },
+    {
+      "file": "frame-button.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 526,
+        "y": 528,
+        "width": 486,
+        "height": 328
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 8768,
+      "sha256": "eec32a453c04318abe2dd508a387f242bc91c8aaefae09af5e2134dd522414e0"
+    },
+    {
+      "file": "frame-selected.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 1034,
+        "y": 527,
+        "width": 479,
+        "height": 329
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 8890,
+      "sha256": "4e8deb0e34fae9fa93ccf8da00ac92110c4b7f1ad1aca5b7fa2972e185b18aca"
+    },
+    {
+      "file": "icon-home.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 48,
+        "y": 87,
+        "width": 279,
+        "height": 238
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 9210,
+      "sha256": "f3541ed8c01abb60fd47aa12fa37c434c4a036f589f5681708cbd4ef485856cc"
+    },
+    {
+      "file": "icon-league.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 363,
+        "y": 62,
+        "width": 228,
+        "height": 269
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10720,
+      "sha256": "7775a3b53aebb350a55c07c47ae66f085c5f4a3527bd83b19b26592ab8ea9c01"
+    },
+    {
+      "file": "icon-cup.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 645,
+        "y": 64,
+        "width": 265,
+        "height": 274
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10990,
+      "sha256": "c9f437a8155af07868c2a0088ed418d877c1c9e510860a82ffabd95cd7cd8efe"
+    },
+    {
+      "file": "icon-history.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 956,
+        "y": 65,
+        "width": 262,
+        "height": 268
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 11650,
+      "sha256": "16c5f8df2501c7a686ae1579bb3190c669a4a2c9b611a8170e8464c32c5ca317"
+    },
+    {
+      "file": "icon-people.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 42,
+        "y": 391,
+        "width": 279,
+        "height": 221
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 8710,
+      "sha256": "b6d3f554aa06b113b329680b9f553bc5fdc52b979eebe956b40cbdd719778e02"
+    },
+    {
+      "file": "icon-training.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 345,
+        "y": 385,
+        "width": 276,
+        "height": 231
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10350,
+      "sha256": "f6ca026498039ba87ac667483b5714578e24ade985f4ba662781ea1ba8e0a116"
+    },
+    {
+      "file": "icon-office.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 636,
+        "y": 387,
+        "width": 286,
+        "height": 228
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 8450,
+      "sha256": "33446996f1c43f62a47fdb6f86d1080016e48c2bb113c0a6cc94039b82a6bc15"
+    },
+    {
+      "file": "icon-boot.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 941,
+        "y": 412,
+        "width": 287,
+        "height": 198
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 9556,
+      "sha256": "be770f72300a64da98fcd785dc7531ab6841a2cf4d62664f871fbc07c54b0797"
+    },
+    {
+      "file": "icon-supporters.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 39,
+        "y": 660,
+        "width": 288,
+        "height": 251
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10666,
+      "sha256": "f4324adcafd839a60817782d1ab6d254c4fea1f6d583def926a8d7c28a689cf8"
+    },
+    {
+      "file": "icon-manager.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 344,
+        "y": 660,
+        "width": 276,
+        "height": 264
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10632,
+      "sha256": "e85be168dd0107e868c38ce34c9ce6742ff0814e1158644b6515bd640f6ce39a"
+    },
+    {
+      "file": "icon-shirt.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 629,
+        "y": 669,
+        "width": 290,
+        "height": 255
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 9698,
+      "sha256": "446fe6b2d86cae76f52ff2ed0dae9cc39fb8fd1b4a1c0657f7415b2d0c6fb173"
+    },
+    {
+      "file": "icon-bell.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 955,
+        "y": 682,
+        "width": 265,
+        "height": 232
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 9624,
+      "sha256": "f1ffacc3d0e291a084e616d7762b12fb14ffeaf7a1b770dacd9473b82e297ccf"
+    },
+    {
+      "file": "icon-menu.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 66,
+        "y": 992,
+        "width": 225,
+        "height": 177
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 6070,
+      "sha256": "52c3b1a505f82471edea97f95c9fd4d1d6129c11a819e8699e3f0e25e1d61eda"
+    },
+    {
+      "file": "icon-switch.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 355,
+        "y": 951,
+        "width": 249,
+        "height": 250
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 9138,
+      "sha256": "f488dcbc1bd709ee6146a72e4f16a896fc153ac72b0a11dd9fccc85c1f88a2fa"
+    },
+    {
+      "file": "icon-play.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 657,
+        "y": 963,
+        "width": 244,
+        "height": 243
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 10268,
+      "sha256": "58bc16f57624612fc81ff4681598501bed01108f52c4660403d357ca2c5ce9dd"
+    },
+    {
+      "file": "icon-heart.webp",
+      "source": "icons.png",
+      "crop": {
+        "x": 969,
+        "y": 979,
+        "width": 248,
+        "height": 217
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))',scale=192:192:force_original_aspect_ratio=decrease,pad=192:192:(ow-iw)/2:(oh-ih)/2:color=black@0",
+      "bytes": 8484,
+      "sha256": "61774fd83bb7a1b0dc04ff331acc1daa6cb761c19c3bbb6631ae56fe1fa1c9de"
+    },
+    {
+      "file": "cream.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 2,
+        "y": 2,
+        "width": 623,
+        "height": 623
+      },
+      "filter": "scale=512:512",
+      "bytes": 2284,
+      "sha256": "b8b3ad68e071151accdc4f619946a230d687e36393b9cfa1c9fd6ea4ed6e5923"
+    },
+    {
+      "file": "forest.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 629,
+        "y": 2,
+        "width": 623,
+        "height": 623
+      },
+      "filter": "scale=512:512",
+      "bytes": 4274,
+      "sha256": "6f3a978fb2e2cd8f9add81aec59905206a4e02a4427d541c076edf3bb5752782"
+    },
+    {
+      "file": "orange.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 2,
+        "y": 629,
+        "width": 623,
+        "height": 623
+      },
+      "filter": "scale=512:512",
+      "bytes": 3806,
+      "sha256": "1dec399b3678777100102176c7689ef6e9ccf7c937d9be59b2d73a41da7f2c9a"
+    },
+    {
+      "file": "ivory.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 629,
+        "y": 629,
+        "width": 623,
+        "height": 623
+      },
+      "filter": "scale=512:512",
+      "bytes": 2014,
+      "sha256": "4f73f31eb1ac383679ff82c99ac560066462fda22c7d818bf679d71a93eac8a6"
+    },
+    {
+      "file": "sidebar-clubhouse.webp",
+      "source": "sidebar.png",
+      "filter": "scale=600:-1",
+      "bytes": 29190,
+      "sha256": "816c54d58d404c29a5589870a7dac1ab3ae6d1c7c31747d302b356c1c6554f24"
+    },
+    {
+      "file": "masthead.webp",
+      "source": "../../home-themes/captures/sticker.png",
+      "crop": {
+        "x": 20,
+        "y": 25,
+        "width": 228,
+        "height": 85
+      },
+      "filter": "",
+      "bytes": 5908,
+      "sha256": "d668160f11aa53a67be4ffc56eb3140fbdb14599e5a123a2b9a582c0ce1fe6dc"
+    },
+    {
+      "file": "rule-dark.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 629,
+        "y": 2,
+        "width": 400,
+        "height": 4
+      },
+      "filter": "",
+      "bytes": 730,
+      "sha256": "7891aa0e25cc5f423fe7d7d8f555b115ff0cb9a2e4ae5fc96700cb16df35fd36"
+    },
+    {
+      "file": "rule-light.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 2,
+        "y": 2,
+        "width": 400,
+        "height": 4
+      },
+      "filter": "",
+      "bytes": 618,
+      "sha256": "a86130b9101487aa5038502f40fddde48b1da1a73d583f2c1ba43f6f3aefcefa"
+    },
+    {
+      "file": "rule-light-vertical.webp",
+      "source": "materials.png",
+      "crop": {
+        "x": 2,
+        "y": 2,
+        "width": 4,
+        "height": 300
+      },
+      "filter": "",
+      "bytes": 626,
+      "sha256": "eaf84efdb267cf12984cda93f8f449d570f3f544260774f52447d14b5f69ed11"
+    }
+  ]
+}

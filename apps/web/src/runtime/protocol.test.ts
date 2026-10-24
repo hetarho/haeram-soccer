@@ -143,6 +143,27 @@ it('reads one competition of complete statistics on request, never a playoff sco
   );
 });
 
+it('reads a manager-history page from the start or a cursor, for one named career (→HIST-18)', () => {
+  const accepts = (body: unknown) => requestSchema.safeParse(request(body)).success;
+  const cursor = 'manager-history:1:' + encodeURIComponent(JSON.stringify(['ENG:club', 'x']));
+  for (const body of [
+    { type: 'manager-history' },
+    { type: 'manager-history', cursor },
+    { type: 'manager-history', cursor, world: 'world:abc' },
+  ])
+    expect(requestSchema.parse(request(body)).body).toEqual(body);
+  // The query owns its cursor's meaning; the protocol bounds only its shape.
+  for (const malformed of [
+    { type: 'manager-history', cursor: '' },
+    { type: 'manager-history', cursor: 'x'.repeat(2001) },
+    { type: 'manager-history', cursor: 7 },
+    { type: 'manager-history', world: '' },
+    { type: 'manager-history', year: 1990 },
+    { type: 'manager-history', page: 2 },
+  ])
+    expect(accepts(malformed), JSON.stringify(malformed)).toBe(false);
+});
+
 it('preserves stable retained-coach identities beyond the original candidate slots', () => {
   const body = {
     type: 'command',

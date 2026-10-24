@@ -14,6 +14,7 @@ import { chooseOption, selectOptions } from './select';
 import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
+import { textContrast } from './contrast';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
@@ -45,6 +46,186 @@ async function closeSettings(page: Page) {
 }
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+
+for (const { id: theme } of baseline.themeRegistry.entries)
+  for (const width of [390, 1380])
+    test(`${theme}: readable transport choices and inset settings rows at ${width}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
+      await page.addInitScript((themeId) => {
+        localStorage.setItem(
+          'haeram-soccor:presentation',
+          JSON.stringify({ localeId: 'ko-KR', themeId }),
+        );
+      }, theme);
+      await loadPausedGame(page);
+      await page.getByRole('button', { name: /진행 방식 변경/ }).click();
+      await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
+      const date = await page.getByTestId('game-date').innerText();
+      const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+      await chooseOption(pace, 'x10');
+      await pace.hover();
+      await expect
+        .poll(async () => (await pace.evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      expect(
+        await pace
+          .locator('span')
+          .first()
+          .evaluate((value) => value.scrollWidth - value.clientWidth),
+      ).toBeLessThanOrEqual(1);
+      await pace.press('ArrowDown');
+      const list = page.getByRole('listbox', { name: '자동 진행 배속', exact: true });
+      await expect(list).toBeVisible();
+      const checked = list.getByRole('option', { selected: true });
+      for (const item of [checked, checked.locator('small')])
+        await expect
+          .poll(async () => (await item.evaluate(textContrast)).ratio)
+          .toBeGreaterThanOrEqual(4.5);
+      await pace.press('Home');
+      const highlighted = list.locator('[role="option"][data-highlighted]');
+      await expect(highlighted).toHaveAttribute('data-state', 'unchecked');
+      for (const item of [highlighted, highlighted.locator('small')])
+        await expect
+          .poll(async () => (await item.evaluate(textContrast)).ratio)
+          .toBeGreaterThanOrEqual(4.5);
+      await pace.press('Escape');
+      await expect(pace).toBeFocused();
+
+      await page.getByRole('button', { name: '설정', exact: true }).click();
+      const menu = page.getByTestId('app-menu');
+      await settle(page);
+      const rows = menu.locator('[data-ui="menu-row"]');
+      const spacing = await rows.evaluateAll((items) => {
+        const first = items[0].getBoundingClientRect(),
+          second = items[1].getBoundingClientRect();
+        const style = getComputedStyle(items[0]);
+        return {
+          gap: second.top - first.bottom,
+          inset: parseFloat(style.paddingLeft),
+          height: first.height,
+        };
+      });
+      // Firefox can report an 8px gap as 7.99998px; allow one layout subpixel.
+      expect(spacing.gap).toBeGreaterThanOrEqual(8 - 1 / 64);
+      expect(spacing.inset).toBeGreaterThanOrEqual(8);
+      expect(spacing.height).toBeGreaterThanOrEqual(44);
+      await expect
+        .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      await rows.filter({ hasText: '테마 변경' }).click();
+      const choice = page.getByTestId('presentation-theme');
+      await expect(choice).toBeVisible();
+      await page
+        .getByRole('dialog')
+        .filter({ has: choice })
+        .getByRole('button', { name: '창 닫기', exact: true })
+        .focus();
+      await page.keyboard.press('Tab');
+      await expect(choice).toBeFocused();
+      await choice.press('ArrowDown');
+      await choice.press('Escape');
+      const focus = await choice.evaluate((control) => ({
+        style: getComputedStyle(control).outlineStyle,
+        width: parseFloat(getComputedStyle(control).outlineWidth),
+        parent: getComputedStyle(control.parentElement!).outlineStyle,
+      }));
+      expect(focus.style).toBe('solid');
+      expect(focus.width).toBeGreaterThanOrEqual(2);
+      expect(focus.parent).toBe('none');
+      await closeSettings(page);
+      await expect(page.getByTestId('game-date')).toHaveText(date);
+    });
+
+for (const width of [390, 1380])
+  test(`image-built themes cover home, pinned table cells and detail sheets without advancing play ${width}`, async ({
+    page,
+  }) => {
+    // Each case stages and revisits every shipped pack, including both bitmap font families.
+    test.slow();
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
+    await observeCommands(page);
+    await loadPausedGame(page);
+    const date = await page.getByTestId('game-date').innerText();
+    const sent = await commands(page);
+    for (const { id: theme } of baseline.themeRegistry.entries) {
+      await openSettings(page);
+      await chooseOption(page.getByTestId('presentation-theme'), theme);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      await closeSettings(page);
+      const assetPath = `/art/${theme}/${theme === 'matchday-print' ? 'home' : 'ui'}/`;
+      const homeSkin = await page.getByTestId('club-hub').evaluate((hub) => {
+        const fixture = hub.querySelector('[data-home-part="fixture"]')!;
+        const style = getComputedStyle(fixture);
+        return { frame: style.borderImageSource, fill: style.backgroundImage };
+      });
+      expect(homeSkin.frame).toContain(assetPath);
+      expect(homeSkin.fill).toContain(assetPath);
+
+      await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
+      await page.getByRole('tab', { name: '순위표', exact: true }).click();
+      const table = page.getByRole('table', { name: '리그 순위표', exact: true });
+      await expect(table).toBeVisible();
+      for (const selector of ['thead th', 'tbody th']) {
+        const fill = await table
+          .locator(selector)
+          .first()
+          .evaluate((cell) => getComputedStyle(cell).backgroundImage);
+        expect(fill).toContain(assetPath);
+      }
+      await table.locator('tbody th button').first().click();
+      const detail = page.getByRole('dialog');
+      await expect(detail).toBeVisible();
+      const sheet = await detail.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          fill: getComputedStyle(element).backgroundImage,
+          left: rect.left,
+          right: rect.right,
+          viewport: innerWidth,
+        };
+      });
+      expect(sheet.fill).toContain(assetPath);
+      expect(sheet.left).toBeGreaterThanOrEqual(0);
+      expect(sheet.right).toBeLessThanOrEqual(sheet.viewport);
+      await detail.getByRole('button', { name: '창 닫기', exact: true }).click();
+      await expect(table).toBeVisible();
+      await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+      const ownBadge = page.getByText('우리 팀', { exact: true }).filter({ visible: true }).first();
+      await expect(ownBadge).toBeVisible();
+      await expect
+        .poll(async () => (await ownBadge.evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: '선수단·스태프', exact: true })
+        .click();
+      const roster = page.locator('section').filter({
+        has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }),
+      });
+      await roster
+        .locator('article')
+        .first()
+        .click({ position: { x: 8, y: 8 } });
+      await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
+      await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: '클럽 홈', exact: true })
+        .click();
+      await expect(page.getByTestId('club-hub')).toBeVisible();
+      await expect(page.getByTestId('game-date')).toHaveText(date);
+      expect(await commands(page)).toBe(sent);
+    }
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-theme',
+      baseline.themeRegistry.entries.at(-1)!.id,
+    );
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page.getByTestId('game-date')).toHaveText(date);
+  });
 
 async function expectRegistryChoices(page: Page, fields: Field[] = ['locale', 'theme']) {
   if (fields.includes('locale')) {

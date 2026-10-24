@@ -1,5 +1,144 @@
-/* One pre-rasterized tile is reused by semantic fills; no live filter or overlay. */
-html {
-  --page-grain: url('../../art/standard/grain.png');
-  --surface-grain: var(--page-grain);
+@import './image-ui-shell.css';
+@import './image-ui-controls.css';
+
+html[data-theme='standard'] {
+  --image-art-frame-button: url('../../art/standard/ui/frame-button.webp');
+  --image-art-frame-dark: url('../../art/standard/ui/frame-dark.webp');
+  --image-art-frame-selected: url('../../art/standard/ui/frame-selected.webp');
+  --image-art-frame-stamp: url('../../art/standard/ui/frame-primary.webp');
+  --image-art-frame-ticket: url('../../art/standard/ui/frame-panel.webp');
+  --image-art-frame-tile: url('../../art/standard/ui/frame-tile.webp');
+  --image-art-ink: url('../../art/standard/ui/dark.webp');
+  --image-art-paper: url('../../art/standard/ui/canvas.webp');
+  --image-art-paper-quiet: url('../../art/standard/ui/quiet.webp');
+  --image-art-vermilion: url('../../art/standard/ui/primary.webp');
+  --image-art-masthead: url('../../art/standard/ui/masthead.webp');
+  --image-art-rule-dark: url('../../art/standard/ui/rule-dark.webp');
+  --image-art-rule-light: url('../../art/standard/ui/rule-light.webp');
+  --image-art-rule-light-vertical: url('../../art/standard/ui/rule-light-vertical.webp');
+  --image-art-sidebar-terrace: url('../../art/standard/ui/sidebar-terrace.webp');
+  --image-art-icon-home: url('../../art/standard/ui/icon-home.webp');
+  --image-art-icon-league: url('../../art/standard/ui/icon-league.webp');
+  --image-art-icon-cup: url('../../art/standard/ui/icon-cup.webp');
+  --image-art-icon-history: url('../../art/standard/ui/icon-history.webp');
+  --image-art-icon-people: url('../../art/standard/ui/icon-people.webp');
+  --image-art-icon-training: url('../../art/standard/ui/icon-training.webp');
+  --image-art-icon-office: url('../../art/standard/ui/icon-office.webp');
+  --image-art-icon-boot: url('../../art/standard/ui/icon-boot.webp');
+  --image-art-icon-supporters: url('../../art/standard/ui/icon-supporters.webp');
+  --image-art-icon-manager: url('../../art/standard/ui/icon-manager.webp');
+  --image-art-icon-shirt: url('../../art/standard/ui/icon-shirt.webp');
+  --image-art-icon-bell: url('../../art/standard/ui/icon-bell.webp');
+  --image-art-icon-menu: url('../../art/standard/ui/icon-menu.webp');
+  --image-art-icon-switch: url('../../art/standard/ui/icon-switch.webp');
+  --image-art-icon-play: url('../../art/standard/ui/icon-play.webp');
+  --image-art-icon-heart: url('../../art/standard/ui/icon-heart.webp');
+  --image-canvas-material: var(--image-art-paper);
+  --image-quiet-material: var(--image-art-paper-quiet);
+  --image-dark-material: var(--image-art-ink);
+  --image-primary-material: var(--image-art-vermilion);
+  --image-panel-frame: var(--image-art-frame-ticket);
+  --image-primary-frame: var(--image-art-frame-stamp);
+  --image-dark-frame: var(--image-art-frame-dark);
+  --image-tile-frame: var(--image-art-frame-tile);
+  --image-button-frame: var(--image-art-frame-button);
+  --image-selected-frame: var(--image-art-frame-selected);
+  --image-canvas: #14271e;
+  --image-quiet: #203127;
+  --image-ink-color: #f2f4ee;
+  --image-muted: #cbd8cc;
+  --image-faint: #bdcdbf;
+  --image-accent: #98e4a7;
+  --image-focus: #eef0bc;
+  --image-on-dark: #f2f4ee;
+  --image-on-dark-muted: #cbd8cc;
+  --image-primary: #98e4a7;
+  --image-on-primary: #163422;
+  --image-on-primary-muted: #163422;
+  --image-dark-fill: #10251b;
+  --image-sidebar-hover: #98e4a710;
+  --image-heart: #ffb9ad;
+  --image-ovr-bronze: #e0d29d;
+  --image-ovr-silver: #dae4da;
+  --image-table-line: #cbd8cc29;
+  --image-table-hover: #98e4a710;
+  --image-selected-row: #294a32;
+  --image-dialog-shadow: #00000065;
+  --image-popover-shadow: #00000050;
+  --image-radius: 8px;
+  --image-focus-width: 2px;
+  --image-focus-offset: 2px;
+  --image-menu-gap: 12px;
+  --image-link-decoration: none;
+  --image-material-size: 160px;
+  --image-small-size: 12px;
+  --image-caption-size: 12px;
+  --text: var(--image-ink-color);
+  --text-muted: var(--image-muted);
+  --text-faint: var(--image-faint);
+  --accent-text: var(--image-accent);
+  --focus: var(--image-focus);
+  --focus-width: var(--image-focus-width);
+  --focus-offset: var(--image-focus-offset);
+  --page-grain: none;
+  --surface-grain: none;
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child {
+    color: var(--image-on-dark-muted);
+  }
+
+  [data-ui='menu-row'],
+  [data-ui='menu-row']:hover:not(:disabled) {
+    border: 0;
+    border-image: none;
+    background: var(--image-art-rule-dark) left bottom / 100% 1px no-repeat;
+  }
+
+  [data-surface='panel'],
+  [data-ui='game-shell'] [data-surface='panel'],
+  [data-home-part='fixture'],
+  [data-home-part='stage'] {
+    border-radius: 12px;
+  }
+
+  [data-ui='dialog'] {
+    border-radius: 18px;
+  }
+
+  [data-ui='badge'],
+  [data-ui='count'] {
+    border-radius: 4px;
+  }
+
+  [data-home-part='fixture'] {
+    padding: 12px;
+  }
+
+  [data-home-part='fixture'] > div:first-child > small {
+    word-break: keep-all;
+  }
+
+  [data-ui='game-shell'] article[data-surface='panel']:hover {
+    background-color: var(--image-selected-row);
+    background-blend-mode: soft-light;
+  }
+
+  [data-ui='game-shell'] article[data-surface='panel'] {
+    border-width: 4px;
+    border-image-width: 6px;
+  }
+
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page']::before {
+    background: var(--image-on-primary);
+  }
+
+  @media (max-width: 760px) {
+    [data-testid='match-score'] > span {
+      gap: 4px;
+    }
+    [data-testid='match-score'] > span > b[aria-hidden='true'] {
+      font-size: 12px;
+      white-space: nowrap;
+    }
+  }
 }

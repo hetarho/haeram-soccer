@@ -1,0 +1,239 @@
+{
+  "method": "Built-in image_gen frame atlas/sidebar; pinned Lucide SVG geometry and reusable static grain; deterministic slicing and Chromium WebP encoding",
+  "date": "2026-10-24",
+  "sources": "apps/web/design/standard-ui/sources",
+  "prompts": "apps/web/design/standard-ui/prompts.json",
+  "license": "presentation/themes/Lucide-LICENSE.txt",
+  "geometry": "Fixed quiet rounded corners; straight repeatable edges; matte materials tile separately behind live HTML.",
+  "assets": [
+    {
+      "file": "frame-panel.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 29,
+        "y": 170,
+        "width": 464,
+        "height": 247
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 9064,
+      "sha256": "8fde67a3415fed70324c5926540e3bd486055cbc80db757409cc1300d9c2deaf"
+    },
+    {
+      "file": "frame-primary.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 537,
+        "y": 170,
+        "width": 463,
+        "height": 247
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 7112,
+      "sha256": "1dee543219c0804ed53d82d52cbcdeb45ca64fe062f8635eb577aeacbc289d6e"
+    },
+    {
+      "file": "frame-dark.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 1044,
+        "y": 170,
+        "width": 465,
+        "height": 247
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 6366,
+      "sha256": "5132c5d7846799ff6ad339373101fb4d6b4d6885e59f88d9a03f9bdf12c6e85e"
+    },
+    {
+      "file": "frame-tile.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 29,
+        "y": 611,
+        "width": 464,
+        "height": 246
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 6454,
+      "sha256": "8c7dd60d27482571bfbf035f778b131a01b13b55cacede1c2e3afa90074e866d"
+    },
+    {
+      "file": "frame-button.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 537,
+        "y": 611,
+        "width": 463,
+        "height": 246
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 5842,
+      "sha256": "7b796ad83b6ef277b1e4aed437bb607d8e73b53d1db99a5b79cc2e263fa97128"
+    },
+    {
+      "file": "frame-selected.webp",
+      "source": "frames.png",
+      "crop": {
+        "x": 1044,
+        "y": 611,
+        "width": 465,
+        "height": 246
+      },
+      "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
+      "bytes": 9232,
+      "sha256": "34f06f7a8bc8fc2631d496183e0f228e777ac30e85b503d147bf13fbf84237ff"
+    },
+    {
+      "file": "icon-home.webp",
+      "source": "lucide-static/icons/house.svg",
+      "bytes": 2008,
+      "sha256": "df7babb14a965f857968da7ddc310fd69c07143d116cf984b03920cc1bf6f49e"
+    },
+    {
+      "file": "icon-league.webp",
+      "source": "lucide-static/icons/table-2.svg",
+      "bytes": 1324,
+      "sha256": "33849dc799ff5b52af6cd66256f6ea7822941e26733a6691def369563d2bd99a"
+    },
+    {
+      "file": "icon-cup.webp",
+      "source": "lucide-static/icons/trophy.svg",
+      "bytes": 2316,
+      "sha256": "7f292137e8f194dedc80f6b08f40b5f83befcc89623890bf678d1cb322bb6869"
+    },
+    {
+      "file": "icon-history.webp",
+      "source": "lucide-static/icons/rotate-ccw-clock.svg",
+      "bytes": 2942,
+      "sha256": "678f0a0291b53c3deec3d4df581ced17cc04f1ce26e090dfd3df0f40b583f841"
+    },
+    {
+      "file": "icon-people.webp",
+      "source": "lucide-static/icons/users.svg",
+      "bytes": 3106,
+      "sha256": "c77e7eb80894fd01b654da1dffbe9112d2297a10190d26181ce6efbfb63b2df1"
+    },
+    {
+      "file": "icon-training.webp",
+      "source": "lucide-static/icons/dumbbell.svg",
+      "bytes": 3646,
+      "sha256": "f03cd76da12be3922d9c57a952f27ca711e9701d2a84be3a36eb0d22bdc7ad02"
+    },
+    {
+      "file": "icon-office.webp",
+      "source": "lucide-static/icons/building.svg",
+      "bytes": 2162,
+      "sha256": "1db29fa532c537b07d20c6a17738e94d54248c6e55000e02e3f9d357f4d659aa"
+    },
+    {
+      "file": "icon-boot.webp",
+      "source": "lucide-static/icons/footprints.svg",
+      "bytes": 3218,
+      "sha256": "350b5ea1ce1394ff6ede1bd94348f50cafae407154ea152f8c5fa0710a3cb35b"
+    },
+    {
+      "file": "icon-supporters.webp",
+      "source": "lucide-static/icons/users-round.svg",
+      "bytes": 3556,
+      "sha256": "e8e270ce71ea11464e87cdf3d0d99f593fe0e17e749a5be049a04df10ac67124"
+    },
+    {
+      "file": "icon-manager.webp",
+      "source": "lucide-static/icons/user-round.svg",
+      "bytes": 2576,
+      "sha256": "2a4324f6aa0eb80c84e88530466096febfd5f4418cfe8c7b3ec2335ab13dd3ff"
+    },
+    {
+      "file": "icon-shirt.webp",
+      "source": "lucide-static/icons/shirt.svg",
+      "bytes": 2422,
+      "sha256": "dd4d8c33ed13a74b71d1d416a02a25405925a127cc8542059cea502d1f418f78"
+    },
+    {
+      "file": "icon-bell.webp",
+      "source": "lucide-static/icons/bell.svg",
+      "bytes": 2404,
+      "sha256": "2cb93b689100a65da94dde520fcc9e047ec2ed08b0e43a716bd0aa784ca8b8ff"
+    },
+    {
+      "file": "icon-menu.webp",
+      "source": "lucide-static/icons/menu.svg",
+      "bytes": 1098,
+      "sha256": "72b9a6ae7321453d47fda4df69c5ebe8bb631aaf479fdb2bac2249f9e8e24fce"
+    },
+    {
+      "file": "icon-switch.webp",
+      "source": "lucide-static/icons/arrow-right-left.svg",
+      "bytes": 1528,
+      "sha256": "c7bc42a6a506fd01eec974bdf5236ea4c8d0d8739a2e55c7c0f28af02bdc7356"
+    },
+    {
+      "file": "icon-play.webp",
+      "source": "lucide-static/icons/play.svg",
+      "bytes": 2262,
+      "sha256": "036711a4e2a1c346f6af5defaaf3495ce28bc8ec759e9c2d392edf6a6e06d89c"
+    },
+    {
+      "file": "icon-heart.webp",
+      "source": "lucide-static/icons/heart.svg",
+      "bytes": 2874,
+      "sha256": "cbacfb06cb3f2630a15d22e93df286fa538c9f97fd01a81434f8eeb504253692"
+    },
+    {
+      "file": "canvas.webp",
+      "source": "standard/grain.png + semantic palette",
+      "bytes": 2044,
+      "sha256": "ca2cd2061463867b67a21fcd46fb9b4f19b1de0d504f63dd1448a158437161a6"
+    },
+    {
+      "file": "quiet.webp",
+      "source": "standard/grain.png + semantic palette",
+      "bytes": 1720,
+      "sha256": "751b9c187609b141b45e5b3f63f7c24129cbc4ebd78b989ae4c5976ed7446375"
+    },
+    {
+      "file": "dark.webp",
+      "source": "standard/grain.png + semantic palette",
+      "bytes": 1846,
+      "sha256": "15c2528427d63f08edc9f53a43732012e9ae3d2ca26fbae4cdd713d7f241a46d"
+    },
+    {
+      "file": "primary.webp",
+      "source": "standard/grain.png + semantic palette",
+      "bytes": 622,
+      "sha256": "7dd8df39c46975e94916c8def00f29e0f674e0309de11d6efc98755029cb33b8"
+    },
+    {
+      "file": "sidebar-terrace.webp",
+      "source": "sidebar.png",
+      "filter": "scale=600:-1",
+      "bytes": 36126,
+      "sha256": "f88e7f724eb56b0818791c01ce3d385d9db7b5ad893be17133609df32db9ae9e"
+    },
+    {
+      "file": "masthead.webp",
+      "source": "native wordmark SVG in prepare-standard-ui.mjs",
+      "bytes": 4518,
+      "sha256": "8cda13201d6bb243b71c6987b3d36abe2c46c48831da63109cd931530016f57e"
+    },
+    {
+      "file": "rule-dark.webp",
+      "source": "native tonal rule",
+      "bytes": 580,
+      "sha256": "e55f7d535dae843abd9766ba4ec900f5f098fbec08a8c245da24b30344246167"
+    },
+    {
+      "file": "rule-light.webp",
+      "source": "native tonal rule",
+      "bytes": 572,
+      "sha256": "73f1159304eb53373db4acce37d7ff74caee603878db404f34f4d051b2e1818e"
+    },
+    {
+      "file": "rule-light-vertical.webp",
+      "source": "native tonal rule",
+      "bytes": 572,
+      "sha256": "ef46566dffd9b525af6a0e0109e18878f431470e160a847d8f254a219a9519d6"
+    }
+  ]
+}

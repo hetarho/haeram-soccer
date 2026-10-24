@@ -9,6 +9,15 @@ import { foundWithPreset } from './presets';
 import { openShortlistWindow } from './signings';
 import { defaultSettings } from './responsibilities';
 import { installMissingIdentities } from './club-identity';
+import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
+import { ensureManagerHistory } from './manager-history-capture';
+export * from './manager-history-capture';
+export {
+  activateMatchModel,
+  activatesMatchModel,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
+} from './match-model';
 export * from './responsibilities';
 export * from './club-identity';
 export * from './settings';
@@ -56,7 +65,11 @@ export * from './signings';
 export * from './intervention';
 export * from './orders';
 export * from './coach-training';
-export function createWorld(input: Founding) {
+/**
+ * A new career on the founding day. With `release` on it records the full match model from its
+ * founding (→SAVE-23); the default is the internal switch, which only tests and measurements pass.
+ */
+export function createWorld(input: Founding, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
   // The previewed founding identity is used as it is, so it must be complete and lead with the
   // founding colour (→KIT-14); nothing is built from an invalid one.
   if (
@@ -84,6 +97,10 @@ export function createWorld(input: Founding) {
   foundWithPreset(w, input.preset);
   // A club is founded on the summer window's opening day (→CLUB-33).
   openShortlistWindow(w);
+  // With the release on, founding coverage: the first season is tracked whole.
+  activateMatchModel(w, release);
+  // Own-manager attribution starts at the founding, whatever the switch (→SAVE-24).
+  ensureManagerHistory(w);
   return w;
 }
 export function simulateSeason(w: World) {

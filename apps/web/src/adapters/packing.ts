@@ -1,6 +1,11 @@
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
 import { packMatchModel, unpackMatchModel, type PackedMatchModel } from './matchModelPacking';
+import {
+  packManagerHistory,
+  unpackManagerHistory,
+  type PackedManagerHistory,
+} from './managerHistoryPacking';
 import { prepareSeason } from '../../../../packages/engine/src/season';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
@@ -173,6 +178,11 @@ interface Packed {
    * (matchModelPacking.ts), absent when the world carries none; never inline in `world`.
    */
   model?: PackedMatchModel;
+  /**
+   * Container 4 only: own-manager tenure and outcome facts and record links
+   * (managerHistoryPacking.ts), absent in a career not yet tracked; never inline in `world`.
+   */
+  managerHistory?: PackedManagerHistory;
   stats: string;
   statWidth?: number;
   statBits?: ReturnType<typeof packBitColumns>;
@@ -413,6 +423,7 @@ export function pack(w: World): Packed {
   }
   const appearances = packAppearances(w.ownMatches);
   const model = packMatchModel(w, id);
+  const managerHistory = packManagerHistory(w, id);
   const careers =
     w.people === undefined
       ? undefined
@@ -428,6 +439,7 @@ export function pack(w: World): Packed {
       ...w,
       ...(careers ? { people: undefined } : {}),
       ...(model ? { matchModel: undefined, npcSeason: undefined } : {}),
+      ...(managerHistory ? { managerHistory: undefined } : {}),
       fixtures: [],
       ownMatches: [],
       events: [],
@@ -520,6 +532,7 @@ export function pack(w: World): Packed {
       : {}),
     ...(appearances ? { appearances } : {}),
     ...(model ? { model } : {}),
+    ...(managerHistory ? { managerHistory } : {}),
     ...(compactEvents
       ? {
           eventStats: integers(eventRows.flat(), 6),
@@ -898,6 +911,15 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   model?.records.forEach((revision, i) => {
     if (revision !== undefined) matches[i].model = revision;
   });
+  if (p.world.managerHistory !== undefined)
+    throw new Error('감독 이력 데이터는 압축 스트림에만 있어야 합니다.');
+  const managers =
+    p.managerHistory === undefined
+      ? undefined
+      : unpackManagerHistory(p.managerHistory, str, matches.length);
+  managers?.records.forEach((tenure, i) => {
+    if (tenure !== undefined) matches[i].managerTenure = tenure;
+  });
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
       throw new Error('정산 이벤트 압축 데이터 손상');
@@ -1075,6 +1097,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     ...(people === undefined ? {} : { people }),
     ...(model?.matchModel ? { matchModel: model.matchModel } : {}),
     ...(model?.npcSeason ? { npcSeason: model.npcSeason } : {}),
+    ...(managers ? { managerHistory: managers.facts } : {}),
     fixtures: copy.fixtures,
     ownMatches: matches,
     history,

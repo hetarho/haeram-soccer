@@ -285,6 +285,7 @@ export const SHAPE_CONFIG = {
   - Then `x ≤ offsideLine − 0.5` for players not on a run, where `offsideLine` is the opponent's second-last player.
 - **Out of possession:**
   - `spot + [defend, 0]`, then `x += (b.x − 52.5) × compact` and `y += (b.y − 34) × lateral`.
+  - On the candidate model, in a shape with three centre-backs and the ball at least `SHAPE_CONFIG.candidate.flank.wide` (18) m off the centre line and no further up than `upTo` (60) m, the ball-side wing-back closes `follow` (0.4) of the way to the ball's line, the ball-side wide centre-back steps `channel` (3) m toward the touchline to cover the channel between them, and the far wing-back tucks `tuck` (0) of the way in (T399, →MATCH-8). With the pressed cross below, balanced's xG conceded against the other three's mean moved −0.041 (outside) → −0.017 and the crosses balanced concedes 21.5 → 21.2 a match.
   - DF-line players are clamped to `line[0] ≤ x ≤ line[1]`. With the ball played behind that line, the line drops to `deepLine.behindBall` (4) m goal-side of the ball, never deeper than `deepLine.min` (6) m (T215: back lines used to stay above their 18–30 m floor and left box shots unmarked).
   - For `transitionSeconds` (4) after losing the ball, the side's players move at `recoverySpeed` (1.15) times their speed (§4.4).
   - Pressers:
@@ -297,7 +298,7 @@ export const SHAPE_CONFIG = {
   - A run lasts 4–6 s and overrides his target. Its kind:
     - `behind`: FW line, AM, shadow striker. Target `[offsideLine + behindDepth, his y]`.
     - `overlap`: overlapping full-back, attacking wing-back. Target `[b.x + overlapAhead, wide-lane centre on his side]`.
-    - `box`: box-to-box, mezzala, shadow striker, only while b is in band ≥ 5. Target `[boxX, 30 + 8·u]`.
+    - `box`: box-to-box, mezzala, shadow striker, only while b is in band ≥ 5. Target `[boxX, 30 + 8·u]`. On the candidate model a box run starts `SHAPE_CONFIG.candidate.boxRun.odds` (1.3, T398) times as often, from band `from` (5) and for the `extra` roles too (none): midfielders arriving late take 34% of the box shots (30% before) and score 34% of the goals, forwards 57% (61%), with `DECISION_CONFIG.candidate.shotScale` 0.43 (0.475) holding the volume. T398 also screened, and left neutral, a second striker standing `secondStriker.drop` m deeper in a two-striker shape (0) and a bonus for a teammate arriving on a box run as a cross's target (`DUEL_CONFIG.candidate.crossArriving`, 0) and as a cut-back's (`DECISION_CONFIG.candidate.arriving`, 0).
   - Run draws come from the match stream and happen in roster order.
 - **Set pieces** (a corner, or a free kick crossed into the box; MATCH-18, T215):
   - The attacking side's five best headers (0.6 공중볼 + 0.4 몸싸움) take the `setPiece.box` spots and the sixth waits at `edge`; the rest hold where they stand.
@@ -469,7 +470,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 2. **Position profile** (`POSITION_PROFILES[profileKey(position)]` against the league's overall, `factorRange` 0.2–3):
    - `takeOn × clamp(profile.takeOnPerPass / 0.075)`
    - `cross` and `cutBack × clamp(profile.crossShare / 0.025) × crossScale`, `crossScale` 7.2 (the cells' own cross shares gave under one cross a side, T215)
-3. **Shot volume:** `shot × shotLine[line] × shotScale × (band 6 ? shotBox : 1) × exp(−max(0, goalDistance − 28)/6)` with `shotLine` GK 0, DF 1, MF 3.8, FW 0.9, `shotScale` 0.19 (the first engine made about 25 shots a side), `shotBox` 0.42 (shoot in the box band rather than carry into the goal area) and `longShot` 28 m / 6 m (a cell's shots come from its near end), all T215. On the candidate model (`DECISION_CONFIG.candidate`) `shotScale` is 0.45 and the long-shot fall-off 3.5 m (T370), and a shot in the box is also weighed by its chance: × min(1, (xG/0.3)^0.5), its xG from §7.4 with the pressure on him (`shotQuality`, T370, →MATCH-16). A carrier passes up a weak angle or a pressured look and a big chance keeps its weight, so box shots and key passes fall into MATCH-30's bands with goals unchanged; the scales hold the volume and keep the shot places inside MATCH-23.
+3. **Shot volume:** `shot × shotLine[line] × shotScale × (band 6 ? shotBox : 1) × exp(−max(0, goalDistance − 28)/6)` with `shotLine` GK 0, DF 1, MF 3.8, FW 0.9, `shotScale` 0.19 (the first engine made about 25 shots a side), `shotBox` 0.42 (shoot in the box band rather than carry into the goal area) and `longShot` 28 m / 6 m (a cell's shots come from its near end), all T215. On the candidate model (`DECISION_CONFIG.candidate`) `shotScale` is 0.43 (0.45 at T370, 0.475 at T371, 0.43 since T398's late box runs) and the long-shot fall-off 3.5 m (T370), and a shot in the box is also weighed by its chance: × min(1, (xG/0.3)^0.5), its xG from §7.4 with the pressure on him (`shotQuality`, T370, →MATCH-16). A carrier passes up a weak angle or a pressured look and a big chance keeps its weight, so box shots and key passes fall into MATCH-30's bands with goals unchanged; the scales hold the volume and keep the shot places inside MATCH-23.
 4. **Role and traits:** multiply by `actionWeight(role, traits, x)` for:
    - `shot ← 'shot'`
    - `takeOn ← 'dribble'`
@@ -601,7 +602,7 @@ export const DUEL_CONFIG = {
 - **Loose balls.** Outside the boxes a 50/50 ends in a foul on its winner by the nearest opponent `looseFoul` of the time (T215).
 - **Cross.**
   - The target is drawn first among the attackers in the box, weighted `e^((rating − best)/targetSpread)` with `rating = (0.6 공중볼 + 0.4 몸싸움) × aerial habit`.
-  - Delivery: `p = clamp(base + (크로스 − 60)·skill − max(0, defenders − attackers in box)·crowd, min, max)`.
+  - Delivery: `p = clamp(base + (크로스 − 60)·skill − max(0, defenders − attackers in box)·crowd, min, max)`. On the candidate model a crosser under pressure loses `DUEL_CONFIG.candidate.crossPressure` (0.15, T399) × his `pressure` tag (up to 1) more: the closed-down cross is blocked, and cross completion falls 24.4 → 22.2% (MATCH-23 20–30%).
   - A failed delivery (or no target) goes out over the byline `failOut` of the time (a goal kick); otherwise the nearest defender to the target intercepts it `intercept` of the time and heads it clear as a loose ball the rest.
   - A delivered cross: the keeper claims it with `claim + (공중볼 처리 − 60)/400`, else the target duels his nearest marker in the air, `p = clamp(0.5 + (att − def)·aerial.skill, 0.15, 0.85)` on 0.6 공중볼 + 0.4 몸싸움. A marker who wins it heads it to a loose ball at the box edge (x = 88.5 m).
   - The attacker who wins it brings it down (`control.open` 0.8 in open play, `control.setPiece` 0.05 at a set piece) or heads at goal, under `SHOT_CONFIG.headerPressure` when a marker contested it (§7.4).

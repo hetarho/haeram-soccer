@@ -172,6 +172,30 @@ describe('identity workload is deterministic', () => {
     });
     expect(evidence.recordsWearingAppliedDesign).toBeGreaterThan(0);
   });
+
+  it('continues from its state in another process exactly as without the break (T308)', () => {
+    const [whole, split] = [started(), started()];
+    const run = (w: World, resume: boolean) => {
+      let workload = identityWorkload();
+      workload.edit(w, 5);
+      for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
+      // The benchmark's phase boundary: the world and the state cross as JSON.
+      if (resume) {
+        w = JSON.parse(JSON.stringify(w)) as World;
+        workload = identityWorkload(JSON.parse(JSON.stringify(workload.state())));
+      }
+      workload.edit(w, 6);
+      const choice = workload.chooseKit(w);
+      return { w, choice, evidence: workload.evidence() };
+    };
+    const a = run(whole, false),
+      b = run(split, true);
+    expect(canonical(b.w)).toBe(canonical(a.w));
+    expect(b.choice).toEqual(a.choice);
+    expect(b.evidence).toEqual(a.evidence);
+    // The resumed workload still checks the records settled since the edit before the break.
+    expect(b.evidence.recordsWearingAppliedDesign).toBeGreaterThan(0);
+  });
 });
 
 describe('earlier recorded appearances survive the workload (→KIT-12, SAVE-22)', () => {

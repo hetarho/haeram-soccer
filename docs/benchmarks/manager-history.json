@@ -1,0 +1,785 @@
+{
+  "phase": "T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile; T308 adds own-manager tracking from the founding (container 4), a same-day appointment, replacement and reappointment four times in the active-management century and a settled round after the century in the baseline too",
+  "task": "T308",
+  "feature": "Own-manager tenures and attributed results (HIST-18/19, SAVE-24) carried and read on the century profiles",
+  "synthetic": true,
+  "date": "2026-10-23T21:45:36.433Z",
+  "node": "v26.8.1",
+  "toolchain": {
+    "pnpm": "10.34.6",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15"
+  },
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "logicalCpus": 10
+  },
+  "gitHead": "4a9c6f9d1f81fa805d10c5bad2a9fb41ddc2d493",
+  "gitDirty": true,
+  "currentHeadVerified": false,
+  "verifiedSource": "uncommitted working tree",
+  "sourceFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "86c2ae269c90d2cd83e77963cd0bbad385a8b08d84fae74298dd253c9f4124c2",
+    "files": 1182
+  },
+  "run": {
+    "mode": "phased: one `pnpm run benchmark --phase <name>` command per phase",
+    "phases": [
+      {
+        "phase": "retained",
+        "date": "2026-10-23T20:30:38.922Z",
+        "elapsedMs": 18588
+      },
+      {
+        "phase": "baseline-1",
+        "date": "2026-10-23T20:35:27.846Z",
+        "elapsedMs": 284112
+      },
+      {
+        "phase": "baseline-2",
+        "date": "2026-10-23T20:47:33.894Z",
+        "elapsedMs": 715111
+      },
+      {
+        "phase": "baseline-checkpoints",
+        "date": "2026-10-23T21:17:03.849Z",
+        "elapsedMs": 707106
+      },
+      {
+        "phase": "active-management-1",
+        "date": "2026-10-23T21:05:07.547Z",
+        "elapsedMs": 347375
+      },
+      {
+        "phase": "active-management-2",
+        "date": "2026-10-23T21:27:13.510Z",
+        "elapsedMs": 708777
+      },
+      {
+        "phase": "active-management-checkpoints",
+        "date": "2026-10-23T21:40:12.180Z",
+        "elapsedMs": 645997
+      },
+      {
+        "phase": "era-1",
+        "date": "2026-10-23T21:29:14.290Z",
+        "elapsedMs": 190576
+      },
+      {
+        "phase": "era-2",
+        "date": "2026-10-23T21:45:23.463Z",
+        "elapsedMs": 352781
+      }
+    ]
+  },
+  "engine": "4.0.0",
+  "catalog": "2026-demo-3",
+  "catalogHash": "5c4dc847344070fba54562572233a41a00ca2adac9c132f6a93845876b06da4f",
+  "checkpointLimit": 3145728,
+  "totalLimit": 3670016,
+  "measurements": [
+    {
+      "label": "marked synthetic retained career and cross-season promise",
+      "seasons": 3,
+      "year": 1953,
+      "round": 21,
+      "ownedMatches": 154,
+      "players": 29,
+      "events": 575,
+      "seed": "retained-workload",
+      "canonicalBytes": 4527418,
+      "canonicalUtf16Bytes": 8985744,
+      "retainedPeople": 3127,
+      "employmentSpells": 3363,
+      "mentorSpells": 237,
+      "coachingProfiles": 235,
+      "managerProfiles": 2,
+      "playingCoachProposals": 1,
+      "mediations": 1,
+      "promises": 1,
+      "pendingPromises": 1,
+      "trainingFocus": "hard",
+      "trainingAt": "1953:21",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 5,
+      "container": 4,
+      "compressedPayloadBytes": 274517,
+      "checkpointBytes": 314398,
+      "totalBytes": 314910,
+      "heapBytes": 183739424,
+      "encodingMs": 133,
+      "decodingMs": 182,
+      "passed": true
+    },
+    {
+      "label": "retained workload after actual season close",
+      "seasons": 4,
+      "year": 1954,
+      "round": 0,
+      "ownedMatches": 179,
+      "players": 29,
+      "events": 690,
+      "seed": "retained-workload",
+      "canonicalBytes": 4058633,
+      "canonicalUtf16Bytes": 8038998,
+      "retainedPeople": 3286,
+      "employmentSpells": 3595,
+      "mentorSpells": 310,
+      "coachingProfiles": 331,
+      "managerProfiles": 3,
+      "playingCoachProposals": 1,
+      "mediations": 1,
+      "promises": 1,
+      "pendingPromises": 1,
+      "trainingFocus": "balanced",
+      "trainingAt": "1953:46",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 6,
+      "container": 4,
+      "compressedPayloadBytes": 204189,
+      "checkpointBytes": 234024,
+      "totalBytes": 234536,
+      "heapBytes": 257581416,
+      "encodingMs": 103,
+      "decodingMs": 151,
+      "passed": true
+    },
+    {
+      "label": "baseline founding",
+      "seasons": 0,
+      "year": 1950,
+      "round": 0,
+      "ownedMatches": 0,
+      "players": 20,
+      "events": 1,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 2508685,
+      "canonicalUtf16Bytes": 5017056,
+      "retainedPeople": 2114,
+      "employmentSpells": 2114,
+      "mentorSpells": 0,
+      "coachingProfiles": 0,
+      "managerProfiles": 0,
+      "playingCoachProposals": 0,
+      "mediations": 0,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingFocusEvents": 0,
+      "managerTenures": 1,
+      "managerOutcomes": 0,
+      "container": 4,
+      "compressedPayloadBytes": 77724,
+      "checkpointBytes": 89490,
+      "totalBytes": 90002,
+      "heapBytes": 102645240,
+      "encodingMs": 51,
+      "decodingMs": 69,
+      "passed": true
+    },
+    {
+      "label": "baseline mid-career active round",
+      "seasons": 50,
+      "year": 2000,
+      "round": 23,
+      "ownedMatches": 2340,
+      "players": 513,
+      "events": 8322,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 37457191,
+      "canonicalUtf16Bytes": 74271112,
+      "retainedPeople": 11470,
+      "employmentSpells": 59079,
+      "mentorSpells": 51026,
+      "coachingProfiles": 4147,
+      "managerProfiles": 2386,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2000:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 56,
+      "container": 4,
+      "compressedPayloadBytes": 1265678,
+      "checkpointBytes": 1276316,
+      "totalBytes": 1276828,
+      "heapBytes": 764485312,
+      "encodingMs": 121087,
+      "decodingMs": 2512,
+      "passed": true
+    },
+    {
+      "label": "baseline century",
+      "seasons": 100,
+      "year": 2050,
+      "round": 0,
+      "ownedMatches": 4586,
+      "players": 1040,
+      "events": 16762,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 92025131,
+      "canonicalUtf16Bytes": 182785984,
+      "retainedPeople": 20607,
+      "employmentSpells": 171054,
+      "mentorSpells": 157927,
+      "coachingProfiles": 8572,
+      "managerProfiles": 4596,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2049:46",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 109,
+      "container": 4,
+      "compressedPayloadBytes": 2422271,
+      "checkpointBytes": 2442012,
+      "totalBytes": 2442524,
+      "heapBytes": 1967090216,
+      "encodingMs": 245193,
+      "decodingMs": 5763,
+      "passed": true
+    },
+    {
+      "label": "baseline century round 23",
+      "seasons": 100,
+      "year": 2050,
+      "round": 23,
+      "ownedMatches": 4608,
+      "players": 1040,
+      "events": 16840,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 93505288,
+      "canonicalUtf16Bytes": 185740208,
+      "retainedPeople": 20607,
+      "employmentSpells": 172579,
+      "mentorSpells": 159512,
+      "coachingProfiles": 8572,
+      "managerProfiles": 4611,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2050:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 109,
+      "container": 4,
+      "compressedPayloadBytes": 2519856,
+      "checkpointBytes": 2540444,
+      "totalBytes": 2540956,
+      "heapBytes": 2355133184,
+      "encodingMs": 249125,
+      "decodingMs": 7006,
+      "passed": true
+    },
+    {
+      "label": "active-management founding",
+      "seasons": 0,
+      "year": 1950,
+      "round": 0,
+      "ownedMatches": 0,
+      "players": 20,
+      "events": 1,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 2509334,
+      "canonicalUtf16Bytes": 5018354,
+      "retainedPeople": 2115,
+      "employmentSpells": 2115,
+      "mentorSpells": 0,
+      "coachingProfiles": 0,
+      "managerProfiles": 0,
+      "playingCoachProposals": 0,
+      "mediations": 0,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingFocusEvents": 0,
+      "managerTenures": 1,
+      "managerOutcomes": 0,
+      "container": 4,
+      "compressedPayloadBytes": 77493,
+      "checkpointBytes": 89228,
+      "totalBytes": 89740,
+      "heapBytes": 98324312,
+      "encodingMs": 82,
+      "decodingMs": 89,
+      "passed": true
+    },
+    {
+      "label": "active-management mid-career active round",
+      "seasons": 50,
+      "year": 2000,
+      "round": 23,
+      "ownedMatches": 1728,
+      "players": 494,
+      "events": 6997,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 34935716,
+      "canonicalUtf16Bytes": 69226540,
+      "retainedPeople": 11589,
+      "employmentSpells": 59764,
+      "mentorSpells": 49792,
+      "coachingProfiles": 4252,
+      "managerProfiles": 2371,
+      "playingCoachProposals": 0,
+      "mediations": 11,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2000:23",
+      "trainingFocusEvents": 101,
+      "managerTenures": 15,
+      "managerOutcomes": 52,
+      "container": 4,
+      "compressedPayloadBytes": 1036573,
+      "checkpointBytes": 1045406,
+      "totalBytes": 1045918,
+      "heapBytes": 626245408,
+      "encodingMs": 119192,
+      "decodingMs": 2679,
+      "passed": true
+    },
+    {
+      "label": "active-management century",
+      "seasons": 100,
+      "year": 2050,
+      "round": 0,
+      "ownedMatches": 3638,
+      "players": 992,
+      "events": 14609,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 88375061,
+      "canonicalUtf16Bytes": 175458604,
+      "retainedPeople": 20411,
+      "employmentSpells": 173185,
+      "mentorSpells": 157950,
+      "coachingProfiles": 8512,
+      "managerProfiles": 4614,
+      "playingCoachProposals": 0,
+      "mediations": 30,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2049:46",
+      "trainingFocusEvents": 200,
+      "managerTenures": 32,
+      "managerOutcomes": 107,
+      "container": 4,
+      "compressedPayloadBytes": 2102972,
+      "checkpointBytes": 2120222,
+      "totalBytes": 2120734,
+      "heapBytes": 1847222912,
+      "encodingMs": 234790,
+      "decodingMs": 4302,
+      "passed": true
+    },
+    {
+      "label": "active-management century active round 23",
+      "seasons": 100,
+      "year": 2050,
+      "round": 23,
+      "ownedMatches": 3665,
+      "players": 992,
+      "events": 14698,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 89964501,
+      "canonicalUtf16Bytes": 178630314,
+      "retainedPeople": 20411,
+      "employmentSpells": 174873,
+      "mentorSpells": 159686,
+      "coachingProfiles": 8512,
+      "managerProfiles": 4627,
+      "playingCoachProposals": 0,
+      "mediations": 30,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingAt": "2050:23",
+      "trainingFocusEvents": 202,
+      "managerTenures": 32,
+      "managerOutcomes": 107,
+      "container": 4,
+      "compressedPayloadBytes": 2203340,
+      "checkpointBytes": 2221470,
+      "totalBytes": 2221982,
+      "heapBytes": 1989327528,
+      "encodingMs": 213774,
+      "decodingMs": 4711,
+      "passed": true
+    }
+  ],
+  "worstCheckpoint": {
+    "label": "baseline century round 23",
+    "checkpointBytes": 2540444,
+    "streams": [
+      {
+        "stream": "matchDetail.players",
+        "bytes": 1318800,
+        "brotliBytes": 501697
+      },
+      {
+        "stream": "statBits.data",
+        "bytes": 905822,
+        "brotliBytes": 303856
+      },
+      {
+        "stream": "careers.jobs",
+        "bytes": 4552498,
+        "brotliBytes": 205361
+      },
+      {
+        "stream": "matchIncidents.rows",
+        "bytes": 362123,
+        "brotliBytes": 187172
+      },
+      {
+        "stream": "matchDetail.teams",
+        "bytes": 289017,
+        "brotliBytes": 174037
+      },
+      {
+        "stream": "standings",
+        "bytes": 444714,
+        "brotliBytes": 171888
+      },
+      {
+        "stream": "careers.people",
+        "bytes": 2774825,
+        "brotliBytes": 157132
+      },
+      {
+        "stream": "world.players",
+        "bytes": 873231,
+        "brotliBytes": 95255
+      },
+      {
+        "stream": "careers.mentors",
+        "bytes": 1343648,
+        "brotliBytes": 71620
+      },
+      {
+        "stream": "dict",
+        "bytes": 481735,
+        "brotliBytes": 68291
+      },
+      {
+        "stream": "seasonHeat.rows",
+        "bytes": 140849,
+        "brotliBytes": 56143
+      },
+      {
+        "stream": "eventStats",
+        "bytes": 233794,
+        "brotliBytes": 49898
+      },
+      {
+        "stream": "eventDetails",
+        "bytes": 108194,
+        "brotliBytes": 47965
+      },
+      {
+        "stream": "bracketTies",
+        "bytes": 99522,
+        "brotliBytes": 38571
+      },
+      {
+        "stream": "world.discipline",
+        "bytes": 482175,
+        "brotliBytes": 34290
+      }
+    ]
+  },
+  "workloads": [
+    {
+      "variant": "baseline",
+      "seed": "release-century-baseline",
+      "completedSeasons": 100,
+      "careerDomesticRoundSettlements": 4623,
+      "completeSeasonTrainingSelections": 0,
+      "identityEdits": 0,
+      "centuryActiveCheckpointTrainingSelections": 0,
+      "trainingCycle": "balanced; century checkpoint adds 23 rounds",
+      "ownerManagerHires": 0,
+      "sameDayReappointments": 0,
+      "elapsedMs": 1706329,
+      "completedSeasonsPerSecond": 0.06,
+      "simulationMs": 983655,
+      "simulationSecondsPerSeason": 9.837,
+      "ownedMatches": 4608,
+      "ownedMatchesPerSecond": 2.7,
+      "allRetainedFactsPreserved": true,
+      "managerHistory": {
+        "century": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 2,
+          "tenures": 2,
+          "interimTenures": 1,
+          "zeroMatchTenures": 0,
+          "repeatedManagers": 0,
+          "sameDayAppointments": 0,
+          "departures": {
+            "expired": 1
+          },
+          "outcomes": {
+            "cup-title": 1,
+            "league-finish": 100,
+            "promotion": 8
+          },
+          "attributedMatches": 4586,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 3682,
+            "brotliBytes": 427
+          },
+          "read": {
+            "pages": 1,
+            "pageSize": 20,
+            "rows": 2,
+            "tenureRows": 2,
+            "legacyRows": 0,
+            "recordedMatches": 4586,
+            "honours": 14,
+            "firstPageMs": 11,
+            "allPagesMs": 11,
+            "largestReplyBytes": 12050
+          },
+          "roundTrip": true
+        },
+        "round23": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 2,
+          "tenures": 2,
+          "interimTenures": 1,
+          "zeroMatchTenures": 0,
+          "repeatedManagers": 0,
+          "sameDayAppointments": 0,
+          "departures": {
+            "expired": 1
+          },
+          "outcomes": {
+            "cup-title": 1,
+            "league-finish": 100,
+            "promotion": 8
+          },
+          "attributedMatches": 4608,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 3682,
+            "brotliBytes": 433
+          },
+          "read": {
+            "pages": 1,
+            "pageSize": 20,
+            "rows": 2,
+            "tenureRows": 2,
+            "legacyRows": 0,
+            "recordedMatches": 4608,
+            "honours": 14,
+            "firstPageMs": 39,
+            "allPagesMs": 39,
+            "largestReplyBytes": 12193
+          },
+          "roundTrip": true
+        }
+      }
+    },
+    {
+      "variant": "active-management",
+      "seed": "release-century-active-management",
+      "completedSeasons": 100,
+      "careerDomesticRoundSettlements": 4623,
+      "completeSeasonTrainingSelections": 200,
+      "identityEdits": 101,
+      "centuryActiveCheckpointTrainingSelections": 2,
+      "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
+      "ownerManagerHires": 8,
+      "sameDayReappointments": 4,
+      "elapsedMs": 1702149,
+      "completedSeasonsPerSecond": 0.06,
+      "simulationMs": 1035451,
+      "simulationSecondsPerSeason": 10.355,
+      "ownedMatches": 3665,
+      "ownedMatchesPerSecond": 2.15,
+      "allRetainedFactsPreserved": true,
+      "managerHistory": {
+        "century": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 32,
+          "tenures": 32,
+          "interimTenures": 11,
+          "zeroMatchTenures": 10,
+          "repeatedManagers": 4,
+          "sameDayAppointments": 10,
+          "departures": {
+            "expired": 11,
+            "replaced": 20
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 7
+          },
+          "attributedMatches": 3638,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 5401,
+            "brotliBytes": 806
+          },
+          "read": {
+            "pages": 2,
+            "pageSize": 20,
+            "rows": 32,
+            "tenureRows": 32,
+            "legacyRows": 0,
+            "recordedMatches": 3638,
+            "honours": 10,
+            "firstPageMs": 6,
+            "allPagesMs": 10,
+            "largestReplyBytes": 32451
+          },
+          "roundTrip": true
+        },
+        "round23": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 32,
+          "tenures": 32,
+          "interimTenures": 11,
+          "zeroMatchTenures": 10,
+          "repeatedManagers": 4,
+          "sameDayAppointments": 10,
+          "departures": {
+            "expired": 11,
+            "replaced": 20
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 7
+          },
+          "attributedMatches": 3665,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 5401,
+            "brotliBytes": 806
+          },
+          "read": {
+            "pages": 2,
+            "pageSize": 20,
+            "rows": 32,
+            "tenureRows": 32,
+            "legacyRows": 0,
+            "recordedMatches": 3665,
+            "honours": 10,
+            "firstPageMs": 5,
+            "allPagesMs": 17,
+            "largestReplyBytes": 32595
+          },
+          "roundTrip": true
+        }
+      }
+    }
+  ],
+  "centuryCheckpointSha256": "2afb309ba646b229691ce3de492db87afea5bb9f8824cc41b7ec24ab0a22b039",
+  "eraProbe": {
+    "seasons": 75,
+    "year": 2025,
+    "passed": true
+  },
+  "identityWorkload": {
+    "profile": "active-management",
+    "seed": "release-century-active-management",
+    "edits": 101,
+    "firstSeason": 0,
+    "lastSeason": 100,
+    "paletteColours": 24,
+    "paletteSize": 24,
+    "shirtPatterns": [
+      "plain",
+      "stripes",
+      "hoops",
+      "halves",
+      "band",
+      "sash",
+      "checks",
+      "chevron"
+    ],
+    "crestCompositions": 6,
+    "crestCompositionCount": 6,
+    "representativeColourCounts": {
+      "1": 34,
+      "2": 34,
+      "3": 33
+    },
+    "designsSha256": "05019fc04218a252afe3067ab8377764b0aedb56eeef1ecfa6d399b5a88ce7f1",
+    "appearanceChecks": 102,
+    "appearancesCompared": 183709,
+    "recordsWearingAppliedDesign": 3665,
+    "kitChoices": [
+      {
+        "fixtureId": "2050:ENG:1:0:23:3",
+        "role": "away",
+        "automatic": "home",
+        "kind": "league",
+        "year": 2050,
+        "round": 23,
+        "ownSide": 0,
+        "shirt": {
+          "pattern": "chevron",
+          "primary": "#c9184a",
+          "secondary": "#a7b0ba",
+          "trim": "#00a6c8"
+        }
+      }
+    ],
+    "checkpointAppearances": {
+      "records": 3665,
+      "recorded": 3665,
+      "absent": 0,
+      "distinct": 2207
+    },
+    "checkpointLabel": "active-management century active round 23",
+    "pendingChoiceDecoded": true,
+    "resumedSettlementConsumed": {
+      "uninterrupted": true,
+      "restored": true
+    }
+  },
+  "elapsedMs": 3970423,
+  "heapBytes": 252723816,
+  "peakObservedHeapBytes": 2355133184,
+  "losslessRoundtrip": true,
+  "resumedSeasonReplay": true,
+  "managerHistoryRoundTrip": true,
+  "passed": true,
+  "scope": "Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (101 edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate 1950–2025 era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings."
+}

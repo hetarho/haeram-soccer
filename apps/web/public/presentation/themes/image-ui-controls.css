@@ -1,0 +1,595 @@
+/* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
+html[data-theme] {
+  --control-hover-filter: brightness(0.96);
+  --control-active-filter: brightness(0.9);
+  --ovr-bronze: var(--image-ovr-bronze);
+  --ovr-silver: var(--image-ovr-silver);
+
+  :where(
+    button:not(
+      [data-ui='link'],
+      [data-ui='icon'],
+      [data-ui='navigation'],
+      [data-ui='badge'],
+      [data-home-part],
+      [data-select-trigger]
+    )
+  ) {
+    border: 6px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background-image: var(--image-quiet-material);
+    background-color: var(--image-quiet);
+    background-size: var(--image-material-size, 384px);
+    background-clip: padding-box;
+    box-shadow: none;
+  }
+
+  button[data-ui='primary'],
+  button[type='submit'],
+  button[aria-pressed='true'],
+  button[aria-selected='true'] {
+    --text: var(--image-on-primary);
+    --text-muted: var(--image-on-primary);
+    --text-faint: var(--image-on-primary-muted);
+    --accent-text: var(--image-on-primary);
+    --gold: var(--image-on-primary);
+    color: var(--image-on-primary);
+    border-width: 6px;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
+    background-image: var(--image-primary-material);
+    background-color: var(--image-primary);
+    background-size: var(--image-material-size, 256px);
+    background-clip: padding-box;
+  }
+
+  button[data-ui='primary'] {
+    background-image: var(--image-primary-material) !important;
+    color: var(--image-on-primary);
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
+  }
+
+  [data-ui='link'] {
+    border: 0;
+    border-image: none;
+    border-radius: var(--image-radius, 0px);
+    background: none;
+    box-shadow: none;
+  }
+
+  [data-ui='icon'] {
+    border: 4px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: none;
+  }
+
+  [data-select-trigger][role='combobox'],
+  [data-select-trigger][role='combobox']:is(:hover, [data-state='open']),
+  :where(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+    textarea,
+    select
+  ) {
+    border: 5px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 7px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+    box-shadow: none;
+  }
+
+  [data-select-trigger][role='combobox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    padding: 10px 14px;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  :is(input, textarea)::placeholder {
+    color: var(--image-muted);
+    opacity: 1;
+  }
+
+  :is(
+    button:disabled,
+    [data-select-trigger]:disabled,
+    [role='option'][data-disabled],
+    fieldset:disabled
+  ) {
+    opacity: 1;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
+
+  :is(button[data-ui='link'] > span, button[data-money], button[data-ui='term']:not(:disabled)) {
+    text-decoration-line: var(--image-link-decoration, underline);
+    text-decoration-style: solid;
+    text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  :is(button[data-ui='link']:hover > span, button[data-money]:hover, button[data-ui='term']:hover) {
+    text-decoration-line: underline;
+    text-decoration-color: currentColor;
+  }
+
+  [data-testid='app-menu'] section {
+    display: grid;
+    gap: var(--image-menu-gap, 10px);
+  }
+
+  [data-testid='app-menu'] h3 {
+    margin: 0;
+    color: var(--image-muted);
+  }
+
+  [data-ui='menu-row'] {
+    min-height: 68px;
+    padding: 12px 14px;
+    gap: 12px;
+    line-height: 1.5;
+    color: var(--image-ink-color);
+  }
+
+  [data-ui='menu-row'] > span {
+    padding: 0;
+  }
+
+  [data-ui='menu-row'] small {
+    color: var(--image-muted);
+    line-height: 1.5;
+  }
+
+  [data-ui='menu-row']:hover:not(:disabled) {
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'] {
+    accent-color: var(--image-primary);
+  }
+
+  [data-surface='panel'],
+  [data-ui='game-shell'] [data-surface='panel'] {
+    border: 8px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: none;
+  }
+
+  [data-surface='panel'] > header {
+    border-bottom-color: transparent;
+    background-image: var(--image-art-rule-dark);
+    background-position: center bottom;
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+  }
+
+  [data-surface='tile'],
+  [data-ui='game-shell'] [data-surface='tile'] {
+    border: 4px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: none;
+  }
+
+  [data-ui='toolbar'] {
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 512px);
+  }
+
+  [role='tablist'],
+  [data-ui='choices'] {
+    gap: 6px;
+    border: 0;
+    border-radius: var(--image-radius, 0px);
+    background: none;
+    padding: 4px 0 8px;
+  }
+
+  [role='radiogroup'] {
+    gap: 6px;
+  }
+
+  [role='tab'],
+  [data-ui='choices'] > button,
+  [role='radiogroup'] > button {
+    flex-shrink: 0;
+    min-height: 44px;
+    border: 6px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 8px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+    font-weight: 700;
+    box-shadow: none;
+  }
+
+  [role='tab'][aria-selected='true'],
+  [data-ui='choices'] > button[aria-pressed='true'],
+  [role='radio'][aria-checked='true'] {
+    --text: var(--image-on-primary);
+    --text-muted: var(--image-on-primary);
+    --text-faint: var(--image-on-primary-muted);
+    color: var(--image-on-primary);
+    /* The shared .selected utility forces a border; replace that complete border here. */
+    border: 6px solid transparent !important;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch !important;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  [role='tab']::after,
+  [data-ui='choices'] > button::after {
+    display: none;
+  }
+
+  table {
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  thead {
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-canvas);
+    --accent-text: var(--image-on-dark);
+    color: var(--image-on-dark);
+  }
+
+  table thead :is(th, td),
+  table[aria-label] thead :is(th, td) {
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-dark);
+    border-bottom-color: transparent;
+    font-weight: 700;
+  }
+
+  td {
+    border-bottom: 1px solid var(--image-table-line);
+  }
+
+  [data-tier] {
+    border: 4px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 5px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: var(--image-table-hover);
+  }
+
+  /* Pinned cells paint their own opaque paper, including while the table scrolls. */
+  table tbody :is(th, td),
+  table[aria-label] tbody :is(th, td) {
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  table tbody tr:nth-child(even) > :is(th, td) {
+    background-color: var(--image-selected-row);
+    background-blend-mode: multiply;
+  }
+
+  table tbody tr[data-own='true'] > :is(th, td) {
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 512px);
+  }
+
+  [data-ui='badge'],
+  [data-ui='count'] {
+    border: 4px solid transparent;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-primary);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  [data-ui='count'] {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    width: max-content;
+    height: auto;
+    min-height: 24px;
+    padding: 0 3px;
+    line-height: 1.2;
+  }
+
+  table :where(button:not([data-ui='primary'])) {
+    border: 0;
+    border-image: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  details > summary {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: var(--image-muted);
+    font-weight: 700;
+  }
+
+  [data-ui='dialog'] {
+    border: 10px solid transparent;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 13px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: 0 8px 48px var(--image-dialog-shadow);
+  }
+
+  [data-ui='dialog-header'] {
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark);
+    --text-faint: var(--image-canvas);
+    flex-shrink: 0;
+    border: 0;
+    padding: 10px 16px;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-dark);
+  }
+
+  [data-ui='dialog-header'] h2 {
+    color: inherit;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  [data-ui='dialog-header'] button {
+    flex: 0 0 44px;
+    border: 0;
+    border-image: none;
+    background: none;
+    color: var(--image-on-dark);
+  }
+
+  [data-ui='game-shell'] > main > header > button:has([data-pixel-icon]) {
+    border: 0;
+    border-image: none;
+    background: none;
+  }
+
+  [data-ui='season-overview'] {
+    border: 0;
+    border-image: none;
+    background: none;
+  }
+
+  [data-ui='dialog-body'] {
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-ui='dialog-actions'] {
+    border: 0;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [role='listbox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    --accent-text: var(--image-accent);
+    border: 8px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    padding: 6px;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: 2px 4px 0 var(--image-popover-shadow);
+    color: var(--image-ink-color);
+  }
+
+  [role='option'] {
+    min-height: 44px;
+    padding: 10px 36px 10px 12px;
+    margin-block: 3px;
+    border: 3px solid transparent;
+    border-image: none;
+    border-radius: var(--image-radius, 0px);
+    background: transparent;
+    color: var(--image-ink-color);
+    line-height: 1.5;
+  }
+
+  [role='option'] small {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  [role='option'][data-highlighted]:not([data-state='checked']) {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    color: var(--image-ink-color);
+    background: var(--image-canvas) var(--image-canvas-material) repeat padding-box;
+    outline: 2px solid var(--image-option-hover, var(--image-accent));
+    outline-offset: -3px;
+  }
+
+  [role='option'][data-state='checked'],
+  [role='option'][data-state='checked'][data-highlighted] {
+    --text: var(--image-option-text, var(--image-on-primary));
+    --text-muted: var(--image-option-muted, var(--image-on-primary));
+    --text-faint: var(--text-muted);
+    color: var(--text);
+    background: var(--image-option-fill, var(--image-primary))
+      var(--image-option-material, var(--image-primary-material)) repeat padding-box;
+    border-image: var(--image-option-frame, var(--image-primary-frame))
+      var(--image-frame-slice, 54) / 6px stretch;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  [data-testid='action-outcome'],
+  [data-testid='settings-toast'],
+  [data-testid='event-card'],
+  [data-testid='event-group'],
+  [data-testid='runtime-alerts'] > div,
+  [data-testid='team-state-alert'] > div {
+    border: 8px solid transparent;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 10px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: none;
+  }
+
+  [data-testid='event-pill'] {
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 9px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-primary);
+  }
+
+  [data-testid='event-pill'] > i {
+    background: none;
+    color: var(--image-on-primary);
+  }
+
+  /* The framed pending-event ticket must clear the last action in the content scroller. */
+  &:has([data-testid='event-pill'])
+    [data-ui='game-shell']:not([data-page='match'], [data-page='dashboard'])
+    [data-testid='view-scroller'] {
+    padding-bottom: 72px;
+  }
+
+  &:has([data-testid='event-pill'])
+    [data-ui='game-shell'][data-page='dashboard']
+    div:has(> [data-home-active='true']) {
+    padding-bottom: 72px;
+  }
+
+  [data-testid='club-founding'] > header {
+    padding: 18px 0;
+    background: var(--image-art-rule-dark) center bottom / 100% 3px no-repeat;
+  }
+
+  [data-testid='club-founding'] form {
+    padding: 24px;
+    border: 10px solid transparent;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 13px stretch;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-testid='facility-overview'] {
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 54) / 10px stretch;
+  }
+
+  label:has(input[type='file']) {
+    border: 3px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    min-height: 44px;
+    padding: 2px 8px;
+  }
+
+  @media (max-width: 760px) {
+    [data-surface='panel'] {
+      border-width: 6px;
+      border-image-width: 8px;
+    }
+    [data-ui='dialog'] {
+      border-width: 7px;
+      border-image-width: 10px;
+      max-height: calc(100dvh - 12px);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    [data-ui='dialog-header'] {
+      padding: 6px 12px;
+    }
+    [data-ui='dialog-header'] h2 {
+      font-size: 16px;
+    }
+    [data-ui='game-shell'][data-playing='false'] > main {
+      --gutter: 12px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    [data-ui='game-shell'][data-playing='false'] > main > header {
+      min-height: 48px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+    [data-ui='game-shell'][data-playing='false'] [data-testid='view-scroller'] {
+      padding-top: 4px;
+    }
+    [data-ui='game-shell'][data-playing='false'] [data-testid='view-scroller'] > footer {
+      margin-top: 8px;
+    }
+    [data-testid='club-founding'] > header {
+      padding: 4px 0;
+    }
+    [data-testid='club-founding'] h2 {
+      margin: 4px 0;
+    }
+    [data-testid='club-founding'] header p {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    [data-testid='club-founding'] > [data-surface='tile'] {
+      margin: 3px 0;
+      padding: 2px 8px;
+      border-width: 3px;
+      border-image-width: 6px;
+    }
+    [data-testid='club-founding'] form {
+      gap: 6px;
+      padding: 4px 6px;
+      border-width: 6px;
+      border-image-width: 11px;
+    }
+    [data-testid='club-founding'] :is(input, [data-select-trigger]) {
+      min-height: 44px;
+    }
+    [data-testid='club-founding'] [data-select-trigger][role='combobox'] {
+      padding: 5px 10px;
+    }
+    [data-testid='club-founding'] fieldset button {
+      min-width: 0;
+      min-height: 62px;
+      gap: 1px;
+      padding: 2px 1px;
+      border-width: 3px;
+      border-image-width: 6px;
+    }
+    [data-testid='club-founding'] fieldset :is(b, small) {
+      line-height: 1.3;
+    }
+    [data-testid='club-founding'] [data-ui='launch'] button {
+      min-height: 48px;
+      padding: 3px 6px;
+      border-width: 4px;
+      border-image-width: 7px;
+    }
+    [data-testid='event-group'] {
+      padding: 6px;
+    }
+  }
+}

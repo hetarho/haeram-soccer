@@ -1,0 +1,16 @@
+base: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 9, unresolved 4, outside 8, unbanded 2
+  MATCH-23: inside 36, unresolved 2
+  MATCH-29: inside 20, insufficient 4, outside 1
+  curve 2.23 (-35 8.1, -30 6.9, -25 4.6, -20 8.0, -15 10.3, -10 9.3, -5 8.8, 0 2.3, 5 6.3, 10 7.0, 15 9.7, 20 7.7, 25 1.5, 30 4.6, 35 7.4, 40 9.3); points possession 1.395, press 1.355, counter 1.408, balanced 1.355
+cand: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 10, unresolved 3, outside 8, unbanded 2
+  MATCH-23: inside 35, unresolved 3
+  MATCH-29: inside 23, insufficient 2
+  curve 2.15 (-35 9.9, -30 6.7, -25 3.9, -20 7.7, -15 7.5, -10 10.8, -5 6.8, 0 0.8, 5 7.6, 10 6.7, 15 8.5, 20 7.2, 25 2.8, 30 3.5, 35 6.3, 40 9.8); points possession 1.354, press 1.352, counter 1.416, balanced 1.381
+* 30:boxShots                      7.741 [7.682, 7.799] unresolved              → 7.606 [7.547, 7.664] inside
+* 23:tacklesInterceptions          29.751 [29.631, 29.870] inside               → 29.924 [29.807, 30.042] unresolved
+* 29:draws:press-press             0.284 [0.259, 0.310] insufficient            → 0.269 [0.244, 0.294] inside
+* 29:draws:counter-counter         0.277 [0.251, 0.302] insufficient            → 0.256 [0.231, 0.281] inside
+* 29:draws:balanced-balanced       0.222 [0.198, 0.245] insufficient            → 0.238 [0.214, 0.262] inside
+* 29:ordering:xgConceded           -0.041 [-0.061, -0.022] outside              → -0.017 [-0.036, 0.002] insufficient

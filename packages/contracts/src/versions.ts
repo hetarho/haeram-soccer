@@ -101,12 +101,22 @@ export const CURRENT_CHECKPOINT_SCHEMA = 2;
  * current container.
  */
 export const FULL_MODEL_CHECKPOINT_SCHEMA = 3;
+/**
+ * The container after the full-model one, for checkpoints carrying own-manager history facts or a
+ * record linked to a tenure (→SAVE-24), with or without full-model data, so an older reader
+ * refuses them instead of dropping the attribution.
+ */
+export const MANAGER_HISTORY_CHECKPOINT_SCHEMA = 4;
 /** Containers this version reads; any other is a compatibility failure, never corruption. */
 export const SUPPORTED_CHECKPOINT_SCHEMAS = [
   1,
   CURRENT_CHECKPOINT_SCHEMA,
   FULL_MODEL_CHECKPOINT_SCHEMA,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
 ] as const;
+/** Whether a world holds own-manager history facts or an own record linked to a tenure. */
+export const carriesManagerHistory = (w: Pick<World, 'managerHistory' | 'ownMatches'>) =>
+  !!w.managerHistory || w.ownMatches.some((m) => m.managerTenure !== undefined);
 export type CheckpointSchema = (typeof SUPPORTED_CHECKPOINT_SCHEMAS)[number];
 export const isCheckpointSchema = (value: unknown): value is CheckpointSchema =>
   (SUPPORTED_CHECKPOINT_SCHEMAS as readonly unknown[]).includes(value);

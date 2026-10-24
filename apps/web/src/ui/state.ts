@@ -9,6 +9,10 @@ import type {
   YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
+import type {
+  ManagerHistoryPage,
+  ManagerSourceSeason,
+} from '../../../../packages/contracts/src/manager-history-view';
 /**
  * The destinations: home, the competitions and records, and the owner's three levers — 사람 (who
  * joins and stays), 훈련 (how players develop) and 방향 (where the club is going and its money,
@@ -356,6 +360,122 @@ export const RECORD_TABS = [
   ['managers', '감독 이력'],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];
+
+/**
+ * The 감독 이력 tab's place in one career (→WEB-74, WEB-92), kept in the world-scoped task memory:
+ * a visit to a season it names and the way back find it as it was, and another game starts empty.
+ */
+export interface ManagerRecords {
+  /** The view's `managerHistoryKey` `page` was read at; any other key reads it again. */
+  key?: string;
+  /** Every row read so far, with the next page's cursor. */
+  page?: ManagerHistoryPage;
+  /** The key of the latest first-page read; an earlier one's reply is superseded. */
+  reading?: string;
+  /** The tenure open for inspection. */
+  inspected?: string;
+  /** The list's scroll when a season was opened from it. */
+  scroll?: number;
+  /** The season a tenure opened, and that tenure's row, until the way back is taken. */
+  opened?: { season: ManagerSourceSeason; row: string };
+}
+export const MANAGER_RECORDS = 'manager-records';
+/** This career's 감독 이력 place; empty for another career or before any. */
+export function managerRecords(world: string): ManagerRecords {
+  const memory = useTaskMemory.getState();
+  return memory.world === world ? ((memory.values[MANAGER_RECORDS] as ManagerRecords) ?? {}) : {};
+}
+export function updateManagerRecords(
+  world: string,
+  update: (records: ManagerRecords) => ManagerRecords,
+) {
+  useTaskMemory.getState().activate(world);
+  const next = update(managerRecords(world));
+  useTaskMemory.setState((memory) => ({ values: { ...memory.values, [MANAGER_RECORDS]: next } }));
+}
+/** `next`, the page after the rows read so far, added to them; a row already read is kept once. */
+export function mergeManagerPage(loaded: ManagerHistoryPage, next: ManagerHistoryPage) {
+  const seen = new Set(loaded.rows.map((row) => row.id));
+  return { ...next, rows: [...loaded.rows, ...next.rows.filter((row) => !seen.has(row.id))] };
+}
+/**
+ * The first page read again, followed by its cursors until `rows` rows are back (at least one
+ * page): a refresh renews every summary on screen without shortening the list. A page that adds
+ * no row ends it.
+ */
+export async function readManagerPages(
+  read: (cursor?: string) => Promise<ManagerHistoryPage>,
+  rows: number,
+) {
+  let page = await read();
+  while (page.nextCursor && page.rows.length < rows) {
+    const next = mergeManagerPage(page, await read(page.nextCursor));
+    if (next.rows.length === page.rows.length) break;
+    page = next;
+  }
+  return page;
+}
+/** A first-page read for `key` begins; any earlier one still in flight is superseded. */
+export function beginManagerRead(world: string, key: string | undefined) {
+  updateManagerRecords(world, (records) => ({ ...records, reading: key ?? '' }));
+}
+/**
+ * Keeps a page read for `key` (the first one when `cursor` is absent, else the one after
+ * `cursor`) unless it is no longer this career's answer: another game is active, a later
+ * first-page read superseded it, or the rows it continues were replaced meanwhile.
+ */
+export function acceptManagerPage(
+  world: string,
+  key: string | undefined,
+  page: ManagerHistoryPage,
+  cursor?: string,
+) {
+  if (useTaskMemory.getState().world !== world) return false;
+  const records = managerRecords(world);
+  if (cursor === undefined) {
+    if (records.reading !== (key ?? '')) return false;
+    updateManagerRecords(world, ({ reading: _reading, ...kept }) => {
+      void _reading;
+      return { ...kept, key, page };
+    });
+    return true;
+  }
+  if (records.key !== key || !records.page || records.page.nextCursor !== cursor) return false;
+  updateManagerRecords(world, (kept) => ({ ...kept, page: mergeManagerPage(kept.page!, page) }));
+  return true;
+}
+/** A tenure opens one of our seasons: the list keeps that tenure open and its scroll. */
+export function rememberManagerSeason(
+  world: string,
+  season: ManagerSourceSeason,
+  row: string,
+  scroll: number,
+) {
+  updateManagerRecords(world, (records) => ({
+    ...records,
+    inspected: row,
+    scroll,
+    opened: { season: { ...season }, row },
+  }));
+}
+/** Another records journey begins: the season opened from the list no longer names a way back. */
+export function leaveManagerSeason(world: string) {
+  if (!managerRecords(world).opened) return;
+  updateManagerRecords(world, ({ opened: _opened, ...records }) => {
+    void _opened;
+    return records;
+  });
+}
+/**
+ * Back on the list from that season, by its named return or the browser: the scroll to restore,
+ * once; nothing when no season was opened from it.
+ */
+export function returnedToManagers(world: string) {
+  const { opened, scroll } = managerRecords(world);
+  if (!opened) return undefined;
+  leaveManagerSeason(world);
+  return scroll ?? 0;
+}
 
 /** A focused policy/competition visit keeps the working task it was opened from. */
 export function beginTaskDetour(target: Page) {

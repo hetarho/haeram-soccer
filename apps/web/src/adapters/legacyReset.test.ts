@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import {
   envelopeEngine,
   FULL_MODEL_CHECKPOINT_SCHEMA,
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
 } from '../../../../packages/contracts/src/versions';
 import { encode, recognizedLegacy, Saves } from './persistence';
 import { resetLegacy } from './legacyReset';
@@ -38,13 +39,16 @@ class Parked implements ParkedStore {
   }
 }
 async function saved(engine: string) {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Legacy',
-    color: '#123456',
-    seed: 'reset',
-    level: 'easy',
-  });
+  // Earlier rules never tracked manager history, so their checkpoints use the old containers.
+  const w = withoutManagerHistory(
+    simulatedWorld({
+      country: 'ENG',
+      name: 'Legacy',
+      color: '#123456',
+      seed: 'reset',
+      level: 'easy',
+    }),
+  );
   w.engine = engine;
   return encode(w);
 }
@@ -214,10 +218,21 @@ it('unknown envelope never grants legacy reset permission', async () => {
     expect(await recognizedLegacy(raw)).toBe(true);
   }
   // An apparently older engine header over a genuine legacy payload, in a container this version
-  // cannot read or in the match-model container, which earlier rules never wrote.
-  for (const schema of [0, FULL_MODEL_CHECKPOINT_SCHEMA, FULL_MODEL_CHECKPOINT_SCHEMA + 1, 99]) {
+  // cannot read or in the match-model or manager-history container, which earlier rules never
+  // wrote.
+  for (const schema of [
+    0,
+    FULL_MODEL_CHECKPOINT_SCHEMA,
+    MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+    MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1,
+    99,
+  ]) {
     const raw = JSON.stringify({ ...JSON.parse(legacy), schema });
-    expect(envelopeEngine(raw)).toBe(schema === FULL_MODEL_CHECKPOINT_SCHEMA ? '2.0.0' : undefined);
+    expect(envelopeEngine(raw)).toBe(
+      schema === FULL_MODEL_CHECKPOINT_SCHEMA || schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA
+        ? '2.0.0'
+        : undefined,
+    );
     expect(await recognizedLegacy(raw)).toBe(false);
     const unindexed = new Memory();
     unindexed.setItem(ACTIVE_SAVE_KEYS[1], raw);

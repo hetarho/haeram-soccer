@@ -27,6 +27,7 @@ import {
   matchModelStateSchema,
   type FullStatsRead,
 } from '../../../../packages/contracts/src/match-model';
+import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import type { NewsItem } from '../../../../packages/engine/src/news';
@@ -245,6 +246,14 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('save') }),
     z.object({ type: z.literal('archive'), year: z.number().int().min(1901).max(4000) }),
+    // One page of the own managers' tenures and older personnel events (→HIST-18/19, WEB-92):
+    // `cursor` is the query's own page position and `world` the career the client shows, so a
+    // read answered from another career is refused rather than shown.
+    z.strictObject({
+      type: z.literal('manager-history'),
+      cursor: z.string().min(1).max(2000).optional(),
+      world: z.string().min(1).max(300).optional(),
+    }),
     z.object({ type: z.literal('head-to-head'), club: ref }),
     z.object({ type: z.literal('club-records') }),
     z.object({ type: z.literal('person-career'), person: ref }),
@@ -273,9 +282,12 @@ export type Request = z.infer<typeof requestSchema>;
 export type Body = Request['body'];
 /**
  * Daily projection excludes the lifetime person registry and bounds resolved recruitment history.
- * The season's complete statistics come with a `full-stats` read when a view asks (→WEB-89).
+ * The season's complete statistics come with a `full-stats` read when a view asks (→WEB-89), and
+ * the manager-history facts with a `manager-history` read (→HIST-18).
  */
-export type ProjectedWorld = Omit<World, 'people' | 'npcSeason'> & { people?: never };
+export type ProjectedWorld = Omit<World, 'people' | 'npcSeason' | 'managerHistory'> & {
+  people?: never;
+};
 export interface View {
   world: ProjectedWorld;
   careers: Record<string, CareerAssessment>;
@@ -295,6 +307,12 @@ export interface View {
   news: NewsItem[];
   /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
+  /**
+   * Changes whenever the `manager-history` read would answer differently: the facts, a settled own
+   * match, a closed season, the manager in charge or this season's provisional place. The records
+   * room reads the history again on it, never on the date alone (→HIST-18, WEB-92).
+   */
+  managerHistoryKey?: string;
 }
 /**
  * Published views each side keeps, so a reply can still name the base a client holds after a
@@ -357,6 +375,8 @@ export interface Reply {
   leagueFixtures?: Fixture[];
   /** A competition's complete statistics this season; absent while the season keeps none. */
   fullStats?: FullStatsRead;
+  /** One page of the manager history, summarised from every retained own match (→HIST-18/19). */
+  managerHistory?: ManagerHistoryPage;
   progress?: number;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */

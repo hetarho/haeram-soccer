@@ -1,5 +1,92 @@
-@import './matchday-print-home.css';
-@import './matchday-print-ui.css';
+@import './image-ui-shell.css';
+@import './image-ui-controls.css';
+
+html[data-theme='matchday-print'] {
+  --image-art-frame-button: url('../../art/matchday-print/home/frame-button.webp');
+  --image-art-frame-dark: url('../../art/matchday-print/home/frame-dark.webp');
+  --image-art-frame-selected: url('../../art/matchday-print/home/frame-selected.webp');
+  --image-art-frame-stamp: url('../../art/matchday-print/home/frame-stamp.webp');
+  --image-art-frame-ticket: url('../../art/matchday-print/home/frame-ticket.webp');
+  --image-art-frame-tile: url('../../art/matchday-print/home/frame-tile.webp');
+  --image-art-icon-bell: url('../../art/matchday-print/home/icon-bell.webp');
+  --image-art-icon-boot: url('../../art/matchday-print/home/icon-boot.webp');
+  --image-art-icon-cup: url('../../art/matchday-print/home/icon-cup.webp');
+  --image-art-icon-heart: url('../../art/matchday-print/home/icon-heart.webp');
+  --image-art-icon-history: url('../../art/matchday-print/home/icon-history.webp');
+  --image-art-icon-home: url('../../art/matchday-print/home/icon-home.webp');
+  --image-art-icon-league: url('../../art/matchday-print/home/icon-league.webp');
+  --image-art-icon-manager: url('../../art/matchday-print/home/icon-manager.webp');
+  --image-art-icon-menu: url('../../art/matchday-print/home/icon-menu.webp');
+  --image-art-icon-office: url('../../art/matchday-print/home/icon-office.webp');
+  --image-art-icon-people: url('../../art/matchday-print/home/icon-people.webp');
+  --image-art-icon-play: url('../../art/matchday-print/home/icon-play.webp');
+  --image-art-icon-shirt: url('../../art/matchday-print/home/icon-shirt.webp');
+  --image-art-icon-supporters: url('../../art/matchday-print/home/icon-supporters.webp');
+  --image-art-icon-switch: url('../../art/matchday-print/home/icon-switch.webp');
+  --image-art-icon-training: url('../../art/matchday-print/home/icon-training.webp');
+  --image-art-ink: url('../../art/matchday-print/home/ink.webp');
+  --image-art-masthead: url('../../art/matchday-print/home/masthead.webp');
+  --image-art-paper: url('../../art/matchday-print/home/paper.webp');
+  --image-art-paper-quiet: url('../../art/matchday-print/home/paper-quiet.webp');
+  --image-art-rule-dark: url('../../art/matchday-print/home/rule-dark.webp');
+  --image-art-rule-light: url('../../art/matchday-print/home/rule-light.webp');
+  --image-art-rule-light-vertical: url('../../art/matchday-print/home/rule-light-vertical.webp');
+  --image-art-sidebar-terrace: url('../../art/matchday-print/home/sidebar-terrace.webp');
+  --image-art-vermilion: url('../../art/matchday-print/home/vermilion.webp');
+  --image-canvas-material: var(--image-art-paper);
+  --image-quiet-material: var(--image-art-paper-quiet);
+  --image-dark-material: var(--image-art-ink);
+  --image-primary-material: var(--image-art-vermilion);
+  --image-panel-frame: var(--image-art-frame-ticket);
+  --image-primary-frame: var(--image-art-frame-stamp);
+  --image-dark-frame: var(--image-art-frame-dark);
+  --image-tile-frame: var(--image-art-frame-tile);
+  --image-button-frame: var(--image-art-frame-button);
+  --image-selected-frame: var(--image-art-frame-selected);
+  --image-canvas: #eddfc3;
+  --image-quiet: #f1e5cb;
+  --image-ink-color: #24231e;
+  --image-muted: #39372e;
+  --image-faint: #4c473b;
+  --image-accent: #a62e20;
+  --image-focus: #24231e;
+  --image-on-dark: #f2e6c9;
+  --image-on-dark-muted: #e7d8b7;
+  --image-primary: #a63724;
+  --image-on-primary: #fff1d8;
+  --image-sidebar-hover: #f4e5c514;
+  --image-heart: #ed6950;
+  --image-on-primary-muted: #f1dfbf;
+  --image-ovr-bronze: #8e4d1e;
+  --image-ovr-silver: #4d5960;
+  --image-table-line: #7c6d4e38;
+  --image-table-hover: #8d6b3210;
+  --image-selected-row: #e8d9b9;
+  --image-dialog-shadow: #20170d40;
+  --image-popover-shadow: #31251a30;
+  --page-grain: none;
+  --surface-grain: url('../../art/standard/grain.png');
+  --text: var(--image-ink-color);
+  --text-muted: var(--image-muted);
+  --text-faint: var(--image-faint);
+  --accent-text: var(--image-accent);
+  --focus: var(--image-focus);
+  --focus-width: var(--image-focus-width);
+  --focus-offset: var(--image-focus-offset);
+  --image-focus-width: 2px;
+  --image-focus-offset: 2px;
+  --image-menu-gap: 8px;
+  --image-link-decoration: underline;
+
+  [data-ui='menu-row'],
+  [data-ui='menu-row']:hover:not(:disabled) {
+    border: 0;
+    border-image: none;
+    border-radius: 0;
+    padding: 14px 8px;
+    background: var(--image-art-rule-dark) left bottom / 100% 1px no-repeat;
+  }
+}
 
 html {
   --page-grain: url('../../art/standard/grain.png');

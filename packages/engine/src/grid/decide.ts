@@ -141,8 +141,10 @@ export const DECISION_CONFIG = {
      * The global shot-volume scale, in place of `shotScale` (T321, T324: 0.35 left validation goals
      * at 2.50 once defenders read the pass early). T370: 0.42 → 0.45 with `shotQuality`, which
      * passes up weak box shots, so the volume holds. T371: 0.475 with the lines' new weights.
+     * T398: 0.43, as midfielders arriving in the box (`SHAPE_CONFIG.candidate.boxRun`) shoot
+     * there too and the goals hold at 2.88.
      */
-    shotScale: 0.475,
+    shotScale: 0.43,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
@@ -207,6 +209,11 @@ export const DECISION_CONFIG = {
      * often runs across it than into it. Neutral at 0.
      */
     boxCarry: 0,
+    /**
+     * A pass into the box or a cut-back (T398, →MATCH-17): a teammate arriving on a box run scores
+     * this much more. Neutral at 0.
+     */
+    arriving: 0,
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -572,6 +579,14 @@ export function passOptions(
           (beyondLine ? past.through : 1)
         : 0;
     const combo = combination(s, gp, idx, c);
+    // A midfielder arriving in the box is found there (candidate model, T398).
+    const arriving =
+      candidate &&
+      (opts.crossOnly || inBox(p)) &&
+      gp.run?.kind === 'box' &&
+      gp.run.until > s.elapsed
+        ? DECISION_CONFIG.candidate.arriving
+        : 0;
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -588,6 +603,7 @@ export function passOptions(
       P.risk * (opts.riskScale ?? 1) * risk -
       Math.max(0, dist - P.tooFar) / 10 +
       through +
+      arriving +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'

@@ -6,7 +6,7 @@ import { build } from './codec';
 import type { CodecJob, View } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
-import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   lineupPreset,
   operate,
@@ -21,21 +21,30 @@ import {
 } from '../../../../packages/engine/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
-  checkpointSchemaFor,
   MATCH_MODEL_REVISION,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
 import { pack } from '../adapters/packing';
 import { encodePayload } from '../adapters/compression';
+import { checkpointContainerFor } from '../adapters/managerHistoryPacking';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
-import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
+import {
+  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PRIOR_CATALOG_HASHES,
+} from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { npcCompetition } from '../../../../packages/engine/src/npc-stats';
-import { cachedWorld, simulatedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
+import { npcCompetition, trackingBoundary } from '../../../../packages/engine/src/npc-stats';
+import {
+  cachedWorld,
+  ENABLED_RELEASE,
+  simulatedWorld,
+  withCandidateModel,
+  withoutManagerHistory,
+} from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
@@ -772,7 +781,7 @@ async function sealed(w: World) {
   const { codec, payload } = await encodePayload(bytes);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return JSON.stringify({
-    schema: checkpointSchemaFor(w),
+    schema: checkpointContainerFor(w),
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -819,4 +828,275 @@ it('reports supported match-model metadata and refuses a future one without acti
   expect(future.errorCode).toBe('save-compatibility');
   expect(future.worldMetadata).toBeUndefined();
   expect(host.world).toBeUndefined();
+});
+
+describe('prospective match-model activation (→SAVE-23)', () => {
+  const enabled = () => new Host(undefined, { release: ENABLED_RELEASE });
+  const load = (host: Host, id: string, raw: string, upgrade = true) =>
+    host.handle(req(id, -1, { type: 'inspect', raw, activate: true, upgrade }));
+  const round = (host: Host, id: string) =>
+    host.handle(
+      req(id, host.world!.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
+    );
+  /** The career's facts apart from the model, its ledger and the revision. */
+  const settled = (w: World) => {
+    const { matchModel: _model, npcSeason: _season, revision: _revision, ...rest } = w;
+    void [_model, _season, _revision];
+    return canonical(rest);
+  };
+  /** Mid-season with two own results settled; the next round plays an own match. */
+  const career = () => simulatedWorld(input, { rounds: 3 });
+
+  it('activates supported careers only prospectively', async () => {
+    const source = career();
+    const host = enabled();
+    const reply = await load(host, 'model-activate', await encode(source));
+    expect(reply.ok, reply.error).toBe(true);
+    expect(reply.upgraded).toBe(true);
+    const w = host.world!;
+    // One writer upgrade: the revision moves once and the model names it.
+    expect(w.revision).toBe(source.revision + 1);
+    expect(w.matchModel).toEqual({
+      revision: MATCH_MODEL_REVISION,
+      activated: { year: source.year, day: currentDay(source), revision: source.revision + 1 },
+      trackedFrom: trackingBoundary(source),
+      coverage: 'activation',
+    });
+    expect(w.npcSeason!.competitions).toEqual([]);
+    // Nothing settled is replayed, rewritten or backfilled.
+    expect(settled(w)).toBe(settled(source));
+    // It is written in the container of a tracked career, model data included, validated as any
+    // checkpoint (→SAVE-23/24).
+    const written = await decode(reply.raw!);
+    expect(written.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(canonical(written.world)).toBe(canonical(w));
+    // Loading it again keeps the recorded boundary and writes nothing.
+    const again = enabled();
+    const reloaded = await load(again, 'model-reload', reply.raw!);
+    expect(reloaded.upgraded).toBeUndefined();
+    expect(canonical(again.world)).toBe(canonical(w));
+    // New results carry the model; the earlier ones stay as settled.
+    expect((await round(again, 'model-round')).ok).toBe(true);
+    const added = again.world!.ownMatches.slice(source.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === MATCH_MODEL_REVISION)).toBe(true);
+    expect(canonical(again.world!.ownMatches.slice(0, source.ownMatches.length))).toBe(
+      canonical(source.ownMatches),
+    );
+    // A founding tracks from its first day; the default switch founds and loads without it.
+    const founder = enabled();
+    await founder.handle(req('model-found', -1, { type: 'found', input }));
+    expect(founder.world!.matchModel?.coverage).toBe('founding');
+    const plain = new Host();
+    await plain.handle(req('plain-found', -1, { type: 'found', input }));
+    expect(plain.world!.matchModel).toBeUndefined();
+    const unchanged = new Host();
+    expect((await load(unchanged, 'plain-load', await encode(source))).upgraded).toBeUndefined();
+    expect(canonical(unchanged.world)).toBe(canonical(source));
+  });
+
+  it('does not replace an unfinished settled playback', async () => {
+    const source = career();
+    const disk = await encode(source);
+    const host = enabled();
+    // The live career as its writer left it: the checkpoint on disk is the source.
+    host.world = structuredClone(source);
+    // A watched round queued before the load settles first, under the model it was played with;
+    // the checkpoint lacks that match, so loading it replays the fixture and activation waits.
+    const [watched, loaded] = await Promise.all([
+      round(host, 'queued-round'),
+      load(host, 'load-behind', disk),
+    ]);
+    expect(watched.ok, watched.error).toBe(true);
+    const playback = watched.playback!;
+    expect(playback.record.model).toBeUndefined();
+    expect(loaded.ok, loaded.error).toBe(true);
+    expect(loaded.upgraded).toBeUndefined();
+    expect(host.world!.matchModel).toBeUndefined();
+    // Replayed, the revealed match is the same settled fact.
+    const replay = await round(host, 'replayed-round');
+    expect(canonical(replay.playback!.record)).toBe(canonical(playback.record));
+    // The next checkpoint holds it: that is the safe boundary, and the match stays as settled.
+    const held = structuredClone(host.world!);
+    const activated = await load(host, 'load-held', await encode(held));
+    expect(activated.upgraded).toBe(true);
+    expect(host.world!.matchModel!.trackedFrom).toEqual(trackingBoundary(held));
+    expect(canonical(host.world!.ownMatches)).toBe(canonical(held.ownMatches));
+  });
+
+  it('read only does not persist activation', async () => {
+    const source = career();
+    const raw = await encode(source);
+    const host = enabled();
+    const metadata = await host.handle(
+      req('model-meta', -1, { type: 'inspect', raw, metadataOnly: true }),
+    );
+    expect(metadata.worldMetadata).toEqual({ id: source.id, revision: source.revision });
+    const inspected = await host.handle(req('model-inspect', -1, { type: 'inspect', raw }));
+    expect(inspected.candidate!.matchModel).toBeUndefined();
+    expect(
+      (await host.handle(req('model-inspect-up', -1, { type: 'inspect', raw, upgrade: true }))).ok,
+    ).toBe(false);
+    expect(host.world).toBeUndefined();
+    // A read-only tab activates the career as stored: no model, no upgrade, nothing to write.
+    const readOnly = await load(host, 'model-read-only', raw, false);
+    expect(readOnly.ok, readOnly.error).toBe(true);
+    expect(readOnly.upgraded).toBeUndefined();
+    expect(readOnly.raw).toBeUndefined();
+    expect(canonical(host.world)).toBe(canonical(source));
+  });
+
+  it('failed activation keeps exportable state', async () => {
+    const source = career();
+    const disk = await encode(source);
+    const host = enabled();
+    const reply = await load(host, 'model-write', disk);
+    expect(reply.upgraded).toBe(true);
+    // The commit of `reply.raw` fails: the disk keeps `disk`, the activated career stays live.
+    const exported = await host.handle(
+      req('model-export', host.world!.revision, { type: 'export' }),
+    );
+    const saved = await decode(exported.raw!);
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(canonical(saved.world)).toBe(canonical(host.world));
+    expect(canonical((await decode(disk)).world)).toBe(canonical(source));
+    // A retry from the kept checkpoint activates at the same boundary.
+    const retry = enabled();
+    await load(retry, 'model-retry', disk);
+    expect(canonical(retry.world)).toBe(canonical(host.world));
+    // A future model stays a compatibility failure, never activated over.
+    const future = await load(
+      retry,
+      'model-future',
+      await sealed({
+        ...source,
+        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-2' },
+      } as unknown as World),
+    );
+    expect(future.ok).toBe(false);
+    expect(future.errorCode).toBe('save-compatibility');
+    expect(canonical(retry.world)).toBe(canonical(host.world));
+  });
+
+  it('loads a recorded full-model career while the release is off', async () => {
+    const modelled = withCandidateModel(career());
+    const host = new Host();
+    const loaded = await load(host, 'recorded-load', await encode(modelled));
+    expect(loaded.ok, loaded.error).toBe(true);
+    expect(loaded.upgraded).toBeUndefined();
+    expect(canonical(host.world)).toBe(canonical(modelled));
+    // It plays on under its recorded model and saves in its container.
+    expect((await round(host, 'recorded-round')).ok).toBe(true);
+    const added = host.world!.ownMatches.slice(modelled.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === MATCH_MODEL_REVISION)).toBe(true);
+    expect(host.world!.npcSeason!.competitions.length).toBeGreaterThan(0);
+    const exported = await host.handle(
+      req('recorded-export', host.world!.revision, { type: 'export' }),
+    );
+    const saved = await decode(exported.raw!);
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(saved.world.matchModel).toEqual(modelled.matchModel);
+  });
+});
+
+describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
+  const load = (host: Host, id: string, raw: string, upgrade = true) =>
+    host.handle(req(id, -1, { type: 'inspect', raw, activate: true, upgrade }));
+  const round = (host: Host, id: string) =>
+    host.handle(
+      req(id, host.world!.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
+    );
+  /** A supported career saved before manager history; its next round plays an own match. */
+  const older = () => withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
+
+  it('starts a supported older career at its writer activation, whatever the release switch', async () => {
+    const source = older();
+    source.manager.since = source.year - 2;
+    const host = new Host();
+    const reply = await load(host, 'track-old', await encode(source));
+    expect(reply.ok, reply.error).toBe(true);
+    expect(reply.upgraded).toBe(true);
+    const w = host.world!;
+    expect(w.revision).toBe(source.revision + 1);
+    expect(w.managerHistory).toMatchObject({
+      coverage: 'activation',
+      trackedFrom: { year: source.year, day: currentDay(source), revision: source.revision + 1 },
+    });
+    // The known earlier service year stays; activation is no appointment date.
+    expect(w.managerHistory!.tenures[0]).toMatchObject({ knownSince: source.year - 2 });
+    expect(w.managerHistory!.tenures[0]).not.toHaveProperty('appointed');
+    // Older facts are kept as they were and old results stay unattributed.
+    const { managerHistory: _facts, revision: _revision, ...rest } = w;
+    void [_facts, _revision];
+    const { revision: _old, ...before } = source;
+    void _old;
+    expect(canonical(rest)).toBe(canonical(before));
+    expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
+    expect((await decode(reply.raw!)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    // New results are attributed; the heavy facts never travel in a view.
+    const played = await round(host, 'track-round');
+    expect(played.ok, played.error).toBe(true);
+    const added = host.world!.ownMatches.slice(source.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.managerTenure === w.managerHistory!.tenures[0]!.id)).toBe(true);
+    expect(reply.view!.world).not.toHaveProperty('managerHistory');
+    // Loaded again, a tracked career changes nothing.
+    const again = new Host();
+    expect((await load(again, 'track-again', reply.raw!)).upgraded).toBeUndefined();
+  });
+
+  it('waits for a queued or revealed own match before tracking starts', async () => {
+    const source = older();
+    const disk = await encode(source);
+    const host = new Host();
+    host.world = structuredClone(source);
+    const [watched, loaded] = await Promise.all([
+      round(host, 'track-queued'),
+      load(host, 'track-behind', disk),
+    ]);
+    expect(watched.ok, watched.error).toBe(true);
+    expect(watched.playback!.record).not.toHaveProperty('managerTenure');
+    expect(loaded.upgraded).toBeUndefined();
+    expect(host.world!.managerHistory).toBeUndefined();
+    // The checkpoint holding that match is the boundary; its result stays unattributed.
+    const replay = await round(host, 'track-replayed');
+    expect(canonical(replay.playback!.record)).toBe(canonical(watched.playback!.record));
+    const held = structuredClone(host.world!);
+    expect((await load(host, 'track-held', await encode(held))).upgraded).toBe(true);
+    expect(host.world!.managerHistory!.coverage).toBe('activation');
+    expect(host.world!.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
+  });
+
+  it('never tracks from a read-only load or an inspection', async () => {
+    const source = older();
+    const raw = await encode(source);
+    const host = new Host();
+    const inspected = await host.handle(req('track-inspect', -1, { type: 'inspect', raw }));
+    expect(inspected.candidate).not.toHaveProperty('managerHistory');
+    const readOnly = await load(host, 'track-read-only', raw, false);
+    expect(readOnly.upgraded).toBeUndefined();
+    expect(readOnly.raw).toBeUndefined();
+    expect(canonical(host.world)).toBe(canonical(source));
+  });
+
+  it('keeps the previous checkpoint and the tracked career exportable when the write fails', async () => {
+    const source = older();
+    const disk = await encode(source);
+    const host = new Host();
+    const reply = await load(host, 'track-write', disk);
+    expect(reply.upgraded).toBe(true);
+    // The commit of `reply.raw` fails: the disk keeps `disk`, the tracked career stays live.
+    const exported = await host.handle(
+      req('track-export', host.world!.revision, { type: 'export' }),
+    );
+    const saved = await decode(exported.raw!);
+    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(canonical(saved.world)).toBe(canonical(host.world));
+    expect((await decode(disk)).world).not.toHaveProperty('managerHistory');
+    // A retry from the kept checkpoint starts at the same boundary.
+    const retry = new Host();
+    await load(retry, 'track-retry', disk);
+    expect(canonical(retry.world)).toBe(canonical(host.world));
+  });
 });
