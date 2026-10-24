@@ -20,9 +20,9 @@ import {
   IN_STRIDE_CONFIG,
   prepareOnClock,
   prepareRestart,
+  presserOf,
   reachSeconds,
   readAt,
-  shielding,
   stepToward,
   strideSpeed,
   type MotionKnot,
@@ -324,23 +324,36 @@ describe('grid movement', () => {
     carryInStride(s, foe, [0, 34], 2, cellOf(attackFrame(1, foe.pos)));
     expect(cellOf(attackFrame(1, foe.pos))).toBe(cellOf(attackFrame(1, [37, 30])));
     expect(foe.pos[0]).toBeLessThan(35.1);
-    // An opponent within the pressure radius makes him shield it.
+    // The nearest opponent within the pressure radius presses him.
+    gp.pos = [40, 30];
     foe.pos = [gp.pos[0] + IN_STRIDE_CONFIG.pressureRadius - 0.1, gp.pos[1]];
-    expect(shielding(s, gp)).toBe(true);
+    expect(presserOf(s, gp)).toBe(foe);
     foe.pos = [gp.pos[0] + IN_STRIDE_CONFIG.pressureRadius + 0.1, gp.pos[1]];
-    expect(shielding(s, gp)).toBe(false);
-    // `since`: a carrier who has already moved those seconds starts his steps then.
-    const mate = s.players[0][7]!;
-    for (const p of [gp, mate]) {
-      p.pos = [30, 10];
-      p.vel = undefined;
-    }
-    advance(s, 1, [
-      { gp, to: [50, 10], since: 1 },
-      { gp: mate, to: [50, 10] },
-    ]);
-    expect(gp.pos).toEqual([30, 10]);
-    expect(mate.pos[0]).toBeGreaterThan(30);
+    expect(presserOf(s, gp)).toBeUndefined();
+    // Pressed from in front (1.2 m goal-side), he shields it on the move, away from the presser at
+    // the same pace, while the presser tracks him on his intention and the others move on theirs.
+    gp.vel = undefined;
+    foe.pos = [41.2, 30];
+    foe.vel = undefined;
+    foe.intention = {
+      kind: 'press',
+      priority: 'committed',
+      target: [41.2, 30],
+      opponent: gp.idx,
+      since: 0,
+      until: 60,
+    };
+    const idle = s.players[0][2]!;
+    const was = [idle.pos[0], idle.pos[1]];
+    const idleTo = targetOf(s, 0, idle.idx);
+    carryInStride(s, gp, [60, 30], 1.6);
+    expect(gp.pos[0]).toBeLessThan(39);
+    expect(40 - gp.pos[0]).toBeLessThanOrEqual(quick * 1.6 + EPS);
+    expect(gap(foe.pos, gp.pos)).toBeLessThan(IN_STRIDE_CONFIG.pressureRadius);
+    expect(foe.pos[0]).toBeLessThan(41.2);
+    // The ball goes with him; a player with nothing to track heads for his place.
+    expect(s.ball).toEqual(gp.pos);
+    if (gap(was, idleTo) > 0.1) expect(gap(idle.pos, idleTo)).toBeLessThan(gap(was, idleTo));
   });
 
   it('waits for a long flight to land', () => {

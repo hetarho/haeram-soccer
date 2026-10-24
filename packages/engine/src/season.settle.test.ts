@@ -142,7 +142,8 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
       played(w, f, { minute: 20, side: other, kind: 'injury', player: hurt.id }),
       true,
     );
-    const out = w.discipline!.out;
+    // The match's own injuries are listed too.
+    const out = w.discipline!.out.filter((o) => o.player === hurt.id);
     expect(out).toHaveLength(1);
     expect(out[0]).toMatchObject({ player: hurt.id, club, until: { year: w.year } });
     const days = out[0].until.day - dayCountedFrom(w, w.year);
@@ -154,7 +155,10 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const [first, second] = ownFixtures(w);
     const side = sideOf(w, first);
     const probe = simulateMatch(w, first, false, true);
-    const sent = probe.squads[side][1];
+    // A starter with no incident of his own in the match, so his red card is the only one.
+    const sent = probe.squads[side]
+      .slice(1)
+      .find((p) => !probe.record.incidents?.some((x) => x.player === p.id || x.other === p.id))!;
     recordMatch(
       w,
       played(w, first, { minute: 70, side, kind: 'red', player: sent.id, reason: 'dogso' }),

@@ -19,7 +19,7 @@ import {
   toEngine,
 } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
-import { SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
+import { intentionTarget, SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
 import { kickOffPoint, onPitch, skill, type GridPlayer, type GridState } from './state';
 
 /**
@@ -65,10 +65,10 @@ export const GRID_BALL_CONFIG = {
 export type BallSpeed = Exclude<keyof typeof GRID_BALL_CONFIG, 'retrieval' | 'placement'>;
 
 /**
- * The player on the ball between receiving it and playing it (→MATCH-12 r25, T426): he takes it in
+ * The player on the ball between receiving it and playing it (→MATCH-12 r27, T426): he takes it in
  * stride at `speed` m/s, a fresh player of average pace's, scaled by pace and fatigue as his top
- * speed is (`strideSpeed`), unless an opponent stands within `pressureRadius` metres of him: then
- * he shields it where he received it.
+ * speed is (`strideSpeed`); with an opponent within `pressureRadius` metres of him he shields it on
+ * the move, taking it away from that opponent at the same pace.
  */
 export const IN_STRIDE_CONFIG = {
   speed: 3.5,
@@ -197,8 +197,7 @@ export function flightSeconds(
  * for that many seconds first (the player on the ball until he plays it). `before` sends him on to
  * the point he was heading for before the action until `readAt` seconds, when he reads the kick
  * and turns to `to` (→MATCH-17: off the ball a player reacts to the ball once it is played, not to
- * where it will land). `since` (whole steps) is the time he has already moved in the action, his
- * in-stride carry before the kick (`carryInStride`): his steps start then.
+ * where it will land).
  */
 export interface Move {
   gp: GridPlayer;
@@ -206,7 +205,6 @@ export interface Move {
   holdUntil?: number;
   before?: readonly [number, number];
   readAt?: number;
-  since?: number;
 }
 
 /** A player a restart needs on a spot: its taker or one of its scene. */
@@ -235,7 +233,6 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     vmax: number;
     holdUntil: number;
     hold: readonly [number, number];
-    since: number;
   }[] = [];
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
@@ -248,7 +245,6 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
         vmax: speedOf(s, gp),
         holdUntil: before ? p.readAt! : (p?.holdUntil ?? 0),
         hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
-        since: p?.since ?? 0,
       });
     }
   const whole = Math.floor(dt / C.step + 1e-9);
@@ -259,33 +255,39 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
     const t = i * C.step;
     for (let k = 0; k < movers.length; k++) {
       const m = movers[k]!;
-      if (t + 1e-9 < m.since) continue;
       stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
     }
   }
 }
 
-/** His in-stride pace (→MATCH-12 r25): `IN_STRIDE_CONFIG.speed` scaled as his top speed (`speedOf`). */
+/** His in-stride pace (→MATCH-12 r27): `IN_STRIDE_CONFIG.speed` scaled as his top speed (`speedOf`). */
 export function strideSpeed(s: GridState, gp: GridPlayer): number {
   const { base, pace } = SHAPE_CONFIG.speed;
   return (IN_STRIDE_CONFIG.speed * speedOf(s, gp)) / (base + (pace * AVERAGE_PACE) / 99);
 }
 
-/** An opponent stands within `IN_STRIDE_CONFIG.pressureRadius` of him: he shields the ball. */
-export function shielding(s: GridState, gp: GridPlayer): boolean {
-  return s.players[gp.side === 0 ? 1 : 0].some(
-    (o) =>
-      onPitch(o) &&
-      s.math.hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]) <= IN_STRIDE_CONFIG.pressureRadius,
-  );
+/** The nearest opponent within `IN_STRIDE_CONFIG.pressureRadius` of him, who makes him shield it. */
+export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined {
+  let near: GridPlayer | undefined,
+    best: number = IN_STRIDE_CONFIG.pressureRadius;
+  for (const o of s.players[gp.side === 0 ? 1 : 0]) {
+    if (!onPitch(o)) continue;
+    const d = s.math.hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]);
+    if (d <= best) [near, best] = [o, d];
+  }
+  return near;
 }
 
 /**
- * The player on the ball takes it in stride for `seconds` (whole steps) before he plays it
- * (→MATCH-12 r25, T426): along his heading blended evenly with the direction to `aim`, at his
- * stride pace (`strideSpeed`) within the movement rules and the pitch, and, given `cell` (his side's
- * attack-frame cell), never out of that cell. He keeps running through it, so he is still in
- * stride when he plays it. Moves him; the caller moves the ball with him.
+ * The player on the ball takes it in stride for `seconds` (whole steps) of the match before he
+ * plays it (→MATCH-12 r27, T426), at his stride pace (`strideSpeed`) within the movement rules and
+ * the pitch and, given `cell` (his side's attack-frame cell), never out of that cell: along his
+ * heading blended evenly with the direction to `aim`, or, with an opponent close (`presserOf`),
+ * shielding it on the move away from him. He keeps running through it, so he is still in stride
+ * when he plays it. Everyone else moves meanwhile on his intention: a target that follows another
+ * player (a presser, a marker, a cover) is read again every step, so they track the carrier and
+ * the men they mark; the rest are read once, as `advance` reads them. Moves everyone and the ball
+ * with him; the caller runs the clock.
  */
 export function carryInStride(
   s: GridState,
@@ -295,19 +297,9 @@ export function carryInStride(
   cell?: number,
 ): void {
   const C = GRID_MOVEMENT_CONFIG;
-  const { hypot } = s.math;
   const vmax = strideSpeed(s, gp);
-  const v = gp.vel ?? [0, 0];
-  const speed = hypot(v[0], v[1]);
-  const ax = aim[0] - gp.pos[0],
-    ay = aim[1] - gp.pos[1];
-  const toAim = hypot(ax, ay);
-  let dx = (toAim > 0 ? ax / toAim : 0) + (speed > 0 ? v[0] / speed : 0),
-    dy = (toAim > 0 ? ay / toAim : 0) + (speed > 0 ? v[1] / speed : 0);
-  const blended = hypot(dx, dy);
-  // Heading straight away from his aim: he turns toward it.
-  if (blended < 1e-9) [dx, dy] = toAim > 0 ? [ax / toAim, ay / toAim] : [0, 0];
-  else [dx, dy] = [dx / blended, dy / blended];
+  const speed = s.math.hypot(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);
+  const [dx, dy] = strideHeading(s, gp, aim);
   // A point past where his stride takes him, by its braking distance.
   const top = Math.max(vmax, speed);
   const reach = top * seconds + (top * top) / (2 * C.braking);
@@ -327,11 +319,46 @@ export function carryInStride(
   };
   const point = inside([gp.pos[0] + dx * reach, gp.pos[1] + dy * reach]);
   keep(point);
+  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const others: { gp: GridPlayer; to: readonly [number, number]; vmax: number }[] = [];
+  for (const side of [0, 1] as const)
+    for (const o of s.players[side])
+      if (o !== gp && onPitch(o))
+        others.push({ gp: o, to: inside(targetOf(s, side, o.idx, cache)), vmax: speedOf(s, o) });
   const steps = Math.round(seconds / C.step);
   for (let i = 0; i < steps; i++) {
     stepToward(gp, point, vmax, C.step);
     keep(gp.pos, gp.vel);
+    s.ball = [gp.pos[0], gp.pos[1]];
+    for (const m of others)
+      stepToward(m.gp, m.gp.intention ? inside(intentionTarget(s, m.gp)) : m.to, m.vmax, C.step);
   }
+}
+
+/**
+ * Which way the player on the ball takes it in stride (a unit vector): straight away from the
+ * opponent close to him (`presserOf`), else his heading blended evenly with the direction to `aim`
+ * — toward it when he stands or runs straight away from it.
+ */
+function strideHeading(
+  s: GridState,
+  gp: GridPlayer,
+  aim: readonly [number, number],
+): [number, number] {
+  const { hypot } = s.math;
+  const unit = (x: number, y: number): [number, number] => {
+    const n = hypot(x, y);
+    return n > 1e-9 ? [x / n, y / n] : [0, 0];
+  };
+  const presser = presserOf(s, gp);
+  if (presser) {
+    const away = unit(gp.pos[0] - presser.pos[0], gp.pos[1] - presser.pos[1]);
+    if (away[0] !== 0 || away[1] !== 0) return away;
+  }
+  const to = unit(aim[0] - gp.pos[0], aim[1] - gp.pos[1]);
+  const run = unit(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);
+  const blended = unit(to[0] + run[0], to[1] + run[1]);
+  return blended[0] !== 0 || blended[1] !== 0 ? blended : to;
 }
 
 /** An attack-frame cell as `[x0, x1, y0, y1]`; a cell holds its near edges, so its far ones are kept just inside. */

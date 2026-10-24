@@ -937,12 +937,17 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     const moves = candidate
       ? [...P.times, ...P.paths.flatMap((path) => path?.route?.map(([t]) => t) ?? [])]
       : [...P.times, ...P.starts];
-    // Every restart's recorded kick is drawn as its own sample, however close (T359); on a
-    // pre-feature trace every snapshot is, so a receiver is drawn where the ball reaches him.
+    // Every restart's recorded kick is drawn as its own sample, however close (T359), and so is the
+    // kick that ends an in-stride carry, so the page draws the carry (T426); on a pre-feature trace
+    // every snapshot is, so a receiver is drawn where the ball reaches him.
     const kicks = candidate
       ? entries.flatMap((e, k) => {
           const kick = k ? kickAfter(entries[k - 1]!, e) : undefined;
-          return kick ? [kick.elapsed] : [];
+          const knots = e.knots ?? [];
+          const stride = knots.findIndex(
+            (knot, i) => knot.kind === 'kick' && knots[i - 1]?.kind === 'carry',
+          );
+          return [...(kick ? [kick.elapsed] : []), ...(stride > 0 ? [knots[stride]!.at] : [])];
         })
       : P.times;
     const knots = candidate ? entries.flatMap((e) => e.knots?.map((knot) => knot.at) ?? []) : [];
@@ -1022,12 +1027,17 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
             now.set(side * 64 + idx, position);
             const was = before.get(side * 64 + idx);
             const at = (side * 11 + slot) * 2;
-            const target = Number.isFinite(snap.targets[at])
-              ? mirror(units([snap.targets[at]!, snap.targets[at + 1]!]))
-              : position;
             const holder = ball.holder?.[0] === side && ball.holder[1] === idx;
             const state = MOTION_STATES[snap.states[side * 11 + slot]!] ?? 'shape';
             const intention = snap.intentions?.[side * 11 + slot];
+            // The snapshot's carrier aims where he stands; once the ball has left him (his kick,
+            // T426) he shows his intention's target instead.
+            const left = state === 'carry' && !holder && intention && !('end' in intention);
+            const target = left
+              ? mirror(units(intention.target))
+              : Number.isFinite(snap.targets[at])
+                ? mirror(units([snap.targets[at]!, snap.targets[at + 1]!]))
+                : position;
             list.push({
               id: id(side, idx),
               position,

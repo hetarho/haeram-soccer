@@ -326,13 +326,13 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-19` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-1` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
-    // flank beside a back three `candidate-et-1`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-19']) {
-      const extraTime = id === 'candidate-et-19';
+    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-1']) {
+      const extraTime = id === 'candidate-et-1';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -387,12 +387,29 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 });
 
 /**
- * The share of holds a viewer sees stand still: every spell of one player on the ball (the frames'
- * `holders`, joined across minutes) of at least 0.2 s whose drawn position — the motion samples,
- * straight between them as the page draws them — moves under 0.3 m/s for more than half of it, in
- * tenth-second steps.
+ * The share of open-play holds a viewer sees stand still (T426's drawn-hold measure): every spell
+ * of one player on the ball (the frames' `holders`, joined across minutes) of at least 0.2 s whose
+ * drawn position — the motion samples, straight between them as the page draws them — moves under
+ * 0.3 m/s for more than half of it, in tenth-second steps. The spells MATCH-12 r27 lets him stand
+ * on the ball are left out: those of a hold-up or lay-off, a keeper's and a restart's (the entry
+ * whose play the spell's middle falls in).
  */
-function stillHolds(frames: readonly MatchFrame[]): number {
+function stillHolds(
+  frames: readonly MatchFrame[],
+  trace: readonly TraceEntry[],
+  rosters: readonly (readonly { id: string }[])[],
+): number {
+  const plays = trace.filter((e) => e.outcome !== 'incident');
+  let j = 0;
+  const standing = (id: string, p: number, mid: number) => {
+    while (j < plays.length && (plays[j]!.period < p || plays[j]!.elapsed < mid)) j++;
+    const e = plays[j];
+    if (!e || e.period !== p) return false;
+    const side = rosters[0]!.some((x) => x.id === id) ? 0 : 1;
+    const idx = rosters[side]!.findIndex((x) => x.id === id);
+    const keeper = e.slots[side * 11] === idx;
+    return e.spot !== undefined || keeper || (e.action === 'holdUp' && e.idx === idx);
+  };
   const samples = frames.flatMap((f) =>
     (f.motion ?? []).map((m) => ({
       t: m.elapsedSeconds,
@@ -425,7 +442,7 @@ function stillHolds(frames: readonly MatchFrame[]): number {
     still = 0;
   for (const h of holds) {
     const length = h.t1 - h.t0;
-    if (length < 0.2) continue;
+    if (length < 0.2 || standing(h.id, h.p, (h.t0 + h.t1) / 2)) continue;
     const n = Math.max(2, Math.round(length / 0.1));
     let quiet = 0,
       was = drawn(h.id, h.p, h.t0);
@@ -446,7 +463,7 @@ function stillHolds(frames: readonly MatchFrame[]): number {
   return still / counted;
 }
 
-describe('candidate in-stride carry in playback (→MATCH-12 r25, T426)', () => {
+describe('candidate in-stride carry in playback (→MATCH-12 r27, T426)', () => {
   const played = ['in-stride-1', 'in-stride-2', 'in-stride-3'].map((id) => {
     const setup = buildGridSetup(
       w,
@@ -485,11 +502,8 @@ describe('candidate in-stride carry in playback (→MATCH-12 r25, T426)', () => 
           expect(Math.hypot(mid.at[0] - from[0], mid.at[1] - from[1])).toBeGreaterThan(0.1);
         carries++;
       }
-      // Holds the page draws still: 0.42, 0.45 and 0.42 before the carry on this measure. Most of
-      // those left are receivers shielding from a presser within `IN_STRIDE_CONFIG.pressureRadius`
-      // (pressers stand `SHAPE_CONFIG.pressGoalSide` from their man), hold-ups and duels; the
-      // brief's 0.04 against its probe's 0.113 awaits the planner (T426 result).
-      expect(stillHolds(frames)).toBeLessThan(0.37);
+      // Open-play holds the page draws still: 0.42, 0.45 and 0.42 of every hold before the carry.
+      expect(stillHolds(frames, result.trace!, setup.rosters)).toBeLessThanOrEqual(0.05);
     }
     expect(carries).toBeGreaterThan(300);
   });

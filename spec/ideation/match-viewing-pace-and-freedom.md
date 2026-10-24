@@ -1,5 +1,5 @@
 # IDEATION match-viewing-pace-and-freedom
-> st:ready@261024 | Open play readable at 1x, dead balls that do not drag, coherent corner defence, and players who leave their formation spot when football calls for it.
+> st:converted@261025 | Open play readable at 1x, dead balls that do not drag, coherent corner defence, and players who leave their formation spot when football calls for it.
 
 ## vision
 - Problem (owner, 261024, watching own matches in the live game): open play moves too fast to follow at 1x while corners, free kicks and goal kicks crawl; at a corner only the attacking side gathers at the goal while the defenders keep their formation; players hold their shape so well that an LB on the right wing, normal in real football, never happens.
@@ -55,11 +55,11 @@
 
 ## domains
 - WEB (now): WEB-32 running-speed policy (1x = 12 s per open-play minute, 2x start, the set-piece walk-in drawn fast) →WEB-32
-- WEB (next model revision): inspector tendency labels
+- WEB (next model revision): inspector tendency labels →PLAYER-26
 - MATCH (now): MATCH-12 uniform mapping with the set-piece walk-in as an explicit presentation exception; settled facts, added time and the engine's recorded dead time unchanged →MATCH-12
-- MATCH (next model revision): MATCH-17 intentions with manager-set positional freedom, situational disorder and position swaps; tendencies in movement; MATCH-25 views showing it; recalibration under MATCH-28
-- STAFF: how a manager sets each player's freedom (his philosophy/flexibility, the slot's role, the player's ability); no owner control
-- PLAYER: the four tendencies (자유도, 규율, 압박 성향, 예측력) — today attributes plus a hidden stable personality (`motionTraits`); their meaning beside 판단력/위치선정
+- MATCH (next model revision): MATCH-17 intentions with manager-set positional freedom, situational disorder and position swaps; tendencies in movement; MATCH-25 views showing it; recalibration under MATCH-28 →MATCH-17
+- STAFF: how a manager sets each player's freedom (his philosophy/flexibility, the slot's role, the player's ability); no owner control →STAFF-46
+- PLAYER: the four tendencies (자유도, 규율, 압박 성향, 예측력) — today attributes plus a hidden stable personality (`motionTraits`); their meaning beside 판단력/위치선정 →PLAYER-26
 
 ## open
 - Beyond the set-piece walk-in: whether other dead time (ball retrieval, penalties, cards, injuries, substitutions) is compressed — the owner decides after seeing v1 in play.
