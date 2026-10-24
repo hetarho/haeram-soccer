@@ -8,6 +8,7 @@
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--reference id,…] [--reference-scale S] [--rare-scale S]
  *     [--seasons N] [--jobs N] [--out FILE] [--patch JSON] [--reference-cache DIR]
+ *     [--sizes id=N,…]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   docs/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
@@ -15,7 +16,8 @@
  *   one season each through ordinary settlement (season:league-20; `--only season` plays only them);
  *   `--stress N` plays N core fixtures with the red-card settlement forced to its fallback;
  *   `--patch` overrides configs in this process and its workers (t328-counter-roles.ts's form) and
- *   `--reference-cache` keeps each condition's detailed samples for later screens (T400)
+ *   `--reference-cache` keeps each condition's detailed samples for later screens (T400);
+ *   `--sizes` plays the named conditions at their own sizes, both paths (T401's pilot sizes)
  *
  *   pnpm exec tsx scripts/match-parity.ts --tactics [--partition …] [--round N] [--matches N]
  *     [--out FILE]
@@ -1046,21 +1048,34 @@ function reportJobs(): Job[] {
       throw new Error(`unknown family ${family}`);
   const named = text('conditions', '').split(',').filter(Boolean);
   const references = text('reference', '').split(',').filter(Boolean);
-  for (const id of [...named, ...references]) conditionOf(id);
+  // Each condition's own size (`--sizes id=n,…`, T401: its pilot size), its reference the same.
+  const sizes = new Map(
+    text('sizes', '')
+      .split(',')
+      .filter(Boolean)
+      .map((x) => {
+        const [id, n] = x.split('=');
+        if (!Number.isInteger(Number(n)) || Number(n) < 30) throw new Error(`bad size ${x}`);
+        return [id!, Number(n)] as const;
+      }),
+  );
+  for (const id of [...named, ...references, ...sizes.keys()]) conditionOf(id);
   return CORPUS_CONFIG.conditions
     .filter((c) =>
       named.length ? named.includes(c.id) : only.includes(c.family) && c.family !== 'season',
     )
     .map((c) => {
       const scale = c.rare ? option('rare-scale', option('scale', 1)) : option('scale', 1);
-      const count = Math.max(30, Math.round(calibrationSize(c) * scale));
+      const count = sizes.get(c.id) ?? Math.max(30, Math.round(calibrationSize(c) * scale));
       return {
         condition: c.id,
         count,
         partition,
         round: option('round', 0),
         reference: references.includes(c.id)
-          ? Math.min(count, Math.max(30, Math.round(count * option('reference-scale', 1))))
+          ? sizes.has(c.id)
+            ? count
+            : Math.min(count, Math.max(30, Math.round(count * option('reference-scale', 1))))
           : 0,
       };
     });
