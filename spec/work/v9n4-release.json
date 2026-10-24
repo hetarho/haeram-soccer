@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T14:33:15.579Z",
-  "sourceCommit": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+  "snapshotAt": "2026-10-24T16:27:38.414Z",
+  "sourceCommit": "fd16927a23b6b82ef572b4936239feaf9042621f",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "879f0432bc06bacc52d6facfb9dad8a7cd0d7999",
+      "commit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T12:57:02.695Z"
+      "at": "2026-10-24T14:51:12.827Z"
     },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
@@ -48,13 +48,13 @@
     }
   },
   "summary": {
-    "total": 11,
-    "completed": 8,
-    "remaining": 3,
-    "running": 0,
+    "total": 18,
+    "completed": 9,
+    "remaining": 9,
+    "running": 1,
     "review": 0,
     "blocked": 0,
-    "unassigned": 3
+    "unassigned": 8
   },
   "tasks": [
     {
@@ -106,7 +106,9 @@
         "T411",
         "T420",
         "T422",
-        "T426"
+        "T426",
+        "T436",
+        "T437"
       ],
       "status": "todo"
     },
@@ -114,7 +116,8 @@
       "id": "T410",
       "title": "Re-read both references and MATCH-28 parity at the pilot size on the released model",
       "dep": [
-        "T286"
+        "T286",
+        "T433"
       ],
       "status": "todo"
     },
@@ -123,6 +126,54 @@
       "title": "The player on the ball takes it in stride instead of stopping",
       "dep": [
         "T420"
+      ],
+      "status": "doing"
+    },
+    {
+      "id": "T431",
+      "title": "Player tendencies and manager-given freedom in the engine",
+      "dep": [
+        "T435"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T432",
+      "title": "Freedom, situational disorder and position swaps in the candidate's movement",
+      "dep": [
+        "T431"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T433",
+      "title": "규율, 압박 성향 and 예측력 drive movement",
+      "dep": [
+        "T432"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T434",
+      "title": "Re-run the own-club edge probe on the released model",
+      "dep": [
+        "T286"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T435",
+      "title": "Match-model revision 2 and its prospective upgrade",
+      "dep": [
+        "T286"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T437",
+      "title": "Recalibrate the candidate's scoring after the in-stride carry",
+      "dep": [
+        "T426"
       ],
       "status": "todo"
     }
@@ -813,6 +864,8 @@
       "submittedBase": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
       "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
       "submittedAt": "2026-10-24T14:25:27.603Z",
+      "integratedCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
+      "integratedAt": "2026-10-24T14:51:10.612Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -889,6 +942,196 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T14:23:21.845Z",
           "finishedAt": "2026-10-24T14:25:27.184Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T14:33:15.682Z",
+          "finishedAt": "2026-10-24T14:51:10.329Z"
+        }
+      ]
+    },
+    {
+      "id": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "group": "v9n4-release",
+      "taskId": "T426",
+      "tasks": [
+        "T426"
+      ],
+      "lane": null,
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "doing",
+      "reason": null,
+      "createdAt": "2026-10-24T14:51:13.055Z",
+      "startCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
+      "dispatch": {
+        "id": "b4c6cfa0-1cfe-4be9-a757-abd1aa44d233",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T15:41:01.733Z",
+        "finishedAt": "2026-10-24T16:13:29.801Z",
+        "error": null,
+        "summary": "MATCH r27 is implemented, but the candidate now scores 4.1 goals a match and a coarse goals guard in bands.test fails; loosening it is the planner's call.\n\nWhat changed:\n- **The carry:** the hold time is fixed before the resolution and the match clock runs through it. A free carrier blends his heading toward his aim. A pressed carrier (an opponent within 3 m) shields on the move, straight away from that opponent, at the same stride pace. Everyone else moves on his intention meanwhile; pressers, markers and covers re-read their target every step, so they track the carrier.\n- **The kick:** the action then resolves from the kick spot, with `carry, carry, kick` knots. After a carry he kicks at once and the flight lasts until the action ends, so he never waits on the ball.\n- **Who stands:** only hold-ups and lay-offs, keepers, restart takers and first-time balls stand on the ball.\n- **Playback:** draws the carry and keeps each carried kick as a drawn sample.\n\nMeasured:\n- On the drawn-hold measure without hold-ups, keepers and restarts, the still share on the three possession-v-counter fixtures is 0.030 / 0.035 / 0.040 (target at most 0.05).\n- Re-recorded: the candidate digests in grid-throughput and full-model-throughput, the knockout seeds, and the playback extra-time seed (now `candidate-et-1`).\n- The pre-feature digests pass untouched.\n- season.settle.test's injected incidents collided with the match's own; the test is fixed (outside touches, listed in limits).\n- One calibration round (round 68, 120 core matches, per team a match): goals 2.89 → 4.10 a match, xG 1.33 → 2.05, shots 11.7 → 14.8, passes 431 → 394, progressive carries 46 → 75, box entries 28 → 38.\n\nThe blocker:\n- bands.test's coarse candidate guard (2.0–3.6 goals) fails at 4.33. Under the release-on config its real-football guard also fails, at 3.64.\n- Probes on the same round show why. With the carrier still but the clock running and everyone moving, goals are 3.25. With the other players frozen too, 2.78. So running play on through the hold before the resolution adds about 0.45 goals, and the carry itself about 0.8.\n\nChecks: typecheck, lint and format:check pass. `vitest run --changed` in 8 shards (218 files): everything else it found is now fixed; only the bands.test guards still fail. The batch gate was not run. The task result is written and done items are marked [v]."
+      }
+    },
+    {
+      "id": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "group": "v9n4-release",
+      "taskId": "T427",
+      "tasks": [
+        "T427"
+      ],
+      "lane": null,
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "released",
+      "reason": "renumbered: this work continues as T436 (u6p2 completed its own T427); implementation kept on task/v9n4-release/T427-9420e805 at 0969b77c",
+      "createdAt": "2026-10-24T15:27:03.681Z",
+      "startCommit": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+      "verifiedCommit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+      "submittedBase": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+      "submissionId": "525aea9c-b0e2-462b-8084-7435d3528201",
+      "submittedAt": "2026-10-24T15:40:58.800Z",
+      "releasedAt": "2026-10-24T15:57:15.723Z",
+      "risk": {
+        "risky": false,
+        "reasons": [],
+        "lines": 44,
+        "files": 2
+      },
+      "dispatch": {
+        "id": "77b2efdb-a4f0-45f8-88c4-0e580e3dac73",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T15:27:04.925Z",
+        "finishedAt": "2026-10-24T15:40:58.822Z",
+        "error": null,
+        "summary": "T427 is fixed and its task checks pass. In `closeSeason` (`packages/engine/src/season.ts`), `reduceSeasonMaterial` now runs right after `promote`, which plays the promotion playoff. The two playoff matches now lose their per-match material at the close like the rest of the season, and their touches count in the season heat maps (MATCH-5). It still reads the history entry written before `promote`. Only that call moved; nothing else in the close changed order.\n\n`packages/engine/src/material.test.ts` gains \"the promotion playoff's material is reduced at the close\". It takes the FOUNDING club on `ENABLED_RELEASE` after 46 rounds and closes the season. It then checks that `1950:lower-promotion:0:0` and `:1:0` have no material but keep their score, highlights, xG, metrics and detail. It also checks that the season heat maps hold more touches than the league matches alone, so the playoff touches are included. With the call moved back before `promote`, this case fails as required (\"expected { …(4) } to be undefined\"); the fix was then restored. The existing close test's comment no longer points at the old defect. The golden fixtures record neither material nor heat, so they are unaffected.\n\n**Checks run:**\n- `material.test.ts`: 6 passed, and 6 passed under `--config vitest.release-on.config.ts`.\n- `pnpm run typecheck` and `pnpm run lint` passed.\n- `pnpm run format:check` passed after `prettier --write` on the test file.\n- `vitest run --changed 12b973f2 --passWithNoTests`: run as 8 shards to stay under the 10-minute command limit. 218 files, 1690 passed, 4 skipped, 0 failed.\n\n**Left to the batch gate, not run:** `test:unit`, `test:contract`, `validate:catalogs`, `build` and Chromium playwright. No storage benchmark was run. Nothing was committed or submitted. Acceptance items are marked `[v]` and the result is filled in `spec/tasks/T427.playoff-material-at-close.md`."
+      },
+      "reviewHistory": [
+        {
+          "id": "53a5b3a2-3534-4fde-ab56-813c3046dda2",
+          "owner": "policy",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "low risk: 44 changed lines in 2 files within touches, tests changed",
+          "findings": [],
+          "commit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+          "baseCommit": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+          "submissionId": "525aea9c-b0e2-462b-8084-7435d3528201",
+          "createdAt": "2026-10-24T15:40:58.801Z",
+          "finishedAt": "2026-10-24T15:40:58.801Z",
+          "invalidatedAt": "2026-10-24T15:57:15.723Z",
+          "invalidationReason": "attempt released"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T427",
+          "commit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+          "at": "2026-10-24T15:40:58.757Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T15:38:25.870Z",
+              "finishedAt": "2026-10-24T15:40:58.368Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T15:38:25.870Z",
+          "finishedAt": "2026-10-24T15:40:58.368Z"
+        }
+      ]
+    },
+    {
+      "id": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "group": "v9n4-release",
+      "taskId": "T436",
+      "tasks": [
+        "T436"
+      ],
+      "lane": null,
+      "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+      "contributors": [
+        "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-24T16:13:30.106Z",
+      "startCommit": "897524ec6427f0a6b4aea41357aaca138069b882",
+      "verifiedCommit": "352063a00e4021a2b69702de822e5e269941f29c",
+      "submittedBase": "fd16927a23b6b82ef572b4936239feaf9042621f",
+      "submissionId": "52e18d40-525e-4986-98dd-7cbf2d39b817",
+      "submittedAt": "2026-10-24T16:27:36.180Z",
+      "risk": {
+        "risky": false,
+        "reasons": [],
+        "lines": 44,
+        "files": 2
+      },
+      "dispatch": {
+        "id": "1a551a28-1019-4108-9b3c-a286fc65e721",
+        "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T16:13:31.253Z",
+        "finishedAt": "2026-10-24T16:27:36.202Z",
+        "error": null,
+        "summary": "T436 is done: the promotion playoff's per-match material is now cleared at the season close, like every other own match (MATCH-5).\n\n**Fix.** In `closeSeason` (`packages/engine/src/season.ts`), `reduceSeasonMaterial` now runs right after `promote`, which plays the playoff. Nothing else in the close changes order.\n\n**Test.** `packages/engine/src/material.test.ts` has a new case, \"the promotion playoff's material is reduced at the close\". It runs FOUNDING on `ENABLED_RELEASE` for 46 rounds, then closes the season. After the close, `1950:lower-promotion:0:0` and `:1:0` have no material but keep score, highlights, xG, metrics and detail. The case also checks that the season heat maps include the playoff touches. With the old order put back, this case fails (\"expected { …(4) } to be undefined\"). The existing close case's comment was updated.\n\n**Carry-over.** Cherry-pick is blocked for workers, so I re-applied T427's approved commit 0969b77c by hand. Both code files now match it exactly (`git diff 0969b77c` on them is empty). No code named T427, so nothing needed renaming.\n\n**Checks run:**\n- `pnpm install --frozen-lockfile --prefer-offline`\n- `material.test.ts`: 6 passed on the default config and 6 passed with `--config vitest.release-on.config.ts`\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` all pass\n- `pnpm exec vitest run --changed 897524ec… --passWithNoTests` in 8 shards: 218 files, 1693 passed, 4 skipped, 0 failed\n\n**Not run, left to the batch gate:** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and the Chromium Playwright run. No storage benchmark was run; candidate careers that play the playoff now save slightly smaller checkpoints.\n\nChanged files: `season.ts`, `material.test.ts` and the T436 task file (acceptance boxes ticked, result filled in)."
+      },
+      "review": {
+        "id": "71d43d89-8998-4cb7-a61e-c364eb73101a",
+        "owner": "policy",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "low risk: 44 changed lines in 2 files within touches, tests changed",
+        "findings": [],
+        "commit": "352063a00e4021a2b69702de822e5e269941f29c",
+        "baseCommit": "fd16927a23b6b82ef572b4936239feaf9042621f",
+        "submissionId": "52e18d40-525e-4986-98dd-7cbf2d39b817",
+        "createdAt": "2026-10-24T16:27:36.180Z",
+        "finishedAt": "2026-10-24T16:27:36.180Z"
+      },
+      "steps": [
+        {
+          "taskId": "T436",
+          "commit": "352063a00e4021a2b69702de822e5e269941f29c",
+          "at": "2026-10-24T16:27:36.131Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T16:24:42.764Z",
+              "finishedAt": "2026-10-24T16:27:35.678Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T16:24:42.764Z",
+          "finishedAt": "2026-10-24T16:27:35.678Z"
         }
       ]
     }
@@ -5008,6 +5251,856 @@
       "group": "v9n4-release",
       "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
       "taskId": "T420",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1035,
+      "at": "2026-10-24T14:51:10.509Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T14:33:15.682Z",
+            "finishedAt": "2026-10-24T14:51:10.329Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1036,
+      "at": "2026-10-24T14:51:10.612Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
+        "integratedAt": "2026-10-24T14:51:10.612Z"
+      }
+    },
+    {
+      "sequence": 1037,
+      "at": "2026-10-24T14:51:12.843Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T14:51:12.827Z"
+        }
+      }
+    },
+    {
+      "sequence": 1038,
+      "at": "2026-10-24T14:51:13.055Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "c5718a8f-acf7-488c-a840-7c23a953237d",
+        "group": "v9n4-release",
+        "taskId": "T426",
+        "tasks": [
+          "T426"
+        ],
+        "lane": null,
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T14:51:13.055Z",
+        "startCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4"
+      }
+    },
+    {
+      "sequence": 1039,
+      "at": "2026-10-24T14:51:13.919Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1040,
+      "at": "2026-10-24T14:51:14.464Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9807047f-8501-4102-964e-d2e192dd7006",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T14:51:14.464Z"
+        }
+      }
+    },
+    {
+      "sequence": 1041,
+      "at": "2026-10-24T14:51:14.646Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9807047f-8501-4102-964e-d2e192dd7006",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T14:51:14.464Z"
+        }
+      }
+    },
+    {
+      "sequence": 1042,
+      "at": "2026-10-24T15:25:45.460Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: With IN_STRIDE_CONFIG.pressureRadius 3, 58% of the candidate's open-play passes come from a receiver who shields: pressers stand SHAPE_CONFIG.pressGoalSide (1.2 m) goal-side of their man. Still holds only fall from 0.43 to 0.34 on the test's drawn-hold measure. The brief's 0.113 baseline can't be reproduced, and hold-ups, duel tackles and keepers alone leave 0.11. Because only the carrier moves before the resolution, opponents stay where they stood: goals go 2.89 → 3.17 a match and xG 1.33 → 1.73 a team (4.05 and 2.06 at a 1 m radius). Which in-stride rule and target should T426 implement?"
+      }
+    },
+    {
+      "sequence": 1043,
+      "at": "2026-10-24T15:25:45.485Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "9807047f-8501-4102-964e-d2e192dd7006",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T14:51:14.464Z",
+          "finishedAt": "2026-10-24T15:25:45.485Z",
+          "error": null,
+          "summary": "T426 is built as specified, but blocked on a planner decision. In `movement.ts`: `IN_STRIDE_CONFIG` (3.5 m/s, 3 m), `strideSpeed`, `shielding`, `carryInStride` (keeps a shot, cross, cut-back or clearance inside the reception cell) and `Move.since`. In `engine.ts`: the action time is drawn before the action is played, and the in-stride carry fills the hold time left by the flight estimate. The carrier and ball move first, then the action resolves from the kick spot, with `dt = max(least, carry + flight, reach)`, `carry` knots, and the carry counted via `Tally.carryEvent`. In `playback.ts`: the actor is drawn along his carry with the ball at his feet. Tests were added to engine, movement and playback tests. The pre-feature digests are unchanged (1975/1995/2024 recomputed). typecheck, lint and format:check pass. The three touched files give 45 passed and 1 failed, the same under the release-on config. The failure is the `candidate-et-19` extra-time seed, which no longer reaches extra time. grid-throughput and full-model-throughput have 4 failures because the candidate seeds and digests moved; I have not re-recorded them yet. `vitest --changed` was not run.\n\nWhy it is blocked:\n- **Shielding dominates.** Pressers stand 1.2 m goal-side of their man (`SHAPE_CONFIG.pressGoalSide`), so 58% of open-play passes come from a receiver who shields under the 3 m radius. On the test's drawn-hold measure, the still-hold share goes from 0.42/0.45/0.42 to 0.32/0.36/0.33 on the three fixtures. With no shielding (1 m radius) it is 0.107; hold-ups, duel tackles and keepers make up that floor.\n- **The brief's baseline can't be reproduced.** None of the measures tried gives the brief's 0.113 / 0.24.\n- **Frozen opponents inflate chances.** Only the carrier moves before the resolution, so opponents stay where they stood. On calibration round 68 (core condition, 120 matches, per team): progressive carries 46.4 → 57.1, xG 1.33 → 1.73, goals 2.89 → 3.17 a match. At a 1 m radius goals reach 4.05.\n\nAll measurements are in the task result."
+        }
+      }
+    },
+    {
+      "sequence": 1044,
+      "at": "2026-10-24T15:25:46.521Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T10:04:39.403Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000,
+          "decisionWait": {
+            "startedAt": "2026-10-24T15:25:46.512Z",
+            "deadlineAt": "2026-10-24T15:40:45.350Z",
+            "attempts": [
+              {
+                "attempt": "c5718a8f-acf7-488c-a840-7c23a953237d",
+                "taskId": "T426",
+                "question": "With IN_STRIDE_CONFIG.pressureRadius 3, 58% of the candidate's open-play passes come from a receiver who shields: pressers stand SHAPE_CONFIG.pressGoalSide (1.2 m) goal-side of their man. Still holds only fall from 0.43 to 0.34 on the test's drawn-hold measure. The brief's 0.113 baseline can't be reproduced, and hold-ups, duel tackles and keepers alone leave 0.11. Because only the carrier moves before the resolution, opponents stay where they stood: goals go 2.89 → 3.17 a match and xG 1.33 → 1.73 a team (4.05 and 2.06 at a 1 m radius). Which in-stride rule and target should T426 implement?",
+                "requestedAt": "2026-10-24T15:25:45.460Z"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "sequence": 1045,
+      "at": "2026-10-24T15:27:03.681Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "9420e805-d683-4216-918a-7de74e0c7c50",
+        "group": "v9n4-release",
+        "taskId": "T427",
+        "tasks": [
+          "T427"
+        ],
+        "lane": null,
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T15:27:03.681Z",
+        "startCommit": "12b973f2d897bf33e956a2e2f84d91680a171ac8"
+      }
+    },
+    {
+      "sequence": 1046,
+      "at": "2026-10-24T15:27:04.541Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1047,
+      "at": "2026-10-24T15:27:04.559Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T10:04:39.403Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1048,
+      "at": "2026-10-24T15:27:04.925Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "77b2efdb-a4f0-45f8-88c4-0e580e3dac73",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T15:27:04.925Z"
+        }
+      }
+    },
+    {
+      "sequence": 1049,
+      "at": "2026-10-24T15:27:05.112Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "77b2efdb-a4f0-45f8-88c4-0e580e3dac73",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T15:27:04.925Z"
+        }
+      }
+    },
+    {
+      "sequence": 1050,
+      "at": "2026-10-24T15:27:24.087Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1051,
+      "at": "2026-10-24T15:38:24.770Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1052,
+      "at": "2026-10-24T15:38:25.476Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1053,
+      "at": "2026-10-24T15:38:25.518Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1054,
+      "at": "2026-10-24T15:40:58.801Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "verifying",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "verifiedCommit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+        "submittedBase": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+        "submissionId": "525aea9c-b0e2-462b-8084-7435d3528201",
+        "submittedAt": "2026-10-24T15:40:58.800Z",
+        "risk": {
+          "risky": false,
+          "reasons": [],
+          "lines": 44,
+          "files": 2
+        },
+        "review": {
+          "id": "53a5b3a2-3534-4fde-ab56-813c3046dda2",
+          "owner": "policy",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "low risk: 44 changed lines in 2 files within touches, tests changed",
+          "findings": [],
+          "commit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+          "baseCommit": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+          "submissionId": "525aea9c-b0e2-462b-8084-7435d3528201",
+          "createdAt": "2026-10-24T15:40:58.801Z",
+          "finishedAt": "2026-10-24T15:40:58.801Z"
+        },
+        "steps": [
+          {
+            "taskId": "T427",
+            "commit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+            "at": "2026-10-24T15:40:58.757Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T15:38:25.870Z",
+                "finishedAt": "2026-10-24T15:40:58.368Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T15:38:25.870Z",
+            "finishedAt": "2026-10-24T15:40:58.368Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1055,
+      "at": "2026-10-24T15:40:58.822Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "77b2efdb-a4f0-45f8-88c4-0e580e3dac73",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T15:27:04.925Z",
+          "finishedAt": "2026-10-24T15:40:58.822Z",
+          "error": null,
+          "summary": "T427 is fixed and its task checks pass. In `closeSeason` (`packages/engine/src/season.ts`), `reduceSeasonMaterial` now runs right after `promote`, which plays the promotion playoff. The two playoff matches now lose their per-match material at the close like the rest of the season, and their touches count in the season heat maps (MATCH-5). It still reads the history entry written before `promote`. Only that call moved; nothing else in the close changed order.\n\n`packages/engine/src/material.test.ts` gains \"the promotion playoff's material is reduced at the close\". It takes the FOUNDING club on `ENABLED_RELEASE` after 46 rounds and closes the season. It then checks that `1950:lower-promotion:0:0` and `:1:0` have no material but keep their score, highlights, xG, metrics and detail. It also checks that the season heat maps hold more touches than the league matches alone, so the playoff touches are included. With the call moved back before `promote`, this case fails as required (\"expected { …(4) } to be undefined\"); the fix was then restored. The existing close test's comment no longer points at the old defect. The golden fixtures record neither material nor heat, so they are unaffected.\n\n**Checks run:**\n- `material.test.ts`: 6 passed, and 6 passed under `--config vitest.release-on.config.ts`.\n- `pnpm run typecheck` and `pnpm run lint` passed.\n- `pnpm run format:check` passed after `prettier --write` on the test file.\n- `vitest run --changed 12b973f2 --passWithNoTests`: run as 8 shards to stay under the 10-minute command limit. 218 files, 1690 passed, 4 skipped, 0 failed.\n\n**Left to the batch gate, not run:** `test:unit`, `test:contract`, `validate:catalogs`, `build` and Chromium playwright. No storage benchmark was run. Nothing was committed or submitted. Acceptance items are marked `[v]` and the result is filled in `spec/tasks/T427.playoff-material-at-close.md`."
+        }
+      }
+    },
+    {
+      "sequence": 1056,
+      "at": "2026-10-24T15:40:58.872Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1057,
+      "at": "2026-10-24T15:41:01.611Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "origin/main를 합치다 충돌했습니다. 기획 공간에서 merge해 해결한 뒤 다시 통합하세요."
+      }
+    },
+    {
+      "sequence": 1058,
+      "at": "2026-10-24T15:41:01.733Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4c6cfa0-1cfe-4be9-a757-abd1aa44d233",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T15:41:01.733Z"
+        }
+      }
+    },
+    {
+      "sequence": 1059,
+      "at": "2026-10-24T15:41:01.920Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4c6cfa0-1cfe-4be9-a757-abd1aa44d233",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T15:41:01.733Z"
+        }
+      }
+    },
+    {
+      "sequence": 1060,
+      "at": "2026-10-24T15:57:15.723Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "9420e805-d683-4216-918a-7de74e0c7c50",
+      "taskId": "T427",
+      "previousStatus": "approved",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "renumbered: this work continues as T436 (u6p2 completed its own T427); implementation kept on task/v9n4-release/T427-9420e805 at 0969b77c",
+        "review": null,
+        "releasedAt": "2026-10-24T15:57:15.723Z",
+        "reviewHistory": [
+          {
+            "id": "53a5b3a2-3534-4fde-ab56-813c3046dda2",
+            "owner": "policy",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "low risk: 44 changed lines in 2 files within touches, tests changed",
+            "findings": [],
+            "commit": "0969b77ca12fb3b97db2f19441304cd95bba36ea",
+            "baseCommit": "12b973f2d897bf33e956a2e2f84d91680a171ac8",
+            "submissionId": "525aea9c-b0e2-462b-8084-7435d3528201",
+            "createdAt": "2026-10-24T15:40:58.801Z",
+            "finishedAt": "2026-10-24T15:40:58.801Z",
+            "invalidatedAt": "2026-10-24T15:57:15.723Z",
+            "invalidationReason": "attempt released"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1061,
+      "at": "2026-10-24T16:13:29.778Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: With MATCH r27 implemented, the candidate's goals rise 2.89 → 4.10 a match (xG 1.33 → 2.05 a team, shots 11.7 → 14.8, passes 431 → 394). bands.test's coarse goal guards (at most 3.6) fail: 4.33 for the candidate, 3.64 for the real-football guard under release-on. With the carrier still but the clock running and everyone moving, goals are 3.25 (2.78 with the others frozen too); the carry itself adds about 0.8. Calibration is not gated, but widening the guards loosens a target (MATCH-28). How should T426 land?"
+      }
+    },
+    {
+      "sequence": 1062,
+      "at": "2026-10-24T16:13:29.801Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "b4c6cfa0-1cfe-4be9-a757-abd1aa44d233",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T15:41:01.733Z",
+          "finishedAt": "2026-10-24T16:13:29.801Z",
+          "error": null,
+          "summary": "MATCH r27 is implemented, but the candidate now scores 4.1 goals a match and a coarse goals guard in bands.test fails; loosening it is the planner's call.\n\nWhat changed:\n- **The carry:** the hold time is fixed before the resolution and the match clock runs through it. A free carrier blends his heading toward his aim. A pressed carrier (an opponent within 3 m) shields on the move, straight away from that opponent, at the same stride pace. Everyone else moves on his intention meanwhile; pressers, markers and covers re-read their target every step, so they track the carrier.\n- **The kick:** the action then resolves from the kick spot, with `carry, carry, kick` knots. After a carry he kicks at once and the flight lasts until the action ends, so he never waits on the ball.\n- **Who stands:** only hold-ups and lay-offs, keepers, restart takers and first-time balls stand on the ball.\n- **Playback:** draws the carry and keeps each carried kick as a drawn sample.\n\nMeasured:\n- On the drawn-hold measure without hold-ups, keepers and restarts, the still share on the three possession-v-counter fixtures is 0.030 / 0.035 / 0.040 (target at most 0.05).\n- Re-recorded: the candidate digests in grid-throughput and full-model-throughput, the knockout seeds, and the playback extra-time seed (now `candidate-et-1`).\n- The pre-feature digests pass untouched.\n- season.settle.test's injected incidents collided with the match's own; the test is fixed (outside touches, listed in limits).\n- One calibration round (round 68, 120 core matches, per team a match): goals 2.89 → 4.10 a match, xG 1.33 → 2.05, shots 11.7 → 14.8, passes 431 → 394, progressive carries 46 → 75, box entries 28 → 38.\n\nThe blocker:\n- bands.test's coarse candidate guard (2.0–3.6 goals) fails at 4.33. Under the release-on config its real-football guard also fails, at 3.64.\n- Probes on the same round show why. With the carrier still but the clock running and everyone moving, goals are 3.25. With the other players frozen too, 2.78. So running play on through the hold before the resolution adds about 0.45 goals, and the carry itself about 0.8.\n\nChecks: typecheck, lint and format:check pass. `vitest run --changed` in 8 shards (218 files): everything else it found is now fixed; only the bands.test guards still fail. The batch gate was not run. The task result is written and done items are marked [v]."
+        }
+      }
+    },
+    {
+      "sequence": 1063,
+      "at": "2026-10-24T16:13:30.106Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+        "group": "v9n4-release",
+        "taskId": "T436",
+        "tasks": [
+          "T436"
+        ],
+        "lane": null,
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T16:13:30.106Z",
+        "startCommit": "897524ec6427f0a6b4aea41357aaca138069b882"
+      }
+    },
+    {
+      "sequence": 1064,
+      "at": "2026-10-24T16:13:31.131Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1065,
+      "at": "2026-10-24T16:13:31.253Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1a551a28-1019-4108-9b3c-a286fc65e721",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T16:13:31.253Z"
+        }
+      }
+    },
+    {
+      "sequence": 1066,
+      "at": "2026-10-24T16:13:31.456Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1a551a28-1019-4108-9b3c-a286fc65e721",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T16:13:31.253Z"
+        }
+      }
+    },
+    {
+      "sequence": 1067,
+      "at": "2026-10-24T16:14:27.565Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1068,
+      "at": "2026-10-24T16:24:41.541Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1069,
+      "at": "2026-10-24T16:24:42.328Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1070,
+      "at": "2026-10-24T16:24:42.370Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1071,
+      "at": "2026-10-24T16:27:36.180Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "verifying",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "verifiedCommit": "352063a00e4021a2b69702de822e5e269941f29c",
+        "submittedBase": "fd16927a23b6b82ef572b4936239feaf9042621f",
+        "submissionId": "52e18d40-525e-4986-98dd-7cbf2d39b817",
+        "submittedAt": "2026-10-24T16:27:36.180Z",
+        "risk": {
+          "risky": false,
+          "reasons": [],
+          "lines": 44,
+          "files": 2
+        },
+        "review": {
+          "id": "71d43d89-8998-4cb7-a61e-c364eb73101a",
+          "owner": "policy",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "low risk: 44 changed lines in 2 files within touches, tests changed",
+          "findings": [],
+          "commit": "352063a00e4021a2b69702de822e5e269941f29c",
+          "baseCommit": "fd16927a23b6b82ef572b4936239feaf9042621f",
+          "submissionId": "52e18d40-525e-4986-98dd-7cbf2d39b817",
+          "createdAt": "2026-10-24T16:27:36.180Z",
+          "finishedAt": "2026-10-24T16:27:36.180Z"
+        },
+        "steps": [
+          {
+            "taskId": "T436",
+            "commit": "352063a00e4021a2b69702de822e5e269941f29c",
+            "at": "2026-10-24T16:27:36.131Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T16:24:42.764Z",
+                "finishedAt": "2026-10-24T16:27:35.678Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T16:24:42.764Z",
+            "finishedAt": "2026-10-24T16:27:35.678Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1072,
+      "at": "2026-10-24T16:27:36.202Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "1a551a28-1019-4108-9b3c-a286fc65e721",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T16:13:31.253Z",
+          "finishedAt": "2026-10-24T16:27:36.202Z",
+          "error": null,
+          "summary": "T436 is done: the promotion playoff's per-match material is now cleared at the season close, like every other own match (MATCH-5).\n\n**Fix.** In `closeSeason` (`packages/engine/src/season.ts`), `reduceSeasonMaterial` now runs right after `promote`, which plays the playoff. Nothing else in the close changes order.\n\n**Test.** `packages/engine/src/material.test.ts` has a new case, \"the promotion playoff's material is reduced at the close\". It runs FOUNDING on `ENABLED_RELEASE` for 46 rounds, then closes the season. After the close, `1950:lower-promotion:0:0` and `:1:0` have no material but keep score, highlights, xG, metrics and detail. The case also checks that the season heat maps include the playoff touches. With the old order put back, this case fails (\"expected { …(4) } to be undefined\"). The existing close case's comment was updated.\n\n**Carry-over.** Cherry-pick is blocked for workers, so I re-applied T427's approved commit 0969b77c by hand. Both code files now match it exactly (`git diff 0969b77c` on them is empty). No code named T427, so nothing needed renaming.\n\n**Checks run:**\n- `pnpm install --frozen-lockfile --prefer-offline`\n- `material.test.ts`: 6 passed on the default config and 6 passed with `--config vitest.release-on.config.ts`\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` all pass\n- `pnpm exec vitest run --changed 897524ec… --passWithNoTests` in 8 shards: 218 files, 1693 passed, 4 skipped, 0 failed\n\n**Not run, left to the batch gate:** `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and the Chromium Playwright run. No storage benchmark was run; candidate careers that play the playoff now save slightly smaller checkpoints.\n\nChanged files: `season.ts`, `material.test.ts` and the T436 task file (acceptance boxes ticked, result filled in)."
+        }
+      }
+    },
+    {
+      "sequence": 1073,
+      "at": "2026-10-24T16:27:36.255Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "b44f488f-718a-42a6-825f-c1c9b2c21c21",
+      "taskId": "T436",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

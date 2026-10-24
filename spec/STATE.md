@@ -283,7 +283,6 @@
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
 | T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
-| T436 | The promotion playoff's own material reduced at the season close | MATCH HIST SAVE ARCH | - | todo |
 | T437 | Recalibrate the candidate's scoring after the in-stride carry | MATCH ARCH | T426 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH ARCH | T286 | todo |
 | T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF MATCH WEB ARCH | T435 | todo |
@@ -301,15 +300,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 11 | 8 | 3 | 0 | 0 | 0 | 2026-10-24T14:33:15.579Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 18 | 9 | 9 | 1 | 0 | 0 | 2026-10-24T16:27:38.414Z | [history](work/v9n4-release.json) |
 
 ## next
-- resume work group v9n4-release (hand-off from v9n4, 261025 01:30): `npx haeram-spec-creator work status --json` and `work board --work v9n4-release --json`; if the runner is gone, `work runner-recover --work v9n4-release`, then run `work run --work v9n4-release --autopilot --provider claude --decision-wait-ms 900000 --json` in the background and coordinate with `work next --work v9n4-release --owner v9n4 --coordinator --autopilot --wait 540 --json` (the coordinator tag stays v9n4)
-- remaining in the group: T426 (carrier in stride, MATCH r27; resumed with the defenders' read restored, coarse goal guards widened only for what remains) → T437 (explore 4 h, main session: recalibrate the carry's scoring) and T436 (promotion playoff material at the close; reuse 0969b77c on task/v9n4-release/T427-9420e805) → T286 (flip `MATCH_MODEL_RELEASE`, benchmarks on a quiet machine, accuracy report, docs; start from its switch-on probe notes)
-- after T286: T435 (match-model revision 2) → T431 → T432 (explore 6 h, main session) → T433 (explore 4 h, main session) → T410 (explore, re-read on the released model); T434 (explore 3 h, own-club edge probe on the released model, then the owner chooses A/B/C/D)
-- owner: review T422's set-piece pace in play before any further dead-ball compression (throw-ins, retrieval, penalties, cards, injuries, substitutions keep the running speed)
+- inspect work board for remaining tasks
 
 ## log
+- 261024 T436 integrated
 - 261025 decide T426 + create-task T437 (v9n4): goals 4.10 after MATCH r27; defenders' read restored in T426, T437 recalibrates before T286
 - 261025 v9n4 hand-off at 01:30: group v9n4-release continues in a new session (STATE next); integrated T415–T422 and T420 with green CI after two e2e fixes; planned T426, T431–T436 and MATCH r25–r27, STAFF r35, PLAYER r10, SAVE r53
 - 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
@@ -329,4 +326,3 @@
 - 261024 T420 integrated
 - 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
 - 261024 T421 T422 integrated
-- 261024 T416 integrated

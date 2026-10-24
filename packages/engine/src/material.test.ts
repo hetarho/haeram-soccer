@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../contracts/src/detail';
 import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 import { FOUNDING } from './finance.testkit';
 import { playGrid } from './grid/engine';
 import { cellOf } from './grid/pitch';
@@ -134,9 +134,8 @@ describe('post-match material', () => {
   });
 
   it('reduces material to season heat maps at the close', () => {
-    // The pre-feature season, whatever the switch. On the candidate this club reaches the lower
-    // promotion playoff, which `promote` settles after the close reduced the material, so both
-    // playoff matches keep theirs (T419's probe): a season-close defect left to T420.
+    // The pre-feature season, whatever the switch: this club plays no playoff on it, so the league
+    // season is all its material (the candidate's playoff is the next case).
     const w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
     const season = w.ownMatches.filter((m) => m.year === w.year);
     expect(season.length).toBeGreaterThan(0);
@@ -166,6 +165,38 @@ describe('post-match material', () => {
       expect(m.score).toBeDefined();
       expect(m.xg).toBeDefined();
     }
+  });
+
+  it("the promotion playoff's material is reduced at the close", () => {
+    // On the candidate this club reaches the lower promotion playoff, which `promote` plays inside
+    // the close.
+    const w = simulatedWorld(FOUNDING, { rounds: 46 }, ENABLED_RELEASE);
+    const year = w.year;
+    const touches = (heat: Record<string, number[]> = {}) =>
+      Object.values(heat)
+        .flat()
+        .reduce((s, n) => s + n, 0);
+    let league = 0;
+    for (const m of w.ownMatches.filter((m) => m.year === year))
+      for (const p of m.players) league += heatMap(m, p.id)!.touches;
+
+    closeSeason(w);
+
+    const playoff = [`${year}:lower-promotion:0:0`, `${year}:lower-promotion:1:0`].map((id) =>
+      w.ownMatches.find((m) => m.id === id)!,
+    );
+    for (const m of playoff) {
+      expect(m).toBeDefined();
+      expect(m.material).toBeUndefined();
+      // Outcomes, highlights, match xG and counters stay (→MATCH-5).
+      expect(m.score).toBeDefined();
+      expect(m.highlights.length).toBeGreaterThan(0);
+      expect(m.xg).toHaveLength(2);
+      expect(m.metrics).toHaveLength(2);
+      expect(m.detail).toHaveLength(2);
+    }
+    // The season heat maps take the playoff touches too.
+    expect(touches(w.history.find((h) => h.year === year)!.heat)).toBeGreaterThan(league);
   });
 
   it('decodes what it encodes', () => {
