@@ -127,8 +127,11 @@ for (const viewport of VIEWPORTS)
     await page.waitForTimeout(8 * FAST_MINUTE_MS);
     const covered = (await minuteNow(page)) - before.minute;
     const holds = (await seen()).cues.length - before.cues + held;
+    // The pitch advances its clock at most 60 ms a frame (Pitch.tsx), so a slow CI browser draws
+    // 16x below its nominal rate; three of the eight nominal minutes still tell a running 16x
+    // clock from a stalled or 1x one (1x would cover half a minute).
     expect(covered).toBeGreaterThanOrEqual(
-      5 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
+      3 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
     );
     expect(covered).toBeLessThanOrEqual(10);
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({

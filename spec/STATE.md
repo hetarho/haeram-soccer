@@ -300,6 +300,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261024 fix e2e (v9n4): CI on 879f0432 failed on Firefox and WebKit — the set-piece preparation journey compared the page's sample count with the Node reference exactly (1729 against 1726) and now seeks by match time; the continuity journey's 16x window expected 5 of 8 nominal minutes while the pitch caps each frame's clock step at 60 ms, now 3; both specs 18/18 on Chromium, Firefox and WebKit
 - 261024 T421 T422 integrated
 - 261024 T416 integrated
 - 261024 T419 integrated
@@ -319,4 +320,3 @@
 - 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
 - 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
 - 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.
-- 261024 T409 done (t5q2; explore, kept k1): the aggregate credits 20 s / 30 s of added time it left out; validation round 67: core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside; second-yellow factor by tactic neutral; aggregate artifact refreshed
