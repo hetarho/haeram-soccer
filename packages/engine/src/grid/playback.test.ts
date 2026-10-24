@@ -326,13 +326,14 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-2` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-1` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
-    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-2']) {
-      const extraTime = id === 'candidate-et-2';
+    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`; T441's
+    // lanes settled `candidate-et-2` in 90 minutes).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-1']) {
+      const extraTime = id === 'candidate-et-1';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -655,8 +656,22 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
           // From the kick until the next play the samples show exactly the engine's jobs, drawn as
           // marking (the keeper as guarding his goal), each mark on a different attacker on the
           // pitch; when the next play is a restart, its preparation shows its own places (T359).
+          // A defender who leaves meanwhile (an injury or a dismissal traced from the delivery on,
+          // as in T441's `candidate-1`, where one is hurt as the corner lands) takes his job along.
           else if (m.elapsedSeconds < next && (!prepared || m.elapsedSeconds <= e.elapsed)) {
-            expect(new Set(jobs.map((p) => p.id)), label).toEqual(engine);
+            const left = new Set(
+              played.result
+                .trace!.filter(
+                  (x) =>
+                    x.transition === 'exit' &&
+                    x.side === def &&
+                    x.elapsed >= e.elapsed &&
+                    x.elapsed <= m.elapsedSeconds,
+                )
+                .map((x) => ids(def)[x.idx]!),
+            );
+            const still = new Set([...engine].filter((p) => !left.has(p)));
+            expect(new Set(jobs.map((p) => p.id)), label).toEqual(still);
             checked++;
           }
           const attackers = new Set(m.players[att].map((p) => p.id));

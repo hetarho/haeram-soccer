@@ -20,7 +20,8 @@ export const LANE_CONFIG = {
   /**
    * The completion chance a pass loses per unit of its lane's summed weight (`laneWeight`). T441
    * set it where the candidate's completion holds its frame (calibration round 69, core, 120
-   * matches: 77.3% before, 79.1% with no lane term, 74.8% at 0.08, 77.6% at 0.033).
+   * matches: 77.32% before; screened at 79.1% with no lane term and 74.8% at 0.08; 77.34% at 0.033
+   * on the final source).
    */
   risk: 0.033,
   /**
@@ -56,7 +57,7 @@ export interface PathReach {
 }
 
 /** An opponent's weight in a lane he reaches (`LANE_CONFIG.weight`). */
-export function laneWeight(reach: Pick<LaneReach, 'spare' | 'stretch'>): number {
+function laneWeight(reach: Pick<LaneReach, 'spare' | 'stretch'>): number {
   const W = LANE_CONFIG.weight;
   return Math.min(1, Math.max(0, reach.spare) / W.full) * (reach.stretch ? W.stretch : 1);
 }
@@ -65,7 +66,7 @@ export function laneWeight(reach: Pick<LaneReach, 'spare' | 'stretch'>): number 
  * Seconds to run `d` metres in a straight line from `u0` m/s toward it, accelerating at
  * `GRID_MOVEMENT_CONFIG.acceleration` up to `vmax`.
  */
-export function runSeconds(d: number, u0: number, vmax: number): number {
+function runSeconds(d: number, u0: number, vmax: number): number {
   if (d <= 0) return 0;
   const a = GRID_MOVEMENT_CONFIG.acceleration;
   const u = Math.min(Math.max(0, u0), vmax);

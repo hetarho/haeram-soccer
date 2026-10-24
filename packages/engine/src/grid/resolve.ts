@@ -375,8 +375,8 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
  *
  * On the candidate model (→MATCH-11, MATCH-31, T441) the lane is who reaches the ball's path,
  * kicked `kickAt` seconds from now (`reachOnPath`): the marker is the opponent it meets first, on
- * his 위치선정 (none: an even 60), and the lane term `LANE_CONFIG.risk` × the reaching opponents'
- * summed weights. A failed pass the split gives to an interception is that opponent's, and only
+ * his 위치선정 (none: an even 60; a keeper's distribution keeps the defender nearest the lane), and
+ * the lane term `LANE_CONFIG.risk` × the reaching opponents' summed weights. A failed pass the split gives to an interception is that opponent's, and only
  * when one reaches it: he wins it at his reach point within `LANE_CONFIG.reach` with
  * `LANE_CONFIG.sure` to spare, else deflects it loose there; with nobody reaching it the ball is
  * lost at its receiver (or out) instead.
@@ -409,13 +409,12 @@ export function resolvePass(
   const lane = onCandidate(s)
     ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
     : undefined;
-  const marker = lane ? undefined : nearestToSegment(s, side, from, to);
   const first = lane?.first;
-  const markerSkill = first
-    ? skill(s, other(side), first.gp.idx, 'positioning')
-    : marker
-      ? skill(s, other(side), marker.gp.idx, 'positioning')
-      : 60;
+  // The defender the pass plays against (→MATCH-11): for a keeper's distribution the one nearest
+  // the lane, for any other pass on the candidate the one who reaches its path first.
+  const marker = !lane || keeper ? nearestToSegment(s, side, from, to) : undefined;
+  const against = lane && !keeper ? first?.gp : marker?.gp;
+  const markerSkill = against ? skill(s, other(side), against.idx, 'positioning') : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
@@ -440,11 +439,12 @@ export function resolvePass(
   const I = DUEL_CONFIG.candidate.intercept;
   const intercepted =
     onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
-  if (u < intercepted && first)
-    return !first.stretch && first.spare >= LANE_CONFIG.sure
-      ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
-      : looseBall(s, first.at, r, [side, target]);
-  if (u < intercepted && marker) {
+  if (lane) {
+    if (u < intercepted && first)
+      return !first.stretch && first.spare >= LANE_CONFIG.sure
+        ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
+        : looseBall(s, first.at, r, [side, target]);
+  } else if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
       from[1] + (to[1] - from[1]) * marker.t,
