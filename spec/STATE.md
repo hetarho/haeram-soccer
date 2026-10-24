@@ -16,6 +16,10 @@
 | p4w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T17:03Z | 2026-10-24T17:03Z | - |
 
 ## inbox
+- 261025 decided MATCH-31 MATCH-32 MATCH-33 MATCH-34 MATCH-35 T441 T442 T443 T444 T445: the owner asks for a redesigned attack in front of goal and better interceptions in the passing lanes (the 261024 suggest (a)) → MATCH r28: a pass is cut out only where an opponent reaches its path, a side shuts lanes with a cover shadow and a screen, the attack occupies near post / far post / penalty spot / edge with runs timed to the delivery, the defence protects the same zones goal-side, deliveries go into occupied zones and never blind, shots meet the bodies in their path before the keeper and second balls go to whoever reaches them (alt: keep the drawn interception split with a distance cap | retune entries and shot scales again, which T397/T408/T411 found exhausted)
+- 261025 decided T441 T442 T443 T444 T445 T437 T286 T410: where the final-third rework goes → before T437 and T286, so one recalibration covers the carry and the rework and the release measures the final model, as for T426 (alt: after the release as part of match-model revision 2 with the freedom bundle | after T410's re-read)
+- 261025 decided T441 T442 T443 T444 T445: parallel or serial → one dependency chain T441 → T445, each integrated on its own, while T431 runs beside it; every candidate-football change re-records the same candidate digests and shares bands.test, so two lanes would conflict at integration (alt: two lanes with neutral hooks switched on together in T437 | one lane integrated once)
+- 261025 decided T441 T442 T443 T444 T445 T437: a chain task whose change takes bands.test's coarse guards out → it widens them only to its measured level with its evidence in the comment, and T437 restores them before T286, as T426's decision allowed (alt: a decision request from each task | relax nothing and hold the chain)
 - 261025 decided T431 T435 T432 T286: the owner wants T431 to run right after T426 instead of waiting for T286 → T431 dep T426; its values are a pure function nothing in play reads, so it needs no revision gate and changes no digest, and the per-match computation on revision 2 moves to T435 (dep T286 T431); T432 dep T431 T435 keeps the freedom movement behind revision 2 (alt: keep T431 behind T435 | gate T431 on the candidate path instead of revision 2)
 - 261025 decided T426 T437 T286 MATCH-23 MATCH-28: MATCH r27 took the candidate's goals 2.89 → 4.10 a match and failed bands.test's coarse guard (3.6) → T426 restores the defenders' read of the decided pass during the carry (about 0.45 goals), widens the coarse guards only for what remains with the evidence, and T437 (explore 4 h) recalibrates the carry's scoring before T286 activates (alt: widen the guards and leave it to T410 after the release | recalibrate inside T426)
 - 261025 decided MATCH-12 T426: with a 3 m shielding radius 58% of passes still came from a receiver standing on the ball (pressers stand 1.2 m goal-side) and frozen opponents lifted goals 2.89 → 3.17 → MATCH r27: a pressed carrier shields on the move away from the nearest opponent and everyone moves on his intention during the carry; only hold-ups, lay-offs, keepers and restart takers stand; T426's target restated on its drawn-hold measure without those spells, at most 0.05 (alt: keep the 3 m shield with everyone moving, about 0.34 | keep the spec with frozen opponents and leave the goals to T410)
@@ -268,7 +272,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 27 | 27 | - | 0 |
+| MATCH | 28 | 28 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -286,9 +290,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T437 | Recalibrate the candidate's scoring after the in-stride carry | MATCH ARCH | T426 | todo |
+| T441 | A pass is cut out only where an opponent reaches its path | MATCH PLAYER ARCH | T426 | todo |
+| T442 | Out of possession a side shuts the carrier's passing lanes | MATCH ARCH | T441 | todo |
+| T443 | The attack occupies the box's zones and the defence protects it goal-side | MATCH PLAYER ARCH | T442 | todo |
+| T444 | Crosses and cut-backs are delivered into the zones the runners attack | MATCH ARCH | T443 | todo |
+| T445 | Shots meet the bodies in front of goal before the keeper, and second balls are contested | MATCH ARCH | T444 | todo |
+| T437 | Recalibrate the candidate's scoring after the in-stride carry and the final-third rework | MATCH ARCH | T426 T445 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF WEB ARCH | T426 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
@@ -308,9 +317,11 @@
 | v9n4-release | 4 | 18 | 10 | 8 | 0 | 0 | 0 | 2026-10-24T17:36:03.125Z | [history](work/v9n4-release.json) |
 
 ## next
-- inspect work board for remaining tasks
+- work group v9n4-release (coordinator v9n4): T426 → T431 beside the chain T441 → T442 → T443 → T444 → T445 → T437 (explore 6 h, main session) → T286; then T435 → T432 → T433 → T410, T434
 
 ## log
+- 261025 create-task T441 T442 T443 T444 T445 (p4w8): final-third chain after T426; T437 dep T426 T445 explore 6h, T286 dep + T441–T445, MATCH base 28 on T286 T410 T432 T433 T434 T435 T437
+- 261025 update-ssot MATCH r28 (p4w8): MATCH-11✎ MATCH-31+ MATCH-32+ MATCH-33+ MATCH-34+ MATCH-35+ — passes cut out where reached, lanes shut, box zones attacked and defended, deliveries into zones, shots blocked before the keeper and second balls contested
 - 261024 T426 integrated
 - 261025 T438 final sync (u6p2): pulled docs-only b8358cc7, retained p4w8 planning/active state and T431 dep T426; verified runtime and browser sources unchanged
 - 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
@@ -329,5 +340,3 @@
 - 261025 fix e2e milestones (u6p2): assert native DOM height instead of Firefox protocol quad subtraction (44px reported as 43.999992px); two phone journeys pass on Firefox, type/lint/format pass; unit selection empty because application code is unchanged. c20e4f3e CI passes all other seven jobs; publish the test-only correction.
 - 261025 fix e2e precision start (u6p2): c20e4f3e CI 40107002410 passes checks, every unit shard, Chromium and both WebKit shards; only two Firefox milestone cases read 44px as 43.999992px through the protocol; use native DOM height, preserve application code
 - 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
-- 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
-- 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch

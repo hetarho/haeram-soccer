@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r27 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r28 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -38,7 +38,7 @@
   - every attribute a duel reads is the player's own (→PLAYER-2) × his level at the slot (→PLAYER-4) × his adaptation or his club's 조직력 multiplier, with in-match fatigue; in-match fatigue grows with minutes, faster for low 체력 and under press.
   | action | attacker | against |
   |---|---|---|
-  | short or long pass, switch of play | passer 패스; 시야 for a line-breaking or through ball | the defender nearest the lane on 위치선정 |
+  | short or long pass, switch of play | passer 패스; 시야 for a line-breaking or through ball | the opponent who reaches its path first, on 위치선정 (→MATCH-31) |
   | through ball | passer 시야 and 패스; runner 속도 | defender 위치선정 and 속도; a 스위퍼 키퍼's 속도 and 발밑 |
   | cross, cut-back | 크로스; the receiver's 공중볼 and 몸싸움 for a header | defender 공중볼 and 몸싸움; keeper 공중볼 처리 |
   | take-on, carry under pressure | 드리블 and 속도; 몸싸움 in a shoulder duel | 태클 and 속도 |
@@ -47,7 +47,7 @@
   | shot, header | 슈팅 (공중볼 for a header) and 침착성 | blocker 위치선정; keeper 선방 |
   | keeper distribution | 발밑 | the defender nearest the lane |
   - key duels and finishing against the keeper use margins that flatten past about 15 points (30 × tanh(margin/30)).
-  - shot quality is the chance's place and situation: its cell and distance, the angle, pressure, a header or a foot, a cut-back or a cross.
+  - shot quality is the chance's place and situation: its cell and distance, the angle, pressure, the bodies between the ball and the goal (→MATCH-35), a header or a foot, a cut-back or a cross.
   - recorded xG is that chance's goal probability for the match level's average finisher and keeper, so goals minus xG measures finishing and xGA minus goals against measures keeping.
   - the last completed pass before the shot is the key pass and earns the assist, unless the shooter beat his marker alone (then the shot is unassisted).
   - player contributions record the actual passer, receiver, marker, shooter, keeper, fouler, carded player and substitute.
@@ -225,6 +225,30 @@
   - both paths count a counter by the same definition before its band is read; a definition changes only in MATCH-13.
   - a band is never set from either engine's own output.
 
+- MATCH-31 [o] A pass is cut out only by an opponent who reaches its path before the ball has passed. ← a defender who could not have got there winning the ball reads as a bug, and one standing in the lane who lets it through reads as no defending
+  - whether he reaches it reads where he stands and how he is moving when the ball is kicked, his speed and fatigue and how early he reads the pass (→PLAYER-26), against the ball's travel along its path; the first point an opponent reaches is where the ball meets him, and its flight ends there (→MATCH-12).
+  - the more time he has there, the likelier he wins it; a pass played firmly through a narrow gap (the passer's 패스, 시야 for a line-breaking or through ball) beats a defender who only just gets there, and one he reaches only at full stretch is deflected loose where he meets it instead of won.
+  - a pass no opponent can reach is lost only at its receiver — his control under pressure or a 50/50 there — never cut out by a distant defender.
+  - the carrier's choice reads the same lanes: the more opponents can reach a pass's path, and the earlier, the riskier he weighs it, more surely with better 판단력 (→MATCH-16).
+  - a delivery into the box and a loose ball in front of goal are reached the same way (→MATCH-33, →MATCH-35); headers and aerial duels keep →MATCH-11's duels.
+- MATCH-32 [o] Out of possession a side shuts the carrier's passing lanes, not only the carrier. ← pressing that leaves every lane open only chases the ball; real pressers steer play and win it in the lanes
+  - the presser approaches on a curve that keeps the carrier's most dangerous nearby option behind him (his cover shadow), leaving open the pass the defence prefers — backward or wide.
+  - the nearest free midfielder or defender screens the lane into a receiver between the lines or in a half-space, stepping only as far as his line and his job allow (→MATCH-17: one job each, the rest defence and the line keep their places).
+  - each tactic shuts lanes from its own block height and press reach (→MATCH-8).
+- MATCH-33 [o] When the ball is wide in the final third or in a cut-back zone, the attack occupies the box's zones and the ball is delivered into them. ← many entries that each make a poor chance is not how football scores; an entry is worth the runs that meet it
+  - the forwards attack the near post and the far post, an arriving midfielder or the far-side winger the penalty spot or a post left free, and another midfielder holds the edge of the box (아크 정면) for the cut-back and the second ball; roles and traits decide who goes where (→PLAYER-5, →PLAYER-9), the rest defence stays home (→MATCH-17), and each run is timed to arrive as the ball is delivered rather than to wait there.
+  - the delivery is played into a zone a teammate attacks — driven to the near post, lofted to the far post, pulled back to the penalty spot or the edge, or squared across the goal area — and its target is the runner arriving there, weighed by how free he arrives and whether the ball suits him (his head for a lofted ball, his feet for a low one).
+  - with nobody attacking a zone the ball is not delivered blind: the carrier keeps it, recycles it or shoots by his decision table (→MATCH-16).
+- MATCH-34 [o] In open play the defending side protects its box goal-side once the ball is wide in its final third or in a cut-back zone. ← a back line that keeps its shape while runners arrive lets every entry become a shot
+  - the back line drops toward its goal and narrows: a centre-back guards the near post and the other the middle, the far full-back or wing-back tucks in to the far post, and a holding or central midfielder drops to the edge or the penalty spot for the cut-back.
+  - markers stay goal-side of the runners they track, between them and the zone they attack; a zone without a runner is held by position (→MATCH-17's marking and handover).
+  - the shape releases when the ball leaves the area or is cleared, the line stepping up together (→MATCH-18's offside line); set pieces keep →MATCH-18's defending.
+- MATCH-35 [o] A shot meets the bodies between it and the goal before the keeper, and what it leaves loose is contested. ← a shot through a crowd scoring as often as an open one happens only in a model, and real goals also come from the follow-up
+  - each outfielder in the shot's path to the goal may block it first, likelier the nearer he is to the shooter and the better his 위치선정; only a shot that gets through meets the keeper (→MATCH-11).
+  - the chance's xG reads those bodies as part of its situation (→MATCH-11), so goals minus xG still measures finishing.
+  - a block, a parry or a save the keeper cannot hold falls where the shot and the save send it; the players of both sides contest that second ball by who reaches it first (→MATCH-31), and an attacker who wins it near goal may shoot again at once.
+  - the carrier weighs a blocked view when he chooses to shoot, more surely with better 판단력 (→MATCH-16); a blocked shot still counts as a shot (→MATCH-3).
+
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
 - Other-club fixture: prepared squads and fixture conditions → aggregate joint match facts → complete common result → invariant validation → ordinary world settlement and bounded aggregates.
@@ -233,6 +257,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r28 261025 MATCH-11✎ pass against the defender nearest the lane→the opponent who reaches its path first; shot quality + the bodies between ball and goal · MATCH-31+ a pass cut out only where reached · MATCH-32+ lanes shut · MATCH-33+ box zones attacked and delivered into · MATCH-34+ box defended goal-side · MATCH-35+ shots blocked before the keeper, second balls contested
 - r27 261025 MATCH-12✎ a pressed carrier stood on the ball to shield it→shields it on the move away from the nearest opponent, everyone else moving meanwhile; standing only to hold up or lay off, distribute as keeper or take a restart
 - r26 261025 MATCH-17✎ movement from slot, role, traits and attributes→also manager-given positional freedom with its trade-off, situational disorder, position swaps and the four tendencies
 - r25 261024 MATCH-12✎ carrier unspecified (stood on the ball until his kick)→carries it in stride from reception to his action, played and resolved from there; stands only to shield, hold up or lay off, distribute as keeper or take a restart
