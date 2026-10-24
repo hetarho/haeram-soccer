@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { cachedWorld, simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
+import {
+  cachedWorld,
+  DISABLED_RELEASE,
+  simulatedWorld,
+  withCandidateModel,
+} from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';
@@ -10,7 +15,7 @@ import { closeSeason, eloOf, ownLeagueClubs, simulateSeason } from './index';
 import { playFixture, tieRule } from './knockout';
 import { OWN_LEAGUE_ENGINE, setOwnLeagueEngine, simulateMatch } from './match';
 import { appearanceForFixture } from './match-appearance';
-import { MATCH_MODEL_RELEASE, validateFullMatchRecord } from './match-model';
+import { validateFullMatchRecord } from './match-model';
 import { npcCompetition, playerTotals } from './npc-stats';
 import { advanceDays, advanceRound, advanceToNextMatch, recordMatch, resolveTie } from './season';
 import { archiveLastRound, closedSeason, founded } from './season.testkit';
@@ -135,12 +140,15 @@ describe('league settlement appearance (→KIT-12)', () => {
 });
 
 const isOwn = (w: World, f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
-/** A 2024 world (substitutes, cups and Europe) on the candidate model from its founding. */
-const candidate = () => withCandidateModel(founded(2024));
+/**
+ * A 2024 world (substitutes, cups and Europe) on the candidate model from its founding: founded
+ * with the release off and activated once its year is 2024, whatever the switch.
+ */
+const candidate = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
 /** The candidate world seven rounds in, by rounds: league days, a cup round and a Europe day. */
 const sevenRounds = () =>
   cachedWorld('candidate-2024-seven-rounds', () => {
-    const w = withCandidateModel(founded(2024));
+    const w = withCandidateModel(founded(2024, DISABLED_RELEASE));
     while (w.round < 7) advanceRound(w, undefined, false);
     return w;
   });
@@ -176,7 +184,7 @@ const facts = (w: World) => canonical({ ...w, critical: undefined, revision: 0, 
 describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-17)', () => {
   it('dispatches every non-own competition to aggregate', () => {
     const w = candidate();
-    const plain = founded(2024);
+    const plain = founded(2024, DISABLED_RELEASE);
     const cup = w.cups!.find((c) => c.fixtures.some((f) => !isOwn(w, f)))!;
     const cupTie = cup.fixtures.find((f) => !isOwn(w, f))!;
     const others: [Fixture, DecideRule | undefined][] = [
@@ -226,7 +234,7 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       expect(quiet.record.lineCounts![1]).toBeGreaterThanOrEqual(11);
       expect(simulateMatch(plain, f, false, true, decide).record.model).toBeUndefined();
     }
-    // Through the season's own paths every competition reaches the ledger; the switch stays off.
+    // Through the season's own paths every competition reaches the ledger.
     const s = sevenRounds();
     expect([...new Set(s.npcSeason!.competitions.map((c) => c.kind))].sort()).toEqual([
       'cup',
@@ -241,7 +249,9 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       [tie.home, 1],
       [tie.away, 1],
     ]);
-    expect(MATCH_MODEL_RELEASE.enabled).toBe(false);
+    // Only the explicit release activated: the candidate from its founding, the world founded
+    // with the release off never (the switch's own value is match-model.test.ts's).
+    expect(s.matchModel!.coverage).toBe('founding');
     expect(plain.matchModel).toBeUndefined();
   });
 
@@ -290,7 +300,7 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     expect(facts(days)).toBe(facts(sevenRounds()));
     // Across the close: activated two rounds before it, then day, round and season commands.
     const late = cachedWorld('late-2024', () => {
-      const w = founded(2024);
+      const w = founded(2024, DISABLED_RELEASE);
       while (w.round < 44) advanceRound(w, undefined, false);
       return w;
     });

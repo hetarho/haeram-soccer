@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T11:14:45.379Z",
-  "sourceCommit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+  "snapshotAt": "2026-10-24T11:36:22.186Z",
+  "sourceCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
+      "commit": "e2f0dddc2705d5422db75f6de3440eca96597423",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T11:08:14.602Z"
+      "at": "2026-10-24T11:31:40.810Z"
     },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
@@ -49,11 +49,11 @@
   },
   "summary": {
     "total": 10,
-    "completed": 3,
-    "remaining": 7,
+    "completed": 4,
+    "remaining": 6,
     "running": 0,
-    "review": 1,
-    "blocked": 3,
+    "review": 3,
+    "blocked": 0,
     "unassigned": 3
   },
   "tasks": [
@@ -124,15 +124,6 @@
         "T415"
       ],
       "lane": "release-settle",
-      "status": "blocked"
-    },
-    {
-      "id": "T419",
-      "title": "Digests and calibration guards fix the model they guard",
-      "dep": [
-        "T415"
-      ],
-      "lane": "release-guards",
       "status": "ready"
     },
     {
@@ -151,7 +142,7 @@
       "title": "1x at 12 seconds a match minute, matches opening at 2x",
       "dep": [],
       "lane": "viewing-pace",
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "id": "T422",
@@ -160,7 +151,7 @@
         "T421"
       ],
       "lane": "viewing-pace",
-      "status": "blocked"
+      "status": "ready"
     }
   ],
   "attempts": [
@@ -263,7 +254,7 @@
     {
       "id": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
       "group": "v9n4-release",
-      "taskId": "T421",
+      "taskId": "T422",
       "tasks": [
         "T421",
         "T422"
@@ -273,23 +264,70 @@
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-2"
       ],
-      "status": "blocked",
-      "reason": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-24T10:04:40.994Z",
       "startCommit": "fe1508d34e03da875baaa4382b4373908cc440ed",
+      "verifiedCommit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+      "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
+      "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+      "submittedAt": "2026-10-24T11:32:31.741Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1040 changed lines (limit 300)",
+          "outside touches: tests/e2e/full-model-continuity.spec.ts tests/e2e/match-core.spec.ts tests/e2e/mobile-match-presentation.spec.ts tests/e2e/preparation.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1040,
+        "files": 13
+      },
       "dispatch": {
-        "id": "a3ea2008-1a71-47ca-8d09-7c5ea8b843b9",
+        "id": "92b03286-3a97-4e0d-b551-498fa284dd80",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
         "role": "worker",
         "slot": 2,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T10:47:47.621Z",
-        "finishedAt": "2026-10-24T11:12:07.731Z",
-        "error": "에이전트 실행 중 HEAD가 변경됐습니다. 자동 커밋 전에 확인하세요.",
-        "summary": "T422 is done and committed as a0094fd6 on the lane branch. The coordinator asked for the commit, even though the general instructions say not to commit.\n\nWhat changed:\n- **Clock in match seconds.** The match clock now counts match seconds instead of real milliseconds at 1x. Running play advances at speed × 60 / 12000 seconds per real ms. Inside a set-piece preparation it runs at the larger of that rate and span / `SET_PIECE_PREPARATION_MS` (1500).\n- **Where preparations come from.** `setPiecePreparations(frames)` finds the dead interval before every corner, free kick and goal kick.\n- **What reads the clock.** Goal feedback and `Pitch.tsx` (seeking, progress bar, possession cue) now use match seconds. The old `presentationLength`, `clockAt` and `runningSeconds` are gone. `possessionCue.ts` already took seconds and is unchanged.\n- **Test hook.** The pitch canvas exposes the current match second as `data-seconds`, so browser journeys can time the clock.\n\n**One departure from the impl note.** The note says the kick is the restart event's own time. On both models that time is actually when the delivery lands, so following it would also speed up the delivery, which WEB-32 and MATCH-12 keep at the selected speed. Instead the kick is read from data both models carry:\n- pre-feature: the moment the taker takes the ball, from `holders`\n- candidate: its recorded kick sample, the last sample with phase 'restart'\n\nEither must fall more than 0.1 s before the landing, so a taker passing to himself isn't read as the kick. On the pre-feature this gives the note's own \"32 s dead, 3.2 s kick\". This doesn't change the spec, so I didn't raise it as a blocker.\n\n**Measured on the real engine** (four seeded first matches per model):\n- Every corner, free kick and goal kick got a preparation.\n- Deliveries stay at running speed (0.15–5.6 s).\n- A whole match takes about 14.3–15.9 min at 1x and 8.0–8.6 min at 2x, down from 19 and 9.5. That is slightly longer than WEB-32's \"about 13–14 / 7 minutes\"; it's for your in-play review of the 1500 ms value.\n\n**Checks that passed:** the three affected test files (38 tests), typecheck, lint, format:check, `vitest run --changed d1ae3485` (4 files, 50 tests) and the build.\n\n**Not run (batch):**\n- `set-piece-defence.spec.ts` (candidate scene) and a new test in `stable-controls-and-pacing.spec.ts` (pre-feature, seed `stable-pace`). Both seek to just before a dead ball, resume at 1x, and check the preparation is drawn in 1.4–2.5 s with the players still moving and no jumps.\n- They share a new helper, `tests/e2e/preparation.ts`, which is outside touches.\n- The existing pace journeys still need the batch run too.\n\nThe task result records all of this."
-      }
+        "startedAt": "2026-10-24T11:31:41.314Z",
+        "finishedAt": "2026-10-24T11:32:31.759Z",
+        "error": null,
+        "summary": "Nothing changed this run, as the coordinator asked: I didn't edit or commit anything, so the lane is ready for the runner to submit. The working tree is clean. The lane branch has T421 (9537ddd2) and T422 (a0094fd6), plus the group-branch merge 71e66601.\n\nBoth task files already have their acceptance items marked `[v]` and their results filled in. Their task-tier checks all passed: typecheck, lint, format:check, `vitest run --changed` and the build.\n\nStill to be run in the batch (none of these have run yet):\n- **For T422:** the new set-piece checks in `set-piece-defence.spec.ts` and `stable-controls-and-pacing.spec.ts`, using the new helper `tests/e2e/preparation.ts`.\n- **For T421:** the specs updated for the slower pace — `match-core`, `mobile-match-presentation` and `full-model-continuity`, plus the continuity fixture."
+      },
+      "steps": [
+        {
+          "taskId": "T421",
+          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+          "at": "2026-10-24T11:32:31.699Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T11:31:59.726Z",
+              "finishedAt": "2026-10-24T11:32:31.361Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T422",
+          "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+          "at": "2026-10-24T11:32:31.699Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T11:31:59.726Z",
+              "finishedAt": "2026-10-24T11:32:31.361Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T11:31:59.726Z",
+          "finishedAt": "2026-10-24T11:32:31.361Z"
+        }
+      ]
     },
     {
       "id": "cb8f4011-c362-4baa-9208-b06e471ca337",
@@ -303,23 +341,56 @@
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
       ],
-      "status": "blocked",
-      "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-24T10:35:42.873Z",
       "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
+      "verifiedCommit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+      "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
+      "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+      "submittedAt": "2026-10-24T11:34:59.043Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 156,
+        "files": 1
+      },
       "dispatch": {
-        "id": "c9ae8ea7-2d45-4511-b651-ecbed0c8d153",
+        "id": "3fd86099-f7cb-4c59-914b-98ede4e59c82",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T10:35:44.105Z",
-        "finishedAt": "2026-10-24T10:48:19.779Z",
+        "startedAt": "2026-10-24T11:31:40.978Z",
+        "finishedAt": "2026-10-24T11:34:59.062Z",
         "error": null,
-        "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
-      }
+        "summary": "T416 is finished: the guard case meets the reworded item 1, and all four acceptance items are now marked [v]. No engine source changed.\n\n**Change this turn.** I tightened the guard case \"an activated world settles only valid full records\" in `season.settle.test.ts` so it checks item 1 explicitly. It now keeps the league records and the cup records apart and asserts that each group includes:\n- an own match played in the detailed (grid) engine, and\n- another club's match on the aggregate path.\n\nIt still asserts that the cup round has at least one extra-time record and one shoot-out. The setup is the same as before:\n- the 1950 world built with `ENABLED_RELEASE`;\n- the own league's (1950:ENG:4) first two rounds;\n- the ENG cup's first round, 44 ties, the own club's 1950:cup:ENG:k0:43 among them, played through `playFixture` with `{ awayGoals: false }`;\n- every record passing `validateFullMatchRecord`.\n\n**Task file.** Item 1 is marked [v], and the outcome, at, verified and limits lines are updated. The limit about the unmet \"fails on the unfixed source\" clause is gone, since the 261024 decision reworded item 1.\n\n**Checks**, run on 838318fd (which includes the merged T417 and T418 lanes) plus this change:\n- `season.settle.test.ts` passes under the default config and the release-on config, 6 of 6 each.\n- typecheck, lint and format:check pass.\n- `vitest run --changed 2737e84a… --passWithNoTests` passed 25 files, 390 tests; that range also covers the merged T417/T418 files.\n\n**Not run here:** the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate, and the whole release-on unit tier to T420. I did not commit; the changed files are `packages/engine/src/season.settle.test.ts` and `spec/tasks/T416.activated-settlement-records.md`."
+      },
+      "steps": [
+        {
+          "taskId": "T416",
+          "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+          "at": "2026-10-24T11:34:59.000Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T11:34:25.358Z",
+              "finishedAt": "2026-10-24T11:34:58.642Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T11:34:25.358Z",
+          "finishedAt": "2026-10-24T11:34:58.642Z"
+        }
+      ]
     },
     {
       "id": "138003fd-55f5-4585-989a-d711c6916372",
@@ -438,6 +509,8 @@
       "submittedBase": "fada6e6d8912e9b1ee47277fae398a6528b074c9",
       "submissionId": "48a18f3a-cf30-4d0a-bd2e-e754452a6499",
       "submittedAt": "2026-10-24T11:09:12.789Z",
+      "integratedCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+      "integratedAt": "2026-10-24T11:31:38.713Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -499,6 +572,13 @@
           "startedAt": "2026-10-24T11:08:15.792Z",
           "finishedAt": "2026-10-24T11:09:12.396Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T11:14:45.480Z",
+          "finishedAt": "2026-10-24T11:31:38.485Z"
+        }
       ]
     },
     {
@@ -513,7 +593,7 @@
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-3"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-24T10:47:48.032Z",
       "startCommit": "2737e84a74712700c88d36afac2bd41751b7465e",
@@ -531,17 +611,46 @@
         "files": 9
       },
       "dispatch": {
-        "id": "29186240-ef17-4c2a-a23b-fd9acac3997f",
+        "id": "565296a6-fe41-47b3-9841-f22fbe5dcb6a",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
-        "role": "worker",
-        "slot": 3,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T10:47:49.214Z",
-        "finishedAt": "2026-10-24T11:11:04.366Z",
+        "startedAt": "2026-10-24T11:31:43.494Z",
+        "finishedAt": "2026-10-24T11:36:20.153Z",
         "error": null,
-        "summary": "T419 is done. All ten guard files now build their worlds with an explicit release, and they pass with the switch both off and on (release-on config). Nothing is committed; the runner commits.\n\n**What changed**\n- **Pinned to the old path (`DISABLED_RELEASE`), recorded values unchanged:**\n  - grid-throughput (the candidate model is still set explicitly per match, so its stored values stay the same)\n  - the four calibration files, via the shared guard world in `calibration.testkit.ts`\n  - build.tradeoffs\n  - material's season-close test\n- **Candidate tests:** in season.test and npc-stats, the candidate world is now `withCandidateModel(founded(2024, DISABLED_RELEASE))`, so the model starts at the 2024 founding. Before, with the switch on, `founded(2024)` had recorded it in 1950, before the year was moved.\n- **Never-activated worlds** (`plain`, npc-stats' tracking-boundary world, feature-replay's activation fixture) are built off. feature-replay's new-career replay is built with `ENABLED_RELEASE`.\n- **No values re-recorded:** every candidate value already came from a world activated explicitly.\n- **Switch check:** `season.test.ts` no longer checks that the switch is off. It now checks that the candidate's coverage is `founding` and that `plain` has no model. Only `match-model.test.ts` keeps the switch's exact value.\n\n**Edits outside the task's file list:** `season.testkit.ts`, `build.testkit.ts` and `calibration.testkit.ts`. The guards build their worlds there, so there was no way around it. `founded` and `scenario` gain an optional release argument whose default is unchanged. No other lane's file list includes these testkits. The runner will flag the unit for review because of this; it does not reject it.\n\n**Checks run:** typecheck, lint and format:check are clean. Each of the ten files passed in both configs. Before the edits, four of them failed 5 tests with the switch on, matching the probe. `vitest run --changed 2737e84a` passed in two shards (20 files). The last edit after those runs was a comment rewrap; prettier and eslint passed on it afterwards.\n\n**For T420 and T410:**\n- **Engine bug (needs a source fix, which this test-only task can't make):** `closeSeason` clears the season's match material (`season.ts:737`) before `promote` plays the promotion playoff (`season.ts:743`). An own club in the playoff keeps that match's material forever, against MATCH-5. On the candidate, the material test's club reaches the playoff, and two matches keep their material. That is why this test stays pinned off.\n- **Calibration misses on the candidate** (measured on the same guard clubs, recorded in `calibration.testkit.ts`):\n  - grid: a +20 favourite wins 87.5% (band ≤85%), equal sides score 3.12 goals (≤3.1), a +39 giant's matches have 4.03 goals (<4)\n  - summary samples (the aggregate plays them on the candidate): equal sides draw 20.9% (≥22%), the giant's matches have 4.27 goals\n  - build.tradeoffs: the press case only ties another tactic, 181 against 181\n\n  No band was widened; these stay as figures for T410.\n\n**Not run (left to the batch gate and T420):** `test:unit`, `test:unit:release-on`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright. The ten other files that import the edited testkits were run with the switch off only."
+        "summary": "T419 (f3307678 vs e2f0dddc, merge-base 2737e84a; the T417/T418 upstream changes don't touch any T419 file): this change only edits tests, and every guard in the ten files now builds its world with an explicit release. Risk reason 1 (three testkits outside the task's touch list): founded() and scenario() gain an optional release whose default is unchanged, matching T417's gridKit pattern. The calibration guard world is pinned to DISABLED_RELEASE. With the switch off this builds the same world as before, so no recorded value moves for the other importers. Candidate digests and aggregates still come only from explicitly activated worlds: grid-throughput passes `model` explicitly, and season/npc-stats use withCandidateModel(founded(2024, DISABLED_RELEASE)) at the 2024 boundary. So nothing needed re-recording, and none was. Risk reason 2 (autopilot decisions) follows the impl notes. Calibration, build.tradeoffs and material are pinned to the pre-feature path. Bands aren't widened, and the candidate residuals are measured in comments for T410. The new career in feature-replay plays ENABLED_RELEASE; the Host's release only affects activation, which is a no-op on a world that already has a model. The material case is pinned off because of a real engine defect, named in limits for T420: closeSeason calls reduceSeasonMaterial at season.ts:737 before promote at season.ts:743, so promotion-playoff matches keep their material, against MATCH-5. The season.test switch assertion now names explicit releases, and match-model.test.ts alone keeps the switch value. The worker's record shows typecheck, lint, format:check, the sharded --changed run, and both configs on the ten files. I did not rerun them, because the review checkout has no node_modules and must stay read-only. Only P3 improvements remain."
+      },
+      "review": {
+        "id": "5910e30f-47a2-47c4-b65c-4b9ed0541117",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T419 (f3307678 vs e2f0dddc, merge-base 2737e84a; the T417/T418 upstream changes don't touch any T419 file): this change only edits tests, and every guard in the ten files now builds its world with an explicit release. Risk reason 1 (three testkits outside the task's touch list): founded() and scenario() gain an optional release whose default is unchanged, matching T417's gridKit pattern. The calibration guard world is pinned to DISABLED_RELEASE. With the switch off this builds the same world as before, so no recorded value moves for the other importers. Candidate digests and aggregates still come only from explicitly activated worlds: grid-throughput passes `model` explicitly, and season/npc-stats use withCandidateModel(founded(2024, DISABLED_RELEASE)) at the 2024 boundary. So nothing needed re-recording, and none was. Risk reason 2 (autopilot decisions) follows the impl notes. Calibration, build.tradeoffs and material are pinned to the pre-feature path. Bands aren't widened, and the candidate residuals are measured in comments for T410. The new career in feature-replay plays ENABLED_RELEASE; the Host's release only affects activation, which is a no-op on a world that already has a model. The material case is pinned off because of a real engine defect, named in limits for T420: closeSeason calls reduceSeasonMaterial at season.ts:737 before promote at season.ts:743, so promotion-playoff matches keep their material, against MATCH-5. The season.test switch assertion now names explicit releases, and match-model.test.ts alone keeps the switch value. The worker's record shows typecheck, lint, format:check, the sharded --changed run, and both configs on the ten files. I did not rerun them, because the review checkout has no node_modules and must stay read-only. Only P3 improvements remain.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.test.ts:254 (T419)",
+            "message": "The new `expect(s.matchModel!.coverage).toBe('founding')` would also pass if the default switch had activated the model when createWorld founded the world: that is the earlier-boundary case this task removes, since activation then also happens at round 0 with no own matches. So it doesn't prove what the comment says ('Only the explicit release activated'). Assert the boundary too, e.g. `expect(s.matchModel!.activated.year).toBe(2024)` or the `trackedFrom` year, so the case fails if the activation ever comes from the default again."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.testkit.ts:27 (T419)",
+            "message": "With an enabled release, `founded(year, release)` records the model at createWorld's founding and only then moves the year and calls prepareSeason. The docstring documents this, but it gives an inconsistent world: activated and trackedFrom sit before `year`. After T286 flips the default, every other importer gets that world: cups, discipline, full-model-throughput and season.brackets/contracts/exchange/groups/professional. Option: create the world disabled and, when `release.enabled`, call `activateMatchModel(w, release)` after prepareSeason. Then `founded(year, ENABLED_RELEASE)` would mean a candidate founded in `year`. Otherwise, hand this trap to T420 explicitly."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/feature-replay.test.ts:21 (T419)",
+            "message": "The new-career replay now plays the candidate model in the default unit run too (ENABLED_RELEASE), but the comment still says it 'takes about 11 s and keeps the config's limit'. That figure was measured on the pre-feature path, and the candidate's seasons are slower (T285). The result records no time for this case on either config. Refresh the figure, or note it for T420's timing table, so the default run's cost and timeout margin stay known."
+          }
+        ],
+        "commit": "f3307678f269132877a1800418c05a81cac826d2",
+        "baseCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+        "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
+        "createdAt": "2026-10-24T11:31:42.035Z",
+        "finishedAt": "2026-10-24T11:36:20.135Z"
       },
       "steps": [
         {
@@ -2410,6 +2519,585 @@
       "group": "v9n4-release",
       "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
       "taskId": "T418",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 941,
+      "at": "2026-10-24T11:17:53.559Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 942,
+      "at": "2026-10-24T11:18:00.217Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 943,
+      "at": "2026-10-24T11:31:38.658Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T11:14:45.480Z",
+            "finishedAt": "2026-10-24T11:31:38.485Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 944,
+      "at": "2026-10-24T11:31:38.713Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3cbc46d9-86be-4097-9a47-ef920fe9b0b2",
+      "taskId": "T418",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+        "integratedAt": "2026-10-24T11:31:38.713Z"
+      }
+    },
+    {
+      "sequence": 945,
+      "at": "2026-10-24T11:31:40.826Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T11:31:40.810Z"
+        }
+      }
+    },
+    {
+      "sequence": 946,
+      "at": "2026-10-24T11:31:40.978Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3fd86099-f7cb-4c59-914b-98ede4e59c82",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T11:31:40.978Z"
+        }
+      }
+    },
+    {
+      "sequence": 947,
+      "at": "2026-10-24T11:31:41.155Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3fd86099-f7cb-4c59-914b-98ede4e59c82",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T11:31:40.978Z"
+        }
+      }
+    },
+    {
+      "sequence": 948,
+      "at": "2026-10-24T11:31:41.314Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92b03286-3a97-4e0d-b551-498fa284dd80",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T11:31:41.314Z"
+        }
+      }
+    },
+    {
+      "sequence": 949,
+      "at": "2026-10-24T11:31:41.515Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "92b03286-3a97-4e0d-b551-498fa284dd80",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T11:31:41.314Z"
+        }
+      }
+    },
+    {
+      "sequence": 950,
+      "at": "2026-10-24T11:31:42.035Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5910e30f-47a2-47c4-b65c-4b9ed0541117",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "f3307678f269132877a1800418c05a81cac826d2",
+          "baseCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+          "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
+          "createdAt": "2026-10-24T11:31:42.035Z"
+        }
+      }
+    },
+    {
+      "sequence": 951,
+      "at": "2026-10-24T11:31:43.494Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "565296a6-fe41-47b3-9841-f22fbe5dcb6a",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T11:31:43.494Z"
+        }
+      }
+    },
+    {
+      "sequence": 952,
+      "at": "2026-10-24T11:31:43.510Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "565296a6-fe41-47b3-9841-f22fbe5dcb6a",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T11:31:43.494Z"
+        }
+      }
+    },
+    {
+      "sequence": 953,
+      "at": "2026-10-24T11:31:58.866Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 954,
+      "at": "2026-10-24T11:31:59.406Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 955,
+      "at": "2026-10-24T11:31:59.441Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T421",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 956,
+      "at": "2026-10-24T11:32:31.741Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T422",
+        "status": "ready",
+        "verifiedCommit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+        "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
+        "submissionId": "33c8801e-06b5-45aa-b564-84f141660386",
+        "submittedAt": "2026-10-24T11:32:31.741Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1040 changed lines (limit 300)",
+            "outside touches: tests/e2e/full-model-continuity.spec.ts tests/e2e/match-core.spec.ts tests/e2e/mobile-match-presentation.spec.ts tests/e2e/preparation.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1040,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T421",
+            "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+            "at": "2026-10-24T11:32:31.699Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:31:59.726Z",
+                "finishedAt": "2026-10-24T11:32:31.361Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T422",
+            "commit": "71e6660125f31db47bb7efa5df5dfa2ba743b668",
+            "at": "2026-10-24T11:32:31.699Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:31:59.726Z",
+                "finishedAt": "2026-10-24T11:32:31.361Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T11:31:59.726Z",
+            "finishedAt": "2026-10-24T11:32:31.361Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 957,
+      "at": "2026-10-24T11:32:31.759Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "92b03286-3a97-4e0d-b551-498fa284dd80",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T11:31:41.314Z",
+          "finishedAt": "2026-10-24T11:32:31.759Z",
+          "error": null,
+          "summary": "Nothing changed this run, as the coordinator asked: I didn't edit or commit anything, so the lane is ready for the runner to submit. The working tree is clean. The lane branch has T421 (9537ddd2) and T422 (a0094fd6), plus the group-branch merge 71e66601.\n\nBoth task files already have their acceptance items marked `[v]` and their results filled in. Their task-tier checks all passed: typecheck, lint, format:check, `vitest run --changed` and the build.\n\nStill to be run in the batch (none of these have run yet):\n- **For T422:** the new set-piece checks in `set-piece-defence.spec.ts` and `stable-controls-and-pacing.spec.ts`, using the new helper `tests/e2e/preparation.ts`.\n- **For T421:** the specs updated for the slower pace — `match-core`, `mobile-match-presentation` and `full-model-continuity`, plus the continuity fixture."
+        }
+      }
+    },
+    {
+      "sequence": 958,
+      "at": "2026-10-24T11:34:24.371Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 959,
+      "at": "2026-10-24T11:34:24.976Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 960,
+      "at": "2026-10-24T11:34:25.015Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 961,
+      "at": "2026-10-24T11:34:59.043Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+        "submittedBase": "e2f0dddc2705d5422db75f6de3440eca96597423",
+        "submissionId": "3c9a7c2d-1b26-4a70-b9a0-3915769144d9",
+        "submittedAt": "2026-10-24T11:34:59.043Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 156,
+          "files": 1
+        },
+        "steps": [
+          {
+            "taskId": "T416",
+            "commit": "fbd25c40c63ac0118cb0a61c3f5575fc63490a7d",
+            "at": "2026-10-24T11:34:59.000Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T11:34:25.358Z",
+                "finishedAt": "2026-10-24T11:34:58.642Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T11:34:25.358Z",
+            "finishedAt": "2026-10-24T11:34:58.642Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 962,
+      "at": "2026-10-24T11:34:59.062Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "cb8f4011-c362-4baa-9208-b06e471ca337",
+      "taskId": "T416",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "3fd86099-f7cb-4c59-914b-98ede4e59c82",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T11:31:40.978Z",
+          "finishedAt": "2026-10-24T11:34:59.062Z",
+          "error": null,
+          "summary": "T416 is finished: the guard case meets the reworded item 1, and all four acceptance items are now marked [v]. No engine source changed.\n\n**Change this turn.** I tightened the guard case \"an activated world settles only valid full records\" in `season.settle.test.ts` so it checks item 1 explicitly. It now keeps the league records and the cup records apart and asserts that each group includes:\n- an own match played in the detailed (grid) engine, and\n- another club's match on the aggregate path.\n\nIt still asserts that the cup round has at least one extra-time record and one shoot-out. The setup is the same as before:\n- the 1950 world built with `ENABLED_RELEASE`;\n- the own league's (1950:ENG:4) first two rounds;\n- the ENG cup's first round, 44 ties, the own club's 1950:cup:ENG:k0:43 among them, played through `playFixture` with `{ awayGoals: false }`;\n- every record passing `validateFullMatchRecord`.\n\n**Task file.** Item 1 is marked [v], and the outcome, at, verified and limits lines are updated. The limit about the unmet \"fails on the unfixed source\" clause is gone, since the 261024 decision reworded item 1.\n\n**Checks**, run on 838318fd (which includes the merged T417 and T418 lanes) plus this change:\n- `season.settle.test.ts` passes under the default config and the release-on config, 6 of 6 each.\n- typecheck, lint and format:check pass.\n- `vitest run --changed 2737e84a… --passWithNoTests` passed 25 files, 390 tests; that range also covers the merged T417/T418 files.\n\n**Not run here:** the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate, and the whole release-on unit tier to T420. I did not commit; the changed files are `packages/engine/src/season.settle.test.ts` and `spec/tasks/T416.activated-settlement-records.md`."
+        }
+      }
+    },
+    {
+      "sequence": 963,
+      "at": "2026-10-24T11:36:20.135Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "5910e30f-47a2-47c4-b65c-4b9ed0541117",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T419 (f3307678 vs e2f0dddc, merge-base 2737e84a; the T417/T418 upstream changes don't touch any T419 file): this change only edits tests, and every guard in the ten files now builds its world with an explicit release. Risk reason 1 (three testkits outside the task's touch list): founded() and scenario() gain an optional release whose default is unchanged, matching T417's gridKit pattern. The calibration guard world is pinned to DISABLED_RELEASE. With the switch off this builds the same world as before, so no recorded value moves for the other importers. Candidate digests and aggregates still come only from explicitly activated worlds: grid-throughput passes `model` explicitly, and season/npc-stats use withCandidateModel(founded(2024, DISABLED_RELEASE)) at the 2024 boundary. So nothing needed re-recording, and none was. Risk reason 2 (autopilot decisions) follows the impl notes. Calibration, build.tradeoffs and material are pinned to the pre-feature path. Bands aren't widened, and the candidate residuals are measured in comments for T410. The new career in feature-replay plays ENABLED_RELEASE; the Host's release only affects activation, which is a no-op on a world that already has a model. The material case is pinned off because of a real engine defect, named in limits for T420: closeSeason calls reduceSeasonMaterial at season.ts:737 before promote at season.ts:743, so promotion-playoff matches keep their material, against MATCH-5. The season.test switch assertion now names explicit releases, and match-model.test.ts alone keeps the switch value. The worker's record shows typecheck, lint, format:check, the sharded --changed run, and both configs on the ten files. I did not rerun them, because the review checkout has no node_modules and must stay read-only. Only P3 improvements remain.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.test.ts:254 (T419)",
+              "message": "The new `expect(s.matchModel!.coverage).toBe('founding')` would also pass if the default switch had activated the model when createWorld founded the world: that is the earlier-boundary case this task removes, since activation then also happens at round 0 with no own matches. So it doesn't prove what the comment says ('Only the explicit release activated'). Assert the boundary too, e.g. `expect(s.matchModel!.activated.year).toBe(2024)` or the `trackedFrom` year, so the case fails if the activation ever comes from the default again."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.testkit.ts:27 (T419)",
+              "message": "With an enabled release, `founded(year, release)` records the model at createWorld's founding and only then moves the year and calls prepareSeason. The docstring documents this, but it gives an inconsistent world: activated and trackedFrom sit before `year`. After T286 flips the default, every other importer gets that world: cups, discipline, full-model-throughput and season.brackets/contracts/exchange/groups/professional. Option: create the world disabled and, when `release.enabled`, call `activateMatchModel(w, release)` after prepareSeason. Then `founded(year, ENABLED_RELEASE)` would mean a candidate founded in `year`. Otherwise, hand this trap to T420 explicitly."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/feature-replay.test.ts:21 (T419)",
+              "message": "The new-career replay now plays the candidate model in the default unit run too (ENABLED_RELEASE), but the comment still says it 'takes about 11 s and keeps the config's limit'. That figure was measured on the pre-feature path, and the candidate's seasons are slower (T285). The result records no time for this case on either config. Refresh the figure, or note it for T420's timing table, so the default run's cost and timeout margin stay known."
+            }
+          ],
+          "commit": "f3307678f269132877a1800418c05a81cac826d2",
+          "baseCommit": "e2f0dddc2705d5422db75f6de3440eca96597423",
+          "submissionId": "0bd45ab0-110f-4596-9f06-1d2b1a915e32",
+          "createdAt": "2026-10-24T11:31:42.035Z",
+          "finishedAt": "2026-10-24T11:36:20.135Z"
+        }
+      }
+    },
+    {
+      "sequence": 964,
+      "at": "2026-10-24T11:36:20.153Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "565296a6-fe41-47b3-9841-f22fbe5dcb6a",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T11:31:43.494Z",
+          "finishedAt": "2026-10-24T11:36:20.153Z",
+          "error": null,
+          "summary": "T419 (f3307678 vs e2f0dddc, merge-base 2737e84a; the T417/T418 upstream changes don't touch any T419 file): this change only edits tests, and every guard in the ten files now builds its world with an explicit release. Risk reason 1 (three testkits outside the task's touch list): founded() and scenario() gain an optional release whose default is unchanged, matching T417's gridKit pattern. The calibration guard world is pinned to DISABLED_RELEASE. With the switch off this builds the same world as before, so no recorded value moves for the other importers. Candidate digests and aggregates still come only from explicitly activated worlds: grid-throughput passes `model` explicitly, and season/npc-stats use withCandidateModel(founded(2024, DISABLED_RELEASE)) at the 2024 boundary. So nothing needed re-recording, and none was. Risk reason 2 (autopilot decisions) follows the impl notes. Calibration, build.tradeoffs and material are pinned to the pre-feature path. Bands aren't widened, and the candidate residuals are measured in comments for T410. The new career in feature-replay plays ENABLED_RELEASE; the Host's release only affects activation, which is a no-op on a world that already has a model. The material case is pinned off because of a real engine defect, named in limits for T420: closeSeason calls reduceSeasonMaterial at season.ts:737 before promote at season.ts:743, so promotion-playoff matches keep their material, against MATCH-5. The season.test switch assertion now names explicit releases, and match-model.test.ts alone keeps the switch value. The worker's record shows typecheck, lint, format:check, the sharded --changed run, and both configs on the ten files. I did not rerun them, because the review checkout has no node_modules and must stay read-only. Only P3 improvements remain."
+        }
+      }
+    },
+    {
+      "sequence": 965,
+      "at": "2026-10-24T11:36:20.201Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "12007006-d7e0-4fdc-8b46-31b557432d56",
+      "taskId": "T419",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

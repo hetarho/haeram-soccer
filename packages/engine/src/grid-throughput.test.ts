@@ -24,15 +24,19 @@ import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, type DecideRule } from './grid/setup';
 import { founded } from './season.testkit';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 
 const digest = (value: unknown) =>
   createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 const LEVEL: DecideRule = { awayGoals: false };
 const HOST = `${process.platform}-${process.arch}`;
 
-/** The archive club's first own league fixture of a season founded in `year`. */
+/**
+ * The archive club's first own league fixture of a season founded in `year`, on a world that never
+ * activated: each fixture plays the model `play` names, never one the switch recorded.
+ */
 function era(year: number): { w: World; f: Fixture } {
-  const w = founded(year);
+  const w = founded(year, DISABLED_RELEASE);
   const f = w.fixtures
     .filter((x) => (x.home === w.playerClub || x.away === w.playerClub) && x.kind !== 'cup')
     .sort((a, b) => a.round - b.round)[0]!;

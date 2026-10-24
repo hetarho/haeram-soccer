@@ -9,7 +9,12 @@ import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { createWorld, currentDay, advanceDays, fixtureDay, fullStatsRead } from './index';
-import { cachedWorld, ENABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import {
+  cachedWorld,
+  DISABLED_RELEASE,
+  ENABLED_RELEASE,
+  simulatedWorld,
+} from '../../../tests/fixtures/worlds';
 import { command, facts, readAndReload } from './feature-replay.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -19,17 +24,21 @@ for (const retained of [false])
   it(
     `keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (${retained ? 'retained' : 'new'} career)`,
     async () => {
-      // The starting career is setup, built once; the replays below are the test.
+      // The starting career is setup, built once; the replays below are the test. A new career
+      // plays what new careers play once the release is on, whatever the switch.
       const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
         const seed = retained
           ? retainedWorkload().w
-          : createWorld({
-              country: 'ENG',
-              name: 'Feature Replay',
-              color: '#224466',
-              seed: 'feature-replay',
-              level: 'easy',
-            });
+          : createWorld(
+              {
+                country: 'ENG',
+                name: 'Feature Replay',
+                color: '#224466',
+                seed: 'feature-replay',
+                level: 'easy',
+              },
+              ENABLED_RELEASE,
+            );
         for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
         // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
         if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);
@@ -104,11 +113,14 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
   }
   const load = (host: Host, raw: string) =>
     send(host, { type: 'inspect', raw, activate: true, upgrade: true });
-  /** A supported career three rounds in, activated by its writer, then played to an own result. */
+  /**
+   * A supported career three rounds in that never activated (founded with the release off), then
+   * activated by its writer and played to an own result.
+   */
   let built: Promise<{ before: World; at: World; host: Host }> | undefined;
   const activated = () =>
     (built ??= (async () => {
-      const before = simulatedWorld(founding, { rounds: 3 });
+      const before = simulatedWorld(founding, { rounds: 3 }, DISABLED_RELEASE);
       const host = new Host(undefined, { release: ENABLED_RELEASE });
       await load(host, await encode(before));
       const at = structuredClone(host.world!);
