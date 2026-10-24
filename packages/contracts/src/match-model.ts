@@ -180,6 +180,8 @@ export const INTENTION_KINDS = [
   'carry',
   'restart',
   'exit',
+  /** Standing in the lane from the carrier to a receiver between the lines or in a half-space (→MATCH-32). */
+  'screen',
 ] as const;
 /** Highest first: an intention yields only to a higher one or a reasoned event. */
 export const INTENTION_PRIORITIES = ['exit', 'restart', 'danger', 'committed', 'tactical'] as const;

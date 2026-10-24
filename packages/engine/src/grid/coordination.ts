@@ -1,8 +1,9 @@
 /**
  * Side-level coordination of the candidate model's intentions (→MATCH-16, MATCH-17;
  * docs/MATCH-ENGINE-DESIGN.md §4.6). After every action each side reads one snapshot and plans
- * its jobs at once. The defending side presses the carrier, covers the presser, marks runners
- * (handing a runner over to the teammate whose zone he enters) and recovers. The side with the
+ * its jobs at once. The defending side presses the carrier (keeping his most dangerous option in
+ * the presser's cover shadow), covers the presser, marks runners (handing a runner over to the
+ * teammate whose zone he enters), screens a lane into a receiver and recovers. The side with the
  * ball shows for a pressured carrier, clears the lane he is shown in, and runs, while its rest
  * defence stays home. Each job goes to one player. Candidates are ranked by cost with the player's
  * ID breaking ties, never by the order the roster is visited, and a player claimed for one job
@@ -17,9 +18,12 @@ import { lineOf } from '../player';
 import { hypot } from '../portable-math';
 import { random } from '../primitives';
 import { CHANGES_CONFIG } from './changes';
-import { attackFrame, clamp, PITCH, toEngine } from './pitch';
+import { dangerousOption, nearbyThreat, SHADOW_CONFIG, threatGain } from './lanes';
+import { attackFrame, clamp, laneOf, PITCH, toEngine } from './pitch';
 import {
   coverPoint,
+  lineFloor,
+  lineX,
   offsideLine,
   runContext,
   runPlan,
@@ -185,11 +189,19 @@ export interface Handover {
   to: number;
 }
 
+/** A presser already on the carrier whose cover shadow changes: the option he keeps behind him now, or none. */
+export interface Shadow {
+  side: 0 | 1;
+  idx: number;
+  option?: number;
+}
+
 /** Everything both sides decide from one snapshot. */
 export interface CoordinationPlan {
   /** The presser whose press an urgent danger makes urgent. */
   escalate?: [0 | 1, number];
   handovers: Handover[];
+  shadows: Shadow[];
   jobs: Job[];
 }
 
@@ -199,7 +211,7 @@ export interface CoordinationPlan {
  * snapshot and an inspection changes no outcome.
  */
 export function planCoordination(s: GridState, danger: boolean): CoordinationPlan {
-  const plan: CoordinationPlan = { handovers: [], jobs: [] };
+  const plan: CoordinationPlan = { handovers: [], shadows: [], jobs: [] };
   const att = s.possession;
   const carrier = s.owner && s.owner[0] === att ? s.players[att][s.owner[1]]! : undefined;
   if (!carrier || !onPitch(carrier)) return plan;
@@ -243,6 +255,27 @@ function defend(
       return { gp, d, cost: d / (weight(s, gp, 'press') * fresh(s, gp)) };
     })
     .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp));
+  // The cover shadow (T442, →MATCH-32): a tactical presser within the press reach keeps the
+  // carrier's most dangerous nearby option behind him, and holds it while it stays a nearby option
+  // that gains threat, since his own shadow is what puts a reaching man on its path. An urgent
+  // press goes straight goal-side, so nobody shadows in a danger.
+  const att = other(side);
+  let option: GridPlayer | null | undefined;
+  const shadowFor = (d: number, held?: number): number | undefined => {
+    if (danger || d > reach) return undefined;
+    const kept = held === undefined ? undefined : s.players[att][held];
+    if (kept && nearbyThreat(att, carrier, kept)) return held;
+    if (option === undefined) option = dangerousOption(s, att, carrier) ?? null;
+    return option?.idx;
+  };
+  const shadowed = new Set<number>();
+  for (const gp of pressing) {
+    const held = gp.intention!.shadow;
+    const shadow = shadowFor(gap(gp.pos, carrier.pos), held);
+    if (shadow !== undefined) shadowed.add(shadow);
+    if (shadow !== held)
+      plan.shadows.push({ side, idx: gp.idx, ...(shadow === undefined ? {} : { option: shadow }) });
+  }
   const wanted = CC.pressers[s.setup.tactics[side]];
   const all = [...pressing];
   for (const c of candidates) {
@@ -251,9 +284,17 @@ function defend(
     const priority = urgent ? 'danger' : 'tactical';
     if (!free(c.gp, priority)) continue;
     if (!urgent && c.d > reach) continue;
+    const shadow = shadowFor(c.d);
+    if (shadow !== undefined) shadowed.add(shadow);
     job(
       c.gp,
-      { kind: 'press', priority, target: [carrier.pos[0], carrier.pos[1]], opponent: carrier.idx },
+      {
+        kind: 'press',
+        priority,
+        target: [carrier.pos[0], carrier.pos[1]],
+        opponent: carrier.idx,
+        ...(shadow === undefined ? {} : { shadow }),
+      },
       urgent ? 'danger' : 'replaced',
     );
     all.push(c.gp);
@@ -336,6 +377,53 @@ function defend(
       danger ? 'danger' : 'replaced',
     );
   }
+  // Screen (T442, →MATCH-32): while the side presses the carrier from within its press reach, one
+  // free midfielder or defender stands in the lane to a receiver between the lines or in a
+  // half-space: the most dangerous such lane with an eligible man beside it, other than an option a
+  // presser already shadows. The nearest eligible man takes it; never the side's last man, and no
+  // marker leaves his runner for it (markers are claimed or hold their mark).
+  const lines =
+    all.some((gp) => gap(gp.pos, carrier.pos) <= reach) &&
+    !players.some((gp) => gp.intention?.kind === 'screen' && gp.intention.opponent === carrier.idx)
+      ? linesOf(s, side)
+      : undefined;
+  const receivers = lines
+    ? s.players[att]
+        .filter((gp) => !shadowed.has(gp.idx) && screenable(s, carrier, gp, lines))
+        .map((gp) => ({ gp, gain: threatGain(att, carrier.pos, gp.pos) }))
+        .sort((a, b) => b.gain - a.gain || byId(a.gp, b.gp))
+    : [];
+  if (lines && receivers.length) {
+    // How deep he stands: `attackFrame(side, gp.pos)[0]` without allocating.
+    const depth = (gp: GridPlayer) => (side === 0 ? gp.pos[0] : PITCH.length - gp.pos[0]);
+    const last = players.reduce((a, b) =>
+      depth(b) < depth(a) || (depth(b) === depth(a) && byId(b, a) < 0) ? b : a,
+    );
+    const screeners = players
+      .filter((gp) => {
+        if (gp === last || gp.intention || claimed.has(gp)) return false;
+        const line = lineOf(slotOf(s, gp).position);
+        return line === 'MF' || line === 'DF';
+      })
+      .map((gp) => ({ gp, home: place(gp) }));
+    for (const { gp: receiver } of receivers) {
+      const pick = screeners
+        .flatMap(({ gp, home }) => {
+          const at = screenPoint(s, gp, carrier, receiver, home, lines.df);
+          return at ? [{ gp, at, cost: gap(gp.pos, at) }] : [];
+        })
+        .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp))[0];
+      if (!pick) continue;
+      job(pick.gp, {
+        kind: 'screen',
+        priority: 'tactical',
+        target: pick.at,
+        opponent: carrier.idx,
+        shadow: receiver.idx,
+      });
+      break;
+    }
+  }
   // Recover: just after losing the ball, a free player far from his shape goes back to it; a better reader reacts sooner.
   if (s.lastLoss?.side !== side || s.elapsed - s.lastLoss.at >= CC.recover.window) return;
   for (const gp of players) {
@@ -367,15 +455,92 @@ function onside(s: GridState, side: 0 | 1, p: readonly number[]): [number, numbe
   return toEngine(side, [Math.min(q[0], limit), q[1]]);
 }
 
-/** How far `p` stands from the segment `a`→`b`, or Infinity beyond its ends. */
-function fromLane(p: readonly number[], a: readonly number[], b: readonly number[]): number {
+/** The point of the segment `a`→`b` nearest `p`, or undefined when `p` lies beyond its ends. */
+function laneFoot(
+  p: readonly number[],
+  a: readonly number[],
+  b: readonly number[],
+): [number, number] | undefined {
   const dx = b[0]! - a[0]!,
     dy = b[1]! - a[1]!;
   const len = dx * dx + dy * dy;
-  if (len === 0) return Infinity;
+  if (len === 0) return undefined;
   const t = ((p[0]! - a[0]!) * dx + (p[1]! - a[1]!) * dy) / len;
-  if (t <= 0 || t >= 1) return Infinity;
-  return hypot(p[0]! - (a[0]! + t * dx), p[1]! - (a[1]! + t * dy));
+  if (t <= 0 || t >= 1) return undefined;
+  return [a[0]! + t * dx, a[1]! + t * dy];
+}
+
+/** How far `p` stands from the segment `a`→`b`, or Infinity beyond its ends. */
+function fromLane(p: readonly number[], a: readonly number[], b: readonly number[]): number {
+  const foot = laneFoot(p, a, b);
+  return foot ? hypot(p[0]! - foot[0], p[1]! - foot[1]) : Infinity;
+}
+
+/** A side's midfield and back lines (`lineX`, its attack frame), which screening reads. */
+export interface Lines {
+  mf: number;
+  df: number;
+}
+const linesOf = (s: GridState, side: 0 | 1): Lines => ({
+  mf: lineX(s, side, 'MF'),
+  df: lineX(s, side, 'DF'),
+});
+
+/**
+ * Whether the lane from `carrier` to his teammate `receiver` is one to screen (T442, →MATCH-32):
+ * the pass gains threat (`threatGain`) and the receiver stands in a half-space or between the
+ * opponents' midfield and defensive lines in the central lanes (→MATCH-14/15, as `computeTags`
+ * reads it). `lines` are the opponents', when the caller already has them.
+ */
+export function screenable(
+  s: GridState,
+  carrier: GridPlayer,
+  receiver: GridPlayer,
+  lines: Lines = linesOf(s, other(carrier.side)),
+): boolean {
+  const side = carrier.side;
+  if (receiver === carrier || !outfield(receiver)) return false;
+  if (threatGain(side, carrier.pos, receiver.pos) <= 0) return false;
+  const p = attackFrame(side, receiver.pos);
+  const lane = laneOf(p[1]);
+  if (lane === 1 || lane === 3) return true;
+  return lane === 2 && p[0] >= PITCH.length - lines.mf && p[0] <= PITCH.length - lines.df;
+}
+
+/**
+ * Where `gp` stands to screen the lane from `carrier` to `receiver` (engine frame, T442): the point
+ * of it nearest his shape place, at most `SHADOW_CONFIG.screen.step` m from that place and inside
+ * his line's bounds (a defender the back line's, §4.3; a midfielder never behind his back line);
+ * undefined when his shape place lies beyond the lane's ends or more than `screen.reach` m from it.
+ * `home` is his shape place and `backLine` his side's back line (`lineX`), when the caller
+ * already has them.
+ */
+export function screenPoint(
+  s: GridState,
+  gp: GridPlayer,
+  carrier: GridPlayer,
+  receiver: GridPlayer,
+  home: readonly [number, number] = shapePlace(s, gp.side, gp.idx),
+  backLine?: number,
+): [number, number] | undefined {
+  const S = SHADOW_CONFIG.screen;
+  const side = gp.side;
+  const foot = laneFoot(home, carrier.pos, receiver.pos);
+  if (!foot) return undefined;
+  const d = gap(home, foot);
+  if (d > S.reach) return undefined;
+  const k = d > S.step ? S.step / d : 1;
+  const [x, y] = attackFrame(side, [
+    home[0] + (foot[0] - home[0]) * k,
+    home[1] + (foot[1] - home[1]) * k,
+  ]);
+  const cfg = tacticShape(s, side);
+  return toEngine(side, [
+    lineOf(slotOf(s, gp).position) === 'DF'
+      ? clamp(x, lineFloor(attackFrame(side, s.ball)[0], cfg.line[0]), cfg.line[1])
+      : Math.max(x, backLine ?? lineX(s, side, 'DF')),
+    y,
+  ]);
 }
 
 /** The side with the ball: one teammate shows for a pressured carrier, another clears his lane, runners go. */

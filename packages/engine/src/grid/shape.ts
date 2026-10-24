@@ -6,6 +6,7 @@ import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch
 import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { MatchMath } from '../portable-math';
+import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, skill, slotOf } from './state';
 import { ROLE_SHIFT, SPOTS } from './spots';
@@ -407,22 +408,31 @@ export function shapePlace(
 }
 
 /** The deepest the back line stands: its tactic's line, or goal-side of a ball played in behind it (T215). */
-const lineFloor = (ball: number, line: number) =>
+export const lineFloor = (ball: number, line: number) =>
   Math.min(line, Math.max(SHAPE_CONFIG.deepLine.min, ball - SHAPE_CONFIG.deepLine.behindBall));
 
 /**
- * Where a presser of `gp`'s side goes for the ball at `at` (his attack frame): goal-side of it, a
- * defender within his line's bounds unless `urgent` (an urgent danger pulls him out of the line).
+ * Where a presser of `gp`'s side goes for the ball at `at` (his attack frame): goal-side of it,
+ * bent toward `option` (his attack frame) to keep it in his cover shadow (`coverShadow`, candidate
+ * model, T442), a defender within his line's bounds unless `urgent` (an urgent danger pulls him
+ * out of the line).
  */
-function pressPoint(s: GridState, gp: GridPlayer, at: Point, urgent: boolean): [number, number] {
+function pressPoint(
+  s: GridState,
+  gp: GridPlayer,
+  at: Point,
+  urgent: boolean,
+  option?: Point,
+): [number, number] {
   const side = gp.side;
   const cfg = tacticShape(s, side);
-  const goalSide = at[0] - SHAPE_CONFIG.pressGoalSide;
+  const goalSide: Point = [at[0] - SHAPE_CONFIG.pressGoalSide, at[1]];
+  const [x, y] = option ? coverShadow(goalSide, at, option) : goalSide;
   return toEngine(side, [
     lineOfSlot(s, gp) === 'DF' && !urgent
-      ? clamp(goalSide, lineFloor(at[0], cfg.line[0]), cfg.line[1])
-      : Math.max(0, goalSide),
-    at[1],
+      ? clamp(x, lineFloor(at[0], cfg.line[0]), cfg.line[1])
+      : Math.max(0, x),
+    y,
   ]);
 }
 
@@ -441,17 +451,27 @@ export function coverPoint(side: 0 | 1, mate: GridPlayer, math: MatchMath): [num
 
 /**
  * Where `gp`'s intention takes him now (engine frame, →MATCH-17): a press or a mark goes goal-side of
- * the opponent it tracks, a cover behind the teammate who presses, a set-piece guard to its zone or
- * goal (`guardPoint`); every other kind holds the target it was given. A reference that has left
- * the pitch falls back to that target.
+ * the opponent it tracks (a tactical press bent to keep the option it names behind him, T442), a
+ * cover behind the teammate who presses, a set-piece guard to its zone or goal (`guardPoint`);
+ * every other kind holds the target it was given. A reference that has left the pitch falls back
+ * to that target.
  */
 export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] {
   const i = gp.intention!;
   const side = gp.side;
   const foe = i.opponent === undefined ? undefined : s.players[other(side)][i.opponent];
   const mate = i.teammate === undefined ? undefined : s.players[side][i.teammate];
-  if (foe && onPitch(foe) && i.kind === 'press')
-    return pressPoint(s, gp, attackFrame(side, foe.pos), i.priority === 'danger');
+  if (foe && onPitch(foe) && i.kind === 'press') {
+    const urgent = i.priority === 'danger';
+    const option = urgent || i.shadow === undefined ? undefined : s.players[other(side)][i.shadow];
+    return pressPoint(
+      s,
+      gp,
+      attackFrame(side, foe.pos),
+      urgent,
+      option && onPitch(option) ? attackFrame(side, option.pos) : undefined,
+    );
+  }
   if (foe && onPitch(foe) && i.kind === 'mark') return goalSideOf(side, foe);
   if (i.kind === 'cover' && i.zone) return guardPoint(s, gp, i.zone);
   if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate, s.math);

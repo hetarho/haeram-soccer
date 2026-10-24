@@ -19,7 +19,7 @@ import {
 } from './intentions';
 import { MOTION_STATES, buildFrames } from './playback';
 import { buildGridSetup } from './setup';
-import { runPlan, SHAPE_CONFIG, targetOf } from './shape';
+import { runPlan, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { random } from '../primitives';
 import { createState, type GridPlayer, type GridState } from './state';
 import type { TraceEntry } from './trace';
@@ -331,6 +331,7 @@ describe('grid intentions', () => {
       const roster = (sd: 0 | 1) => Array.from(e.slots.slice(sd * 11, sd * 11 + 11));
       if (i.teammate !== undefined) expect(roster(side)).toContain(i.teammate);
       if (i.opponent !== undefined) expect(roster(side === 0 ? 1 : 0)).toContain(i.opponent);
+      if (i.shadow !== undefined) expect(roster(side === 0 ? 1 : 0)).toContain(i.shadow);
     }
     // Every exit and entry is traced with the intention the leaver ended with, and why he left.
     for (const { result } of watched)
@@ -341,6 +342,61 @@ describe('grid intentions', () => {
         expect(e.left!.at).toBeLessThanOrEqual(e.elapsed);
       }
     expect(changes).toBeGreaterThan(0);
+  });
+
+  it('a screen ends cleared when the ball is played', () => {
+    /**
+     * Balanced's block in its shape against side 0's carrier 7 at [40, 34], pressed from 4 m by its
+     * striker 10, with side 0's 9 ahead in the left half-space: one update gives out the screen.
+     */
+    const screened = () => {
+      const s = lab();
+      s.players[0].forEach((gp, i) => i !== 7 && (gp.pos = [1, 2 + 6 * i]));
+      s.players[0][7]!.pos = [40, 34];
+      s.ball = [40, 34];
+      for (const gp of s.players[1]) gp.pos = shapePlace(s, 1, gp.idx);
+      s.players[1][10]!.pos = [43, 36.5];
+      s.players[0][9]!.pos = [72, 22];
+      updateIntentions(s);
+      const screener = s.players[1].find((gp) => gp.intention?.kind === 'screen')!;
+      expect(screener.intention).toMatchObject({ priority: 'tactical', opponent: 7, shadow: 9 });
+      return { s, screener };
+    };
+    const { s, screener } = screened();
+    // An ordinary update keeps him in the lane.
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    expect(screener.intention?.kind).toBe('screen');
+    // The carrier plays the ball to another teammate: that lane is gone.
+    const six = s.players[0][6]!;
+    six.pos = [36, 20];
+    takeBall(s, six, [36, 20], 7);
+    s.owner = [0, 6];
+    s.ball = [36, 20];
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    expectEnded(screener, 'screen', 'cleared');
+    // The receiver leaving the lane for the wing in his own half ends it the same way.
+    const left = screened();
+    left.s.players[0][9]!.pos = [45, 2];
+    left.s.elapsed += 0.5;
+    updateIntentions(left.s);
+    expectEnded(left.screener, 'screen', 'cleared');
+    // The receiver leaving the pitch ends it as departed.
+    const gone = screened();
+    const nine = gone.s.players[0][9]!;
+    nine.onPitch = false;
+    depart(gone.s, nine, 'injury');
+    expectEnded(gone.screener, 'screen', 'departed');
+    // In play: screens are traced as marking the lane and never end on arrival.
+    let screens = 0;
+    for (const { e, k, i } of tracedSlots()) {
+      if (i.kind !== 'screen') continue;
+      screens++;
+      if (ended(i)) expect(i.reason).not.toBe('arrival');
+      else expect(MOTION_STATES[e.states[k]!]).toBe('mark');
+    }
+    expect(screens).toBeGreaterThan(0);
   });
 
   it('keeps role differences observable', () => {
