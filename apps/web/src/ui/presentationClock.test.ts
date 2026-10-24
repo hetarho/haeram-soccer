@@ -8,6 +8,7 @@ import {
   presentationSamples,
   runningSeconds,
   runningTime,
+  WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
   WATCH_SPEEDS,
 } from './presentationClock';
@@ -42,26 +43,36 @@ function timedFrame(
 }
 
 describe('presentation clock (→WEB-32)', () => {
-  it('spends equal time on equal match intervals', () => {
-    expect(WATCH_MINUTE_MS).toBe(4000);
+  it('1x lasts 12 s a match minute', () => {
+    expect(WATCH_MINUTE_MS).toBe(12000);
     expect(WATCH_SPEEDS).toEqual([1, 2, 4, 8, 16]);
-    // Every minute lasts 4 s at 1x, so any 60 match seconds take 4 s and 15 take 1 s.
-    expect(presentationLength(95)).toBe(95 * 4000);
-    expect(clockAt(60)).toBe(4000);
+    // Every minute lasts 12 s at 1x, so any 60 match seconds take 12 s and 15 take 3 s.
+    expect(presentationLength(95)).toBe(95 * 12000);
+    expect(clockAt(60)).toBe(12000);
     for (const [from, to] of [
       [0, 15],
       [600, 615],
       [2700, 2715],
       [5400, 5415],
     ] as const)
-      expect(clockAt(to) - clockAt(from)).toBeCloseTo(1000, 9);
+      expect(clockAt(to) - clockAt(from)).toBeCloseTo(3000, 9);
     expect(runningSeconds(clockAt(1234.5))).toBeCloseTo(1234.5, 9);
-    // At each speed a minute takes 4000 / speed real ms, whatever happens in it.
+    // At each speed a minute takes 12000 / speed real ms, whatever happens in it.
+    const length = presentationLength(2);
     for (const speed of WATCH_SPEEDS)
-      expect(presentationAdvance(0, 4000 / speed, speed, 8000)).toBeCloseTo(4000, 9);
+      expect(presentationAdvance(0, 12000 / speed, speed, length)).toBeCloseTo(12000, 9);
     // Every speed reaches the final whistle and stays there.
-    expect(presentationAdvance(7990, 100, 16, 8000)).toBe(8000);
-    expect(presentationAdvance(0, -5, 1, 8000)).toBe(0);
+    expect(presentationAdvance(length - 10, 100, 16, length)).toBe(length);
+    expect(presentationAdvance(0, -5, 1, length)).toBe(0);
+  });
+
+  it('matches open at 2x', () => {
+    expect(WATCH_DEFAULT_SPEED).toBe(2);
+    expect(WATCH_SPEEDS).toContain(WATCH_DEFAULT_SPEED);
+    // At the opening speed a minute takes 6 real seconds: a 95-minute match about 9½ minutes.
+    expect(presentationAdvance(0, 6000, WATCH_DEFAULT_SPEED, presentationLength(95))).toBe(
+      clockAt(60),
+    );
   });
 
   it('changes speed without a time jump', () => {
@@ -71,8 +82,8 @@ describe('presentation clock (→WEB-32)', () => {
     for (const speed of WATCH_SPEEDS)
       expect(presentationAdvance(clock, 0, speed, 360000)).toBe(clock);
     clock = presentationAdvance(clock, 100, 16, 360000);
-    // 100 ms at 16x are 1.6 s of the 1x clock: 24 match seconds after the switch, not a restart.
-    expect(runningSeconds(clock) - before).toBeCloseTo(24, 9);
+    // 100 ms at 16x are 1.6 s of the 1x clock: 8 match seconds after the switch, not a restart.
+    expect(runningSeconds(clock) - before).toBeCloseTo((1600 / WATCH_MINUTE_MS) * 60, 9);
   });
 
   it('keeps dead-ball and open-play multipliers equal', () => {
@@ -103,9 +114,9 @@ describe('presentation clock (→WEB-32)', () => {
     ];
     // Minute 1 holds a 30-second dead ball (10–40); minute 2 30 seconds of open play (70–100).
     const at = (i: number, t: number) => clockAt(runningTime(i, frames[i]!, t, 0));
-    expect(at(0, 40) - at(0, 10)).toBeCloseTo(2000, 9);
-    expect(at(1, 100) - at(1, 70)).toBeCloseTo(2000, 9);
-    expect(at(1, 60) - at(0, 0)).toBeCloseTo(4000, 9);
+    expect(at(0, 40) - at(0, 10)).toBeCloseTo(WATCH_MINUTE_MS / 2, 9);
+    expect(at(1, 100) - at(1, 70)).toBeCloseTo(WATCH_MINUTE_MS / 2, 9);
+    expect(at(1, 60) - at(0, 0)).toBeCloseTo(WATCH_MINUTE_MS, 9);
     const { times } = presentationSamples(frames);
     expect(times).toEqual([10, 40, 60, 70, 100, 120]);
   });
@@ -223,6 +234,6 @@ describe('presentation clock (→WEB-32)', () => {
     const decoded = presentationSamples([observed]);
     expect(decoded.times).toEqual([15, 30, 45, 60]);
     expect(decoded.trackTimes).toEqual([30, 60]);
-    expect(presentationLength(legacy.length)).toBe(90 * 4000);
+    expect(presentationLength(legacy.length)).toBe(90 * WATCH_MINUTE_MS);
   });
 });

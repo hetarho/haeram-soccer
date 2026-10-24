@@ -50,6 +50,7 @@ import {
   presentationLength,
   presentationSamples,
   runningSeconds,
+  WATCH_DEFAULT_SPEED,
   WATCH_SPEEDS,
 } from './presentationClock';
 import s from './App.module.css';
@@ -145,8 +146,8 @@ export function Pitch({
   const skin = usePitchSkin(canvas);
   const [ground] = useState(() => createGroundPainter());
   /**
-   * Presentation time in ms at 1x, every match minute lasting 4000 ms (→WEB-32), with the recorded
-   * goal it holds at (→WEB-94).
+   * Presentation time in ms at 1x, every match minute lasting `WATCH_MINUTE_MS` (→WEB-32), with the
+   * recorded goal it holds at (→WEB-94).
    */
   const clock = useRef<GoalFeedbackState>({ clockMs: 0, next: 0 });
   const last = useRef(0);
@@ -159,7 +160,7 @@ export function Pitch({
   // Who has the ball at the presented instant, shared by the scoreboard and the pitch (→WEB-95).
   const [possession, setPossession] = useState<PossessionCue>({ state: 'unknown' });
   const possessionShown = useRef('');
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState<number>(WATCH_DEFAULT_SPEED);
   const [paused, setPaused] = useState(false);
   const [inspect, setInspect] = useState(false);
   const [details, setDetails] = useState(false);
@@ -263,6 +264,8 @@ export function Pitch({
     setSelection('0:8');
     setDetails(false);
     setInspect(false);
+    // Every presentation opens at the default speed, live or archived (→WEB-32).
+    setSpeed(WATCH_DEFAULT_SPEED);
     setPaused(
       document.hidden || (summary && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
     );

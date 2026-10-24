@@ -12,6 +12,7 @@ import {
   presentationLength,
   presentationSamples,
   runningSeconds,
+  WATCH_MINUTE_MS,
   type PresentationSample,
 } from './presentationClock';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
@@ -174,11 +175,20 @@ describe('possession cue', () => {
       const shown = samples[Math.floor(locate(times, now, sampleBreak) + 1e-6)];
       return resolvePossessionCue(shown, frames[shown!.frame], now - shown!.frame * 60);
     };
-    // Held at the goal: the scoring shot is the presented action, not the kick-off after it.
+    // Held at the goal: the scoring shot is the presented action, not the kick-off after it; 15 s
+    // earlier home still carries.
     expect(at(held.clockMs)).toEqual({ state: 'flight', side: 0 });
-    expect(at(held.clockMs - 1000)).toEqual({ state: 'carrier', side: 0, carrierId: 'h9' });
-    // A seek into the next minute reads that instant's action.
-    expect(at(presentationLength(1) + 400)).toEqual({ state: 'carrier', side: 1, carrierId: 'a4' });
+    expect(at(held.clockMs - WATCH_MINUTE_MS / 4)).toEqual({
+      state: 'carrier',
+      side: 0,
+      carrierId: 'h9',
+    });
+    // A seek 6 s into the next minute reads that instant's action.
+    expect(at(presentationLength(1) + WATCH_MINUTE_MS / 10)).toEqual({
+      state: 'carrier',
+      side: 1,
+      carrierId: 'a4',
+    });
   });
 
   it('minute leader is not current possession', () => {

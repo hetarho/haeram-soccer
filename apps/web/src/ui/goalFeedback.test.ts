@@ -260,6 +260,6 @@ describe('goal feedback', () => {
     run(start, 16, 16, (state) => state.next === again.length && !state.cue, 120_000, again);
     expect(JSON.stringify({ rec, frames })).toBe(before);
     expect(again).toEqual(goals);
-    expect(WATCH_MINUTE_MS).toBe(4000);
+    expect(lengthMs).toBe(frames.length * WATCH_MINUTE_MS);
   });
 });

@@ -3,7 +3,8 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
-import { continuityCareer } from '../fixtures/full-model-continuity';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { continuityCareer, FAST_MINUTE_MS, FAST_SPEED } from '../fixtures/full-model-continuity';
 import { exportRaw, exportWorld } from './club-identity-helpers';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -116,17 +117,23 @@ for (const viewport of VIEWPORTS)
     await expect(badge).toHaveCount(1, { timeout: 10_000 });
     await expect(badge).toHaveAccessibleName('볼 소유');
 
-    // At 16x every running minute lasts 250 ms; only a goal's hold (→WEB-94) takes time out.
+    // At 16x every running minute lasts 750 ms; only a goal's hold (→WEB-94) takes time out. The
+    // whole match at that speed is the slowest part of this journey.
+    test.info().setTimeout(test.info().timeout + next.watchMs);
     const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
-    await speeds.getByRole('radio', { name: '16×', exact: true }).click();
+    await speeds.getByRole('radio', { name: `${FAST_SPEED}×`, exact: true }).click();
     const before = { minute: await minuteNow(page), cues: (await seen()).cues.length };
     const held = await page.getByTestId('goal-cue').count();
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(8 * FAST_MINUTE_MS);
     const covered = (await minuteNow(page)) - before.minute;
     const holds = (await seen()).cues.length - before.cues + held;
-    expect(covered).toBeGreaterThanOrEqual(5 - 4 * holds);
+    expect(covered).toBeGreaterThanOrEqual(
+      5 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
+    );
     expect(covered).toBeLessThanOrEqual(10);
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+      timeout: next.watchMs + 10_000,
+    });
     await expect(page.getByTestId('goal-cue')).toHaveCount(0, { timeout: 3000 });
 
     // Each goal held and cued once, in order, its side named, with the running score after it.

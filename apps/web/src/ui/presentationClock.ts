@@ -5,8 +5,10 @@ import type {
 } from '../../../../packages/contracts/src/types';
 
 export const WATCH_SPEEDS = [1, 2, 4, 8, 16] as const;
+/** The speed every match presentation opens at, live or archived (→WEB-32). */
+export const WATCH_DEFAULT_SPEED = 2;
 /** Real ms one match minute of running playback lasts at 1x (→WEB-32, MATCH-12). */
-export const WATCH_MINUTE_MS = 4000;
+export const WATCH_MINUTE_MS = 12000;
 
 /**
  * The presentation clock (→WEB-32): ms at 1x, uniform through build-up, dead balls, chances, added
