@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
-import { cachedWorld, simulatedWorld, withoutManagerHistory } from '../../../tests/fixtures/worlds';
+import {
+  cachedWorld,
+  DISABLED_RELEASE,
+  simulatedWorld,
+  withoutManagerHistory,
+} from '../../../tests/fixtures/worlds';
 import { advanceRound, createWorld, managerCandidates, operate, simulateSeason } from './index';
 import {
   attributeOwnMatch,
@@ -23,9 +28,12 @@ const FOUNDING = {
   seed: 'manager-capture',
   level: 'easy' as const,
 };
-/** A founded career with money for hires; `delegated` hands the manager post to the staff. */
+/**
+ * A founded career with money for hires; `delegated` hands the manager post to the staff. On the
+ * pre-feature path: manager attribution, not the match model, is the subject.
+ */
 function founded(delegated = false) {
-  const w = simulatedWorld(FOUNDING);
+  const w = simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
   w.cash = '999999999999';
   if (delegated) {
     w.intervention = 4;
@@ -156,7 +164,7 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
     // whose final we win is the scene (a lost final still happens even then).
     const won = ['manager-cup-2', 'manager-cup-3', 'manager-cup-4']
       .map((seed) => {
-        const w = createWorld({ ...FOUNDING, seed });
+        const w = createWorld({ ...FOUNDING, seed }, DISABLED_RELEASE);
         for (const p of w.players)
           for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
         finishCups(w);

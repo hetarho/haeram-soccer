@@ -4,20 +4,27 @@ import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { activePlayers, advanceRound, prepareSeason } from './index';
 import { professionalStart } from './testing';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
-/** A club founded in 1950, moved to `year` and to the lowest professional division if asked. */
+/**
+ * A club founded in 1950, moved to `year` and to the lowest professional division if asked; on the
+ * pre-feature path, since sponsorship, not the match model, is the subject.
+ */
 export function club({
   year,
   professional = false,
 }: { year?: number; professional?: boolean } = {}) {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Slot Town',
-    color: '#335544',
-    seed: 'sponsors',
-    level: 'easy' as const,
-  });
+  const w = simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Slot Town',
+      color: '#335544',
+      seed: 'sponsors',
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
   w.settings = legacySettings(2);
   // The squad stays as founded, so results follow only what a test sets.
   if (year) {

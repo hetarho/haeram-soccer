@@ -33,7 +33,7 @@ import {
   transferOffers,
   transferWindowDays,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 
 /**
  * A rich level-4 club on the winter window's opening day, half its season played with revenue far
@@ -50,16 +50,19 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
   if (finance) w.direction = { finance };
   return w;
 }
-/** The club as founded, built once per seed. */
+/** The club as founded, built once per seed, on the pre-feature path: signings are the subject. */
 const founded = (seed: string) =>
   cachedWorld(`founded:${seed}`, () =>
-    createWorld({
-      country: 'ENG',
-      name: 'Scout Town',
-      color: '#224433',
-      seed,
-      level: 'easy' as const,
-    }),
+    createWorld(
+      {
+        country: 'ENG',
+        name: 'Scout Town',
+        color: '#224433',
+        seed,
+        level: 'easy' as const,
+      },
+      DISABLED_RELEASE,
+    ),
   );
 const staffBids = (w: World) => (w.bids || []).filter((bid) => bid.staff);
 const reports = (w: World) =>

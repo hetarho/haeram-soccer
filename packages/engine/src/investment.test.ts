@@ -12,16 +12,21 @@ import {
   ticketInvestmentPreview,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
+/** The club on the pre-feature path: investment plans, not the match model, are the subject. */
 function world() {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Investment United',
-    color: '#224433',
-    seed: 'investment-plans',
-    level: 'easy' as const,
-  });
+  const w = simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Investment United',
+      color: '#224433',
+      seed: 'investment-plans',
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999999';
   return w;
 }

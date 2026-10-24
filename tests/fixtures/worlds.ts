@@ -262,6 +262,18 @@ export const ENABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enab
 export const DISABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: false };
 
 /**
+ * The release production declares, also under the release-on probe, which keeps it before turning
+ * the switch on (tests/setup/release-on.ts). Only the case guarding production's switch reads it.
+ */
+export function declaredRelease(): MatchModelRelease {
+  return (
+    (globalThis as { declaredMatchModelRelease?: MatchModelRelease }).declaredMatchModelRelease ?? {
+      ...MATCH_MODEL_RELEASE,
+    }
+  );
+}
+
+/**
  * `w` on the candidate match model (→SAVE-23), for tests and measurements while the release switch
  * stays off: production's `activateMatchModel` with an enabled release, so the model is recorded at
  * the world's current boundary with its season's complete aggregates opened there — `founding`

@@ -1,5 +1,5 @@
 import type { Founding } from '../../contracts/src/types';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 export const FOUNDING: Founding = {
   country: 'ENG',
@@ -9,6 +9,7 @@ export const FOUNDING: Founding = {
   level: 'easy',
 };
 
+/** The finance club founded on the pre-feature path: money, not the match model, is the subject. */
 export function world() {
-  return simulatedWorld(FOUNDING);
+  return simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
 }

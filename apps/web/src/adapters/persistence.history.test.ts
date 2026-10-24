@@ -26,11 +26,13 @@ import {
 } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, recognizedLegacy } from './persistence';
 import { pack, unpack } from './packing';
-import { legacyIntegers, world } from './persistence.testkit';
+import { FOUNDING, legacyIntegers } from './persistence.testkit';
 
+// The archive's history, not the match model, is the subject of the two round trips below: their
+// seasons are played on the pre-feature path.
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
   const w = cachedWorld('season from 2000', () => {
-    const w = world();
+    const w = simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
     w.year = 2000;
     w.currency = 'GBP';
     w.manager.since = 1997;
@@ -65,13 +67,17 @@ it('preserves first and second European phases and global standings in a histori
 });
 
 it('roundtrips one transferred league scorer with both real club contributions', async () => {
-  const { w, playerId } = cachedWorld('transferred scorer', () => transferredScorerWorld());
+  const { w, playerId } = cachedWorld('transferred scorer', () =>
+    transferredScorerWorld(undefined, DISABLED_RELEASE),
+  );
   const raw = await encode(w, 1, 0),
     loaded = await decode(raw);
   expect(canonical(loaded.world)).toBe(canonical(w));
   expect(loaded.world.scorerSeason!.players.find((p) => p.id === playerId)!.clubs).toHaveLength(2);
   const closed = cachedWorld('transferred scorer season', () => {
-    const { w } = cachedWorld('transferred scorer', () => transferredScorerWorld());
+    const { w } = cachedWorld('transferred scorer', () =>
+      transferredScorerWorld(undefined, DISABLED_RELEASE),
+    );
     simulateSeason(w);
     return w;
   });

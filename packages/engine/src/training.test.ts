@@ -8,7 +8,7 @@ import { settleRate } from './adaptation';
 import { TRAINING_INJURY, trainingInjuryChance } from './careers';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import {
   activePlayers,
   advanceDays,
@@ -31,14 +31,18 @@ function world(focus: TrainingFocus = 'balanced') {
   return cachedWorld(`world:${focus}`, () => founded(focus));
 }
 
+/** The club on the pre-feature path: training, not the match model, is the subject. */
 function founded(focus: TrainingFocus) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Academy United',
-    color: '#224433',
-    seed: 'training-progress',
-    level: 'easy' as const,
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Academy United',
+      color: '#224433',
+      seed: 'training-progress',
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   w.settings = legacySettings(2);
   w.cash = '999999999';
   w.manager.youth = 60;

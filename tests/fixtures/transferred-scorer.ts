@@ -3,21 +3,32 @@ import {
   createWorld,
   activePlayers,
   advanceRound,
+  MATCH_MODEL_RELEASE,
   ownLeagueClubs,
   respondBid,
+  type MatchModelRelease,
 } from '../../packages/engine/src/index';
 import { ATTRIBUTES } from '../../packages/contracts/src/player';
 import type { World } from '../../packages/contracts/src/types';
-/** `prepare` sets the founded world up before anything is played, as a match model's activation. */
-export function transferredScorerWorld(prepare?: (w: World) => unknown) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Transfer Scorer',
-    color: '#224433',
-    // A seed where the summary-path own league (T224) still leaves him a top-ten scorer.
-    seed: 'transferred-scorer-c',
-    level: 'easy',
-  });
+/**
+ * `prepare` sets the founded world up before anything is played, as a match model's activation;
+ * `release` founds it (default the switch as it stands).
+ */
+export function transferredScorerWorld(
+  prepare?: (w: World) => unknown,
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
+) {
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Synthetic Transfer Scorer',
+      color: '#224433',
+      // A seed where the summary-path own league (T224) still leaves him a top-ten scorer.
+      seed: 'transferred-scorer-c',
+      level: 'easy',
+    },
+    release,
+  );
   prepare?.(w);
   w.cash = '999999999999';
   const player = activePlayers(w).find((p) => p.position === 'ST')!;

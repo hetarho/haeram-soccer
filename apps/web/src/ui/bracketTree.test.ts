@@ -13,17 +13,21 @@ import {
   prepareSeason,
   tieAggregate,
 } from '../../../../packages/engine/src/index';
-import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { archivedKnockout, treeColumns, treeStart, type TreeColumn } from './bracketTree';
 
+/** The bracket club on the pre-feature path: the knockout tree, not the match model, is the subject. */
 function founded(country: CountryCode, year?: number) {
-  const w = createWorld({
-    country,
-    name: 'Bracket Rovers',
-    color: '#2a4d3a',
-    seed: `bracket-tree-${country}`,
-    level: 'normal' as const,
-  });
+  const w = createWorld(
+    {
+      country,
+      name: 'Bracket Rovers',
+      color: '#2a4d3a',
+      seed: `bracket-tree-${country}`,
+      level: 'normal' as const,
+    },
+    DISABLED_RELEASE,
+  );
   if (!year) return w;
   w.year = year;
   // Fresh synthetic founding epoch; no played career is being moved.

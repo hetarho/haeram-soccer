@@ -283,7 +283,6 @@
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
-| T420 | The unit tier green and timed with the release switch on | SAVE ARCH | T416 T417 T418 T419 | todo |
 | T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
 
 ## work
@@ -296,12 +295,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 10 | 7 | 3 | 1 | 0 | 0 | 2026-10-24T12:36:44.579Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 11 | 8 | 3 | 0 | 0 | 0 | 2026-10-24T14:33:15.579Z | [history](work/v9n4-release.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261024 T420 integrated
 - 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
 - 261024 T421 T422 integrated
 - 261024 T416 integrated
@@ -321,4 +321,3 @@
 - 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
 - 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
 - 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
-- 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.

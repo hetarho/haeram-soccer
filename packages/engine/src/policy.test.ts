@@ -29,16 +29,21 @@ import {
   driftFans,
   baseEffects,
 } from './index';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
+/** The club on the pre-feature path: club policy, not the match model, is the subject. */
 function world(policy?: Partial<ClubPolicy>) {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Policy Athletic',
-    color: '#2a4d3c',
-    seed: 'club-policy',
-    level: 'easy' as const,
-  });
+  const w = simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Policy Athletic',
+      color: '#2a4d3c',
+      seed: 'club-policy',
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
   return w;

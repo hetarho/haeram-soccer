@@ -12,7 +12,7 @@ import {
   createWorld,
   prepareSeason,
 } from '../../../../packages/engine/src/index';
-import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { cupRoute, nationName, runLine, runResult, type TieRow } from './cupRoute';
 
 const club = (id: string, country: string): Club => ({
@@ -303,14 +303,18 @@ describe('our cup road', () => {
   });
 
   it('agrees with the archived runs of a played 1980 season, the Cup Winners Cup included', () => {
+    // Played on the pre-feature path: the cup route, not the match model, is the subject.
     const world = cachedWorld('eng-1980-closed', () => {
-      const world = createWorld({
-        country: 'ENG',
-        name: 'Route Rovers',
-        color: '#2a4d3a',
-        seed: 'cup-route',
-        level: 'normal' as const,
-      });
+      const world = createWorld(
+        {
+          country: 'ENG',
+          name: 'Route Rovers',
+          color: '#2a4d3a',
+          seed: 'cup-route',
+          level: 'normal' as const,
+        },
+        DISABLED_RELEASE,
+      );
       world.year = 1980;
       world.currency = currency('ENG', 1980).code;
       world.priceIndex = priceIndex('ENG', 1980).value;

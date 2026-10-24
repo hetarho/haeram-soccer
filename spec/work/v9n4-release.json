@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T12:36:44.579Z",
-  "sourceCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+  "snapshotAt": "2026-10-24T14:33:15.579Z",
+  "sourceCommit": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,10 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+      "commit": "879f0432bc06bacc52d6facfb9dad8a7cd0d7999",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T12:28:20.826Z"
+      "at": "2026-10-24T12:57:02.695Z"
     },
     "runner": {
       "id": "3e511759-d587-4aee-829d-77a50d0d1b4e",
@@ -48,13 +48,13 @@
     }
   },
   "summary": {
-    "total": 10,
-    "completed": 7,
+    "total": 11,
+    "completed": 8,
     "remaining": 3,
-    "running": 1,
+    "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 2
+    "unassigned": 3
   },
   "tasks": [
     {
@@ -105,7 +105,8 @@
         "T409",
         "T411",
         "T420",
-        "T422"
+        "T422",
+        "T426"
       ],
       "status": "todo"
     },
@@ -118,15 +119,12 @@
       "status": "todo"
     },
     {
-      "id": "T420",
-      "title": "The unit tier green and timed with the release switch on",
+      "id": "T426",
+      "title": "The player on the ball takes it in stride instead of stopping",
       "dep": [
-        "T416",
-        "T417",
-        "T418",
-        "T419"
+        "T420"
       ],
-      "status": "doing"
+      "status": "todo"
     }
   ],
   "attempts": [
@@ -248,6 +246,8 @@
       "submittedBase": "58e259bddb7363dfac22d412fa51a79397995ea3",
       "submissionId": "081a557b-89a6-40b9-9222-67da4c762fb1",
       "submittedAt": "2026-10-24T12:11:13.422Z",
+      "integratedCommit": "879f0432bc06bacc52d6facfb9dad8a7cd0d7999",
+      "integratedAt": "2026-10-24T12:57:00.449Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -375,6 +375,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T12:10:41.978Z",
           "finishedAt": "2026-10-24T12:11:13.029Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T12:36:44.877Z",
+          "finishedAt": "2026-10-24T12:57:00.187Z"
         }
       ]
     },
@@ -798,19 +805,92 @@
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-24T12:28:21.051Z",
       "startCommit": "18db8f5933bba66deb7eec7300c207c31bbb66cc",
+      "verifiedCommit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+      "submittedBase": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+      "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
+      "submittedAt": "2026-10-24T14:25:27.603Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1024 changed lines (limit 300)",
+          "touches not declared",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1024,
+        "files": 53
+      },
       "dispatch": {
-        "id": "fd9ecd0d-fde1-41a3-9af8-860679f39232",
+        "id": "dfa31222-82cf-4a04-bd75-b36319562e9e",
         "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-24T12:28:22.145Z"
-      }
+        "status": "finished",
+        "startedAt": "2026-10-24T14:25:30.007Z",
+        "finishedAt": "2026-10-24T14:33:13.506Z",
+        "error": null,
+        "summary": "T420 is approved. I reviewed the full submission (1b6b9b57 against base 90a2078a), starting from the three risk reasons. Size and undeclared touches: all 53 files are tests, testkits, test fixtures, the release-on setup file and the T420 task file. No engine or runtime source changed, and none of these files overlaps the base-side T421/T422 UI changes. The added optional `release` parameters (`transferredScorerWorld`, `retainedWorkload`, `playOn`, calendar.testkit `world`) keep their old defaults, so scripts/benchmark.ts behaves as before. The match-model.test fix is sound: `tests/setup/release-on.ts` saves the declared switch before turning it on, `declaredRelease()` reads that saved value, and the activation cases now name DISABLED_RELEASE or ENABLED_RELEASE explicitly. With vitest's default per-file isolation the saved value is fresh in every file. The DISABLED_RELEASE pins follow the subject-based rule T417 and T419 set. Pinned testkits and their importers stay consistent (no mixed-release comparisons). The world-cache keys include the switch state, so a world built with one setting is never served to a run with the other. Timing: I re-added the recorded shard times. Release-on cold is 577.7 s against 314.7 s switch-off (1.84×). All of the excess above 1.5× (105.6 s) comes from persistence.long-career, whose 10-season full-model codec round trip is the case SAVE-23 requires. Without it the ratio is about 1.42×, so acceptance item 2's 'excess named file by file' path holds. I did not re-run any tests, because this review session is read-only. The release-on evidence is therefore the worker's recorded 8-shard runs, cold and warm, under both switch states; the runner's task check (switch off, `--changed`) passed 121 files. The pending owner decision is a planning handoff: the engine defect named in limit (1) needs a fix task. The findings below are handoffs and optional improvements; none blocks approval."
+      },
+      "review": {
+        "id": "d7dd2f8b-92e4-4f66-a5c8-bb6fe16e160d",
+        "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T420 is approved. I reviewed the full submission (1b6b9b57 against base 90a2078a), starting from the three risk reasons. Size and undeclared touches: all 53 files are tests, testkits, test fixtures, the release-on setup file and the T420 task file. No engine or runtime source changed, and none of these files overlaps the base-side T421/T422 UI changes. The added optional `release` parameters (`transferredScorerWorld`, `retainedWorkload`, `playOn`, calendar.testkit `world`) keep their old defaults, so scripts/benchmark.ts behaves as before. The match-model.test fix is sound: `tests/setup/release-on.ts` saves the declared switch before turning it on, `declaredRelease()` reads that saved value, and the activation cases now name DISABLED_RELEASE or ENABLED_RELEASE explicitly. With vitest's default per-file isolation the saved value is fresh in every file. The DISABLED_RELEASE pins follow the subject-based rule T417 and T419 set. Pinned testkits and their importers stay consistent (no mixed-release comparisons). The world-cache keys include the switch state, so a world built with one setting is never served to a run with the other. Timing: I re-added the recorded shard times. Release-on cold is 577.7 s against 314.7 s switch-off (1.84×). All of the excess above 1.5× (105.6 s) comes from persistence.long-career, whose 10-season full-model codec round trip is the case SAVE-23 requires. Without it the ratio is about 1.42×, so acceptance item 2's 'excess named file by file' path holds. I did not re-run any tests, because this review session is read-only. The release-on evidence is therefore the worker's recorded 8-shard runs, cold and warm, under both switch states; the runner's task check (switch off, `--changed`) passed 121 files. The pending owner decision is a planning handoff: the engine defect named in limit (1) needs a fix task. The findings below are handoffs and optional improvements; none blocks approval.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.ts:737 (T420 limits 1, handed over from T419)",
+            "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/cups.test.ts:50, packages/engine/src/discipline.test.ts:205, packages/engine/src/discipline.test.ts:242, packages/engine/src/full-model-throughput.test.ts:105 (T420)",
+            "message": "Four candidate cases still use `withCandidateModel(founded(2024))`, which takes the default release. Under release-on (and after T286) `createWorld` records the model at the 1950 founding before the year moves to 2024. season.testkit's own doc comment says to use `withCandidateModel(founded(2024, DISABLED_RELEASE))` instead, and T419 fixed the same pattern in season.test, npc-stats and season.settle. These cases pass in both states, so this is optional under T420's acceptance (limits 3). Pinning them would keep the state each case tests the same before and after T286's flip."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/fixtures/club-identity.ts preIdentityCareer() (T418 limit 2, carried in T420 limits 3)",
+            "message": "A pre-identity, older-container career still follows the switch, so with the switch on it gains model metadata that such a career cannot carry under SAVE-23. persistence.test's `withoutMatchModel` only works around this. T418 recommended building it with DISABLED_RELEASE, which would also make `withoutMatchModel` unnecessary. T420 left it, and T286's touches do not include this fixture, although T418 named the e2e spec club-identity-continuity.spec.ts as depending on it. Either pin it here or add the fixture to T286's scope."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/build.test.ts:15, packages/engine/src/build.pressing.test.ts:131 (T420)",
+            "message": "These 'tactical roster tradeoffs' cases are pinned to DISABLED_RELEASE 'as build.tradeoffs guards them (T419)'. They make directional match-play claims (midfield passing raises possession and pass completion, defenders cut opposing shots, fresh stamina enables pressing, observation leaves seeded facts unchanged), and they passed on the candidate. T419 pinned build.tradeoffs because it guards recorded values that the candidate misses. Under T417's 'prefer pinning' guidance this is acceptable. Still, after T286 nothing checks these effects on the model careers actually play. T286 or T410 should consider candidate counterparts."
+          }
+        ],
+        "commit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+        "baseCommit": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+        "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
+        "createdAt": "2026-10-24T14:25:28.465Z",
+        "finishedAt": "2026-10-24T14:33:13.488Z"
+      },
+      "steps": [
+        {
+          "taskId": "T420",
+          "commit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+          "at": "2026-10-24T14:25:27.538Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T14:23:21.845Z",
+              "finishedAt": "2026-10-24T14:25:27.184Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T14:23:21.845Z",
+          "finishedAt": "2026-10-24T14:25:27.184Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -4510,6 +4590,424 @@
         "T421",
         "T422"
       ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1016,
+      "at": "2026-10-24T12:57:00.377Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T12:36:44.877Z",
+            "finishedAt": "2026-10-24T12:57:00.187Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1017,
+      "at": "2026-10-24T12:57:00.449Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
+      "taskId": "T422",
+      "tasks": [
+        "T421",
+        "T422"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "879f0432bc06bacc52d6facfb9dad8a7cd0d7999",
+        "integratedAt": "2026-10-24T12:57:00.449Z"
+      }
+    },
+    {
+      "sequence": 1018,
+      "at": "2026-10-24T12:57:02.714Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "879f0432bc06bacc52d6facfb9dad8a7cd0d7999",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T12:57:02.695Z"
+        }
+      }
+    },
+    {
+      "sequence": 1019,
+      "at": "2026-10-24T13:28:27.426Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "adapter timeout"
+      }
+    },
+    {
+      "sequence": 1020,
+      "at": "2026-10-24T13:28:27.547Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1021,
+      "at": "2026-10-24T13:28:27.564Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "fd9ecd0d-fde1-41a3-9af8-860679f39232",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T12:28:22.145Z",
+          "finishedAt": "2026-10-24T13:28:27.564Z",
+          "error": "adapter timeout",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 1022,
+      "at": "2026-10-24T13:28:27.658Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e8720ad9-b7ba-4880-8cc2-c2f42bcce699",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T13:28:27.658Z"
+        }
+      }
+    },
+    {
+      "sequence": 1023,
+      "at": "2026-10-24T13:28:27.860Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e8720ad9-b7ba-4880-8cc2-c2f42bcce699",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T13:28:27.658Z"
+        }
+      }
+    },
+    {
+      "sequence": 1024,
+      "at": "2026-10-24T14:23:21.057Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1025,
+      "at": "2026-10-24T14:23:21.558Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1026,
+      "at": "2026-10-24T14:23:21.596Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1027,
+      "at": "2026-10-24T14:25:27.603Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+        "submittedBase": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+        "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
+        "submittedAt": "2026-10-24T14:25:27.603Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1024 changed lines (limit 300)",
+            "touches not declared",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1024,
+          "files": 53
+        },
+        "steps": [
+          {
+            "taskId": "T420",
+            "commit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+            "at": "2026-10-24T14:25:27.538Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T14:23:21.845Z",
+                "finishedAt": "2026-10-24T14:25:27.184Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T14:23:21.845Z",
+            "finishedAt": "2026-10-24T14:25:27.184Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1028,
+      "at": "2026-10-24T14:25:27.624Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "e8720ad9-b7ba-4880-8cc2-c2f42bcce699",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T13:28:27.658Z",
+          "finishedAt": "2026-10-24T14:25:27.624Z",
+          "error": null,
+          "summary": "T420 is done: the whole unit tier passes with the release switch on. On the final tree, release-on gives 2043 passed, 0 failed and 4 skipped in 270 files, and the switch-off run gives the same. Typecheck, lint and format:check pass. No engine or runtime source changed.\n\n**Failures fixed.** The release-on probe left 3 failures, all in `match-model.test.ts`:\n- **Switch value case:** the probe now keeps the release the source declares before turning the switch on, and a new `declaredRelease()` reads it. The case still checks production's switch value under both configs, and T286 changes that one expected value when it flips the switch.\n- **Two activation cases:** these founded on the default switch. They now found with `DISABLED_RELEASE` and activate with `ENABLED_RELEASE`.\n\n**Files moved off the candidate's seasons.** Season-heavy files whose subject is not the match model now pin `DISABLED_RELEASE`. They include economy, staff, squad, transfers, sponsors, season archive and exchange, and the UI bracket, archive and cup files. Several testkits and fixtures gained an optional `release` parameter whose default is unchanged.\n\n**Times** (M1 Max, sums of the 8 shards, cache cleared by literal path before each cold run, four runs back to back; machine load was 3–11 from VS Code):\n\n| Run | Cold | Warm |\n|---|---|---|\n| Switch off | 314.7 s | 218.8 s |\n| Release on | 577.7 s (1.84×) | 336.7 s (1.54×) |\n\n**Why the cold run is over 1.5×.** All 105.6 s of excess is shard 8, which is almost entirely `persistence.long-career.test.ts` (187.9 s vs 52.7 s with the switch off). Once the switch flips, it is the only unit test that runs a multi-season career on the new match model through save and load (SAVE-13/23). Without it the ratio would be about 1.42×. The remaining slower files follow the switch on purpose because they test what new careers play or save:\n- the calendar progression and fast-path files (ARCH-5)\n- `detail` and `packing`\n- T418's new-career cases\n\nThe result names each one, and lists the 20 heaviest files.\n\n**Left for later** (all in the result's limits):\n- T419 found an engine bug: `closeSeason` handles match material before the promotion playoff is settled. It needs its own fix task ahead of T286, which I can't create as a worker.\n- A few files still follow the switch and pass under both settings.\n- The batch-gate checks were not run: `test:contract`, `validate:catalogs`, `build` and Chromium playwright."
+        }
+      }
+    },
+    {
+      "sequence": 1029,
+      "at": "2026-10-24T14:25:28.465Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d7dd2f8b-92e4-4f66-a5c8-bb6fe16e160d",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "reviewing",
+          "commit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+          "baseCommit": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+          "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
+          "createdAt": "2026-10-24T14:25:28.465Z"
+        }
+      }
+    },
+    {
+      "sequence": 1030,
+      "at": "2026-10-24T14:25:30.007Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dfa31222-82cf-4a04-bd75-b36319562e9e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T14:25:30.007Z"
+        }
+      }
+    },
+    {
+      "sequence": 1031,
+      "at": "2026-10-24T14:25:30.048Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dfa31222-82cf-4a04-bd75-b36319562e9e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T14:25:30.007Z"
+        }
+      }
+    },
+    {
+      "sequence": 1032,
+      "at": "2026-10-24T14:33:13.488Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d7dd2f8b-92e4-4f66-a5c8-bb6fe16e160d",
+          "owner": "3e511759-d587-4aee-829d-77a50d0d1b4e/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T420 is approved. I reviewed the full submission (1b6b9b57 against base 90a2078a), starting from the three risk reasons. Size and undeclared touches: all 53 files are tests, testkits, test fixtures, the release-on setup file and the T420 task file. No engine or runtime source changed, and none of these files overlaps the base-side T421/T422 UI changes. The added optional `release` parameters (`transferredScorerWorld`, `retainedWorkload`, `playOn`, calendar.testkit `world`) keep their old defaults, so scripts/benchmark.ts behaves as before. The match-model.test fix is sound: `tests/setup/release-on.ts` saves the declared switch before turning it on, `declaredRelease()` reads that saved value, and the activation cases now name DISABLED_RELEASE or ENABLED_RELEASE explicitly. With vitest's default per-file isolation the saved value is fresh in every file. The DISABLED_RELEASE pins follow the subject-based rule T417 and T419 set. Pinned testkits and their importers stay consistent (no mixed-release comparisons). The world-cache keys include the switch state, so a world built with one setting is never served to a run with the other. Timing: I re-added the recorded shard times. Release-on cold is 577.7 s against 314.7 s switch-off (1.84×). All of the excess above 1.5× (105.6 s) comes from persistence.long-career, whose 10-season full-model codec round trip is the case SAVE-23 requires. Without it the ratio is about 1.42×, so acceptance item 2's 'excess named file by file' path holds. I did not re-run any tests, because this review session is read-only. The release-on evidence is therefore the worker's recorded 8-shard runs, cold and warm, under both switch states; the runner's task check (switch off, `--changed`) passed 121 files. The pending owner decision is a planning handoff: the engine defect named in limit (1) needs a fix task. The findings below are handoffs and optional improvements; none blocks approval.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:737 (T420 limits 1, handed over from T419)",
+              "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/cups.test.ts:50, packages/engine/src/discipline.test.ts:205, packages/engine/src/discipline.test.ts:242, packages/engine/src/full-model-throughput.test.ts:105 (T420)",
+              "message": "Four candidate cases still use `withCandidateModel(founded(2024))`, which takes the default release. Under release-on (and after T286) `createWorld` records the model at the 1950 founding before the year moves to 2024. season.testkit's own doc comment says to use `withCandidateModel(founded(2024, DISABLED_RELEASE))` instead, and T419 fixed the same pattern in season.test, npc-stats and season.settle. These cases pass in both states, so this is optional under T420's acceptance (limits 3). Pinning them would keep the state each case tests the same before and after T286's flip."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/club-identity.ts preIdentityCareer() (T418 limit 2, carried in T420 limits 3)",
+              "message": "A pre-identity, older-container career still follows the switch, so with the switch on it gains model metadata that such a career cannot carry under SAVE-23. persistence.test's `withoutMatchModel` only works around this. T418 recommended building it with DISABLED_RELEASE, which would also make `withoutMatchModel` unnecessary. T420 left it, and T286's touches do not include this fixture, although T418 named the e2e spec club-identity-continuity.spec.ts as depending on it. Either pin it here or add the fixture to T286's scope."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/build.test.ts:15, packages/engine/src/build.pressing.test.ts:131 (T420)",
+              "message": "These 'tactical roster tradeoffs' cases are pinned to DISABLED_RELEASE 'as build.tradeoffs guards them (T419)'. They make directional match-play claims (midfield passing raises possession and pass completion, defenders cut opposing shots, fresh stamina enables pressing, observation leaves seeded facts unchanged), and they passed on the candidate. T419 pinned build.tradeoffs because it guards recorded values that the candidate misses. Under T417's 'prefer pinning' guidance this is acceptable. Still, after T286 nothing checks these effects on the model careers actually play. T286 or T410 should consider candidate counterparts."
+            }
+          ],
+          "commit": "1b6b9b57e6b8bac2f4353105e850be68e84e1823",
+          "baseCommit": "90a2078acad577f42b0dbbd1fd58eb52ec456802",
+          "submissionId": "83de0ed1-5b39-4e51-a31e-e3f8a4f0e98b",
+          "createdAt": "2026-10-24T14:25:28.465Z",
+          "finishedAt": "2026-10-24T14:33:13.488Z"
+        }
+      }
+    },
+    {
+      "sequence": 1033,
+      "at": "2026-10-24T14:33:13.506Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "dfa31222-82cf-4a04-bd75-b36319562e9e",
+          "runner": "3e511759-d587-4aee-829d-77a50d0d1b4e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T14:25:30.007Z",
+          "finishedAt": "2026-10-24T14:33:13.506Z",
+          "error": null,
+          "summary": "T420 is approved. I reviewed the full submission (1b6b9b57 against base 90a2078a), starting from the three risk reasons. Size and undeclared touches: all 53 files are tests, testkits, test fixtures, the release-on setup file and the T420 task file. No engine or runtime source changed, and none of these files overlaps the base-side T421/T422 UI changes. The added optional `release` parameters (`transferredScorerWorld`, `retainedWorkload`, `playOn`, calendar.testkit `world`) keep their old defaults, so scripts/benchmark.ts behaves as before. The match-model.test fix is sound: `tests/setup/release-on.ts` saves the declared switch before turning it on, `declaredRelease()` reads that saved value, and the activation cases now name DISABLED_RELEASE or ENABLED_RELEASE explicitly. With vitest's default per-file isolation the saved value is fresh in every file. The DISABLED_RELEASE pins follow the subject-based rule T417 and T419 set. Pinned testkits and their importers stay consistent (no mixed-release comparisons). The world-cache keys include the switch state, so a world built with one setting is never served to a run with the other. Timing: I re-added the recorded shard times. Release-on cold is 577.7 s against 314.7 s switch-off (1.84×). All of the excess above 1.5× (105.6 s) comes from persistence.long-career, whose 10-season full-model codec round trip is the case SAVE-23 requires. Without it the ratio is about 1.42×, so acceptance item 2's 'excess named file by file' path holds. I did not re-run any tests, because this review session is read-only. The release-on evidence is therefore the worker's recorded 8-shard runs, cold and warm, under both switch states; the runner's task check (switch off, `--changed`) passed 121 files. The pending owner decision is a planning handoff: the engine defect named in limit (1) needs a fix task. The findings below are handoffs and optional improvements; none blocks approval."
+        }
+      }
+    },
+    {
+      "sequence": 1034,
+      "at": "2026-10-24T14:33:13.555Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "bf1b0cf3-5b54-4080-be87-14a2f54141b8",
+      "taskId": "T420",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

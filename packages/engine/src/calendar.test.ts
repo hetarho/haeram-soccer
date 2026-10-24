@@ -15,8 +15,14 @@ import {
   SEASON_END_DAY,
   seasonLength,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
-import { world } from './calendar.testkit';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { world as calendarClub } from './calendar.testkit';
+
+/**
+ * The calendar club on the pre-feature path: the calendar's mechanics, not the match model, are
+ * the subject (calendar.fast-path and calendar.progression-* keep what new careers play).
+ */
+const world = () => calendarClub('ENG', DISABLED_RELEASE);
 
 describe('persistent season calendar', () => {
   it('advances off days without playing fixtures or charging weekly costs', () => {

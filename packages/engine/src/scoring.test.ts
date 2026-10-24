@@ -14,17 +14,21 @@ import {
   simulateSeason,
   FOUNDING_YEAR,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { transferredScorerWorld } from '../../../tests/fixtures/transferred-scorer';
 
+/** The scorer race's club on the pre-feature path: the league's scorer ledger is the subject. */
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Scoring United',
-    color: '#223344',
-    seed: 'goal-race',
-    level: 'easy' as const,
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Scoring United',
+      color: '#223344',
+      seed: 'goal-race',
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999999';
   return w;
 }
@@ -201,7 +205,8 @@ describe('actual league scorer standings', () => {
 
 describe('retained scorer transfers', () => {
   it('keeps one identity and exact per-club contributions through a real in-league sale', async () => {
-    const transferred = () => cachedWorld('transferred', () => transferredScorerWorld());
+    const transferred = () =>
+      cachedWorld('transferred', () => transferredScorerWorld(undefined, DISABLED_RELEASE));
     const fixture = transferred(),
       { playerId, buyer } = fixture;
     let w = fixture.w;

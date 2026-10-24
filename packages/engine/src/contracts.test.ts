@@ -63,7 +63,7 @@ import {
   wageBill,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
@@ -74,8 +74,9 @@ const founding = {
   seed: 'market-wages',
   level: 'normal' as const,
 };
+/** The club on the pre-feature path: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG') {
-  const w = simulatedWorld({ ...founding, country });
+  const w = simulatedWorld({ ...founding, country }, {}, DISABLED_RELEASE);
   w.settings = legacySettings(2); // This suite explicitly exercises delegated contract policy.
   return w;
 }
@@ -395,7 +396,7 @@ describe('contract talks (→CLUB-26)', () => {
       return { w, p, floor, market, item: talkItems(w, p.id)[0] };
     };
     // 표준 is 110% of the market wage, no minimum OVR and no age limit.
-    expect(talkRuleOf(simulatedWorld(founding))).toEqual(TALK_RULE_DEFAULT);
+    expect(talkRuleOf(simulatedWorld(founding, {}, DISABLED_RELEASE))).toEqual(TALK_RULE_DEFAULT);
     expect(TALK_RULE_DEFAULT).toEqual({ maxPay: 1.1, minOvr: 0 });
     expect(answer('standard').item.title).toContain('받아들였어요');
     const kept = answer('keepAll');
