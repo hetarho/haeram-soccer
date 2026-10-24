@@ -210,6 +210,17 @@ export const DECISION_CONFIG = {
      */
     boxCarry: 0,
     /**
+     * Settled play in the final third (T408, →MATCH-13, MATCH-30): a passer at least `from` m up
+     * the pitch weighs lateral options `lateral` and backward ones `back` times as much, and a
+     * forward pass from below `from` into it `entry` times as much; a carry outside the box
+     * runs `carry` times its length, and a carrier there chooses to pass `pass` times as often.
+     * Neutral at 1. T408 screened them and kept none: `entry` 0.2 (with `carry` 1.1) took
+     * final-third passes 167 → 145 and box entries 27.6 → 25.6 but moved offsides, ball in play
+     * and MATCH-29's high-regain ordering outside; fewer passes there (`pass`) lost passes and
+     * added shots, goals and box carries.
+     */
+    finalThird: { from: 70, lateral: 1, back: 1, entry: 1, carry: 1, pass: 1 },
+    /**
      * A pass into the box or a cut-back (T398, →MATCH-17): a teammate arriving on a box run scores
      * this much more. Neutral at 0.
      */
@@ -308,6 +319,8 @@ export function actionMix(
     clearance: cell.clearance,
   };
   const candidate = s.setup.model !== undefined;
+  // Fewer passes kept in the final third (candidate model, T408).
+  if (candidate && c[0] >= C.candidate.finalThird.from) mix.pass *= C.candidate.finalThird.pass;
   if (inCutBack) {
     const share = candidate ? C.candidate.cutBackShare : C.cutBackShare;
     mix.cutBack = share * mix.cross;
@@ -613,6 +626,12 @@ export function passOptions(
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
     if (beyondLine) prior *= past.prior;
+    // Settled play in the final third (candidate model, T408).
+    if (candidate) {
+      const F = DECISION_CONFIG.candidate.finalThird;
+      if (c[0] >= F.from) prior *= dir === 'lateral' ? F.lateral : dir === 'back' ? F.back : 1;
+      else if (dir === 'forward' && p[0] >= F.from) prior *= F.entry;
+    }
     const lineBreaking =
       (dfDeep !== undefined && c[0] <= dfDeep && p[0] > dfDeep) ||
       (mfDeep !== undefined && c[0] <= mfDeep && p[0] > mfDeep);
@@ -726,7 +745,9 @@ export function chooseCarry(
   const c = attackFrame(side, me.pos);
   const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
   const [base, spread] = inBox(c) ? K.boxLength : K.length;
-  const length = base + spread * r();
+  const length =
+    (base + spread * r()) *
+    (s.setup.model !== undefined && !inBox(c) ? DECISION_CONFIG.candidate.finalThird.carry : 1);
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
   const ends = K.headings.map((deg): Point => {
     const a = toGoal + deg * DEG;

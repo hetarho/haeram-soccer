@@ -517,7 +517,7 @@ The goalkeeper's distribution is `pass` with the GK rules (§6.5).
 prior_j = CELL_BASELINES[cell][dir] × sqrt(profile[dir] / OVERALL[dir]) / n_dir
 ```
 
-`n_dir` is the number of candidates in that direction. When scores are flat, the choice reproduces the cell's real direction mix. Backward options take `backPrior` (2.2) on top, since the threat gain alone kept back passes near 9% (T215); after a hold-up they take `backBias` (3) more and at a kick-off `RESTART_CONFIG.kickoffBackBias` (10).
+`n_dir` is the number of candidates in that direction. When scores are flat, the choice reproduces the cell's real direction mix. Backward options take `backPrior` (2.2) on top, since the threat gain alone kept back passes near 9% (T215); after a hold-up they take `backBias` (3) more and at a kick-off `RESTART_CONFIG.kickoffBackBias` (10). On the candidate model `DECISION_CONFIG.candidate.finalThird` can weigh a passer's lateral and backward options from 70 m on (`lateral`, `back`), a forward pass into the final third from below it (`entry`), a carrier's choice to pass there (`pass`) and a carry's length outside the box (`carry`); all are neutral at 1. T408 kept none: fewer entries moved the final-third and box counts toward MATCH-30 but took offsides, ball in play and MATCH-29's high-regain ordering outside their bands.
 
 **Temperature:**
 

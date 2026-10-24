@@ -1,0 +1,26 @@
+base: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 10, unresolved 3, outside 8, unbanded 2
+  MATCH-23: inside 36, unresolved 2
+  MATCH-29: inside 23, insufficient 1, outside 1
+  curve 2.24 (-35 10.0, -30 7.8, -25 3.5, -20 6.0, -15 11.7, -10 8.2, -5 5.8, 0 7.4, 5 5.2, 10 5.8, 15 9.9, 20 6.6, 25 3.3, 30 5.7, 35 6.1, 40 9.9); points possession 1.351, press 1.339, counter 1.442, balanced 1.364
+cand: core 4800, pairing 19200, gap 19200; invalid 0, invariant failures 0
+  MATCH-30: inside 10, unresolved 3, outside 8, unbanded 2
+  MATCH-23: inside 34, unresolved 2, outside 2
+  MATCH-29: inside 16, insufficient 6, outside 3
+  curve 2.49 (-35 9.3, -30 4.9, -25 2.0, -20 7.6, -15 9.1, -10 11.2, -5 9.4, 0 3.1, 5 5.4, 10 10.0, 15 6.4, 20 5.8, 25 3.3, 30 11.5, 35 8.2, 40 7.7); points possession 1.253, press 1.279, counter 1.587, balanced 1.385
+* 30:progressivePasses             124.092 [123.795, 124.389] unresolved        → 119.076 [118.791, 119.361] inside
+* 30:ppda                          13.544 [13.473, 13.614] inside               → 14.061 [13.989, 14.133] unresolved
+* 23:shotsGoalArea                 8.544 [8.384, 8.704] inside                  → 9.017 [8.850, 9.183] unresolved
+* 23:tacklesInterceptions          29.907 [29.789, 30.024] unresolved           → 28.527 [28.410, 28.645] inside
+* 23:offsides                      1.845 [1.808, 1.881] inside                  → 1.563 [1.530, 1.596] outside
+* 23:ballInPlay                    57.582 [57.508, 57.656] inside               → 58.450 [58.374, 58.527] outside
+* 29:draws:press-press             0.258 [0.234, 0.283] inside                  → 0.216 [0.193, 0.239] insufficient
+* 29:draws:counter-counter         0.278 [0.252, 0.303] insufficient            → 0.224 [0.201, 0.248] inside
+* 29:winShareGap:possession-counter -0.039 [-0.073, -0.005] inside               → -0.166 [-0.199, -0.132] outside
+* 29:winShareGap:possession-balanced -0.022 [-0.055, 0.012] inside                → -0.087 [-0.121, -0.053] insufficient
+* 29:winShareGap:press-counter     -0.055 [-0.089, -0.021] inside               → -0.137 [-0.170, -0.103] insufficient
+* 29:winShareGap:counter-balanced  0.042 [0.007, 0.076] inside                  → 0.122 [0.088, 0.156] insufficient
+* 29:points:possession             -0.023 [-0.052, 0.007] inside                → -0.123 [-0.152, -0.094] insufficient
+* 29:points:counter                0.068 [0.038, 0.097] inside                  → 0.211 [0.182, 0.241] outside
+* 29:ordering:xgConceded           -0.020 [-0.039, -0.001] outside              → -0.003 [-0.022, 0.016] insufficient
+* 29:ordering:highRegains          0.806 [0.681, 0.932] inside                  → 0.391 [0.265, 0.518] outside
