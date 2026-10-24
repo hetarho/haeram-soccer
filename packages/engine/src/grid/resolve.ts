@@ -128,6 +128,15 @@ export const DUEL_CONFIG = {
      */
     crossPressure: 0.15,
     passLoose: 0.8,
+    /**
+     * A pass played within the final third (T411, →MATCH-13): from and to at least `from` m up
+     * the pitch, completed `malus` less often, the crowded ground in front of the box. Neutral
+     * at 0. T411 kept none: 0.15 with fewer entries (`DECISION_CONFIG.candidate.finalThird`) took
+     * final-third passes completed 112 → 80 (inside), box entries 27 → 21 and xT 4.7 → 3.9 with
+     * offsides and tackles held, but goals 2.89 → 2.5, since fewer completed balls there make fewer
+     * chances.
+     */
+    finalThirdPass: { from: 70, malus: 0 },
     clearanceOut: 0.5,
     /**
      * Pressing in the opponent's build-up (T370, →MATCH-8, MATCH-13): of the failed passes played
@@ -396,7 +405,12 @@ export function resolvePass(
       Math.max(0, dist - 20) * P.distance -
       P.pressure * tags.pressure +
       s.setup.bends[side].pass / 100 +
-      bonus,
+      bonus -
+      (onCandidate(s) &&
+      from[0] >= DUEL_CONFIG.candidate.finalThirdPass.from &&
+      to[0] >= DUEL_CONFIG.candidate.finalThirdPass.from
+        ? DUEL_CONFIG.candidate.finalThirdPass.malus
+        : 0),
     P.min,
     P.max,
   );
