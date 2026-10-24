@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { finishing } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
@@ -22,9 +23,12 @@ import { computeTags } from './tags';
 import { gridKit } from './testkit';
 import { strengthScaled, type GridState } from './state';
 
-/** Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`. */
+/**
+ * Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`,
+ * on the pre-feature path (candidate cases set the setup's model).
+ */
 function scene(slot: number, at: Point, tactics?: [Tactic, Tactic]) {
-  const kit = gridKit(tactics);
+  const kit = gridKit(tactics, undefined, DISABLED_RELEASE);
   const s = kit.state;
   for (const side of s.players)
     for (const gp of side) {

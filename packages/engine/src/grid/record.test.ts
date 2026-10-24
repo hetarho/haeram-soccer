@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../contracts/src/detail';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { MATERIAL_LAYOUT } from '../material';
 import { validateFullMatchRecord } from '../match-model';
@@ -13,7 +14,8 @@ import { buildGridSetup } from './setup';
 import { createState, type GridState } from './state';
 import { gridKit } from './testkit';
 
-const kit = gridKit();
+// The pre-feature path's kit: candidate counting rules set the setup's model.
+const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
 const recorded = buildGridSetup(kit.w, kit.f, {
   observe: false,
   recordPlayers: true,
@@ -235,13 +237,16 @@ describe('grid advanced counters', () => {
   });
 
   it('fills every match consistently with the schema rules and plausible totals', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Grid Counter Lab',
-      color: '#2a5d8f',
-      seed: 'grid-counters',
-      level: 'normal',
-    });
+    const w = createWorld(
+      {
+        country: 'ENG',
+        name: 'Grid Counter Lab',
+        color: '#2a5d8f',
+        seed: 'grid-counters',
+        level: 'normal',
+      },
+      DISABLED_RELEASE,
+    );
     const [home, away] = w.clubs.filter(
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
     );

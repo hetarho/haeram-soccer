@@ -8,6 +8,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { buildGridSetup } from './grid/setup';
 import { createState } from './grid/state';
 import { gridKit } from './grid/testkit';
@@ -450,7 +451,7 @@ describe('portable math (T358)', () => {
     expect(HOST_MATH.hypot).toBe(Math.hypot);
     expect(HOST_MATH.powInt(1.6, 3)).toBe(1.6 ** 3);
     expect(PORTABLE_MATH.atan2).toBe(atan2);
-    const kit = gridKit();
+    const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
     expect(kit.state.math).toBe(HOST_MATH);
     const candidate = buildGridSetup(kit.w, kit.f, {
       observe: false,
