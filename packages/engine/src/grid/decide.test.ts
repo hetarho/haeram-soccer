@@ -723,6 +723,30 @@ describe('grid decisions', () => {
     expect(forward(1)).toBeGreaterThan(forward(0));
   });
 
+  it('weighs a forward pass into the final third and stretches a carry outside the box, on the candidate model only (T408)', () => {
+    const neutral = { from: 70, lateral: 1, back: 1, entry: 1, carry: 1, pass: 1 };
+    // A forward pass from the middle band to a man past 70 m: its prior scaled by `entry`.
+    const entry = (candidate: boolean, value: number) =>
+      withCandidate({ finalThird: { ...neutral, entry: value } }, () => {
+        const sc = scene(CM, centre(4, 2));
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        place(sc.s, ST, [80, 34]);
+        return passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!.prior;
+      });
+    expect(entry(true, 0.2) / entry(true, 1)).toBeCloseTo(0.2, 12);
+    expect(entry(false, 0.2)).toBeCloseTo(entry(false, 1), 12);
+    // A carry from the middle of the pitch: the same draws, `carry` times as far.
+    const carried = (candidate: boolean, value: number) =>
+      withCandidate({ finalThird: { ...neutral, carry: value } }, () => {
+        const sc = scene(CM, [50, 34]);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        const end = chooseCarry(sc.s, 0, CM, sc.tags(), random('t408-carry'));
+        return Math.hypot(end[0] - 50, end[1] - 34);
+      });
+    expect(carried(true, 1.5) / carried(true, 1)).toBeCloseTo(1.5, 9);
+    expect(carried(false, 1.5)).toBeCloseTo(carried(false, 1), 12);
+  });
+
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
     const share = (tactic: Tactic) => {
       const kit = gridKit([tactic, 'balanced']);
