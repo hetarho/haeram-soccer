@@ -301,6 +301,8 @@
 - Inspect the live work board before claiming the remaining engine tasks; UI work is complete.
 
 ## log
+- 261025 fix e2e milestones (u6p2): assert native DOM height instead of Firefox protocol quad subtraction (44px reported as 43.999992px); two phone journeys pass on Firefox, type/lint/format pass; unit selection empty because application code is unchanged. c20e4f3e CI passes all other seven jobs; publish the test-only correction.
+- 261025 fix e2e precision start (u6p2): c20e4f3e CI 40107002410 passes checks, every unit shard, Chromium and both WebKit shards; only two Firefox milestone cases read 44px as 43.999992px through the protocol; use native DOM height, preserve application code
 - 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
 - 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
 - 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch
@@ -319,5 +321,3 @@
 - 261024 update-ssot WEB r145 (u6p2): clean ordinary-control edges and readable selected labels; existing pending tasks do not own the changed controls
 - 261024 update-ssot WEB start (u6p2): stable clean control borders and readable selected dropdown labels
 - 261024 T429 done (u6p2): compact shared controls, text navigation, 7/8 phone standings rows, content-sized home card; manual Chromium across four themes and 320px checks; changed units 68, type/lint/format/build/resources pass; browser specs queued for batch; uncommitted
-- 261024 create-task WEB r144 and start T429 (u6p2): compact management surfaces with measured before/after previews
-- 261024 update-ssot WEB r144 (u6p2): shared content density, text navigation and normal-flow home card; existing tasks do not own these areas
