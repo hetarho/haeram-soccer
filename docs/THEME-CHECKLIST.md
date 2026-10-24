@@ -90,7 +90,9 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       reflow the possession word before squeezing them. Check local text against dark chart materials.
 - [ ] Review actual live/replay, kit-preview and analytical pitch pixels in each pack. Keep static
       material decode/cache preparation outside rAF; preserve geometry, kits, player numbers, ball
-      visibility, goalkeeper distinctions and the paused sample when switching themes. Test a failed
+      visibility, goalkeeper distinctions and the paused sample when switching themes. Check the
+      actual Canvas after stylesheet imports finish in Firefox and Safari, as well as Chromium.
+      Test a failed
       decorative texture and retain a readable solid ground.
 - [ ] Open, scroll, close and reopen bottom sheets and reports. Header, body and action footer
       must retain their intended scroll bounds; actions must stay reachable.

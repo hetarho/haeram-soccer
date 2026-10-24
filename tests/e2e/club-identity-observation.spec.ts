@@ -100,7 +100,7 @@ function predictedRegions(shirt: ShirtDesign) {
 }
 
 /**
- * In the page: the shirt markers of one two-colour design on the visible pitch Canvas whose pixels
+ * In the page: the shirt markers of a solid or two-colour design on the visible pitch Canvas whose pixels
  * agree with the predicted regions. A marker is a connected run of pixels on the colour line
  * between the two shirt colours (so smoothed stripe edges stay joined) with the live marker's
  * size; a pixel within `tol` of one shirt colour must lie where that colour is predicted.
@@ -122,18 +122,21 @@ function agreeingMarkers(args: {
   // The live marker radius in device pixels (Pitch: max(6, width × 0.011) CSS px).
   const radius = Math.max(6, canvas.clientWidth * 0.011) * (W / canvas.clientWidth);
   const ref = args.colours.map((hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)));
+  const solid = args.colours[0] === args.colours[1];
   const span = ref[1]!.map((v, k) => v - ref[0]![k]!);
   const span2 = span.reduce((sum, v) => sum + v * v, 0);
   const near = new Uint8Array(W * H);
   const cls = new Int8Array(W * H).fill(-1);
   for (let p = 0; p < W * H; p++) {
     const c = [px[p * 4]!, px[p * 4 + 1]!, px[p * 4 + 2]!];
-    const t = Math.min(
-      1,
-      Math.max(0, c.reduce((sum, v, k) => sum + (v - ref[0]![k]!) * span[k]!, 0) / span2),
-    );
+    const t = solid
+      ? 0
+      : Math.min(
+          1,
+          Math.max(0, c.reduce((sum, v, k) => sum + (v - ref[0]![k]!) * span[k]!, 0) / span2),
+        );
     if (Math.hypot(...c.map((v, k) => v - (ref[0]![k]! + t * span[k]!))) <= args.tol) near[p] = 1;
-    for (let k = 0; k < 2; k++)
+    for (let k = 0; k < (solid ? 1 : 2); k++)
       if (Math.hypot(...c.map((v, i) => v - ref[k]![i]!)) <= args.tol) cls[p] = k;
   }
   const seen = new Uint8Array(W * H);
@@ -189,15 +192,18 @@ function agreeingMarkers(args: {
       counts[k]!++;
       if (args.grid[j * args.cells + i]! & (1 << k)) agree[k]!++;
     }
-    // Both colours visible, and each where the pattern puts it.
-    if (counts.every((count, k) => count >= 12 && agree[k]! / count >= 0.95)) agreeing++;
+    // Each worn colour is visible where the pattern puts it; plain shirts have one region.
+    if (
+      counts.slice(0, solid ? 1 : 2).every((count, k) => count >= 12 && agree[k]! / count >= 0.95)
+    )
+      agreeing++;
   }
   return agreeing;
 }
 const markers = (page: Page, shirt: ShirtDesign) =>
   page.evaluate(agreeingMarkers, {
     selector: PITCH,
-    colours: [shirt.primary, shirt.secondary!] as [string, string],
+    colours: [shirt.primary, shirt.secondary ?? shirt.primary] as [string, string],
     grid: predictedRegions(shirt),
     cells: CELLS,
     tol: 60,
@@ -333,8 +339,8 @@ test('an old imported record says 유니폼 미기록 and never draws today’s 
   await expect(dialog.getByTestId('match-kit-unrecorded')).toHaveText('유니폼 미기록');
   await expect(dialog.getByRole('img', { name: /엠블럼 미기록$/ })).toHaveCount(2);
   // Neutral markers are drawn; today's home shirt is not presented as this match's.
-  await expect
-    .poll(() => colourArea(page, UNRECORDED_LOOK.sides[0].shirt.primary))
-    .toBeGreaterThan(150);
-  expect(await colourArea(page, today, 30)).toBe(0);
+  // The dark neutral side remains separable from the print theme's warm paper ground.
+  await expect.poll(() => markers(page, UNRECORDED_LOOK.sides[1].shirt)).toBeGreaterThanOrEqual(3);
+  // Ground textures, ball seams or posts may share a colour; only shirt-sized regions are identity.
+  expect(await markers(page, { pattern: 'plain', primary: today })).toBe(0);
 });

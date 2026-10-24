@@ -74,6 +74,13 @@ html[data-theme] {
     color: var(--image-accent);
   }
 
+  [data-ui='match-tactics'],
+  [data-testid='match-kit-unrecorded'] {
+    color: var(--image-on-dark);
+    background: var(--pitch-chart-ground) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+
   [data-ui='possession-cue'] {
     display: inline-flex;
     align-items: center;

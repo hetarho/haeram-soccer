@@ -176,8 +176,10 @@ missing values retain the readable legacy defaults. `--pitch-texture` reuses a s
 material; Canvas/SVG background-image computation resolves the stylesheet-relative resource URL.
 A failed decorative decode retains the solid ground, geometry, labels and controls.
 
-`ui/usePitchSkin.ts` reacts to installed presentation resources and decodes that material outside
-animation. `ui/pitchPainting.ts` owns the common live/replay/kit-preview ground projection and one
+`ui/usePitchSkin.ts` reacts to installed presentation resources and stylesheet completion, then
+decodes that material outside animation. Media-gated imports may finish after the selection
+publishes; one deferred preparation after each stylesheet load avoids caching a transient empty
+style. An older decode cannot replace a newer preparation or selection. `ui/pitchPainting.ts` owns the common live/replay/kit-preview ground projection and one
 replaceable ground cache per mounted Canvas. Ordinary frames only blit the cached ground; size,
 density or skin changes repaint it. Pixel changes ground/sprite raster density and ball contour;
 all packs preserve the supplied positions, interpolation, marker bounds and selected shirt faces.

@@ -731,7 +731,7 @@ export function Pitch({
           </button>
         )}
         {p && !summary && (
-          <span className={t.tactics}>
+          <span className={t.tactics} data-ui="match-tactics">
             {tacticLabel[p.record.tactics[0]]} vs {tacticLabel[p.record.tactics[1]]}
           </span>
         )}

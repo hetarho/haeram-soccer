@@ -45,7 +45,11 @@ for (const width of [360, 1380])
 
     // Native range input pauses at a recorded sample through the public observer control.
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    const scrubber = page.getByRole('slider', { name: '경기 시간', exact: true });
+    const scrubber = page.getByRole('slider', {
+      name: '경기 시간',
+      exact: true,
+      includeHidden: true,
+    });
     await scrubber.press('ArrowRight');
     const instant = await scrubber.inputValue();
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
@@ -75,7 +79,7 @@ for (const width of [360, 1380])
       });
       grounds.add(ground);
       previousGround = ground;
-      const theatre = page.getByTestId('match-theatre');
+      const theatre = page.getByTestId('pitch-theatre');
       for (const element of [
         theatre,
         page.getByTestId('match-feedback'),
@@ -87,8 +91,9 @@ for (const width of [360, 1380])
       }
       const back = page.getByTestId('match-score').getByRole('button', { name: '홈', exact: true });
       const bounds = (await back.boundingBox())!;
-      expect(bounds.width).toBeGreaterThanOrEqual(44);
-      expect(bounds.height).toBeGreaterThanOrEqual(44);
+      // Firefox can report a 44px target as 43.999992 at a fractional layout position.
+      expect(bounds.width).toBeGreaterThanOrEqual(44 - 1 / 64);
+      expect(bounds.height).toBeGreaterThanOrEqual(44 - 1 / 64);
       const icon = (await back.locator('[data-pixel-icon="chevronLeft"]').boundingBox())!;
       expect(icon.width).toBeGreaterThanOrEqual(20);
       expect(icon.width).toBeLessThanOrEqual(24);
