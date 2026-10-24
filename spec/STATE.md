@@ -281,9 +281,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T427 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
 | T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
+| T427 | The promotion playoff's own material reduced at the season close | MATCH HIST SAVE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -301,6 +302,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 create-task T427 (v9n4): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T427
 - 261024 T420 integrated
 - 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
 - 261024 T421 T422 integrated
@@ -320,4 +322,3 @@
 - 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
 - 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
 - 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
-- 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
