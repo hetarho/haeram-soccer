@@ -20,8 +20,8 @@ export const LANE_CONFIG = {
   /**
    * The completion chance a pass loses per unit of its lane's summed weight (`laneWeight`). T441
    * set it where the candidate's completion holds its frame (calibration round 69, core, 120
-   * matches: 77.32% before; screened at 79.1% with no lane term and 74.8% at 0.08; 77.34% at 0.033
-   * on the final source).
+   * matches: 77.32% before; 79.1% with no lane term, 74.8% at 0.08 and 77.43% at 0.033, the final
+   * source).
    */
   risk: 0.033,
   /**

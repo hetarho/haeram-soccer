@@ -387,24 +387,24 @@ describe('grid open-play resolution', () => {
     expect(deflected).toBeGreaterThan(0);
   });
 
-  it("a keeper's distribution plays against the defender nearest the lane, reached or not (T441, →MATCH-11)", () => {
-    // A 30 m ball out of the box; the only defender near it stands 10 m off its line, out of reach.
-    const rate = (passer: number, positioning: number) => {
+  it("a keeper's distribution plays against the first opponent who reaches its path, as any pass (T441, →MATCH-11 r29)", () => {
+    // A 30 m ball out of the box; the only defender near it stands `off` m off its line midway.
+    const rate = (passer: number, off: number, positioning: number) => {
       const sc = scene(passer, [10, 34]);
       sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
       sc.s.players[0][8]!.pos = [40, 34];
-      sc.s.players[1][3]!.pos = [25, 44];
+      sc.s.players[1][3]!.pos = [25, 34 + off];
       set(sc.s, 1, 3, 'positioning', positioning);
-      expect(reachOnPath(sc.s, 0, [10, 34], [40, 34], 0).first).toBeUndefined();
-      const r = random(`t441-keeper-${passer}`);
+      expect(reachOnPath(sc.s, 0, [10, 34], [40, 34], 0).first?.gp.idx).toBe(off ? undefined : 3);
+      const r = random(`t441-keeper-${passer}-${off}`);
       const tags = sc.tags();
       const o = tally(6000, () => resolvePass(sc.s, 0, passer, 8, tags, 'long', false, r));
       return (o.complete ?? 0) / 6000;
     };
-    // The keeper's ball is completed less often against a defender who reads the game better…
-    expect(rate(0, 40) - rate(0, 80)).toBeGreaterThan(0.08);
-    // …while an outfielder's along the same lane plays against nobody, as nobody reaches it.
-    expect(rate(5, 40)).toBe(rate(5, 80));
+    // 10 m off the line nobody reaches it: a keeper's ball, like an outfielder's, plays against nobody…
+    for (const passer of [0, 5]) expect(rate(passer, 10, 40)).toBe(rate(passer, 10, 80));
+    // …and in the lane he reaches it, so the better he reads the game, the less often it arrives.
+    expect(rate(0, 0, 40) - rate(0, 0, 80)).toBeGreaterThan(0.08);
   });
 
   it('lets the keeper gather a share of the failed crosses running out on the candidate model only (T371)', () => {

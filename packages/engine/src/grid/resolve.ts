@@ -375,11 +375,11 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
  *
  * On the candidate model (→MATCH-11, MATCH-31, T441) the lane is who reaches the ball's path,
  * kicked `kickAt` seconds from now (`reachOnPath`): the marker is the opponent it meets first, on
- * his 위치선정 (none: an even 60; a keeper's distribution keeps the defender nearest the lane), and
- * the lane term `LANE_CONFIG.risk` × the reaching opponents' summed weights. A failed pass the split gives to an interception is that opponent's, and only
- * when one reaches it: he wins it at his reach point within `LANE_CONFIG.reach` with
- * `LANE_CONFIG.sure` to spare, else deflects it loose there; with nobody reaching it the ball is
- * lost at its receiver (or out) instead.
+ * his 위치선정 (none: an even 60), a keeper's distribution's as any pass's (MATCH-11 r29), and the
+ * lane term `LANE_CONFIG.risk` × the reaching opponents' summed weights. A failed pass the split
+ * gives to an interception is that opponent's, and only when one reaches it: he wins it at his
+ * reach point within `LANE_CONFIG.reach` with `LANE_CONFIG.sure` to spare, else deflects it loose
+ * there; with nobody reaching it the ball is lost at its receiver (or out) instead.
  */
 export function resolvePass(
   s: GridState,
@@ -410,10 +410,10 @@ export function resolvePass(
     ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
     : undefined;
   const first = lane?.first;
-  // The defender the pass plays against (→MATCH-11): for a keeper's distribution the one nearest
-  // the lane, for any other pass on the candidate the one who reaches its path first.
-  const marker = !lane || keeper ? nearestToSegment(s, side, from, to) : undefined;
-  const against = lane && !keeper ? first?.gp : marker?.gp;
+  // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its
+  // path first, the pre-feature path's the one nearest the segment.
+  const marker = lane ? undefined : nearestToSegment(s, side, from, to);
+  const against = lane ? first?.gp : marker?.gp;
   const markerSkill = against ? skill(s, other(side), against.idx, 'positioning') : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
