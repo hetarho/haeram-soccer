@@ -66,7 +66,8 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     box-shadow: none;
   }
 
-  [data-select-trigger],
+  [data-select-trigger][role='combobox'],
+  [data-select-trigger][role='combobox']:is(:hover, [data-state='open']),
   :where(
     input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
     textarea,
@@ -79,6 +80,76 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     background-size: 384px;
     color: var(--image-ink-color);
     box-shadow: none;
+  }
+
+  [data-select-trigger][role='combobox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    padding: 10px 14px;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  :is(input, textarea)::placeholder {
+    color: var(--image-muted);
+    opacity: 1;
+  }
+
+  :is(
+    button:disabled,
+    [data-select-trigger]:disabled,
+    [role='option'][data-disabled],
+    fieldset:disabled
+  ) {
+    opacity: 1;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
+
+  :is(button[data-ui='link'] > span, button[data-money], button[data-ui='term']:not(:disabled)) {
+    text-decoration-line: var(--image-link-decoration, underline);
+    text-decoration-style: solid;
+    text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  :is(button[data-ui='link']:hover > span, button[data-money]:hover, button[data-ui='term']:hover) {
+    text-decoration-line: underline;
+    text-decoration-color: currentColor;
+  }
+
+  [data-testid='app-menu'] section {
+    display: grid;
+    gap: var(--image-menu-gap, 10px);
+  }
+
+  [data-testid='app-menu'] h3 {
+    margin: 0;
+    color: var(--image-muted);
+  }
+
+  [data-ui='menu-row'] {
+    min-height: 68px;
+    padding: 12px 14px;
+    gap: 12px;
+    line-height: 1.5;
+    color: var(--image-ink-color);
+  }
+
+  [data-ui='menu-row'] > span {
+    padding: 0;
+  }
+
+  [data-ui='menu-row'] small {
+    color: var(--image-muted);
+    line-height: 1.5;
+  }
+
+  [data-ui='menu-row']:hover:not(:disabled) {
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: 384px;
   }
 
   input[type='checkbox'],
@@ -121,7 +192,8 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [role='tablist'],
-  [data-ui='choices'] {
+  [data-ui='choices'],
+  [role='radiogroup'] {
     gap: 6px;
     border: 0;
     border-radius: var(--image-radius, 0px);
@@ -316,10 +388,14 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [role='listbox'] {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    --accent-text: var(--image-accent);
     border: 8px solid transparent;
     border-image: var(--image-tile-frame) 54 / 10px stretch;
     border-radius: var(--image-radius, 0px);
-    padding: 4px;
+    padding: 6px;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: 384px;
     box-shadow: 2px 4px 0 var(--image-popover-shadow);
@@ -327,14 +403,40 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   [role='option'] {
+    min-height: 44px;
+    padding: 10px 36px 10px 12px;
+    margin-block: 3px;
+    border: 3px solid transparent;
+    border-image: none;
     border-radius: var(--image-radius, 0px);
+    background: transparent;
+    color: var(--image-ink-color);
+    line-height: 1.5;
   }
 
-  :where([role='option'][data-highlighted], [role='option'][data-state='checked']) {
-    --text: var(--image-on-primary);
-    --text-muted: var(--image-on-primary);
-    color: var(--image-on-primary);
-    background: var(--image-primary) var(--image-primary-material) repeat;
+  [role='option'] small {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  [role='option'][data-highlighted]:not([data-state='checked']) {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    color: var(--image-ink-color);
+    background: var(--image-canvas) var(--image-canvas-material) repeat padding-box;
+    outline: 2px solid var(--image-option-hover, var(--image-accent));
+    outline-offset: -3px;
+  }
+
+  [role='option'][data-state='checked'],
+  [role='option'][data-state='checked'][data-highlighted] {
+    --text: var(--image-option-text, var(--image-on-primary));
+    --text-muted: var(--image-option-muted, var(--image-on-primary));
+    --text-faint: var(--text-muted);
+    color: var(--text);
+    background: var(--image-option-fill, var(--image-primary))
+      var(--image-option-material, var(--image-primary-material)) repeat padding-box;
+    border-image: var(--image-option-frame, var(--image-primary-frame)) 54 / 6px stretch;
     background-size: 256px;
   }
 
@@ -461,6 +563,9 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     }
     [data-testid='club-founding'] :is(input, [data-select-trigger]) {
       min-height: 44px;
+    }
+    [data-testid='club-founding'] [data-select-trigger][role='combobox'] {
+      padding: 5px 10px;
     }
     [data-testid='club-founding'] fieldset button {
       min-width: 0;

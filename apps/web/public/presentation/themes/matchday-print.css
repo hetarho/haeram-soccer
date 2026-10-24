@@ -49,7 +49,7 @@ html[data-theme='matchday-print'] {
   --image-muted: #39372e;
   --image-faint: #4c473b;
   --image-accent: #a62e20;
-  --image-focus: #9a271c;
+  --image-focus: #24231e;
   --image-on-dark: #f2e6c9;
   --image-on-dark-muted: #e7d8b7;
   --image-primary: #a63724;
@@ -71,6 +71,21 @@ html[data-theme='matchday-print'] {
   --text-faint: var(--image-faint);
   --accent-text: var(--image-accent);
   --focus: var(--image-focus);
+  --focus-width: var(--image-focus-width);
+  --focus-offset: var(--image-focus-offset);
+  --image-focus-width: 2px;
+  --image-focus-offset: 2px;
+  --image-menu-gap: 8px;
+  --image-link-decoration: underline;
+
+  [data-ui='menu-row'],
+  [data-ui='menu-row']:hover:not(:disabled) {
+    border: 0;
+    border-image: none;
+    border-radius: 0;
+    padding: 14px 8px;
+    background: var(--image-art-rule-dark) left bottom / 100% 1px no-repeat;
+  }
 }
 
 html {

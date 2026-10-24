@@ -67,6 +67,13 @@ tables, inputs and engine-owned diagrams retain their HTML and game behavior. Sh
 targets the shell sidebar explicitly; it never matches event/feedback `aside` elements. Dialog
 headers, bodies, action footers and popup lists keep independent scrolling and hit targets. Home-only
 scrolling is scoped to the active home, while the shell and materials apply before founding too.
+Popup lists reset their text roles locally, so a dark transport bar cannot lend pale text to a
+light option. Selected/highlighted options explicitly pair material, frame and text colors with
+enough specificity to survive component states. Print uses stamped selection, fine ink rules in
+settings and solid underlines; sticker uses cream selected options with forest text, separated
+framed settings rows and link emphasis on hover. Each supplies a solid keyboard focus treatment
+on the control itself. Disabled controls retain readable text rather than reducing whole-control
+opacity. Neutral `menu-row` and `term` hooks keep these details out of component theme branches.
 Source atlases and exact prompts live in `apps/web/design/home-print`; approved concept references
 remain in `apps/web/design/home-themes`. Deployed resources and provenance live in
 `apps/web/public/art/matchday-print/home`. `node scripts/prepare-print-home.mjs` slices and encodes

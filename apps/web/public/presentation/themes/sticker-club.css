@@ -49,7 +49,7 @@ html[data-theme='sticker-club'] {
   --image-muted: #405d47;
   --image-faint: #4c614c;
   --image-accent: #245d3d;
-  --image-focus: #184f37;
+  --image-focus: #246084;
   --image-on-dark: #fff9e5;
   --image-on-dark-muted: #f5efd9;
   --image-primary: #b84620;
@@ -73,6 +73,18 @@ html[data-theme='sticker-club'] {
   --text-faint: var(--image-faint);
   --accent-text: var(--image-accent);
   --focus: var(--image-focus);
+  --focus-width: var(--image-focus-width);
+  --focus-offset: var(--image-focus-offset);
+  --image-focus-width: 3px;
+  --image-focus-offset: 3px;
+  --image-menu-gap: 12px;
+  --image-link-decoration: none;
+  --image-option-fill: #fff0be;
+  --image-option-material: var(--image-canvas-material);
+  --image-option-frame: var(--image-selected-frame);
+  --image-option-text: #17382b;
+  --image-option-muted: #405d47;
+  --image-option-hover: #246084;
 
   /* Full-color stickers keep their printed rim instead of becoming monochrome masks. */
   [data-ui='game-shell'] > [data-ui='sidebar'] nav button::before,

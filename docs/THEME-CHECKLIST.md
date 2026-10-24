@@ -25,6 +25,10 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       interior material separately; test short, long and multiline labels without stretching corners.
 - [ ] Provide coherent neutral, selected, primary, dark and inset surfaces, plus legible hover,
       pressed, disabled and keyboard-focus states. Preserve semantic status meanings.
+- [ ] Open selects from both light panels and dark transport bars. Check the trigger during
+      hover/open, every option state and its hint; pair local text and material colors explicitly.
+      Check selected options against component selector specificity. Small text needs 4.5:1
+      contrast; disabled actions must remain readable. Verify the longest pace value fits.
 - [ ] Check transparent atlas gutters, crop bounds, repeat seams, image density and text contrast.
       Grain belongs behind text; it must not filter or distort the text itself.
       Generated atlas grids can drift: inspect full silhouettes before cropping to avoid clipped
@@ -68,6 +72,11 @@ rendered game. Record the reviewed theme, commit, viewports, browser and excepti
       missing images. Keep explanatory copy readable; do not hide it to force a layout to fit.
 - [ ] Keep required touch targets at least 44px, related transport controls aligned and preparation
       actions reachable beside their fixture text. Preserve keyboard focus and reduced motion.
+- [ ] Leave visible gaps between framed rows and inset their text/icons. Inspect settings,
+      segmented controls and popups after hover too. A control's frame must not touch its neighbor.
+- [ ] Use decoration that fits the concept: ink rules/stamps for print, cream rims/color cues for
+      stickers. Avoid redundant dotted link borders and duplicate label/control focus rings.
+      Keep one clear keyboard focus indicator and meaningful chart/status distinctions.
 - [ ] Open, scroll, close and reopen bottom sheets and reports. Header, body and action footer
       must retain their intended scroll bounds; actions must stay reachable.
 - [ ] Check home column scrolling and focus restoration, plus the last row/action on every page.

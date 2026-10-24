@@ -27,10 +27,25 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
   }
 
   button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  a:focus-visible,
+  summary:focus-visible,
   [data-select-trigger]:focus-visible,
-  label:focus-within {
-    outline: 2px dashed var(--focus);
-    outline-offset: 4px;
+  label:has(input[type='file']):focus-visible,
+  label:has(input[type='file']:focus-visible) {
+    outline: var(--image-focus-width, 2px) solid var(--image-focus, var(--focus));
+    outline-offset: var(--image-focus-offset, 2px);
+  }
+
+  :is(
+    [data-ui='game-shell'] > [data-ui='sidebar'],
+    [data-ui='game-shell'] > nav,
+    [data-ui='season-transport'],
+    [data-ui='dialog-header']
+  ) {
+    --image-focus: var(--image-on-dark);
+    --focus: var(--image-on-dark);
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] {
@@ -701,10 +716,21 @@ html:is([data-theme='matchday-print'], [data-theme='sticker-club']) {
     font-size: 12px;
   }
 
-  [data-ui='season-transport'] [data-select-trigger] {
+  [data-ui='season-transport'] [data-select-trigger][role='combobox'],
+  [data-ui='season-transport']
+    [data-select-trigger][role='combobox']:is(:hover, [data-state='open']) {
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark-muted);
+    --text-faint: var(--image-on-dark-muted);
+    color: var(--image-on-dark);
     height: 44px;
     min-height: 44px;
+    min-width: 78px;
+    padding-inline: 10px;
+    padding-block: 4px;
+    gap: 8px;
     border: 4px solid transparent;
+    border-color: transparent;
     border-image: var(--image-dark-frame) 54 / 6px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;

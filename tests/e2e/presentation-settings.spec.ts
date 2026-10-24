@@ -14,6 +14,7 @@ import { chooseOption, selectOptions } from './select';
 import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
+import { textContrast } from './contrast';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
@@ -45,6 +46,89 @@ async function closeSettings(page: Page) {
 }
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+
+for (const theme of ['matchday-print', 'sticker-club'])
+  for (const width of [390, 1380])
+    test(`${theme}: readable transport choices and inset settings rows at ${width}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
+      await page.addInitScript((themeId) => {
+        localStorage.setItem(
+          'haeram-soccor:presentation',
+          JSON.stringify({ localeId: 'ko-KR', themeId }),
+        );
+      }, theme);
+      await loadPausedGame(page);
+      await page.getByRole('button', { name: /진행 방식 변경/ }).click();
+      await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
+      const date = await page.getByTestId('game-date').innerText();
+      const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+      await chooseOption(pace, 'x10');
+      await pace.hover();
+      await expect
+        .poll(async () => (await pace.evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      expect(
+        await pace
+          .locator('span')
+          .first()
+          .evaluate((value) => value.scrollWidth - value.clientWidth),
+      ).toBeLessThanOrEqual(1);
+      await pace.press('ArrowDown');
+      const list = page.getByRole('listbox', { name: '자동 진행 배속', exact: true });
+      await expect(list).toBeVisible();
+      const checked = list.getByRole('option', { selected: true });
+      for (const item of [checked, checked.locator('small')])
+        await expect
+          .poll(async () => (await item.evaluate(textContrast)).ratio)
+          .toBeGreaterThanOrEqual(4.5);
+      await pace.press('Home');
+      const highlighted = list.locator('[role="option"][data-highlighted]');
+      await expect(highlighted).toHaveAttribute('data-state', 'unchecked');
+      for (const item of [highlighted, highlighted.locator('small')])
+        await expect
+          .poll(async () => (await item.evaluate(textContrast)).ratio)
+          .toBeGreaterThanOrEqual(4.5);
+      await pace.press('Escape');
+      await expect(pace).toBeFocused();
+
+      await page.getByRole('button', { name: '설정', exact: true }).click();
+      const menu = page.getByTestId('app-menu');
+      const rows = menu.locator('[data-ui="menu-row"]');
+      const spacing = await rows.evaluateAll((items) => {
+        const first = items[0].getBoundingClientRect(),
+          second = items[1].getBoundingClientRect();
+        const style = getComputedStyle(items[0]);
+        return {
+          gap: second.top - first.bottom,
+          inset: parseFloat(style.paddingLeft),
+          height: first.height,
+        };
+      });
+      expect(spacing.gap).toBeGreaterThanOrEqual(8);
+      expect(spacing.inset).toBeGreaterThanOrEqual(8);
+      expect(spacing.height).toBeGreaterThanOrEqual(44);
+      await expect
+        .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      await rows.filter({ hasText: '테마 변경' }).click();
+      const choice = page.getByTestId('presentation-theme');
+      await expect(choice).toBeVisible();
+      await choice.focus();
+      await choice.press('ArrowDown');
+      await choice.press('Escape');
+      const focus = await choice.evaluate((control) => ({
+        style: getComputedStyle(control).outlineStyle,
+        width: parseFloat(getComputedStyle(control).outlineWidth),
+        parent: getComputedStyle(control.parentElement!).outlineStyle,
+      }));
+      expect(focus.style).toBe('solid');
+      expect(focus.width).toBeGreaterThanOrEqual(2);
+      expect(focus.parent).toBe('none');
+      await closeSettings(page);
+      await expect(page.getByTestId('game-date')).toHaveText(date);
+    });
 
 for (const width of [390, 1380])
   test(`image-built themes cover home, pinned table cells and detail sheets without advancing play ${width}`, async ({

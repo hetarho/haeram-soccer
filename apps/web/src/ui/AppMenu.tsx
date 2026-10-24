@@ -16,7 +16,7 @@ function MenuRow({
   onClick: () => void;
 }) {
   return (
-    <button className={s.row} onClick={onClick}>
+    <button className={s.row} data-ui="menu-row" onClick={onClick}>
       <span className={s.icon}>
         <PixelIcon name={icon} size={20} />
       </span>
