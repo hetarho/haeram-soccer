@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T19:46:34.918Z",
-  "sourceCommit": "baaf367dfe27e853e36c9333caa3b80e550a73d1",
+  "snapshotAt": "2026-10-24T20:11:28.063Z",
+  "sourceCommit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,36 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "8ac4426b0d3701e6aa7db621384fb751a9021f7b",
+      "commit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T19:12:35.705Z"
+      "at": "2026-10-24T19:46:37.572Z"
+    },
+    "runner": {
+      "id": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-24T19:47:31.307Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
     },
     "lastRun": {
       "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
@@ -66,11 +92,11 @@
   },
   "summary": {
     "total": 23,
-    "completed": 11,
-    "remaining": 12,
+    "completed": 12,
+    "remaining": 11,
     "running": 0,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 11
   },
   "tasks": [
@@ -185,14 +211,6 @@
         "T445"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T441",
-      "title": "A pass is cut out only where an opponent reaches its path",
-      "dep": [
-        "T426"
-      ],
-      "status": "blocked"
     },
     {
       "id": "T442",
@@ -1394,39 +1412,71 @@
         "T441"
       ],
       "lane": null,
-      "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1",
+      "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1",
       "contributors": [
-        "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1"
+        "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1",
+        "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1"
       ],
-      "status": "blocked",
-      "reason": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-24T18:17:15.369Z",
       "startCommit": "83a36bb5e98c5ba90ceedcfbd2c8d15c59369893",
-      "submittedBase": "e449975351d3e33d99bc3d8c8fd0a47c52c39348",
-      "submissionId": "4fde0384-605f-4e1f-a47d-f95e5bb87b81",
-      "submittedAt": "2026-10-24T19:17:07.757Z",
+      "verifiedCommit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+      "submittedBase": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+      "submissionId": "0189af59-1718-408c-a855-79ab839908ea",
+      "submittedAt": "2026-10-24T20:03:13.817Z",
       "risk": {
         "risky": true,
         "reasons": [
-          "606 changed lines (limit 300)",
+          "684 changed lines (limit 300)",
           "outside touches: packages/engine/src/material.test.ts",
+          "reworked after a review or integration failure",
           "autopilot decisions awaiting the owner"
         ],
-        "lines": 606,
+        "lines": 684,
         "files": 11
       },
       "dispatch": {
-        "id": "d94d2fc9-e446-402a-a754-639726728461",
-        "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
-        "role": "worker",
+        "id": "50cbed92-2148-48df-8f1c-ca4eca5e725e",
+        "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T19:26:41.445Z",
-        "finishedAt": "2026-10-24T19:46:33.027Z",
-        "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-        "summary": "All five review findings on T441 are fixed and the task checks pass. The pre-feature path is still unchanged: its digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **P2, keeper distributions (`resolve.ts`):** on the candidate, a keeper's pass now plays against the defender nearest the lane again, as MATCH-11's keeper row says. Every other pass plays against the first opponent who reaches its path, or an even 60 if nobody does. The lane term and who cuts the ball out still use the reach rule for all candidate passes. A new test shows a keeper's completion drops as that defender's 위치선정 rises even when he can't reach the path, while an outfielder's pass down the same lane is unaffected. Candidate digests are re-recorded:\n  - grid-throughput: 1975 unchanged; the 1995 extra-time tie is now `knockout-1995-2`; 2024 league facts and observed positions changed.\n  - full-model-throughput: `52d8ce752a4579f5`.\n- **P3, the \"could not reach\" test is now strong enough to catch the old rule.** It spies on `Tally.prototype.interception` to read each interceptor's position, velocity and top speed at the kick. It then checks he could actually get within reach of the point before the ball arrives at pass speed, accelerating from his real speed. With the old nearest-man rule switched back in temporarily, this check failed (one interceptor was 0.47 m short); the edit is reverted.\n- **P3, `passLosses`:** the same test now checks the four counts against the trace for each side. `laneWeight` and `runSeconds` are no longer exported.\n- **P3, the `LANE_CONFIG.risk` comment** now matches the measured figure.\n- **P3, hand-offs for T437** (the spare-time reading, cut-outs at the passer's feet, the deflection's 50/50 and playback) are written into the result's limits.\n\n**Round-69 calibration on the final source** (120 matches, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| completion | 77.32% | 77.34% |\n| interceptions | 13.6 | 7.6 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.4 |\n| high turnovers | 7.4 | 5.9 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions fall below MATCH-23's 22–30 band and PPDA moves further above MATCH-30's 12–14; both are left for T437. Of failed open-play passes, 5.5% are won in the lane, 4.7% deflected, 75.6% lost at the receiver and 12.8% go out. bands.test's guards pass without widening (3.48 and 2.98 goals).\n\n**Two edits outside touches, both test-only.** The keeper fix moved seeded fixtures in `playback.test.ts`:\n- The extra-time seed is now `candidate-et-1`, because `candidate-et-2` now finishes in 90 minutes.\n- The set-piece job check failed because a defender is injured at the instant a corner lands in `candidate-1`. It now drops players who leave the pitch from the expected jobs. That is a fixture edge case, not an engine defect.\n\n**Checks run:** typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards: 219 files, 1705 tests passed, 4 skipped. The touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not done:**\n- The workspace is still on the first submission without the base's T431. I can't merge here; T431 changes no engine facts or frames, so the digests should hold after integration.\n- The paired timing (+4.4% per observed match) was measured before the keeper fix and not repeated.\n- The batch gate, CI and ARCH-31's reference-machine benchmarks were not run."
+        "startedAt": "2026-10-24T20:03:16.080Z",
+        "finishedAt": "2026-10-24T20:11:26.039Z",
+        "error": null,
+        "summary": "T441 resubmission e117822d against base 40d221ef (the base includes MATCH r29). The previous review's P2 (keeper distributions still playing against the defender nearest the lane) was settled by planning in baaf367d: MATCH-11 r29's keeper row now reads 'the opponent who reaches its path first (→MATCH-31)'. resolve.ts:409-417 does exactly that for every candidate pass, with an even 60 when nobody reaches. The keeper test checks the r29 reading: equal completion when nobody reaches, and the reacher's 위치선정 counts when he does. Since the first submission (05480a61), resolve.ts changed only by a refactor that behaves the same, so the first submission's candidate digests hold. The pre-feature path is untouched: nearestToSegment/laneRisk, kickAt 0, no passLosses, unchanged diagnostics.\n\nThe previous P3s are addressed:\n- The fixture test now spies on Tally.prototype.interception. That records each interceptor's place, velocity and speedOf at the kick, and the test checks his reach in the ball's pass-speed time.\n- passLosses is pinned to the trace.\n- laneWeight and runSeconds are module-internal.\n- The LANE_CONFIG.risk comment now gives 77.43%.\n- The other hand-offs (spare from the first reach point on, cut-outs at the passer's feet, the deflector not sent to the deflection point) are in the result's limits for T437.\n\nI checked each risk reason:\n- Size: the new 224-line lanes.ts. The quadratic scan bound is correct and conservative. firstReach places the first reach correctly, and the reach scan starting from the stretch point is sound. lanes.ts imports nothing from resolve.ts and has no import cycle. Math.sqrt is already used in movement.ts.\n- Outside touches: the material.test.ts edit is test-only and correct. Per amateurEntrants, index `places` is the playoff's second spot, so taking that club's record keeps the own club in the playoff.\n- Rework: the earlier findings are fixed or settled.\n- Autopilot readings: the share reading, spare, and restart kickAt 0 are recorded explicitly in the result for the owner and T437.\n\nAll acceptance items are met: reachOnPath's contract, the resolvePass lane term and cut-out, choosePass reading the same reach, the flight ending at the reach point, the named tests, the digests with their measured changes, and the round-69 report.\n\nThe worker recorded these checks passing: typecheck, lint, format:check, vitest --changed (220 files, 1719 tests), and the release-on files (100/100). I did not re-run them.\n\nThe three findings are P3 hand-offs only."
+      },
+      "review": {
+        "id": "20e15115-af3f-425e-9b8f-8d04fb6a4902",
+        "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T441 resubmission e117822d against base 40d221ef (the base includes MATCH r29). The previous review's P2 (keeper distributions still playing against the defender nearest the lane) was settled by planning in baaf367d: MATCH-11 r29's keeper row now reads 'the opponent who reaches its path first (→MATCH-31)'. resolve.ts:409-417 does exactly that for every candidate pass, with an even 60 when nobody reaches. The keeper test checks the r29 reading: equal completion when nobody reaches, and the reacher's 위치선정 counts when he does. Since the first submission (05480a61), resolve.ts changed only by a refactor that behaves the same, so the first submission's candidate digests hold. The pre-feature path is untouched: nearestToSegment/laneRisk, kickAt 0, no passLosses, unchanged diagnostics.\n\nThe previous P3s are addressed:\n- The fixture test now spies on Tally.prototype.interception. That records each interceptor's place, velocity and speedOf at the kick, and the test checks his reach in the ball's pass-speed time.\n- passLosses is pinned to the trace.\n- laneWeight and runSeconds are module-internal.\n- The LANE_CONFIG.risk comment now gives 77.43%.\n- The other hand-offs (spare from the first reach point on, cut-outs at the passer's feet, the deflector not sent to the deflection point) are in the result's limits for T437.\n\nI checked each risk reason:\n- Size: the new 224-line lanes.ts. The quadratic scan bound is correct and conservative. firstReach places the first reach correctly, and the reach scan starting from the stretch point is sound. lanes.ts imports nothing from resolve.ts and has no import cycle. Math.sqrt is already used in movement.ts.\n- Outside touches: the material.test.ts edit is test-only and correct. Per amateurEntrants, index `places` is the playoff's second spot, so taking that club's record keeps the own club in the playoff.\n- Rework: the earlier findings are fixed or settled.\n- Autopilot readings: the share reading, spare, and restart kickAt 0 are recorded explicitly in the result for the owner and T437.\n\nAll acceptance items are met: reachOnPath's contract, the resolvePass lane term and cut-out, choosePass reading the same reach, the flight ending at the reach point, the named tests, the digests with their measured changes, and the round-69 report.\n\nThe worker recorded these checks passing: typecheck, lint, format:check, vitest --changed (220 files, 1719 tests), and the release-on files (100/100). I did not re-run them.\n\nThe three findings are P3 hand-offs only.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/resolve.ts:442-447, lanes.ts:26 (T441)",
+            "message": "Hand-off for the planner and T437, not a fix. Under the worker's reading of the build-up shares, the reacher gets a failed pass only on the tactic's draw (0.155–0.195 below 70 m), however much time he has to spare. A full-weight reacher costs the pass only LANE_CONFIG.risk (0.033) of completion. So a defender standing squarely in the lane lets most passes through him: reached passes still complete at 78.7%. The round-69 result shows 77% of failed passes are reached, yet only 10.1% end in the lane; the rest fly past the reacher and are lost at the receiver. MATCH-31's rationale calls 'one standing in the lane who lets it through' no defending. The acceptance fixes this structure (completion held at its frame, shares kept), and the worker recorded the reading and the levers (intercept shares, sure, stretch, weight). When T437 recalibrates, the planner should confirm whether the shares should be rescaled to the reached failures or the cut-out tied to spare."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:670-677 vs motionOf engine.ts:470-472 (T441)",
+            "message": "On a pass with no in-stride carry (keeper distributions and first-time balls, 3.1% of passes), the reach is computed with kickAt = least − the flight to the pass's end. motionOf's windUp is dt − the flight to where the ball actually ended. For an interception or deflection that flight is shorter, so playback kicks later and the ball reaches the reach point later than reachOnPath assumed, by the uncovered part of the flight. The other defenders' playback read (readAt on windUp) uses the same later kick. This never shows a reach that could not happen; it only gives the interceptor more time than the engine credited him. Note it for T442/T437, which reuse reachOnPath's timing: either time the reach from the same wind-up motionOf will use, or record why the gap is acceptable."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/decide.ts:603, decide.ts:888 (T441)",
+            "message": "passOptions' reach risk also drives the target choice for crosses and cut-backs, because choosePass runs with { crossOnly: true } at decide.ts:888. The result lists only choosePass for passes, keeper distribution and restarts. A cross is lofted, but its target choice now weighs a ground-speed reach of its path, as the old exp(−d/2) term did. The round-69 figures already include this, so it is not a regression. Note it for T444, which rewrites delivery choice and reads reachOnPath for deliveries, so that its 'before' is measured with this in place."
+          }
+        ],
+        "commit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+        "baseCommit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+        "submissionId": "0189af59-1718-408c-a855-79ab839908ea",
+        "createdAt": "2026-10-24T20:03:14.831Z",
+        "finishedAt": "2026-10-24T20:11:26.018Z"
       },
       "reviewHistory": [
         {
@@ -1474,13 +1524,13 @@
       "steps": [
         {
           "taskId": "T441",
-          "commit": "05480a6123bfc2f4479899e667263bac7df708e2",
-          "at": "2026-10-24T19:17:07.713Z",
+          "commit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+          "at": "2026-10-24T20:03:13.770Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-24T19:14:40.075Z",
-              "finishedAt": "2026-10-24T19:17:07.327Z"
+              "startedAt": "2026-10-24T20:00:46.900Z",
+              "finishedAt": "2026-10-24T20:03:13.385Z"
             }
           ]
         }
@@ -1488,8 +1538,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-24T19:14:40.075Z",
-          "finishedAt": "2026-10-24T19:17:07.327Z"
+          "startedAt": "2026-10-24T20:00:46.900Z",
+          "finishedAt": "2026-10-24T20:03:13.385Z"
         }
       ]
     }
@@ -8462,6 +8512,392 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1159,
+      "at": "2026-10-24T19:46:37.590Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T19:46:37.572Z"
+        }
+      }
+    },
+    {
+      "sequence": 1160,
+      "at": "2026-10-24T19:47:23.300Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1161,
+      "at": "2026-10-24T19:47:31.324Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T19:47:31.307Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1162,
+      "at": "2026-10-24T19:47:31.356Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1",
+        "contributors": [
+          "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1",
+          "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1163,
+      "at": "2026-10-24T19:47:31.505Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0e89c48c-fe1f-4181-954d-6f75ca2b8991",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T19:47:31.505Z"
+        }
+      }
+    },
+    {
+      "sequence": 1164,
+      "at": "2026-10-24T19:47:31.690Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0e89c48c-fe1f-4181-954d-6f75ca2b8991",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T19:47:31.505Z"
+        }
+      }
+    },
+    {
+      "sequence": 1165,
+      "at": "2026-10-24T20:00:45.898Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1166,
+      "at": "2026-10-24T20:00:46.542Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1167,
+      "at": "2026-10-24T20:00:46.581Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1168,
+      "at": "2026-10-24T20:03:13.817Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+        "submissionId": "0189af59-1718-408c-a855-79ab839908ea",
+        "submittedAt": "2026-10-24T20:03:13.817Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "684 changed lines (limit 300)",
+            "outside touches: packages/engine/src/material.test.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 684,
+          "files": 11
+        },
+        "steps": [
+          {
+            "taskId": "T441",
+            "commit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+            "at": "2026-10-24T20:03:13.770Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T20:00:46.900Z",
+                "finishedAt": "2026-10-24T20:03:13.385Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T20:00:46.900Z",
+            "finishedAt": "2026-10-24T20:03:13.385Z"
+          }
+        ],
+        "verifiedCommit": "e117822d40fd29bb9b18fdafe0270bafdad185ca"
+      }
+    },
+    {
+      "sequence": 1169,
+      "at": "2026-10-24T20:03:13.840Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "0e89c48c-fe1f-4181-954d-6f75ca2b8991",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T19:47:31.505Z",
+          "finishedAt": "2026-10-24T20:03:13.840Z",
+          "error": null,
+          "summary": "I removed the keeper special case as the coordinator asked, and all task checks pass on the merged tree (MATCH r29 and T431 included).\n\n**What changed**\n- **`resolve.ts`:** the nearest-lane marker for keeper distributions and its doc comment are gone. On the candidate, every pass, a keeper's included, now plays against the first opponent who reaches its path, on his 위치선정, or an even 60 when nobody does. The pre-feature path is unchanged, and its digests pass as before.\n- **Keeper test (`resolve.test.ts`):** it now checks the r29 rule. A keeper's or outfielder's ball 10 m from the only defender plays against nobody: identical completion whatever his 위치선정. When he stands in the lane, completion drops as his 위치선정 rises.\n- **Digests:** candidate play is back to the first submission's, so those digests are restored. grid-throughput knockout ties are 13/8, 3/0 and 18/0 (1995 extra time `c5a91f8d1170e536`, 2024 `e1aef5ff1c701e4f` / `cf2e018cdfce0754`); full-model-throughput candidate rounds `5c21d584c8efd809`.\n- **`playback.test.ts`:** last round's two edits there only followed from the keeper change, so the file is back to its first-submission text and passes. The only edit outside touches left is `material.test.ts`.\n- **Kept from the review round:** the stronger \"nobody cuts out a pass he could not reach\" test (it fails under the old nearest-man rule), the `passLosses` check against the trace, `laneWeight`/`runSeconds` no longer exported, and the T437 hand-off notes.\n- The `LANE_CONFIG.risk` comment, both digest comments, `docs/MATCH-ENGINE-DESIGN.md` and the task result carry the re-measured figures. The header is untouched (MATCH@29) and all acceptance items are marked done.\n\n**Round 69, re-run on the merged tree** (identical to the first submission's):\n\n| per team | before | after |\n|---|---|---|\n| completion | 77.32% | 77.43% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.2 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions now sit below MATCH-23's 22–30 band and PPDA further above MATCH-30's 12–14; both are left for T437. bands.test's coarse guards pass without widening: 3.46 goals on the candidate guard and 3.33 on the real-football guard run on the candidate.\n\n**Checks run:**\n- typecheck, lint and format:check pass.\n- `vitest run --changed 83a36bb5` passes in 8 shards: 220 files, 1719 tests passed, 4 skipped. The base is passed as an argument because the `HAERAM_DIFF_BASE=` prefix is denied here.\n- The 9 touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not run:** the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's reference-machine benchmarks.\n\nI did not commit."
+        }
+      }
+    },
+    {
+      "sequence": 1170,
+      "at": "2026-10-24T20:03:14.831Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "20e15115-af3f-425e-9b8f-8d04fb6a4902",
+          "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+          "status": "reviewing",
+          "commit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+          "baseCommit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+          "submissionId": "0189af59-1718-408c-a855-79ab839908ea",
+          "createdAt": "2026-10-24T20:03:14.831Z"
+        }
+      }
+    },
+    {
+      "sequence": 1171,
+      "at": "2026-10-24T20:03:16.080Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "50cbed92-2148-48df-8f1c-ca4eca5e725e",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T20:03:16.080Z"
+        }
+      }
+    },
+    {
+      "sequence": 1172,
+      "at": "2026-10-24T20:03:16.101Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "50cbed92-2148-48df-8f1c-ca4eca5e725e",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T20:03:16.080Z"
+        }
+      }
+    },
+    {
+      "sequence": 1173,
+      "at": "2026-10-24T20:11:26.018Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "20e15115-af3f-425e-9b8f-8d04fb6a4902",
+          "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T441 resubmission e117822d against base 40d221ef (the base includes MATCH r29). The previous review's P2 (keeper distributions still playing against the defender nearest the lane) was settled by planning in baaf367d: MATCH-11 r29's keeper row now reads 'the opponent who reaches its path first (→MATCH-31)'. resolve.ts:409-417 does exactly that for every candidate pass, with an even 60 when nobody reaches. The keeper test checks the r29 reading: equal completion when nobody reaches, and the reacher's 위치선정 counts when he does. Since the first submission (05480a61), resolve.ts changed only by a refactor that behaves the same, so the first submission's candidate digests hold. The pre-feature path is untouched: nearestToSegment/laneRisk, kickAt 0, no passLosses, unchanged diagnostics.\n\nThe previous P3s are addressed:\n- The fixture test now spies on Tally.prototype.interception. That records each interceptor's place, velocity and speedOf at the kick, and the test checks his reach in the ball's pass-speed time.\n- passLosses is pinned to the trace.\n- laneWeight and runSeconds are module-internal.\n- The LANE_CONFIG.risk comment now gives 77.43%.\n- The other hand-offs (spare from the first reach point on, cut-outs at the passer's feet, the deflector not sent to the deflection point) are in the result's limits for T437.\n\nI checked each risk reason:\n- Size: the new 224-line lanes.ts. The quadratic scan bound is correct and conservative. firstReach places the first reach correctly, and the reach scan starting from the stretch point is sound. lanes.ts imports nothing from resolve.ts and has no import cycle. Math.sqrt is already used in movement.ts.\n- Outside touches: the material.test.ts edit is test-only and correct. Per amateurEntrants, index `places` is the playoff's second spot, so taking that club's record keeps the own club in the playoff.\n- Rework: the earlier findings are fixed or settled.\n- Autopilot readings: the share reading, spare, and restart kickAt 0 are recorded explicitly in the result for the owner and T437.\n\nAll acceptance items are met: reachOnPath's contract, the resolvePass lane term and cut-out, choosePass reading the same reach, the flight ending at the reach point, the named tests, the digests with their measured changes, and the round-69 report.\n\nThe worker recorded these checks passing: typecheck, lint, format:check, vitest --changed (220 files, 1719 tests), and the release-on files (100/100). I did not re-run them.\n\nThe three findings are P3 hand-offs only.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:442-447, lanes.ts:26 (T441)",
+              "message": "Hand-off for the planner and T437, not a fix. Under the worker's reading of the build-up shares, the reacher gets a failed pass only on the tactic's draw (0.155–0.195 below 70 m), however much time he has to spare. A full-weight reacher costs the pass only LANE_CONFIG.risk (0.033) of completion. So a defender standing squarely in the lane lets most passes through him: reached passes still complete at 78.7%. The round-69 result shows 77% of failed passes are reached, yet only 10.1% end in the lane; the rest fly past the reacher and are lost at the receiver. MATCH-31's rationale calls 'one standing in the lane who lets it through' no defending. The acceptance fixes this structure (completion held at its frame, shares kept), and the worker recorded the reading and the levers (intercept shares, sure, stretch, weight). When T437 recalibrates, the planner should confirm whether the shares should be rescaled to the reached failures or the cut-out tied to spare."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:670-677 vs motionOf engine.ts:470-472 (T441)",
+              "message": "On a pass with no in-stride carry (keeper distributions and first-time balls, 3.1% of passes), the reach is computed with kickAt = least − the flight to the pass's end. motionOf's windUp is dt − the flight to where the ball actually ended. For an interception or deflection that flight is shorter, so playback kicks later and the ball reaches the reach point later than reachOnPath assumed, by the uncovered part of the flight. The other defenders' playback read (readAt on windUp) uses the same later kick. This never shows a reach that could not happen; it only gives the interceptor more time than the engine credited him. Note it for T442/T437, which reuse reachOnPath's timing: either time the reach from the same wind-up motionOf will use, or record why the gap is acceptable."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/decide.ts:603, decide.ts:888 (T441)",
+              "message": "passOptions' reach risk also drives the target choice for crosses and cut-backs, because choosePass runs with { crossOnly: true } at decide.ts:888. The result lists only choosePass for passes, keeper distribution and restarts. A cross is lofted, but its target choice now weighs a ground-speed reach of its path, as the old exp(−d/2) term did. The round-69 figures already include this, so it is not a regression. Note it for T444, which rewrites delivery choice and reads reachOnPath for deliveries, so that its 'before' is measured with this in place."
+            }
+          ],
+          "commit": "e117822d40fd29bb9b18fdafe0270bafdad185ca",
+          "baseCommit": "40d221eff0f584b1a3942c0a7e2af27a2a4e4e1f",
+          "submissionId": "0189af59-1718-408c-a855-79ab839908ea",
+          "createdAt": "2026-10-24T20:03:14.831Z",
+          "finishedAt": "2026-10-24T20:11:26.018Z"
+        }
+      }
+    },
+    {
+      "sequence": 1174,
+      "at": "2026-10-24T20:11:26.039Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "50cbed92-2148-48df-8f1c-ca4eca5e725e",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T20:03:16.080Z",
+          "finishedAt": "2026-10-24T20:11:26.039Z",
+          "error": null,
+          "summary": "T441 resubmission e117822d against base 40d221ef (the base includes MATCH r29). The previous review's P2 (keeper distributions still playing against the defender nearest the lane) was settled by planning in baaf367d: MATCH-11 r29's keeper row now reads 'the opponent who reaches its path first (→MATCH-31)'. resolve.ts:409-417 does exactly that for every candidate pass, with an even 60 when nobody reaches. The keeper test checks the r29 reading: equal completion when nobody reaches, and the reacher's 위치선정 counts when he does. Since the first submission (05480a61), resolve.ts changed only by a refactor that behaves the same, so the first submission's candidate digests hold. The pre-feature path is untouched: nearestToSegment/laneRisk, kickAt 0, no passLosses, unchanged diagnostics.\n\nThe previous P3s are addressed:\n- The fixture test now spies on Tally.prototype.interception. That records each interceptor's place, velocity and speedOf at the kick, and the test checks his reach in the ball's pass-speed time.\n- passLosses is pinned to the trace.\n- laneWeight and runSeconds are module-internal.\n- The LANE_CONFIG.risk comment now gives 77.43%.\n- The other hand-offs (spare from the first reach point on, cut-outs at the passer's feet, the deflector not sent to the deflection point) are in the result's limits for T437.\n\nI checked each risk reason:\n- Size: the new 224-line lanes.ts. The quadratic scan bound is correct and conservative. firstReach places the first reach correctly, and the reach scan starting from the stretch point is sound. lanes.ts imports nothing from resolve.ts and has no import cycle. Math.sqrt is already used in movement.ts.\n- Outside touches: the material.test.ts edit is test-only and correct. Per amateurEntrants, index `places` is the playoff's second spot, so taking that club's record keeps the own club in the playoff.\n- Rework: the earlier findings are fixed or settled.\n- Autopilot readings: the share reading, spare, and restart kickAt 0 are recorded explicitly in the result for the owner and T437.\n\nAll acceptance items are met: reachOnPath's contract, the resolvePass lane term and cut-out, choosePass reading the same reach, the flight ending at the reach point, the named tests, the digests with their measured changes, and the round-69 report.\n\nThe worker recorded these checks passing: typecheck, lint, format:check, vitest --changed (220 files, 1719 tests), and the release-on files (100/100). I did not re-run them.\n\nThe three findings are P3 hand-offs only."
+        }
+      }
+    },
+    {
+      "sequence": 1175,
+      "at": "2026-10-24T20:11:26.092Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
+      "taskId": "T441",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

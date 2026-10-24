@@ -17,6 +17,7 @@ import {
   toEngine,
   type Point,
 } from './pitch';
+import { reachOnPath } from './lanes';
 import { chanceXg } from './resolve';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
@@ -595,9 +596,12 @@ export function passOptions(
         Number.isNaN(oy)
       )
         nearest = Math.min(nearest, hypot(ox, oy));
+      if (candidate) continue;
       const t = ((o[0] - c[0]) * dx + (o[1] - c[1]) * dy) / (dist * dist);
       if (t > 0 && t < 1) risk += exp(-hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
     }
+    // The candidate weighs who reaches the path as it stands (→MATCH-16, MATCH-31, T441).
+    if (candidate) risk = reachOnPath(s, side, me.pos, gp.pos, 0).weight;
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
     // A man already past the offside line as the ball is played (candidate model, T397).

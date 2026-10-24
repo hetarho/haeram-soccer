@@ -27,6 +27,7 @@ import {
 } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
+import { LANE_CONFIG, reachOnPath } from './lanes';
 
 type Kind = NonNullable<Decision['kind']>;
 type Ref = [0 | 1, number];
@@ -143,7 +144,9 @@ export const DUEL_CONFIG = {
      * from below `upTo` m, the defending side's tactic intercepts this share in place of
      * `pass.lost.intercepted`, taken from the loose balls, so as many still leave play. Press reads
      * the build-up most and counter, engaging around halfway, least; PPDA and high turnovers come
-     * inside MATCH-30's bands with tackles and interceptions still inside MATCH-23's.
+     * inside MATCH-30's bands with tackles and interceptions still inside MATCH-23's. T441: the
+     * share (and `pass.lost.intercepted` from `upTo` on) splits only a failed pass an opponent
+     * reaches (`reachOnPath`), who wins or deflects it; the rest are lost at the receiver.
      */
     intercept: {
       upTo: 70,
@@ -283,6 +286,7 @@ function nearestToSegment(s: GridState, side: 0 | 1, a: Point, b: Point) {
   return best;
 }
 
+/** The pre-feature lane term: e^(−d/2) for each opponent beside the segment; the candidate reads `reachOnPath`. */
 function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
   const { exp, hypot } = s.math;
   let risk = 0;
@@ -368,6 +372,14 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
  * A pass. Draws, in order: completion; on failure the split; for a loose ball the winner.
  * Offside is checked by the caller before this resolves (T210). `at` (engine frame) is where the
  * ball is played when not to the receiver's feet: a through ball into his path (T324).
+ *
+ * On the candidate model (→MATCH-11, MATCH-31, T441) the lane is who reaches the ball's path,
+ * kicked `kickAt` seconds from now (`reachOnPath`): the marker is the opponent it meets first, on
+ * his 위치선정 (none: an even 60), a keeper's distribution's as any pass's (MATCH-11 r29), and the
+ * lane term `LANE_CONFIG.risk` × the reaching opponents' summed weights. A failed pass the split
+ * gives to an interception is that opponent's, and only when one reaches it: he wins it at his
+ * reach point within `LANE_CONFIG.reach` with `LANE_CONFIG.sure` to spare, else deflects it loose
+ * there; with nobody reaching it the ball is lost at its receiver (or out) instead.
  */
 export function resolvePass(
   s: GridState,
@@ -380,6 +392,7 @@ export function resolvePass(
   r: () => number,
   bonus = 0,
   at?: readonly [number, number],
+  kickAt = 0,
 ): Outcome {
   const P = DUEL_CONFIG.pass;
   const from = attackFrame(side, s.players[side][idx]!.pos);
@@ -393,15 +406,22 @@ export function resolvePass(
     : long
       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
       : skill(s, side, idx, 'passing');
-  const marker = nearestToSegment(s, side, from, to);
-  const markerSkill = marker ? skill(s, other(side), marker.gp.idx, 'positioning') : 60;
+  const lane = onCandidate(s)
+    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
+    : undefined;
+  const first = lane?.first;
+  // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its
+  // path first, the pre-feature path's the one nearest the segment.
+  const marker = lane ? undefined : nearestToSegment(s, side, from, to);
+  const against = lane ? first?.gp : marker?.gp;
+  const markerSkill = against ? skill(s, other(side), against.idx, 'positioning') : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
   const p = clamp(
     base +
       P.base +
       (passer - 60) * P.passer -
       (markerSkill - 60) * P.marker -
-      P.risk * laneRisk(s, side, from, to) -
+      (lane ? LANE_CONFIG.risk * lane.weight : P.risk * laneRisk(s, side, from, to)) -
       Math.max(0, dist - 20) * P.distance -
       P.pressure * tags.pressure +
       s.setup.bends[side].pass / 100 +
@@ -419,7 +439,12 @@ export function resolvePass(
   const I = DUEL_CONFIG.candidate.intercept;
   const intercepted =
     onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
-  if (u < intercepted && marker) {
+  if (lane) {
+    if (u < intercepted && first)
+      return !first.stretch && first.spare >= LANE_CONFIG.sure
+        ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
+        : looseBall(s, first.at, r, [side, target]);
+  } else if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
       from[1] + (to[1] - from[1]) * marker.t,

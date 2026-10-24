@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
@@ -18,7 +18,14 @@ import {
   shotContext,
   type Outcome,
 } from './resolve';
+import { playGrid } from './engine';
+import { LANE_CONFIG, reachOnPath } from './lanes';
+import { validateFullMatchRecord } from '../match-model';
+import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from './movement';
 import type { Point } from './pitch';
+import { Tally } from './record';
+import { buildGridSetup } from './setup';
+import { speedOf } from './shape';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
 import { strengthScaled, type GridState } from './state';
@@ -220,6 +227,184 @@ describe('grid open-play resolution', () => {
       expect(lost(out + 1e-6, 40, tactic, true)).toBe('out');
       expect(lost(out - 1e-6, 40, tactic, true)).not.toBe('out');
     }
+  });
+
+  /** A failing candidate pass from [60, 34] to [75, 34], drawn `n` times; `foe` stands where given. */
+  const failing = (n: number, seed: string, foe?: Point) => {
+    const sc = scene(7, [60, 34], ['balanced', 'press']);
+    sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+    sc.s.players[0][8]!.pos = [75, 34];
+    if (foe) sc.s.players[1][3]!.pos = [...foe];
+    set(sc.s, 0, 7, 'passing', 0);
+    const r = random(seed);
+    const tags = sc.tags();
+    return Array.from({ length: n }, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r));
+  };
+  const lostAt = (o: Outcome) => (o.kind === 'loose' || o.kind === 'foul' ? o.at : undefined);
+
+  it('a pass whose lane nobody reaches is never intercepted (T441)', () => {
+    const outcomes = failing(20000, 't441-open');
+    const kinds = tally(outcomes.length, (i) => outcomes[i]!);
+    expect(kinds.intercepted ?? 0).toBe(0);
+    expect(kinds.loose).toBeGreaterThan(1000);
+    expect(kinds.out).toBeGreaterThan(100);
+    // Lost only at its receiver: every loose ball and 50/50 foul is where he stands.
+    for (const o of outcomes) {
+      const at = lostAt(o);
+      if (at) expect(at).toEqual([75, 34]);
+    }
+  });
+
+  it('a failed pass is won where the man in the lane meets it, or deflected there at full stretch (T441)', () => {
+    // Standing in the lane 5 m out: he wins the build-up's share of the failed passes cleanly.
+    const inLane = failing(20000, 't441-lane', [65, 34]);
+    const won = inLane.filter((o) => o.kind === 'intercepted');
+    expect(won.length).toBeGreaterThan(200);
+    for (const o of won) {
+      expect(o).toMatchObject({ kind: 'intercepted', by: 3 });
+      const [x, y] = (o as Extract<Outcome, { kind: 'intercepted' }>).at;
+      // Where the ball first comes within his reach, a step before him at most.
+      expect(y).toBeCloseTo(34, 9);
+      expect(65 - x).toBeGreaterThan(0);
+      expect(65 - x).toBeLessThan(LANE_CONFIG.reach + 1);
+    }
+    // 2 m off the line he gets a touch at full stretch only: the same share is deflected loose there.
+    const stretched = failing(20000, 't441-lane', [67, 36]);
+    expect(stretched.filter((o) => o.kind === 'intercepted')).toHaveLength(0);
+    const deflected = stretched.filter((o) => {
+      const at = lostAt(o);
+      return at && (at[0] !== 75 || at[1] !== 34);
+    });
+    expect(Math.abs(deflected.length - won.length)).toBeLessThan(won.length * 0.25);
+    for (const o of deflected) {
+      const [x, y] = lostAt(o)!;
+      // On the line, where a step toward it takes him within stretch before the ball.
+      expect(y).toBeCloseTo(34, 9);
+      expect(x).toBeLessThanOrEqual(67);
+      expect(x).toBeGreaterThan(64);
+    }
+  });
+
+  it('nobody cuts out a pass he could not reach (T441)', () => {
+    const kit = gridKit(['press', 'possession'], undefined, DISABLED_RELEASE);
+    /** Metres a runner covers in `t` s from `u0` m/s his way, accelerating up to `vmax`. */
+    const covered = (t: number, u0: number, vmax: number) => {
+      const a = GRID_MOVEMENT_CONFIG.acceleration;
+      const u = Math.min(Math.max(0, u0), vmax);
+      const ramp = (vmax - u) / a;
+      return t <= ramp ? u * t + (a * t * t) / 2 : ((u + vmax) / 2) * ramp + vmax * (t - ramp);
+    };
+    // Each interceptor as the engine counts the interception: nobody has moved since the kick.
+    type Kick = { pos: Point; vel: Point; vmax: number; passer: Point };
+    let kicks: Kick[] = [];
+    const count = Tally.prototype.interception;
+    const spy = vi.spyOn(Tally.prototype, 'interception').mockImplementation(function (
+      this: Tally,
+      ...args: Parameters<Tally['interception']>
+    ) {
+      const s = (this as unknown as { state: GridState }).state;
+      const gp = s.players[args[0]][args[1]]!;
+      const passer = s.players[s.owner![0]][s.owner![1]]!.pos;
+      const vel = gp.vel ?? [0, 0];
+      kicks.push({
+        pos: [gp.pos[0], gp.pos[1]],
+        vel: [vel[0], vel[1]],
+        vmax: speedOf(s, gp),
+        passer: [passer[0], passer[1]],
+      });
+      count.apply(this, args);
+    });
+    let arrived = 0,
+      fromKick = 0,
+      deflected = 0;
+    try {
+      for (const id of ['lanes-1', 'lanes-2', 'lanes-3']) {
+        kicks = [];
+        const result = playGrid(
+          buildGridSetup(
+            kit.w,
+            { ...kit.f, id },
+            { observe: true, recordPlayers: true, model: MATCH_MODEL_REVISION },
+          ),
+        );
+        expect(validateFullMatchRecord(result.record), id).toEqual([]);
+        const trace = result.trace!;
+        // Every interception, of any action, is counted once and traced in the same order.
+        const intercepted = trace.filter((e) => e.outcome === 'intercepted');
+        expect(intercepted).toHaveLength(kicks.length);
+        intercepted.forEach((e, k) => {
+          if (e.action !== 'pass') return;
+          const [foe, by] = e.by!;
+          const reachAt = e.to!;
+          // The flight ends at his reach point (none when he meets it as it is played).
+          const landing = e.knots?.at(-1);
+          if (landing) expect(landing.ball).toEqual(reachAt);
+          // Where he is when it arrives: where his next play starts (his carry, or he plays it there).
+          const next = trace.slice(trace.indexOf(e) + 1).find((x) => x.outcome !== 'incident');
+          if (next?.side === foe && next.idx === by && next.from) {
+            const start = next.knots?.[0]?.kind === 'carry' ? next.knots[0].ball : next.from;
+            expect(Math.hypot(start[0] - reachAt[0], start[1] - reachAt[1])).toBeLessThanOrEqual(
+              LANE_CONFIG.stretch,
+            );
+            arrived++;
+          }
+          // After an in-stride carry the ball is kicked at once and he reads it then: from where he
+          // stood and how he moved, he gets within reach of the point by the ball at pass speed.
+          if (e.knots?.[0]?.kind !== 'carry') return;
+          const { pos, vel, vmax, passer } = kicks[k]!;
+          expect(passer).toEqual(e.from);
+          const d = Math.hypot(reachAt[0] - pos[0], reachAt[1] - pos[1]);
+          const toward =
+            d > 0 ? (vel[0] * (reachAt[0] - pos[0]) + vel[1] * (reachAt[1] - pos[1])) / d : 0;
+          const ball =
+            Math.hypot(reachAt[0] - passer[0], reachAt[1] - passer[1]) / GRID_BALL_CONFIG.pass;
+          expect(d - LANE_CONFIG.reach).toBeLessThanOrEqual(covered(ball, toward, vmax) + 1e-6);
+          fromKick++;
+        });
+        // The diagnostics count every failed open-play pass once, by where it ended.
+        const losses = result.diagnostics.passLosses!;
+        for (const side of [0, 1] as const) {
+          const failed = trace.filter(
+            (e) =>
+              e.side === side &&
+              e.action === 'pass' &&
+              e.tags &&
+              e.outcome !== 'complete' &&
+              e.outcome !== 'offside',
+          );
+          const of = (...kinds: string[]) => failed.filter((e) => kinds.includes(e.outcome)).length;
+          expect(losses.intercepted[side]).toBe(of('intercepted'));
+          expect(losses.out[side]).toBe(of('out'));
+          expect(losses.deflected[side] + losses.receiver[side]).toBe(of('loose', 'foul'));
+          deflected += losses.deflected[side];
+        }
+      }
+    } finally {
+      spy.mockRestore();
+    }
+    expect(arrived).toBeGreaterThan(10);
+    expect(fromKick).toBeGreaterThan(10);
+    expect(deflected).toBeGreaterThan(0);
+  });
+
+  it("a keeper's distribution plays against the first opponent who reaches its path, as any pass (T441, →MATCH-11 r29)", () => {
+    // A 30 m ball out of the box; the only defender near it stands `off` m off its line midway.
+    const rate = (passer: number, off: number, positioning: number) => {
+      const sc = scene(passer, [10, 34]);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.players[0][8]!.pos = [40, 34];
+      sc.s.players[1][3]!.pos = [25, 34 + off];
+      set(sc.s, 1, 3, 'positioning', positioning);
+      expect(reachOnPath(sc.s, 0, [10, 34], [40, 34], 0).first?.gp.idx).toBe(off ? undefined : 3);
+      const r = random(`t441-keeper-${passer}-${off}`);
+      const tags = sc.tags();
+      const o = tally(6000, () => resolvePass(sc.s, 0, passer, 8, tags, 'long', false, r));
+      return (o.complete ?? 0) / 6000;
+    };
+    // 10 m off the line nobody reaches it: a keeper's ball, like an outfielder's, plays against nobody…
+    for (const passer of [0, 5]) expect(rate(passer, 10, 40)).toBe(rate(passer, 10, 80));
+    // …and in the lane he reaches it, so the better he reads the game, the less often it arrives.
+    expect(rate(0, 0, 40) - rate(0, 0, 80)).toBeGreaterThan(0.08);
   });
 
   it('lets the keeper gather a share of the failed crosses running out on the candidate model only (T371)', () => {

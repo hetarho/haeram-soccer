@@ -7,7 +7,10 @@ import { playGrid } from './grid/engine';
 import { cellOf } from './grid/pitch';
 import { MaterialTally } from './grid/record';
 import { buildGridSetup } from './grid/setup';
+import { country } from '../../catalogs/src/index';
 import { createWorld, closeSeason } from './index';
+import { ranked } from './season';
+import { clubOf } from './world';
 import {
   heatMap,
   ownSideOf,
@@ -168,10 +171,18 @@ describe('post-match material', () => {
   });
 
   it("the promotion playoff's material is reduced at the close", () => {
-    // On the candidate this club reaches the lower promotion playoff, which `promote` plays inside
-    // the close.
+    // On the candidate this club plays the lower promotion playoff, which `promote` plays inside
+    // the close. Where it finishes is the football's to decide (T441's lanes moved it out), so it
+    // takes the record of the club in the playoff's second place: tied there, it ranks at most one
+    // place either way, still among the four the playoff takes after the direct places.
     const w = simulatedWorld(FOUNDING, { rounds: 46 }, ENABLED_RELEASE);
     const year = w.year;
+    const cp = country(clubOf(w).country);
+    const places = cp.groups[cp.groups.length - 1]!.length * 2;
+    const amateurs = w.clubs.filter((c) =>
+      w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
+    );
+    w.tables[w.playerClub] = { ...w.tables[ranked(w, amateurs)[places]!.id]! };
     const touches = (heat: Record<string, number[]> = {}) =>
       Object.values(heat)
         .flat()
