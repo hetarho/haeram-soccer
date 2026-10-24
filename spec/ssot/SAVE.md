@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r51 | Define the browser-demo rules for browser persistence and protocol.
+> r52 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -81,7 +81,7 @@
   - persist a declared match-model revision and the first tracked boundary of newly available counters. New careers start with full coverage; supported older careers preserve settled scores, contributions, designs, money, dates, personnel and history, and use the new model only for future unsettled fixtures. No backfill or resimulation of settled matches is allowed.
   - model activation is one validated writer upgrade through →SAVE-3/6/10. A queued or already revealed own-match playback completes under its settled model; activation waits for that safe boundary. Read-only views do not write or switch a career's persisted model.
   - checkpoints carrying the new aggregates/model metadata declare a container version that an older reader must refuse instead of silently dropping fields. Preserve supported older container readers, future-version protection and failed-write/export recovery (→SAVE-5/11/13).
-  - activating the full model requires →MATCH-28 and →ARCH-31 evidence. New full-model checkpoints round-trip all aggregate values, tracking boundaries, saved appearances and settled facts within →SAVE-4/13; a failed gate cannot be replaced by clearing careers or raising the limits.
+  - activating the full model requires →ARCH-31's throughput and capacity evidence; its →MATCH-28 accuracy is measured and reported, not a gate. New full-model checkpoints round-trip all aggregate values, tracking boundaries, saved appearances and settled facts within →SAVE-4/13; a failed gate cannot be replaced by clearing careers or raising the limits.
 
 - SAVE-24 [o] Own-manager tenure/result attribution (→HIST-18/19) activates prospectively in supported careers and survives save, reload, export and import.
   - new careers track from founding. A supported older career begins attribution at a recorded writer-activation boundary, retaining all older match/season/event/person facts and known service dates. Do not parse saved prose to invent missing identities, replay old fixtures, fabricate zero achievements or reset a career.
@@ -90,6 +90,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r52 261024 SAVE-23✎ activation required →MATCH-28 and →ARCH-31 evidence→→ARCH-31 throughput and capacity evidence, →MATCH-28 accuracy reported, not a gate
 - r51 261021 SAVE-24+ prospective own-manager history activation, lossless attribution round trips and older-reader protection within existing budgets
 - r50 261020 SAVE-23+ prospective versioned full-match-model activation for supported careers, exact aggregates and coverage, safe playback boundary and older-reader protection
 - r49 261019 SAVE-3✎ IndexedDB-unavailable commit without a previous copy→verified localStorage predecessor or refusal before overwrite, preserving disk data/exportable memory; SAVE-14✎ always saves without IndexedDB→SAVE-3 bounded fallback and failure protection

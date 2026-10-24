@@ -12,6 +12,7 @@ import { FORMATIONS, lineOf } from '../player';
 import { buildGridSetup, eraRules } from '../grid/setup';
 import { prepareMatch } from '../match';
 import {
+  aggregateAddedTime,
   aggregatePlan,
   aggregateRecord,
   aggregateSkillAccess,
@@ -926,5 +927,63 @@ describe('the score state (MATCH-22 r22, T400)', () => {
           expect(h.minute).toBeLessThanOrEqual(record.regulation ? 120 : 90);
       }
     });
+  });
+});
+
+describe('aggregate added time and second cautions (T409)', () => {
+  const withConfig = <T>(set: () => () => void, body: () => T): T => {
+    const restore = set();
+    try {
+      return body();
+    } finally {
+      restore();
+    }
+  };
+  it("credits the aggregate's own added seconds to each period within ADDED_CONFIG's bounds", () => {
+    const { w, fixtures } = others(20, 2024);
+    let longer = 0;
+    for (const f of fixtures) {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      const { facts, participation } = playAggregate(w, f, prepared, rosters);
+      const base = aggregateAddedTime(facts, participation.incidents);
+      const extra = withConfig(
+        () => {
+          const kept = [...AGGREGATE_CONFIG.addedSeconds];
+          (AGGREGATE_CONFIG.addedSeconds as unknown as number[]).splice(0, 4, 60, 120, 0, 0);
+          return () => (AGGREGATE_CONFIG.addedSeconds as unknown as number[]).splice(0, 4, ...kept);
+        },
+        () => aggregateAddedTime(facts, participation.incidents),
+      );
+      // A minute more in the first half and two in the second, short of each period's bound.
+      expect(extra[0]! - base[0]!).toBeGreaterThanOrEqual(0);
+      expect(extra[0]! - base[0]!).toBeLessThanOrEqual(1);
+      expect(extra[1]! - base[1]!).toBeGreaterThanOrEqual(0);
+      expect(extra[1]! - base[1]!).toBeLessThanOrEqual(2);
+      if (extra[1]! > base[1]!) longer++;
+    }
+    expect(longer).toBeGreaterThan(0);
+  });
+
+  it("scales each side's second cautions by its tactic's factor", () => {
+    const { w, fixtures } = others(300, 2024);
+    const seconds = (factor: number) =>
+      withConfig(
+        () => {
+          const T = AGGREGATE_CONFIG.tactics as Record<string, { secondYellow: number }>;
+          const kept = Object.fromEntries(Object.entries(T).map(([k, v]) => [k, v.secondYellow]));
+          for (const v of Object.values(T)) v.secondYellow = factor;
+          return () => {
+            for (const [k, v] of Object.entries(kept)) T[k]!.secondYellow = v;
+          };
+        },
+        () =>
+          fixtures.reduce((n, f) => {
+            const { record } = simulateAggregate(w, f);
+            return n + (record.incidents ?? []).filter((x) => x.kind === 'secondYellow').length;
+          }, 0),
+      );
+    expect(seconds(0)).toBe(0);
+    expect(seconds(3)).toBeGreaterThan(seconds(1));
   });
 });

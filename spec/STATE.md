@@ -15,10 +15,14 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-23T17:49Z | 2026-10-23T17:49Z | T409 |
-| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T01:57Z | - |
+| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T08:35Z | T412 |
+| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:12Z | 2026-10-24T09:12Z | - |
 
 ## inbox
+- 261024 decided MATCH-28 SAVE-23 ARCH-31 T286 T410: the owner orders the work as release the new engine, implement the ideation items, then measure and fix what differs from real football → MATCH r23, SAVE r52 and ARCH r20 keep throughput, capacity and continuity as activation gates and report accuracy (MATCH-28 equivalence, MATCH-23/29/30) with the release instead of gating it; T286 becomes the release, T410 moves after it as the first step of the later calibration; T411's question (grid attacking-phase redesign) waits for that step (alt: keep the accuracy gate, which T401 shows the release cannot pass soon | drop the throughput and capacity gates too, which would risk saves past SAVE-4's limit)
+- 261024 suggest T411 T410 T286 MATCH-30 MATCH-28 MATCH-23: for the owner — T397, T408 and T411 found no lever that brings the grid's final-third flow (final-third passes 167, box entries 27, front-of-box entries 66, xT 4.7) toward MATCH-30 without taking goals, passes, offsides, ball in play or MATCH-29's pairings outside — the grid scores from many box entries, so fewer entries mean fewer goals → recommend (a) a planned redesign of the grid's attacking phase (an entry worth more as a chance: xG and decision structure, several sessions) before T410 and T286 (alt: (b) rule whether MATCH-30's final-third, entry and xT bands bind this engine's definitions | (c) rule whether MATCH-28 parity covers metrics where the grid misses its band) — a release-criteria choice the autopilot does not relax; T410 and T286 wait
+- 261024 decided WEB-91 T412: match visual theming → shared data/CSS-driven ground materials and marker outlines, preserving simulation, timing, identity and saved playback (alt: repaint football facts or replace the observer, excluded). Audit missed match surfaces and icon optical sizing across all four packs.
+- 261024 decided T409 MATCH-28 MATCH-29: which validated aggregate setting to keep → k1 (20 s / 30 s of added time a half the aggregate's stoppages left out): core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside (alt: q2 with carries lost 0.06 for tackles, which did not lower core's count | the tactic multipliers t3, which cut the pairing parity's different rows 5 → 2 but added core differences 42 → 45) — the exit asks core's count to fall; pairing-specific factors are left for later
 - 261024 decided T408 T411 T409 MATCH-30 MATCH-29: T408 kept nothing (fewer final-third entries moved MATCH-30's flow rows but took offsides, ball in play and MATCH-29's high-regain ordering outside) → T411 restructures how the grid's attacks end in the final third before T410's re-read and T286; T409 runs now, since the aggregate's levels inside both bands do not depend on the grid's flow (alt: stop the chain until the owner rules on MATCH-30's final-third bands | keep g2 for its MATCH-30 progress despite three rows inside → outside, which the exit forbids)
 - 261024 decided T286 T401 T408 T409 T410 MATCH-28: T401 found no condition equivalent at pilot size on 5abb70a2 (core 42 / 47 / 16), so T286's accuracy gate cannot pass and activation stays off → three follow-ups before T286: T408 the grid's MATCH-30 attacking flow (about 18 of core's differences are the grid's own misses), T409 the aggregate's levels, distributions, pairings and pairing second yellows on the fixed grid, T410 the pilot-size re-read; T286 keeps its final gate with dep T408 T409 T410 (alt: run T286 now to record failing gates, hours of century profiles on a source that must change | update-ssot to widen MATCH-28's margins, which would change the release criteria the owner set)
 - 261024 decided T400 MATCH-22 MATCH-28 MATCH-23: which validated aggregate setting to keep and what to leave → p1 (six score-state segments with volume 0.4 and risk 0.4, crosses 0.69 / 0.14, touch 0.34, byline 0.62, intercepted 0.18, corner 0.26, shot scale 0.52, balanced's guard 1, counter's 0.9): core different 49 → 42 with every relationship off different, MATCH-29 22/3/0, curve 1.55; passes, xT and the second-yellow rate left as they are (alt: q1/q2 with interceptions 0.17 for PPDA, more different and no fewer outside rows | fitting passes, which takes MATCH-30's progressive passes below their floor | fitting xT to the grid's 4.5, a known MATCH-30 miss) — MATCH-28 fits the aggregate only where the grid holds MATCH-23, and the second yellow is underpowered until T401's pilot size
@@ -251,18 +255,18 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 19 | 19 | - | 2 |
-| WEB | 138 | 138 | - | 0 |
+| ARCH | 20 | 20 | - | 2 |
+| WEB | 139 | 139 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 22 | 22 | - | 0 |
+| MATCH | 23 | 23 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 17 | 17 | - | 0 |
-| SAVE | 51 | 51 | - | 0 |
+| SAVE | 52 | 52 | - | 0 |
 | PLAYER | 9 | 9 | - | 0 |
 
 ## review
@@ -274,10 +278,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Activate the complete model only with combined accuracy and continuity evidence | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T410 T411 | todo |
-| T409 | Recalibrate the aggregate's levels, distributions and pairings to the fixed grid | MATCH ARCH | T408 | doing@261024.t5q2 |
-| T410 | Re-read both references and MATCH-28 parity at the pilot size after T408, T409 and T411 | MATCH ARCH | T408 T409 T411 | todo |
-| T411 | Change how the grid's attacks end in the final third | MATCH ARCH | T408 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 | todo |
+| T412 | Complete match-theme surfaces, icons and pitch materials | WEB KIT ARCH | T405 | doing@261024.m8p2 |
+| T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -291,12 +294,20 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 
 ## next
+- implement-task T286 (start from its switch-on probe notes: the activated seasons' invalid records first; release: throughput, capacity and continuity checks, then `MATCH_MODEL_RELEASE` on, accuracy reported); then the ideation items (own-club-match-edge, match-viewing-pace-and-freedom); then T410 and the calibration it names (T411's grid attacking-phase redesign among them)
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
-- resume (t5q2 261024): T372 is done as measured on 4389396a (w6p4; context only, not release evidence) and T384 is done on main; the history-activation lane (T402, T306–T308) is done and integrated; the calibration chain T396 → T397 → T398 → T399 (grid) → T400 (aggregate, MATCH r22 segments) → T401 (pilot-size parity on the M1 Max, no condition equivalent) is done; its follow-ups T408 (grid MATCH-30 flow) → T409 (aggregate levels and pairings) → T410 (re-read) come before T286's final gate. Validation rounds spent: 11–26, 30–34, 40, 44, 46–64; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384, 57 by T397, 58 by T398, 59 by T399, 60 by T400.
+- resume (t5q2 261024): T372 is done as measured on 4389396a (w6p4; context only, not release evidence) and T384 is done on main; the history-activation lane (T402, T306–T308) is done and integrated; the calibration chain T396 → T397 → T398 → T399 (grid) → T400 (aggregate, MATCH r22 segments) → T401 (pilot-size parity on the M1 Max, no condition equivalent) is done; its follow-ups T408 (grid MATCH-30 flow, nothing kept), T409 (aggregate added time kept) and T411 (attack endings, nothing kept) are done; the owner's answer to T411's question (inbox suggest) comes before T410 (re-read) and T286's final gate. Validation rounds spent: 11–26, 30–34, 40, 44, 46–67; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384, 57 by T397, 58 by T398, 59 by T399, 60 by T400, 61 by T408, 62 by T409, 63 by T411.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 T286 probe (t5q2): the release switch on fails 105 unit tests in 31 files and takes the unit tier to about 20 minutes, with invalid records in activated seasons (season.settle) as the first blocker; findings in T286's impl notes, the flip on wip/t5q2; T286 back to todo for the next session
+- 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
+- 261024 update-ssot MATCH-28 SAVE-23 ARCH-31 + create-task T286 T410 (t5q2): activation gated by throughput, capacity and continuity, accuracy reported (MATCH r23, SAVE r52, ARCH r20); T286 is the release, T410 follows it
+- 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
+- 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
+- 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.
+- 261024 T409 done (t5q2; explore, kept k1): the aggregate credits 20 s / 30 s of added time it left out; validation round 67: core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside; second-yellow factor by tactic neutral; aggregate artifact refreshed
 - 261024 T408 done (t5q2; explore exit, nothing kept): fewer forward passes into the final third moved final-third passes 167 → 145, box entries 27.6 → 24–26, xT 4.72 → 4.2–4.4 on validation rounds 65+66 but took offsides, ball in play and MATCH-29's high-regain ordering outside; neutral `finalThird` hooks kept; follow-up T411
 - 261024 create-task T408 T409 T410 (t5q2): T401's residual differences become T286's prerequisites — the grid's MATCH-30 attacking flow, the aggregate's levels, distributions and pairings, and the pilot-size re-read; T286 dep + T408 T409 T410; T408 claimed
 - 261024 T401 done (t5q2; measurement): final football 5abb70a2 on validation round 64 at pilot size (11,148–22,972 a condition, 446,354 matches a path): no condition equivalent, core 42 equivalent / 47 different / 16 insufficient (relationships 6 / 1 / 0), MATCH-29 paired 16 / 7 / 2; both references refreshed; follow-ups named for T286 (grid MATCH-30 flow, aggregate levels and pairings, re-read)
@@ -310,10 +321,3 @@
 - 261024 fix e2e (t5q2): CI on 76daccd9 failed two journeys the change does not reach — live-state's scorer-trend click lost to the match eve's backdrop on a slow WebKit run, and styled-select's player inspector listed 21 after a dismissal in the founded world's random match; the click now stops once the eve's dialog is up and the inspector needs at least 20; both specs 18/18 on Chromium, WebKit and Firefox
 - 261024 T399 done (t5q2; explore, kept p5): the ball-side wing-back of a back three closes 0.4 toward the ball's line, the wide centre-back steps 3 m out, a pressed cross loses 0.15 × pressure; validation rounds 61+62: balanced's xG conceded −0.041 outside → −0.017 insufficient, counter ≥ press 0.026 insufficient, MATCH-29 20 → 23, MATCH-30 9 → 10, MATCH-23 36 → 35, curve 2.15, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
 - 261024 T402 T306 T307 T308 done (work group history-activation, integrated by t5q2): prospective full-model activation behind the release switch, manager attribution, the bounded manager-history query and its journeys; the runner's integration failed on the new Chromium journeys, fixed on the merged tree (league season restore from the address, a delegated fixture) and passed 6/6 before the batch gate
-- 261024 T398 done (t5q2; explore, kept q1): box runs ×1.3, candidate shot scale 0.43; validation rounds 59+60: FW goals 61.5 → 57.4% inside, MF 33.6%, MATCH-23 33 → 36, MATCH-29 21 → 24, MATCH-30 10 → 9 (box shots unresolved), goals 2.88, curve 2.11, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
-- 261024 create-task T286 T307 T308 T402 base WEB@136→137 (t5q2): r137 extends WEB-91's image-built surfaces to sticker-club, which none of them cites; no content change
-- 261024 T397 done (t5q2; explore, kept v3): through balls counted only for a receiver not yet past the line (33.9 → 0.55); pull of a timed run 2 (half past the line), first-touch carry ×6, cut-back share 0.5, offside base 0.05; validation rounds 57+58: through balls completed inside, MATCH-30 9 → 10, MATCH-23 35 → 35, MATCH-29 23 → 24 (counter ≥ press inside), offsides 1.86, goals 2.82, curve 1.86, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
-- 261024 T396 done (t5q2): MATCH-29 parity paired by fixture id with 95% intervals against MATCH-28's margins (`tacticPairingParity`); rows shared with `tacticPairingVerdicts` through `pairingRowSpecs`; tooling only, 31 parity units pass
-- 261024 T403 done (m8p2): sticker image-built UI and WEB r137 pushed at 749fd1fb; 31 assets with retained sources/prompts, shared print geometry/resources, unchanged default/preferences. Type/lint/format/build, 1970 units + 4 skips, 39 contracts, catalogs/presentation/generators pass; 247 existing Chromium journeys plus 2 corrected new journeys cover all 249, with the new cases passing on all 3 browsers. Chrome/WebKit each review 85 states; image-failure fallback passes. Hosted CI 40004751277 is pending; no hosted success claimed. Disposable review artifacts removed.
-- 261024 T391 done (m8p2): previously stalled print CI 39993317846 has completed successfully across all jobs; publication and hosted verification are complete, task archived. No workflow cancellation or repository setting change needed.
-- 261024 T403 local checks (m8p2): 31 sticker UI assets generated with retained sources/prompts; shared image-skin rules preserve print geometry/art. Type/lint/format/build, 1970 units + 4 skips, 39 contracts, catalogs, presentation, generator/hash checks pass; 85 Chromium and 85 WebKit captures cover all views, zero page/resource errors, fresh default and saved alternatives preserved. Final Chromium batch runs before publication. WEB r137 changes sticker styling only; T391 and other WEB-referencing tasks retain their existing scope.

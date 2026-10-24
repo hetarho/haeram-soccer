@@ -90,10 +90,11 @@ const facts = (w: World) => ({
  * and pressed crosses left both unchanged: the two rounds' own grid matches settled the same facts.
  * T400's score-state segments and level, cross and tactic-guard recalibration changed both (the
  * candidate rounds through their aggregate fixtures); a8d299718d0919a0 and 93e1b3f124830eb1
- * before.
+ * before. T409's added seconds a half (the aggregate's stoppages left uncredited) changed the
+ * aggregate records only; e1a19359f49581e0 before.
  */
 const BEFORE = {
-  aggregateRecords: 'e1a19359f49581e0',
+  aggregateRecords: '940dadab556327b9',
   candidateRounds: 'e307acad9c517fe3',
 };
 

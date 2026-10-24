@@ -474,7 +474,8 @@ class SidePlanner {
     this.hurtAt.clear();
     for (const line of this.onPitch()) this.scheduleInjury(line, this.start[line]!);
     const D = PC.discipline,
-      fouls = AGGREGATE_CONFIG.tactics[this.input.sides[this.side].tactic].fouls;
+      tactic = AGGREGATE_CONFIG.tactics[this.input.sides[this.side].tactic],
+      fouls = tactic.fouls;
     type Card = { t: number; kind: 'yellow' | 'secondYellow' | 'red'; u: number; reason: Reason };
     const reason = (shares: Record<string, number>): Reason => {
       const keys = Object.keys(shares);
@@ -483,7 +484,7 @@ class SidePlanner {
     const queue: ({ t: number; card: Card } | { t: number; stop: 'interval' | 'play' })[] = [];
     for (const [kind, rate] of [
       ['yellow', D.yellows * fouls],
-      ['secondYellow', D.secondYellows * fouls],
+      ['secondYellow', D.secondYellows * fouls * tactic.secondYellow],
       ['red', D.reds],
     ] as const)
       for (let k = poissonDraw(cards, (rate * span) / 90); k > 0; k--) {

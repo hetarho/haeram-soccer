@@ -88,6 +88,33 @@ describe('grid open-play resolution', () => {
     return (o.complete ?? 0) / n;
   };
 
+  it('completes a pass within the final third less often by its malus, on the candidate model only (T411)', () => {
+    const rate = (candidate: boolean, malus: number, from: Point, to: Point) => {
+      const F = DUEL_CONFIG.candidate.finalThirdPass as { malus: number };
+      const kept = F.malus;
+      F.malus = malus;
+      try {
+        const sc = scene(7, from);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        sc.s.players[0][8]!.pos = [...to];
+        const r = random('t411-final-third');
+        const tags = sc.tags();
+        const o = tally(4000, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r));
+        return (o.complete ?? 0) / 4000;
+      } finally {
+        F.malus = kept;
+      }
+    };
+    // Within the final third: the same draws, `malus` fewer completed.
+    expect(rate(true, 0, [80, 20], [80, 40]) - rate(true, 0.2, [80, 20], [80, 40])).toBeCloseTo(
+      0.2,
+      1,
+    );
+    // Into it from below, and on the pre-feature model, no change.
+    expect(rate(true, 0.2, [60, 34], [75, 34])).toBe(rate(true, 0, [60, 34], [75, 34]));
+    expect(rate(false, 0.2, [80, 20], [80, 40])).toBe(rate(false, 0, [80, 20], [80, 40]));
+  });
+
   it("completes passes from the cell's real rate for equal players", () => {
     const sc = passScene();
     const tags = sc.tags();
