@@ -30,7 +30,7 @@ import {
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { moveAll, speedOf, startRuns } from './shape';
+import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
 import { carryTo, depart, interruptAll, losePass, takeBall, updateIntentions } from './intentions';
 import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
 import {
@@ -550,11 +550,51 @@ export function playGrid(setup: GridSetup): GridResult {
     const seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
     if (seconds <= 0) return undefined;
     const carry: Carry = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
-    carryInStride(s, gp, aim.to, seconds, aim.cell);
+    carryInStride(s, gp, aim.to, seconds, aim.cell, readsOf(side, d, aim.to, seconds));
     s.t += seconds;
     s.elapsed += seconds;
     tally.carryEvent(side, idx, attackFrame(side, carry.at), attackFrame(side, gp.pos));
     return carry;
+  }
+
+  /**
+   * Candidate model (→MATCH-17, T324, T426): the defenders' read of the decided pass during its
+   * carry, as they read a kick from the start of its wind-up before the carry existed. Each heads,
+   * from `readAt` on (the carry being the wind-up), where the pass would take him: his reaction to
+   * its receiver on the ball at its aim, worked out on the side and undone, since the pass is not
+   * played yet. None for an action without a receiver (a shot, a clearance).
+   */
+  function readsOf(side: 0 | 1, d: Decision, aim: [number, number], seconds: number) {
+    if (d.target === undefined) return undefined;
+    const everyone = [...s.players[0], ...s.players[1]];
+    const kept = everyone.map((gp) => ({
+      intention: gp.intention,
+      fields: gp.intention && { ...gp.intention },
+      ended: gp.ended,
+      run: gp.run,
+    }));
+    const [owner, ball, received] = [s.owner, s.ball, s.received];
+    s.owner = [side, d.target];
+    s.ball = [aim[0], aim[1]];
+    s.received = [side, d.target];
+    updateIntentions(s);
+    const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+    const reads = new Map<GridPlayer, { to: [number, number]; at: number }>();
+    for (const gp of s.players[other(side)])
+      if (onPitch(gp))
+        reads.set(gp, {
+          to: targetOf(s, gp.side, gp.idx, cache),
+          at: readAt(s, gp, side, seconds),
+        });
+    everyone.forEach((gp, k) => {
+      const was = kept[k]!;
+      if (was.intention) Object.assign(was.intention, was.fields);
+      gp.intention = was.intention;
+      gp.ended = was.ended;
+      gp.run = was.run;
+    });
+    [s.owner, s.ball, s.received] = [owner, ball, received];
+    return reads;
   }
 
   /** One decision by the player on the ball; returns the timing key of what was played and its outcome. */

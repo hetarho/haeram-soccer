@@ -286,8 +286,10 @@ export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined 
  * shielding it on the move away from him. He keeps running through it, so he is still in stride
  * when he plays it. Everyone else moves meanwhile on his intention: a target that follows another
  * player (a presser, a marker, a cover) is read again every step, so they track the carrier and
- * the men they mark; the rest are read once, as `advance` reads them. Moves everyone and the ball
- * with him; the caller runs the clock.
+ * the men they mark; the rest are read once, as `advance` reads them. A defender in `reads` turns,
+ * from its `at` seconds on, to `to`: where the decided pass takes him once he reads it (T324's
+ * early read, the carry being the kick's wind-up). Moves everyone and the ball with him; the
+ * caller runs the clock.
  */
 export function carryInStride(
   s: GridState,
@@ -295,6 +297,7 @@ export function carryInStride(
   aim: readonly [number, number],
   seconds: number,
   cell?: number,
+  reads?: ReadonlyMap<GridPlayer, { to: readonly [number, number]; at: number }>,
 ): void {
   const C = GRID_MOVEMENT_CONFIG;
   const vmax = strideSpeed(s, gp);
@@ -320,18 +323,40 @@ export function carryInStride(
   const point = inside([gp.pos[0] + dx * reach, gp.pos[1] + dy * reach]);
   keep(point);
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
-  const others: { gp: GridPlayer; to: readonly [number, number]; vmax: number }[] = [];
+  const others: {
+    gp: GridPlayer;
+    to: readonly [number, number];
+    vmax: number;
+    read?: { to: readonly [number, number]; at: number };
+  }[] = [];
   for (const side of [0, 1] as const)
-    for (const o of s.players[side])
-      if (o !== gp && onPitch(o))
-        others.push({ gp: o, to: inside(targetOf(s, side, o.idx, cache)), vmax: speedOf(s, o) });
+    for (const o of s.players[side]) {
+      if (o === gp || !onPitch(o)) continue;
+      const read = reads?.get(o);
+      others.push({
+        gp: o,
+        to: inside(targetOf(s, side, o.idx, cache)),
+        vmax: speedOf(s, o),
+        ...(read ? { read: { to: inside(read.to), at: read.at } } : {}),
+      });
+    }
   const steps = Math.round(seconds / C.step);
   for (let i = 0; i < steps; i++) {
     stepToward(gp, point, vmax, C.step);
     keep(gp.pos, gp.vel);
     s.ball = [gp.pos[0], gp.pos[1]];
+    const t = i * C.step;
     for (const m of others)
-      stepToward(m.gp, m.gp.intention ? inside(intentionTarget(s, m.gp)) : m.to, m.vmax, C.step);
+      stepToward(
+        m.gp,
+        m.read && t + 1e-9 >= m.read.at
+          ? m.read.to
+          : m.gp.intention
+            ? inside(intentionTarget(s, m.gp))
+            : m.to,
+        m.vmax,
+        C.step,
+      );
   }
 }
 

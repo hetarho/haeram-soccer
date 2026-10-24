@@ -96,7 +96,7 @@ const facts = (w: World) => ({
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: '8049aef5dc01a89f',
+  candidateRounds: '525b895cc4a040c2',
 };
 
 describe('complete-result throughput (T285)', () => {

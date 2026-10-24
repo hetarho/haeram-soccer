@@ -80,9 +80,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2 and 3/1).
  */
 const CASES = {
-  1975: { extraTime: 25, shootout: 0 },
-  1995: { extraTime: 42, shootout: 0 },
-  2024: { extraTime: 0, shootout: 4 },
+  1975: { extraTime: 7, shootout: 2 },
+  1995: { extraTime: 10, shootout: 3 },
+  2024: { extraTime: 5, shootout: 12 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -151,8 +151,9 @@ interface CandidateDigests {
  * 53a69e70e2832073, 471df82c3b8c4d4e, 2024 75d48ef3225697f0, 02ca3d882eee3a48 and positions 1975
  * 567f7d852fa17324, df35f3035429b034, 1995 81faf4ead6e2e1b4, 3d6d09b74f59c4c0, 2024
  * 11990ef8c06e3a19, e20dade414ad7a86. T426's in-stride carry (the match runs through it before
- * the action resolves from the kick spot, a pressed carrier shielding on the move) moved every
- * value and the knockout ties (rescanned above); before it, facts 1975 aabaadd388aded04,
+ * the action resolves from the kick spot, a pressed carrier shielding on the move, the defenders
+ * reading the decided pass from the start of the carry) moved every value and the knockout ties
+ * (rescanned above); before it, facts 1975 aabaadd388aded04,
  * 62f034df209d6e0a, ec9050f0a8550f03, 1995 2153aa97ed3ec113, 1e044e817ac3c2d9, 18e234b44e2d1c0a,
  * 2024 5d955b32af2fa421, 31069e56fe8ce463, 3ce82e3930c7f3c4 and positions 1975 a623c5308686acb9,
  * e2b00355f811a7a4, 1995 cd732ec31bcbbeda, f5a134a821329cc5, 2024 daf004d070ca6a19,
@@ -161,27 +162,27 @@ interface CandidateDigests {
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'b12a4c9a708d883b',
-      extraTime: 'b10e4055c88e690c',
-      shootout: '6ad983e7b96503f8',
+      league: 'f0a0ba2dc499fd22',
+      extraTime: 'a8cc64939de38037',
+      shootout: '95f7e78f01131e08',
     },
-    positions: { observed: '6b9bff79269e3a76', shootout: 'e5a9977b644065a7' },
+    positions: { observed: '1ee9029e583b99f8', shootout: '5eae25ce083d761e' },
   },
   1995: {
     facts: {
-      league: '86435f426358df79',
-      extraTime: 'b4b975347b824442',
-      shootout: 'a43a29b5e44aa548',
+      league: '57fc93f647a63148',
+      extraTime: 'd723ad996af0ff79',
+      shootout: 'fdc8517c30c5d3fb',
     },
-    positions: { observed: 'e4750b4c603a5369', shootout: 'af0751f15f887708' },
+    positions: { observed: 'c2ba4b1c4ad87a64', shootout: '504b231aba7ac5c4' },
   },
   2024: {
     facts: {
-      league: '2d9b3172b284d407',
-      extraTime: '9452db3e3b39a12a',
-      shootout: '7f2b42ab92e4106e',
+      league: '2e9ffd372f9aa7ec',
+      extraTime: '33aa01cd4e3be1b8',
+      shootout: '2cab6d1d194e4b9a',
     },
-    positions: { observed: '94bb0909dce6a707', shootout: 'f0e3d214542a9e4a' },
+    positions: { observed: '1a1941ede88902e8', shootout: '8cea09e476540af1' },
   },
 };
 
