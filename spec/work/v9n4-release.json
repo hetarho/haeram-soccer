@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T21:55:45.337Z",
-  "sourceCommit": "8e67ed0be64ae224d4783754f46bf2212211e303",
+  "snapshotAt": "2026-10-24T23:36:51.797Z",
+  "sourceCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,12 +15,12 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "8e67ed0be64ae224d4783754f46bf2212211e303",
+      "commit": "09621a66dc1044517e4bee9aa206eab577f74019",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T20:29:31.913Z"
+      "at": "2026-10-24T22:13:48.428Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "76da33b8-305e-4085-9ccc-dee9c6501e52",
       "adapter": "builtin",
       "providers": {
@@ -43,47 +43,21 @@
         }
       ],
       "startedAt": "2026-10-24T19:47:31.307Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-24T17:15:44.068Z",
-      "stoppedAt": "2026-10-24T19:46:34.250Z",
+      "stoppedAt": "2026-10-24T23:36:50.725Z",
       "dispatched": 7,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "c50d2e45-b255-4c43-9091-8f4c2729a66c",
-          "submissionId": "e73bcf28-5d19-4996-aeea-cf8fdcaf1e6d",
-          "commit": "43a38481dc0536a8374398e5d914ea7366ea8c7c",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+          "attempt": "f083e042-f29b-4190-813d-97d111a384fb",
+          "role": "worker",
+          "error": "adapter timeout"
         },
         {
-          "attempt": "3ef6ccf6-e038-44fe-acd0-020b94749c2d",
-          "role": "worker",
-          "error": "T441: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+          "attempt": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+          "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+          "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         }
       ],
       "autopilot": true,
@@ -95,9 +69,9 @@
     "completed": 13,
     "remaining": 10,
     "running": 0,
-    "review": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 10
+    "unassigned": 9
   },
   "tasks": [
     {
@@ -218,7 +192,7 @@
       "dep": [
         "T442"
       ],
-      "status": "todo"
+      "status": "approved"
     },
     {
       "id": "T444",
@@ -1564,6 +1538,8 @@
       "submittedBase": "8e67ed0be64ae224d4783754f46bf2212211e303",
       "submissionId": "6d139041-9af2-4467-b747-9fa181333db1",
       "submittedAt": "2026-10-24T21:48:55.710Z",
+      "integratedCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+      "integratedAt": "2026-10-24T22:13:45.589Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1636,6 +1612,117 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T21:46:26.401Z",
           "finishedAt": "2026-10-24T21:48:55.313Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-24T21:55:45.569Z",
+          "finishedAt": "2026-10-24T22:13:45.158Z"
+        }
+      ]
+    },
+    {
+      "id": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "group": "v9n4-release",
+      "taskId": "T443",
+      "tasks": [
+        "T443"
+      ],
+      "lane": null,
+      "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1",
+      "contributors": [
+        "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1"
+      ],
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+      "createdAt": "2026-10-24T22:13:48.724Z",
+      "startCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+      "verifiedCommit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+      "submittedBase": "09621a66dc1044517e4bee9aa206eab577f74019",
+      "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+      "submittedAt": "2026-10-24T23:08:42.959Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1085 changed lines (limit 300)",
+          "outside touches: packages/engine/src/grid/playback.test.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 1085,
+        "files": 13
+      },
+      "dispatch": {
+        "id": "13e24f59-2c41-4b65-8c58-e51d8fa35407",
+        "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-24T23:08:45.236Z",
+        "finishedAt": "2026-10-24T23:18:52.067Z",
+        "error": null,
+        "summary": "T443 meets its acceptance and MATCH-33/34 r28. I found no P1 or P2 issues; five P3 notes follow. I checked the three risk reasons first. (1) Size: about 400 of the 1,085 lines are the new box.ts, and most of the rest is tests and the §4.8 doc. (2) The playback.test.ts edit outside touches is test-only and justified: the fixture's extra-time tie moved, and an injury now ends a press as `departed`. (3) The autopilot readings (load point toward halfway, the 30 m `reach`, 8 s jobs re-given, linear line depth, narrowing 0.6, release over the whole final third, the edge/spot rule) are reasonable and documented. One of them, the near-post zone, needs a planner decision before T444 (P3 below).\n\nWhat I checked statically:\n- `boxSide`/`boxScene`: candidate-only and on-ball only; set-piece jobs keep the scene off. Zones are named by the ball's side. One attacker per zone, nearest suitable pair first with ties by player ID. Forwards take the posts, box-run midfielders or the far-side winger take the spot or a free post, another midfielder takes the edge. The rest defence, the carrier and busy players are excluded.\n- Runs: committed runs wait at the load point. `attackZones` runs at the decision, before the carry, and the T426 hypothetical read restores the replaced targets and `gp.run`. The runners go back to their load points when the scene comes back on, and `boxHeld` clears them on a turnover, when the ball leaves the final third, or when it switches to the other side of goal. The `box` run target is suppressed only while the scene is on.\n- Defence: tactical guards go to the ball-side CB (near post), the central CB (middle), the far FB/WB (far post) and the nearest DM/CM (edge or spot). Guards stand goal-side between a runner and his zone. The mark pairing skips guarded runners and never takes a guard. `boxMarkPoint` handles other markers. `shapePlace` drops and narrows the back line on the candidate model only.\n- Pre-feature path: unchanged, since every new branch is gated on `s.setup.model`. The import cycle box↔coordination↔shape has no top-level use, so it is safe.\n- Tests: the digests are re-recorded with the round-71 evidence, and the pre-feature digests are untouched. The bands.test ceiling is widened only to the measured 4.0, as decision 261025 allows. Accuracy is reported, not gated (MATCH-28 r23).\n\nI did not run any tests. The review checkout has no node_modules, and this review is read-only. The check results come from the worker's record: typecheck, lint, format:check, `vitest --changed` (220 files) and the release-on files. The batch run still has to cover test:unit, test:contract, build and the Chromium run, including the two e2e specs the worker named."
+      },
+      "review": {
+        "id": "6fe92b7e-4448-4207-990f-eda48470b8e1",
+        "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T443 meets its acceptance and MATCH-33/34 r28. I found no P1 or P2 issues; five P3 notes follow. I checked the three risk reasons first. (1) Size: about 400 of the 1,085 lines are the new box.ts, and most of the rest is tests and the §4.8 doc. (2) The playback.test.ts edit outside touches is test-only and justified: the fixture's extra-time tie moved, and an injury now ends a press as `departed`. (3) The autopilot readings (load point toward halfway, the 30 m `reach`, 8 s jobs re-given, linear line depth, narrowing 0.6, release over the whole final third, the edge/spot rule) are reasonable and documented. One of them, the near-post zone, needs a planner decision before T444 (P3 below).\n\nWhat I checked statically:\n- `boxSide`/`boxScene`: candidate-only and on-ball only; set-piece jobs keep the scene off. Zones are named by the ball's side. One attacker per zone, nearest suitable pair first with ties by player ID. Forwards take the posts, box-run midfielders or the far-side winger take the spot or a free post, another midfielder takes the edge. The rest defence, the carrier and busy players are excluded.\n- Runs: committed runs wait at the load point. `attackZones` runs at the decision, before the carry, and the T426 hypothetical read restores the replaced targets and `gp.run`. The runners go back to their load points when the scene comes back on, and `boxHeld` clears them on a turnover, when the ball leaves the final third, or when it switches to the other side of goal. The `box` run target is suppressed only while the scene is on.\n- Defence: tactical guards go to the ball-side CB (near post), the central CB (middle), the far FB/WB (far post) and the nearest DM/CM (edge or spot). Guards stand goal-side between a runner and his zone. The mark pairing skips guarded runners and never takes a guard. `boxMarkPoint` handles other markers. `shapePlace` drops and narrows the back line on the candidate model only.\n- Pre-feature path: unchanged, since every new branch is gated on `s.setup.model`. The import cycle box↔coordination↔shape has no top-level use, so it is safe.\n- Tests: the digests are re-recorded with the round-71 evidence, and the pre-feature digests are untouched. The bands.test ceiling is widened only to the measured 4.0, as decision 261025 allows. Accuracy is reported, not gated (MATCH-28 r23).\n\nI did not run any tests. The review checkout has no node_modules, and this review is read-only. The check results come from the worker's record: typecheck, lint, format:check, `vitest --changed` (220 files) and the release-on files. The batch run still has to cover test:unit, test:contract, build and the Chromium run, including the two e2e specs the worker named.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
+            "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+          },
+          {
+            "priority": "P3",
+            "where": "docs/CALIBRATION.md (outside T443 touches)",
+            "message": "T443 used calibration round 71 because T441 and T442 used rounds 69 and 70 without recording them. docs/CALIBRATION.md still stops at about round 67/68, so the acceptance's 'next unused round in docs/CALIBRATION.md' cannot be read from the file. Handoff to integration/the planner: record rounds 69–71 (sources, sizes, seeds) so T444, T445 and T437 do not reuse a round's seeds."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/box.ts:118-120",
+            "message": "T443: The cut-back zone test (`(lane === 1 || lane === 3) && x >= BAND_EDGES[7]`) re-implements record.ts:50 `inCutBackZone`, which is MATCH-13's cut-back counter and is not exported. Export one point-based MATCH-14 helper and use it in both places, so the zone that turns the scene on cannot drift from the zone the counter reads."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/box.ts:165-168, :60",
+            "message": "T443: `boxScene`'s `claimed` parameter is never passed. `planCoordination` calls `boxScene(s, att)` before any job is claimed, so the exclusion is dead code. `BOX_CONFIG.roles` also lists 'shadowStriker', which `BOX_ROLES` already contains. Drop the unused parameter (or pass it) and the duplicate role."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/coordination.ts:8; packages/engine/src/grid/shape.ts:463-470",
+            "message": "T443: Two doc comments were not rewrapped after the edit. The coordination.ts header has a 175-character line, and the `intentionTarget` doc ends on an orphaned 'to that target.' line. Rewrap both to the file's width."
+          }
+        ],
+        "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+        "baseCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+        "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+        "createdAt": "2026-10-24T23:08:43.986Z",
+        "finishedAt": "2026-10-24T23:18:52.048Z"
+      },
+      "steps": [
+        {
+          "taskId": "T443",
+          "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+          "at": "2026-10-24T23:08:42.910Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T23:04:36.135Z",
+              "finishedAt": "2026-10-24T23:08:42.545Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T23:04:36.135Z",
+          "finishedAt": "2026-10-24T23:08:42.545Z"
         }
       ]
     }
@@ -9483,6 +9570,476 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1199,
+      "at": "2026-10-24T22:13:45.506Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "f083e042-f29b-4190-813d-97d111a384fb",
+      "taskId": "T442",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+            "startedAt": "2026-10-24T21:55:45.569Z",
+            "finishedAt": "2026-10-24T22:13:45.158Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1200,
+      "at": "2026-10-24T22:13:45.589Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "f083e042-f29b-4190-813d-97d111a384fb",
+      "taskId": "T442",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+        "integratedAt": "2026-10-24T22:13:45.589Z"
+      }
+    },
+    {
+      "sequence": 1201,
+      "at": "2026-10-24T22:13:48.448Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "09621a66dc1044517e4bee9aa206eab577f74019",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T22:13:48.428Z"
+        }
+      }
+    },
+    {
+      "sequence": 1202,
+      "at": "2026-10-24T22:13:48.724Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+        "group": "v9n4-release",
+        "taskId": "T443",
+        "tasks": [
+          "T443"
+        ],
+        "lane": null,
+        "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1",
+        "contributors": [
+          "76da33b8-305e-4085-9ccc-dee9c6501e52/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-24T22:13:48.724Z",
+        "startCommit": "09621a66dc1044517e4bee9aa206eab577f74019"
+      }
+    },
+    {
+      "sequence": 1203,
+      "at": "2026-10-24T22:13:49.590Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1204,
+      "at": "2026-10-24T22:13:49.980Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "90c1d2c2-dfcf-4c98-9dc3-ff9e84659ff4",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T22:13:49.980Z"
+        }
+      }
+    },
+    {
+      "sequence": 1205,
+      "at": "2026-10-24T22:13:50.141Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "90c1d2c2-dfcf-4c98-9dc3-ff9e84659ff4",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T22:13:49.980Z"
+        }
+      }
+    },
+    {
+      "sequence": 1206,
+      "at": "2026-10-24T23:04:35.129Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1207,
+      "at": "2026-10-24T23:04:35.780Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1208,
+      "at": "2026-10-24T23:04:35.823Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1209,
+      "at": "2026-10-24T23:08:42.959Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+        "submittedBase": "09621a66dc1044517e4bee9aa206eab577f74019",
+        "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+        "submittedAt": "2026-10-24T23:08:42.959Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1085 changed lines (limit 300)",
+            "outside touches: packages/engine/src/grid/playback.test.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 1085,
+          "files": 13
+        },
+        "steps": [
+          {
+            "taskId": "T443",
+            "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+            "at": "2026-10-24T23:08:42.910Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T23:04:36.135Z",
+                "finishedAt": "2026-10-24T23:08:42.545Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T23:04:36.135Z",
+            "finishedAt": "2026-10-24T23:08:42.545Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1210,
+      "at": "2026-10-24T23:08:42.983Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "90c1d2c2-dfcf-4c98-9dc3-ff9e84659ff4",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T22:13:49.980Z",
+          "finishedAt": "2026-10-24T23:08:42.982Z",
+          "error": null,
+          "summary": "T443 is implemented on the candidate model. The pre-feature path is unchanged: its digests still pass as recorded.\n\nWhat it does:\n- New `grid/box.ts` exports `BOX_CONFIG` and `boxScene`. The scene turns on when the ball is in a wide lane from 70 m or in a cut-back zone. It stays off while any set-piece job is still held, so set pieces keep the existing §4.7 defence. The four zones (near post, far post, penalty spot, edge of the box) are named by the ball's side of the goal.\n- Attack: each zone gets one attacker, nearest suitable first, ties by player ID. Forwards take the posts. A box-run midfielder or the far-side winger takes the spot or a free post, and another midfielder takes the edge. The rest defence never goes.\n  - Each runner gets a committed box run to a load point 4 m short of his zone.\n  - `playGrid` calls `attackZones` right after the carrier decides a cross or cut-back, before the carry, so every runner then attacks his zone itself. The next update with the scene on sends him back to his load point.\n  - While the scene is on, these runs replace the old box-run target.\n- Defence: the back line drops to between 5.5 and 11 m from goal (deeper as the ball nears the byline) and narrows.\n  - The ball-side centre-back guards the near post, the other centre-back the middle, and the far full-back or wing-back the far post. The nearest holding or central midfielder drops to the edge, or to the spot if only the spot is filled.\n  - A guard whose zone has a runner stands between that runner and the zone. Other runners' markers stand the same way, goal-side. Everything releases when the ball leaves the final third or the defence wins it back.\n\nCalibration round 71, 600 core matches, before → after (reported, not gated):\n- Crosses with an attacker within 3 m of the zone as the ball arrives: near post 7.2 → 31.4%, far post 1.4 → 10.4%, spot 23.2 → 27.1%, edge 15.1 → 20.5%.\n- Goals 3.52 → 3.72 a match, xG per shot 0.126 → 0.131.\n- Goal-area shots 9.2 → 12.4% of shots, now outside their 6–9% band.\n- Crosses 19.4 → 22.3 a team. Goals by forwards 51 → 57%, inside their band.\n- With the attack's runs switched off (defence only), goals were 3.50, so the extra goals come from the runs. T437 calibrates this.\n\nTests and checks:\n- All 8 required tests were added.\n- Candidate digests were re-recorded and the knockout ties rescanned.\n- bands.test's candidate goal ceiling was widened to the measured 4.0, with the evidence in its comment, for T437 to restore to 3.6.\n- Typecheck, lint, format:check and `vitest --changed 09621a66` (8 shards, 220 files) pass. The touched files also pass under the release-on config. Spec lint is clean.\n\nLimits:\n- Two test-only fixes in `playback.test.ts`, outside touches:\n  - The extra-time fixture `candidate-et-0` no longer goes to extra time, so `candidate-et-1` replaces it.\n  - The urgent-job check now stops at an injury incident that legitimately ends the job.\n- docs/CALIBRATION.md was not updated to record round 71.\n- Left to the batch run: test:unit, test:contract, validate:catalogs, build and the Chromium playwright run. The e2e specs set-piece-defence and full-model-continuity read inspector state labels, and a guarding defender now shows the cover state.\n- Not run: ARCH-31 benchmarks. A probe on this host showed about +2.5% time per observed match."
+        }
+      }
+    },
+    {
+      "sequence": 1211,
+      "at": "2026-10-24T23:08:43.986Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6fe92b7e-4448-4207-990f-eda48470b8e1",
+          "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+          "status": "reviewing",
+          "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+          "baseCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+          "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+          "createdAt": "2026-10-24T23:08:43.986Z"
+        }
+      }
+    },
+    {
+      "sequence": 1212,
+      "at": "2026-10-24T23:08:45.236Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "13e24f59-2c41-4b65-8c58-e51d8fa35407",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T23:08:45.236Z"
+        }
+      }
+    },
+    {
+      "sequence": 1213,
+      "at": "2026-10-24T23:08:45.260Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "13e24f59-2c41-4b65-8c58-e51d8fa35407",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T23:08:45.236Z"
+        }
+      }
+    },
+    {
+      "sequence": 1214,
+      "at": "2026-10-24T23:18:52.048Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "6fe92b7e-4448-4207-990f-eda48470b8e1",
+          "owner": "76da33b8-305e-4085-9ccc-dee9c6501e52/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T443 meets its acceptance and MATCH-33/34 r28. I found no P1 or P2 issues; five P3 notes follow. I checked the three risk reasons first. (1) Size: about 400 of the 1,085 lines are the new box.ts, and most of the rest is tests and the §4.8 doc. (2) The playback.test.ts edit outside touches is test-only and justified: the fixture's extra-time tie moved, and an injury now ends a press as `departed`. (3) The autopilot readings (load point toward halfway, the 30 m `reach`, 8 s jobs re-given, linear line depth, narrowing 0.6, release over the whole final third, the edge/spot rule) are reasonable and documented. One of them, the near-post zone, needs a planner decision before T444 (P3 below).\n\nWhat I checked statically:\n- `boxSide`/`boxScene`: candidate-only and on-ball only; set-piece jobs keep the scene off. Zones are named by the ball's side. One attacker per zone, nearest suitable pair first with ties by player ID. Forwards take the posts, box-run midfielders or the far-side winger take the spot or a free post, another midfielder takes the edge. The rest defence, the carrier and busy players are excluded.\n- Runs: committed runs wait at the load point. `attackZones` runs at the decision, before the carry, and the T426 hypothetical read restores the replaced targets and `gp.run`. The runners go back to their load points when the scene comes back on, and `boxHeld` clears them on a turnover, when the ball leaves the final third, or when it switches to the other side of goal. The `box` run target is suppressed only while the scene is on.\n- Defence: tactical guards go to the ball-side CB (near post), the central CB (middle), the far FB/WB (far post) and the nearest DM/CM (edge or spot). Guards stand goal-side between a runner and his zone. The mark pairing skips guarded runners and never takes a guard. `boxMarkPoint` handles other markers. `shapePlace` drops and narrows the back line on the candidate model only.\n- Pre-feature path: unchanged, since every new branch is gated on `s.setup.model`. The import cycle box↔coordination↔shape has no top-level use, so it is safe.\n- Tests: the digests are re-recorded with the round-71 evidence, and the pre-feature digests are untouched. The bands.test ceiling is widened only to the measured 4.0, as decision 261025 allows. Accuracy is reported, not gated (MATCH-28 r23).\n\nI did not run any tests. The review checkout has no node_modules, and this review is read-only. The check results come from the worker's record: typecheck, lint, format:check, `vitest --changed` (220 files) and the release-on files. The batch run still has to cover test:unit, test:contract, build and the Chromium run, including the two e2e specs the worker named.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
+              "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+            },
+            {
+              "priority": "P3",
+              "where": "docs/CALIBRATION.md (outside T443 touches)",
+              "message": "T443 used calibration round 71 because T441 and T442 used rounds 69 and 70 without recording them. docs/CALIBRATION.md still stops at about round 67/68, so the acceptance's 'next unused round in docs/CALIBRATION.md' cannot be read from the file. Handoff to integration/the planner: record rounds 69–71 (sources, sizes, seeds) so T444, T445 and T437 do not reuse a round's seeds."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/box.ts:118-120",
+              "message": "T443: The cut-back zone test (`(lane === 1 || lane === 3) && x >= BAND_EDGES[7]`) re-implements record.ts:50 `inCutBackZone`, which is MATCH-13's cut-back counter and is not exported. Export one point-based MATCH-14 helper and use it in both places, so the zone that turns the scene on cannot drift from the zone the counter reads."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/box.ts:165-168, :60",
+              "message": "T443: `boxScene`'s `claimed` parameter is never passed. `planCoordination` calls `boxScene(s, att)` before any job is claimed, so the exclusion is dead code. `BOX_CONFIG.roles` also lists 'shadowStriker', which `BOX_ROLES` already contains. Drop the unused parameter (or pass it) and the duplicate role."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/coordination.ts:8; packages/engine/src/grid/shape.ts:463-470",
+              "message": "T443: Two doc comments were not rewrapped after the edit. The coordination.ts header has a 175-character line, and the `intentionTarget` doc ends on an orphaned 'to that target.' line. Rewrap both to the file's width."
+            }
+          ],
+          "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+          "baseCommit": "09621a66dc1044517e4bee9aa206eab577f74019",
+          "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+          "createdAt": "2026-10-24T23:08:43.986Z",
+          "finishedAt": "2026-10-24T23:18:52.048Z"
+        }
+      }
+    },
+    {
+      "sequence": 1215,
+      "at": "2026-10-24T23:18:52.067Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "13e24f59-2c41-4b65-8c58-e51d8fa35407",
+          "runner": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T23:08:45.236Z",
+          "finishedAt": "2026-10-24T23:18:52.067Z",
+          "error": null,
+          "summary": "T443 meets its acceptance and MATCH-33/34 r28. I found no P1 or P2 issues; five P3 notes follow. I checked the three risk reasons first. (1) Size: about 400 of the 1,085 lines are the new box.ts, and most of the rest is tests and the §4.8 doc. (2) The playback.test.ts edit outside touches is test-only and justified: the fixture's extra-time tie moved, and an injury now ends a press as `departed`. (3) The autopilot readings (load point toward halfway, the 30 m `reach`, 8 s jobs re-given, linear line depth, narrowing 0.6, release over the whole final third, the edge/spot rule) are reasonable and documented. One of them, the near-post zone, needs a planner decision before T444 (P3 below).\n\nWhat I checked statically:\n- `boxSide`/`boxScene`: candidate-only and on-ball only; set-piece jobs keep the scene off. Zones are named by the ball's side. One attacker per zone, nearest suitable pair first with ties by player ID. Forwards take the posts, box-run midfielders or the far-side winger take the spot or a free post, another midfielder takes the edge. The rest defence, the carrier and busy players are excluded.\n- Runs: committed runs wait at the load point. `attackZones` runs at the decision, before the carry, and the T426 hypothetical read restores the replaced targets and `gp.run`. The runners go back to their load points when the scene comes back on, and `boxHeld` clears them on a turnover, when the ball leaves the final third, or when it switches to the other side of goal. The `box` run target is suppressed only while the scene is on.\n- Defence: tactical guards go to the ball-side CB (near post), the central CB (middle), the far FB/WB (far post) and the nearest DM/CM (edge or spot). Guards stand goal-side between a runner and his zone. The mark pairing skips guarded runners and never takes a guard. `boxMarkPoint` handles other markers. `shapePlace` drops and narrows the back line on the candidate model only.\n- Pre-feature path: unchanged, since every new branch is gated on `s.setup.model`. The import cycle box↔coordination↔shape has no top-level use, so it is safe.\n- Tests: the digests are re-recorded with the round-71 evidence, and the pre-feature digests are untouched. The bands.test ceiling is widened only to the measured 4.0, as decision 261025 allows. Accuracy is reported, not gated (MATCH-28 r23).\n\nI did not run any tests. The review checkout has no node_modules, and this review is read-only. The check results come from the worker's record: typecheck, lint, format:check, `vitest --changed` (220 files) and the release-on files. The batch run still has to cover test:unit, test:contract, build and the Chromium run, including the two e2e specs the worker named."
+        }
+      }
+    },
+    {
+      "sequence": 1216,
+      "at": "2026-10-24T23:18:52.122Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1217,
+      "at": "2026-10-24T23:36:49.583Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+      "taskId": "T443",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium"
+      }
+    },
+    {
+      "sequence": 1218,
+      "at": "2026-10-24T23:36:50.725Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "76da33b8-305e-4085-9ccc-dee9c6501e52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T19:47:31.307Z",
+          "stoppedAt": "2026-10-24T23:36:50.725Z",
+          "dispatched": 7,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f083e042-f29b-4190-813d-97d111a384fb",
+              "role": "worker",
+              "error": "adapter timeout"
+            },
+            {
+              "attempt": "63ff57c1-3a73-48e0-a086-bdab973a7532",
+              "submissionId": "3b76801e-48e0-4657-9db9-0dd16bc361b3",
+              "commit": "3a0729e91d7ddd869754d32f1b5be0b22b6a8004",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
