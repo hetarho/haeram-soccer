@@ -299,7 +299,6 @@
 | T445 | Shots meet the bodies in front of goal before the keeper, and second balls are contested | MATCH ARCH | T444 | todo |
 | T437 | Recalibrate the candidate's scoring after the in-stride carry and the final-third rework | MATCH ARCH | T426 T445 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
-| T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF WEB ARCH | T426 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
@@ -314,12 +313,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 18 | 10 | 8 | 0 | 0 | 0 | 2026-10-24T17:36:03.125Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 23 | 11 | 12 | 1 | 0 | 0 | 2026-10-24T18:53:59.339Z | [history](work/v9n4-release.json) |
 
 ## next
-- work group v9n4-release (coordinator v9n4): T426 → T431 beside the chain T441 → T442 → T443 → T444 → T445 → T437 (explore 6 h, main session) → T286; then T435 → T432 → T433 → T410, T434
+- inspect work board for remaining tasks
 
 ## log
+- 261024 T431 integrated
 - 261025 create-task T441 T442 T443 T444 T445 (p4w8): final-third chain after T426; T437 dep T426 T445 explore 6h, T286 dep + T441–T445, MATCH base 28 on T286 T410 T432 T433 T434 T435 T437
 - 261025 update-ssot MATCH r28 (p4w8): MATCH-11✎ MATCH-31+ MATCH-32+ MATCH-33+ MATCH-34+ MATCH-35+ — passes cut out where reached, lanes shut, box zones attacked and defended, deliveries into zones, shots blocked before the keeper and second balls contested
 - 261024 T426 integrated
@@ -339,4 +339,3 @@
 - 261025 create-task T436 (v9n4, created as T427, renumbered after u6p2's T427): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T436
 - 261025 fix e2e milestones (u6p2): assert native DOM height instead of Firefox protocol quad subtraction (44px reported as 43.999992px); two phone journeys pass on Firefox, type/lint/format pass; unit selection empty because application code is unchanged. c20e4f3e CI passes all other seven jobs; publish the test-only correction.
 - 261025 fix e2e precision start (u6p2): c20e4f3e CI 40107002410 passes checks, every unit shard, Chromium and both WebKit shards; only two Firefox milestone cases read 44px as 43.999992px through the protocol; use native DOM height, preserve application code
-- 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
