@@ -71,8 +71,13 @@ function receptions(id: string) {
           (e.spot !== undefined && e.kind === 'cross')),
     );
     expect(passes).toHaveLength(froms.length);
-    const out: { e: TraceEntry; at: [number, number]; nearest: number; from: readonly number[] }[] =
-      [];
+    const out: {
+      e: TraceEntry;
+      at: [number, number];
+      nearest: number;
+      presser: [number, number];
+      from: readonly number[];
+    }[] = [];
     let last: TraceEntry | undefined;
     for (const e of trace!) {
       if (e.outcome === 'incident') continue;
@@ -83,15 +88,16 @@ function receptions(id: string) {
       const slot = Array.from(before.slots).indexOf(e.idx, e.side * 11);
       // A keeper distributes the ball from where he stands.
       if (slot < 0 || slot === e.side * 11) continue;
-      const at: [number, number] = [before.positions[slot * 2]!, before.positions[slot * 2 + 1]!];
-      let nearest = Infinity;
-      for (let j = (1 - e.side) * 11; j < (2 - e.side) * 11; j++)
-        if (before.slots[j]! >= 0)
-          nearest = Math.min(
-            nearest,
-            Math.hypot(before.positions[j * 2]! - at[0], before.positions[j * 2 + 1]! - at[1]),
-          );
-      out.push({ e, at, nearest, from: froms[k]! });
+      const P = before.positions;
+      const at: [number, number] = [P[slot * 2]!, P[slot * 2 + 1]!];
+      let nearest = Infinity,
+        presser: [number, number] = at;
+      for (let j = (1 - e.side) * 11; j < (2 - e.side) * 11; j++) {
+        const d = Math.hypot(P[j * 2]! - at[0], P[j * 2 + 1]! - at[1]);
+        if (before.slots[j]! >= 0 && d < nearest)
+          [nearest, presser] = [d, [P[j * 2]!, P[j * 2 + 1]!]];
+      }
+      out.push({ e, at, nearest, presser, from: froms[k]! });
     }
     return out;
   } finally {
@@ -360,17 +366,28 @@ describe('grid engine', () => {
   });
 
   it('a pressed receiver shields', () => {
+    // On the move (MATCH-12 r27): he takes it away from the opponent close to him, so his kick
+    // knot leaves the reception spot farther from that opponent's spot at the reception.
     const R = IN_STRIDE_CONFIG.pressureRadius;
-    let pressed = 0;
-    for (const { e, at, nearest, from } of receptions('cand-stride-1')) {
+    let pressed = 0,
+      away = 0;
+    for (const { e, at, nearest, presser, from } of receptions('cand-stride-1')) {
       const kick = e.knots!.find((k) => k.kind === 'kick');
       if (!kick || nearest >= R - 0.1) continue;
       pressed++;
-      expect(e.knots!.some((k) => k.kind === 'carry')).toBe(false);
-      expect(kick.ball[0]).toBeCloseTo(at[0], 3);
-      expect(kick.ball[1]).toBeCloseTo(at[1], 3);
       expect(from).toEqual(attackFrame(e.side, kick.ball));
+      const [start] = e.knots!.filter((k) => k.kind === 'carry');
+      // A first-time ball is still played where it arrives.
+      if (!start) continue;
+      expect(start.ball[0]).toBeCloseTo(at[0], 3);
+      expect(start.ball[1]).toBeCloseTo(at[1], 3);
+      const from0 = Math.hypot(at[0] - presser[0], at[1] - presser[1]);
+      const from1 = Math.hypot(kick.ball[0] - presser[0], kick.ball[1] - presser[1]);
+      // Kept off the touchline and his action's cell by the pitch and the cell, never toward him.
+      expect(from1).toBeGreaterThanOrEqual(from0 - 1e-3);
+      if (from1 >= from0 + 1) away++;
     }
     expect(pressed).toBeGreaterThan(50);
+    expect(away / pressed).toBeGreaterThan(0.8);
   });
 });
