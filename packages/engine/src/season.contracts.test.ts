@@ -2,13 +2,14 @@ import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { activePlayers, clubOf, divisionStrength, marketWageAt, overall, rating } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { closedSeason, founded, toLastRound } from './season.testkit';
 
+// Contracts at the close, on the pre-feature path: the squad, not the match model, is the subject.
 describe('closed season archive', () => {
   it('renews no contract by itself: unrenewed players leave at the close (→CLUB-26, CLUB-28)', () => {
     const { w, year, contracts } = cachedWorld('unrenewed-last-round', () => {
-      const w = founded();
+      const w = founded(undefined, DISABLED_RELEASE);
       // Unanswered talks stay open: nobody signs for the owner.
       w.intervention = 1;
       w.settings = legacySettings(1);
@@ -44,7 +45,7 @@ describe('closed season archive', () => {
 
   it('refills a squad its expiring contracts emptied at its division’s level and wage (→CLUB-3, CLUB-25, CLUB-28)', () => {
     const w = cachedWorld('expiring-xi-last-round', () => {
-      const w = founded();
+      const w = founded(undefined, DISABLED_RELEASE);
       w.intervention = 1;
       w.settings = legacySettings(1);
       // An XI far above the amateur league and the division it goes up to.

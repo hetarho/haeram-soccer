@@ -16,7 +16,7 @@ import {
   ranked,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /**
  * A club whose first season is `year`, with a squad and manager of that time, founded under
@@ -58,15 +58,18 @@ export function toLastRound(w: World) {
   return w;
 }
 
-/** The archive club's first season (amateur, professional or in 1980) at its last round. */
+/**
+ * The archive club's first season (amateur, professional or in 1980) at its last round, on the
+ * pre-feature path: the season's archive, not the match model, is the subject.
+ */
 export function archiveLastRound(start: 'amateur' | 'professional' | 1980) {
   return cachedWorld(`archive-last-round-${start}`, () =>
     toLastRound(
       start === 1980
-        ? founded(1980)
+        ? founded(1980, DISABLED_RELEASE)
         : start === 'professional'
-          ? professionalStart(founded())
-          : founded(),
+          ? professionalStart(founded(undefined, DISABLED_RELEASE))
+          : founded(undefined, DISABLED_RELEASE),
     ),
   );
 }
@@ -90,16 +93,19 @@ export const exchangeFounding = (code: CountryCode) => ({
   level: 'normal' as const,
 });
 
-/** A club founded in `code`, its first season (amateur unless `professional`) played to the last round. */
+/**
+ * A club founded in `code`, its first season (amateur unless `professional`) played to the last
+ * round, on the pre-feature path: promotion and relegation, not the match model, are the subject.
+ */
 export function lastRound(code: CountryCode, professional = false) {
   // Exactly 46 round steps: one stays put once the club is bankrupt, which then never gets here.
   const w = professional
     ? cachedWorld(`professional-last-round-${code}`, () => {
-        const w = professionalStart(createWorld(exchangeFounding(code)));
+        const w = professionalStart(createWorld(exchangeFounding(code), DISABLED_RELEASE));
         for (let n = 0; n < 46; n++) advanceRound(w, undefined, false);
         return w;
       })
-    : simulatedWorld(exchangeFounding(code), { rounds: 46 });
+    : simulatedWorld(exchangeFounding(code), { rounds: 46 }, DISABLED_RELEASE);
   expect(w.round, `bankrupt: ${JSON.stringify(w.bankrupt)}`).toBe(46);
   return w;
 }

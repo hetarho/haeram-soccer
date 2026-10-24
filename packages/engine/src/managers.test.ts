@@ -2,7 +2,7 @@ import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { Founding, ManagerStyle, World } from '../../contracts/src/types';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 import {
   advanceRound,
   coachProspect,
@@ -17,6 +17,7 @@ import {
   managerRenewal,
   managerTrait,
   MARKET_BANDS,
+  type MatchModelRelease,
   operate,
   quote,
   ratio,
@@ -25,15 +26,25 @@ import {
   STYLE_INFO,
 } from './index';
 
-/** The test club; `found` is `createWorld` for a world only searched through, so it is not kept on disk. */
-function world(seed = 'manager-schools', found: (input: Founding) => World = simulatedWorld) {
-  const w = found({
-    country: 'ENG',
-    name: 'Dugout Athletic',
-    color: '#224466',
-    seed,
-    level: 'easy' as const,
-  });
+/**
+ * The test club, on the pre-feature path: managers, not the match model, are the subject. `found`
+ * is `createWorld` for a world only searched through, so it is not kept on disk.
+ */
+function world(
+  seed = 'manager-schools',
+  found: (input: Founding, release: MatchModelRelease) => World = (input, release) =>
+    simulatedWorld(input, {}, release),
+) {
+  const w = found(
+    {
+      country: 'ENG',
+      name: 'Dugout Athletic',
+      color: '#224466',
+      seed,
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999';
   return w;
 }

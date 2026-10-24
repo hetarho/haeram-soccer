@@ -7,6 +7,8 @@ import {
   transferWindowDays,
   managerCandidates,
   clubManager,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
 } from '../../packages/engine/src/index';
 import { careerDate, openEmployment } from '../../packages/engine/src/person-careers';
 import { retirePerson } from '../../packages/engine/src/careers';
@@ -14,15 +16,19 @@ import { detectMediations, resolveMediation } from '../../packages/engine/src/me
 import { lineOf } from '../../packages/engine/src/player';
 import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities';
 /** Marked synthetic announced candidates/funding; all subsequent contracts, employment time,
- * qualification and fixed promises use real transitions. The complete NPC registry is retained. */
-export function retainedWorkload() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Retained Workload',
-    color: '#224466',
-    seed: 'retained-workload',
-    level: 'easy',
-  });
+ * qualification and fixed promises use real transitions. The complete NPC registry is retained.
+ * `release` founds it (default the switch as it stands). */
+export function retainedWorkload(release: MatchModelRelease = MATCH_MODEL_RELEASE) {
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Synthetic Retained Workload',
+      color: '#224466',
+      seed: 'retained-workload',
+      level: 'easy',
+    },
+    release,
+  );
   w.cash = w.income = '999999999999';
   const playing = w.players.find((p) => p.position === 'CM')!,
     former = w.players.find((p) => p.id !== playing.id)!;

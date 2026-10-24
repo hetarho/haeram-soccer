@@ -12,15 +12,20 @@ import {
   moraleStrength,
   settleMorale,
 } from './morale';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 
+/** The club on the pre-feature path: morale, not the match model, is the subject. */
 const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Morale',
-    color: '#24664f',
-    seed: 'morale',
-    level: 'easy' as const,
-  });
+  createWorld(
+    {
+      country: 'ENG',
+      name: 'Morale',
+      color: '#24664f',
+      seed: 'morale',
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
 
 describe('squad morale', () => {
   it('starts neutral for new clubs and is exactly neutral when absent', () => {

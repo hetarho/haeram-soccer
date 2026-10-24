@@ -14,15 +14,19 @@ import { nextEventDays, advanceToNextEvent } from './next-event';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+/** Founded on the pre-feature path: the calendar's next event, not the match model, is the subject. */
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Next Event',
-    color: '#224466',
-    seed: 'next-event',
-    level: 'normal',
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Next Event',
+      color: '#224466',
+      seed: 'next-event',
+      level: 'normal',
+    },
+    DISABLED_RELEASE,
+  );
   w.cash = w.income = '999999999999';
   w.settings!.mode = 'manual';
   for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';

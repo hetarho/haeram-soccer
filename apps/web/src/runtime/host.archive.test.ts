@@ -18,16 +18,22 @@ import { encode } from '../adapters/persistence';
 import { headToHead } from './headToHead';
 import {
   cachedWorld,
+  DISABLED_RELEASE,
   simulatedWorld,
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 import type { View } from './protocol';
+
+// Archive and history reads on the pre-feature path, careers and hosts alike: the reads, not the
+// match model, are the subject.
+const host = () => new Host(undefined, { release: DISABLED_RELEASE });
+
 describe('worker command protocol', () => {
   it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
-    const h = new Host();
+    const h = host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(h, simulatedWorld(input, { seasons: 1 }));
+    playOn(h, simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE), DISABLED_RELEASE);
     const season = h.world!.history[0];
     expect(season.brackets?.length).toBeGreaterThan(0);
     expect(season.scorers?.length).toBeGreaterThan(0);
@@ -46,7 +52,7 @@ describe('worker command protocol', () => {
     expect(h.world!.history[0].brackets).toBe(season.brackets);
   });
   it('reads archives between queued simulation steps without revisions, receipts or a projection', async () => {
-    const h = new Host();
+    const h = host();
     await h.handle(req('create', -1, { type: 'found', input }));
     const w = h.world!,
       before = canonical(w),
@@ -80,15 +86,16 @@ describe('worker command protocol', () => {
     expect(w.receiptIds).not.toContain('archive');
   });
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
-    const h = new Host();
+    const h = host();
     await h.handle(req('create', -1, { type: 'found', input }));
     playOn(
       h,
       cachedWorld('legacy-season', () => {
-        const w = createWorld(input);
+        const w = createWorld(input, DISABLED_RELEASE);
         w.settings = legacySettings(4);
         return simulateSeason(w);
       }),
+      DISABLED_RELEASE,
     );
     const w = h.world!,
       met = w.ownMatches.find((m) => m.kind === 'lower')!,
@@ -126,9 +133,9 @@ describe('worker command protocol', () => {
 describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   /** The founding grown through a season, its manager then replaced `hires` times today. */
   async function career(hires = 0, untracked = false) {
-    const h = new Host();
+    const h = host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(h, simulatedWorld(input, { seasons: 1 }));
+    playOn(h, simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE), DISABLED_RELEASE);
     const w = untracked ? withoutManagerHistory(h.world!) : h.world!;
     w.cash = '999999999999';
     for (let n = 0; n < hires; n++)
@@ -236,7 +243,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   it('keeps an appointment in the week tracking began a tenure, never an older event too', async () => {
     // A career saved before manager history, its manager replaced in round 3, then loaded by the
     // writer on a day between league rounds.
-    const source = withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
+    const source = withoutManagerHistory(simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE));
     source.cash = '999999999999';
     operate(source, {
       type: 'hire',
@@ -245,7 +252,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
     advanceDays(source, ROUND_INTERVAL_DAYS + 1);
     expect(source.round).toBe(4);
     expect(currentDay(source) % ROUND_INTERVAL_DAYS).not.toBe(0);
-    const h = new Host();
+    const h = host();
     const loaded = await h.handle(
       req('load', -1, {
         type: 'inspect',
@@ -283,7 +290,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   });
 
   it('answers between queued simulation steps without revisions, receipts or a projection', async () => {
-    const h = new Host();
+    const h = host();
     await h.handle(req('create', -1, { type: 'found', input }));
     const w = h.world!;
     let advanced = false;

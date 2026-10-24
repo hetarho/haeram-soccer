@@ -27,7 +27,7 @@ import {
   SUPPORT_EXPENSES,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 import { FOUNDING, world } from './finance.testkit';
 
 describe('operating expenses (→ECON-30)', () => {
@@ -170,7 +170,7 @@ describe('operating expenses (→ECON-30)', () => {
     ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
   it('raises the floor from the first round after a promotion', () => {
     const amateur = clubOf(world()).tier,
-      w = simulatedWorld(FOUNDING, { rounds: 46 });
+      w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
     const before = operatingCosts(w).expenses;
     expect(entries(w)[0].amount).toBe(before);
     // The amateur champions go up into the last professional division, after a season whose
@@ -205,7 +205,7 @@ describe('operating expenses (→ECON-30)', () => {
   describe('after a completed season', () => {
     // One played season, closed with extra ledger entries of its final round.
     const close = (extra: Record<string, bigint> = {}) => {
-      const w = simulatedWorld(FOUNDING, { rounds: 46 });
+      const w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
       for (const [kind, amount] of Object.entries(extra)) {
         w.events.push({
           year: w.year,

@@ -18,16 +18,21 @@ import {
   stepBase,
   transferOffers,
 } from './index';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
 
+/** The club on the pre-feature path: its bases, not the match model, are the subject. */
 function world(policy?: Partial<ClubPolicy>) {
-  const w = simulatedWorld({
-    country: 'ENG',
-    name: 'Bases Albion',
-    color: '#2a4d3c',
-    seed: 'club-bases',
-    level: 'easy' as const,
-  });
+  const w = simulatedWorld(
+    {
+      country: 'ENG',
+      name: 'Bases Albion',
+      color: '#2a4d3c',
+      seed: 'club-bases',
+      level: 'easy' as const,
+    },
+    {},
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
   return w;

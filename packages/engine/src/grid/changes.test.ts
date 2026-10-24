@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Manager, Tactic } from '../../../contracts/src/types';
 import { injuryChance } from '../careers';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { lineOf } from '../player';
 import { random } from '../primitives';
@@ -10,13 +11,17 @@ import { M } from './record';
 import { buildGridSetup, type GridSetup } from './setup';
 import { createState, slotOf, type GridState } from './state';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Grid Changes Lab',
-  color: '#2a5d8f',
-  seed: 'grid-changes',
-  level: 'normal',
-});
+// The pre-feature path's substitution mechanics, as the other grid files pin them (T417).
+const w = createWorld(
+  {
+    country: 'ENG',
+    name: 'Grid Changes Lab',
+    color: '#2a5d8f',
+    seed: 'grid-changes',
+    level: 'normal',
+  },
+  DISABLED_RELEASE,
+);
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
