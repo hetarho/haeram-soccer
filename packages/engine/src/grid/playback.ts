@@ -622,8 +622,9 @@ function flights(legs: Leg[], from: Units, start: number, end: number, r: () => 
 /**
  * A candidate entry's ball and actor (→MATCH-12) from the engine's own knots at their recorded
  * times: the dead ball is carried back and set down, rests on its spot while the taker walks there,
- * and every flight lasts exactly from its kick to its touch, reception or arrival — never shortened
- * to fit. Returns where the ball is when the entry ends.
+ * the player on the ball carries it at his feet along its `carry` knots (in stride before his kick,
+ * T426, or a carry of his own), and every flight lasts exactly from its kick to its touch,
+ * reception or arrival — never shortened to fit. Returns where the ball is when the entry ends.
  */
 function knotted(
   P: Period,
@@ -655,10 +656,13 @@ function knotted(
     at,
   });
   const route: [number, Units][] = [];
-  const carrying = knots.some((knot) => knot.kind === 'carry');
+  // A carry of his own ends with the ball at his feet; an in-stride carry ends in his kick.
+  const carrying =
+    knots.some((knot) => knot.kind === 'carry') && !knots.some((knot) => knot.kind === 'kick');
   let cursor = start,
     at = ball,
     leg = 0,
+    carried = false,
     placed: number | undefined;
   for (const knot of knots) {
     const t = clamp(knot.at, cursor, Math.max(cursor, end));
@@ -695,12 +699,17 @@ function knotted(
           route.push([arrive, spot], [t, spot]);
           add(rest(cursor, t, spot));
         } else {
-          route.push([t, here]);
-          add(hold(cursor, t, here));
+          // He kicks it where his carry took it, else where he received it.
+          const kicked = carried ? to : here;
+          route.push([t, kicked]);
+          add(hold(cursor, t, kicked));
         }
         break;
       case 'carry':
         route.push([t, to]);
+        // The ball at his feet up to this point of his carry.
+        add(hold(cursor, t, at));
+        carried = true;
         break;
       case 'tackle':
         add(hold(cursor, t, at));

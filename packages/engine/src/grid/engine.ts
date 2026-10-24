@@ -4,6 +4,7 @@ import { choosePass, decide, DECISION_CONFIG, throughPoint, type Decision } from
 import { computeTags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
+  DUEL_CONFIG,
   inFront,
   looseWinner,
   resolveCarry,
@@ -31,7 +32,7 @@ import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns } from './shape';
 import { carryTo, depart, interruptAll, losePass, takeBall, updateIntentions } from './intentions';
-import { attackFrame, PITCH } from './pitch';
+import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
 import {
   createState,
   kickOff,
@@ -49,11 +50,14 @@ import { stampAt } from './playback';
 import {
   advance,
   benchPoint,
+  carryInStride,
   flightSeconds,
+  GRID_MOVEMENT_CONFIG,
   heading,
   prepareOnClock,
   readAt,
   reachSeconds,
+  shielding,
   type BallSpeed,
   type MotionKnot,
   type Move,
@@ -114,6 +118,12 @@ interface Motion {
   dt: number;
   plan: Move[];
   knots: MotionKnot[];
+}
+
+/** The candidate's in-stride carry before a kick (→MATCH-12 r25): where it started and its whole steps. */
+interface Carry {
+  at: [number, number];
+  seconds: number;
 }
 
 export function playGrid(setup: GridSetup): GridResult {
@@ -404,11 +414,11 @@ export function playGrid(setup: GridSetup): GridResult {
 
   /**
    * Candidate model (→MATCH-12): the action `actor` played from `from` at `start`, already applied,
-   * lasts at least `least` and until its route is done — the ball's flight to where it ended at
-   * bounded speed and the new owner's run to it. The actor keeps the ball until the kick, timed so
-   * the ball lands as the action ends; the new owner runs to the ball, everyone else to his shape.
-   * With `before` (where everyone was heading before the action) the others keep going there until
-   * the kick and only then react to the ball (→MATCH-17).
+   * lasts at least `least` and until its route is done — his in-stride `carry` to `from`, the
+   * ball's flight to where it ended at bounded speed and the new owner's run to it. The actor keeps
+   * the ball until the kick, timed so the ball lands as the action ends; the new owner runs to the
+   * ball, everyone else to his shape. With `before` (where everyone was heading before the action)
+   * the others keep going there until the kick and only then react to the ball (→MATCH-17).
    */
   function motionOf(
     actor: Ref,
@@ -418,11 +428,13 @@ export function playGrid(setup: GridSetup): GridResult {
     least: number,
     start: number,
     before?: ReadonlyMap<GridPlayer, readonly [number, number]>,
+    carry?: Carry,
   ): Motion {
     const gp = s.players[actor[0]][actor[1]]!;
-    const carry = o !== 'offside' && o.kind === 'complete' && o.receiver === actor[1];
+    // A carry action of his own: he runs with the ball to where it ends.
+    const own = o !== 'offside' && o.kind === 'complete' && o.receiver === actor[1];
     const legs: { to: [number, number]; speed: BallSpeed }[] = [];
-    if (!carry) {
+    if (!own) {
       const shot = o !== 'offside' && o.kind === 'shot';
       const shooter = shot ? (o.shooter ?? actor[1]) : actor[1];
       // A header or a cut-back's finish: the delivery reaches the shooter, who strikes it.
@@ -442,11 +454,16 @@ export function playGrid(setup: GridSetup): GridResult {
     }
     const owner = pending || !s.owner ? undefined : s.players[s.owner[0]][s.owner[1]]!;
     const ball: [number, number] = [s.ball[0], s.ball[1]];
-    const reach = owner ? reachSeconds(owner, ball, speedOf(s, owner)) : 0;
-    const dt = Math.max(least, flight, reach);
+    // His carry has already taken its seconds of the action; his own steps start after it.
+    const carried = carry?.seconds ?? 0;
+    const since = carried ? { since: carried } : {};
+    const reach = owner
+      ? reachSeconds(owner, ball, speedOf(s, owner)) + (owner === gp ? carried : 0)
+      : 0;
+    const dt = Math.max(least, carried + flight, reach);
     const plan: Move[] = [];
-    if (owner) plan.push({ gp: owner, to: ball });
-    if (owner !== gp) plan.push({ gp, holdUntil: dt - flight });
+    if (owner) plan.push({ gp: owner, to: ball, ...(owner === gp ? since : {}) });
+    if (owner !== gp) plan.push({ gp, holdUntil: dt - flight, ...since });
     // `forEach` walks the map in the same insertion order without an entry array per player.
     if (before && flight > 0)
       before.forEach((to, p) => {
@@ -455,6 +472,11 @@ export function playGrid(setup: GridSetup): GridResult {
       });
     const knots: MotionKnot[] = [];
     if (carry)
+      knots.push(
+        { kind: 'carry', at: start, ball: [carry.at[0], carry.at[1]] },
+        { kind: 'carry', at: start + carried, ball: [from[0], from[1]] },
+      );
+    if (own)
       knots.push(
         { kind: 'carry', at: start, ball: [from[0], from[1]] },
         { kind: 'arrive', at: start + reach, ball },
@@ -472,6 +494,65 @@ export function playGrid(setup: GridSetup): GridResult {
     } else if (o !== 'offside' && o.kind === 'tackled')
       knots.push({ kind: 'tackle', at: start + dt, ball });
     return { dt, plan, knots };
+  }
+
+  /**
+   * Candidate model (→MATCH-12 r25): what the decision `d` of `(side, idx)` aims at before it is
+   * played — its timing key, the point his carry blends toward, the flight from where he stands and,
+   * for the actions his cell decides (a shot, a cross, a cut-back, a clearance), that attack-frame
+   * cell, which his carry does not leave rather than changing the action's sense. None for the
+   * actions he plays standing on the ball (a hold-up or lay-off) or carrying it himself.
+   */
+  function aimOf(side: 0 | 1, idx: number, d: Decision) {
+    const gp = s.players[side][idx]!;
+    const c = attackFrame(side, gp.pos);
+    const goal = toEngine(side, [PITCH.length, PITCH.width / 2]);
+    const ahead = (key: ActionKey, to: [number, number], cell?: number) => ({
+      key,
+      to,
+      flight: flightSeconds(gp.pos, to, kickSpeed(key)),
+      cell,
+    });
+    if (d.action === 'shot') return ahead('shot', goal, cellOf(c));
+    if (d.action === 'clearance') {
+      const [near, far] = DUEL_CONFIG.clearance.reach;
+      const upfield = toEngine(side, [Math.min(PITCH.length, c[0] + (near + far) / 2), c[1]]);
+      return ahead('clearance', upfield, cellOf(c));
+    }
+    if (d.target === undefined) return undefined;
+    const mate = s.players[side][d.target]!.pos;
+    if (d.action === 'cross') return ahead('cross', [mate[0], mate[1]], cellOf(c));
+    if (d.action === 'cutBack') {
+      const aim = ahead('cutBack', [mate[0], mate[1]], cellOf(c));
+      // The cut-back's finish follows it.
+      return { ...aim, flight: aim.flight + flightSeconds(mate, goal, 'shot') };
+    }
+    if (d.action !== 'pass') return undefined;
+    const lead = d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
+    return ahead(d.kind ?? 'short', lead ?? [mate[0], mate[1]]);
+  }
+
+  /**
+   * Candidate model (→MATCH-12 r25, T426): the player on the ball takes it in stride from where he
+   * received it until he plays `d`. The action keeps its time (`ACTION_SECONDS` × `jitter`); his
+   * carry fills what the flight from here leaves of it, so the ball still lands as it ends. He
+   * stays on it as a keeper distributing it, to hold it up or lay it off, when an opponent is close
+   * (`shielding`) and for a first-time ball whose flight takes the whole action. Moves him and the
+   * ball, counts the carry (→MATCH-13) and returns where it started and how long it took.
+   */
+  function inStride(side: 0 | 1, idx: number, d: Decision, jitter: number): Carry | undefined {
+    const gp = s.players[side][idx]!;
+    if (slotOf(s, gp).position === 'GK' || shielding(s, gp)) return undefined;
+    const aim = aimOf(side, idx, d);
+    if (!aim) return undefined;
+    const step = GRID_MOVEMENT_CONFIG.step;
+    const seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
+    if (seconds <= 0) return undefined;
+    const at: [number, number] = [gp.pos[0], gp.pos[1]];
+    carryInStride(s, gp, aim.to, seconds, aim.cell);
+    s.ball = [gp.pos[0], gp.pos[1]];
+    tally.carryEvent(side, idx, attackFrame(side, at), attackFrame(side, gp.pos));
+    return { at, seconds };
   }
 
   /** One decision by the player on the ball; returns the timing key of what was played and its outcome. */
@@ -766,13 +847,26 @@ export function playGrid(setup: GridSetup): GridResult {
         tracer.hold();
         // Where everyone heads before the action: off the ball they keep on until they read the kick.
         const before = candidate ? heading(s) : undefined;
+        // The action's time is drawn before it is played, so his in-stride carry can fill it; he
+        // plays the ball, and it is resolved, where the carry took him (→MATCH-12 r25).
+        const jitter = candidate ? 0.85 + 0.3 * r() : 0;
+        const carry = candidate ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const played = play(owner[0], owner[1], d);
-        // Tracing draws nothing, so the duration's draw may come before it.
-        const least = candidate ? secondsOf(played.key) * (0.85 + 0.3 * r()) : 0;
+        const least = candidate ? secondsOf(played.key) * jitter : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
         if (candidate) updateIntentions(s);
         const motion = candidate
-          ? motionOf(owner, from, played.outcome, kickSpeed(played.key), least, s.elapsed, before)
+          ? motionOf(
+              owner,
+              from,
+              played.outcome,
+              kickSpeed(played.key),
+              least,
+              s.elapsed,
+              before,
+              carry,
+            )
           : undefined;
         tracer.act(s, owner[0], owner[1], {
           outcome: played.outcome,
