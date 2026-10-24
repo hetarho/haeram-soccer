@@ -16,6 +16,7 @@
 | v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:52Z | 2026-10-24T09:52Z | - |
 
 ## inbox
+- 261024 decided MATCH-12 T426 T286: the owner reports that a player on the ball always stops (measured: candidate holds still for most of 11.3% of holds, the live pre-feature path 24%; the engine waits on the ball until the kick so the ball lands as the action ends) → MATCH r25: he takes it in stride and the action is resolved from the kick spot, on the candidate before T286's flip, so the release measures the final model and no model revision follows it (alt: after activation as a model revision | a playback-only carry, which would kick from a spot the engine never recorded)
 - 261024 decided T416 T286: T416 found no engine path writing invalid records in an activated world (the probe's five season.settle failures were the test's own hand-edited records; whole activated 1950 and 2024 seasons settled valid records) → accept: item 1 guards the writers instead of failing on the unfixed source, no engine change, T286's blocker note corrected (alt: search more countries, eras and ties for a faulty writer | require the guard to catch an injected bad record)
 - 261024 decided T286 T415 T416 T417 T418 T419 T420 ARCH-30 SAVE-23: how to make 105 failing unit tests (31 files) pass with the release switch on without one serial 20-minute task → every test names its release (DISABLED_RELEASE for the pre-feature path that never-activating careers keep, ENABLED_RELEASE for new-career behaviour) and a release-on vitest config proves each file under both switch states, in four parallel lanes plus a timed whole-tier step before T286 flips (alt: flip in T286 and fix all 31 files there | pin every shared fixture world off, leaving most tests on a path new careers no longer play)
 - 261024 decided T422 WEB-32: how a speed-independent 1.5 s preparation fits the 1x-ms clock → the clock's state becomes running match seconds and advances by per-segment rates, so speed changes, seeking and the goal hold keep match time (alt: keep the 1x-ms clock and re-base it on every speed change | compress the frames themselves, which would change what the engine recorded for playback)
@@ -262,7 +263,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 24 | 24 | - | 0 |
+| MATCH | 25 | 25 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -280,9 +281,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
 | T420 | The unit tier green and timed with the release switch on | SAVE ARCH | T416 T417 T418 T419 | todo |
+| T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -300,6 +302,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25
 - 261024 T421 T422 integrated
 - 261024 T416 integrated
 - 261024 T419 integrated
@@ -319,4 +322,3 @@
 - 261024 ideation match-viewing-pace-and-freedom ready: 1x = 12 s per open-play minute with a 2x start and a fast set-piece walk-in, both models now; freedom set by the manager (style × role × ability) with result trade-offs, situational disorder, position swaps and four real tendencies as the model revision after activation; corner defence stays T348's at activation
 - 261024 ideation match-viewing-pace-and-freedom start: owner reports fast open play / slow set pieces, corner defence keeping formation, 1x too fast, no positional freedom; diagnosis recorded (live path is the pre-feature model)
 - 261024 WEB r139 tasked as T412 doing (m8p2): owner supplied missed match surfaces, undersized back icon and possession chip; extend presentation-only theme roles to ground material/lines/marker outlines across observation, replay, previews and analysis. Origin pulled at cd2a1c3c; isolated codex/match-theme-details checkout, no questions and main publication authorized. T286 cites WEB for continuity and retains gameplay scope; T410/T411 do not cite WEB-91. Hosted CI remains deferred by owner.
-- 261024 T409 done (t5q2; explore, kept k1): the aggregate credits 20 s / 30 s of added time it left out; validation round 67: core different 41 → 40, all reference conditions 1,280 → 1,257, nothing inside → outside; second-yellow factor by tactic neutral; aggregate artifact refreshed

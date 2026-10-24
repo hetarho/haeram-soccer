@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r24 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r25 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -54,6 +54,7 @@
 - MATCH-12 [o] Observed playback draws the engine's own positions for every touch: the ball flies along the recorded actions and players stand where the engine puts them. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
   - the selected speed applies uniformly to running play, through build-up, chances and every restart's kick and delivery; 1x maps every 60 match seconds to 12 real seconds (→WEB-32). Added time and extra time use the same mapping. The set-piece preparation (→WEB-32), goal-feedback holds (→WEB-94), seeking and the interval between periods are explicit presentation transitions outside running play; none adds simulated time or engine stoppage credit.
   - the set-piece preparation shortens only its presentation time: every route in it is scaled by the same factor, so the ball and players still travel their recorded routes in order, and the engine's recorded dead time, added time and settled facts are unchanged.
+  - a player on the ball moves with it: from receiving it until he plays it he takes it in stride at a carrying pace his movement rules bound, and the ball is played and the action resolved from where he has taken it; he stands on it only to shield it under close pressure, to hold it up or lay it off, as a keeper distributing it or as a restart's taker. ← a carrier who stops dead on every reception reads as a moving diagram, not football
   - action durations and restart preparation allow the ball and players to traverse their recorded routes. Player speed, acceleration and turning are bounded by movement rules using pace and fatigue; kicks have bounded travel speed and a visible departure and arrival. No path is compressed to catch a later action or replaced by an instantaneous position assignment.
   - flight: a quadratic curve from launch to landing whose sideways bend grows with distance; passes of 18+ units rise with distance (up to 9, about 30% of long balls driven low), shots stay low; bend and height come from the motion stream only.
   - every flight ends where the engine recorded it: at the receiver, the interceptor, the tackler, out of play or in the net. After the ball leaves play it returns to the real restart spot through a recorded retrieval/placement interval; the taker and set-piece participants travel there before the kick. Substitutions and the change of ends have explicit entry/exit or period transitions.
@@ -227,6 +228,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r25 261024 MATCH-12✎ carrier unspecified (stood on the ball until his kick)→carries it in stride from reception to his action, played and resolved from there; stands only to shield, hold up or lay off, distribute as keeper or take a restart
 - r24 261024 MATCH-12✎ uniform speed in and out of play at 4 real s per minute→uniform running play at 12 real s per minute with the set-piece preparation a presentation transition scaling its routes by one factor
 - r23 261024 MATCH-28✎ full-model activation required the accuracy, compatibility, storage and speed gates together→accuracy measured and reported with the release, not an activation gate; residual differences calibrated afterwards
 - r22 261024 MATCH-22✎ aggregate path one undivided joint draw (no per-minute chance loop)→may draw a match as at most six time segments whose reached score shapes later shot volume and risk, still no per-minute loop, within ARCH-31's fixture budget
