@@ -84,6 +84,8 @@ html[data-theme='sticker-club'] {
   --image-popover-shadow: #17382b30;
   --image-dark-fill: #174b35;
   --image-radius: 12px;
+  --image-control-radius: 5px;
+  --image-control-shadow: 0 2px 0 #17382b;
   --page-grain: none;
   --surface-grain: none;
   --text: var(--image-ink-color);
@@ -132,11 +134,6 @@ html[data-theme='sticker-club'] {
     color: #17382b;
   }
 
-  [data-ui='game-shell'] > [data-ui='sidebar'] label:has(input[type='file']) {
-    color: #17382b;
-    min-height: 44px;
-  }
-
   [data-home-part='fixture'] {
     --text: #fff9e5;
     --text-muted: #f5efd9;
@@ -164,7 +161,6 @@ html[data-theme='sticker-club'] {
     background: var(--image-art-icon-heart) center / contain no-repeat;
   }
 
-  [data-home-part='season-stats'] > i,
   [data-ui='season-transport'] button > [data-pixel-icon='play'] {
     mask: none;
     background: var(--image-art-icon-play) center / contain no-repeat;

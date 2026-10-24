@@ -14,6 +14,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Inline artwork shares the label's centre rather than the font's baseline. */
+[data-pixel-icon] {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+:where(button:has(> [data-pixel-icon])) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
+}
+
 /* Keep every game surface scrollable without native scrollbar chrome. */
 * {
   scrollbar-width: none;

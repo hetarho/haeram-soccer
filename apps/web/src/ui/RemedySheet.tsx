@@ -2,6 +2,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
+import { PixelIcon } from './PixelIcon';
 import {
   openCoachSheet,
   openPeople,
@@ -73,7 +74,11 @@ export function RemedySheet({
       {current.advice && <p className={s.remedyAdvice}>{current.advice.text}</p>}
       <ul className={s.remedies}>
         {remedies(w, key).map((remedy) => (
-          <li key={remedy.id} className={remedy.unavailable ? s.remedyOff : undefined}>
+          <li
+            key={remedy.id}
+            data-surface="tile"
+            className={remedy.unavailable ? s.remedyOff : undefined}
+          >
             <div>
               <b>
                 {remedy.label}
@@ -94,6 +99,7 @@ export function RemedySheet({
               )}
             </div>
             <button
+              data-ui={remedy.command ? undefined : 'link'}
               disabled={!!remedy.unavailable || (acting && !!remedy.command)}
               onClick={() => {
                 if (!remedy.command) onClose();
@@ -101,6 +107,7 @@ export function RemedySheet({
               }}
             >
               {remedy.command ? (remedy.by ? '요청' : '실행') : '열기'}
+              {!remedy.command && <PixelIcon name="chevronRight" size={14} />}
             </button>
           </li>
         ))}

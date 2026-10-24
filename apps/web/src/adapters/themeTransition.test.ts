@@ -57,6 +57,27 @@ function browser() {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('progressive theme cascade', () => {
+  it.each(['animated', 'unsupported', 'reduced'] as const)(
+    'flushes presentation consumers through the host before the %s commit completes',
+    async (mode) => {
+      const b = browser();
+      if (mode === 'unsupported') Object.assign(b.document, { startViewTransition: undefined });
+      if (mode === 'reduced') vi.stubGlobal('matchMedia', () => ({ matches: true }));
+      const order: string[] = [];
+      const commit = vi.fn((update: () => void) => {
+        order.push('flush');
+        update();
+        order.push('consumers-painted');
+      });
+      await createBrowserThemeTransition(b.document as unknown as Document, commit).run(() => {
+        order.push('publish');
+      });
+      expect(commit).toHaveBeenCalledTimes(1);
+      expect(order).toEqual(['flush', 'publish', 'consumers-painted']);
+      b.finished.resolve();
+    },
+  );
+
   it('reveals one composited root without enumerating or naming controls', async () => {
     const b = browser();
     const update = vi.fn();

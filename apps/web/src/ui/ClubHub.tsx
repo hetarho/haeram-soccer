@@ -15,6 +15,7 @@ import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
+import { PixelIcon } from './PixelIcon';
 import { CashAlarm } from './CashAlarm';
 
 /** Home can resume an existing match; only the eve dialog starts a new one. */
@@ -277,9 +278,7 @@ export function ClubHub({
             </b>
             <small>승점 {table?.points ?? 0}</small>
           </div>
-          <i className={s.more} aria-hidden="true">
-            ›
-          </i>
+          <PixelIcon name="chevronRight" size={14} className={s.more} />
         </button>
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />

@@ -554,12 +554,12 @@ button.resources:active:not(:disabled) {
   display: grid;
   gap: 8px;
 }
-.remedies li {
+.remedies > li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
   background: var(--surface-grain, none) var(--surface-2);
@@ -588,6 +588,12 @@ button.resources:active:not(:disabled) {
 .remedies b {
   font-size: 14px;
 }
+.remedies > li > div > b {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
 .remedies small {
   font-size: 12px;
   line-height: 1.4;
@@ -606,10 +612,6 @@ button.resources:active:not(:disabled) {
   min-height: 44px;
   padding: 4px 12px;
   font-size: 13px;
-}
-.remedyOff b,
-.remedyOff small {
-  opacity: 0.6;
 }
 .remedyOff em {
   color: var(--text-faint);
@@ -696,14 +698,13 @@ button.resources:active:not(:disabled) {
 }
 /* Requests name who carries them out and list each possible result with its chance. */
 .remedies b .remedyBy {
-  margin-left: 6px;
+  margin: 0;
   padding: 1px 6px;
   border-radius: var(--badge-radius);
   background: var(--surface-grain, none) var(--surface-3);
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
-  vertical-align: 1px;
   font-family: var(--display);
 }
 .chances {

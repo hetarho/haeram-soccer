@@ -13,12 +13,21 @@ html[data-theme] {
     --text: var(--image-on-dark);
     --text-muted: var(--image-on-dark-muted);
     --text-faint: var(--image-on-dark-muted);
+    --accent-text: var(--image-on-dark);
+    --image-focus: var(--image-on-dark);
+    --focus: var(--image-on-dark);
     --line: var(--image-table-line);
     --line-strong: var(--image-on-dark-muted);
     color: var(--image-on-dark);
     background: var(--pitch-chart-ground) var(--image-dark-material) repeat;
     background-size: var(--image-material-size, 256px);
     border-color: transparent;
+  }
+
+  [data-ui='match-chart'] {
+    --image-tab-text: var(--image-on-dark-muted);
+    --image-tab-active: var(--image-on-dark);
+    --image-tab-rule: color-mix(in srgb, var(--image-on-dark) 30%, transparent);
   }
 
   [data-testid='match-score'] > strong {
@@ -88,7 +97,7 @@ html[data-theme] {
     padding: 2px 4px;
     border: 2px solid transparent;
     border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 3px stretch;
-    border-radius: var(--image-radius, 0px);
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
@@ -147,12 +156,12 @@ html[data-theme] {
   ) {
     border: 1px solid var(--image-control-edge);
     border-image: none;
-    border-radius: var(--image-radius, 0px);
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
     background-image: var(--image-quiet-material);
     background-color: var(--image-quiet);
     background-size: var(--image-material-size, 384px);
     background-clip: padding-box;
-    box-shadow: none;
+    box-shadow: var(--image-control-shadow, none);
   }
 
   button[data-ui='primary'],
@@ -190,10 +199,10 @@ html[data-theme] {
   [data-ui='icon'] {
     border: 1px solid var(--image-control-edge);
     border-image: none;
-    border-radius: var(--image-radius, 0px);
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
-    box-shadow: none;
+    box-shadow: var(--image-control-shadow, none);
   }
 
   [data-select-trigger][role='combobox'],
@@ -205,11 +214,11 @@ html[data-theme] {
   ) {
     border: 1px solid var(--image-control-edge);
     border-image: none;
-    border-radius: var(--image-radius, 0px);
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
-    box-shadow: none;
+    box-shadow: var(--image-control-shadow, none);
   }
 
   [data-select-trigger][role='combobox'] {
@@ -235,6 +244,14 @@ html[data-theme] {
 
   [data-ui='season-picker'] [data-ui='text-select'][data-select-trigger] {
     font-size: 18px;
+  }
+
+  [data-ui='presentation-choice'][data-select-trigger][role='combobox'] {
+    border: 3px solid transparent;
+    border-image: var(--image-selected-frame) var(--image-frame-slice, 54) / 6px stretch;
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
+    padding: 2px 10px;
+    font-weight: 700;
   }
 
   :is(input, textarea)::placeholder {
@@ -348,7 +365,7 @@ html[data-theme] {
   [role='tablist'] {
     gap: 4px;
     padding: 0;
-    border-bottom: 1px solid var(--image-table-line);
+    border-bottom: 1px solid var(--image-tab-rule, var(--image-table-line));
     border-radius: 0;
     background: none;
   }
@@ -360,16 +377,16 @@ html[data-theme] {
     border-image: none;
     border-radius: 0;
     background: none;
-    color: var(--image-muted);
+    color: var(--image-tab-text, var(--image-muted));
     box-shadow: none;
   }
 
   [role='tab'][aria-selected='true'] {
-    color: var(--image-accent);
+    color: var(--image-tab-active, var(--image-accent));
     border: 0 !important;
     border-image: none !important;
     background: none !important;
-    box-shadow: inset 0 -2px var(--image-accent);
+    box-shadow: inset 0 -2px var(--image-tab-active, var(--image-accent));
   }
 
   [role='radiogroup'] {
@@ -534,6 +551,7 @@ html[data-theme] {
     border: 0;
     border-image: none;
     background: none;
+    box-shadow: none;
     color: var(--image-on-dark);
   }
 
@@ -541,6 +559,7 @@ html[data-theme] {
     border: 0;
     border-image: none;
     background: none;
+    box-shadow: none;
   }
 
   [data-ui='season-overview'] {
@@ -671,6 +690,9 @@ html[data-theme] {
   }
 
   label:has(input[type='file']) {
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    color: var(--image-ink-color);
     border: 3px solid transparent;
     border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 6px stretch;
     border-radius: var(--image-radius, 0px);

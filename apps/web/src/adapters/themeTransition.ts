@@ -11,7 +11,10 @@ export const THEME_TRANSITION = {
 } as const;
 
 /** Root snapshots retain the document's clipping and stacking, including open overlays. */
-export function createBrowserThemeTransition(document: Document): ThemeTransitionPort {
+export function createBrowserThemeTransition(
+  document: Document,
+  commit: (update: () => void) => void = (update) => update(),
+): ThemeTransitionPort {
   let active: { transition: ViewTransition; cleanup: () => void } | undefined;
   let disposed = false;
 
@@ -36,7 +39,7 @@ export function createBrowserThemeTransition(document: Document): ThemeTransitio
         reducedMotion() ||
         typeof document.startViewTransition !== 'function'
       ) {
-        update();
+        commit(update);
         return;
       }
 
@@ -52,7 +55,8 @@ export function createBrowserThemeTransition(document: Document): ThemeTransitio
       const once = () => {
         if (updated) return;
         updated = true;
-        update();
+        // The host flushes reactive image consumers before the browser takes its new snapshot.
+        commit(update);
       };
       try {
         // Naming a button extracts its pixels into a top-layer sibling of the root snapshot.

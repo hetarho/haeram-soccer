@@ -264,7 +264,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 20 | 20 | - | 2 |
-| WEB | 147 | 147 | - | 0 |
+| WEB | 148 | 148 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -312,8 +312,15 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 T438 final sync (u6p2): pulled docs-only b8358cc7, retained p4w8 planning/active state and T431 dep T426; verified runtime and browser sources unchanged
 - 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
+- 261025 T438 publication verified (u6p2): pulled 1e060b3b; units2061+4 existing skips/contracts39/static checks pass; Chromium272 covered after two entrance-motion assertion reruns pass; commit/push authorized, hosted CI follows
+- 261025 T438 browser assertion timing (u6p2): two new remedy contrast checks sampled entrance opacity 0 (ratio 1); wait for existing finite motion before reading the settled contrast; application code unchanged
+- 261025 T438 publication start (u6p2): user authorizes commit/push; pulled origin/main 1e060b3b, retained T436 integration and restored the theme batch; full verification before publication
 - 261024 T436 integrated
+- 261025 T438 done (u6p2): shared theme details and live stadium preview; units62/type/lint/format/resources/build pass, all four themes audited, 20 open-picker and 12 match browser previews pass; uncommitted
+- 261025 T438 freshness (u6p2): WEB r148 changes presentation only; T286/T431/T434 keep engine/release contracts and advance WEB base 147→148; no executing attempt for those tasks
+- 261025 update-ssot WEB r148 + create-task/start T438 (u6p2): audit sticker-club and shared theme details; preserve v9n4-release work and game facts
 - 261025 decide T426 + create-task T437 (v9n4): goals 4.10 after MATCH r27; defenders' read restored in T426, T437 recalibrates before T286
 - 261025 v9n4 hand-off at 01:30: group v9n4-release continues in a new session (STATE next); integrated T415–T422 and T420 with green CI after two e2e fixes; planned T426, T431–T436 and MATCH r25–r27, STAFF r35, PLAYER r10, SAVE r53
 - 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
@@ -325,10 +332,3 @@
 - 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
 - 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch
 - 261025 T430 done (u6p2): compact 44px season rows with current background/rule; 12 manual previews pass; full units 2057+4 skips, contracts39 and task checks pass; publication browser batch running
-- 261025 T286 freshness reviewed (u6p2): WEB base 140→147; display changes preserve observation timing, continuity and release gates; no executing attempt in this checkout
-- 261025 pulled origin/main 2f8d95af (u6p2): preserved T420 integration, MATCH r25 and engine T426; restored the UI batch from its safety stash and merged STATE
-- 261025 create-task WEB r147 and start T430 (u6p2): compact current-season rows; pull, verify and publish the accumulated UI batch
-- 261025 update-ssot WEB r147 (u6p2): current-season text badge to background/leading rule; user authorizes pull/commit/push
-- 261025 reconcile uncommitted UI task T426 to T429 (u6p2): origin/main independently allocated T426 to carrier-in-stride; preserve that remote task
-- 261024 T420 integrated
-- 261024 update-ssot MATCH r25 + create-task T426 (v9n4): the player on the ball takes it in stride (owner report); T426 dep T420, T286 dep + T426 and base MATCH@25, T410 base MATCH@25

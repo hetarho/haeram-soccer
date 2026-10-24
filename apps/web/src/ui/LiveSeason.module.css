@@ -234,6 +234,10 @@
   box-shadow: none;
 }
 .watch b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
   font-size: 14px;
   font-weight: 700;
 }

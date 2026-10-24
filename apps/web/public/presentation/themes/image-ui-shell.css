@@ -1,6 +1,9 @@
 /* Shared image-built shell and home. Artwork supplies surfaces; HTML retains live content.
    Frames use fixed nine-slice corners, independent material tiles and independent icons. */
 html[data-theme] {
+  --image-small-size: 12px;
+  --image-caption-size: 12px;
+
   body {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: var(--image-material-size, 512px);
@@ -192,7 +195,7 @@ html[data-theme] {
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] label {
-    color: var(--image-on-dark);
+    color: var(--text);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -548,14 +551,13 @@ html[data-theme] {
     letter-spacing: 0;
   }
 
-  [data-home-part='season-stats'] > i {
+  [data-home-part='season-stats'] > [data-pixel-icon='chevronRight'] {
     right: 14px;
-    bottom: 25px;
-    width: 11px;
-    height: 18px;
-    background: var(--image-on-dark);
-    mask: var(--image-art-icon-play) center / contain no-repeat;
-    font-size: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--image-on-dark);
   }
 
   [data-testid='team-state'] {
@@ -1003,10 +1005,8 @@ html[data-theme] {
       font-size: var(--image-caption-size, 10px);
       margin-left: 1px;
     }
-    [data-home-part='season-stats'] > i {
+    [data-home-part='season-stats'] > [data-pixel-icon='chevronRight'] {
       right: 5px;
-      bottom: 19px;
-      font-size: 20px;
     }
     [data-home-part='conditions'] {
       grid-template-columns: repeat(2, minmax(0, 1fr));

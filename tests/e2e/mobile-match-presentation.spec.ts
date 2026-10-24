@@ -7,8 +7,43 @@ import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
+import { textContrast } from './contrast';
 
 const defaultThemeId = readPresentationBaselines().themeEntry.id;
+
+for (const { id: themeId } of readPresentationBaselines().themeRegistry.entries)
+  test(`${themeId}: readable match tabs and aligned result icon`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.addInitScript((themeId) => {
+      localStorage.setItem(
+        'haeram-soccor:presentation',
+        JSON.stringify({ localeId: 'ko-KR', themeId }),
+      );
+    }, themeId);
+    await importResponsibilityCareer(page, goalWorld());
+    await watchNext(page);
+    const chart = page.getByRole('region', { name: '경기 흐름 그래프', exact: true });
+    await expect(chart).toBeVisible();
+    for (const tab of await chart.getByRole('tab').all()) {
+      await tab.click();
+      for (const label of await chart.getByRole('tab').all())
+        expect((await label.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+    }
+    const difference = await page
+      .getByTestId('match-next-action')
+      .locator('b')
+      .evaluate((label) => {
+        const text = [...label.childNodes].find((node) => node.nodeType === Node.TEXT_NODE)!;
+        const range = document.createRange();
+        range.selectNode(text);
+        const copy = range.getBoundingClientRect();
+        const icon = label.querySelector('[data-pixel-icon]')!.getBoundingClientRect();
+        return Math.abs(copy.y + copy.height / 2 - icon.y - icon.height / 2);
+      });
+    expect(difference).toBeLessThanOrEqual(3);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  });
 
 for (const width of [360, 390]) {
   test(`fixed pitch ratio ${width}`, async ({ page }) => {

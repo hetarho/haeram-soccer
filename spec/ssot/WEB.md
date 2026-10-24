@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r147 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r148 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -360,6 +360,7 @@
 - WEB-73 [o] The pixel theme's UI icons use one solid pixel-grid family with stepped edges and consistent optical weight, matching its painted pixel environments; other themes replace resources behind the same semantic icon names (→WEB-91).
   - Apply the family to primary navigation, HUD menu and inbox, club news, dialog close controls, dropdown arrows/checks and trophy-cabinet symbols. Keep their established meanings distinct at small sizes.
   - Icons inherit the interface colour and remain decorative when an accessible label already names the control. Preserve focus, selection, target sizes and keyboard behaviour; club identity and analytical charts keep their own data-driven graphics.
+  - Inline icons align optically with their label and retain their aspect ratio. Detail/disclosure links use directional chevrons; playback symbols appear only on playback actions.
 
 - WEB-74 [o] Ordinary navigation preserves unfinished UI work within the active game session: selected main/subview, player/candidate, season/competition filters, comparison selection, scroll position and unapplied policy draft.
   - A contextual setting or competition detour offers a named return to the originating task. A fresh entry uses the defined default; returning to ongoing work restores its context.
@@ -450,6 +451,7 @@
   - Matchday-print uses warm newsprint, charcoal and vermilion, carved woodcut/halftone facility illustrations, solid stamped pictograms and printed-ticket controls. Keep distress in artwork and restrained background texture; text, numbers and status meanings stay clear.
   - Every registered theme, including standard and pixel, carries its image-built visual language across founding, slots, home, match observation, league/cups, people, training, operations, records, settings, notices and dialogs/sheets. Image frames, button/tab skins, rules, icons and tiled materials form the controls and surfaces; fixed corners and stretchable/repeatable regions accommodate content and responsive dimensions. CSS positions and assembles these resources; labels, editable text, numbers, tables and game-driven diagrams remain semantic, live content.
   - Reuse semantic surface and control treatments across views. Shell decoration belongs only to the shell; sheets, events, dropdowns and floating feedback retain their own geometry, scrolling, focus and reachable actions. Image failures must not remove readable facts or usable controls.
+  - Utility sheets, remedy choices and presentation selectors use the same themed materials and edge hierarchy as the rest of the game. Dark containers provide readable local text, tab and selection colours; disabled choices retain readable explanations rather than fading their copy. Preserve compact density and touch targets.
   - Ordinary buttons, icon controls, dropdown triggers and text fields use clean 1px semantic borders over the theme's materials; textured frames stay on primary actions and larger surfaces. Hover and press never change control geometry or border thickness and do not filter, translate or rasterize the whole control; use colour and focus feedback without transient stroke-weight changes. Shared control mechanics belong to the application stylesheet so the active pack cannot retain an older independent copy.
   - Sticker-club uses flat cartoon facility illustrations, colourful filled pictograms with a cream die-cut edge and dark contour, and compact badge-like controls with restrained offset shadows. Keep illustration and icon detail distinct from data, preserve text space and avoid decorative foliage behind copy.
   - Structure the standard theme with distinct surface luminance and saturation, existing spacing and text hierarchy: subdued dark page/navigation backgrounds, quieter content surfaces and stronger green controls/selection. Keep the overall palette deep while preserving the visible green foundation and readable contrast.
@@ -472,6 +474,7 @@
 
 - WEB-93 [o] An explicit successful change between different themes reveals the new appearance in a short top-to-bottom sequence across visible controls and content.
   - Preserve the old appearance until resources are ready, then commit the new presentation atomically; animation never applies partial preferences or alters game facts, drafts, focus, scrolling or playback.
+  - Mounted facility images, including the home stadium behind an open picker, adopt the selected resources in that same commit. The preview never depends on closing a dialog or navigating away.
   - Initial loading, locale-only changes, reselecting the current theme, hidden documents and reduced-motion preferences switch immediately. Unsupported or failed animation falls back to an immediate change.
   - A newer selection supersedes pending work and any running visual transition. Bound total animation duration; offscreen content adopts the committed theme immediately. Preserve stacking order, clipping, modal backdrops and popover occlusion throughout the transition; individual controls never escape their original visual layer.
 
@@ -507,6 +510,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r148 261025 WEB-73✎ unaligned/ambiguous decorative cues→aligned semantic icons and disclosure chevrons; WEB-91✎ generic utility surfaces and global tab colours→themed sheets/selectors with local contrast; WEB-93✎ picker chrome-only preview→atomic mounted facility-image preview
 - r147 261025 WEB-54✎ current-season 진행 중 text line→compact row with background/leading-rule emphasis and accessible current status
 - r146 261024 WEB-33✎ wrapping selected labels→single-line unboxed season navigation and readable competition text filters; WEB-91✎ hover-only stable external shared skin→hover/press-stable application-owned shared skin
 - r145 261024 WEB-33✎ padded ellipsized selected labels→compact text space with wrapping for long selections; WEB-91✎ textured ordinary-control frames and brightness hover filtering→clean 1px borders with stable hover geometry and no whole-control filtering

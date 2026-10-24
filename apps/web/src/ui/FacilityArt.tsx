@@ -30,13 +30,14 @@ export function FacilityArt({
       style={{ '--facility-overlay': scene.treatment.overlay } as CSSProperties}
     >
       <img
+        key={scene.src}
         className={s.image}
         src={scene.src}
         alt={scene.alt}
         width="240"
         height="80"
         loading={eager || kind === 'stadium' ? 'eager' : 'lazy'}
-        decoding="async"
+        decoding="sync"
         style={{
           objectFit: scene.treatment.objectFit,
           objectPosition: scene.treatment.objectPosition,

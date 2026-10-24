@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import { App } from './ui/App';
 import { PresentationBoundary, PresentationProvider } from './presentation/react';
 import { PresentationSettings } from './ui/PresentationSettings';
@@ -26,7 +27,7 @@ async function start() {
     resources: createPresentationResources({ fetch }),
     preferences: new PresentationPreferencesStore(),
     prepareTheme: prepareThemeResources,
-    transitionTheme: createBrowserThemeTransition(document),
+    transitionTheme: createBrowserThemeTransition(document, flushSync),
     applyLocale(locale) {
       document.documentElement.lang = locale.id;
       document.documentElement.dir = locale.direction;

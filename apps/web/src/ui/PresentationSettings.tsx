@@ -50,6 +50,7 @@ export function PresentationSettingsControls({ field }: { field?: PresentationFi
           <Select
             aria-label={t('presentation.theme')}
             data-testid="presentation-theme"
+            data-ui="presentation-choice"
             value={snapshot.theme!.id}
             onValueChange={(themeId) => void controller.select({ themeId })}
           >
@@ -67,6 +68,7 @@ export function PresentationSettingsControls({ field }: { field?: PresentationFi
           <Select
             aria-label={t('presentation.language')}
             data-testid="presentation-locale"
+            data-ui="presentation-choice"
             value={snapshot.locale!.id}
             onValueChange={(localeId) => void controller.select({ localeId })}
           >

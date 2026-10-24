@@ -60,6 +60,9 @@ for (const { id: theme } of baseline.themeRegistry.entries)
         );
       }, theme);
       await loadPausedGame(page);
+      const importControl = page.locator('[data-ui="sidebar"] label:has(input[type="file"])');
+      if (width > 760)
+        expect((await importControl.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
       await page.getByRole('button', { name: /진행 방식 변경/ }).click();
       await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
       const date = await page.getByTestId('game-date').innerText();
@@ -163,6 +166,21 @@ for (const width of [390, 1380])
       expect(homeSkin.frame).toContain(assetPath);
       expect(homeSkin.fill).toContain(assetPath);
       await expectHomeSceneRatio(page);
+      const stats = page.getByRole('button', { name: '시즌 상세', exact: true });
+      await expect(stats.locator('[data-pixel-icon="chevronRight"]')).toHaveCount(1);
+      await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
+      await page.getByRole('button', { name: /^피로/ }).click();
+      const remedies = page.getByRole('dialog', { name: '피로 관리', exact: true });
+      await expect(remedies).toBeVisible();
+      await settle(page);
+      const choices = remedies.locator('li[data-surface="tile"]');
+      expect(await choices.count()).toBeGreaterThan(0);
+      expect(
+        await choices.first().evaluate((row) => getComputedStyle(row).backgroundImage),
+      ).toContain(assetPath);
+      for (const copy of await remedies.locator('li[data-surface="tile"] > div > small, em').all())
+        expect((await copy.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+      await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
 
       await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
       await page.getByRole('tab', { name: '순위표', exact: true }).click();
@@ -319,15 +337,21 @@ for (const width of [390, 1380])
       const art = page.locator('[data-facility-art="stadium"] img');
       const artwork = await art.getAttribute('src');
       const pack = await (await page.request.get(`/presentation/themes/${entry.resource}`)).json();
-      await openSettings(page);
+      const picker = await openSettings(page);
       await chooseOption(page.getByTestId('presentation-theme'), entry.id);
       await expect.poll(() => background(page)).toBe(pack.tokens.palette.bg);
-      await closeSettings(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', entry.id);
+      await expect(picker).toBeVisible();
       await expect(art).not.toHaveAttribute('src', artwork!);
       expect(
         (await art.getAttribute('src'))?.startsWith(pack.images.facility.pattern.split('{')[0]),
       ).toBe(true);
+      await expect
+        .poll(() =>
+          art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0),
+        )
+        .toBe(true);
+      await closeSettings(page);
       await expectHomeBounds(page);
       await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
       await page.reload();
@@ -338,8 +362,9 @@ for (const width of [390, 1380])
       await openSettings(page);
       await chooseOption(page.getByTestId('presentation-theme'), baseline.theme.id);
       await expect.poll(() => background(page)).toBe(baseline.theme.tokens.palette.bg);
-      await closeSettings(page);
       await expect(art).toHaveAttribute('src', artwork!);
+      await expect(picker).toBeVisible();
+      await closeSettings(page);
       await page.reload();
       await expect(page.getByTestId('club-hub')).toBeVisible();
       expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
@@ -378,7 +403,18 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
     const start = document.startViewTransition?.bind(document);
     if (!start) return;
     document.startViewTransition = (update) => {
-      const transition = start(update);
+      const transition = start(
+        typeof update === 'function'
+          ? () => {
+              const result = update();
+              // The new root must capture the selected art in this callback, before returning.
+              document.documentElement.dataset.themeSnapshotArt =
+                document.querySelector('[data-facility-art="stadium"] img')?.getAttribute('src') ??
+                '';
+              return result;
+            }
+          : update,
+      );
       void transition.ready
         .then(() => {
           document.documentElement.dataset.themeSnapshotControls = String(
@@ -405,6 +441,10 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
   await chooseOption(page.getByTestId('presentation-theme'), 'pixel');
   await expect(page.locator('html')).toHaveAttribute('data-theme-snapshot-controls', '0');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-theme-snapshot-art',
+    (await page.locator('[data-facility-art="stadium"] img').getAttribute('src'))!,
+  );
   await expect.poll(closePaths).not.toBe(standardClose);
   await expect(dialog).toBeVisible();
   await closeSettings(page);
