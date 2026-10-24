@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ENABLED_RELEASE, withCandidateModel } from '../../../tests/fixtures/worlds';
+import {
+  DISABLED_RELEASE,
+  ENABLED_RELEASE,
+  withCandidateModel,
+} from '../../../tests/fixtures/worlds';
 import { PD, TD } from '../../contracts/src/detail';
 import type { Fixture, Incident, MatchRecord, World } from '../../contracts/src/types';
 import { settleRate } from './adaptation';
@@ -30,8 +34,11 @@ function world(release: MatchModelRelease) {
     release,
   );
 }
-/** A 2024 world on the model a new career plays: it names substitutes (→MATCH-20). */
-const modern = () => withCandidateModel(founded(2024));
+/**
+ * A 2024 world on the model a new career plays, recorded once the year has moved (founded off,
+ * then activated), whatever the switch: it names substitutes (→MATCH-20).
+ */
+const modern = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
 const isOwn = (w: World, f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
 const ownFixtures = (w: World) =>
   w.fixtures
