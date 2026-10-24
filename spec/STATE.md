@@ -16,7 +16,6 @@
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
 | m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T09:36Z | - |
-| t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:12Z | 2026-10-24T09:12Z | - |
 
 ## inbox
 - 261024 decided MATCH-28 SAVE-23 ARCH-31 T286 T410: the owner orders the work as release the new engine, implement the ideation items, then measure and fix what differs from real football → MATCH r23, SAVE r52 and ARCH r20 keep throughput, capacity and continuity as activation gates and report accuracy (MATCH-28 equivalence, MATCH-23/29/30) with the release instead of gating it; T286 becomes the release, T410 moves after it as the first step of the later calibration; T411's question (grid attacking-phase redesign) waits for that step (alt: keep the accuracy gate, which T401 shows the release cannot pass soon | drop the throughput and capacity gates too, which would risk saves past SAVE-4's limit)
