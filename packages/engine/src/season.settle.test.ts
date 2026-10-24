@@ -166,23 +166,28 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
 
 describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => {
   it('an activated world settles only valid full records', () => {
-    // The release-on probe's world: its own league's first two rounds (the own match on the grid,
-    // the others on the aggregate path) and the national cup's first round, level ties going to
-    // extra time and a shoot-out.
+    // The release-on probe's world: its own league's first two rounds and the national cup's first
+    // round, each with the own match on the grid and the others on the aggregate path, level ties
+    // going to extra time and a shoot-out.
     const w = world(ENABLED_RELEASE);
-    const settled: MatchRecord[] = [];
+    const league: MatchRecord[] = [];
     for (const f of w.fixtures.filter((f) => f.id.startsWith('1950:ENG:4:') && f.round <= 2)) {
       const playback = simulateMatch(w, f, false, true);
       f.score = playback.record.score;
       recordMatch(w, playback, true);
-      settled.push(playback.record);
+      league.push(playback.record);
     }
     const cup = w.cups!.find((c) => c.fixtures.some((f) => isOwn(w, f)))!;
-    for (const f of cup.fixtures.filter((f) => f.id.includes(':k0:')))
-      settled.push(playFixture(w, f, undefined, false, { awayGoals: false })!.record);
-    for (const r of settled) expect(validateFullMatchRecord(r), r.id).toEqual([]);
-    expect(settled.filter((r) => isOwn(w, r)).length).toBeGreaterThanOrEqual(2);
-    expect(settled.some((r) => r.regulation)).toBe(true);
-    expect(settled.some((r) => r.shootout)).toBe(true);
+    const ties = cup.fixtures
+      .filter((f) => f.id.includes(':k0:'))
+      .map((f) => playFixture(w, f, undefined, false, { awayGoals: false })!.record);
+    for (const r of [...league, ...ties]) expect(validateFullMatchRecord(r), r.id).toEqual([]);
+    // Both result paths in the league rounds and in the cup round.
+    for (const records of [league, ties]) {
+      expect(records.some((r) => isOwn(w, r))).toBe(true);
+      expect(records.some((r) => !isOwn(w, r))).toBe(true);
+    }
+    expect(ties.some((r) => r.regulation)).toBe(true);
+    expect(ties.some((r) => r.shootout)).toBe(true);
   });
 });
