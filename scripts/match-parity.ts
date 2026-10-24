@@ -7,13 +7,17 @@
  *   pnpm exec tsx scripts/match-parity.ts --report [--partition calibration|validation]
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--reference id,…] [--reference-scale S] [--rare-scale S]
- *     [--seasons N] [--jobs N] [--out FILE]
+ *     [--seasons N] [--jobs N] [--out FILE] [--patch JSON] [--reference-cache DIR]
+ *     [--sizes id=N,…]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   docs/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
  *   report, kept apart from the intended-target errors; `--seasons N` also plays N founded worlds
  *   one season each through ordinary settlement (season:league-20; `--only season` plays only them);
- *   `--stress N` plays N core fixtures with the red-card settlement forced to its fallback
+ *   `--stress N` plays N core fixtures with the red-card settlement forced to its fallback;
+ *   `--patch` overrides configs in this process and its workers (t328-counter-roles.ts's form) and
+ *   `--reference-cache` keeps each condition's detailed samples for later screens (T400);
+ *   `--sizes` plays the named conditions at their own sizes, both paths (T401's pilot sizes)
  *
  *   pnpm exec tsx scripts/match-parity.ts --tactics [--partition …] [--round N] [--matches N]
  *     [--out FILE]
@@ -30,6 +34,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { arch, cpus, platform } from 'node:os';
 import { dirname } from 'node:path';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
@@ -72,6 +77,7 @@ import type { Prepared } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { lineOf } from '../packages/engine/src/player';
 import { withCandidateModel } from '../tests/fixtures/worlds';
+import { applyBehaviour, behaviourOf } from './t328-counter-roles-variants';
 import {
   conditionClubs,
   conditionFixture,
@@ -571,6 +577,43 @@ interface Job {
 }
 
 const LINES = ['FW', 'MF', 'DF', 'GK'];
+/**
+ * A screen's detailed reference kept between runs (`--reference-cache <dir>`, T400): one
+ * condition's grid samples, keyed by the condition, partition, round and count, the grid's source
+ * (`gridFingerprint`) and the patch's settings outside
+ * the aggregate path, so aggregate-only screens read one reference without replaying it.
+ */
+function referenceSamples(job: Job): MatchSample[] {
+  const dir = text('reference-cache', '');
+  if (!dir) return referenceCondition(job.condition, job.partition, job.round, job.reference);
+  const grid = Object.fromEntries(
+    behaviourOf('', patch).flatMap((p) =>
+      Object.entries(p).filter(
+        ([k]) => k !== 'aggregate' && k !== 'attribution' && k !== 'participation',
+      ),
+    ),
+  );
+  const key = createHash('sha256')
+    .update(
+      JSON.stringify([
+        gridFingerprint(),
+        grid,
+        job.condition,
+        job.partition,
+        job.round,
+        job.reference,
+      ]),
+    )
+    .digest('hex')
+    .slice(0, 16);
+  const file = `${dir}/${job.condition.replace(/[^\w-]/g, '_')}-${key}.json.gz`;
+  if (existsSync(file))
+    return JSON.parse(gunzipSync(readFileSync(file)).toString('utf8')) as MatchSample[];
+  const samples = referenceCondition(job.condition, job.partition, job.round, job.reference);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(file, gzipSync(JSON.stringify(samples)));
+  return samples;
+}
 /** One condition's measurements on the aggregate path, compact enough to retain. */
 function summarise(job: Job) {
   const c = conditionOf(job.condition);
@@ -607,7 +650,7 @@ function summarise(job: Job) {
   let referencePairing: MatchSample[] | undefined;
   if (job.reference > 0) {
     const refStarted = performance.now();
-    const refSamples = referenceCondition(job.condition, job.partition, job.round, job.reference);
+    const refSamples = referenceSamples(job);
     // MATCH-29 on the detailed reference too, so both paths' pairing verdicts compare (T372).
     if (c.family === 'tactics') referencePairing = refSamples.map(pairingSample);
     const refMs = (performance.now() - refStarted) / job.reference;
@@ -944,6 +987,32 @@ const SOURCE_SCOPE = [
   // The season runner's `withCandidateModel`.
   'tests/fixtures/worlds.ts',
 ];
+/**
+ * The source the detailed reference depends on: the fingerprint scope without the aggregate path,
+ * tests and this runner (an edit to `referenceCondition` needs a fresh cache directory).
+ */
+let gridSource: string | undefined;
+function gridFingerprint() {
+  if (gridSource) return gridSource;
+  const files = execFileSync(
+    'git',
+    ['ls-files', '--cached', '--others', '--exclude-standard', '--', ...SOURCE_SCOPE],
+    { encoding: 'utf8' },
+  )
+    .split('\n')
+    .filter(
+      (file) =>
+        file &&
+        existsSync(file) &&
+        !file.startsWith('packages/engine/src/aggregate/') &&
+        file !== 'scripts/match-parity.ts' &&
+        !/\.test\.tsx?$/.test(file),
+    )
+    .sort();
+  const hash = createHash('sha256');
+  for (const file of files) hash.update(file).update('\0').update(readFileSync(file));
+  return (gridSource = hash.digest('hex'));
+}
 function sourceFingerprint() {
   const files = execFileSync(
     'git',
@@ -959,6 +1028,11 @@ function sourceFingerprint() {
 }
 
 const args = process.argv.slice(2);
+// A measurement's config overrides (`--patch <json>`, as t328-counter-roles.ts takes them): the
+// candidate configs patched in this process and in every worker it forks, never in the source.
+const patchAt = args.indexOf('--patch');
+const patch = patchAt >= 0 ? args[patchAt + 1] : undefined;
+if (patch) for (const p of behaviourOf('', patch)) applyBehaviour(p);
 const text = (name: string, fallback: string) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? args[i + 1]! : fallback;
@@ -974,21 +1048,34 @@ function reportJobs(): Job[] {
       throw new Error(`unknown family ${family}`);
   const named = text('conditions', '').split(',').filter(Boolean);
   const references = text('reference', '').split(',').filter(Boolean);
-  for (const id of [...named, ...references]) conditionOf(id);
+  // Each condition's own size (`--sizes id=n,…`, T401: its pilot size), its reference the same.
+  const sizes = new Map(
+    text('sizes', '')
+      .split(',')
+      .filter(Boolean)
+      .map((x) => {
+        const [id, n] = x.split('=');
+        if (!Number.isInteger(Number(n)) || Number(n) < 30) throw new Error(`bad size ${x}`);
+        return [id!, Number(n)] as const;
+      }),
+  );
+  for (const id of [...named, ...references, ...sizes.keys()]) conditionOf(id);
   return CORPUS_CONFIG.conditions
     .filter((c) =>
       named.length ? named.includes(c.id) : only.includes(c.family) && c.family !== 'season',
     )
     .map((c) => {
       const scale = c.rare ? option('rare-scale', option('scale', 1)) : option('scale', 1);
-      const count = Math.max(30, Math.round(calibrationSize(c) * scale));
+      const count = sizes.get(c.id) ?? Math.max(30, Math.round(calibrationSize(c) * scale));
       return {
         condition: c.id,
         count,
         partition,
         round: option('round', 0),
         reference: references.includes(c.id)
-          ? Math.min(count, Math.max(30, Math.round(count * option('reference-scale', 1))))
+          ? sizes.has(c.id)
+            ? count
+            : Math.min(count, Math.max(30, Math.round(count * option('reference-scale', 1))))
           : 0,
       };
     });
@@ -1053,9 +1140,19 @@ async function runReport() {
   await Promise.all(
     Array.from({ length: workers }, async () => {
       // Its own flag: grid-bands.ts, imported for the condition fixtures, answers `--worker`.
-      const child = fork(fileURLToPath(import.meta.url), ['--aggregate-worker'], {
-        execArgv: process.execArgv,
-      });
+      const child = fork(
+        fileURLToPath(import.meta.url),
+        [
+          '--aggregate-worker',
+          ...(patch ? ['--patch', patch] : []),
+          ...(text('reference-cache', '')
+            ? ['--reference-cache', text('reference-cache', '')]
+            : []),
+        ],
+        {
+          execArgv: process.execArgv,
+        },
+      );
       for (let job = queue.shift(); job; job = queue.shift()) {
         const next = job;
         const message = await new Promise<Summary | SeasonSummary | StressSummary>(

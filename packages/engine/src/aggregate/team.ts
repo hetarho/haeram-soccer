@@ -188,8 +188,17 @@ export function generateTeamFacts(
     for (const side of [0, 1] as const) foulsOn(m, p, side, fouls);
     const shots = streams.draw('shots', period),
       setPieces = streams.draw('setPieces', period);
+    // The score state reads regulation in segments (MATCH-22 r22, T400).
+    const S = C.scoreState;
+    const segmented = S.segments > 1 && period === 'regulation';
+    // Chances are drawn often enough that no kept share exceeds one: a side behind by `cap`
+    // keeps all of its shots, a side ahead all of its goals.
+    const inflate = segmented
+      ? Math.exp(Math.max(Math.abs(S.volume), Math.abs(S.risk - S.volume)) * S.cap)
+      : 1;
+    for (const side of [0, 1] as const) openPlayShots(m, p, side, shots, inflate);
+    if (segmented) keepByScore(m, p, streams.draw('scoreState', period));
     for (const side of [0, 1] as const) {
-      openPlayShots(m, p, side, shots);
       setPieceShots(m, p, side, setPieces);
       m.sides[side].held.push(p.share[side] * (to - from) * 60 * C.ballInPlay);
     }
@@ -588,8 +597,47 @@ function shoot(
   return { period: p.period, minute, ...shot, xg, outcome, corner };
 }
 
+/** Each open-play chance drawn above its base rate for the score state: by how much (T400). */
+const drawnAt = new WeakMap<AggregateShot, number>();
+
+/**
+ * The score state over one period's open-play chances (MATCH-22 r22, T400): segment by segment,
+ * each side's chances in it are kept by the lead it started the segment with, one draw a chance in
+ * segment, side and ledger order; the goals kept then move the lead for the next segment. Kept
+ * chances stay in their ledger order, so the set pieces after see only the corners they won.
+ */
+function keepByScore(m: Match, p: Period, r: Rng) {
+  const S = C.scoreState;
+  const span = (p.to - p.from) / Math.min(6, S.segments);
+  const open = (s: AggregateShot) => s.period === p.period && s.kind === 'open';
+  const kept = new Set<AggregateShot>();
+  const goals = [0, 0];
+  for (let k = 0; k < Math.min(6, S.segments); k++) {
+    const lo = p.from + k * span,
+      hi = p.from + (k + 1) * span;
+    const lead = goals[0]! - goals[1]!;
+    for (const side of [0, 1] as const) {
+      const ahead = clamp(side === 0 ? lead : -lead, -S.cap, S.cap);
+      const keep = Math.exp(-S.volume * ahead),
+        goal = Math.exp(S.risk * ahead);
+      for (const shot of m.sides[side].shots) {
+        if (!open(shot) || shot.minute <= lo || shot.minute > hi) continue;
+        const drawn = drawnAt.get(shot) ?? 1;
+        const chance = Math.min(1, (shot.outcome === 'goal' ? keep * goal : keep) / drawn);
+        if (r() < chance) kept.add(shot);
+      }
+    }
+    for (const side of [0, 1] as const)
+      for (const shot of m.sides[side].shots)
+        if (kept.has(shot) && shot.outcome === 'goal' && shot.minute > lo && shot.minute <= hi)
+          goals[side]! += 1;
+  }
+  for (const side of [0, 1] as const)
+    m.sides[side].shots = m.sides[side].shots.filter((s) => !open(s) || kept.has(s));
+}
+
 /** Chances from completed arrivals in the final third, each at most one shot. */
-function openPlayShots(m: Match, p: Period, side: AggregateSide, r: Rng) {
+function openPlayShots(m: Match, p: Period, side: AggregateSide, r: Rng, inflate = 1) {
   const a = attackOf(m, p, side);
   const own = m.sides[side];
   const shooting = tacticOf(m, side).shot;
@@ -601,21 +649,28 @@ function openPlayShots(m: Match, p: Period, side: AggregateSide, r: Rng) {
       : inBoxCell(move.to)
         ? C.shots.place.box
         : C.shots.place.outside;
-    const rate = Math.min(
-      0.9,
+    const base =
       CELL_BASELINES[move.to]!.shot *
-        C.shots.scale *
-        C.shots.kind[move.kind] *
-        place *
-        shooting *
-        a.rate,
-    );
+      C.shots.scale *
+      C.shots.kind[move.kind] *
+      place *
+      shooting *
+      a.rate;
+    const rate = Math.min(0.9, base * inflate);
     const k = binomial(r, move.completed, rate);
     for (let i = 0; i < k; i++) {
       const header = move.kind === 'cross' && r() < C.shots.header;
-      own.shots.push(
-        shoot(m, p, a, r, { cell: move.to, source: index, kind: 'open', header }, move.kind),
+      const shot = shoot(
+        m,
+        p,
+        a,
+        r,
+        { cell: move.to, source: index, kind: 'open', header },
+        move.kind,
       );
+      // How much more often than the base rate this chance was drawn, after the 0.9 cap.
+      if (inflate > 1) drawnAt.set(shot, rate / Math.min(0.9, base));
+      own.shots.push(shot);
     }
   });
 }

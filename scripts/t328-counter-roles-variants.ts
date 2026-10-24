@@ -8,6 +8,7 @@ import type { Position, RoleId } from '../packages/contracts/src/player';
 import {
   AGGREGATE_ATTRIBUTION_CONFIG,
   AGGREGATE_CONFIG,
+  AGGREGATE_PARTICIPATION_CONFIG,
 } from '../packages/engine/src/aggregate/config';
 import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
@@ -111,6 +112,8 @@ export interface BehaviourPatch {
   restart?: object;
   aggregate?: object;
   attribution?: object;
+  /** T400: the aggregate path's participation plan (cards, changes). */
+  participation?: object;
 }
 
 const settled = (
@@ -261,6 +264,7 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     restart: RESTART_CONFIG,
     aggregate: AGGREGATE_CONFIG,
     attribution: AGGREGATE_ATTRIBUTION_CONFIG,
+    participation: AGGREGATE_PARTICIPATION_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(

@@ -237,10 +237,11 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     // leave one red-card answer against the score. With two searches and no retry the fallback
     // settles the earlier of the tied plans. The fixture was found by searching replays of this
     // world under the kernel's settings (T284: index 1209 of 3,000; T323's retune: 296; T369's box
-    // flows: 1408, the first of three in 12,000 with 2370 and 3292); retuning AGGREGATE_CONFIG moves
-    // the draws, and the tie check below then fails until a tied fixture is found again.
-    const { w, fixtures } = others(1409, 2024);
-    const f: Fixture = { ...fixtures[1408]!, kind: 'cup' };
+    // flows: 1408, the first of three in 12,000 with 2370 and 3292; T400's score state and levels:
+    // 2431, with 2450 and 2596); retuning AGGREGATE_CONFIG moves the draws, and the tie check below
+    // then fails until a tied fixture is found again.
+    const { w, fixtures } = others(2432, 2024);
+    const f: Fixture = { ...fixtures[2431]!, kind: 'cup' };
     const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
     const prepared = prepareMatch(w, f);
     const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
@@ -842,5 +843,88 @@ describe('one counting rule on both paths (→MATCH-13, MATCH-30)', () => {
     // Playback shares running possession by the same passes (grid/playback.ts reads this slot).
     const running = t.running();
     expect([running[M.minutes], running[RUNNING + M.minutes]]).toEqual([30, 20]);
+  });
+});
+
+describe('the score state (MATCH-22 r22, T400)', () => {
+  const SS = AGGREGATE_CONFIG.scoreState as {
+    segments: number;
+    volume: number;
+    risk: number;
+    cap: number;
+  };
+  /** Runs `body` with the score state set as given, then puts it back. */
+  const withState = <T>(set: Partial<typeof SS>, body: () => T): T => {
+    const kept = { ...SS };
+    Object.assign(SS, set);
+    try {
+      return body();
+    } finally {
+      Object.assign(SS, kept);
+    }
+  };
+  /** Each regulation segment's open-play shots by the side ahead and the side behind at its start. */
+  const sharesBehind = (fixtures: Fixture[], w: World) => {
+    let ahead = 0,
+      behind = 0;
+    for (const f of fixtures) {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      const { facts } = playAggregate(w, f, prepared, rosters);
+      const shots = facts.ledger.sides.map((side) =>
+        side.shots.filter((x) => x.period === 'regulation' && x.kind === 'open'),
+      );
+      const span = 90 / 6;
+      const goals = [0, 0];
+      for (let k = 0; k < 6; k++) {
+        const lo = k * span,
+          hi = (k + 1) * span;
+        const lead = goals[0]! - goals[1]!;
+        const n = shots.map((list) => list.filter((x) => x.minute > lo && x.minute <= hi).length);
+        if (lead !== 0) {
+          const [up, down] = lead > 0 ? [n[0]!, n[1]!] : [n[1]!, n[0]!];
+          ahead += up;
+          behind += down;
+        }
+        shots.forEach((list, side) => {
+          goals[side]! += list.filter(
+            (x) => x.outcome === 'goal' && x.minute > lo && x.minute <= hi,
+          ).length;
+        });
+      }
+    }
+    return behind / Math.max(1, ahead + behind);
+  };
+
+  it("a side behind takes a larger share of the later segments' shots than a side ahead", () => {
+    const { w, fixtures } = others(160);
+    const without = withState({ segments: 1, volume: 0, risk: 0 }, () => sharesBehind(fixtures, w));
+    const segmented = withState({ segments: 6, volume: 0.35, risk: 0 }, () =>
+      sharesBehind(fixtures, w),
+    );
+    expect(segmented).toBeGreaterThan(0.5);
+    expect(segmented).toBeGreaterThan(without + 0.05);
+  });
+
+  it('segmented matches reconcile goals, contributors and minutes exactly', () => {
+    const { w, fixtures } = others(60);
+    withState({ segments: 6, volume: 0.3, risk: 0.2 }, () => {
+      for (const f of fixtures) {
+        const { record } = simulateAggregate(w, f);
+        expect(validateFullMatchRecord(record)).toEqual([]);
+        for (const side of [0, 1] as const) {
+          const lines = linesOf(record, side);
+          for (const index of [M.goals, M.shots, M.passes])
+            expect(lines.reduce((n, l) => n + l.metrics[index]!, 0)).toBe(
+              record.metrics[side][index],
+            );
+        }
+        expect(record.metrics[0][M.goals]! + record.metrics[1][M.goals]!).toBe(
+          record.score.home + record.score.away,
+        );
+        for (const h of record.highlights)
+          expect(h.minute).toBeLessThanOrEqual(record.regulation ? 120 : 90);
+      }
+    });
   });
 });
