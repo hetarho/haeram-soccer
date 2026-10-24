@@ -54,8 +54,9 @@
 - not: changing the live pre-feature engine's football; per-player tactical instructions; owner control of freedom
 
 ## domains
-- WEB: WEB-32 running-speed policy (1x = 12 s per open-play minute, 2x start, the set-piece walk-in drawn fast), inspector tendency labels
-- MATCH (now): MATCH-12 uniform mapping with the set-piece walk-in as an explicit presentation exception; settled facts, added time and the engine's recorded dead time unchanged
+- WEB (now): WEB-32 running-speed policy (1x = 12 s per open-play minute, 2x start, the set-piece walk-in drawn fast) →WEB-32
+- WEB (next model revision): inspector tendency labels
+- MATCH (now): MATCH-12 uniform mapping with the set-piece walk-in as an explicit presentation exception; settled facts, added time and the engine's recorded dead time unchanged →MATCH-12
 - MATCH (next model revision): MATCH-17 intentions with manager-set positional freedom, situational disorder and position swaps; tendencies in movement; MATCH-25 views showing it; recalibration under MATCH-28
 - STAFF: how a manager sets each player's freedom (his philosophy/flexibility, the slot's role, the player's ability); no owner control
 - PLAYER: the four tendencies (자유도, 규율, 압박 성향, 예측력) — today attributes plus a hidden stable personality (`motionTraits`); their meaning beside 판단력/위치선정

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r139 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r140 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -111,7 +111,9 @@
 - WEB-31 [o] Background automatic progression keeps preparation controls stable across day calculations, with calendar-wide edit protection under →WEB-97.
   - Preparation remains inspectable during automatic play and initializes from the settled current roster without pausing the clock. Its local previews remain separate from applying changes.
   - Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming). Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers.
-- WEB-32 [o] Match presentation defaults to 1x with exactly 4 real seconds per 60 match seconds of running playback, uniformly in and out of play (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the goal-feedback hold is an explicit presentation transition (→WEB-94). Speed changes preserve the current match-time position and never change settled outcomes or the game calendar.
+- WEB-32 [o] Match presentation opens at 2x; 1x is exactly 12 real seconds per 60 match seconds of running playback (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the set-piece preparation and the goal-feedback hold (→WEB-94) are explicit presentation transitions. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar. ← 1x is for close reading (about 13–14 minutes a match), 2x for ordinary watching (about 7)
+  - Set-piece preparation: before the kick of a corner, free kick or goal kick, the dead interval in which the ball is placed and the players walk to their places is drawn in about 1.5 real seconds at every speed, or at the running speed when that is shorter; the kick and delivery play at the selected speed. ← the owner's time belongs where the football is, while the players still visibly travel instead of appearing in place
+  - Throw-ins, kick-offs, penalties, cards, injuries, substitutions and the ball's retrieval before other restarts keep the running speed.
   - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
 
@@ -499,6 +501,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r140 261024 WEB-32✎ opens at 1x→2x; 1x 4→12 real s per match minute; uniform in and out of play→uniform running play with the corner/free-kick/goal-kick preparation drawn in about 1.5 real s at every speed
 - r139 261024 WEB-91✎ fixed live-pitch styling→theme-driven ground materials, markings and marker outlines across observation/replay/previews/analytical pitches; engine geometry, timing, identity and saved facts preserved
 - r138 261024 WEB-91✎ image-built coverage print/sticker→all registered themes, including standard/pixel; pixel flat CSS surfaces→crisp stepped image frames/materials; standard absent decorative edges→restrained image-built seams; single standard grain tile→reusable static materials, existing typography/art/palettes/default/preferences preserved.
 - r137 261024 WEB-91✎ all-screen image-built controls and surfaces: matchday-print only→matchday-print and sticker-club; retain their distinct materials, frames and icon families, with matchday-print still the registry default.

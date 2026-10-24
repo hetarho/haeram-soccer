@@ -13,11 +13,12 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
-| k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T09:36Z | - |
+| v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:52Z | 2026-10-24T09:52Z | - |
 
 ## inbox
+- 261024 decided T286 T415 T416 T417 T418 T419 T420 ARCH-30 SAVE-23: how to make 105 failing unit tests (31 files) pass with the release switch on without one serial 20-minute task → every test names its release (DISABLED_RELEASE for the pre-feature path that never-activating careers keep, ENABLED_RELEASE for new-career behaviour) and a release-on vitest config proves each file under both switch states, in four parallel lanes plus a timed whole-tier step before T286 flips (alt: flip in T286 and fix all 31 files there | pin every shared fixture world off, leaving most tests on a path new careers no longer play)
+- 261024 decided T422 WEB-32: how a speed-independent 1.5 s preparation fits the 1x-ms clock → the clock's state becomes running match seconds and advances by per-segment rates, so speed changes, seeking and the goal hold keep match time (alt: keep the 1x-ms clock and re-base it on every speed change | compress the frames themselves, which would change what the engine recorded for playback)
+- 261024 decided WEB-32 MATCH-12 ideation/match-viewing-pace-and-freedom: which dead time the fast set-piece walk-in covers → the dead interval before the kick of a corner, free kick or goal kick (ball placed, players walking to their places) drawn in about 1.5 real s at every speed, never slower than the running speed; throw-ins, kick-offs, penalties, cards, injuries, substitutions and retrieval before other restarts keep the running speed (alt: include throw-ins | a fixed 1–2 s even where 8x/16x running play is already shorter)
 - 261024 decided MATCH-28 SAVE-23 ARCH-31 T286 T410: the owner orders the work as release the new engine, implement the ideation items, then measure and fix what differs from real football → MATCH r23, SAVE r52 and ARCH r20 keep throughput, capacity and continuity as activation gates and report accuracy (MATCH-28 equivalence, MATCH-23/29/30) with the release instead of gating it; T286 becomes the release, T410 moves after it as the first step of the later calibration; T411's question (grid attacking-phase redesign) waits for that step (alt: keep the accuracy gate, which T401 shows the release cannot pass soon | drop the throughput and capacity gates too, which would risk saves past SAVE-4's limit)
 - 261024 suggest T411 T410 T286 MATCH-30 MATCH-28 MATCH-23: for the owner — T397, T408 and T411 found no lever that brings the grid's final-third flow (final-third passes 167, box entries 27, front-of-box entries 66, xT 4.7) toward MATCH-30 without taking goals, passes, offsides, ball in play or MATCH-29's pairings outside — the grid scores from many box entries, so fewer entries mean fewer goals → recommend (a) a planned redesign of the grid's attacking phase (an entry worth more as a chance: xG and decision structure, several sessions) before T410 and T286 (alt: (b) rule whether MATCH-30's final-third, entry and xT bands bind this engine's definitions | (c) rule whether MATCH-28 parity covers metrics where the grid misses its band) — a release-criteria choice the autopilot does not relax; T410 and T286 wait
 - 261024 decided WEB-91 T412: match visual theming → shared data/CSS-driven ground materials and marker outlines, preserving simulation, timing, identity and saved playback (alt: repaint football facts or replace the observer, excluded). Audit missed match surfaces and icon optical sizing across all four packs.
@@ -256,11 +257,11 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 20 | 20 | - | 2 |
-| WEB | 139 | 139 | - | 0 |
+| WEB | 140 | 140 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 23 | 23 | - | 0 |
+| MATCH | 24 | 24 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 34 | 34 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -278,8 +279,16 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
+| T415 | Explicit test releases and a release-on unit probe | SAVE ARCH | - | todo |
+| T416 | Valid full records from every settlement path of an activated world | MATCH SAVE HIST ARCH | T415 | todo |
+| T417 | Engine path tests build their worlds with an explicit release | MATCH SAVE ARCH | T415 | todo |
+| T418 | Web runtime and persistence tests name the container they expect | SAVE WEB ARCH | T415 | todo |
+| T419 | Digests and calibration guards fix the model they guard | MATCH SAVE ARCH | T415 | todo |
+| T420 | The unit tier green and timed with the release switch on | SAVE ARCH | T416 T417 T418 T419 | todo |
+| T421 | 1x at 12 seconds a match minute, matches opening at 2x | WEB MATCH | - | todo |
+| T422 | Set-piece preparation drawn in about 1.5 real seconds | WEB MATCH | T421 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -293,14 +302,17 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 
 ## next
-- implement-task T286 (start from its switch-on probe notes: the activated seasons' invalid records first; release: throughput, capacity and continuity checks, then `MATCH_MODEL_RELEASE` on, accuracy reported); then the ideation items (own-club-match-edge, match-viewing-pace-and-freedom); then T410 and the calibration it names (T411's grid attacking-phase redesign among them)
-- update-ssot WEB-32 MATCH-12 (owner, ideation/match-viewing-pace-and-freedom): 1x = 12 s per open-play minute, matches open at 2x, the set-piece walk-in drawn fast (owner reviews it in play before further dead-ball compression); then update-ssot MATCH-17 STAFF PLAYER WEB for the freedom bundle as the model revision after T286's activation. WEB is at r139; T412 is complete, so its match-theme UI no longer blocks the speed change in `presentationClock.ts` WATCH_MINUTE_MS
+- work group v9n4-release (v9n4): T415 → lanes release-settle T416, release-grid T417, release-web T418, release-guards T419 → T420 → T286 (flip, benchmarks, accuracy report, docs; start from its switch-on probe notes); lane viewing-pace T421 → T422 beside it; then T410 (explore, main session) and the calibration it names
+- update-ssot MATCH-17 STAFF PLAYER WEB for the freedom bundle (ideation/match-viewing-pace-and-freedom) as the model revision after T286's activation; the owner reviews T422's set-piece pace in play before any further dead-ball compression
 - ideation own-club-match-edge 계속 (owner): first re-run its probe on the candidate model, then choose A/B/C/D
 - resume (t5q2 261024): T372 is done as measured on 4389396a (w6p4; context only, not release evidence) and T384 is done on main; the history-activation lane (T402, T306–T308) is done and integrated; the calibration chain T396 → T397 → T398 → T399 (grid) → T400 (aggregate, MATCH r22 segments) → T401 (pilot-size parity on the M1 Max, no condition equivalent) is done; its follow-ups T408 (grid MATCH-30 flow, nothing kept), T409 (aggregate added time kept) and T411 (attack endings, nothing kept) are done; the owner's answer to T411's question (inbox suggest) comes before T410 (re-read) and T286's final gate. Validation rounds spent: 11–26, 30–34, 40, 44, 46–67; calibration round 41 used by T374, 50 by T375, 51 by T370, 52 by T371, 55 by T384, 57 by T397, 58 by T398, 59 by T399, 60 by T400, 61 by T408, 62 by T409, 63 by T411.
 - T346/T347 are complete and owner-approved for publication on main; their focused/browser checks are recorded in their completed tasks, with full engine/browser-family suites and CI unclaimed. FORMAT: migrate reference-kind notation before adopting typed SSOT arrows.
 - known flaky checks: Chromium on a loaded host — manual-progression "next-match-eve-with-all-delegated 390" (club hub after import, 261022); club-identity-founding "exact previewed design … after reload" and growth-core "19-player advice floats" (fixed in 5f80730 by measuring at 1/64 px); Firefox CI — staff.spec.ts:80 and :247 at the mediation dialog's 단장 우선 radio `.check()` (`tests/e2e/events.ts`); unit shard 1/3 can exceed `build.tradeoffs.test.ts`'s 300 s timeout on a slow runner. test-world caches (`node_modules/.cache/haeram-worlds/<hash>`, ~1 GB per source tree) fill the disk; prune to the newest two hashes before each batch gate.
 
 ## log
+- 261024 create-task WEB r140 MATCH r24 + T286 split (v9n4): T415 (explicit test releases, release-on probe) → T416 settlement records, T417 engine tests, T418 web tests, T419 guards (lanes) → T420 release-on tier → T286; viewing pace T421 → T422 (lane); T286 base WEB@140 MATCH@24, dep + T420 T422; T410 base MATCH@24 (no content change)
+- 261024 update-ssot WEB r140 MATCH r24 (v9n4): ideation match-viewing-pace-and-freedom v1 — 1x 12 s per open-play minute, matches open at 2x, the corner/free-kick/goal-kick preparation drawn in about 1.5 real s; T286 (todo) cites WEB-32 and MATCH-12, its continuity journey and frame checks follow the new pacing; the freedom bundle stays the model revision after T286
+- 261024 v9n4 start (autopilot, orchestrator): merged origin/main 5bd03574; removed 145 finished worktrees (branches kept; orphan and dirty heads under refs/archive/worktrees/*), disk 3.9 → 19 GiB free; stale active rows d4n8, k2r7, m8p2 ended (owner: no other session runs)
 - 261024 T286 probe (t5q2): the release switch on fails 105 unit tests in 31 files and takes the unit tier to about 20 minutes, with invalid records in activated seasons (season.settle) as the first blocker; findings in T286's impl notes, the flip on wip/t5q2; T286 back to todo for the next session
 - 261024 T412 done (m8p2): image-built match surfaces/icons and themed live/replay/preview/analysis grounds; source 341b83cf + 43174387, verified integrated source 09c85daa. Full units 2039+4 skips, contracts39, type/lint/format/build/catalogs/resources pass. Merged Chromium263/265 then both ENOSPC artifact failures pass2/2 after obsolete-cache cleanup; core theme/legacy cases pass across all browsers, 25 manual states reviewed. WEB139; ARCH base19→20 unrelated ARCH-31 planning delta. Sources/provenance retained; 792 scratch files removed. Origin pulled including neutral T411/recovery changes, main publication authorized; hosted CI deferred by owner.
 - 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
@@ -318,8 +330,3 @@
 - 261024 T405 done (m8p2): rebuilt pixel/standard as image UI while retaining fonts, icon/facility families and palettes; code a41a6c38, 62 assets with editable sources/prompts and checklist updates. WEB138/ARCH19; type/lint/format/build, 54 changed units, 2025 full units + 4 skips, 39 contracts, catalogs/presentation/assets pass. Reviewed 172 states; Chromium 259/263 initially, all four failures resolved by focused checks, final 24/24 affected cases pass across three browsers. Removed task-owned scratch; origin pulled and main publication authorized. Hosted CI deferred by owner.
 - 261024 WEB r138 tasked as T405 doing (m8p2): retain pixel/standard typography, icon/facility families and palettes; rebuild UI skins/materials across all screens using shared image assembly and per-pack assets. No TSX theme branches or registry/default changes. T286 base WEB@137→138, unrelated WEB-91 delta only; gameplay tasks otherwise unchanged.
 - 261024 WEB r138 planned (m8p2): image-built coverage extends from print/sticker to standard/pixel while preserving each established direction. Standard uses low-contrast material seams; pixel keeps crisp angular geometry. Pending WEB-91✎; T286/T400/T401 do not cite this decision, so their gameplay scope is unchanged.
-- 261024 update-ssot WEB start (m8p2): owner requests pixel and stadium-green rebuilt with the image-theme production method, retaining their existing feel, then commit/push. Origin pulled at ebcdac46; current checkout explicitly assigned, no questions requested. Preserve print/sticker, registry default, stable preferences, game data and live pitch. Spec CLI unavailable; use direct spec checks.
-- 261024 T404 done (m8p2): readable dropdowns/transport, inset and separated controls, distinct print/sticker cues and single solid focus; compact match overflow corrected. Code 7c054050 + 5d92a965; type/lint/format/build, 2025 units + 4 skips, 39 contracts, catalogs/presentation/assets pass. Chromium audit 164 states; new checks 12/12 across all browsers; full Chromium 258/259 then corrected match specs 9/9 cover all 259. Checklist updated; no SSOT policy change. Origin pulled, publication authorized; hosted CI deferred by owner.
-- 261024 T404 start (m8p2): owner requests readable text, breathing room and concept-appropriate detail in both image-built themes. Origin pulled at 76daccd9; current checkout explicitly assigned, spec CLI unavailable. Enforce existing WEB-10/38/91: isolate popup colors, fix selected-state specificity, inset/separate menu rows, remove duplicate focus outlines and replace generic dotted decoration with theme-specific cues. Preserve keyboard focus and meaningful diagram/status distinctions; no policy change.
-- 261024 fix e2e (t5q2): CI on 76daccd9 failed two journeys the change does not reach — live-state's scorer-trend click lost to the match eve's backdrop on a slow WebKit run, and styled-select's player inspector listed 21 after a dismissal in the founded world's random match; the click now stops once the eve's dialog is up and the inspector needs at least 20; both specs 18/18 on Chromium, WebKit and Firefox
-- 261024 T399 done (t5q2; explore, kept p5): the ball-side wing-back of a back three closes 0.4 toward the ball's line, the wide centre-back steps 3 m out, a pressed cross loses 0.15 × pressure; validation rounds 61+62: balanced's xG conceded −0.041 outside → −0.017 insufficient, counter ≥ press 0.026 insufficient, MATCH-29 20 → 23, MATCH-30 9 → 10, MATCH-23 36 → 35, curve 2.15, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
