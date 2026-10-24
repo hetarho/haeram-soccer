@@ -13,6 +13,21 @@ export const AGGREGATE_CONFIG = {
   },
   /** Seconds of a period the ball is in play (MATCH-23: 54–58 of 90 minutes). */
   ballInPlay: 0.62,
+  /**
+   * The score state (MATCH-22 r22, T400): regulation is read as `segments` consecutive time
+   * segments (at most six). A side's open-play chances in a segment are kept by the lead it starts
+   * the segment with (own goals minus the opponent's, clamped to ±`cap`): at the base rate
+   * × `e^(−volume × lead)`, so a side behind shoots more and a side ahead less, and a goal of a
+   * side ahead `e^(risk × lead)` times as often again, the space a chasing side leaves. Chances
+   * are drawn `e^(max(|volume|, |risk − volume|) × cap)` times as often first (an arrival's chance
+   * still at most 0.9), and each is kept at its share over the factor it was drawn at, so a level
+   * score keeps the base rate and no share exceeds one. One ordered pass on its own stream, after every chance is drawn and before the
+   * set pieces; set-piece goals do not move the state. One segment is the joint draw without a
+   * score state. T400 keeps six segments, volume 0.4 and risk 0.4: against the grid on the same
+   * fixtures the team-match correlations shots~goals 0.480 → 0.242 (grid 0.239), xG~goals and key
+   * passes~assists become equivalent, draws too, with goals and shots held.
+   */
+  scoreState: { segments: 6, volume: 0.4, risk: 0.4, cap: 2 },
   /** The match's shared latent state: its tempo and how the ball splits beyond the prepared chance. */
   latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12 },
   possession: {
@@ -80,7 +95,8 @@ export const AGGREGATE_CONFIG = {
     completion: 0.33,
   },
   /** Scale on the reference cross share of a cell's passes. */
-  crosses: { scale: 0.6, completion: 0.17, goalArea: 0.25 },
+  /** T400: 0.6 / 0.17 → 0.69 / 0.14 toward the grid's crosses (18.6 a team, 22% completed). */
+  crosses: { scale: 0.69, completion: 0.14, goalArea: 0.25 },
   /** Completed passes of each kind played beyond an opponent line. */
   lineBreaking: { short: 0.1, long: 0.45, through: 0.9 },
   /**
@@ -88,14 +104,17 @@ export const AGGREGATE_CONFIG = {
    * T369: touch 0.42 → 0.39, since passes played wide of the box now fail toward the touchline
    * (MATCH-23 throw-ins 21.9 → 20.4 a team, as before them). T384: offside 0.06 / 0.3 → 0.064 /
    * 0.32, so calls average 1.7–1.9 a team (MATCH-23 r21; 1.70 → 1.81 on validation rounds 55–56).
+   * T400: touch 0.39 → 0.34, byline 0.7 → 0.62, intercepted 0.16 → 0.18 and corner 0.32 → 0.26
+   * toward the grid's throw-ins (17.6), goal kicks (8.9), interceptions and corners (4.5), with
+   * the more and less completed crosses above.
    */
   failed: {
     offside: { forward: 0.064, through: 0.32 },
-    touch: 0.39,
-    byline: 0.7,
-    intercepted: 0.16,
+    touch: 0.34,
+    byline: 0.62,
+    intercepted: 0.18,
     /** Of the byline outs from a cross or a pass into the box, deflections giving a corner. */
-    corner: 0.32,
+    corner: 0.26,
     /**
      * Of the rest, the loose balls the opponent wins (T323, →MATCH-13 high turnovers): `share`
      * times the opponent preset's `press`, at most `max`; the passing side keeps the others. T327
@@ -130,9 +149,10 @@ export const AGGREGATE_CONFIG = {
     /**
      * Scale on the reference shot share of a cell, per completed arrival of each kind. T323: 0.565 →
      * 0.5 and the outside place 1.7 → 2.1, so box shots reach MATCH-30 (6.8–7.7 a team) with the
-     * shots and shot-place rows of MATCH-23 inside.
+     * shots and shot-place rows of MATCH-23 inside. T400: 0.5 → 0.52, the goals the less completed
+     * crosses took (2.64 → 2.76 a match, the grid 2.9).
      */
-    scale: 0.5,
+    scale: 0.52,
     kind: {
       short: 1,
       long: 0.9,
@@ -211,7 +231,9 @@ export const AGGREGATE_CONFIG = {
    * MATCH-29's bands with forced pairings that seated each club's XI in the forced formation's
    * slots; T323 re-measured them with squads built for the forced formation at equal strength
    * (T321's conditioning) and kept them: MATCH-29 20 inside, 0 outside, 5 insufficient of 25 on
-   * calibration seeds (docs/CALIBRATION.md, T323).
+   * calibration seeds (docs/CALIBRATION.md, T323). T400 fits the guards to the grid's pairings on
+   * the same fixtures: balanced 0.94 → 1 (its pairings scored 0.2–0.8 goals fewer than the grid's)
+   * and counter 0.95 → 0.9 (possession beat counter 6–8 points more often than on the grid).
    */
   tactics: {
     balanced: {
@@ -222,7 +244,7 @@ export const AGGREGATE_CONFIG = {
       fouls: 1,
       press: 1,
       shot: 1,
-      guard: 0.94,
+      guard: 1,
     },
     possession: {
       tempo: 1.06,
@@ -242,7 +264,7 @@ export const AGGREGATE_CONFIG = {
       fouls: 1,
       press: 0.8,
       shot: 1.2,
-      guard: 0.95,
+      guard: 0.9,
     },
     press: {
       tempo: 1.02,

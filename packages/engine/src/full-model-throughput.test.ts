@@ -88,10 +88,13 @@ const facts = (w: World) => ({
  * candidate rounds only (the aggregate path untouched); 294f1d9b278a1461 before. T398's late box
  * runs and shot scale changed them again; 8fd84923e38c3aa5 before. T399's flank beside a back three
  * and pressed crosses left both unchanged: the two rounds' own grid matches settled the same facts.
+ * T400's score-state segments and level, cross and tactic-guard recalibration changed both (the
+ * candidate rounds through their aggregate fixtures); a8d299718d0919a0 and 93e1b3f124830eb1
+ * before.
  */
 const BEFORE = {
-  aggregateRecords: 'a8d299718d0919a0',
-  candidateRounds: '93e1b3f124830eb1',
+  aggregateRecords: 'e1a19359f49581e0',
+  candidateRounds: 'e307acad9c517fe3',
 };
 
 describe('complete-result throughput (T285)', () => {

@@ -145,6 +145,7 @@ export const AGGREGATE_STREAM_FAMILIES = [
   'attribution',
   'shootout',
   'loose',
+  'scoreState',
 ] as const;
 export type AggregateStreamFamily = (typeof AGGREGATE_STREAM_FAMILIES)[number];
 /**
