@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { FORMATIONS } from '../player';
 import { playGrid } from './engine';
 import {
@@ -25,8 +26,9 @@ import type { TraceEntry } from './trace';
 import { gridKit } from './testkit';
 
 // Side 0 plays possession (4-3-3: 1 inverted full-back, 4 overlapping full-back, 7 deep-lying
-// playmaker, 9 false nine), side 1 balanced (3-5-2).
-const kit = gridKit(['possession', 'balanced'], 'intention-lab');
+// playmaker, 9 false nine), side 1 balanced (3-5-2). The pre-feature path's kit: candidate cases
+// set the setup's model.
+const kit = gridKit(['possession', 'balanced'], 'intention-lab', DISABLED_RELEASE);
 const TOP = (SHAPE_CONFIG.speed.base + SHAPE_CONFIG.speed.pace) * SHAPE_CONFIG.recoverySpeed;
 const CARRY = MOTION_STATES.indexOf('carry');
 

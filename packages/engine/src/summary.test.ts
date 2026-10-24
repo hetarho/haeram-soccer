@@ -1,18 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, World } from '../../contracts/src/types';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { INJURY } from './careers';
 import { createWorld, ownLeagueClubs } from './index';
 import { simulateMatch, SUMMARY_DISCIPLINE } from './match';
 
-/** Fixtures between clubs nobody owns: every one takes the probabilistic path (→MATCH-22). */
+/**
+ * Fixtures between clubs nobody owns: every one takes the probabilistic path (→MATCH-22) — the
+ * pre-feature summary path, which careers that never activate the model keep (→SAVE-23).
+ */
 function others(n: number) {
-  const w: World = createWorld({
-    country: 'ENG',
-    name: 'Watching Town',
-    color: '#334466',
-    seed: 'summary-path',
-    level: 'normal',
-  });
+  const w: World = createWorld(
+    {
+      country: 'ENG',
+      name: 'Watching Town',
+      color: '#334466',
+      seed: 'summary-path',
+      level: 'normal',
+    },
+    DISABLED_RELEASE,
+  );
   const league = new Set(ownLeagueClubs(w).map((c) => c.id));
   const fixtures = w.fixtures.filter(
     (f) => f.home !== w.playerClub && f.away !== w.playerClub && !league.has(f.home),
