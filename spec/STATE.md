@@ -16,6 +16,7 @@
 | v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:52Z | 2026-10-24T09:52Z | - |
 
 ## inbox
+- 261025 decided MATCH-12 T426: with a 3 m shielding radius 58% of passes still came from a receiver standing on the ball (pressers stand 1.2 m goal-side) and frozen opponents lifted goals 2.89 → 3.17 → MATCH r27: a pressed carrier shields on the move away from the nearest opponent and everyone moves on his intention during the carry; only hold-ups, lay-offs, keepers and restart takers stand; T426's target restated on its drawn-hold measure without those spells, at most 0.05 (alt: keep the 3 m shield with everyone moving, about 0.34 | keep the spec with frozen opponents and leave the goals to T410)
 - 261025 decided MATCH-17 STAFF-46 PLAYER-26 SAVE-23 T430 T431 T432 T433 ideation/match-viewing-pace-and-freedom: the freedom bundle's open points → it ships as match-model revision 2 that careers on revision 1 take prospectively at the next safe boundary, settled matches replaying under their own revision (alt: keep revision 1 careers on it for good); freedom = manager flexibility × role creativity × 판단력, an interim giving the neutral flexibility 50; 예측력 sets reaction time, 위치선정 position and 판단력 decisions so nothing counts twice; post-match views stay touch-based heat maps and pass network (alt: retain off-ball average positions, more saved data per match); T410's re-read waits for T433 (alt: re-read revision 1 first)
 - 261025 decided ideation/own-club-match-edge T434: tasks before the owner's A/B/C/D choice → only the probe on the released model (T434, explore 3 h), which records the figures and a recommendation; the choice stays open (alt: decide B, symmetric context, now)
 - 261024 decided MATCH-12 T426 T286: the owner reports that a player on the ball always stops (measured: candidate holds still for most of 11.3% of holds, the live pre-feature path 24%; the engine waits on the ball until the kick so the ball lands as the action ends) → MATCH r25: he takes it in stride and the action is resolved from the kick spot, on the candidate before T286's flip, so the release measures the final model and no model revision follows it (alt: after activation as a model revision | a playback-only carry, which would kick from a spot the engine never recorded)
@@ -265,7 +266,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 26 | 26 | - | 0 |
+| MATCH | 27 | 27 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -309,6 +310,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 decide T426 + update-ssot MATCH r27 (v9n4): pressed carriers shield on the move, everyone moves during the carry; T426 base MATCH@27
 - 261025 update-ssot MATCH r26 STAFF r35 PLAYER r10 SAVE r53 + create-task T430–T434 (v9n4): the freedom bundle as model revision 2 (T430 → T431 → T432 explore → T433 explore, after T286), the own-club edge probe T434 (explore, after T286); T410 dep + T433; ideation match-viewing-pace-and-freedom converted
 - 261025 create-task T427 (v9n4): T420's limit — `closeSeason` reduces the own material before `promote` plays the promotion playoff, so the playoff keeps its material against MATCH-5; T286 dep + T427
 - 261024 T420 integrated
@@ -328,4 +330,3 @@
 - 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
 - 261024 update-ssot MATCH-28 SAVE-23 ARCH-31 + create-task T286 T410 (t5q2): activation gated by throughput, capacity and continuity, accuracy reported (MATCH r23, SAVE r52, ARCH r20); T286 is the release, T410 follows it
 - 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
-- 261024 T411 done (t5q2; explore exit, nothing kept): a malus on passes within the final third with fewer entries and the offside call 0.06 took final-third completed 112 → 80 (inside), box entries 27 → 21, xT 4.7 → 3.9 with offsides and tackles held, but goals 2.89 → 2.5; patience lost passes; owner question parked (grid attacking-phase redesign vs MATCH-30/MATCH-28 scope); T410 and T286 wait
