@@ -44,7 +44,7 @@ import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { slotOvr } from '../world';
 import { buildAggregateInput } from './input';
-import { AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
+import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
@@ -277,7 +277,8 @@ export function aggregateAddedTime(
   for (const x of incidents)
     credits[periodOf(x.minute)]! +=
       x.kind === 'sub' ? K.sub : x.kind === 'injury' ? K.injury : K.card;
-  return credits.slice(0, periods).map((seconds, i) => {
+  return credits.slice(0, periods).map((credited, i) => {
+    const seconds = credited + AGGREGATE_CONFIG.addedSeconds[i]!;
     const [lo, hi] = ADDED_CONFIG.bounds[i]!;
     return Math.min(hi, Math.max(lo, Math.ceil(seconds / 60)));
   });

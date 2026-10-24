@@ -28,6 +28,14 @@ export const AGGREGATE_CONFIG = {
    * passes~assists become equivalent, draws too, with goals and shots held.
    */
   scoreState: { segments: 6, volume: 0.4, risk: 0.4, cap: 2 },
+  /**
+   * Added time the aggregate's stoppages leave out (T409): seconds credited to each period
+   * (first half, second half, extra-time halves) before `ADDED_CONFIG`'s rounding and bounds.
+   * Neutral at 0. T409 keeps 20 s and 30 s for the halves: added time against the grid on the
+   * same fixtures −0.94 → −0.21 minutes a match, the stoppages (restarts, set pieces, VAR-free
+   * delays) the aggregate's goals, cards, changes and injuries do not credit.
+   */
+  addedSeconds: [20, 30, 0, 0],
   /** The match's shared latent state: its tempo and how the ball splits beyond the prepared chance. */
   latent: { tempoSd: 0.06, possessionSd: 0.025, attackSd: 0.12 },
   possession: {
@@ -227,7 +235,8 @@ export const AGGREGATE_CONFIG = {
   /**
    * How each preset plays the ball beyond its profile points (→MATCH-8): `shot` scales its own
    * open-play shots per completed arrival (possession: fewer direct shots), `guard` the opponent's
-   * chance rate against it (balanced: defensive stability). T284 calibrated `shot` and `guard` on
+   * chance rate against it (balanced: defensive stability), `secondYellow` its second cautions
+   * beside `fouls` (T409, neutral at 1). T284 calibrated `shot` and `guard` on
    * MATCH-29's bands with forced pairings that seated each club's XI in the forced formation's
    * slots; T323 re-measured them with squads built for the forced formation at equal strength
    * (T321's conditioning) and kept them: MATCH-29 20 inside, 0 outside, 5 insufficient of 25 on
@@ -245,6 +254,7 @@ export const AGGREGATE_CONFIG = {
       press: 1,
       shot: 1,
       guard: 1,
+      secondYellow: 1,
     },
     possession: {
       tempo: 1.06,
@@ -255,6 +265,7 @@ export const AGGREGATE_CONFIG = {
       press: 1,
       shot: 0.85,
       guard: 1,
+      secondYellow: 1,
     },
     counter: {
       tempo: 0.92,
@@ -265,6 +276,7 @@ export const AGGREGATE_CONFIG = {
       press: 0.8,
       shot: 1.2,
       guard: 0.9,
+      secondYellow: 1,
     },
     press: {
       tempo: 1.02,
@@ -275,6 +287,7 @@ export const AGGREGATE_CONFIG = {
       press: 1.35,
       shot: 1,
       guard: 1,
+      secondYellow: 1,
     },
   } satisfies Record<Tactic, Record<string, number>>,
 } as const;
