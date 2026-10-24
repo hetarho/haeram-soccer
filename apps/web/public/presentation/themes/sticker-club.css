@@ -2,6 +2,27 @@
 @import './image-ui-controls.css';
 
 html[data-theme='sticker-club'] {
+  /* Pitch materials are presentation roles; kits, motion and clocks remain recorded facts. */
+  --pitch-ground: #174b3a;
+  --pitch-stripe: #21634b;
+  --pitch-stripe-alt: #2b7451;
+  --pitch-line: #f4efca;
+  --pitch-goal: #fff6d8;
+  --pitch-marker-outline: #fff4cf;
+  --pitch-ball: #fff9e8;
+  --pitch-ball-edge: #0b3628;
+  --pitch-ball-seam: #cd4a17;
+  --pitch-carrier: #fff0ab;
+  --pitch-selection: #ffb12c;
+  --pitch-idle-text: #fff4cf;
+  --pitch-line-width: 1.8;
+  --pitch-marker-width: 2.2;
+  --pitch-pixel-size: 0;
+  --pitch-texture-opacity: 0.1;
+  --pitch-texture-size: 256;
+  --pitch-texture: var(--image-canvas-material);
+  --pitch-chart-ground: var(--image-dark-fill, var(--image-ink-color));
+
   --image-art-frame-button: url('../../art/sticker-club/ui/frame-button.webp');
   --image-art-frame-dark: url('../../art/sticker-club/ui/frame-dark.webp');
   --image-art-frame-selected: url('../../art/sticker-club/ui/frame-selected.webp');

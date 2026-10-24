@@ -25,6 +25,11 @@ const playback = simulateMatch(
 );
 
 describe('live match charts', () => {
+  it('keeps chart lines above 3:1 contrast on each active theme ground', () => {
+    const kit = '#0b1f44';
+    for (const surface of ['#191b16', '#123b2e', '#10251b', '#0c0f10'])
+      expect(contrast(seriesColour(kit, surface), surface)).toBeGreaterThanOrEqual(3);
+  });
   it('reveals data only up to the presented frame', () => {
     const [home, away] = chartSeries(playback, 30, 'xg');
     expect(home).toHaveLength(30);

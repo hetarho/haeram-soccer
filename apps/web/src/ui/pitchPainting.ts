@@ -1,0 +1,195 @@
+/** Presentation-only pitch roles. Coordinates, shirts and clocks remain with their owners. */
+const COLORS = {
+  ground: '#253b31',
+  chartGround: '#07110e',
+  stripe: '#2b4538',
+  stripeAlt: '#304b3d',
+  line: '#d7dcc598',
+  goal: '#e8efe6aa',
+  markerOutline: '#ffffffcc',
+  ball: '#ffffff',
+  ballEdge: '#21392a',
+  ballSeam: '#21392a',
+  carrier: '#e8c15a',
+  selection: '#f1f0e8',
+  idleText: '#d7dcc5',
+};
+
+export interface PitchSkin extends Record<keyof typeof COLORS, string> {
+  lineWidth: number;
+  markerWidth: number;
+  pixelSize: number;
+  textureOpacity: number;
+  textureSize: number;
+  texture?: HTMLImageElement;
+  textureUrl?: string;
+}
+
+export const DEFAULT_PITCH_SKIN: PitchSkin = Object.freeze({
+  ...COLORS,
+  lineWidth: 1.4,
+  markerWidth: 1.2,
+  pixelSize: 0,
+  textureOpacity: 0,
+  textureSize: 160,
+});
+
+export function resolvePitchSkin(style: Pick<CSSStyleDeclaration, 'getPropertyValue'>): PitchSkin {
+  const value = (key: string) =>
+    style.getPropertyValue(`--pitch-${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`).trim();
+  const numeric = (key: keyof PitchSkin, min: number, max: number) => {
+    const text = value(key);
+    const number = Number(text);
+    return text && Number.isFinite(number) && number >= min && number <= max
+      ? number
+      : (DEFAULT_PITCH_SKIN[key] as number);
+  };
+  return Object.freeze({
+    ...Object.fromEntries(
+      Object.entries(COLORS).map(([key, fallback]) => [key, value(key) || fallback]),
+    ),
+    lineWidth: numeric('lineWidth', 0.5, 3),
+    markerWidth: numeric('markerWidth', 0.5, 3),
+    pixelSize: numeric('pixelSize', 0, 4),
+    textureOpacity: numeric('textureOpacity', 0, 1),
+    textureSize: numeric('textureSize', 16, 512),
+  }) as PitchSkin;
+}
+
+/** The existing live geometry: all render treatments use this same projection. */
+export const markerRadius = (width: number) => Math.max(6, width * 0.011);
+
+export function paintPitchGround(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  skin: PitchSkin = DEFAULT_PITCH_SKIN,
+) {
+  const pad = width * 0.065;
+  const fw = width - pad * 2;
+  const fh = height - pad * 2;
+  const x = (v: number) => pad + (fw * v) / 100;
+  const y = (v: number) => pad + (fh * v) / 100;
+  ctx.save();
+  ctx.fillStyle = skin.ground;
+  ctx.fillRect(0, 0, width, height);
+  for (let stripe = 0; stripe < 10; stripe++) {
+    ctx.fillStyle = stripe % 2 ? skin.stripe : skin.stripeAlt;
+    ctx.fillRect(pad + (fw * stripe) / 10, pad, fw / 10 + 0.5, fh);
+  }
+  if (skin.texture && skin.textureOpacity) {
+    const pattern = ctx.createPattern(skin.texture, 'repeat');
+    if (pattern) {
+      ctx.save();
+      const sx = skin.textureSize / skin.texture.naturalWidth;
+      const sy = skin.textureSize / skin.texture.naturalHeight;
+      ctx.scale(sx, sy);
+      ctx.globalAlpha = skin.textureOpacity;
+      ctx.fillStyle = pattern;
+      ctx.fillRect(0, 0, width / sx, height / sy);
+      ctx.restore();
+    }
+  }
+  ctx.strokeStyle = skin.line;
+  ctx.lineWidth = skin.lineWidth;
+  ctx.strokeRect(pad, pad, fw, fh);
+  ctx.beginPath();
+  ctx.moveTo(x(50), pad);
+  ctx.lineTo(x(50), y(100));
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(x(50), y(50), fw * 0.09, fh * 0.15, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  for (const side of [0, 1]) {
+    ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);
+    ctx.strokeRect(x(side === 0 ? 0 : 94), y(38), fw * 0.06, fh * 0.24);
+    ctx.fillStyle = skin.goal;
+    ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
+  }
+  ctx.restore();
+}
+
+/** One replaceable static surface per mounted pitch; rAF only blits it. */
+export function createGroundPainter(
+  makeCanvas: () => HTMLCanvasElement = () => document.createElement('canvas'),
+) {
+  let surface: HTMLCanvasElement | undefined;
+  let previous: { width: number; height: number; dpr: number; skin: PitchSkin } | undefined;
+  return {
+    draw(
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number,
+      dpr: number,
+      skin: PitchSkin,
+    ) {
+      if (width <= 0 || height <= 0) return;
+      surface ??= makeCanvas();
+      if (
+        !previous ||
+        previous.width !== width ||
+        previous.height !== height ||
+        previous.dpr !== dpr ||
+        previous.skin !== skin
+      ) {
+        // Pixel art changes the static raster density, never player coordinates or interpolation.
+        const scale = skin.pixelSize ? 1 / skin.pixelSize : dpr;
+        surface.width = Math.ceil(width * scale);
+        surface.height = Math.ceil(height * scale);
+        const ground = surface.getContext('2d');
+        if (!ground) {
+          paintPitchGround(ctx, width, height, skin);
+          return;
+        }
+        ground.setTransform(scale, 0, 0, scale, 0, 0);
+        ground.imageSmoothingEnabled = !skin.pixelSize;
+        paintPitchGround(ground, width, height, skin);
+        previous = { width, height, dpr, skin };
+      }
+      ctx.save();
+      ctx.imageSmoothingEnabled = !skin.pixelSize;
+      ctx.drawImage(surface, 0, 0, width, height);
+      ctx.restore();
+    },
+  };
+}
+
+/** A theme's ball contour, with the same centre and bounds in every treatment. */
+export function paintPitchBall(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  skin: PitchSkin,
+) {
+  ctx.save();
+  ctx.beginPath();
+  if (skin.pixelSize) {
+    for (const [index, [px, py]] of [
+      [-0.5, -1],
+      [0.5, -1],
+      [0.5, -0.5],
+      [1, -0.5],
+      [1, 0.5],
+      [0.5, 0.5],
+      [0.5, 1],
+      [-0.5, 1],
+      [-0.5, 0.5],
+      [-1, 0.5],
+      [-1, -0.5],
+      [-0.5, -0.5],
+    ].entries()) {
+      if (index) ctx.lineTo(x + px! * radius, y + py! * radius);
+      else ctx.moveTo(x + px! * radius, y + py! * radius);
+    }
+    ctx.closePath();
+  } else ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.fillStyle = skin.ball;
+  ctx.fill();
+  ctx.strokeStyle = skin.ballEdge;
+  ctx.lineWidth = Math.min(1.5, skin.markerWidth);
+  ctx.stroke();
+  ctx.fillStyle = skin.ballSeam;
+  ctx.fillRect(x - radius * 0.2, y - radius * 0.2, radius * 0.4, radius * 0.4);
+  ctx.restore();
+}

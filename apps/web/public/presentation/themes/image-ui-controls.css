@@ -1,5 +1,149 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
 html[data-theme] {
+  /* Match-specific containers keep their compact layout while taking the same image materials. */
+  [data-ui='match-theatre'] {
+    border: 1px solid transparent;
+    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 5px stretch;
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-testid='match-score'],
+  [data-ui='match-chart'] {
+    --text: var(--image-on-dark);
+    --text-muted: var(--image-on-dark-muted);
+    --text-faint: var(--image-on-dark-muted);
+    --line: var(--image-table-line);
+    --line-strong: var(--image-on-dark-muted);
+    color: var(--image-on-dark);
+    background: var(--pitch-chart-ground) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+    border-color: transparent;
+  }
+
+  [data-testid='match-score'] > strong {
+    color: var(--image-ink-color);
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-ui='match-theatre'] [data-ui='icon'] {
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: var(--image-ink-color);
+  }
+
+  [data-ui='match-theatre'] [data-ui='icon'] > [data-pixel-icon] {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  [data-ui='match-chart'] > header > button {
+    color: var(--image-ink-color);
+    min-height: 44px;
+  }
+
+  [data-ui='match-actions'] small {
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  [data-ui='match-meta'],
+  [data-ui='match-feedback'],
+  [data-ui='match-actions'] {
+    color: var(--image-ink-color);
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-ui='match-feedback'] {
+    border-radius: 0;
+    border-bottom: 1px solid var(--image-table-line);
+  }
+
+  [data-ui='match-commentary'] {
+    color: var(--image-ink-color);
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  [data-ui='match-commentary'] > span {
+    color: var(--image-accent);
+  }
+
+  [data-ui='match-tactics'],
+  [data-testid='match-kit-unrecorded'] {
+    color: var(--image-on-dark);
+    background: var(--pitch-chart-ground) var(--image-dark-material) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  [data-ui='possession-cue'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px;
+    border: 2px solid transparent;
+    border-image: var(--image-button-frame) var(--image-frame-slice, 54) / 3px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  [data-ui='possession-cue'] > i:first-child {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--pitch-ball-edge);
+    background: var(--pitch-ball);
+    box-shadow: none;
+  }
+
+  [data-ui='possession-cue'] > i:last-child {
+    display: inline;
+    font-size: 12px;
+  }
+
+  [data-ui='goal-cue'] {
+    border: 4px solid transparent;
+    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 7px stretch;
+    background: var(--image-primary) var(--image-primary-material) repeat;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-primary);
+  }
+
+  [data-ui='goal-cue'] strong {
+    color: var(--image-on-primary);
+  }
+
+  @media (max-width: 760px) {
+    [data-testid='match-score'] > span {
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      gap: 2px 4px;
+    }
+
+    [data-testid='match-score'] > span > b[aria-hidden='true'] {
+      flex: 0 0 auto;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    [data-testid='match-score'] > span > [data-ui='possession-cue'] {
+      order: 4;
+      flex-basis: 100%;
+      justify-content: center;
+      padding: 1px 3px;
+    }
+  }
+
   --control-hover-filter: brightness(0.96);
   --control-active-filter: brightness(0.9);
   --ovr-bronze: var(--image-ovr-bronze);

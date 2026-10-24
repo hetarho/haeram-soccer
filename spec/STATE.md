@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | d4n8 | hq-dev1-pve2-vm2 | pair | 2026-10-14T08:21Z | 2026-10-14T08:21Z | - |
 | k2r7 | hq-dev1-pve2-vm2 | autopilot | 2026-10-22T00:42Z | 2026-10-22T00:42Z | - |
-| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T08:35Z | T412 |
+| m8p2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T01:13Z | 2026-10-24T09:36Z | - |
 | t5q2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:12Z | 2026-10-24T09:12Z | - |
 
 ## inbox
@@ -279,7 +279,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 | todo |
-| T412 | Complete match-theme surfaces, icons and pitch materials | WEB KIT ARCH | T405 | doing@261024.m8p2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 | todo |
 
 ## work
@@ -302,6 +301,7 @@
 
 ## log
 - 261024 T286 probe (t5q2): the release switch on fails 105 unit tests in 31 files and takes the unit tier to about 20 minutes, with invalid records in activated seasons (season.settle) as the first blocker; findings in T286's impl notes, the flip on wip/t5q2; T286 back to todo for the next session
+- 261024 T412 done (m8p2): image-built match surfaces/icons and themed live/replay/preview/analysis grounds; source 341b83cf + 43174387, verified integrated source 09c85daa. Full units 2039+4 skips, contracts39, type/lint/format/build/catalogs/resources pass. Merged Chromium263/265 then both ENOSPC artifact failures pass2/2 after obsolete-cache cleanup; core theme/legacy cases pass across all browsers, 25 manual states reviewed. WEB139; ARCH base19→20 unrelated ARCH-31 planning delta. Sources/provenance retained; 792 scratch files removed. Origin pulled including neutral T411/recovery changes, main publication authorized; hosted CI deferred by owner.
 - 261024 warn T412 (m8p2, doing): its base ARCH@19 predates ARCH r20, which changes only ARCH-31 (not cited by T412); no effect on its work, base left to its owner
 - 261024 update-ssot MATCH-28 SAVE-23 ARCH-31 + create-task T286 T410 (t5q2): activation gated by throughput, capacity and continuity, accuracy reported (MATCH r23, SAVE r52, ARCH r20); T286 is the release, T410 follows it
 - 261024 fix e2e (t5q2): Firefox CI 40077037075 timed recovery.spec's one-writer journey out twice at 30 s and a local Firefox run its quota journey at 42 s; both get `test.slow()` like the file's corruption journey; the spec 24/24 on Firefox three times over
@@ -320,4 +320,3 @@
 - 261024 T404 start (m8p2): owner requests readable text, breathing room and concept-appropriate detail in both image-built themes. Origin pulled at 76daccd9; current checkout explicitly assigned, spec CLI unavailable. Enforce existing WEB-10/38/91: isolate popup colors, fix selected-state specificity, inset/separate menu rows, remove duplicate focus outlines and replace generic dotted decoration with theme-specific cues. Preserve keyboard focus and meaningful diagram/status distinctions; no policy change.
 - 261024 fix e2e (t5q2): CI on 76daccd9 failed two journeys the change does not reach — live-state's scorer-trend click lost to the match eve's backdrop on a slow WebKit run, and styled-select's player inspector listed 21 after a dismissal in the founded world's random match; the click now stops once the eve's dialog is up and the inspector needs at least 20; both specs 18/18 on Chromium, WebKit and Firefox
 - 261024 T399 done (t5q2; explore, kept p5): the ball-side wing-back of a back three closes 0.4 toward the ball's line, the wide centre-back steps 3 m out, a pressed cross loses 0.15 × pressure; validation rounds 61+62: balanced's xG conceded −0.041 outside → −0.017 insufficient, counter ≥ press 0.026 insufficient, MATCH-29 20 → 23, MATCH-30 9 → 10, MATCH-23 36 → 35, curve 2.15, nothing inside → outside; digests, knockout ties and calibration artifact re-recorded
-- 261024 T402 T306 T307 T308 done (work group history-activation, integrated by t5q2): prospective full-model activation behind the release switch, manager attribution, the bounded manager-history query and its journeys; the runner's integration failed on the new Chromium journeys, fixed on the merged tree (league season restore from the address, a delegated fixture) and passed 6/6 before the batch gate

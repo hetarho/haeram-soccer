@@ -3,6 +3,15 @@ import type { MatchAppearance, ShirtDesign } from '../../../../packages/contract
 import { previewLines } from './identityPreview';
 import { createKitPainter, type KitDrawOptions } from './kitPainting';
 import s from './KitPitchPreview.module.css';
+import {
+  createGroundPainter,
+  DEFAULT_PITCH_SKIN,
+  markerRadius,
+  paintPitchGround,
+  type PitchSkin,
+} from './pitchPainting';
+import { usePitchSkin } from './usePitchSkin';
+export { markerRadius } from './pitchPainting';
 
 /**
  * A static example shape for one side in pitch units, keeper first, inside its own half; the away
@@ -21,46 +30,6 @@ export const PREVIEW_FORMATION: readonly (readonly [number, number])[] = [
   [45, 50],
   [43, 78],
 ];
-/** The live pitch's marker radius for a canvas `width` CSS pixels wide (WEB-50). */
-export const markerRadius = (width: number) => Math.max(6, width * 0.011);
-/** The live pitch's side outline. */
-const OUTLINE = '#ffffffcc';
-
-/**
- * The grass, mown stripes and markings of the live pitch, with its 6.5% border. `Pitch.tsx` still
- * draws its own copy of these values and of `markerRadius`; when it moves onto the shared painter
- * it should use these, so the preview and match observation cannot drift apart (WEB-87).
- */
-function drawGround(ctx: CanvasRenderingContext2D, width: number, height: number) {
-  const pad = width * 0.065;
-  const fw = width - pad * 2;
-  const fh = height - pad * 2;
-  const x = (v: number) => pad + (fw * v) / 100;
-  const y = (v: number) => pad + (fh * v) / 100;
-  ctx.fillStyle = '#253b31';
-  ctx.fillRect(0, 0, width, height);
-  for (let stripe = 0; stripe < 10; stripe++) {
-    ctx.fillStyle = stripe % 2 ? '#2b4538' : '#304b3d';
-    ctx.fillRect(pad + (fw * stripe) / 10, pad, fw / 10 + 0.5, fh);
-  }
-  ctx.strokeStyle = '#d7dcc598';
-  ctx.lineWidth = 1.4;
-  ctx.strokeRect(pad, pad, fw, fh);
-  ctx.beginPath();
-  ctx.moveTo(x(50), pad);
-  ctx.lineTo(x(50), y(100));
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.ellipse(x(50), y(50), fw * 0.09, fh * 0.15, 0, 0, Math.PI * 2);
-  ctx.stroke();
-  for (const side of [0, 1]) {
-    ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);
-    ctx.strokeRect(x(side === 0 ? 0 : 94), y(38), fw * 0.06, fh * 0.24);
-    ctx.fillStyle = '#e8efe6aa';
-    ctx.fillRect(side === 0 ? pad - 4 : x(100), y(44), 4, fh * 0.12);
-  }
-}
-
 /** Anything that draws a shirt marker the way `KitPainter.draw` does. */
 interface MarkerPainter {
   draw(
@@ -85,12 +54,21 @@ export function paintKitPreview(
   height: number,
   dpr: number,
   font: string,
+  skin: PitchSkin = DEFAULT_PITCH_SKIN,
+  ground?: ReturnType<typeof createGroundPainter>,
 ) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  drawGround(ctx, width, height);
+  if (ground) ground.draw(ctx, width, height, dpr, skin);
+  else paintPitchGround(ctx, width, height, skin);
+  ctx.imageSmoothingEnabled = !skin.pixelSize;
   const pad = width * 0.065;
   const radius = markerRadius(width);
-  const options = { dpr, outline: OUTLINE, font: `${Math.max(8, width * 0.012)}px ${font}` };
+  const options = {
+    dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
+    outline: skin.markerOutline,
+    outlineWidth: skin.markerWidth,
+    font: `${Math.max(8, width * 0.012)}px ${font}`,
+  };
   appearance.sides.forEach(({ shirt, goalkeeper }, side) => {
     const keeper: ShirtDesign = { pattern: 'plain', primary: goalkeeper };
     PREVIEW_FORMATION.forEach(([px, py], i) => {
@@ -116,6 +94,8 @@ export function KitPitchPreview({
 }) {
   const caption = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
+  const skin = usePitchSkin(canvas);
+  const [ground] = useState(() => createGroundPainter());
   // One painter, and so one sprite cache, per mounted preview.
   const [painter] = useState(() => createKitPainter());
   const lines = previewLines(appearance, labels);
@@ -135,14 +115,14 @@ export function KitPitchPreview({
         element.height = pixels[1];
       }
       const font = getComputedStyle(element).fontFamily || 'sans-serif';
-      paintKitPreview(ctx, painter, appearance, width, height, dpr, font);
+      paintKitPreview(ctx, painter, appearance, width, height, dpr, font, skin, ground);
     };
     draw();
     if (typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(draw);
     observer.observe(element);
     return () => observer.disconnect();
-  }, [appearance, painter]);
+  }, [appearance, painter, skin, ground]);
 
   return (
     <figure className={s.preview}>
