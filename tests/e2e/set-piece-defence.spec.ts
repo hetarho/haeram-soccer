@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
-import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
+import { presentationSamples, setPiecePreparations } from '../../apps/web/src/ui/presentationClock';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
+import { expectCompressedPreparation } from './preparation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
 import { watchNext } from './watch';
@@ -125,11 +126,23 @@ function recordedScene(seed: string) {
       }
       let walk = kick;
       while (walk > 0 && scene(walk - 1).every(placed)) walk--;
+      // The walk-in lies inside the restart's set-piece preparation, which ends at the kick
+      // (→WEB-32): the part of the timeline drawn in about 1.5 s.
+      const preparation = setPiecePreparations(playback.frames).find(
+        ({ to }) => Math.abs(to - samples[kick]!.time) <= 0.1,
+      );
+      if (preparation)
+        for (let i = walk; i <= kick; i++) {
+          expect(samples[i]!.time).toBeGreaterThanOrEqual(preparation.from);
+          expect(samples[i]!.time).toBeLessThanOrEqual(preparation.to + 0.1);
+        }
       const who = (s: 0 | 1, id: string): Who => ({
         side: s,
         index: playback.squads[s].findIndex((p) => p.id === id),
       });
       return {
+        playback,
+        preparation,
         samples: samples.length,
         walk: [...new Set([walk, kick])].map(shot),
         at: at.map(shot),
@@ -211,4 +224,9 @@ for (const viewport of [
         [scene.guard, '상대 마크'],
         [scene.keeper, '골문 보호'],
       ]);
+    // Played from just before the ball went dead, the walk-in to this kick is drawn in about
+    // 1.5 real seconds at 1x with the players still travelling (→WEB-32, MATCH-12).
+    expect(scene.preparation, 'the delivery has a set-piece preparation').toBeDefined();
+    if (viewport.name === 'phone')
+      await expectCompressedPreparation(page, scene.playback, scene.preparation!);
   });

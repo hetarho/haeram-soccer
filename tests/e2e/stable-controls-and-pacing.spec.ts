@@ -2,10 +2,15 @@ import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
-import { createWorld } from '../../packages/engine/src/index';
+import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
-import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
+import {
+  presentationSamples,
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
+} from '../../apps/web/src/ui/presentationClock';
+import { expectCompressedPreparation, longPreparation } from './preparation';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('surveys every management destination during uninterrupted calendar play', async ({
@@ -274,4 +279,37 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   await expect
     .poll(async () => Number(await timeline.inputValue()))
     .toBeGreaterThan(Number(sought));
+});
+
+test('draws a set-piece preparation in about 1.5 s with the players travelling', async ({
+  page,
+}) => {
+  // Marked synthetic career on the pre-feature path the build plays (its release switch stays off):
+  // a reference run of the same seeded match finds a long corner, free kick or goal kick
+  // preparation, and the page plays that recorded match (→WEB-32, MATCH-7/12).
+  test.slow();
+  const career = () => {
+    const world = createWorld({
+      country: 'ENG',
+      name: 'Preparation Pace',
+      color: '#224466',
+      seed: 'stable-pace',
+      level: 'easy',
+    });
+    for (const key of Object.keys(world.settings!.responsibilities) as (keyof NonNullable<
+      typeof world.settings
+    >['responsibilities'])[])
+      world.settings!.responsibilities[key] = 'delegated';
+    return world;
+  };
+  const playback = advanceToNextMatch(career())!;
+  const preparation = longPreparation(playback);
+  await importResponsibilityCareer(page, career());
+  await watchNext(page);
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toHaveAttribute(
+    'max',
+    String(presentationSamples(playback.frames).samples.length - 1),
+  );
+  await expectCompressedPreparation(page, playback, preparation);
 });
