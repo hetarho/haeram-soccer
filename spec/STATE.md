@@ -10,11 +10,6 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T09:52Z | 2026-10-24T09:52Z | - |
-
 ## inbox
 - 261025 decided MATCH-12 T426: with a 3 m shielding radius 58% of passes still came from a receiver standing on the ball (pressers stand 1.2 m goal-side) and frozen opponents lifted goals 2.89 → 3.17 → MATCH r27: a pressed carrier shields on the move away from the nearest opponent and everyone moves on his intention during the carry; only hold-ups, lay-offs, keepers and restart takers stand; T426's target restated on its drawn-hold measure without those spells, at most 0.05 (alt: keep the 3 m shield with everyone moving, about 0.34 | keep the spec with frozen opponents and leave the goals to T410)
 - 261025 decided MATCH-17 STAFF-46 PLAYER-26 SAVE-23 T435 T431 T432 T433 ideation/match-viewing-pace-and-freedom: the freedom bundle's open points → it ships as match-model revision 2 that careers on revision 1 take prospectively at the next safe boundary, settled matches replaying under their own revision (alt: keep revision 1 careers on it for good); freedom = manager flexibility × role creativity × 판단력, an interim giving the neutral flexibility 50; 예측력 sets reaction time, 위치선정 position and 판단력 decisions so nothing counts twice; post-match views stay touch-based heat maps and pass network (alt: retain off-ball average positions, more saved data per match); T410's re-read waits for T433 (alt: re-read revision 1 first)
