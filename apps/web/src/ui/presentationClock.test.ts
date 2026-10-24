@@ -263,7 +263,7 @@ function eventFrame(
   index: number,
   events: MatchEvent[],
   holders: [number, string][] = [],
-  samples: [number, MatchMotionSample['phase']][] = [[60, 'possession']],
+  samples: [number, MatchMotionSample['phase'], [number, number]?][] = [[60, 'possession']],
   period: 1 | 2 = 1,
 ): MatchFrame {
   const start = index * 60;
@@ -277,9 +277,10 @@ function eventFrame(
     ),
     events,
     holders,
-    motion: samples.map(([t, phase]) => ({
+    // The drawn ball sits on the events' default spot unless a sample says otherwise.
+    motion: samples.map(([t, phase, ball = [50, 50]]) => ({
       elapsedSeconds: start + t,
-      ball: [50, 50],
+      ball,
       players: [[], []],
       phase,
     })),
@@ -399,6 +400,61 @@ describe('set-piece preparation (→WEB-32, MATCH-12)', () => {
       ),
     ];
     expect(setPiecePreparations(tapped)).toEqual([{ from: 4, to: 27 }]);
+  });
+
+  it('a delivery sampled in the air at a minute end is not the kick', () => {
+    // A candidate corner kicked at 58.6 s from its spot (100, 0): the delivery flies in the restart
+    // phase, the minute's end samples it in the air at 60 s, and it lands 1.4 s into the next
+    // minute. The preparation ends at the kick, so the whole delivery keeps running speed.
+    const spot: [number, number] = [100, 0];
+    const frames = [
+      eventFrame(
+        0,
+        [event(20, 'shot', 'h9', { outcome: 'block' })],
+        [],
+        [
+          [20.1, 'restart', [100, 20]],
+          [40, 'restart', spot],
+          [58.6, 'restart', spot],
+          [60, 'restart', [92, 22]],
+        ],
+      ),
+      eventFrame(
+        1,
+        [event(1.4, 'restart', 'h7', { restart: 'corner', receiver: 'h9', from: spot })],
+        [[1.4, 'h9']],
+        [[1.43, 'possession', [88, 40]]],
+      ),
+    ];
+    const [preparation] = setPiecePreparations(frames) as [Preparation];
+    expect(preparation.from).toBeCloseTo(20, 9);
+    expect(preparation.to).toBeCloseTo(58.6, 9);
+    expect(presentationMs(58.6, 61.4, 1, [preparation])).toBeCloseTo(2.8 / runningRate(1), 6);
+  });
+
+  it('a free kick recorded as the foul its delivery ended in keeps its preparation', () => {
+    // The engine names the fouler as the entry's actor, so the kick comes from the restart sample
+    // with the ball on the free kick's spot, not from a taker's take.
+    const frames = [
+      eventFrame(
+        0,
+        [
+          event(5, 'foul', 'a4', { side: 1, opponent: 'h5' }),
+          event(31, 'foul', 'a2', { side: 1, opponent: 'h9', restart: 'freeKick' }),
+        ],
+        [
+          [4, 'h5'],
+          [5, ''],
+          [29.5, 'h9'],
+        ],
+        [
+          [8, 'restart'],
+          [28, 'restart'],
+          [31, 'restart', [70, 30]],
+        ],
+      ),
+    ];
+    expect(setPiecePreparations(frames)).toEqual([{ from: 5, to: 28 }]);
   });
 
   it('a 32 s corner preparation takes 1.5 real s at 1x and 2x', () => {

@@ -45,16 +45,21 @@ const minuteTime = (index: number, t: number) => index * 60 + Math.min(60, Math.
 
 /** An event's time is recorded to a tenth of a second: a take or sample that close is its landing. */
 const EVENT_TIME_STEP = 0.1;
+/** How far (pitch units) a drawn ball may lie from a restart's spot and still be on it. */
+const SPOT_REACH = 0.5;
 
 /**
  * The set-piece preparations of a playback (→WEB-32, MATCH-12): before the kick of each corner, free
  * kick or goal kick, the dead interval from the end of the last event before it — the ball going
- * dead — to the kick, where the restart is played and the players stand on their places. The
- * restart event is timed where its delivery lands, so the kick is read from what precedes it: on the
- * pre-feature trace, which holds the interval in the restart's step, the taker (the restart's actor)
- * taking the ball by the recorded holders; on the candidate, which walks the participants in and
- * records the kick as its own sample, the last sample of the restart phase. A restart without either
- * keeps running speed, as do throw-ins, kick-offs and penalties, and cards, injuries and
+ * dead — to the kick, where the restart is played and the players stand on their places. Every
+ * entry carrying such a `restart` counts, including a free kick or goal kick whose delivery the
+ * engine records as the foul or offside it ended in. The entry is timed where its delivery lands, so
+ * the kick is read from what precedes it: on the pre-feature trace, which holds the interval in the
+ * restart's step, the taker (the actor of a `kind: 'restart'` entry) taking the ball by the recorded
+ * holders; on the candidate, which walks the participants in and records the kick as its own
+ * sample, the last restart-phase sample with the ball still on the restart's spot (`from`) — the
+ * delivery flies in the same phase, and a minute's end can sample it in the air. A restart without
+ * either keeps running speed, as do throw-ins, kick-offs and penalties, and cards, injuries and
  * substitutions recorded after the ball went dead. Frames are read only.
  */
 export function setPiecePreparations(frames: readonly MatchFrame[]) {
@@ -64,12 +69,11 @@ export function setPiecePreparations(frames: readonly MatchFrame[]) {
     for (const event of frame.events ?? []) {
       const at = minuteTime(i, event.t);
       if (
-        event.kind === 'restart' &&
         PREPARED_RESTARTS.includes(event.restart) &&
         dead &&
         frames[dead.frame]!.period === frame.period
       ) {
-        const kick = restartKick(frames, dead, i, at, event.actor);
+        const kick = restartKick(frames, dead, i, at, event);
         if (kick !== undefined && dead.at >= (preparations.at(-1)?.to ?? 0))
           preparations.push({ from: dead.at, to: kick });
       }
@@ -80,29 +84,34 @@ export function setPiecePreparations(frames: readonly MatchFrame[]) {
 }
 
 /**
- * The kick of a restart taken by `taker` whose delivery lands at `landing` (frame `index`), after the
- * ball went dead at `dead`: the taker's last recorded take of the ball, else the last restart-phase
- * sample, either clear of the landing (a taker can play the ball to himself).
+ * The kick of `restart`, whose delivery lands at `landing` (frame `index`), after the ball went dead
+ * at `dead`: its taker's last recorded take of the ball, else the last restart-phase sample with the
+ * ball on its spot, either clear of the landing (a taker can play the ball to himself).
  */
 function restartKick(
   frames: readonly MatchFrame[],
   dead: { at: number; frame: number },
   index: number,
   landing: number,
-  taker: string,
+  restart: MatchEvent,
 ) {
   const before = (time: number) => time > dead.at && time < landing - EVENT_TIME_STEP;
+  // Only a restart entry's actor is its taker; a foul or offside names who ended the delivery.
+  const taker = restart.kind === 'restart' ? restart.actor : undefined;
   let held: number | undefined;
   let snapshot: number | undefined;
   for (let j = dead.frame; j <= index; j++) {
     const frame = frames[j]!;
     for (const [t, holder] of frame.holders ?? []) {
       const time = minuteTime(j, t);
-      if (holder === taker && before(time)) held = time;
+      if (taker && holder === taker && before(time)) held = time;
     }
     frame.motion?.forEach((motion, k) => {
       const time = runningTime(j, frame, motion.elapsedSeconds, (k + 1) / frame.motion!.length);
-      if (motion.phase === 'restart' && before(time)) snapshot = time;
+      const onSpot =
+        Math.hypot(motion.ball[0] - restart.from[0], motion.ball[1] - restart.from[1]) <=
+        SPOT_REACH;
+      if (motion.phase === 'restart' && onSpot && before(time)) snapshot = time;
     });
   }
   return held ?? snapshot;

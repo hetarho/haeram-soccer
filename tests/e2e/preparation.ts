@@ -8,6 +8,11 @@ import {
   type Preparation,
 } from '../../apps/web/src/ui/presentationClock';
 
+/** Match seconds of running play the seek lands before the dead ball, so 1x reaches it visibly. */
+const LEAD_SECONDS = 3;
+/** Real ms recorded beyond the clock's own time to the kick: the click landing and a few frames. */
+const RECORD_SLACK_MS = 2000;
+
 /**
  * The first set-piece preparation (→WEB-32) of a reference playback that starts after the opening
  * minutes and lasts at least `minSeconds` of match time, so 1x shows its compression plainly.
@@ -21,12 +26,13 @@ export function longPreparation(playback: MatchPlayback, minSeconds = 20) {
 }
 
 /**
- * Seeks the open match details to the recorded sample at or just before `preparation`, resumes at
- * 1x and records the presented running second (the pitch canvas's `data-seconds`) on every animation
- * frame until the kick has passed. The preparation must be drawn in about
- * `SET_PIECE_PREPARATION_MS`, far quicker than its running time at 1x, while the clock passes
- * through many instants inside it in small steps: the players are drawn travelling their recorded
- * routes, interpolated between samples, never jumping to their places.
+ * Seeks the open match details to a recorded sample at least `LEAD_SECONDS` before `preparation`,
+ * starts recording the presented running second (the pitch canvas's `data-seconds`) on every
+ * animation frame while still paused there, resumes at 1x and records until the kick has passed.
+ * The preparation must be drawn in about `SET_PIECE_PREPARATION_MS`, far quicker than its running
+ * time at 1x, while the clock passes through many instants inside it in small steps: the players are
+ * drawn travelling their recorded routes, interpolated between samples, never jumping to their
+ * places.
  */
 export async function expectCompressedPreparation(
   page: Page,
@@ -35,7 +41,7 @@ export async function expectCompressedPreparation(
 ) {
   const { from, to } = preparation;
   const { times } = presentationSamples(playback.frames);
-  const before = times.findLastIndex((time) => time <= from);
+  const before = times.findLastIndex((time) => time <= from - LEAD_SECONDS);
   expect(before).toBeGreaterThanOrEqual(0);
   const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
   await timeline.fill(String(before));
@@ -44,10 +50,10 @@ export async function expectCompressedPreparation(
   await expect
     .poll(async () => Number(await canvas.getAttribute('data-seconds')))
     .toBeCloseTo(times[before]!, 1);
-  // Selecting a speed resumes the paused seek (→WEB-32).
-  await page.getByRole('radio', { name: '1×', exact: true }).click();
-  const recordMs = presentationMs(times[before]!, to, 1, [preparation]) + 1500;
-  const records = await canvas.evaluate(
+  // The recorder starts on the paused seek, so it holds the clock's place before the dead ball
+  // whatever the click costs; selecting a speed then resumes the seek (→WEB-32).
+  const recordMs = presentationMs(times[before]!, to, 1, [preparation]) + RECORD_SLACK_MS;
+  const recording = canvas.evaluate(
     (element, ms) =>
       new Promise<[number, number][]>((resolve) => {
         const out: [number, number][] = [];
@@ -61,9 +67,11 @@ export async function expectCompressedPreparation(
       }),
     recordMs,
   );
+  await page.getByRole('radio', { name: '1×', exact: true }).click();
+  const records = await recording;
+  expect(records[0]![1], 'recording began on the paused seek').toBeLessThanOrEqual(from);
   const enteredAt = records.findLastIndex(([, seconds]) => seconds <= from);
   const kickedAt = records.findIndex(([, seconds]) => seconds >= to);
-  expect(enteredAt, 'the clock reached the dead ball').toBeGreaterThanOrEqual(0);
   expect(kickedAt, 'the clock reached the kick').toBeGreaterThan(enteredAt);
   // Drawn in about 1.5 s, against more than 4 s of running play at 1x.
   const drawnMs = records[kickedAt]![0] - records[enteredAt]![0];
