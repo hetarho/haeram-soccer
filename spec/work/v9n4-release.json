@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-24T17:14:09.498Z",
-  "sourceCommit": "b58803d1fbe33fd88d6e445416429f8ccfc85c1b",
+  "snapshotAt": "2026-10-24T17:36:03.125Z",
+  "sourceCommit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -15,10 +15,36 @@
     "push": "main",
     "review": "risky",
     "pushed": {
-      "commit": "b58803d1fbe33fd88d6e445416429f8ccfc85c1b",
+      "commit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
       "branch": "main",
       "remote": "origin",
-      "at": "2026-10-24T17:13:11.503Z"
+      "at": "2026-10-24T17:14:12.777Z"
+    },
+    "runner": {
+      "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-24T17:15:44.068Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
     },
     "lastRun": {
       "id": "e75c188b-d82a-4d4c-9549-9ec8604213a9",
@@ -59,11 +85,11 @@
   },
   "summary": {
     "total": 18,
-    "completed": 9,
-    "remaining": 9,
+    "completed": 10,
+    "remaining": 8,
     "running": 0,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 8
   },
   "tasks": [
@@ -130,14 +156,6 @@
         "T433"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T426",
-      "title": "The player on the ball takes it in stride instead of stopping",
-      "dep": [
-        "T420"
-      ],
-      "status": "blocked"
     },
     {
       "id": "T431",
@@ -972,29 +990,109 @@
         "T426"
       ],
       "lane": null,
-      "owner": "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1",
+      "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1",
       "contributors": [
         "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
         "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1",
-        "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1"
+        "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1",
+        "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1"
       ],
-      "status": "blocked",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-24T14:51:13.055Z",
       "startCommit": "2f8d95afe608e8348b4841049e43ada95241e4e4",
+      "verifiedCommit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+      "submittedBase": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+      "submissionId": "5aaabc78-ad1a-4666-ae6c-e40e318ba673",
+      "submittedAt": "2026-10-24T17:22:59.431Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "778 changed lines (limit 300)",
+          "outside touches: packages/engine/src/full-model-throughput.test.ts packages/engine/src/grid-throughput.test.ts packages/engine/src/season.settle.test.ts",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 778,
+        "files": 9
+      },
       "dispatch": {
-        "id": "05a3fc34-f9eb-453b-b326-f61e035dddfa",
-        "runner": "1949a3c7-d67d-40ad-8177-e3c94378bd45",
-        "role": "worker",
+        "id": "39531063-77f4-42b3-bf15-47b83048feea",
+        "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-24T17:12:32.835Z",
-        "finishedAt": "2026-10-24T17:13:02.893Z",
-        "error": "T426: 태스크 result에 limits 기록이 필요합니다.",
-        "summary": "I set `- at: -` in the T426 result; that is the only edit this time.\n\nThe `- verified:` line was already filled when I opened the file. It lists the checks from the previous session: typecheck, lint, format:check; `vitest run --changed 2f8d95af` in 8 shards, 221 files, 1713 passed, 4 skipped; and the touched suites 69/69 under both the default and the release-on config. Its sub-bullets are kept under it. I did not re-run those tests, because no code changed; the only check I ran was prettier on the task file, which passes.\n\nAll acceptance items stay marked [v], and nothing is committed. The file is ready for you to submit again."
-      }
+        "startedAt": "2026-10-24T17:23:03.916Z",
+        "finishedAt": "2026-10-24T17:36:00.483Z",
+        "error": null,
+        "summary": "T426 meets its acceptance and MATCH-12 r27, including the 261025 autopilot decisions (shield on the move, everyone moves on his intention, the defenders' read restored). I checked the three risk reasons first. (1) Size: about 778 lines, most of them tests, re-recorded digests and the result text. (2) Edits outside touches: the digest re-records in grid-throughput and full-model-throughput are what the acceptance asks for, and the season.settle change is a fair adaptation, since the candidate's own incidents now appear in that test. (3) Autopilot decisions: implemented as decided, and the coarse guards pass, so they were not widened. Engine: the pre-feature path is untouched. Its RNG draw order is unchanged (jitter is drawn only on the candidate), playback changes are candidate-only, and its facts digests are unchanged. The hold time is fixed before resolution from ACTION_SECONDS minus the estimated flight from the reception spot. The clock runs through the carry. The action resolves from the kick spot: play() reads gp.pos for the tally's from, interception lines and xG, and recomputes tags. Total dt is max(least, carry+flight, carry+reach). The knots run carry, carry, kick. The cell cap keeps shots, crosses, cut-backs and clearances in the reception cell. Keepers, hold-ups, restarts and first-time balls stand. readsOf's provisional updateIntentions restores intention fields, ended and run, plus owner, ball and received. It touches no other state, and coordination draws only from stateless named streams, so no match RNG is used. Playback draws the carry, keeps the ball held by the carrier, and samples the stride kick. The tests cover free carries (from equals the kick spot), the r27 shield, the still-hold share (≤0.05) and validateFullMatchRecord. I did not run tests: the review checkout has no node_modules and the review is read-only. This rests on code reading plus the worker's recorded checks; the base-side merge changed only spec/work files. Only optional P3 notes remain."
+      },
+      "review": {
+        "id": "cd579854-c942-49bf-a2ed-c8656e63680e",
+        "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T426 meets its acceptance and MATCH-12 r27, including the 261025 autopilot decisions (shield on the move, everyone moves on his intention, the defenders' read restored). I checked the three risk reasons first. (1) Size: about 778 lines, most of them tests, re-recorded digests and the result text. (2) Edits outside touches: the digest re-records in grid-throughput and full-model-throughput are what the acceptance asks for, and the season.settle change is a fair adaptation, since the candidate's own incidents now appear in that test. (3) Autopilot decisions: implemented as decided, and the coarse guards pass, so they were not widened. Engine: the pre-feature path is untouched. Its RNG draw order is unchanged (jitter is drawn only on the candidate), playback changes are candidate-only, and its facts digests are unchanged. The hold time is fixed before resolution from ACTION_SECONDS minus the estimated flight from the reception spot. The clock runs through the carry. The action resolves from the kick spot: play() reads gp.pos for the tally's from, interception lines and xG, and recomputes tags. Total dt is max(least, carry+flight, carry+reach). The knots run carry, carry, kick. The cell cap keeps shots, crosses, cut-backs and clearances in the reception cell. Keepers, hold-ups, restarts and first-time balls stand. readsOf's provisional updateIntentions restores intention fields, ended and run, plus owner, ball and received. It touches no other state, and coordination draws only from stateless named streams, so no match RNG is used. Playback draws the carry, keeps the ball held by the carrier, and samples the stride kick. The tests cover free carries (from equals the kick spot), the r27 shield, the still-hold share (≤0.05) and validateFullMatchRecord. I did not run tests: the review checkout has no node_modules and the review is read-only. This rests on code reading plus the worker's recorded checks; the base-side merge changed only spec/work files. Only optional P3 notes remain.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:872 (T426)",
+            "message": "The trace's tags are computed at the reception (computeTags before inStride) and passed to tracer.act at engine.ts:916, so the trace entry's cell and tags describe the reception spot. Its from and the resolution use the kick spot. commentary.ts:72 names cellName(entry.cell), so after a carry that crosses a cell edge (mean carry 3.94 m) a pass is narrated from the wrong cell. Shots, crosses and cut-backs are kept in their cell, so mostly passes are affected. Optional fix: trace the tags play() recomputes at the kick spot, or recompute them after the carry."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:462 (T426)",
+            "message": "After a carry the kick happens at once (windUp 0, kick at start, engine.ts:484), so any slack between the leftover action time and the actual flight lengthens the flight. That slack comes from the 0.2 s step floor, the carry shortening the pass, or the receiver's reach (for example through balls and interceptions), and the ball then travels below its GRID_BALL_CONFIG speed. This breaks no rule, since speeds are only capped from above. Worth measuring the drawn ball-speed distribution when T437 or T435 tunes the candidate."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:523 (T426)",
+            "message": "aimOf adds the finish's flight to a cut-back's estimate but not to a cross's. A cross that ends in a header therefore runs past its drawn ACTION_SECONDS by roughly the header leg, a small tempo inconsistency against 'keep the action time per action'. Optional: add the header leg's estimate, or note why crosses differ."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:462 / T426 limits (5)",
+            "message": "A lost carry, take-on or hold-up still stands on the ball for the whole action until the tackler arrives (tackled leaves the ball at the carrier's feet, so flight is 0 and holdUntil equals dt). This is outside acceptance 1, which covers the wait before a kick, and within the ≤0.05 still-hold gate. But MATCH-12 r27 names no exception for a lost carry or take-on, and the worker left it as is. Hand-off to planning: decide whether this needs a follow-up task (for example with T435 or T437)."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T426.carrier-in-stride.md acceptance (T426)",
+            "message": "The Tests item still says 'a pressed receiver shields (kick knot at the reception spot)', which contradicts the item's own r27 shield-on-the-move clause and the 261025 decision. Its '0.42–0.45 before on that measure' was in fact taken over every hold, not with hold-ups, keepers and restarts excluded. The worker followed r27 and reported both points in limits (3) and (4). Planning may want to note this when archiving."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/engine.ts:567 (T426)",
+            "message": "readsOf runs a provisional updateIntentions and planCoordination for every in-stride action with a receiver (~375 a match). The worker's probe saw 146 → 173 ms per observed match (+18%) on a shared machine, with no A/B timing. ARCH-31 throughput gates T286's activation, so T325 or T286 should re-measure detailed-match cost with this in place."
+          }
+        ],
+        "commit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+        "baseCommit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+        "submissionId": "5aaabc78-ad1a-4666-ae6c-e40e318ba673",
+        "createdAt": "2026-10-24T17:23:01.076Z",
+        "finishedAt": "2026-10-24T17:36:00.461Z"
+      },
+      "steps": [
+        {
+          "taskId": "T426",
+          "commit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+          "at": "2026-10-24T17:22:59.370Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-24T17:16:07.455Z",
+              "finishedAt": "2026-10-24T17:22:58.931Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-24T17:16:07.455Z",
+          "finishedAt": "2026-10-24T17:22:58.931Z"
+        }
+      ]
     },
     {
       "id": "9420e805-d683-4216-918a-7de74e0c7c50",
@@ -6708,6 +6806,408 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1098,
+      "at": "2026-10-24T17:14:12.799Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "pushed": {
+          "commit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+          "branch": "main",
+          "remote": "origin",
+          "at": "2026-10-24T17:14:12.777Z"
+        }
+      }
+    },
+    {
+      "sequence": 1099,
+      "at": "2026-10-24T17:15:36.135Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1100,
+      "at": "2026-10-24T17:15:44.092Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-24T17:15:44.068Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1101,
+      "at": "2026-10-24T17:15:44.142Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1",
+        "contributors": [
+          "3e511759-d587-4aee-829d-77a50d0d1b4e/worker-1",
+          "1949a3c7-d67d-40ad-8177-e3c94378bd45/worker-1",
+          "e75c188b-d82a-4d4c-9549-9ec8604213a9/worker-1",
+          "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1102,
+      "at": "2026-10-24T17:15:44.389Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f4ca0730-9fe2-4472-968a-27b7dd58e9cf",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T17:15:44.389Z"
+        }
+      }
+    },
+    {
+      "sequence": 1103,
+      "at": "2026-10-24T17:15:44.726Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f4ca0730-9fe2-4472-968a-27b7dd58e9cf",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T17:15:44.389Z"
+        }
+      }
+    },
+    {
+      "sequence": 1104,
+      "at": "2026-10-24T17:16:05.432Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1105,
+      "at": "2026-10-24T17:16:06.751Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1106,
+      "at": "2026-10-24T17:16:06.834Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1107,
+      "at": "2026-10-24T17:22:59.431Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+        "submittedBase": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+        "submissionId": "5aaabc78-ad1a-4666-ae6c-e40e318ba673",
+        "submittedAt": "2026-10-24T17:22:59.431Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "778 changed lines (limit 300)",
+            "outside touches: packages/engine/src/full-model-throughput.test.ts packages/engine/src/grid-throughput.test.ts packages/engine/src/season.settle.test.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 778,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T426",
+            "commit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+            "at": "2026-10-24T17:22:59.370Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-24T17:16:07.455Z",
+                "finishedAt": "2026-10-24T17:22:58.931Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-24T17:16:07.455Z",
+            "finishedAt": "2026-10-24T17:22:58.931Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1108,
+      "at": "2026-10-24T17:22:59.472Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "f4ca0730-9fe2-4472-968a-27b7dd58e9cf",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T17:15:44.389Z",
+          "finishedAt": "2026-10-24T17:22:59.472Z",
+          "error": null,
+          "summary": "The T426 result's four lines all carry inline text, so the task is ready to submit. I checked them and changed nothing; the working tree is clean at HEAD 1abaa250, nothing is committed by me, and no tests were re-run this round.\n\n- **outcome:** done, MATCH r27 implemented with the defenders' read of the decided pass restored.\n- **at:** `-`\n- **verified:** typecheck, lint and format:check passed. `vitest run --changed 2f8d95af` in 8 shards: 221 files, 1713 passed, 4 skipped. The touched suites passed 69/69 under both the default and the release-on config.\n- **limits:**\n  - Three test files outside the task's scope were edited (grid-throughput, full-model-throughput, season.settle).\n  - The extra-time seed is now `candidate-et-2`.\n  - The pressed-receiver test checks r27's shield on the move.\n  - A carry or take-on that loses its duel still waits for the tackle.\n  - The batch gate and an A/B throughput timing were not run.\n\nAll acceptance items stay marked [v]."
+        }
+      }
+    },
+    {
+      "sequence": 1109,
+      "at": "2026-10-24T17:23:01.076Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "cd579854-c942-49bf-a2ed-c8656e63680e",
+          "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+          "status": "reviewing",
+          "commit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+          "baseCommit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+          "submissionId": "5aaabc78-ad1a-4666-ae6c-e40e318ba673",
+          "createdAt": "2026-10-24T17:23:01.076Z"
+        }
+      }
+    },
+    {
+      "sequence": 1110,
+      "at": "2026-10-24T17:23:03.916Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "39531063-77f4-42b3-bf15-47b83048feea",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-24T17:23:03.916Z"
+        }
+      }
+    },
+    {
+      "sequence": 1111,
+      "at": "2026-10-24T17:23:04.027Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "39531063-77f4-42b3-bf15-47b83048feea",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-24T17:23:03.916Z"
+        }
+      }
+    },
+    {
+      "sequence": 1112,
+      "at": "2026-10-24T17:36:00.461Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "cd579854-c942-49bf-a2ed-c8656e63680e",
+          "owner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T426 meets its acceptance and MATCH-12 r27, including the 261025 autopilot decisions (shield on the move, everyone moves on his intention, the defenders' read restored). I checked the three risk reasons first. (1) Size: about 778 lines, most of them tests, re-recorded digests and the result text. (2) Edits outside touches: the digest re-records in grid-throughput and full-model-throughput are what the acceptance asks for, and the season.settle change is a fair adaptation, since the candidate's own incidents now appear in that test. (3) Autopilot decisions: implemented as decided, and the coarse guards pass, so they were not widened. Engine: the pre-feature path is untouched. Its RNG draw order is unchanged (jitter is drawn only on the candidate), playback changes are candidate-only, and its facts digests are unchanged. The hold time is fixed before resolution from ACTION_SECONDS minus the estimated flight from the reception spot. The clock runs through the carry. The action resolves from the kick spot: play() reads gp.pos for the tally's from, interception lines and xG, and recomputes tags. Total dt is max(least, carry+flight, carry+reach). The knots run carry, carry, kick. The cell cap keeps shots, crosses, cut-backs and clearances in the reception cell. Keepers, hold-ups, restarts and first-time balls stand. readsOf's provisional updateIntentions restores intention fields, ended and run, plus owner, ball and received. It touches no other state, and coordination draws only from stateless named streams, so no match RNG is used. Playback draws the carry, keeps the ball held by the carrier, and samples the stride kick. The tests cover free carries (from equals the kick spot), the r27 shield, the still-hold share (≤0.05) and validateFullMatchRecord. I did not run tests: the review checkout has no node_modules and the review is read-only. This rests on code reading plus the worker's recorded checks; the base-side merge changed only spec/work files. Only optional P3 notes remain.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:872 (T426)",
+              "message": "The trace's tags are computed at the reception (computeTags before inStride) and passed to tracer.act at engine.ts:916, so the trace entry's cell and tags describe the reception spot. Its from and the resolution use the kick spot. commentary.ts:72 names cellName(entry.cell), so after a carry that crosses a cell edge (mean carry 3.94 m) a pass is narrated from the wrong cell. Shots, crosses and cut-backs are kept in their cell, so mostly passes are affected. Optional fix: trace the tags play() recomputes at the kick spot, or recompute them after the carry."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:462 (T426)",
+              "message": "After a carry the kick happens at once (windUp 0, kick at start, engine.ts:484), so any slack between the leftover action time and the actual flight lengthens the flight. That slack comes from the 0.2 s step floor, the carry shortening the pass, or the receiver's reach (for example through balls and interceptions), and the ball then travels below its GRID_BALL_CONFIG speed. This breaks no rule, since speeds are only capped from above. Worth measuring the drawn ball-speed distribution when T437 or T435 tunes the candidate."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:523 (T426)",
+              "message": "aimOf adds the finish's flight to a cut-back's estimate but not to a cross's. A cross that ends in a header therefore runs past its drawn ACTION_SECONDS by roughly the header leg, a small tempo inconsistency against 'keep the action time per action'. Optional: add the header leg's estimate, or note why crosses differ."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:462 / T426 limits (5)",
+              "message": "A lost carry, take-on or hold-up still stands on the ball for the whole action until the tackler arrives (tackled leaves the ball at the carrier's feet, so flight is 0 and holdUntil equals dt). This is outside acceptance 1, which covers the wait before a kick, and within the ≤0.05 still-hold gate. But MATCH-12 r27 names no exception for a lost carry or take-on, and the worker left it as is. Hand-off to planning: decide whether this needs a follow-up task (for example with T435 or T437)."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T426.carrier-in-stride.md acceptance (T426)",
+              "message": "The Tests item still says 'a pressed receiver shields (kick knot at the reception spot)', which contradicts the item's own r27 shield-on-the-move clause and the 261025 decision. Its '0.42–0.45 before on that measure' was in fact taken over every hold, not with hold-ups, keepers and restarts excluded. The worker followed r27 and reported both points in limits (3) and (4). Planning may want to note this when archiving."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/engine.ts:567 (T426)",
+              "message": "readsOf runs a provisional updateIntentions and planCoordination for every in-stride action with a receiver (~375 a match). The worker's probe saw 146 → 173 ms per observed match (+18%) on a shared machine, with no A/B timing. ARCH-31 throughput gates T286's activation, so T325 or T286 should re-measure detailed-match cost with this in place."
+            }
+          ],
+          "commit": "1abaa2502b836627c819dae3b6673192fb45dba4",
+          "baseCommit": "b8358cc7e9ddc7d19cc16f5a3a042cd11beb2949",
+          "submissionId": "5aaabc78-ad1a-4666-ae6c-e40e318ba673",
+          "createdAt": "2026-10-24T17:23:01.076Z",
+          "finishedAt": "2026-10-24T17:36:00.461Z"
+        }
+      }
+    },
+    {
+      "sequence": 1113,
+      "at": "2026-10-24T17:36:00.483Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "39531063-77f4-42b3-bf15-47b83048feea",
+          "runner": "f3e42e9e-9f9f-4c1f-b072-76483802e6d1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-24T17:23:03.916Z",
+          "finishedAt": "2026-10-24T17:36:00.483Z",
+          "error": null,
+          "summary": "T426 meets its acceptance and MATCH-12 r27, including the 261025 autopilot decisions (shield on the move, everyone moves on his intention, the defenders' read restored). I checked the three risk reasons first. (1) Size: about 778 lines, most of them tests, re-recorded digests and the result text. (2) Edits outside touches: the digest re-records in grid-throughput and full-model-throughput are what the acceptance asks for, and the season.settle change is a fair adaptation, since the candidate's own incidents now appear in that test. (3) Autopilot decisions: implemented as decided, and the coarse guards pass, so they were not widened. Engine: the pre-feature path is untouched. Its RNG draw order is unchanged (jitter is drawn only on the candidate), playback changes are candidate-only, and its facts digests are unchanged. The hold time is fixed before resolution from ACTION_SECONDS minus the estimated flight from the reception spot. The clock runs through the carry. The action resolves from the kick spot: play() reads gp.pos for the tally's from, interception lines and xG, and recomputes tags. Total dt is max(least, carry+flight, carry+reach). The knots run carry, carry, kick. The cell cap keeps shots, crosses, cut-backs and clearances in the reception cell. Keepers, hold-ups, restarts and first-time balls stand. readsOf's provisional updateIntentions restores intention fields, ended and run, plus owner, ball and received. It touches no other state, and coordination draws only from stateless named streams, so no match RNG is used. Playback draws the carry, keeps the ball held by the carrier, and samples the stride kick. The tests cover free carries (from equals the kick spot), the r27 shield, the still-hold share (≤0.05) and validateFullMatchRecord. I did not run tests: the review checkout has no node_modules and the review is read-only. This rests on code reading plus the worker's recorded checks; the base-side merge changed only spec/work files. Only optional P3 notes remain."
+        }
+      }
+    },
+    {
+      "sequence": 1114,
+      "at": "2026-10-24T17:36:00.534Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "c5718a8f-acf7-488c-a840-7c23a953237d",
+      "taskId": "T426",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

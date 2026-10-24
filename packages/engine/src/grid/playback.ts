@@ -622,8 +622,9 @@ function flights(legs: Leg[], from: Units, start: number, end: number, r: () => 
 /**
  * A candidate entry's ball and actor (→MATCH-12) from the engine's own knots at their recorded
  * times: the dead ball is carried back and set down, rests on its spot while the taker walks there,
- * and every flight lasts exactly from its kick to its touch, reception or arrival — never shortened
- * to fit. Returns where the ball is when the entry ends.
+ * the player on the ball carries it at his feet along its `carry` knots (in stride before his kick,
+ * T426, or a carry of his own), and every flight lasts exactly from its kick to its touch,
+ * reception or arrival — never shortened to fit. Returns where the ball is when the entry ends.
  */
 function knotted(
   P: Period,
@@ -655,10 +656,13 @@ function knotted(
     at,
   });
   const route: [number, Units][] = [];
-  const carrying = knots.some((knot) => knot.kind === 'carry');
+  // A carry of his own ends with the ball at his feet; an in-stride carry ends in his kick.
+  const carrying =
+    knots.some((knot) => knot.kind === 'carry') && !knots.some((knot) => knot.kind === 'kick');
   let cursor = start,
     at = ball,
     leg = 0,
+    carried = false,
     placed: number | undefined;
   for (const knot of knots) {
     const t = clamp(knot.at, cursor, Math.max(cursor, end));
@@ -695,12 +699,17 @@ function knotted(
           route.push([arrive, spot], [t, spot]);
           add(rest(cursor, t, spot));
         } else {
-          route.push([t, here]);
-          add(hold(cursor, t, here));
+          // He kicks it where his carry took it, else where he received it.
+          const kicked = carried ? to : here;
+          route.push([t, kicked]);
+          add(hold(cursor, t, kicked));
         }
         break;
       case 'carry':
         route.push([t, to]);
+        // The ball at his feet up to this point of his carry.
+        add(hold(cursor, t, at));
+        carried = true;
         break;
       case 'tackle':
         add(hold(cursor, t, at));
@@ -928,12 +937,17 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     const moves = candidate
       ? [...P.times, ...P.paths.flatMap((path) => path?.route?.map(([t]) => t) ?? [])]
       : [...P.times, ...P.starts];
-    // Every restart's recorded kick is drawn as its own sample, however close (T359); on a
-    // pre-feature trace every snapshot is, so a receiver is drawn where the ball reaches him.
+    // Every restart's recorded kick is drawn as its own sample, however close (T359), and so is the
+    // kick that ends an in-stride carry, so the page draws the carry (T426); on a pre-feature trace
+    // every snapshot is, so a receiver is drawn where the ball reaches him.
     const kicks = candidate
       ? entries.flatMap((e, k) => {
           const kick = k ? kickAfter(entries[k - 1]!, e) : undefined;
-          return kick ? [kick.elapsed] : [];
+          const knots = e.knots ?? [];
+          const stride = knots.findIndex(
+            (knot, i) => knot.kind === 'kick' && knots[i - 1]?.kind === 'carry',
+          );
+          return [...(kick ? [kick.elapsed] : []), ...(stride > 0 ? [knots[stride]!.at] : [])];
         })
       : P.times;
     const knots = candidate ? entries.flatMap((e) => e.knots?.map((knot) => knot.at) ?? []) : [];
@@ -1013,12 +1027,17 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
             now.set(side * 64 + idx, position);
             const was = before.get(side * 64 + idx);
             const at = (side * 11 + slot) * 2;
-            const target = Number.isFinite(snap.targets[at])
-              ? mirror(units([snap.targets[at]!, snap.targets[at + 1]!]))
-              : position;
             const holder = ball.holder?.[0] === side && ball.holder[1] === idx;
             const state = MOTION_STATES[snap.states[side * 11 + slot]!] ?? 'shape';
             const intention = snap.intentions?.[side * 11 + slot];
+            // The snapshot's carrier aims where he stands; once the ball has left him (his kick,
+            // T426) he shows his intention's target instead.
+            const left = state === 'carry' && !holder && intention && !('end' in intention);
+            const target = left
+              ? mirror(units(intention.target))
+              : Number.isFinite(snap.targets[at])
+                ? mirror(units([snap.targets[at]!, snap.targets[at + 1]!]))
+                : position;
             list.push({
               id: id(side, idx),
               position,

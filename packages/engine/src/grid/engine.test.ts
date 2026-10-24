@@ -1,13 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
-import { benchPoint } from './movement';
-import { M } from './record';
+import { benchPoint, IN_STRIDE_CONFIG } from './movement';
+import { attackFrame } from './pitch';
+import { M, Tally } from './record';
 import { RESTART_CONFIG } from './restarts';
 import { buildGridSetup, type DecideRule } from './setup';
+import type { TraceEntry } from './trace';
 
 // The pre-feature path's world: `candidate` below opts a fixture into the model.
 const w = createWorld(
@@ -43,6 +45,65 @@ const candidate = (id: string, observe = false, year?: number, decide?: DecideRu
     ),
   );
 const LEVEL: DecideRule = { awayGoals: false };
+
+/**
+ * Every open-play pass of an observed candidate match with where its passer received the ball and
+ * how far the nearest opponent stood then (the snapshot before it, 32-bit positions), and the
+ * pass's own tally `from` (`Tally.passEvent`, the passer's attack frame).
+ */
+function receptions(id: string) {
+  // Copied when counted: side 0's attack-frame point is his live position.
+  const froms: [number, number][] = [];
+  const count = Tally.prototype.passEvent;
+  const calls = vi.spyOn(Tally.prototype, 'passEvent').mockImplementation(function (
+    this: Tally,
+    ...args: Parameters<Tally['passEvent']>
+  ) {
+    froms.push([args[2].from[0], args[2].from[1]]);
+    count.apply(this, args);
+  });
+  try {
+    const { trace } = candidate(id, true);
+    const passes = trace!.filter(
+      (e) =>
+        e.outcome !== 'incident' &&
+        ((!e.spot && ['pass', 'cross', 'cutBack'].includes(e.action)) ||
+          (e.spot !== undefined && e.kind === 'cross')),
+    );
+    expect(passes).toHaveLength(froms.length);
+    const out: {
+      e: TraceEntry;
+      at: [number, number];
+      nearest: number;
+      presser: [number, number];
+      from: readonly number[];
+    }[] = [];
+    let last: TraceEntry | undefined;
+    for (const e of trace!) {
+      if (e.outcome === 'incident') continue;
+      const before = last?.period === e.period ? last : undefined;
+      last = e;
+      const k = passes.indexOf(e);
+      if (!before || e.spot || e.action !== 'pass' || k < 0) continue;
+      const slot = Array.from(before.slots).indexOf(e.idx, e.side * 11);
+      // A keeper distributes the ball from where he stands.
+      if (slot < 0 || slot === e.side * 11) continue;
+      const P = before.positions;
+      const at: [number, number] = [P[slot * 2]!, P[slot * 2 + 1]!];
+      let nearest = Infinity,
+        presser: [number, number] = at;
+      for (let j = (1 - e.side) * 11; j < (2 - e.side) * 11; j++) {
+        const d = Math.hypot(P[j * 2]! - at[0], P[j * 2 + 1]! - at[1]);
+        if (before.slots[j]! >= 0 && d < nearest)
+          [nearest, presser] = [d, [P[j * 2]!, P[j * 2 + 1]!]];
+      }
+      out.push({ e, at, nearest, presser, from: froms[k]! });
+    }
+    return out;
+  } finally {
+    calls.mockRestore();
+  }
+}
 
 describe('grid engine', () => {
   it('plays deterministically for a seed', () => {
@@ -276,5 +337,57 @@ describe('grid engine', () => {
     expect(seen.dismissal).toBeGreaterThan(0);
     expect(seen.goal).toBeGreaterThan(0);
     expect(seen.extra).toBeGreaterThan(0);
+  });
+
+  it('a free receiver carries in stride before his pass', () => {
+    const R = IN_STRIDE_CONFIG.pressureRadius;
+    let free = 0,
+      carried = 0;
+    for (const { e, at, nearest, from } of receptions('cand-stride-1')) {
+      const knots = e.knots!;
+      const kick = knots.find((k) => k.kind === 'kick');
+      // Kept off the 32-bit snapshot's edge of the pressure radius.
+      if (!kick || nearest <= R + 0.1) continue;
+      free++;
+      const [start, end] = knots.filter((k) => k.kind === 'carry');
+      if (!start || !end) continue;
+      // From where he received it to where he kicks it, and the pass is counted from there.
+      expect(start.ball[0]).toBeCloseTo(at[0], 3);
+      expect(start.ball[1]).toBeCloseTo(at[1], 3);
+      expect(kick.ball).toEqual(end.ball);
+      expect(kick.at).toBeGreaterThanOrEqual(end.at);
+      expect(e.from).toEqual(kick.ball);
+      expect(from).toEqual(attackFrame(e.side, kick.ball));
+      if (Math.hypot(kick.ball[0] - at[0], kick.ball[1] - at[1]) >= 1) carried++;
+    }
+    expect(free).toBeGreaterThan(100);
+    // A first-time ball whose flight takes the whole action is still played where it arrives.
+    expect(carried / free).toBeGreaterThan(0.8);
+  });
+
+  it('a pressed receiver shields', () => {
+    // On the move (MATCH-12 r27): he takes it away from the opponent close to him, so his kick
+    // knot leaves the reception spot farther from that opponent's spot at the reception.
+    const R = IN_STRIDE_CONFIG.pressureRadius;
+    let pressed = 0,
+      away = 0;
+    for (const { e, at, nearest, presser, from } of receptions('cand-stride-1')) {
+      const kick = e.knots!.find((k) => k.kind === 'kick');
+      if (!kick || nearest >= R - 0.1) continue;
+      pressed++;
+      expect(from).toEqual(attackFrame(e.side, kick.ball));
+      const [start] = e.knots!.filter((k) => k.kind === 'carry');
+      // A first-time ball is still played where it arrives.
+      if (!start) continue;
+      expect(start.ball[0]).toBeCloseTo(at[0], 3);
+      expect(start.ball[1]).toBeCloseTo(at[1], 3);
+      const from0 = Math.hypot(at[0] - presser[0], at[1] - presser[1]);
+      const from1 = Math.hypot(kick.ball[0] - presser[0], kick.ball[1] - presser[1]);
+      // Kept off the touchline and his action's cell by the pitch and the cell, never toward him.
+      expect(from1).toBeGreaterThanOrEqual(from0 - 1e-3);
+      if (from1 >= from0 + 1) away++;
+    }
+    expect(pressed).toBeGreaterThan(50);
+    expect(away / pressed).toBeGreaterThan(0.8);
   });
 });

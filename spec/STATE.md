@@ -288,7 +288,6 @@
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T426 | The player on the ball takes it in stride instead of stopping | MATCH ARCH | T420 | todo |
 | T437 | Recalibrate the candidate's scoring after the in-stride carry | MATCH ARCH | T426 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T431 | Player tendencies and manager-given freedom in the engine | PLAYER STAFF WEB ARCH | T426 | todo |
@@ -306,12 +305,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 18 | 9 | 9 | 0 | 0 | 1 | 2026-10-24T17:14:09.498Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 18 | 10 | 8 | 0 | 0 | 0 | 2026-10-24T17:36:03.125Z | [history](work/v9n4-release.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261024 T426 integrated
 - 261025 T438 final sync (u6p2): pulled docs-only b8358cc7, retained p4w8 planning/active state and T431 dep T426; verified runtime and browser sources unchanged
 - 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
 - 261025 T438 publication verified (u6p2): pulled 1e060b3b; units2061+4 existing skips/contracts39/static checks pass; Chromium272 covered after two entrance-motion assertion reruns pass; commit/push authorized, hosted CI follows
@@ -331,4 +331,3 @@
 - 261025 UI publication verified (u6p2): pulled 2f8d95af; T423–T425/T427–T430 complete, compact season rows 44px; full units2057+4 skips/contracts39/Chromium268 merged/task checks pass; commit/push authorized, hosted CI follows
 - 261025 browser regression fixes (u6p2): 8px compact roster padding, aria-current instead of visible season-status text, explicit browser callback scroll argument; all four reruns pass
 - 261025 UI publication batch (u6p2): management-surfaces retained a 12px roster-padding assertion after the shared spacing became 8px; align it with compact spacing and rerun the two cases after the batch
-- 261025 T430 done (u6p2): compact 44px season rows with current background/rule; 12 manual previews pass; full units 2057+4 skips, contracts39 and task checks pass; publication browser batch running

@@ -4,9 +4,10 @@ import {
   MATCH_MODEL_REVISION,
   NEUTRAL_FRAME_PACE,
 } from '../../../contracts/src/match-model';
-import type { MatchMotionSample } from '../../../contracts/src/types';
+import type { MatchFrame, MatchMotionSample } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
+import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
 import { attackFrame, PITCH, toUnits } from './pitch';
@@ -325,13 +326,13 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-19` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-2` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
-    // flank beside a back three `candidate-et-1`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-19']) {
-      const extraTime = id === 'candidate-et-19';
+    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-2']) {
+      const extraTime = id === 'candidate-et-2';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -382,6 +383,129 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
         fastest * (t1 - t0) + 0.2,
       );
     }
+  });
+});
+
+/**
+ * The share of open-play holds a viewer sees stand still (T426's drawn-hold measure): every spell
+ * of one player on the ball (the frames' `holders`, joined across minutes) of at least 0.2 s whose
+ * drawn position — the motion samples, straight between them as the page draws them — moves under
+ * 0.3 m/s for more than half of it, in tenth-second steps. The spells MATCH-12 r27 lets him stand
+ * on the ball are left out: those of a hold-up or lay-off, a keeper's and a restart's (the entry
+ * whose play the spell's middle falls in).
+ */
+function stillHolds(
+  frames: readonly MatchFrame[],
+  trace: readonly TraceEntry[],
+  rosters: readonly (readonly { id: string }[])[],
+): number {
+  const plays = trace.filter((e) => e.outcome !== 'incident');
+  let j = 0;
+  const standing = (id: string, p: number, mid: number) => {
+    while (j < plays.length && (plays[j]!.period < p || plays[j]!.elapsed < mid)) j++;
+    const e = plays[j];
+    if (!e || e.period !== p) return false;
+    const side = rosters[0]!.some((x) => x.id === id) ? 0 : 1;
+    const idx = rosters[side]!.findIndex((x) => x.id === id);
+    const keeper = e.slots[side * 11] === idx;
+    return e.spot !== undefined || keeper || (e.action === 'holdUp' && e.idx === idx);
+  };
+  const samples = frames.flatMap((f) =>
+    (f.motion ?? []).map((m) => ({
+      t: m.elapsedSeconds,
+      p: f.period,
+      at: new Map(m.players.flat().map((x) => [x.id, x.position])),
+    })),
+  );
+  const holds: { id: string; p: number; t0: number; t1: number }[] = [];
+  for (const f of frames)
+    (f.holders ?? []).forEach(([t, id], i, list) => {
+      if (!id) return;
+      const t0 = f.startSeconds! + t;
+      const t1 = f.startSeconds! + (list[i + 1]?.[0] ?? 60);
+      const last = holds.at(-1);
+      if (last?.id === id && last.p === f.period && Math.abs(last.t1 - t0) < 1e-6) last.t1 = t1;
+      else holds.push({ id, p: f.period!, t0, t1 });
+    });
+  let k = 0;
+  const drawn = (id: string, p: number, t: number) => {
+    while (k > 0 && (samples[k]!.p > p || (samples[k]!.p === p && samples[k]!.t > t))) k--;
+    while (k + 1 < samples.length && samples[k + 1]!.p <= p && samples[k + 1]!.t <= t) k++;
+    const [a, b] = [samples[k]!, samples[k + 1]];
+    const pa = a.p === p ? a.at.get(id) : undefined;
+    if (!pa || !b || b.p !== p || b.t <= a.t) return pa;
+    const pb = b.at.get(id) ?? pa;
+    const f = (t - a.t) / (b.t - a.t);
+    return [pa[0] + (pb[0] - pa[0]) * f, pa[1] + (pb[1] - pa[1]) * f] as const;
+  };
+  let counted = 0,
+    still = 0;
+  for (const h of holds) {
+    const length = h.t1 - h.t0;
+    if (length < 0.2 || standing(h.id, h.p, (h.t0 + h.t1) / 2)) continue;
+    const n = Math.max(2, Math.round(length / 0.1));
+    let quiet = 0,
+      was = drawn(h.id, h.p, h.t0);
+    for (let i = 1; i <= n; i++) {
+      const now = drawn(h.id, h.p, h.t0 + (length * i) / n);
+      if (was && now) {
+        const metres = Math.hypot(
+          ((now[0] - was[0]) * PITCH.length) / 100,
+          ((now[1] - was[1]) * PITCH.width) / 100,
+        );
+        if (metres / (length / n) < 0.3) quiet += length / n;
+      }
+      was = now;
+    }
+    counted++;
+    if (quiet > length / 2) still++;
+  }
+  return still / counted;
+}
+
+describe('candidate in-stride carry in playback (→MATCH-12 r27, T426)', () => {
+  const played = ['in-stride-1', 'in-stride-2', 'in-stride-3'].map((id) => {
+    const setup = buildGridSetup(
+      w,
+      { ...w.fixtures[0]!, id, home: home!.id, away: away!.id },
+      {
+        observe: true,
+        recordPlayers: true,
+        tactics: ['possession', 'counter'],
+        model: MATCH_MODEL_REVISION,
+      },
+    );
+    const result = playGrid(setup);
+    return { setup, result, frames: buildFrames(result, setup, w.seed) };
+  });
+
+  it("the candidate's carrier moves with the ball between reception and kick", () => {
+    let carries = 0;
+    for (const { setup, result, frames } of played) {
+      expect(validateFullMatchRecord(result.record), result.record.id).toEqual([]);
+      const ball = ballPath(result, setup, w.seed);
+      for (const e of result.trace!) {
+        const knots = e.knots ?? [];
+        const k = knots.findIndex((knot) => knot.kind === 'kick');
+        if (k < 2 || knots[k - 1]!.kind !== 'carry') continue;
+        const [start, end, kick] = [knots[k - 2]!, knots[k - 1]!, knots[k]!];
+        const from = toUnits(start.ball, e.period);
+        const to = toUnits(end.ball, e.period);
+        // At his feet from where he received it to where he kicks it, and played from there.
+        expect(ball(e.period, start.at).at[0]).toBeCloseTo(from[0], 4);
+        expect(ball(e.period, start.at).at[1]).toBeCloseTo(from[1], 4);
+        expect(ball(e.period, kick.at).at[0]).toBeCloseTo(to[0], 4);
+        expect(ball(e.period, kick.at).at[1]).toBeCloseTo(to[1], 4);
+        const mid = ball(e.period, (start.at + end.at) / 2);
+        expect(mid.holder).toEqual([e.side, e.idx]);
+        if (Math.hypot(to[0] - from[0], to[1] - from[1]) > 1)
+          expect(Math.hypot(mid.at[0] - from[0], mid.at[1] - from[1])).toBeGreaterThan(0.1);
+        carries++;
+      }
+      // Open-play holds the page draws still: 0.42, 0.45 and 0.42 of every hold before the carry.
+      expect(stillHolds(frames, result.trace!, setup.rosters)).toBeLessThanOrEqual(0.05);
+    }
+    expect(carries).toBeGreaterThan(300);
   });
 });
 

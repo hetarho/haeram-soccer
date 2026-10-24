@@ -12,19 +12,23 @@ import {
 } from './intentions';
 import {
   advance,
+  carryInStride,
   flightSeconds,
   GRID_BALL_CONFIG,
   GRID_MOVEMENT_CONFIG,
   heading,
+  IN_STRIDE_CONFIG,
   prepareOnClock,
   prepareRestart,
+  presserOf,
   reachSeconds,
   readAt,
   stepToward,
+  strideSpeed,
   type MotionKnot,
   type Mover,
 } from './movement';
-import { attackFrame } from './pitch';
+import { attackFrame, cellOf } from './pitch';
 import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
 import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';
@@ -276,6 +280,80 @@ describe('grid movement', () => {
     const h = heading(s);
     expect(h.get(mate)).toEqual(targetOf(s, 0, mate.idx));
     expect(h.get(foe)).toEqual(targetOf(s, 1, foe.idx));
+  });
+
+  it('carries the ball in stride at a bounded pace, and shields it when pressed (T426)', () => {
+    const s = field();
+    const gp = s.players[0][6]!;
+    const pace = (n: number) =>
+      (gp.player = { ...gp.player, attrs: { ...gp.player.attrs, pace: n } });
+    // A fresh player of average pace strides at the configured pace; pace and fatigue scale it.
+    pace(50);
+    expect(strideSpeed(s, gp)).toBeCloseTo(IN_STRIDE_CONFIG.speed, 9);
+    pace(90);
+    const quick = strideSpeed(s, gp);
+    expect(quick).toBeGreaterThan(IN_STRIDE_CONFIG.speed);
+    expect(quick / IN_STRIDE_CONFIG.speed).toBeCloseTo(
+      speedOf(s, gp) / (SHAPE_CONFIG.speed.base + (SHAPE_CONFIG.speed.pace * 50) / 99),
+      9,
+    );
+    // Standing, he takes it toward his aim, accelerating within the rules, and is still running.
+    gp.pos = [40, 30];
+    gp.vel = undefined;
+    carryInStride(s, gp, [60, 30], 1.6);
+    expect(gp.pos[0]).toBeGreaterThan(41);
+    expect(gp.pos[0] - 40).toBeLessThanOrEqual(quick * 1.6 + EPS);
+    expect(gp.pos[1]).toBeCloseTo(30, 9);
+    expect(gp.vel![0]).toBeGreaterThan(0);
+    // Running across, he blends his heading with the aim instead of turning on the spot.
+    gp.pos = [40, 30];
+    gp.vel = [0, quick];
+    carryInStride(s, gp, [60, 30], 1);
+    expect(gp.pos[0]).toBeGreaterThan(40);
+    expect(gp.pos[1]).toBeGreaterThan(30);
+    // A cell he must not leave (a shot's) stops him at its edge: band 4 ends at 70 m.
+    gp.pos = [68, 30];
+    gp.vel = undefined;
+    carryInStride(s, gp, [105, 34], 2, cellOf(attackFrame(0, gp.pos)));
+    expect(cellOf(gp.pos)).toBe(cellOf([68, 30]));
+    expect(gp.pos[0]).toBeGreaterThan(69.9);
+    // The other side mirrors: side 1 attacks toward x = 0 and keeps its own cell too.
+    const foe = s.players[1][6]!;
+    foe.pos = [37, 30];
+    foe.vel = undefined;
+    carryInStride(s, foe, [0, 34], 2, cellOf(attackFrame(1, foe.pos)));
+    expect(cellOf(attackFrame(1, foe.pos))).toBe(cellOf(attackFrame(1, [37, 30])));
+    expect(foe.pos[0]).toBeLessThan(35.1);
+    // The nearest opponent within the pressure radius presses him.
+    gp.pos = [40, 30];
+    foe.pos = [gp.pos[0] + IN_STRIDE_CONFIG.pressureRadius - 0.1, gp.pos[1]];
+    expect(presserOf(s, gp)).toBe(foe);
+    foe.pos = [gp.pos[0] + IN_STRIDE_CONFIG.pressureRadius + 0.1, gp.pos[1]];
+    expect(presserOf(s, gp)).toBeUndefined();
+    // Pressed from in front (1.2 m goal-side), he shields it on the move, away from the presser at
+    // the same pace, while the presser tracks him on his intention and the others move on theirs.
+    gp.vel = undefined;
+    foe.pos = [41.2, 30];
+    foe.vel = undefined;
+    foe.intention = {
+      kind: 'press',
+      priority: 'committed',
+      target: [41.2, 30],
+      opponent: gp.idx,
+      since: 0,
+      until: 60,
+    };
+    const idle = s.players[0][2]!;
+    const was = [idle.pos[0], idle.pos[1]];
+    const idleTo = targetOf(s, 0, idle.idx);
+    carryInStride(s, gp, [60, 30], 1.6);
+    expect(gp.pos[0]).toBeLessThan(39);
+    expect(40 - gp.pos[0]).toBeLessThanOrEqual(quick * 1.6 + EPS);
+    expect(gap(foe.pos, gp.pos)).toBeLessThan(IN_STRIDE_CONFIG.pressureRadius);
+    expect(foe.pos[0]).toBeLessThan(41.2);
+    // The ball goes with him; a player with nothing to track heads for his place.
+    expect(s.ball).toEqual(gp.pos);
+    if (gap(was, idleTo) > 0.1) expect(gap(idle.pos, idleTo)).toBeLessThan(gap(was, idleTo));
   });
 
   it('waits for a long flight to land', () => {

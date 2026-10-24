@@ -91,11 +91,12 @@ const facts = (w: World) => ({
  * T400's score-state segments and level, cross and tactic-guard recalibration changed both (the
  * candidate rounds through their aggregate fixtures); a8d299718d0919a0 and 93e1b3f124830eb1
  * before. T409's added seconds a half (the aggregate's stoppages left uncredited) changed the
- * aggregate records only; e1a19359f49581e0 before.
+ * aggregate records only; e1a19359f49581e0 before. T426's in-stride carry on the grid changed the
+ * candidate rounds only (the aggregate path untouched); e307acad9c517fe3 before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: 'e307acad9c517fe3',
+  candidateRounds: '525b895cc4a040c2',
 };
 
 describe('complete-result throughput (T285)', () => {
