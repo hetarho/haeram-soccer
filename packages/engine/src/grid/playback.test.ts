@@ -326,13 +326,14 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-2` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-0` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
-    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-2']) {
-      const extraTime = id === 'candidate-et-2';
+    // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`,
+    // T442's shut lanes `candidate-et-2`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-0']) {
+      const extraTime = id === 'candidate-et-0';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -577,7 +578,10 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
   it('both sides retain continuous recorded paths through a corner', () => {
     const seen = new Set<string>();
     let pairs = 0;
-    for (const id of SCENES) {
+    // The scene matches, then further set-piece matches until the sample is large enough (T442's
+    // shut lanes left the four scene matches 810 pairs).
+    const more = Array.from({ length: 20 }, (_, i) => `set-piece-${i + 4}`);
+    for (const id of [...SCENES, ...more]) {
       const w = match(id);
       for (const { e, window } of deliveries(w)) {
         seen.add(sceneOf(e));
@@ -599,7 +603,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
             }
         }
       }
-      if (seen.size === ALL_SCENES.length) break;
+      if (seen.size === ALL_SCENES.length && pairs > 1000) break;
     }
     expect([...seen].sort()).toEqual(ALL_SCENES);
     expect(pairs).toBeGreaterThan(1000);
