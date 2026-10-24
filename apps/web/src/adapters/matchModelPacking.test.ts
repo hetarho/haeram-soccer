@@ -13,7 +13,7 @@ import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import { simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { packBitColumns } from './bitpacking';
 import { pack, unpack } from './packing';
 import {
@@ -34,8 +34,11 @@ const FOUNDING: Founding = {
   seed: 'full-model-ledger',
   level: 'normal',
 };
-/** Two unobserved rounds into the founded career, a fresh copy per call. */
-const career = () => simulatedWorld(FOUNDING, { rounds: 2 });
+/**
+ * Two unobserved rounds into the founded career, played before the full model (release off) so its
+ * model data is only what a case adds; a fresh copy per call.
+ */
+const career = () => simulatedWorld(FOUNDING, { rounds: 2 }, DISABLED_RELEASE);
 const state = (w: World): MatchModelState => ({
   revision: MATCH_MODEL_REVISION,
   activated: { year: w.year, day: 9, revision: w.revision },
