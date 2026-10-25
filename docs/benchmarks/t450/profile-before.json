@@ -1,0 +1,804 @@
+{
+ "task": "T450",
+ "label": "before",
+ "commit": "4a8c03dc",
+ "machine": {
+  "cpu": "Apple M1 Max",
+  "logicalCpus": 10,
+  "platform": "darwin",
+  "arch": "arm64",
+  "memoryBytes": 34359738368,
+  "node": "v26.8.1"
+ },
+ "command": "node --cpu-prof --cpu-prof-dir=.tmp/t450/prof --import tsx docs/benchmarks/t450/time-seasons.mts 0 <world.json>; node docs/benchmarks/t450/selftime.cjs <profile> 30 --json",
+ "worlds": "docs/benchmarks/t450/build-worlds.mts 80 .tmp/t450/before 0,1,5,30,60,80 on 4a8c03dc: the candidate model from founding on the century baseline profile (seed release-century-baseline); season-N.world.json is the world at the start of season N+1",
+ "note": "One simulateSeason of a kept world, cold (no warm-up), under the V8 sampling profiler, which slows it by about 5%. Self time is the function body alone; inclusive counts its callees once per sample.",
+ "seasons": {
+  "early": {
+   "world": "season-1.world.json (the 1952 season, history 1)",
+   "profileMs": 15958,
+   "selfByFunction": [
+    {
+     "name": "stepToward grid/movement.ts",
+     "ms": 734,
+     "share": 4.6
+    },
+    {
+     "name": "advance grid/movement.ts",
+     "ms": 448,
+     "share": 2.8
+    },
+    {
+     "name": "shapePlace grid/shape.ts",
+     "ms": 444,
+     "share": 2.8
+    },
+    {
+     "name": "(anon) grid/coordination.ts",
+     "ms": 441,
+     "share": 2.8
+    },
+    {
+     "name": "(anon) aggregate/team.ts",
+     "ms": 439,
+     "share": 2.8
+    },
+    {
+     "name": "continuousSquad src/npc-continuity.ts",
+     "ms": 437,
+     "share": 2.7
+    },
+    {
+     "name": "multinomialInto aggregate/participation.ts",
+     "ms": 436,
+     "share": 2.7
+    },
+    {
+     "name": "attributeSide aggregate/players.ts",
+     "ms": 364,
+     "share": 2.3
+    },
+    {
+     "name": "binomial aggregate/team.ts",
+     "ms": 362,
+     "share": 2.3
+    },
+    {
+     "name": "defend grid/coordination.ts",
+     "ms": 350,
+     "share": 2.2
+    },
+    {
+     "name": "targetOf grid/shape.ts",
+     "ms": 349,
+     "share": 2.2
+    },
+    {
+     "name": "set toTemporalInstant set toTemporalInstant:0",
+     "ms": 323,
+     "share": 2,
+     "note": "V8's name for the Object.defineProperty builtin here: tsx's esbuild keepNames helper __name, called each time a named closure is created"
+    },
+    {
+     "name": "hypot src/portable-math.ts",
+     "ms": 283,
+     "share": 1.8
+    },
+    {
+     "name": "within aggregate/players.ts",
+     "ms": 258,
+     "share": 1.6
+    },
+    {
+     "name": "(anon) aggregate/players.ts",
+     "ms": 249,
+     "share": 1.6
+    },
+    {
+     "name": "share aggregate/players.ts",
+     "ms": 248,
+     "share": 1.6
+    },
+    {
+     "name": "weights aggregate/players.ts",
+     "ms": 247,
+     "share": 1.6
+    },
+    {
+     "name": "carryInStride grid/movement.ts",
+     "ms": 233,
+     "share": 1.5
+    },
+    {
+     "name": "playGrid grid/engine.ts",
+     "ms": 217,
+     "share": 1.4
+    },
+    {
+     "name": "(anon) grid/decide.ts",
+     "ms": 200,
+     "share": 1.3
+    },
+    {
+     "name": "(anon) grid/state.ts",
+     "ms": 198,
+     "share": 1.2
+    },
+    {
+     "name": "(garbage collector) (garbage collector):0",
+     "ms": 185,
+     "share": 1.2
+    },
+    {
+     "name": "skill aggregate/engine.ts",
+     "ms": 176,
+     "share": 1.1
+    },
+    {
+     "name": "actionWeight aggregate/players.ts",
+     "ms": 176,
+     "share": 1.1
+    },
+    {
+     "name": "hash src/primitives.ts",
+     "ms": 168,
+     "share": 1.1
+    },
+    {
+     "name": "computeTags grid/tags.ts",
+     "ms": 156,
+     "share": 1
+    },
+    {
+     "name": "(anon) src/primitives.ts",
+     "ms": 152,
+     "share": 1
+    },
+    {
+     "name": "__name aggregate/team.ts",
+     "ms": 147,
+     "share": 0.9
+    },
+    {
+     "name": "creditMove aggregate/players.ts",
+     "ms": 135,
+     "share": 0.8
+    },
+    {
+     "name": "(anon) aggregate/participation.ts",
+     "ms": 131,
+     "share": 0.8
+    }
+   ],
+   "selfByFile": [
+    {
+     "name": "packages/engine/src/aggregate/players.ts",
+     "ms": 2066,
+     "share": 12.9
+    },
+    {
+     "name": "packages/engine/src/grid/movement.ts",
+     "ms": 1554,
+     "share": 9.7
+    },
+    {
+     "name": "packages/engine/src/aggregate/team.ts",
+     "ms": 1438,
+     "share": 9
+    },
+    {
+     "name": "packages/engine/src/grid/coordination.ts",
+     "ms": 1087,
+     "share": 6.8
+    },
+    {
+     "name": "packages/engine/src/grid/shape.ts",
+     "ms": 1062,
+     "share": 6.7
+    },
+    {
+     "name": "packages/engine/src/aggregate/participation.ts",
+     "ms": 985,
+     "share": 6.2
+    },
+    {
+     "name": "packages/engine/src/grid/engine.ts",
+     "ms": 544,
+     "share": 3.4
+    },
+    {
+     "name": "packages/engine/src/aggregate/ledger.ts",
+     "ms": 531,
+     "share": 3.3
+    },
+    {
+     "name": "packages/engine/src/npc-continuity.ts",
+     "ms": 483,
+     "share": 3
+    },
+    {
+     "name": "packages/engine/src/grid/decide.ts",
+     "ms": 421,
+     "share": 2.6
+    },
+    {
+     "name": "packages/engine/src/grid/lanes.ts",
+     "ms": 407,
+     "share": 2.6
+    },
+    {
+     "name": "packages/engine/src/player.ts",
+     "ms": 366,
+     "share": 2.3
+    },
+    {
+     "name": "packages/engine/src/aggregate/engine.ts",
+     "ms": 362,
+     "share": 2.3
+    },
+    {
+     "name": "packages/engine/src/primitives.ts",
+     "ms": 336,
+     "share": 2.1
+    },
+    {
+     "name": "set toTemporalInstant",
+     "ms": 323,
+     "share": 2,
+     "note": "V8's name for the Object.defineProperty builtin here: tsx's esbuild keepNames helper __name, called each time a named closure is created"
+    },
+    {
+     "name": "packages/engine/src/match-model.ts",
+     "ms": 315,
+     "share": 2
+    },
+    {
+     "name": "packages/engine/src/portable-math.ts",
+     "ms": 307,
+     "share": 1.9
+    },
+    {
+     "name": "packages/engine/src/grid/intentions.ts",
+     "ms": 298,
+     "share": 1.9
+    },
+    {
+     "name": "packages/engine/src/grid/state.ts",
+     "ms": 274,
+     "share": 1.7
+    },
+    {
+     "name": "packages/engine/src/world.ts",
+     "ms": 247,
+     "share": 1.5
+    }
+   ],
+   "inclusive": [
+    {
+     "name": "simulateSeason src/index.ts",
+     "ms": 15236,
+     "share": 95.5
+    },
+    {
+     "name": "stepDay src/season.ts",
+     "ms": 15012,
+     "share": 94.1
+    },
+    {
+     "name": "advanceRound src/season.ts",
+     "ms": 15012,
+     "share": 94.1
+    },
+    {
+     "name": "candidateMatch src/match.ts",
+     "ms": 14289,
+     "share": 89.5
+    },
+    {
+     "name": "simulateMatch src/match.ts",
+     "ms": 14289,
+     "share": 89.5
+    },
+    {
+     "name": "playRound src/season.ts",
+     "ms": 13964,
+     "share": 87.5
+    },
+    {
+     "name": "simulateAggregate aggregate/engine.ts",
+     "ms": 7260,
+     "share": 45.5
+    },
+    {
+     "name": "playGrid grid/engine.ts",
+     "ms": 6963,
+     "share": 43.6
+    },
+    {
+     "name": "playAggregate aggregate/engine.ts",
+     "ms": 5929,
+     "share": 37.2
+    },
+    {
+     "name": "attributePlayerFacts aggregate/players.ts",
+     "ms": 2974,
+     "share": 18.6
+    },
+    {
+     "name": "settleParticipation aggregate/engine.ts",
+     "ms": 2906,
+     "share": 18.2
+    },
+    {
+     "name": "attributeSide aggregate/players.ts",
+     "ms": 2829,
+     "share": 17.7
+    },
+    {
+     "name": "generateTeamFacts aggregate/team.ts",
+     "ms": 2467,
+     "share": 15.5
+    },
+    {
+     "name": "updateIntentions grid/intentions.ts",
+     "ms": 1991,
+     "share": 12.5
+    },
+    {
+     "name": "inStride grid/engine.ts",
+     "ms": 1766,
+     "share": 11.1
+    },
+    {
+     "name": "planCoordination grid/coordination.ts",
+     "ms": 1674,
+     "share": 10.5
+    },
+    {
+     "name": "(anon) aggregate/team.ts",
+     "ms": 1467,
+     "share": 9.2
+    },
+    {
+     "name": "advance grid/movement.ts",
+     "ms": 1415,
+     "share": 8.9
+    },
+    {
+     "name": "passesAndCarries aggregate/team.ts",
+     "ms": 1169,
+     "share": 7.3
+    },
+    {
+     "name": "prepareMatch src/match.ts",
+     "ms": 1113,
+     "share": 7
+    },
+    {
+     "name": "defend grid/coordination.ts",
+     "ms": 1051,
+     "share": 6.6
+    },
+    {
+     "name": "(anon) grid/coordination.ts",
+     "ms": 971,
+     "share": 6.1
+    },
+    {
+     "name": "readsOf grid/engine.ts",
+     "ms": 938,
+     "share": 5.9
+    },
+    {
+     "name": "startingSquad src/world.ts",
+     "ms": 910,
+     "share": 5.7
+    },
+    {
+     "name": "stepToward grid/movement.ts",
+     "ms": 900,
+     "share": 5.6
+    },
+    {
+     "name": "targetOf grid/shape.ts",
+     "ms": 866,
+     "share": 5.4
+    }
+   ]
+  },
+  "late": {
+   "world": "season-60.world.json (the 2011 season, history 60)",
+   "profileMs": 21321,
+   "selfByFunction": [
+    {
+     "name": "continuousSquad src/npc-continuity.ts",
+     "ms": 3507,
+     "share": 16.5
+    },
+    {
+     "name": "qualifyManagers src/manager-entry.ts",
+     "ms": 895,
+     "share": 4.2
+    },
+    {
+     "name": "multinomialInto aggregate/participation.ts",
+     "ms": 525,
+     "share": 2.5
+    },
+    {
+     "name": "stepToward grid/movement.ts",
+     "ms": 475,
+     "share": 2.2
+    },
+    {
+     "name": "(anon) aggregate/team.ts",
+     "ms": 439,
+     "share": 2.1
+    },
+    {
+     "name": "attributeSide aggregate/players.ts",
+     "ms": 433,
+     "share": 2
+    },
+    {
+     "name": "binomial aggregate/team.ts",
+     "ms": 398,
+     "share": 1.9
+    },
+    {
+     "name": "weights aggregate/players.ts",
+     "ms": 385,
+     "share": 1.8
+    },
+    {
+     "name": "(anon) aggregate/participation.ts",
+     "ms": 375,
+     "share": 1.8
+    },
+    {
+     "name": "set toTemporalInstant set toTemporalInstant:0",
+     "ms": 368,
+     "share": 1.7,
+     "note": "V8's name for the Object.defineProperty builtin here: tsx's esbuild keepNames helper __name, called each time a named closure is created"
+    },
+    {
+     "name": "share aggregate/players.ts",
+     "ms": 367,
+     "share": 1.7
+    },
+    {
+     "name": "advance grid/movement.ts",
+     "ms": 358,
+     "share": 1.7
+    },
+    {
+     "name": "within aggregate/players.ts",
+     "ms": 342,
+     "share": 1.6
+    },
+    {
+     "name": "(anon) t450/time-seasons.mts",
+     "ms": 338,
+     "share": 1.6,
+     "note": "the harness: JSON.parse of the kept world and the digest after the season, outside the timed season"
+    },
+    {
+     "name": "(anon) src/person-careers.ts",
+     "ms": 305,
+     "share": 1.4
+    },
+    {
+     "name": "shapePlace grid/shape.ts",
+     "ms": 288,
+     "share": 1.4
+    },
+    {
+     "name": "(anon) aggregate/players.ts",
+     "ms": 263,
+     "share": 1.2
+    },
+    {
+     "name": "(anon) grid/coordination.ts",
+     "ms": 260,
+     "share": 1.2
+    },
+    {
+     "name": "actionWeight aggregate/players.ts",
+     "ms": 257,
+     "share": 1.2
+    },
+    {
+     "name": "defend grid/coordination.ts",
+     "ms": 249,
+     "share": 1.2
+    },
+    {
+     "name": "(garbage collector) (garbage collector):0",
+     "ms": 249,
+     "share": 1.2
+    },
+    {
+     "name": "skill aggregate/engine.ts",
+     "ms": 218,
+     "share": 1
+    },
+    {
+     "name": "(anon) src/npc-continuity.ts",
+     "ms": 201,
+     "share": 0.9
+    },
+    {
+     "name": "managerialEntryReady src/manager-entry.ts",
+     "ms": 183,
+     "share": 0.9
+    },
+    {
+     "name": "sideCounters aggregate/ledger.ts",
+     "ms": 171,
+     "share": 0.8
+    },
+    {
+     "name": "(anon) grid/state.ts",
+     "ms": 170,
+     "share": 0.8
+    },
+    {
+     "name": "targetOf grid/shape.ts",
+     "ms": 169,
+     "share": 0.8
+    },
+    {
+     "name": "hypot src/portable-math.ts",
+     "ms": 167,
+     "share": 0.8
+    },
+    {
+     "name": "syncMentorExposure src/person-careers.ts",
+     "ms": 166,
+     "share": 0.8
+    },
+    {
+     "name": "(program) (program):0",
+     "ms": 166,
+     "share": 0.8
+    }
+   ],
+   "selfByFile": [
+    {
+     "name": "packages/engine/src/npc-continuity.ts",
+     "ms": 3729,
+     "share": 17.5
+    },
+    {
+     "name": "packages/engine/src/aggregate/players.ts",
+     "ms": 2684,
+     "share": 12.6
+    },
+    {
+     "name": "packages/engine/src/aggregate/team.ts",
+     "ms": 1560,
+     "share": 7.3
+    },
+    {
+     "name": "packages/engine/src/aggregate/participation.ts",
+     "ms": 1509,
+     "share": 7.1
+    },
+    {
+     "name": "packages/engine/src/grid/movement.ts",
+     "ms": 1078,
+     "share": 5.1
+    },
+    {
+     "name": "packages/engine/src/manager-entry.ts",
+     "ms": 1078,
+     "share": 5.1
+    },
+    {
+     "name": "packages/engine/src/person-careers.ts",
+     "ms": 780,
+     "share": 3.7
+    },
+    {
+     "name": "packages/engine/src/grid/coordination.ts",
+     "ms": 737,
+     "share": 3.5
+    },
+    {
+     "name": "packages/engine/src/grid/shape.ts",
+     "ms": 683,
+     "share": 3.2
+    },
+    {
+     "name": "packages/engine/src/aggregate/ledger.ts",
+     "ms": 622,
+     "share": 2.9
+    },
+    {
+     "name": "packages/engine/src/player.ts",
+     "ms": 525,
+     "share": 2.5
+    },
+    {
+     "name": "packages/engine/src/match-model.ts",
+     "ms": 465,
+     "share": 2.2
+    },
+    {
+     "name": "packages/engine/src/aggregate/engine.ts",
+     "ms": 454,
+     "share": 2.1
+    },
+    {
+     "name": "set toTemporalInstant",
+     "ms": 368,
+     "share": 1.7,
+     "note": "V8's name for the Object.defineProperty builtin here: tsx's esbuild keepNames helper __name, called each time a named closure is created"
+    },
+    {
+     "name": "docs/benchmarks/t450/time-seasons.mts",
+     "ms": 338,
+     "share": 1.6,
+     "note": "the harness: JSON.parse of the kept world and the digest after the season, outside the timed season"
+    },
+    {
+     "name": "packages/engine/src/grid/engine.ts",
+     "ms": 336,
+     "share": 1.6
+    },
+    {
+     "name": "packages/engine/src/primitives.ts",
+     "ms": 324,
+     "share": 1.5
+    },
+    {
+     "name": "packages/engine/src/world.ts",
+     "ms": 290,
+     "share": 1.4
+    },
+    {
+     "name": "packages/engine/src/grid/lanes.ts",
+     "ms": 259,
+     "share": 1.2
+    },
+    {
+     "name": "packages/engine/src/match.ts",
+     "ms": 255,
+     "share": 1.2
+    }
+   ],
+   "inclusive": [
+    {
+     "name": "simulateSeason src/index.ts",
+     "ms": 20206,
+     "share": 94.8
+    },
+    {
+     "name": "stepDay src/season.ts",
+     "ms": 19884,
+     "share": 93.3
+    },
+    {
+     "name": "advanceRound src/season.ts",
+     "ms": 19884,
+     "share": 93.3
+    },
+    {
+     "name": "simulateMatch src/match.ts",
+     "ms": 17169,
+     "share": 80.5
+    },
+    {
+     "name": "candidateMatch src/match.ts",
+     "ms": 17169,
+     "share": 80.5
+    },
+    {
+     "name": "playRound src/season.ts",
+     "ms": 16726,
+     "share": 78.4
+    },
+    {
+     "name": "simulateAggregate aggregate/engine.ts",
+     "ms": 12477,
+     "share": 58.5
+    },
+    {
+     "name": "playAggregate aggregate/engine.ts",
+     "ms": 7661,
+     "share": 35.9
+    },
+    {
+     "name": "playGrid grid/engine.ts",
+     "ms": 4616,
+     "share": 21.6
+    },
+    {
+     "name": "prepareMatch src/match.ts",
+     "ms": 4460,
+     "share": 20.9
+    },
+    {
+     "name": "startingSquad src/world.ts",
+     "ms": 4229,
+     "share": 19.8
+    },
+    {
+     "name": "squad src/world.ts",
+     "ms": 4017,
+     "share": 18.8
+    },
+    {
+     "name": "continuousSquad src/npc-continuity.ts",
+     "ms": 4008,
+     "share": 18.8
+    },
+    {
+     "name": "attributePlayerFacts aggregate/players.ts",
+     "ms": 3836,
+     "share": 18
+    },
+    {
+     "name": "settleParticipation aggregate/engine.ts",
+     "ms": 3775,
+     "share": 17.7
+    },
+    {
+     "name": "attributeSide aggregate/players.ts",
+     "ms": 3654,
+     "share": 17.1
+    },
+    {
+     "name": "generateTeamFacts aggregate/team.ts",
+     "ms": 2776,
+     "share": 13
+    },
+    {
+     "name": "playFixture src/knockout.ts",
+     "ms": 1582,
+     "share": 7.4
+    },
+    {
+     "name": "(anon) aggregate/team.ts",
+     "ms": 1581,
+     "share": 7.4
+    },
+    {
+     "name": "clubDay src/season.ts",
+     "ms": 1536,
+     "share": 7.2
+    },
+    {
+     "name": "updateIntentions grid/intentions.ts",
+     "ms": 1449,
+     "share": 6.8
+    },
+    {
+     "name": "qualifyManagers src/manager-entry.ts",
+     "ms": 1240,
+     "share": 5.8
+    },
+    {
+     "name": "passesAndCarries aggregate/team.ts",
+     "ms": 1224,
+     "share": 5.7
+    },
+    {
+     "name": "planCoordination grid/coordination.ts",
+     "ms": 1197,
+     "share": 5.6
+    },
+    {
+     "name": "advanceCups src/cups.ts",
+     "ms": 1147,
+     "share": 5.4
+    },
+    {
+     "name": "inStride grid/engine.ts",
+     "ms": 1138,
+     "share": 5.3
+    }
+   ]
+  }
+ }
+}
