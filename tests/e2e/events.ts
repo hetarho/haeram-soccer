@@ -149,18 +149,11 @@ export async function configureResponsibilities(
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
   }
-  const currentMode = await page
-    .getByRole('region', { name: '시즌 정보', exact: true })
-    .innerText();
-  if (options.mode && !currentMode.includes(options.mode === 'manual' ? 'MANUAL' : 'AUTO')) {
-    await page
-      .getByRole('navigation')
-      .getByRole('button', { name: '클럽 홈', exact: true })
-      .click();
-    const shortcut = page.getByRole('button', { name: /진행 방식 변경/ });
-    const expected = options.mode === 'manual' ? '현재 수동 모드' : '현재 자동 모드';
-    if (!(await shortcut.getAttribute('aria-label'))?.includes(expected)) {
-      await shortcut.click();
+  if (options.mode) {
+    const mode = page.getByTestId('progression-mode');
+    const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
+    if ((await mode.innerText()) !== expected) {
+      await page.getByRole('button', { name: '진행 방식 변경', exact: true }).click();
       const dialog = page.getByRole('dialog', {
         name: '게임 진행 방식이 변경됩니다.',
         exact: true,
@@ -172,11 +165,10 @@ export async function configureResponsibilities(
             exact: true,
           })
           .click();
-      await expect(shortcut).toHaveAttribute('aria-label', `진행 방식 변경 · ${expected}`);
+      await expect(mode).toHaveText(expected);
       await dismissMatchReport(page);
+      await dismissSettingsToast(page);
     }
-    await openOffice(page);
-    await dismissSettingsToast(page);
   }
   // Explicit report choices are applied after the mode-entry default.
   for (const [key, value] of Object.entries(options.observations ?? {})) {
@@ -225,7 +217,10 @@ export const ALL_DELEGATED: Record<ResponsibilityKey, 'delegated'> = {
 };
 
 /** The card shown when the clock stops for a match eve or an attention event. */
-export const eventCard = (page: Page) => page.getByTestId('event-card');
+export const eventCard = (page: Page) =>
+  page
+    .getByTestId('event-card')
+    .and(page.getByRole('complementary', { name: '이벤트', exact: true }));
 
 /**
  * Reads every pending attention card with '확인', e.g. after importing a career mid-season; an

@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { DISABLED_RELEASE, withoutManagerHistory } from '../fixtures/worlds';
+import { openSaveMenu } from './save-menu';
 
 /**
  * A career of the current rules, one round in, founded before the full match model's release, so
@@ -46,11 +47,13 @@ async function seed(page: Page, raw: string, other?: string) {
   );
 }
 async function exportRaw(page: Page, recovery = false) {
+  const menu = recovery ? undefined : await openSaveMenu(page);
   const event = page.waitForEvent('download');
-  await page
+  await (menu ?? page)
     .getByRole('button', { name: recovery ? '복구 기록 내보내기' : '기록 내보내기', exact: true })
     .click();
   const file = await event;
+  if (menu) await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
   return await readFile((await file.path())!, 'utf8');
 }
 

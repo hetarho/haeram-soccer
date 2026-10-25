@@ -3,6 +3,7 @@ import {
   configureResponsibilities,
   acknowledgeEvents,
   dismissMatchReport,
+  eventCard,
 } from './events';
 import { expect, test, type Page } from '@playwright/test';
 
@@ -26,14 +27,16 @@ async function step(page: Page) {
   const pill = page.getByTestId('event-pill');
   if (await pill.isVisible()) await pill.click();
   await acknowledgeEvents(page);
-  const match = page.getByTestId('event-card').filter({ hasText: '내일 경기' });
+  const match = eventCard(page).filter({ hasText: '내일 경기' });
   const before = await page.getByTestId('game-date').innerText();
-  if (await match.count()) {
+  if (!(await match.isVisible())) {
+    await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+    await expect(eventCard(page).first()).toBeVisible();
+  }
+  // Reopening a dismissed match report deliberately leaves the date unchanged.
+  if ((await match.isVisible()) && (await page.getByTestId('game-date').innerText()) === before) {
     await match.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
     await expect(match).toHaveCount(0);
-  } else {
-    await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
-    await expect(page.getByTestId('event-card').first()).toBeVisible();
   }
   await expect(page.getByTestId('game-date')).not.toHaveText(before);
 }

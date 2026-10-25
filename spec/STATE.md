@@ -280,7 +280,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 20 | 20 | - | 2 |
-| WEB | 148 | 148 | - | 0 |
+| WEB | 153 | 153 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -328,22 +328,22 @@
 
 ## log
 - 261026 T450 done (delegated, merged 0e25b481): candidate seasons median 18.84 → 14.21 s over 80 seasons, digests unchanged
-- 261025 create-task T450 (v9n4): the candidate season throughput before T286, T286 dep + T450
-- 261025 p4w8 session end (account switch): T286 handed off at 97bfd1ea with the season gate failing; T437/T446/T447 merged on the group branch, full gate pending
-- 261025 T447 done (delegated, merged): far-post zone 8 m, lofted claim 0.15, goals 2.84 on validation round 70
-- 261025 T446 done (delegated, merged): far-post reach 0.2 → 22.9%, goals 3.06 on validation round 69; create-task T447 (p4w8), T286 dep + T447
-- 261025 update-ssot MATCH r30 + create-task T446 (p4w8): lofted deliveries fly over the crowd and the delivery choice reads the reach; T286 dep + T446, todo bases MATCH@30
-- 261025 T437 done (delegated sub-session, merged 7daa6f77): goals 2.67 on validation round 68, guards at 2.0–3.6; batch gate not run
-- 261025 v9n4-release (p4w8): T441–T445 integrated, group gate green on a7135c1f; unit gate now fast checks, full gate at completion; T437 delegated to a sub-session
-- 261025 T445 integrated
-- 261025 T444 integrated
-- 261025 T443 integrated
-- 261024 T442 integrated
-- 261024 T441 integrated
-- 261025 update-ssot MATCH r29 (p4w8): MATCH-11✎ keeper distribution reads the opponent who reaches its path first; todo tasks and T441 (doing, review) to base MATCH@29, content unchanged
-- 261024 T431 integrated
-- 261025 create-task T441 T442 T443 T444 T445 (p4w8): final-third chain after T426; T437 dep T426 T445 explore 6h, T286 dep + T441–T445, MATCH base 28 on T286 T410 T432 T433 T434 T435 T437
-- 261025 update-ssot MATCH r28 (p4w8): MATCH-11✎ MATCH-31+ MATCH-32+ MATCH-33+ MATCH-34+ MATCH-35+ — passes cut out where reached, lanes shut, box zones attacked and defended, deliveries into zones, shots blocked before the keeper and second balls contested
-- 261024 T426 integrated
-- 261025 T438 final sync (u6p2): pulled docs-only b8358cc7, retained p4w8 planning/active state and T431 dep T426; verified runtime and browser sources unchanged
-- 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
+- 261026 fix home milestone journey (r8m2): classify the founding/three-export/full-match/reload case as slow, preserving all assertions. CI 40211951722 passed checks/unit/Chromium/WebKit; Firefox had 271 passes, 2 skips and one 30 s journey timeout whose first trace completed its assertions. Type/lint/format/build/spec checks and all three Firefox viewport cases now pass; reuse the unchanged application's previous batch successes.
+- 261026 T451 done + T446–T451 publication verified (r8m2): unit 2131 + 4 existing skips, contracts 39, catalogs/resources/build and Chromium 274 covered (269 first run + five corrected-driver reruns). Owner-authorized commit/push follows.
+- 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.
+- 261026 publication fix (r8m2): the first Chromium batch found configureResponsibilities still reading mode from the removed metadata/button aria-label; stop that run and read the separate progression-mode status. Unit 2131 + 4 skips, contracts 39, catalogs/resources/build already passed and are reused.
+- 261026 T450 done (r8m2): NEXT MATCH follows home conditions in DOM/grid order; task checks pass. T446–T450 publication batch starts before the owner-authorized commit/push.
+- 261026 create-task freshness (r8m2): WEB r153 changes home order only; inactive todo T286/T434 base WEB@152→153, contracts unchanged.
+- 261026 create-task T450 + implement-task start (r8m2): move the home fixture below conditions, then verify and publish the full UI batch.
+- 261026 update-ssot WEB r153 (r8m2): NEXT MATCH follows team-state tiles on every viewport; owner authorizes committing and pushing the accumulated UI changes.
+- 261026 T449 done (r8m2): primary mode switch before fixed-width mode text; no manual NEXT MATCH launcher, real event access retained; 73 unit tests/type/lint/format/build/spec checks pass, browser batch pending, uncommitted.
+- 261026 create-task freshness (r8m2): WEB r152 changes mode/report presentation only; inactive todo T286/T434 base WEB@151→152, contracts unchanged.
+- 261026 create-task T449 + implement-task start (r8m2): stable primary mode switch, trailing mode text and manual-report launcher removal.
+- 261026 update-ssot WEB r152 (r8m2): primary mode-change action before stable-width mode text; no manual dismissed-match launcher, other decision access preserved.
+- 261026 T448 done (r8m2): unified bottom controls, no visible footer/hints; 34 affected unit tests and fast/build checks pass; subsequent layout/report steering in T449.
+- 261026 create-task freshness (r8m2): WEB r151 changes management controls/footer only; inactive todo T286/T434 base WEB@150→151, contracts unchanged.
+- 261026 create-task T448 + implement-task start (r8m2): unified bottom mode/transport controls and no visible footer/generic hints.
+- 261026 update-ssot WEB r151 (r8m2): WEB-10/18/96 group mode and progression below across management views, remove visible footer and generic guidance.
+- 261026 update-ssot WEB start (r8m2): remove visible footer/hints and consolidate mode status, switching and progression in the bottom controls.
+- 261026 T447 done (r8m2): transport inherits on-dark foregrounds; resume opens only on next-event, ordinary event access preserved; 45 unit tests/type/lint/format/build/spec checks pass, browser batch pending, uncommitted.
+- 261026 create-task freshness (r8m2): WEB r150 affects resume entry only; inactive todo T286/T434 base WEB@149→150, contracts unchanged.

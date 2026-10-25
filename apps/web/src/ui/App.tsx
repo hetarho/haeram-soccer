@@ -31,7 +31,7 @@ import { compactMoney, competitionLabel, money, number, percent, seasonName } fr
 import { Money } from './Money';
 import { ProgressControls, ProgressOverview } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
-import { ClubHub, MatchAction } from './ClubHub';
+import { ClubHub } from './ClubHub';
 import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
@@ -474,16 +474,8 @@ const ConnectedFounding = memo(function ConnectedFounding({
 });
 const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
   const state = useContentState();
-  const setPage = useNavigation((state) => state.setPage);
   const w = state.view!.world;
-  return (
-    <ClubHub
-      w={w}
-      client={client}
-      journal={<ClubJournal state={state} />}
-      matchAction={<MatchAction onReturn={() => setPage('match')} />}
-    />
-  );
+  return <ClubHub w={w} client={client} journal={<ClubJournal state={state} />} />;
 });
 const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
   const state = useContentState();
@@ -841,14 +833,12 @@ function useSaveText(playing = true, detail: 'full' | 'brief' = 'full') {
     ? saved
     : t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
 }
-const LiveFooter = memo(function LiveFooter({ playing }: { playing: boolean }) {
-  const { t } = useLocale();
-  const text = useSaveText(playing);
+const AccessibleSaveStatus = memo(function AccessibleSaveStatus() {
+  const text = useSaveText();
   return (
-    <footer className={s.footer}>
-      <span>{t('shell.footer')}</span>
-      <span data-testid="save-status">{text}</span>
-    </footer>
+    <span className={s.srOnly} data-testid="save-status">
+      {text}
+    </span>
   );
 });
 function SaveStatus() {
@@ -1164,7 +1154,7 @@ export function App() {
             </button>
           ))}
         </nav>
-        {client && (
+        {client && !playing && (
           <SaveActions client={client} compact onDownload={download} onImport={importFile} />
         )}
       </aside>
@@ -1187,11 +1177,7 @@ export function App() {
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressOverview
-            client={client}
-            controller={controller}
-            compact={page !== 'dashboard'}
-          />
+          <ProgressOverview compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller ? (
@@ -1265,21 +1251,12 @@ export function App() {
             <div className={s.loading}>{t('shell.loadingOffice')}</div>
           )}
           {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
-          <LiveFooter playing={playing} />
-          {/* Start screens carry their own import and recovery tools. */}
-          {client && playing && (
-            <SaveActions
-              client={client}
-              onDownload={download}
-              onImport={importFile}
-              onSlots={openSlots}
-            />
-          )}
         </div>
         {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressControls controller={controller} />
+          <ProgressControls client={client} controller={controller} />
         )}
       </main>
+      {playing && <AccessibleSaveStatus />}
       <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
         {TABS.map(([id, label, full, owns]) => (
           <button

@@ -215,7 +215,7 @@ describe('management screen calendar locks', () => {
     expect(switcher.find((button) => button.label.startsWith('진행 방식 변경'))?.disabled).toBe(
       true,
     );
-    const transport = render(createElement(ProgressControls, { controller }));
+    const transport = render(createElement(ProgressControls, { client, controller }));
     expect(transport.find((button) => button.label === '자동 진행 정지')?.disabled).toBe(false);
     expect(transport.find((button) => button.label === '자동 진행 배속')?.disabled).toBe(false);
   });

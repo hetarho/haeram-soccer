@@ -13,7 +13,6 @@ async function completeFoundingGeometry(page: Page) {
   const controls = await page.evaluate(() => {
     const founding = document.querySelector('[data-testid="club-founding"]')!;
     const tools = document.querySelector('main [class*="startTools"]')!;
-    const footer = document.querySelector('main [class*="footer"]')!;
     const required = [
       ...founding.querySelectorAll('form > label input,form > label select,button,summary'),
       tools.querySelector('label')!,
@@ -35,7 +34,7 @@ async function completeFoundingGeometry(page: Page) {
       viewportWidth: innerWidth,
       viewportHeight: innerHeight,
       controls: required.map(measure),
-      footer: measure(footer),
+      footerCount: document.querySelectorAll('main footer').length,
       notes: [
         founding.querySelector('header p')!,
         founding.querySelector('button[aria-pressed="true"] small')!,
@@ -60,7 +59,8 @@ function expectCompleteFoundingFits(
   expect(geometry.view.overflow, measured).toBeLessThanOrEqual(2);
   expect(geometry.view.scroll, measured).toBe(0);
   expect(geometry.view.documentScroll, measured).toBe(0);
-  for (const bounds of [...geometry.controls, geometry.footer]) {
+  expect(geometry.footerCount, measured).toBe(0);
+  for (const bounds of geometry.controls) {
     expect(bounds.x, measured).toBeGreaterThanOrEqual(0);
     expect(bounds.y, measured).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width, measured).toBeLessThanOrEqual(geometry.viewportWidth);

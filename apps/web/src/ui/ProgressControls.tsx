@@ -5,6 +5,7 @@ import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
 import { memo, useEffect, useRef } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
+import { useUnfinishedPlayback } from '../runtime/matchView';
 import {
   pendingMatchReport,
   useProgression,
@@ -26,18 +27,13 @@ const PACES: [Pace, string, string][] = [
 
 /** Calendar information stays near the HUD while transport stays below the scrolling view. */
 export const ProgressOverview = memo(function ProgressOverview({
-  client,
-  controller,
   compact = false,
 }: {
-  client: GameClient;
-  controller: ProgressionController;
   compact?: boolean;
 }) {
   const w = useGameState((state) => state.view!.world);
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
-  const manual = settingsOf(w).mode === 'manual';
   const round = ownDivisionRound(w);
   return (
     <section
@@ -62,23 +58,20 @@ export const ProgressOverview = memo(function ProgressOverview({
           / {round.total}
         </small>
       </div>
-      {compact ? (
-        <span className={p.modeStatus}>{manual ? 'MANUAL · 수동 진행' : 'AUTO · 자동 진행'}</span>
-      ) : (
-        <ProgressModeSwitch client={client} controller={controller} />
-      )}
     </section>
   );
 });
 
 /** Play starts the shared clock; the dropdown only sets its pace (→WEB-18). */
 export const ProgressControls = memo(function ProgressControls({
+  client,
   controller,
 }: {
+  client: GameClient;
   controller: ProgressionController;
 }) {
   const state = useGameState((state) => state);
-  const { running, pace, reason } = useProgression(controller, (state) => state);
+  const { running, pace } = useProgression(controller, (state) => state);
   // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
   // click landing just after that was aimed at the old label, so it must not start the clock.
   const userStop = useRef(false);
@@ -94,21 +87,21 @@ export const ProgressControls = memo(function ProgressControls({
   const w = state.view!.world;
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
+  const unfinished = useUnfinishedPlayback();
   const pending = pendingDecisions(w).length > 0;
   const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
-  const detail = PACES.find(([value]) => value === pace)![2];
-  const status = running
-    ? `진행 중 · ${detail}`
-    : manual
-      ? '수동 진행 · 다음 이벤트를 선택하세요'
-      : reason || '재생하면 날짜가 흐릅니다';
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
-        disabled={gameActionsBlocked(state) || blocked || (pending && !pendingMatchReport(w))}
+        data-ui="link"
+        className={p.nextEvent}
+        disabled={
+          gameActionsBlocked(state) || blocked || (pending && !unfinished && !pendingMatchReport(w))
+        }
         onClick={() => void controller.nextEvent()}
       >
         다음 이벤트
+        <PixelIcon name="chevronRight" size={16} />
       </button>
     </div>
   ) : (
@@ -145,15 +138,17 @@ export const ProgressControls = memo(function ProgressControls({
   // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
   return (
-    <section
-      className={`${p.controls} ${running ? p.running : ''}`}
-      data-ui="season-transport"
-      aria-label="시즌 진행"
-    >
-      <div className={p.transportSummary}>
-        <small className={p.status} aria-live="polite" aria-atomic="true">
-          {status}
-        </small>
+    <section className={p.controls} data-ui="season-transport" aria-label="시즌 진행">
+      <div className={p.modeGroup}>
+        <ProgressModeSwitch client={client} controller={controller} />
+        <span
+          className={p.modeStatus}
+          data-testid="progression-mode"
+          aria-label={`현재 진행 방식: ${manual ? '수동' : '자동'}`}
+          aria-live="polite"
+        >
+          {manual ? 'MANUAL' : 'AUTO'}
+        </span>
       </div>
       <i
         className={p.progress}

@@ -1,6 +1,6 @@
 import { MediationButton } from './MediationReview';
 import { PixelIcon } from './PixelIcon';
-import { memo, useEffect, useId, useState } from 'react';
+import { memo, useEffect, useId, useRef, useState } from 'react';
 import type {
   InboxItem,
   InboxKind,
@@ -10,6 +10,7 @@ import type {
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/world';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
+import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { talkFor } from '../../../../packages/engine/src/contracts';
 import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff';
 import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
@@ -38,14 +39,14 @@ import {
   openOwnerOffice,
   useNavigation,
 } from './state';
-import { competitionLabel } from './format';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
 import { TabList, TabPanel } from './PageTabs';
 import s from './EventCenter.module.css';
 import { fadeOutOnRemove } from './motion';
-import { ClubCrest } from './ClubCrest';
 import { watchNextMatch } from './watch';
+import { useUnfinishedPlayback } from '../runtime/matchView';
+import { MatchReportCard } from './MatchReportCard';
 import {
   NewsQuietToggle,
   NewsList,
@@ -101,45 +102,79 @@ export const EventCenter = memo(function EventCenter({
   const running = useProgression(controller, (state) => state.running);
   const [opened, setOpened] = useState<string>();
   const eventRequest = useProgression(controller, (state) => state.eventRequest);
+  const previousRequest = useRef(eventRequest);
   const page = useNavigation((state) => state.page);
-  const events = w && !running ? stoppingEvents(w) : [];
+  const setPage = useNavigation((state) => state.setPage);
+  const unfinished = useUnfinishedPlayback();
+  const resume = !running ? unfinished : undefined;
+  const events =
+    w && !running ? stoppingEvents(w).filter((item) => !resume || item.kind !== 'match') : [];
   const key = w ? `${w.id}:${seasonDate(w)}` : '';
   const date = w ? seasonDate(w) : '';
-  const eve = !running && w && !!pendingMatchReport(w);
+  const eve = !resume && !running && w && !!pendingMatchReport(w);
   const eveKey = eve ? key : undefined;
+  const resumeKey = w && resume ? `${w.id}:watch:${resume.record.id}` : undefined;
+  const resumeOpen = !!resumeKey && opened === resumeKey;
+  const acting = useGameState(gameActionsBlocked);
   useEffect(() => setOpened(undefined), [page]);
   useEffect(() => {
+    const requested = eventRequest !== previousRequest.current;
+    previousRequest.current = eventRequest;
     if (eveKey) setOpened(eveKey);
-  }, [eveKey, eventRequest]);
-  if (!w || running || !events.length) return null;
-  const inDialog = compact || eve;
-  if (inDialog && opened !== key)
+    else if (resumeKey && requested) setOpened(resumeKey);
+  }, [eveKey, resumeKey, eventRequest]);
+  if (!w || running || (!events.length && !resumeOpen)) return null;
+  const inDialog = compact || eve || resumeOpen;
+  const label = resumeOpen ? '관전 이어보기' : eve ? 'NEXT MATCH' : `${date} 이벤트`;
+  if (inDialog && opened !== key && !resumeOpen) {
+    const manualMatch = eve && settingsOf(w).mode === 'manual';
+    const entries = manualMatch ? events.filter((item) => item.kind !== 'match') : events;
+    if (!entries.length) return null;
     return (
       <button
         className={s.pill}
         data-testid="event-pill"
         data-event-access
         aria-label={
-          eve ? `경기 준비 보고 · ${date} · 열기` : `이벤트 ${events.length}개 · ${date} · 열기`
+          eve && !manualMatch
+            ? `경기 준비 보고 · ${date} · 열기`
+            : `이벤트 ${entries.length}개 · ${date} · 열기`
         }
         onClick={() => setOpened(key)}
       >
-        <i aria-hidden="true">{events.length}</i>
-        <span>{eve ? 'NEXT MATCH · 보고 확인' : `${date} 이벤트`}</span>
+        <i aria-hidden="true">{entries.length}</i>
+        <span>{eve && !manualMatch ? 'NEXT MATCH · 보고 확인' : `${date} 이벤트`}</span>
       </button>
     );
+  }
   const content = (
     <div className={s.group} data-testid="event-group">
       <h2>
-        {date} · {eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
+        {date} ·{' '}
+        {resumeOpen ? '관전 중인 경기' : eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
       </h2>
+      {resumeOpen && resume && (
+        <MatchReportCard w={w} fixture={resume.record} continuing>
+          <div className={s.actions}>
+            <button
+              data-ui="primary"
+              className={s.primary}
+              aria-label="관전 이어보기"
+              disabled={acting || !!w.critical || !!w.bankrupt}
+              onClick={() => setPage('match')}
+            >
+              관전 이어보기 <PixelIcon name="play" size={16} />
+            </button>
+          </div>
+        </MatchReportCard>
+      )}
       {events.map((item) => (
         <EventCard key={item.id} client={client} controller={controller} item={item} />
       ))}
     </div>
   );
   return inDialog ? (
-    <Dialog label={eve ? 'NEXT MATCH' : `${date} 이벤트`} onClose={() => setOpened(undefined)}>
+    <Dialog label={label} onClose={() => setOpened(undefined)}>
       {content}
     </Dialog>
   ) : (
@@ -175,31 +210,12 @@ const EventCard = memo(function EventCard({
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
     const blocked = acting || pendingDecisions(w).length > 0;
-    const home = eve.home === w.playerClub;
-    const opponent = w.clubs.find((c) => c.id === (home ? eve.away : eve.home));
     const watch = () => {
       controller.clearMatchEve();
       return watchNextMatch(client, controller, () => setPage('match'), { fromEve: true });
     };
     return (
-      <aside
-        data-surface="panel"
-        key={eve.id}
-        ref={cardExit}
-        className={`${s.card} ${s.matchReport}`}
-        aria-label="이벤트"
-        data-testid="event-card"
-      >
-        <header>
-          <span className={s.kind}>MATCH · 내일 경기</span>
-        </header>
-        <h3>
-          {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
-          vs {opponent?.name}
-        </h3>
-        <p>
-          {home ? '홈' : '원정'} · {competitionLabel(w, eve)} · 선발과 전술은 스태프가 준비해요.
-        </p>
+      <MatchReportCard w={w} fixture={eve} ref={cardExit}>
         <button data-ui="link" type="button" className={s.stops} onClick={openOwnerOffice}>
           구단주 사무실
         </button>
@@ -216,7 +232,7 @@ const EventCard = memo(function EventCard({
             결과만 보고 계속
           </button>
         </div>
-      </aside>
+      </MatchReportCard>
     );
   }
   const bid = bidFor(w, item);

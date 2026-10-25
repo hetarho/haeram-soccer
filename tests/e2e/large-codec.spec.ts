@@ -108,7 +108,11 @@ test('large portable codec writes, loads and exports under production CSP', asyn
   await page.goto('/journal');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   const downloaded = page.waitForEvent('download');
-  await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  await page.getByRole('button', { name: '설정', exact: true }).click();
+  await page
+    .getByRole('dialog', { name: '설정' })
+    .getByRole('button', { name: '기록 내보내기', exact: true })
+    .click();
   const download = await downloaded;
   expect(canonical((await decode(readFileSync((await download.path())!, 'utf8'))).world)).toBe(
     canonical(world),

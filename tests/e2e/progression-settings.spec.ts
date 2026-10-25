@@ -298,31 +298,45 @@ for (const themeId of ['standard', 'pixel']) {
     const date = page.getByTestId('game-date');
     const before = await date.innerText();
     const shortcut = page.getByRole('button', { name: /진행 방식 변경/ });
+    const modeLabel = page.getByTestId('progression-mode');
+    const modeGeometry = async () => ({
+      button: await shortcut.boundingBox(),
+      label: await modeLabel.boundingBox(),
+    });
+    const beforeMode = await modeGeometry();
+    expect(beforeMode.label!.x).toBeGreaterThanOrEqual(
+      beforeMode.button!.x + beforeMode.button!.width,
+    );
+    await expect(shortcut).toHaveAttribute('data-ui', 'primary');
     const dialog = page.getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true });
     await shortcut.click();
     await expect(dialog).toContainText('수동 모드로 바꾸면 경기 전날 보고를 켭니다');
     await dialog.getByRole('checkbox', { name: '다시 보지 않기' }).check();
     await dialog.getByRole('button', { name: '취소', exact: true }).click();
-    await expect(shortcut).toContainText('AUTO');
+    await expect(page.getByTestId('progression-mode')).toHaveText('AUTO');
     await shortcut.click();
     await expect(dialog.getByRole('checkbox')).not.toBeChecked();
     await dialog.getByRole('checkbox').check();
     await dialog.getByRole('button', { name: '수동 모드로 변경', exact: true }).click();
-    await expect(shortcut).toContainText('MANUAL');
+    await expect(page.getByTestId('progression-mode')).toHaveText('MANUAL');
+    const afterMode = await modeGeometry();
+    expect(afterMode.button!.x).toBe(beforeMode.button!.x);
+    expect(afterMode.button!.width).toBe(beforeMode.button!.width);
+    expect(afterMode.label!.width).toBe(beforeMode.label!.width);
     await expect(date).toHaveText(before);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
     const outcome = page.getByTestId('action-outcome');
     await expect(outcome).toBeVisible();
     await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
     await shortcut.click();
-    await expect(shortcut).toContainText('AUTO');
+    await expect(page.getByTestId('progression-mode')).toHaveText('AUTO');
     await expect(dialog).toHaveCount(0);
     await expect(date).toHaveText(before);
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await shortcut.click();
-    await expect(shortcut).toContainText('MANUAL');
+    await expect(page.getByTestId('progression-mode')).toHaveText('MANUAL');
     await expect(dialog).toHaveCount(0);
     await expect(date).toHaveText(before);
   });
@@ -406,19 +420,27 @@ for (const width of [390, 1280]) {
       'aria-pressed',
       'true',
     );
-    await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+    await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
       'MANUAL',
     );
-    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(
+      page
+        .getByRole('region', { name: '시즌 진행', exact: true })
+        .getByRole('button', { name: '진행 방식 변경', exact: true }),
+    ).toBeVisible();
     await expect(page.getByTestId('game-date')).toHaveText(date);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
-    await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+    await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
       'MANUAL',
     );
-    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(
+      page
+        .getByRole('region', { name: '시즌 진행', exact: true })
+        .getByRole('button', { name: '진행 방식 변경', exact: true }),
+    ).toBeVisible();
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });
   test(`office authority confirmation and pending handover ${width}`, async ({ page }) => {
@@ -482,10 +504,14 @@ test('manual can keep match eve disabled and stop at the next result', async ({ 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(office).toBeVisible();
-  await expect(page.getByRole('region', { name: '시즌 정보', exact: true })).toContainText(
+  await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
     'MANUAL',
   );
-  await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+  await expect(
+    page
+      .getByRole('region', { name: '시즌 진행', exact: true })
+      .getByRole('button', { name: '진행 방식 변경', exact: true }),
+  ).toBeVisible();
 });
 
 for (const themeId of ['standard', 'pixel']) {
@@ -513,6 +539,7 @@ for (const themeId of ['standard', 'pixel']) {
     for (let reopen = 0; reopen < 2; reopen++) {
       await report.getByRole('button', { name: '창 닫기', exact: true }).click();
       await expect(report).toHaveCount(0);
+      await expect(page.getByText('NEXT MATCH · 보고 확인', { exact: true })).toHaveCount(0);
       await expect(page.getByTestId('game-date')).toHaveText(date);
       await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
       await expect(report).toBeVisible();

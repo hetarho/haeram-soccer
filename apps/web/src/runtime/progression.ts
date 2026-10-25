@@ -14,6 +14,7 @@ import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
 import { gameStore } from './store';
+import { unfinishedPlayback, useMatchView } from './matchView';
 
 export type Pace = 'x1' | 'x2' | 'x5' | 'x10';
 /** Real milliseconds per game day: x1 is one day a second, x10 one day every 0.1 s. */
@@ -440,6 +441,10 @@ export class ProgressionController {
       state.pendingActions
     )
       return;
+    if (unfinishedPlayback(state.playback, useMatchView.getState())) {
+      this.store.setState((progress) => ({ eventRequest: progress.eventRequest + 1 }));
+      return;
+    }
     const report = pendingMatchReport(w);
     if (report) {
       this.store.setState((progress) => ({

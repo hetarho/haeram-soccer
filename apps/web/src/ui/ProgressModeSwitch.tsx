@@ -5,7 +5,6 @@ import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
-import { PixelIcon } from './PixelIcon';
 import { modeSwitchBlocked, switchProgressMode } from './progressMode';
 import s from './ProgressControls.module.css';
 
@@ -62,18 +61,14 @@ export function ProgressModeSwitch({
     <>
       <button
         className={s.modeSwitch}
-        data-ui="progress-mode"
-        aria-label={`진행 방식 변경 · 현재 ${mode === 'automatic' ? '자동' : '수동'} 모드`}
+        data-ui="primary"
+        data-progress-mode
         aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
         disabled={applying || modeSwitchBlocked(state)}
         title={state.clockRunning ? '진행을 정지한 뒤 변경할 수 있어요.' : undefined}
         onClick={choose}
       >
-        <span>
-          <b>{mode === 'automatic' ? 'AUTO' : 'MANUAL'}</b>
-          <small>{mode === 'automatic' ? '자동 진행' : '수동 진행'}</small>
-        </span>
-        <PixelIcon name="switch" size={18} />
+        진행 방식 변경
       </button>
       {request && (
         <Dialog

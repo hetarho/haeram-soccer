@@ -145,19 +145,6 @@ export const useNavigation = create<{
   },
 }));
 
-/**
- * Where live match presentation stands, so home can offer a way back to an unfinished match
- * instead of starting another one (the match view has no tab).
- */
-export const useMatchView = create<{
-  matchId?: string;
-  finished: boolean;
-  set: (state: { matchId?: string; finished: boolean }) => void;
-}>((set) => ({
-  finished: false,
-  set: ({ matchId, finished }) => set({ matchId, finished }),
-}));
-
 /** A one-shot request a page takes when it opens, or at once while it is showing. */
 export interface OneShot<T> {
   request?: T;

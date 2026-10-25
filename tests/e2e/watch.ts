@@ -8,14 +8,17 @@ export async function openWatchAction(page: Page) {
     .getByTestId('event-card')
     .getByRole('button', { name: '관전하기 ▶', exact: true });
   if (await watch.isVisible()) return watch;
+  const resume = page
+    .getByRole('dialog', { name: '관전 이어보기', exact: true })
+    .getByRole('button', { name: '관전 이어보기', exact: true });
+  if (await resume.isVisible()) return resume;
   await dismissMatchReport(page);
   await page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true }).click();
-  const resume = page.getByTestId('home-watch');
-  if (await resume.isVisible()) return resume;
   await configureResponsibilities(page, { observations: { matchEve: true } });
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   if (await pace.isVisible()) await chooseOption(pace, 'x10');
   for (let step = 0; step < 80; step++) {
+    if (await resume.isVisible()) return resume;
     const pill = page.getByTestId('event-pill');
     if (await pill.isVisible()) await pill.click();
     if (await watch.isVisible()) return watch;
@@ -29,7 +32,10 @@ export async function openWatchAction(page: Page) {
     }
     await expect
       .poll(
-        async () => (await watch.isVisible()) || (await page.getByTestId('event-card').count()) > 0,
+        async () =>
+          (await watch.isVisible()) ||
+          (await resume.isVisible()) ||
+          (await page.getByTestId('event-card').count()) > 0,
         { timeout: 20000 },
       )
       .toBe(true);

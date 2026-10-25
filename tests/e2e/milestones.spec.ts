@@ -32,6 +32,8 @@ for (const viewport of [
   test(`keeps a compact home with calendar progress and retained milestone facts at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
+    // Founding, three menu exports and a full observed match share this journey's budget.
+    test.slow();
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByText('고급 설정', { exact: true }).click();
@@ -57,9 +59,13 @@ for (const viewport of [
     const progressBox = (await hub
       .getByRole('progressbar', { name: '시즌 진행률', exact: true })
       .boundingBox())!;
-    expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(progressBox.y);
+    const conditionsBox = (await hub.getByTestId('team-state').boundingBox())!;
+    expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(conditionsBox.y);
+    expect(conditionsBox.y + conditionsBox.height).toBeLessThanOrEqual(cardBox.y);
     expect(
-      await nextCard.evaluate((element) => element === element.parentElement?.firstElementChild),
+      await nextCard.evaluate(
+        (element) => element.previousElementSibling?.getAttribute('data-testid') === 'team-state',
+      ),
     ).toBe(true);
     expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width);
     expect(prepareBox.y).toBeLessThan(titleBox.y + titleBox.height);
