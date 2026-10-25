@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, Player } from '../../../contracts/src/types';
+import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import { createWorld, isInjured, ownStarters, squad } from '../index';
+import { clubManager } from '../managerMarket';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { bestRoleAt, FORMATIONS } from '../player';
 import { MATCH_MOTION_CONFIG } from './playback';
-import { benchFor, buildGridSetup, eraRules, takersFor } from './setup';
+import { benchFor, buildGridSetup, eraRules, modelAtLeast, takersFor } from './setup';
 import { SPOTS } from './spots';
+import { playerTendencies } from './tendencies';
 
 const w = createWorld({
   country: 'ENG',
@@ -130,6 +135,48 @@ describe('grid setup', () => {
     );
     expect(b.drain).toEqual([1, 1]);
     expect(typeof b.r()).toBe('number');
+  });
+
+  it('revision 2 computes each player’s tendencies once from his manager and role', () => {
+    const [first, second] = MATCH_MODEL_REVISIONS;
+    const a = buildGridSetup(w, own, { observe: false, recordPlayers: true, model: second });
+    expect(modelAtLeast(a, 2)).toBe(true);
+    const ownSide = a.own!;
+    const clubs = [own.home, own.away];
+    for (const side of [0, 1] as const) {
+      const manager =
+        side === ownSide
+          ? w.manager
+          : clubManager(
+              w,
+              w.clubs.find((c) => c.id === clubs[side])!,
+            );
+      const slots = FORMATIONS[a.tactics[side]].slots;
+      expect(a.tendencies![side]).toEqual(
+        a.rosters[side].map((p, i) =>
+          playerTendencies(p, manager, i < 11 ? slots[i]!.role : bestRoleAt(p.attrs, p.position)),
+        ),
+      );
+    }
+    // Revision 1 and the pre-feature path compute nothing new, and the match stream is untouched.
+    const b = buildGridSetup(w, own, { observe: false, recordPlayers: true, model: first });
+    expect(modelAtLeast(b, 1)).toBe(true);
+    expect(modelAtLeast(b, 2)).toBe(false);
+    expect(b.tendencies).toBeUndefined();
+    const old = createWorld(
+      {
+        country: 'ENG',
+        name: 'Grid Setup Lab',
+        color: '#2a5d8f',
+        seed: 'grid-setup',
+        level: 'normal',
+      },
+      DISABLED_RELEASE,
+    );
+    const c = buildGridSetup(old, own, { observe: false, recordPlayers: true });
+    expect(modelAtLeast(c, 1)).toBe(false);
+    expect(c.tendencies).toBeUndefined();
+    expect([a.r(), a.r()]).toEqual([b.r(), b.r()]);
   });
 
   it('gives the UI the formation spots in pitch units', () => {

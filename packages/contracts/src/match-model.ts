@@ -21,12 +21,20 @@ import {
   type CheckpointSchema,
 } from './versions';
 
-/** The candidate model; a world or record naming any other revision is from a newer game. */
-export const MATCH_MODEL_REVISION = 'continuous-aggregate-1';
-export const MATCH_MODEL_REVISIONS = [MATCH_MODEL_REVISION] as const;
+/**
+ * The candidate model's revisions, oldest first; a world or record naming any other revision is
+ * from a newer game. Revision 2 adds the players' freedom and tendencies (T431–T433, →SAVE-23):
+ * careers on revision 1 move to it prospectively and their settled matches keep revision 1.
+ */
+export const MATCH_MODEL_REVISIONS = ['continuous-aggregate-1', 'continuous-aggregate-2'] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
+/** The revision new careers and upgraded ones play. */
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-2';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
+/** A revision's number: 1 for the first. */
+export const matchModelNumber = (revision: MatchModelRevision) =>
+  MATCH_MODEL_REVISIONS.indexOf(revision) + 1;
 
 /** The first fixture day and round a set of newly available counters covers (→HIST-17). */
 export interface TrackingBoundary {

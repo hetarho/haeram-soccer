@@ -243,29 +243,34 @@ interface CandidateDigests {
  * fbb69ebb02f96b08, 8a7b5a6d07c12315, 2024 754fdc2ada509b3a, 66392957bbef0472, 99cc133dd7439a18
  * and positions 1975 da77dcd869b05a14, 1cbbf86a7af506ac, 1995 734b72709cff6baf, 2c1aa9caf17259f1,
  * 2024 1dae5f1755497eef, 2362ea450611199a. The pre-feature facts did not move.
+ * T435's match-model revision 2 names every candidate record's model continuous-aggregate-2 and
+ * plays the same football until T432 and T433 use it (match-model.test.ts "revision 2 plays exactly
+ * as revision 1"): it moved the facts digests by that label only and no positions digest; before
+ * it, facts 1975 a29eb278c768540c, a74abb8cfd489a58, cb404e2c025fb3f4, 1995 7f87afd0e25ba811,
+ * dad4ff2e8fdfcf1a, d84decf0069941c7, 2024 350be78318430d71, 7a6282dbe15f7b44, e9132add2a2297e4.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'a29eb278c768540c',
-      extraTime: 'a74abb8cfd489a58',
-      shootout: 'cb404e2c025fb3f4',
+      league: '6a4775a7a336398a',
+      extraTime: '2b46be63fad36d0e',
+      shootout: 'dbed6956f2b6b738',
     },
     positions: { observed: '07c822b4e9c902d3', shootout: '10e90c63b1226de8' },
   },
   1995: {
     facts: {
-      league: '7f87afd0e25ba811',
-      extraTime: 'dad4ff2e8fdfcf1a',
-      shootout: 'd84decf0069941c7',
+      league: '93425a463d8e9aed',
+      extraTime: '33a0d290368a0747',
+      shootout: '46e07bd58865be6b',
     },
     positions: { observed: 'fa795c0e24ba2c5e', shootout: 'd026d8cfaaeca681' },
   },
   2024: {
     facts: {
-      league: '350be78318430d71',
-      extraTime: '7a6282dbe15f7b44',
-      shootout: 'e9132add2a2297e4',
+      league: 'd60b15c309a5595c',
+      extraTime: '43bd04020b1271aa',
+      shootout: '33124e7a42b4d58b',
     },
     positions: { observed: 'b9e0c5c071922d28', shootout: 'd79ba1087cbcb882' },
   },

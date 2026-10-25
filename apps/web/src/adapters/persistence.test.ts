@@ -821,15 +821,15 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     };
     for (const edit of [
       (p: ReturnType<typeof pack>) => (p.model!.version = 2 as 1),
-      (p: ReturnType<typeof pack>) => (p.model!.revisions = ['continuous-aggregate-2']),
+      (p: ReturnType<typeof pack>) => (p.model!.revisions = ['continuous-aggregate-3']),
       (p: ReturnType<typeof pack>) => {
-        p.model!.revisions = ['continuous-aggregate-2'];
+        p.model!.revisions = ['continuous-aggregate-3'];
         p.dict = 'damaged' as unknown as string[];
       },
       (p: ReturnType<typeof pack>) => {
         p.world = {
           ...p.world,
-          matchModel: { ...w.matchModel!, revision: 'continuous-aggregate-2' },
+          matchModel: { ...w.matchModel!, revision: 'continuous-aggregate-3' },
         } as unknown as World;
       },
     ])
@@ -846,7 +846,7 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     }
     // A newer model inside a world-schema-valid world is refused the same way through validation.
     const revision = structuredClone(w);
-    (revision.npcSeason as { model: string }).model = 'continuous-aggregate-2';
+    (revision.npcSeason as { model: string }).model = 'continuous-aggregate-3';
     await expect(encode(revision).then(decode)).rejects.toBeInstanceOf(SaveCompatibilityError);
   });
 

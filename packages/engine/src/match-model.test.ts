@@ -3,6 +3,7 @@ import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../contracts/src/
 import {
   activeMatchModel,
   MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
   type FullMatchRecord,
 } from '../../contracts/src/match-model';
 import { canonical } from '../../contracts/src/index';
@@ -16,12 +17,13 @@ import {
 } from '../../../tests/fixtures/worlds';
 import { currentDay } from './calendar';
 import { M } from './grid/record';
-import { createWorld } from './index';
+import { advanceRound, createWorld } from './index';
 import {
   activateMatchModel,
   assertFullMatchRecord,
   MATCH_MODEL_RELEASE,
   validateFullMatchRecord,
+  type MatchModelRelease,
 } from './match-model';
 import { trackingBoundary } from './npc-stats';
 import { zeroMetrics } from './primitives';
@@ -131,8 +133,8 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
       return validateFullMatchRecord(r);
     };
     expect(missing((r) => delete (r as MatchRecord).model)).toEqual(['model revision missing']);
-    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-2' as never))).toEqual([
-      'unknown model revision continuous-aggregate-2',
+    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-3' as never))).toEqual([
+      'unknown model revision continuous-aggregate-3',
     ]);
     expect(missing((r) => delete (r as MatchRecord).incidents)).toEqual(['incident list missing']);
     expect(missing((r) => delete (r as MatchRecord).xg)).toEqual(['team xG missing']);
@@ -314,5 +316,80 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
     const earlier = structuredClone(w);
     earlier.engine = '3.0.0';
     untouched(earlier);
+  });
+});
+
+describe('match-model revision 2 (→SAVE-23, T435)', () => {
+  const founding = {
+    country: 'ENG' as const,
+    name: 'Revision Athletic',
+    color: '#224466',
+    seed: 'match-model-2',
+    level: 'normal' as const,
+  };
+  const [first, second] = MATCH_MODEL_REVISIONS;
+  const REVISION_1: MatchModelRelease = { revision: first, enabled: true };
+  /** A career two rounds into revision 1, as one released before T435 saved it. */
+  const onRevision1 = () => structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_1));
+  const withoutModel = ({ matchModel: _m, npcSeason: _s, ...rest }: World) => (
+    void _m,
+    void _s,
+    rest
+  );
+  const counted = (w: World) =>
+    w.npcSeason!.competitions.reduce(
+      (n, c) => n + c.clubs.reduce((sum, club) => sum + club.matches, 0),
+      0,
+    );
+  /** Results without the revision that settled them. */
+  const football = (w: World) =>
+    canonical({
+      own: w.ownMatches.map(({ model: _model, ...m }) => (void _model, m)),
+      fixtures: w.fixtures.map((f) => [f.id, f.score ?? null]),
+      season: w.npcSeason!.competitions,
+    });
+
+  it('a revision-1 world moves to revision 2 at the safe boundary', () => {
+    const w = onRevision1();
+    expect(w.matchModel!.revision).toBe(first);
+    expect(w.npcSeason!.model).toBe(first);
+    const before = structuredClone(w);
+    expect(activateMatchModel(w, ENABLED_RELEASE)).toBe(true);
+    // Only the revision moves: its activation, tracking boundary and coverage stay.
+    expect(w.matchModel).toEqual({ ...before.matchModel!, revision: second });
+    expect(w.npcSeason).toEqual({ ...before.npcSeason!, model: second });
+    expect(canonical(withoutModel(w))).toBe(canonical(withoutModel(before)));
+    // Once there it stays, and an earlier release never moves it back.
+    const upgraded = canonical(w);
+    expect(activateMatchModel(w, ENABLED_RELEASE)).toBe(false);
+    expect(activateMatchModel(w, REVISION_1)).toBe(false);
+    expect(canonical(w)).toBe(upgraded);
+  });
+
+  it('settled matches keep and replay under revision 1', () => {
+    const w = onRevision1();
+    const settled = structuredClone(w.ownMatches);
+    expect(settled.length).toBeGreaterThan(0);
+    expect(settled.every((m) => m.model === first)).toBe(true);
+    activateMatchModel(w, ENABLED_RELEASE);
+    const before = counted(w);
+    for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
+    // Archived records are what a replay draws (→WEB-32): every settled one is as it was.
+    expect(canonical(w.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
+    const added = w.ownMatches.slice(settled.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === second)).toBe(true);
+    // The season's aggregates go on counting the results revision 2 settles.
+    expect(counted(w)).toBeGreaterThan(before);
+  });
+
+  it('revision 2 plays exactly as revision 1 until T432 and T433 use it', () => {
+    const kept = onRevision1(),
+      upgraded = onRevision1();
+    activateMatchModel(upgraded, ENABLED_RELEASE);
+    for (const w of [kept, upgraded]) for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
+    expect(football(upgraded)).toBe(football(kept));
+    expect(upgraded.ownMatches.at(-1)!.model).toBe(second);
+    expect(kept.ownMatches.at(-1)!.model).toBe(first);
   });
 });

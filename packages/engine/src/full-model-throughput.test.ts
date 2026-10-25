@@ -114,11 +114,14 @@ const facts = (w: World) => ({
  * 13.8 → 21.8%, goals 2.63 → 2.93 a match) changed the candidate rounds only; 9418c4eb633877dd
  * before. T447's box zone depths (the far-post zone 3 → 8 m out, the keeper's claim on a lofted
  * delivery +0.15; calibration round 76, core, 600 matches: goal-area shots 9.6 → 6.7%, goals 3.00
- * → 2.73 a match) changed the candidate rounds only; 613d48d6033512fa before.
+ * → 2.73 a match) changed the candidate rounds only; 613d48d6033512fa before. T435's match-model
+ * revision 2 names every record's model continuous-aggregate-2 and plays the same football
+ * (match-model.test.ts "revision 2 plays exactly as revision 1"): both digests moved by that label
+ * only; 940dadab556327b9 and 2eef0890977e3b38 before.
  */
 const BEFORE = {
-  aggregateRecords: '940dadab556327b9',
-  candidateRounds: '2eef0890977e3b38',
+  aggregateRecords: '35f59be3046fd689',
+  candidateRounds: 'c0af3afdd552ff60',
 };
 
 describe('complete-result throughput (T285)', () => {
