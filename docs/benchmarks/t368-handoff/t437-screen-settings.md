@@ -1,0 +1,62 @@
+# T437 screen settings
+
+`scripts/t328-counter-roles.ts --variant base --set all --per 60 --core 600 --gap 60 --partition calibration --round 74 --jobs 8 --chunk 60` on a7135c1f with T437's neutral hooks (`BOX_CONFIG.shot.header`, `IN_STRIDE_CONFIG.shot`, `DECISION_CONFIG.candidate.goalAreaCarry`, `DUEL_CONFIG.candidate.takeOnDepth`; `--patch` reaches `LANE_CONFIG`, `SHADOW_CONFIG`, `BOX_CONFIG` and `IN_STRIDE_CONFIG` as `lanes`, `shadow`, `box` and `stride`). y0–y2 ran `--per 300`. The counter–press runs (x, z; `--set counterpress --only press-counter,counter-press --per 1200 --core 0 --gap 0`) and the validation runs (v; `--partition validation --round 68 --per 600 --core 2400 --gap 600`) used the same script. z0 (`{}`, the kept setting written into the configs) reproduced x5 exactly. h05 met a pass with no length that ran out (`exitPoint`, fixed); h05b is its rerun.
+
+| run | patch |
+|---|---|
+| base | `{}` |
+| b25 | `{"box":{"shot":{"block":0.25}}}` |
+| b20 | `{"box":{"shot":{"block":0.2}}}` |
+| h05b | `{"box":{"shot":{"header":0.5}}}` |
+| h03 | `{"box":{"shot":{"header":0.3}}}` |
+| s38 | `{"decide":{"candidate":{"shotScale":0.38}}}` |
+| s36 | `{"decide":{"candidate":{"shotScale":0.36}}}` |
+| i14 | `{"duel":{"candidate":{"intercept":{"share":{"possession":0.245,"press":0.273,"counter":0.217,"balanced":0.245}}}}}` |
+| i25 | `{"duel":{"candidate":{"intercept":{"share":{"possession":0.4375,"press":0.4875,"counter":0.3875,"balanced":0.4375}}}}}` |
+| i25s10 | `{"duel":{"candidate":{"intercept":{"share":{"possession":0.4375,"press":0.4875,"counter":0.3875,"balanced":0.4375}}}},"lanes":{"sure":0.1}}` |
+| sure15 | `{"lanes":{"sure":0.15}}` |
+| risk06 | `{"lanes":{"risk":0.06}}` |
+| post55 | `{"box":{"zones":{"nearPost":{"out":5.5,"inside":3},"farPost":{"out":5,"beyond":1}}}}` |
+| sbox70 | `{"decide":{"candidate":{"shotBox":0.7}}}` |
+| stride30 | `{"stride":{"speed":3.0}}` |
+| free3 | `{"box":{"delivery":{"freeRadius":3}}}` |
+| p05 | `{"stride":{"shot":0.5}}` |
+| c1 | `{"box":{"shot":{"block":0.25,"header":0.3}},"decide":{"candidate":{"shotScale":0.36}},"duel":{"candidate":{"foul":1.25,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| c2 | `{"box":{"shot":{"block":0.25,"header":0.3}},"decide":{"candidate":{"shotScale":0.36}},"duel":{"candidate":{"foul":1.25,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.5}}` |
+| c3 | `{"box":{"shot":{"block":0.25,"header":0.3}},"decide":{"candidate":{"shotScale":0.33}},"duel":{"candidate":{"foul":1.25,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| c4 | `{"box":{"shot":{"block":0.22,"header":0.3}},"decide":{"candidate":{"shotScale":0.34}},"duel":{"candidate":{"foul":1.25,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.5}}` |
+| ga15 | `{"decide":{"candidate":{"goalAreaCarry":15}}}` |
+| td995 | `{"duel":{"candidate":{"takeOnDepth":99.5}}}` |
+| d1 | `{"box":{"shot":{"block":0.22,"header":0.3}},"decide":{"candidate":{"shotScale":0.34,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99.5,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.5}}` |
+| d2 | `{"box":{"shot":{"block":0.22,"header":0.3}},"decide":{"candidate":{"shotScale":0.34,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99.5,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.3}}` |
+| d3 | `{"box":{"shot":{"block":0.22,"header":0.3}},"decide":{"candidate":{"shotScale":0.31,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99.5,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.5}}` |
+| d4 | `{"box":{"shot":{"block":0.2,"header":0.3}},"decide":{"candidate":{"shotScale":0.31,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99.5,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.3}}` |
+| e1 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.7}}` |
+| e2 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.34,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.7}}` |
+| e3 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.5}}` |
+| e4 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":25}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.7}}` |
+| e5 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.25,"takeOnDepth":99,"intercept":{"share":{"possession":0.315,"press":0.351,"counter":0.279,"balanced":0.315}}}},"stride":{"shot":0.7},"lanes":{"sure":0.2}}` |
+| f1 | `{"box":{"shot":{"block":0.26,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15}},"duel":{"candidate":{"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| f2 | `{"box":{"shot":{"block":0.28,"header":0.3}},"decide":{"candidate":{"shotScale":0.40,"goalAreaCarry":15}},"duel":{"candidate":{"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.7}}` |
+| f3 | `{"box":{"shot":{"block":0.26,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":10}},"duel":{"candidate":{"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}},"stride":{"shot":0.8}}` |
+| f5 | `{"box":{"shot":{"block":0.26,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15,"shotLine":{"GK":0,"DF":4.5,"MF":20,"FW":0.3}}},"duel":{"candidate":{"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| f6 | `{"box":{"shot":{"block":0.24,"header":0.3}},"decide":{"candidate":{"shotScale":0.36,"goalAreaCarry":15}},"duel":{"candidate":{"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| g1 | `{"box":{"shot":{"block":0.28,"header":0.15}},"decide":{"candidate":{"shotScale":0.38,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| g2 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| g3 | `{"box":{"shot":{"block":0.28,"header":0.15}},"decide":{"candidate":{"shotScale":0.40,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| g4 | `{"box":{"shot":{"block":0.28,"header":0.15}},"decide":{"candidate":{"shotScale":0.40,"goalAreaCarry":15,"shotLine":{"GK":0,"DF":4.5,"MF":20,"FW":0.3}}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| y1 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.37,"counter":0.42,"balanced":0.35}}}}}` |
+| y2 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.37,"counter":0.42,"balanced":0.38}}}}}` |
+| x0 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| x1 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.37,"counter":0.33,"balanced":0.35}}}}}` |
+| x2 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| x3 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99}}}` |
+| x4 | `{"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| x5 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.37,"counter":0.42,"balanced":0.35}}}}}` |
+| x6 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.35,"counter":0.46,"balanced":0.35}}}}}` |
+| x7 | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.43,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| z1 | `{"duel":{"candidate":{"foul":1.2,"boxFoul":0.05}}}` |
+| z2 | `{"duel":{"candidate":{"foul":1.2,"boxFoul":0.05}},"decide":{"candidate":{"shotScale":0.39}}}` |
+| vA | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| vB | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.39,"goalAreaCarry":15,"shotLine":{"GK":0,"DF":4.5,"MF":20,"FW":0.3}}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.0554,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.39,"counter":0.31,"balanced":0.35}}}}}` |
+| vC | `{"box":{"shot":{"block":0.26,"header":0.15}},"decide":{"candidate":{"shotScale":0.37,"goalAreaCarry":15}},"duel":{"candidate":{"foul":1.3,"boxFoul":0.046,"takeOnDepth":99,"intercept":{"share":{"possession":0.35,"press":0.37,"counter":0.42,"balanced":0.35}}}}}` |

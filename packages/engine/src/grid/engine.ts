@@ -66,6 +66,7 @@ import {
   flightSeconds,
   GRID_MOVEMENT_CONFIG,
   heading,
+  IN_STRIDE_CONFIG,
   prepareOnClock,
   readAt,
   reachSeconds,
@@ -601,7 +602,8 @@ export function playGrid(setup: GridSetup): GridResult {
     const seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
     if (seconds <= 0) return undefined;
     const carry: Carry = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
-    carryInStride(s, gp, aim.to, seconds, aim.cell, readsOf(side, d, aim.to, seconds));
+    const pace = d.action === 'shot' ? IN_STRIDE_CONFIG.shot : 1;
+    carryInStride(s, gp, aim.to, seconds, aim.cell, readsOf(side, d, aim.to, seconds), pace);
     s.t += seconds;
     s.elapsed += seconds;
     tally.carryEvent(side, idx, attackFrame(side, carry.at), attackFrame(side, gp.pos));

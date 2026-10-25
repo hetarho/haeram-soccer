@@ -14,6 +14,7 @@ import {
   clamp,
   goalDistance,
   inBox,
+  inGoalArea,
   PITCH,
   toEngine,
   type Point,
@@ -146,9 +147,11 @@ export const DECISION_CONFIG = {
      * at 2.50 once defenders read the pass early). T370: 0.42 → 0.45 with `shotQuality`, which
      * passes up weak box shots, so the volume holds. T371: 0.475 with the lines' new weights.
      * T398: 0.43, as midfielders arriving in the box (`SHAPE_CONFIG.candidate.boxRun`) shoot
-     * there too and the goals hold at 2.88.
+     * there too and the goals hold at 2.88. T437: 0.37 after the in-stride carry and the final-third
+     * rework (T426, T441–T445), with fewer bodies blocking shots (`BOX_CONFIG.shot`): shots 15.2 →
+     * 13.6 a team, goals 3.09 → 2.75 a match (calibration round 74, core 600 matches).
      */
-    shotScale: 0.43,
+    shotScale: 0.37,
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
@@ -215,6 +218,16 @@ export const DECISION_CONFIG = {
      * often runs across it than into it. Neutral at 0.
      */
     boxCarry: 0,
+    /**
+     * A carry from outside the goal area that would end in it scores this much less (T437,
+     * →MATCH-16, in the heading choice's xT points): the keeper and the covering defenders close
+     * the six-yard box, so a carrier in the box more often runs across it or strikes from where he
+     * is than takes the ball into it. Neutral at 0. T437 keeps 15 with `DUEL_CONFIG.candidate.
+     * takeOnDepth` 99: 1.23 of 1.91 goal-area shots a team followed the shooter's own carry or
+     * take-on into it (round 74, 200 observed matches), and goal-area shots fell 12.9 → 6.8%
+     * (MATCH-23 6–9%).
+     */
+    goalAreaCarry: 15,
     /**
      * Settled play in the final third (T408, →MATCH-13, MATCH-30): a passer at least `from` m up
      * the pitch weighs lateral options `lateral` and backward ones `back` times as much, and a
@@ -805,11 +818,15 @@ export function chooseCarry(
   // Into the box from outside it (candidate model, T397).
   const boxCarry =
     s.setup.model !== undefined && !inBox(c) ? DECISION_CONFIG.candidate.boxCarry : 0;
+  // Into the goal area from outside it (candidate model, T437).
+  const goalAreaCarry =
+    s.setup.model !== undefined && !inGoalArea(c) ? DECISION_CONFIG.candidate.goalAreaCarry : 0;
   const scores = ends.map(
     (p) =>
       (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 -
       K.pressure * pressureAt(s, side, p) -
-      (boxCarry && inBox(p) ? boxCarry : 0),
+      (boxCarry && inBox(p) ? boxCarry : 0) -
+      (goalAreaCarry && inGoalArea(p) ? goalAreaCarry : 0),
   );
   const tau = temperature(s, side, idx, tags);
   let top = -Infinity;

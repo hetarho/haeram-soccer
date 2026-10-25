@@ -10,9 +10,12 @@ import {
   AGGREGATE_CONFIG,
   AGGREGATE_PARTICIPATION_CONFIG,
 } from '../packages/engine/src/aggregate/config';
+import { BOX_CONFIG } from '../packages/engine/src/grid/box';
 import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
+import { LANE_CONFIG, SHADOW_CONFIG } from '../packages/engine/src/grid/lanes';
+import { IN_STRIDE_CONFIG } from '../packages/engine/src/grid/movement';
 import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
 import { RESTART_CONFIG } from '../packages/engine/src/grid/restarts';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
@@ -114,6 +117,11 @@ export interface BehaviourPatch {
   attribution?: object;
   /** T400: the aggregate path's participation plan (cards, changes). */
   participation?: object;
+  /** T437: the lanes' reach (T441), the cover shadow and screen (T442), the box scene (T443–T445) and the in-stride carry (T426). */
+  lanes?: object;
+  shadow?: object;
+  box?: object;
+  stride?: object;
 }
 
 const settled = (
@@ -265,6 +273,10 @@ export function applyBehaviour(patch: BehaviourPatch): void {
     aggregate: AGGREGATE_CONFIG,
     attribution: AGGREGATE_ATTRIBUTION_CONFIG,
     participation: AGGREGATE_PARTICIPATION_CONFIG,
+    lanes: LANE_CONFIG,
+    shadow: SHADOW_CONFIG,
+    box: BOX_CONFIG,
+    stride: IN_STRIDE_CONFIG,
   };
   for (const [k, v] of Object.entries(patch))
     merge(
