@@ -136,6 +136,9 @@ function parityRows(file, filter) {
     pilotSize: c.reference.pilotValidationSize.size,
     belowPilotSize: c.reference.pilotValidationSize.size > c.matches,
     invariantFailures: c.reference.invariantFailures,
+    differentMetrics: c.reference.metrics.filter((m) => m.status === 'different').map((m) => m.id),
+    insufficientMetrics: c.reference.metrics.filter((m) => m.status === 'insufficient').map((m) => m.id),
+    differentRelationships: c.reference.relationships.filter((r) => r.status === 'different').map((r) => r.pair.join(' ~ ')),
   }));
   const sum = (k) => rows.reduce((n, r) => n + (r.metrics[k] ?? 0), 0);
   return {
