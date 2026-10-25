@@ -45,7 +45,8 @@ export async function importResponsibilityCareer(page: Page, world: World) {
       mimeType: 'application/json',
       buffer: Buffer.from(await encode(world, 1, 0)),
     });
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
+  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });
 }
 export async function closeSettingsOutcome(page: Page) {
   const outcome = page.getByTestId('action-outcome');
