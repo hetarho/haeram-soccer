@@ -1,6 +1,7 @@
 import { clubManager } from './managerMarket';
 import type {
   CareerDate,
+  Club,
   CareerEmployment,
   CareerRole,
   PersonCareer,
@@ -27,6 +28,61 @@ export const compareCareerDates = (a: CareerDate, b: CareerDate) =>
   a.year - b.year || a.day - b.day;
 export function resolvePerson(w: World, id: string) {
   return w.people?.[id];
+}
+type Registry = NonNullable<World['people']>;
+/** Each registry's `Object.values`, read once (T450); `retainPerson` replaces it as it enrolls. */
+const peopleLists = new WeakMap<Registry, readonly PersonCareer[]>();
+const NOBODY: readonly PersonCareer[] = [];
+/**
+ * Everyone in `w.people`, in its own order: `Object.values(w.people)` without copying the
+ * registry on every read, which a century of retired people made the season's largest history
+ * cost (T450). The list is a snapshot, never changed in place, so a caller that enrolls someone
+ * while it walks one keeps walking what it read; enrolment goes through `retainPerson`.
+ */
+export function peopleOf(w: World): readonly PersonCareer[] {
+  const registry = w.people;
+  if (!registry) return NOBODY;
+  let list = peopleLists.get(registry);
+  if (!list) peopleLists.set(registry, (list = Object.values(registry)));
+  return list;
+}
+/** Each world's active players by club, from `peopleOf`'s list (T450); dropped as one moves. */
+const playingIndexes = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; byClub: Map<string, PersonCareer[]> }
+>();
+/**
+ * The people playing for `club` now (`playing` active, `club` it), in the registry's order:
+ * `peopleOf(w).filter(...)` read from an index rebuilt after anyone joins the registry or changes
+ * whom or whether he plays for (`playingChanged`).
+ */
+export function playingFor(w: World, club: string): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = playingIndexes.get(w);
+  if (!hit || hit.people !== people) {
+    const byClub = new Map<string, PersonCareer[]>();
+    for (const person of people) {
+      if (person.playing !== 'active' || person.club === undefined) continue;
+      const list = byClub.get(person.club);
+      if (list) list.push(person);
+      else byClub.set(person.club, [person]);
+    }
+    hit = { people, byClub };
+    playingIndexes.set(w, hit);
+  }
+  return hit.byClub.get(club) ?? NOBODY;
+}
+/** Every write of a person's `playing` or `club` ends with this, so `playingFor` reads it. */
+export function playingChanged(w: World) {
+  playingIndexes.delete(w);
+}
+/** An ID an object orders first, as an array index, rather than by insertion. */
+const indexLike = (id: string) => /^(0|[1-9]\d*)$/.test(id) && Number(id) < 2 ** 32 - 1;
+function enrolled(registry: Registry, person: PersonCareer) {
+  const list = peopleLists.get(registry);
+  if (!list) return;
+  if (indexLike(person.id)) peopleLists.delete(registry);
+  else peopleLists.set(registry, [...list, person]);
 }
 /** Idempotent enrollment; never merge two different people or invent past appearances. */
 export function retainPerson(
@@ -66,6 +122,7 @@ export function retainPerson(
     mentors: [],
   };
   (w.people ??= {})[person.id] = person;
+  enrolled(w.people, person);
   return person;
 }
 function personOf(w: World, id: string) {
@@ -109,12 +166,14 @@ export function openEmployment(
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
   person.employment.push(job);
+  if (isCoachingRole(role)) coachingIndexesEver.delete(w);
   employmentChanged(w, person, job, true);
   syncMentorExposure(w, person, from);
   person.club = club;
   if (role === 'player') {
     person.playing = 'active';
   }
+  playingChanged(w);
   return job;
 }
 export function closeEmployment(w: World, id: string, role: CareerRole, to = careerDate(w)) {
@@ -128,14 +187,28 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (remaining) person.club = remaining.club;
   else delete person.club;
   if (role === 'player') person.playing = 'released';
+  playingChanged(w);
   syncMentorExposure(w, person, to);
 }
 
-export const isCoachingRole = (role: CareerRole) =>
-  ['assistant', 'attack', 'defense', 'goalkeeping', 'fitness', 'youth'].includes(role);
+const COACHING_ROLES: readonly CareerRole[] = [
+  'assistant',
+  'attack',
+  'defense',
+  'goalkeeping',
+  'fitness',
+  'youth',
+];
+export const isCoachingRole = (role: CareerRole) => COACHING_ROLES.includes(role);
 const DAY_MS = 86400000;
-export const careerOrdinal = (date: CareerDate) =>
-  Math.floor(Date.UTC(date.year, 7, 1) / DAY_MS) + date.day;
+/** Each year's 1 August as a day number, worked out once a process (T450): it reads only the year. */
+const seasonStarts = new Map<number, number>();
+function seasonStart(year: number) {
+  let day = seasonStarts.get(year);
+  if (day === undefined) seasonStarts.set(year, (day = Math.floor(Date.UTC(year, 7, 1) / DAY_MS)));
+  return day;
+}
+export const careerOrdinal = (date: CareerDate) => seasonStart(date.year) + date.day;
 export function careerDateFromOrdinal(day: number): CareerDate {
   const date = new Date(day * DAY_MS),
     year = date.getUTCMonth() >= 7 ? date.getUTCFullYear() : date.getUTCFullYear() - 1;
@@ -163,6 +236,9 @@ function coachingIntervals(person: PersonCareer, at: CareerDate): Interval[] {
 }
 /** A virtual anniversary advances only by the union of actually employed calendar days. */
 export function coachingService(person: PersonCareer, at: CareerDate) {
+  // Without a coaching job he has no service: what the intervals below give him (T450).
+  if (!person.employment.some((job) => isCoachingRole(job.role)))
+    return { days: 0, qualified: false };
   const intervals = coachingIntervals(person, at),
     days = intervals.reduce((sum, [a, b]) => sum + b - a, 0),
     first = intervals[0]?.[0];
@@ -186,7 +262,7 @@ export function syncMentorExposure(w: World, person: PersonCareer, at = careerDa
     for (const mentor of active) mentor.to = { ...at };
     return;
   }
-  const club = w.clubs.find((club) => club.id === job.club);
+  const club = clubById(w, job.club);
   if (!club) return;
   const manager = job.club === w.playerClub ? w.manager : clubManager(w, club);
   if (
@@ -205,13 +281,73 @@ export function syncMentorExposure(w: World, person: PersonCareer, at = careerDa
     from: { ...at },
   });
 }
+/** Each world's people who ever coached or had a mentor, from `peopleOf`'s list (T450). */
+const coachingIndexesEver = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; coached: PersonCareer[] }
+>();
+/**
+ * The people who ever held a coaching job or had a mentor, in the registry's order: the only ones
+ * whose mentors a sync touches or whom coaching service can qualify (`coachingService`). Rebuilt
+ * after anyone joins the registry or opens a coaching job, the only writes that add one.
+ */
+export function coachingPeople(w: World): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = coachingIndexesEver.get(w);
+  if (!hit || hit.people !== people) {
+    const coached = people.filter(
+      (person) =>
+        person.mentors.length > 0 || person.employment.some((job) => isCoachingRole(job.role)),
+    );
+    hit = { people, coached };
+    coachingIndexesEver.set(w, hit);
+  }
+  return hit.coached;
+}
+/** Each world's people with a coaching profile, from `peopleOf`'s list (T450). */
+const profiledIndexes = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; profiled: PersonCareer[] }
+>();
+/**
+ * The people with a coaching profile (`coaching`), in the registry's order: the only ones the
+ * coaching market can place. Rebuilt after anyone joins the registry or is given a profile
+ * (`coachingProfiled`), the only write that adds one.
+ */
+export function profiledCoaches(w: World): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = profiledIndexes.get(w);
+  if (!hit || hit.people !== people) {
+    hit = { people, profiled: people.filter((person) => person.coaching) };
+    profiledIndexes.set(w, hit);
+  }
+  return hit.profiled;
+}
+/** Every write of a person's coaching profile ends with this, so `profiledCoaches` reads it. */
+export function coachingProfiled(w: World) {
+  profiledIndexes.delete(w);
+}
 export function syncMentorExposures(w: World) {
-  for (const person of Object.values(w.people || {}))
+  // The date each sync would read for itself: nothing in a sync moves it (T450).
+  const at = careerDate(w);
+  for (const person of coachingPeople(w))
     if (
       person.mentors.some((m) => !m.to) ||
       person.employment.some((job) => !job.to && isCoachingRole(job.role))
     )
-      syncMentorExposure(w, person);
+      syncMentorExposure(w, person, at);
+}
+/** Each clubs list by ID, the first of an ID as `find` reads it (T450); a list that grew is read again. */
+const clubIndexes = new WeakMap<World['clubs'], { size: number; byId: Map<string, Club> }>();
+function clubById(w: World, id: string): Club | undefined {
+  let hit = clubIndexes.get(w.clubs);
+  if (!hit || hit.size !== w.clubs.length) {
+    const byId = new Map<string, Club>();
+    for (const club of w.clubs) if (!byId.has(club.id)) byId.set(club.id, club);
+    hit = { size: w.clubs.length, byId };
+    clubIndexes.set(w.clubs, hit);
+  }
+  return hit.byId.get(id);
 }
 export function longestMentor(person: PersonCareer, at: CareerDate) {
   const employed = coachingIntervals(person, at),
@@ -274,7 +410,7 @@ function occupiedPostByOther(w: World, role: CareerRole, club: string, person: s
   let hit = postIndexes.get(w);
   if (!hit || hit.people !== w.people || hit.version !== version) {
     const posts: Posts = new Map();
-    for (const person of Object.values(w.people ?? {}))
+    for (const person of peopleOf(w))
       for (const job of person.employment)
         if (!job.to && job.role !== 'player') {
           let clubs = posts.get(job.role);
@@ -293,6 +429,15 @@ function occupiedPostByOther(w: World, role: CareerRole, club: string, person: s
 function employmentChanged(w: World, person: PersonCareer, job: CareerEmployment, active: boolean) {
   const previous = employmentVersions.get(w) ?? 0;
   employmentVersions.set(w, previous + 1);
+  // Another role's job leaves the active coaching jobs as they were: their index stays (T450).
+  const coaching = coachingIndexes.get(w);
+  if (
+    coaching &&
+    coaching.people === w.people &&
+    coaching.version === previous &&
+    !isCoachingRole(job.role)
+  )
+    coaching.version = previous + 1;
   const hit = postIndexes.get(w);
   if (!hit || hit.people !== w.people || hit.version !== previous) return;
   if (job.role !== 'player') {
@@ -319,11 +464,11 @@ export function activeCoachingEmployment(w: World) {
   const version = employmentVersions.get(w) ?? 0,
     hit = coachingIndexes.get(w);
   if (hit && hit.people === w.people && hit.version === version) return hit.active;
-  const active = Object.values(w.people || {}).flatMap((person) =>
-    person.employment
-      .filter((job) => !job.to && isCoachingRole(job.role))
-      .map((job) => ({ person, job })),
-  );
+  const active: { person: PersonCareer; job: CareerEmployment }[] = [];
+  // Only someone who ever coached holds a coaching job (`coachingPeople`, T450).
+  for (const person of coachingPeople(w))
+    for (const job of person.employment)
+      if (!job.to && isCoachingRole(job.role)) active.push({ person, job });
   coachingIndexes.set(w, { people: w.people, version, active });
   return active;
 }

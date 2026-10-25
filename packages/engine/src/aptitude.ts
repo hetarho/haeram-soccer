@@ -7,19 +7,17 @@ export function generateQualities(seed: string, person: string): OffPitchQualiti
   const rng = random(`${seed}:aptitude:${person}`);
   return { understanding: gradeOf(rng), teaching: gradeOf(rng), judgement: gradeOf(rng) };
 }
-const meanGrade = (...values: Grade[]): Grade =>
-  Math.max(
-    1,
-    Math.min(5, Math.floor(values.reduce((a, b) => a + b, 0) / values.length + 0.5)),
-  ) as Grade;
+/** The grades' mean, rounded half up; grades are whole, so their sum is exact in any order. */
+const meanGrade = (sum: number, count: number): Grade =>
+  Math.max(1, Math.min(5, Math.floor(sum / count + 0.5))) as Grade;
 export function coachingGrade(person: {
   personality: Pick<Personality, 'professionalism'>;
   qualities?: OffPitchQualities;
 }): Grade | undefined {
   const q = person.qualities;
-  return q && meanGrade(person.personality.professionalism, q.understanding, q.teaching);
+  return q && meanGrade(person.personality.professionalism + q.understanding + q.teaching, 3);
 }
 export function managerialGrade(person: { qualities?: OffPitchQualities }): Grade | undefined {
   const q = person.qualities;
-  return q && meanGrade(q.understanding, q.judgement);
+  return q && meanGrade(q.understanding + q.judgement, 2);
 }

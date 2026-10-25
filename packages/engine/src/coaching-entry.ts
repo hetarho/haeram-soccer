@@ -1,6 +1,6 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
-import { careerDate, retainPerson } from './person-careers';
+import { careerDate, coachingProfiled, retainPerson } from './person-careers';
 import { integer, random } from './primitives';
 import { addEvent } from './world';
 
@@ -88,7 +88,9 @@ export function initializeCoaching(w: World, person: PersonCareer) {
   const grade = personCoachingGrade(person);
   if (!person.intention?.willing || !grade || grade < 4) return undefined;
   const rng = random(`${w.seed}:coaching-entry:${person.id}`);
-  return (person.coaching = coachingProfile(person, careerDate(w), rng));
+  const coaching = (person.coaching = coachingProfile(person, careerDate(w), rng));
+  coachingProfiled(w);
+  return coaching;
 }
 export function coachingProfile(
   person: PersonCareer,

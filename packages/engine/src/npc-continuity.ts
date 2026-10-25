@@ -2,7 +2,14 @@ import { endPlayingCoachForDeparture } from './playing-coach';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
-import { careerDate, closeEmployment, openEmployment, retainPerson } from './person-careers';
+import {
+  careerDate,
+  closeEmployment,
+  openEmployment,
+  playingChanged,
+  playingFor,
+  retainPerson,
+} from './person-careers';
 import { invalidateNpcSquads, makePlayer, npcSquad } from './world';
 import { lineOf } from './player';
 
@@ -64,9 +71,7 @@ function identity(p: Player, person: PersonCareer): Player {
 export function continuousSquad(w: World, c: Club): Player[] {
   const raw = npcSquad(w.seed, w.year, c);
   if (!w.people) return raw;
-  const people = Object.values(w.people).filter(
-    (person) => person.playing === 'active' && person.club === c.id,
-  );
+  const people = playingFor(w, c.id);
   const used = new Set<string>();
   const players = raw.map((p, slot) => {
     const native = people.find(
@@ -113,6 +118,7 @@ export function movePerson(w: World, p: Player, club?: string, own = false, loan
   else {
     delete person.club;
     person.playing = 'released';
+    playingChanged(w);
   }
   invalidateNpcSquads(w);
   return person;
