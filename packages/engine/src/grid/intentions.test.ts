@@ -651,6 +651,33 @@ describe('the box scene’s runs (→MATCH-33, T443)', () => {
     }
   });
 
+  it('the box jobs never share a moment with a set piece’s jobs or take a guard’s committed priority', () => {
+    // §4.7's own jobs, which tests/e2e/set-piece-defence.spec.ts reads as the scene's: a committed
+    // box spot without a box-scene job, a committed mark, a committed zone or goal guard.
+    const setPiece = (i: Intention) =>
+      i.priority === 'committed' &&
+      !i.box &&
+      (i.kind === 'run' || i.kind === 'mark' || (i.kind === 'cover' && !!i.zone));
+    let boxJobs = 0,
+      setPieceMoments = 0;
+    for (const { result } of watched)
+      for (const e of result.trace!) {
+        const holding = (e.intentions ?? []).filter((i): i is Intention => !!i && held(i));
+        const box = holding.filter((i) => i.box);
+        boxJobs += box.length;
+        // A box guard is a tactical cover, a box runner a committed run (§4.8).
+        for (const i of box)
+          expect([i.kind, i.priority]).toEqual(
+            i.kind === 'cover' ? ['cover', 'tactical'] : ['run', 'committed'],
+          );
+        if (!holding.some(setPiece)) continue;
+        setPieceMoments++;
+        expect(box, `${e.elapsed}`).toEqual([]);
+      }
+    expect(boxJobs).toBeGreaterThan(0);
+    expect(setPieceMoments).toBeGreaterThan(0);
+  });
+
   it('the rest defence stays home', () => {
     const s = wide();
     // The anchor and a centre-back stand nearest the edge and the spot.
