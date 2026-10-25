@@ -666,7 +666,8 @@ describe('grid open-play resolution', () => {
     const kit = gridKit(['possession', 'balanced'], undefined, DISABLED_RELEASE);
     let deliveries = 0,
       ranIn = 0,
-      finished = 0;
+      finished = 0,
+      broughtDown = 0;
     // Few deliveries reach their runner (most are cut out, T444's round 72), so 32 fixtures.
     for (let n = 0; n < 32; n++) {
       const id = `t444-zone-${n}`;
@@ -700,6 +701,13 @@ describe('grid open-play resolution', () => {
         const start = next.knots?.[0]?.kind === 'carry' ? next.knots[0].ball : next.from!;
         expect(Math.hypot(start[0] - to[0], start[1] - to[1])).toBeLessThan(0.5);
         if (next.action !== 'shot') return;
+        // A lofted ball he brings down he plays on by his table (T446: they now arrive), and may
+        // carry it before he shoots; a header never follows a carry.
+        if (next.knots![0]!.kind === 'carry') {
+          expect(next.header).toBeFalsy();
+          broughtDown++;
+          return;
+        }
         // A first-time finish: kicked at once from the zone, with no carry before it.
         expect(next.knots![0]).toMatchObject({ kind: 'kick', ball: next.from });
         finished++;
@@ -708,6 +716,7 @@ describe('grid open-play resolution', () => {
     expect(deliveries).toBeGreaterThan(4);
     expect(ranIn).toBeGreaterThan(0);
     expect(finished).toBeGreaterThan(4);
+    expect(broughtDown).toBeLessThan(finished);
   });
 
   it('lets a better dribbler beat his man more often and fouls a set share of failed take-ons', () => {

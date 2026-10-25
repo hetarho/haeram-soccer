@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { BOX_CONFIG, deliveryPoint, deliveryReach, type DeliveryAim } from './box';
 import { GRID_BALL_CONFIG } from './movement';
 import {
   coverShadow,
@@ -77,6 +78,72 @@ describe('who reaches a pass’s path (→MATCH-31, T441)', () => {
     // Read at the kick, the same man meets the ball as late as the poor reader does.
     const atKick = reachOnPath(scene([50, 35.5], 99).s, 0, FROM, TO, 0).first;
     expect(atKick!.along).toBeGreaterThan(early!.along + 1);
+  });
+});
+
+describe('a lofted delivery flies over the crowd (→MATCH-33 r30, T446)', () => {
+  const loft = BOX_CONFIG.delivery.loft;
+
+  it('a lofted ball passes over a defender midway', () => {
+    const { s, gp } = scene([50, 34]);
+    // Along the ground he reaches it, as a pass; lofted, nobody can.
+    expect(reachOnPath(s, 0, FROM, TO, 0).first?.gp).toBe(gp);
+    const high = reachOnPath(s, 0, FROM, TO, 0, undefined, loft);
+    expect(high.first).toBeUndefined();
+    expect(high.clean).toBeUndefined();
+    expect(high.drop).toBeUndefined();
+    expect(high.weight).toBe(0);
+    // Where it drops, within its last `drop` m, he meets it again: there it is his to contest.
+    gp.pos = [19.5 - loft.drop / 2 + FROM[0], 34];
+    const late = reachOnPath(s, 0, FROM, TO, 0, undefined, loft);
+    expect(late.first?.gp).toBe(gp);
+    expect(late.drop?.gp).toBe(gp);
+    expect(late.first!.along).toBeGreaterThan(20 - loft.drop - LANE_CONFIG.stretch);
+    // A 4 m ball's stretches meet: it is reachable all along, as on the ground.
+    gp.pos = [42, 34];
+    const short = reachOnPath(s, 0, FROM, [44, 34], 0, undefined, loft);
+    expect(short.first?.along).toBe(reachOnPath(s, 0, FROM, [44, 34], 0).first?.along);
+  });
+
+  it('a defender at the crosser’s foot still blocks it', () => {
+    const { s, gp } = scene([41.5, 34]);
+    // Kicked after the cross's wind-up, he has read it and wins it cleanly at the crosser's foot.
+    const kickAt = 0.5;
+    const ground = reachOnPath(s, 0, FROM, TO, kickAt);
+    const high = reachOnPath(s, 0, FROM, TO, kickAt, undefined, loft);
+    expect(high.first?.gp).toBe(gp);
+    expect(high.clean?.gp).toBe(gp);
+    expect(high.drop).toBeUndefined();
+    expect(high.first!.along).toBeLessThanOrEqual(loft.foot);
+    // He meets it where he would along the ground, with no more to spare.
+    expect(high.first!.along).toBe(ground.first!.along);
+    expect(high.first!.spare).toBeLessThanOrEqual(ground.first!.spare);
+    expect(high.weight).toBe(1);
+    // Struck at once, it is past his reach before he has `sure` in hand: he only gets to it.
+    const atOnce = reachOnPath(s, 0, FROM, TO, 0, undefined, loft);
+    expect(atOnce.first?.gp).toBe(gp);
+    expect(atOnce.clean).toBeUndefined();
+  });
+
+  it('a ground delivery keeps the pass’s reach', () => {
+    // A side-0 crosser wide on the left byline; side 1's man midway to the near post.
+    const { s, gp } = scene([0, 0]);
+    const from: [number, number] = [100, 8];
+    const near: DeliveryAim = { zone: 'nearPost', kind: 'near', ball: -1 };
+    const zone = deliveryPoint(0, near);
+    gp.pos = [(from[0] + zone[0]) / 2, (from[1] + zone[1]) / 2];
+    const pass = reachOnPath(s, 0, from, zone, 0.3);
+    const low = deliveryReach(s, 0, from, near, 0.3);
+    expect(pass.first?.gp).toBe(gp);
+    expect(low).toEqual({ ...pass, cut: pass.clean });
+    // The same man under a lofted ball to the far post, at its middle, leaves it to fly on.
+    const far: DeliveryAim = { zone: 'farPost', kind: 'far', ball: -1 };
+    const goal = deliveryPoint(0, far);
+    gp.pos = [(from[0] + goal[0]) / 2, (from[1] + goal[1]) / 2];
+    expect(reachOnPath(s, 0, from, goal, 0.3).clean?.gp).toBe(gp);
+    const high = deliveryReach(s, 0, from, far, 0.3);
+    expect(high.first).toBeUndefined();
+    expect(high.cut).toBeUndefined();
   });
 });
 

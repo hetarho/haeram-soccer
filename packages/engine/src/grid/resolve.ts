@@ -27,7 +27,14 @@ import {
 } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
-import { BOX_CONFIG, DELIVERY_ACTION, deliveryPoint, lofted, type DeliveryAim } from './box';
+import {
+  BOX_CONFIG,
+  DELIVERY_ACTION,
+  deliveryPoint,
+  deliveryReach,
+  lofted,
+  type DeliveryAim,
+} from './box';
 import { byId } from './coordination';
 import { cleanReach, LANE_CONFIG, reachOnPath, type LaneReach } from './lanes';
 import { flightSeconds, reachSeconds } from './movement';
@@ -893,7 +900,8 @@ function crossOverhit(s: GridState, side: 0 | 1, idx: number, r: () => number) {
 
 /**
  * A cross delivered to `attacker` where it comes down, at `to` (engine frame). Draws, in order:
- * the keeper's claim; the aerial duel with his marker, the defender in the box nearest to `to`;
+ * the keeper's claim; the aerial duel with his marker, `marker` when given (T446: the man who got
+ * to a lofted delivery's drop first), else the defender in the box nearest to `to`;
  * controlled or headed. Having won it he brings it down at `to`, or heads it at goal: a header,
  * whose draws the caller makes, under `SHOT_CONFIG.headerPressure` when a marker contested it.
  */
@@ -904,6 +912,7 @@ function aerialDelivery(
   tags: Pick<Tags, 'phase'>,
   r: () => number,
   to: [number, number],
+  marker?: GridPlayer,
 ): Outcome | { kind: 'header'; pressure: number; aerial?: 0 | 1 } {
   const X = DUEL_CONFIG.cross;
   const foe = other(side);
@@ -912,11 +921,13 @@ function aerialDelivery(
   if (keeper && r() < claimP) return { kind: 'held', by: keeper.idx };
   const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
   const at = attackFrame(side, to);
-  const defender = defenders.reduce<{ gp: GridPlayer; d: number } | undefined>((best, gp) => {
-    const o = attackFrame(side, gp.pos);
-    const d = s.math.hypot(o[0] - at[0], o[1] - at[1]);
-    return !best || d < best.d ? { gp, d } : best;
-  }, undefined)?.gp;
+  const defender =
+    marker ??
+    defenders.reduce<{ gp: GridPlayer; d: number } | undefined>((best, gp) => {
+      const o = attackFrame(side, gp.pos);
+      const d = s.math.hypot(o[0] - at[0], o[1] - at[1]);
+      return !best || d < best.d ? { gp, d } : best;
+    }, undefined)?.gp;
   if (defender) {
     const duel = resolveAerial(s, [side, attacker.idx], [foe, defender.idx], [88.5, at[1]], r);
     if (duel.kind === 'loose' && duel.winner[0] === foe)
@@ -976,12 +987,14 @@ export interface DeliveryResult {
  * An open-play cross or cut-back of `idx` on the candidate model (→MATCH-11, MATCH-31, MATCH-33,
  * T444), played into the zone `aim` names (`deliveryPoint`), not to the feet of its runner
  * `target`, as a through ball goes into the runner's path; kicked `kickAt` seconds from now.
- * - Contested first (`reachOnPath`): the first opponent the ball meets who gets there cleanly
+ * - Contested first (`deliveryReach`): the first opponent the ball meets who gets there cleanly
  *   (`cleanReach`, as a pass is intercepted cleanly, T441) wins it at his reach point, past any
  *   man who only just got there before him. He cuts it out `cross.intercept` of the time and heads
- *   it clear the rest. A low ball is contested along its whole path into its zone. A lofted ball's
- *   zone is the aerial duel's (MATCH-31): its path is read up to the zone's edge
- *   (`delivery.freeRadius` m from its point), and the men in the zone meet it in the air.
+ *   it clear the rest. A low ball is contested along its whole path into its zone. A lofted ball
+ *   flies over the middle of its path (T446, MATCH-33 r30): only a man at the crosser's foot
+ *   (`delivery.loft.foot` m) cuts it out. Its zone is the aerial duel's (MATCH-31): the men in it,
+ *   or else the man who gets to its drop first (its last `delivery.loft.drop` m before the zone's
+ *   edge), meet it in the air.
  * - Otherwise it is as good as its delivery (MATCH-11's 크로스): a cross's chance (`crossChance`)
  *   or a cut-back's beats a man who only just gets there. A bad cross may run out over the byline
  *   (`crossOverhit`). Otherwise a bad ball is deflected loose where the first man meets it, or with
@@ -1001,24 +1014,14 @@ export function resolveDelivery(
   r: () => number,
   kickAt = 0,
 ): DeliveryResult {
-  const from = s.players[side][idx]!.pos;
   const zone = deliveryPoint(side, aim);
   const high = lofted(aim.kind);
-  const radius = BOX_CONFIG.delivery.freeRadius;
-  const inZone = (gp: GridPlayer) =>
-    s.math.hypot(gp.pos[0] - zone[0], gp.pos[1] - zone[1]) <= radius;
-  const length = s.math.hypot(zone[0] - from[0], zone[1] - from[1]);
-  const k = high ? Math.max(0, 1 - radius / Math.max(1e-9, length)) : 1;
-  const end: [number, number] = [
-    from[0] + (zone[0] - from[0]) * k,
-    from[1] + (zone[1] - from[1]) * k,
-  ];
-  const { first, clean } = reachOnPath(s, side, from, end, kickAt, high ? inZone : undefined);
+  const { first, cut, marker } = deliveryReach(s, side, s.players[side][idx]!.pos, aim, kickAt);
   const won = (by: LaneReach): Outcome =>
     r() < DUEL_CONFIG.cross.intercept
       ? { kind: 'intercepted', by: by.gp.idx, at: by.at }
       : { kind: 'loose', at: by.at, winner: [other(side), by.gp.idx] };
-  if (clean) return { outcome: won(clean) };
+  if (cut) return { outcome: won(cut) };
   const cross = DELIVERY_ACTION[aim.kind] === 'cross';
   if (r() >= (cross ? crossChance(s, side, idx, tags) : cutBackChance(s, side, idx))) {
     const over = cross ? crossOverhit(s, side, idx, r) : undefined;
@@ -1026,7 +1029,7 @@ export function resolveDelivery(
   }
   const received: Outcome = { kind: 'complete', to: zone, receiver: target };
   if (!high) return { outcome: received, finish: { header: false, cutBack: aim.kind !== 'near' } };
-  const aerial = aerialDelivery(s, side, s.players[side][target]!, tags, r, zone);
+  const aerial = aerialDelivery(s, side, s.players[side][target]!, tags, r, zone, marker);
   if (aerial.kind !== 'header') return { outcome: aerial };
   return {
     outcome: { ...received, ...(aerial.aerial === undefined ? {} : { aerial: aerial.aerial }) },
