@@ -274,11 +274,12 @@ export class Host {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
   }
   /**
-   * SAVE-23: a copy of the validated candidate on the full match model, or the candidate itself
-   * when the release is off, it already carries model data (its recorded model is kept whatever
-   * the switch says), its rules are earlier or this career's live world has settled an own match
-   * the checkpoint lacks (activation then waits for a checkpoint that holds it). Like identity
-   * adoption, the revision moves once, and the model records the revision it is written in.
+   * SAVE-23: a copy of the validated candidate on the full match model, or on its later revision
+   * when it plays an earlier one, or the candidate itself when the release is off, it already
+   * plays the release's revision (its recorded model is kept whatever the switch says), its rules
+   * are earlier or this career's live world has settled an own match the checkpoint lacks (the
+   * activation or upgrade then waits for a checkpoint that holds it). Like identity adoption, the
+   * revision moves once, and the model records the revision it is written in.
    */
   private adoptModel(w: World, revised: boolean): World {
     if (!activatesMatchModel(w, this.release) || settledAhead(this.world, w)) return w;

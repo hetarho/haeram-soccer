@@ -1,12 +1,18 @@
 /** Everything a grid match needs before kick-off: era rules, rosters, bench, takers and bends (→MATCH-2, MATCH-18, MATCH-20, CLUB-6). */
 import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contracts/src/types';
-import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
-import { FORMATIONS, lineOf } from '../player';
+import {
+  activeMatchModel,
+  matchModelNumber,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
+import { bestRoleAt, FORMATIONS, lineOf } from '../player';
+import { clubManager } from '../managerMarket';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
 import { prepareMatch, type Prepared } from '../match';
 import { HOST_MATH, PORTABLE_MATH } from '../portable-math';
 import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
+import { playerTendencies, type PlayerTendencies } from './tendencies';
 
 export interface EraRules {
   /** Substitutes a side may name. */
@@ -207,10 +213,48 @@ export interface GridSetup {
   /** The match model this fixture plays; absent is the pre-feature model (→SAVE-23). */
   model?: MatchModelRevision;
   /**
+   * From revision 2: each roster player's tendencies under his side's manager in his matchday
+   * role, in roster order, computed once per match (→PLAYER-26, STAFF-46; T432 and T433 read them).
+   */
+  tendencies?: [PlayerTendencies[], PlayerTendencies[]];
+  /**
    * Measurement only, never set in play (T384): each offside draw as side, receiver, chance,
    * whether it was called and his 판단력 on the duels' scale, kept outside the record.
    */
   offsideDraws?: [0 | 1, number, number, 0 | 1, number][];
+}
+
+/** Whether a match plays `revision` of the candidate model or a later one; T431–T433 gate on 2. */
+export const modelAtLeast = (setup: Pick<GridSetup, 'model'>, revision: number) =>
+  setup.model !== undefined && matchModelNumber(setup.model) >= revision;
+
+/**
+ * One side's tendencies (→PLAYER-26): what his club's manager gives him (ours, or the named
+ * manager of a club nobody owns, →STAFF-46), a starter in his slot's role and a substitute in his
+ * best role at his position. They draw only each player's own personality stream.
+ */
+function sideTendencies(
+  w: World,
+  club: string,
+  tactic: Tactic,
+  roster: readonly Player[],
+  starters: number,
+): PlayerTendencies[] {
+  const manager =
+    club === w.playerClub
+      ? w.manager
+      : clubManager(
+          w,
+          w.clubs.find((one) => one.id === club)!,
+        );
+  const slots = FORMATIONS[tactic].slots;
+  return roster.map((p, i) =>
+    playerTendencies(
+      p,
+      manager,
+      i < starters && i < slots.length ? slots[i]!.role : bestRoleAt(p.attrs, p.position),
+    ),
+  );
 }
 
 const NO_BEND: StyleBend = { pass: 0, possession: 0, shot: 0, defense: 0, lineHigh: 0, lineLow: 0 };
@@ -274,5 +318,11 @@ export function buildGridSetup(
     observe: opts.observe,
     recordPlayers: opts.recordPlayers,
     ...(model ? { model } : {}),
+    ...(modelAtLeast({ model }, 2) && {
+      tendencies: [
+        sideTendencies(w, f.home, tactics[0], rosters[0], xi[0]),
+        sideTendencies(w, f.away, tactics[1], rosters[1], xi[1]),
+      ] as [PlayerTendencies[], PlayerTendencies[]],
+    }),
   };
 }

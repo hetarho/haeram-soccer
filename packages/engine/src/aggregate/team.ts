@@ -6,7 +6,7 @@
  * turnovers and restarts are one simulated match. No player moves through space and no minute or
  * action is stepped through; only actual shots and corners are visited one by one.
  */
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import { CELL_BASELINES } from '../grid/baselines';
 import { cellBand, cellLane } from '../grid/pitch';
 import { clamp, random } from '../primitives';
@@ -34,12 +34,13 @@ type Rng = () => number;
 /**
  * The candidate model's named streams for one fixture: `<seed>:<revision>:aggregate:<family>
  * [:<period>]:<fixture>`. Each call restarts the named sequence, so neither the order of other
- * draws nor any observation or query moves it (→ARCH-5).
+ * draws nor any observation or query moves it (→ARCH-5). Revision 2 changes only the detailed
+ * engine's movement (T431–T433), so the aggregate path keeps revision 1's streams.
  */
 export function aggregateStreams(
   seed: string,
   fixture: string,
-  revision: string = MATCH_MODEL_REVISION,
+  revision: string = MATCH_MODEL_REVISIONS[0],
 ): AggregateStreams {
   const names = (family: AggregateStreamFamily, period?: AggregatePeriod) =>
     `${seed}:${revision}:aggregate:${family}${period ? `:${period}` : ''}:${fixture}`;

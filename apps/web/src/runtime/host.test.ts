@@ -23,6 +23,7 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
 import { pack } from '../adapters/packing';
@@ -833,7 +834,7 @@ it('reports supported match-model metadata and refuses a future one without acti
       type: 'inspect',
       raw: await sealed({
         ...source,
-        matchModel: { ...matchModel, revision: 'continuous-aggregate-2' },
+        matchModel: { ...matchModel, revision: 'continuous-aggregate-3' },
       } as unknown as World),
       metadataOnly: true,
     }),
@@ -948,6 +949,48 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(canonical(host.world!.ownMatches)).toBe(canonical(held.ownMatches));
   });
 
+  it('the upgrade waits for a queued playback and happens on load', async () => {
+    const [first, second] = MATCH_MODEL_REVISIONS;
+    // A career released on revision 1 (T286), saved mid-season before revision 2.
+    const source = simulatedWorld(input, { rounds: 3 }, { revision: first, enabled: true });
+    expect(source.matchModel!.revision).toBe(first);
+    const disk = await encode(source);
+    const host = enabled();
+    host.world = structuredClone(source);
+    // A watched round queued before the load settles under revision 1; the checkpoint lacks it,
+    // so loading replays the fixture and the upgrade waits.
+    const [watched, loaded] = await Promise.all([
+      round(host, 'upgrade-queued'),
+      load(host, 'upgrade-behind', disk),
+    ]);
+    expect(watched.ok, watched.error).toBe(true);
+    const playback = watched.playback!;
+    expect(playback.record.model).toBe(first);
+    expect(loaded.ok, loaded.error).toBe(true);
+    expect(loaded.upgraded).toBeUndefined();
+    expect(host.world!.matchModel!.revision).toBe(first);
+    const replay = await round(host, 'upgrade-replayed');
+    expect(canonical(replay.playback!.record)).toBe(canonical(playback.record));
+    // At the next load of a checkpoint that holds it the career moves to revision 2: one writer
+    // upgrade, the boundary and coverage kept, every settled match still on revision 1.
+    const held = structuredClone(host.world!);
+    const upgraded = await load(host, 'upgrade-held', await encode(held));
+    expect(upgraded.ok, upgraded.error).toBe(true);
+    expect(upgraded.upgraded).toBe(true);
+    const w = host.world!;
+    expect(w.revision).toBe(held.revision + 1);
+    expect(w.matchModel).toEqual({ ...held.matchModel!, revision: second });
+    expect(w.npcSeason!.model).toBe(second);
+    expect(canonical(w.ownMatches)).toBe(canonical(held.ownMatches));
+    expect(w.ownMatches.every((m) => m.model === first)).toBe(true);
+    expect(canonical((await decode(upgraded.raw!)).world)).toBe(canonical(w));
+    // Its next results play revision 2.
+    expect((await round(host, 'upgrade-round')).ok).toBe(true);
+    const added = host.world!.ownMatches.slice(held.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === second)).toBe(true);
+  });
+
   it('read only does not persist activation', async () => {
     const source = career();
     const raw = await encode(source);
@@ -994,7 +1037,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       'model-future',
       await sealed({
         ...source,
-        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-2' },
+        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-3' },
       } as unknown as World),
     );
     expect(future.ok).toBe(false);

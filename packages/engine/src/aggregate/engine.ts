@@ -5,7 +5,11 @@
  * and the player lines are allocated from the team facts. The result is a full-model record with
  * empty observation frames, checked by the shared validator before anything settles it.
  */
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  activeMatchModel,
+  MATCH_MODEL_REVISION,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import type {
   Club,
   Fixture,
@@ -430,13 +434,14 @@ export function playAggregate(
 }
 
 /**
- * The full-model record of an aggregate match (→MATCH-26); `recordMatch` checks it before it
- * settles (→MATCH-27).
+ * The full-model record of an aggregate match (→MATCH-26) under the revision that settles it;
+ * `recordMatch` checks it before it settles (→MATCH-27).
  */
 export function aggregateRecord(
   f: Fixture,
   rosters: readonly [readonly Player[], readonly Player[]],
   match: AggregateMatch,
+  model: MatchModelRevision = MATCH_MODEL_REVISION,
 ): MatchRecord {
   const { facts, participation, players, input } = match;
   const highlights: Highlight[] = [];
@@ -478,7 +483,7 @@ export function aggregateRecord(
     incidents: [...participation.incidents],
     lineCounts: [players.sides[0].length, players.sides[1].length],
     added: aggregateAddedTime(facts, participation.incidents),
-    model: MATCH_MODEL_REVISION,
+    model,
     ...(facts.regulation && {
       regulation: { home: facts.regulation[0], away: facts.regulation[1] },
     }),
@@ -496,5 +501,6 @@ export function simulateAggregate(w: World, f: Fixture, decide?: DecideRule): Ma
   const prepared = prepareMatch(w, f);
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const match = playAggregate(w, f, prepared, rosters, decide);
-  return { record: aggregateRecord(f, rosters, match), frames: [], squads: rosters };
+  const model = activeMatchModel(w) ?? MATCH_MODEL_REVISION;
+  return { record: aggregateRecord(f, rosters, match, model), frames: [], squads: rosters };
 }

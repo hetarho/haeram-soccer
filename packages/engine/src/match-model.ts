@@ -7,6 +7,7 @@ import {
   carriesMatchModel,
   isMatchModelRevision,
   MATCH_MODEL_REVISION,
+  matchModelNumber,
   type FullMatchRecord,
   type MatchModelRevision,
 } from '../../contracts/src/match-model';
@@ -36,11 +37,16 @@ export const MATCH_MODEL_RELEASE: MatchModelRelease = {
 };
 
 /**
- * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world carries
- * no model data yet and plays the current rules (4.0.0, →SAVE-19); earlier rules never activate.
+ * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world plays
+ * the current rules (4.0.0, →SAVE-19; earlier rules never activate) and either carries no model
+ * data yet or records an earlier revision than the release's (→SAVE-23's later revision).
  */
 export const activatesMatchModel = (w: World, release: MatchModelRelease) =>
-  release.enabled && !carriesMatchModel(w) && w.engine === CURRENT_ENGINE_VERSION;
+  release.enabled &&
+  w.engine === CURRENT_ENGINE_VERSION &&
+  (w.matchModel
+    ? matchModelNumber(w.matchModel.revision) < matchModelNumber(release.revision)
+    : !carriesMatchModel(w));
 
 /**
  * Records the full match model on `w` prospectively (→SAVE-23, HIST-17): the revision, the game
@@ -48,11 +54,19 @@ export const activatesMatchModel = (w: World, release: MatchModelRelease) =>
  * coverage — `founding` for a world with no settled round and no own match, `activation` otherwise
  * — then opens the season's empty aggregates from that boundary. Settled fixtures, records, money,
  * dates and people stay as they are: nothing is replayed or backfilled, and only fixtures not yet
- * played use the model. Returns whether it activated; a disabled release, a world already carrying
- * model data or earlier rules leave `w` untouched. Callers own the safe boundary and the revision.
+ * played use the model. A world on an earlier revision moves to the release's: its activation,
+ * tracking boundary and coverage stay, the season's aggregates go on counting under the new
+ * revision and every settled record keeps the revision that settled it. Returns whether it
+ * activated; a disabled release, a world on the release's revision or later, or earlier rules
+ * leave `w` untouched. Callers own the safe boundary and the revision.
  */
 export function activateMatchModel(w: World, release: MatchModelRelease): boolean {
   if (!activatesMatchModel(w, release)) return false;
+  if (w.matchModel) {
+    w.matchModel = { ...w.matchModel, revision: release.revision };
+    if (w.npcSeason) w.npcSeason.model = release.revision;
+    return true;
+  }
   const trackedFrom = trackingBoundary(w);
   w.matchModel = {
     revision: release.revision,
