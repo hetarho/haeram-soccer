@@ -16,6 +16,7 @@
 | p4w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T17:03Z | 2026-10-24T17:03Z | - |
 
 ## inbox
+- 261025 decided T447 MATCH-14 MATCH-24 MATCH-33: T447 (delegated) moved the far-post zone 3 → 8 m and added a keeper claim of 0.15 on open-play lofted balls → goals 2.97 → 2.84 on validation round 70 (inside MATCH-23's 2.6–2.9, short of the task's 2.57–2.77), goal-area shots 7.1%, no row inside → outside; a far-post ball is now met outside the goal-area cell MATCH-14 names 파 포스트, and narration keeps reading the cell where the ball is met (alt: narrate the delivery's target zone, which MATCH-24's recorded-events rule does not allow)
 - 261025 decided T446 T447 T286: T446 (delegated) made lofted far-post balls arrive (0.2 → 22.9% reach their runner) but goals rose 2.77 → 3.06 on validation round 69, because the far-post zone sits 3 m out and every arriving ball is a goal-area finish → T447 (explore 1 h, delegated) sets the zone depths and the keeper's claim on lofted balls to bring goals back to 2.57–2.77 before T286 (alt: release at about 3.0 goals and leave it to T410 | a header block of 1.0, which undid T437's header fix)
 - 261025 decided MATCH-31 MATCH-33 T444 T446 T286: T444 left a structural question — the reach read no flight height, so the centre-backs cut out almost every lofted far-post ball (near post 1.5%, far post 0.03% reach their runner), and the delivery draw read no lanes → MATCH r30: a lofted delivery is contested only at the crosser's foot and at its zone, the choice reads the reach and does not deliver when every path is cut out; T446 (explore 2 h, delegated) before T286 holds T437's goals at 2.57–2.77 (alt: leave both and tune T437's numbers only | make every lofted pass fly over players now)
 - 261025 decided T437 MATCH-29: T437 (delegated) kept shotScale 0.37, box block 0.26, header block 0.15, build-up intercept shares 0.35–0.42, foul 1.3, box foul 0.046 → goals 2.96 → 2.67, goal-area shots 12.9 → 6.6%, tackles + interceptions 23.2 → 26.7, PPDA 18.2 → 15.1, MATCH-23 core 21 → 26 of 38 inside; MATCH-29 'counter at least press' moved insufficient → outside (−0.044 → −0.112), left for T410's re-read on the released model (alt: hold T286 for a counter-specific lever)
@@ -297,7 +298,6 @@
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T446 T447 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T447 | The box zones stand where real deliveries are met, holding T437's goals | MATCH ARCH | T446 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
@@ -319,6 +319,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 T447 done (delegated, merged): far-post zone 8 m, lofted claim 0.15, goals 2.84 on validation round 70
 - 261025 T446 done (delegated, merged): far-post reach 0.2 → 22.9%, goals 3.06 on validation round 69; create-task T447 (p4w8), T286 dep + T447
 - 261025 update-ssot MATCH r30 + create-task T446 (p4w8): lofted deliveries fly over the crowd and the delivery choice reads the reach; T286 dep + T446, todo bases MATCH@30
 - 261025 T437 done (delegated sub-session, merged 7daa6f77): goals 2.67 on validation round 68, guards at 2.0–3.6; batch gate not run
@@ -338,4 +339,3 @@
 - 261025 T438 publication verified (u6p2): pulled 1e060b3b; units2061+4 existing skips/contracts39/static checks pass; Chromium272 covered after two entrance-motion assertion reruns pass; commit/push authorized, hosted CI follows
 - 261025 T438 browser assertion timing (u6p2): two new remedy contrast checks sampled entrance opacity 0 (ratio 1); wait for existing finite motion before reading the settled contrast; application code unchanged
 - 261025 T438 publication start (u6p2): user authorizes commit/push; pulled origin/main 1e060b3b, retained T436 integration and restored the theme batch; full verification before publication
-- 261024 T436 integrated
