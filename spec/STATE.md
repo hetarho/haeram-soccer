@@ -16,6 +16,8 @@
 | p4w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T17:03Z | 2026-10-24T17:03Z | - |
 
 ## inbox
+- 261025 decided MATCH-31 MATCH-33 T444 T446 T286: T444 left a structural question — the reach read no flight height, so the centre-backs cut out almost every lofted far-post ball (near post 1.5%, far post 0.03% reach their runner), and the delivery draw read no lanes → MATCH r30: a lofted delivery is contested only at the crosser's foot and at its zone, the choice reads the reach and does not deliver when every path is cut out; T446 (explore 2 h, delegated) before T286 holds T437's goals at 2.57–2.77 (alt: leave both and tune T437's numbers only | make every lofted pass fly over players now)
+- 261025 decided T437 MATCH-29: T437 (delegated) kept shotScale 0.37, box block 0.26, header block 0.15, build-up intercept shares 0.35–0.42, foul 1.3, box foul 0.046 → goals 2.96 → 2.67, goal-area shots 12.9 → 6.6%, tackles + interceptions 23.2 → 26.7, PPDA 18.2 → 15.1, MATCH-23 core 21 → 26 of 38 inside; MATCH-29 'counter at least press' moved insufficient → outside (−0.044 → −0.112), left for T410's re-read on the released model (alt: hold T286 for a counter-specific lever)
 - 261025 decided ARCH-30 T444 T445 T437: the owner asks to finish the engine code first and test once at the end → the group's unit gate becomes the fast checks (typecheck, lint, format) and the full gate (unit, contract, catalogs, build, Chromium) runs once at group completion, with the per-unit push to main off until it passes (alt: keep the full gate at every integration)
 - 261025 decided MATCH-11 MATCH-31 T441: T441's review found keeper distributions read the first opponent who reaches the path while MATCH-11's keeper row still named the defender nearest the lane → MATCH r29 aligns that row with MATCH-31, since a keeper's pass is a pass and a defender who cannot reach it should not win it; T441 keeps its reach-based keeper distribution, base MATCH@29 (alt: keep the nearest-lane defender for keeper distributions only)
 - 261025 decided MATCH-31 MATCH-32 MATCH-33 MATCH-34 MATCH-35 T441 T442 T443 T444 T445: the owner asks for a redesigned attack in front of goal and better interceptions in the passing lanes (the 261024 suggest (a)) → MATCH r28: a pass is cut out only where an opponent reaches its path, a side shuts lanes with a cover shadow and a screen, the attack occupies near post / far post / penalty spot / edge with runs timed to the delivery, the defence protects the same zones goal-side, deliveries go into occupied zones and never blind, shots meet the bodies in their path before the keeper and second balls go to whoever reaches them (alt: keep the drawn interception split with a distance cap | retune entries and shot scales again, which T397/T408/T411 found exhausted)
@@ -274,7 +276,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 29 | 29 | - | 0 |
+| MATCH | 30 | 30 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -292,9 +294,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T446 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T437 | Recalibrate the candidate's scoring after the in-stride carry and the final-third rework | MATCH ARCH | T426 T445 | todo |
+| T446 | A lofted delivery flies over the crowd, and the carrier reads its lanes | MATCH ARCH | T437 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
@@ -316,6 +318,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 update-ssot MATCH r30 + create-task T446 (p4w8): lofted deliveries fly over the crowd and the delivery choice reads the reach; T286 dep + T446, todo bases MATCH@30
+- 261025 T437 done (delegated sub-session, merged 7daa6f77): goals 2.67 on validation round 68, guards at 2.0–3.6; batch gate not run
 - 261025 v9n4-release (p4w8): T441–T445 integrated, group gate green on a7135c1f; unit gate now fast checks, full gate at completion; T437 delegated to a sub-session
 - 261025 T445 integrated
 - 261025 T444 integrated
@@ -334,5 +338,3 @@
 - 261025 T438 publication start (u6p2): user authorizes commit/push; pulled origin/main 1e060b3b, retained T436 integration and restored the theme batch; full verification before publication
 - 261024 T436 integrated
 - 261025 T438 done (u6p2): shared theme details and live stadium preview; units62/type/lint/format/resources/build pass, all four themes audited, 20 open-picker and 12 match browser previews pass; uncommitted
-- 261025 T438 freshness (u6p2): WEB r148 changes presentation only; T286/T431/T434 keep engine/release contracts and advance WEB base 147→148; no executing attempt for those tasks
-- 261025 update-ssot WEB r148 + create-task/start T438 (u6p2): audit sticker-club and shared theme details; preserve v9n4-release work and game facts

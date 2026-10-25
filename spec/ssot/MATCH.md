@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r29 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r30 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -238,7 +238,8 @@
 - MATCH-33 [o] When the ball is wide in the final third or in a cut-back zone, the attack occupies the box's zones and the ball is delivered into them. ← many entries that each make a poor chance is not how football scores; an entry is worth the runs that meet it
   - the forwards attack the near post and the far post, an arriving midfielder or the far-side winger the penalty spot or a post left free, and another midfielder holds the edge of the box (아크 정면) for the cut-back and the second ball; roles and traits decide who goes where (→PLAYER-5, →PLAYER-9), the rest defence stays home (→MATCH-17), and each run is timed to arrive as the ball is delivered rather than to wait there.
   - the delivery is played into a zone a teammate attacks — driven to the near post, lofted to the far post, pulled back to the penalty spot or the edge, or squared across the goal area — and its target is the runner arriving there, weighed by how free he arrives and whether the ball suits him (his head for a lofted ball, his feet for a low one).
-  - with nobody attacking a zone the ball is not delivered blind: the carrier keeps it, recycles it or shoots by his decision table (→MATCH-16).
+  - a lofted delivery passes over the players between the crosser and its zone: only a defender at the crosser's foot or one who gets to the zone first contests it, the latter in the aerial duel (→MATCH-11); a ball along the ground is reached like a pass (→MATCH-31).
+  - the carrier weighs each delivery by the same reach as a pass (→MATCH-31); with nobody attacking a zone, or with every delivery cut out before it arrives, the ball is not delivered blind: the carrier keeps it, recycles it or shoots by his decision table (→MATCH-16).
 - MATCH-34 [o] In open play the defending side protects its box goal-side once the ball is wide in its final third or in a cut-back zone. ← a back line that keeps its shape while runners arrive lets every entry become a shot
   - the back line drops toward its goal and narrows: a centre-back guards the near post and the other the middle, the far full-back or wing-back tucks in to the far post, and a holding or central midfielder drops to the edge or the penalty spot for the cut-back.
   - markers stay goal-side of the runners they track, between them and the zone they attack; a zone without a runner is held by position (→MATCH-17's marking and handover).
@@ -257,6 +258,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r30 261025 MATCH-33✎ a delivery reached along its whole path→a lofted one reached only at the crosser's foot and at its zone; no blind delivery with nobody in a zone→also none when every delivery is cut out, the choice reading the reach
 - r29 261025 MATCH-11✎ keeper distribution against the defender nearest the lane→the opponent who reaches its path first (→MATCH-31)
 - r28 261025 MATCH-11✎ pass against the defender nearest the lane→the opponent who reaches its path first; shot quality + the bodies between ball and goal · MATCH-31+ a pass cut out only where reached · MATCH-32+ lanes shut · MATCH-33+ box zones attacked and delivered into · MATCH-34+ box defended goal-side · MATCH-35+ shots blocked before the keeper, second balls contested
 - r27 261025 MATCH-12✎ a pressed carrier stood on the ball to shield it→shields it on the move away from the nearest opponent, everyone else moving meanwhile; standing only to hold up or lay off, distribute as keeper or take a restart
