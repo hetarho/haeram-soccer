@@ -4,6 +4,7 @@ import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
 import { ProgressionController } from './progression';
+import { useMatchView } from './matchView';
 import type { View } from './protocol';
 
 const w = createWorld({
@@ -47,6 +48,7 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
   controller?.dispose();
   controller = undefined;
+  useMatchView.setState({ matchId: undefined, finished: false });
   gameStore.publish({ ...initialClientState });
   vi.useRealTimers();
 });
@@ -562,6 +564,50 @@ describe('explicit automatic and manual modes', () => {
     expect(s.command).toHaveBeenCalledTimes(1);
     expect(controller.store.getState().running).toBe(false);
     expect(controller.store.getState().matchEve).toBeDefined();
+  });
+  it('reopens unfinished observation repeatedly without advancing the world or replacing playback', async () => {
+    const world = manual();
+    world.calendar = { day: 7 };
+    const current = playback('already-watching');
+    const s = setup(current, world);
+    controller = s.controller;
+    useMatchView.getState().set({ matchId: current.record.id, finished: false });
+    const before = JSON.stringify(world);
+    await controller.nextEvent();
+    await controller.nextEvent();
+    expect(s.command).not.toHaveBeenCalled();
+    expect(controller.store.getState()).toMatchObject({ eventRequest: 2, running: false });
+    expect(gameStore.getState().playback).toBe(current);
+    expect(JSON.stringify(world)).toBe(before);
+    useMatchView.getState().set({ matchId: current.record.id, finished: true });
+    await controller.nextEvent();
+    expect(s.command).toHaveBeenCalledExactlyOnceWith({ type: 'next-event' }, { background: true });
+  });
+  it('keeps unfinished-observation reopening behind processing and recovery protections', async () => {
+    const world = manual();
+    world.calendar = { day: 7 };
+    const current = playback('already-watching');
+    const s = setup(current, world);
+    controller = s.controller;
+    useMatchView.getState().set({ matchId: current.record.id, finished: false });
+    for (const blocked of [
+      { readonly: true },
+      { error: 'failed' },
+      { processing: true },
+      { pendingActions: 1 },
+    ]) {
+      gameStore.publish({
+        ...gameStore.getSnapshot(),
+        readonly: false,
+        error: undefined,
+        processing: false,
+        pendingActions: 0,
+        ...blocked,
+      });
+      await controller.nextEvent();
+    }
+    expect(controller.store.getState().eventRequest).toBe(0);
+    expect(s.command).not.toHaveBeenCalled();
   });
   it('reopens the same unresolved match report repeatedly without a game command or date change', async () => {
     const world = manual();

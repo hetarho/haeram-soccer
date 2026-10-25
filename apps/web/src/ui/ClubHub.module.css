@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'fixture' 'header' 'stage' 'state';
+  grid-template-areas: 'header' 'stage' 'state' 'fixture';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -218,31 +218,6 @@
   color: var(--fixture-control-text, var(--text));
   border-color: var(--fixture-control-edge, transparent);
 }
-.play {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 12px;
-  color: var(--on-accent);
-  background: var(--surface-grain, none) var(--accent-fill);
-  border-color: var(--accent-edge);
-  box-shadow: none;
-}
-.play b {
-  font-size: 13px;
-  font-weight: 600;
-}
-.play small {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 @media (max-width: 760px) {
   .hub {
     display: flex;
@@ -280,9 +255,6 @@
   .fixtureInfo h3 {
     margin: 2px 0;
     font-size: 16px;
-  }
-  .play {
-    min-height: 44px;
   }
 }
 
@@ -331,13 +303,6 @@
 .bump {
   display: inline-block;
   animation: pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.play b span {
-  display: inline-block;
-  transition: transform 200ms;
-}
-.play:hover:not(:disabled) b span {
-  transform: translateX(3px);
 }
 /* Value wrappers keep the tile's number styling; only their entrance differs. */
 .resources b > .bump {
@@ -616,15 +581,6 @@ button.resources:active:not(:disabled) {
 .remedyOff em {
   color: var(--text-faint);
 }
-.play.returning {
-  background: var(--surface-grain, none) var(--gold-fill);
-  border-color: var(--gold-edge);
-  box-shadow: none;
-}
-.play.returning small {
-  color: var(--on-accent);
-}
-
 /* Both rows participate in layout, so no empty scene spacer survives image resizing. */
 .hub .stage.stage {
   grid-area: stage;
@@ -674,9 +630,6 @@ button.resources:active:not(:disabled) {
   .fixtureInfo h3 {
     margin: 2px 0;
     font-size: 16px;
-  }
-  .play {
-    min-height: 44px;
   }
 }
 @media (max-width: 760px) {

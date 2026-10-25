@@ -3,30 +3,21 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   flex: none;
   gap: 8px;
   min-height: 50px;
   margin: 0;
-  padding: var(--control-gap) var(--row-padding);
+  padding: max(10px, var(--control-gap)) var(--row-padding);
   border-top: 1px solid var(--popover-edge);
   background: var(--hud);
 }
-.transportSummary {
+.modeGroup {
   flex: 1;
   min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-.status {
-  padding: 2px;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-.running .status {
-  color: var(--accent-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .buttons {
   display: flex;
@@ -39,6 +30,15 @@
   padding: var(--control-padding-block) var(--control-padding-inline);
   font-size: 13px;
   white-space: nowrap;
+}
+.buttons .nextEvent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  line-height: 1.5;
 }
 .buttons .toggle {
   position: relative;
@@ -102,7 +102,7 @@
   .controls {
     gap: var(--control-gap);
     min-height: 58px;
-    padding: var(--control-gap) var(--control-gap);
+    padding: max(10px, var(--control-gap)) var(--control-gap);
   }
   .buttons .pace.pace {
     height: 48px;
@@ -157,41 +157,25 @@
   font-variant-numeric: tabular-nums;
 }
 .modeSwitch {
-  display: flex;
+  display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   min-height: 44px;
-  margin-left: auto;
-  padding: 8px 12px;
-  border-color: transparent;
-  background: var(--subtle-fill);
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 .modeStatus {
-  margin-left: auto;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-.modeSwitch span {
-  display: grid;
-  gap: 2px;
-  text-align: left;
-}
-.modeSwitch b {
+  flex: 0 0 56px;
+  width: 56px;
+  white-space: nowrap;
+  color: var(--text);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  line-height: 1.3;
-}
-.modeSwitch small {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 400;
-  line-height: 1.3;
-}
-.modeSwitch svg {
-  flex: none;
-  color: var(--text-muted);
+  line-height: 1.5;
 }
 .modeExplanation > strong {
   font-size: 13px;
@@ -231,9 +215,6 @@
   }
   .calendarSummary span {
     font-size: 12px;
-  }
-  .modeSwitch {
-    gap: 8px;
   }
 }
 

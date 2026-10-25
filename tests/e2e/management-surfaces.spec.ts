@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
+import { textContrast } from './contrast';
 
 async function navigate(page: Page, name: string) {
   await page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
@@ -20,6 +21,35 @@ async function surface(locator: Locator) {
   });
 }
 
+for (const themeId of ['matchday-print', 'sticker-club']) {
+  test(`${themeId}: next-event text remains readable on the dark transport`, async ({ page }) => {
+    await page.addInitScript((themeId) => {
+      localStorage.setItem(
+        'haeram-soccor:presentation',
+        JSON.stringify({ themeId, localeId: 'ko-KR' }),
+      );
+    }, themeId);
+    await page.goto('/');
+    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await page.getByRole('button', { name: /진행 방식 변경/ }).click();
+    await page.getByRole('button', { name: '수동 모드로 변경', exact: true }).click();
+    const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
+    for (const width of [360, 390, 1380]) {
+      await page.setViewportSize({ width, height: width === 360 ? 740 : 844 });
+      await settle(page);
+      await expect(next).toBeVisible();
+      expect((await next.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+      const spacing = await next.evaluate((button) => {
+        const box = button.getBoundingClientRect();
+        const bar = button.closest('section')!.getBoundingClientRect();
+        return { above: box.top - bar.top, below: bar.bottom - box.bottom };
+      });
+      expect(spacing.above).toBeGreaterThanOrEqual(8);
+      expect(spacing.below).toBeGreaterThanOrEqual(8);
+    }
+  });
+}
+
 for (const themeId of ['standard', 'pixel']) {
   test(`${themeId}: management cards, transport and choices retain inset content and separate actions`, async ({
     page,
@@ -34,6 +64,19 @@ for (const themeId of ['standard', 'pixel']) {
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(
+      page.getByTestId('club-hub').getByRole('button', { name: '게임 슬롯', exact: true }),
+    ).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '기록 내보내기', exact: true })).toHaveCount(0);
+    await expect(page.locator('input[type="file"]')).toHaveCount(0);
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const saveMenu = page.getByRole('dialog', { name: '설정', exact: true });
+    await expect(
+      saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }),
+    ).toBeVisible();
+    await expect(saveMenu.getByRole('button', { name: '게임 슬롯', exact: true })).toBeVisible();
+    await expect(saveMenu.locator('label:has(input[type="file"])')).toBeVisible();
+    await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
     await page.getByRole('button', { name: /진행 방식 변경/ }).click();
     await page
       .getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true })
@@ -42,7 +85,11 @@ for (const themeId of ['standard', 'pixel']) {
     await navigate(page, '구단 운영');
     await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
     const office = page.getByTestId('owner-office');
-    await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toHaveCount(0);
+    await expect(
+      page
+        .getByRole('region', { name: '시즌 진행', exact: true })
+        .getByRole('button', { name: '진행 방식 변경', exact: true }),
+    ).toBeVisible();
     await expect(office.getByRole('group', { name: '진행 모드', exact: true })).toHaveCount(0);
 
     for (const width of [360, 390, 760, 1380]) {
@@ -84,15 +131,47 @@ for (const themeId of ['standard', 'pixel']) {
         fixture.getByRole('button', { name: '전술·선발 준비', exact: true }),
       ).toBeVisible();
       const transport = page.getByRole('region', { name: '시즌 진행', exact: true });
-      const text = await transport.locator('small').evaluate((element) => ({
-        hidden: getComputedStyle(element).overflow === 'hidden',
-        width: element.scrollWidth - element.clientWidth,
-        height: element.scrollHeight - element.clientHeight,
-      }));
-      expect(text).toEqual({ hidden: false, width: 0, height: 0 });
+      await expect(transport.getByTestId('progression-mode')).toHaveText('MANUAL');
+      await expect(
+        transport.getByRole('button', { name: '진행 방식 변경', exact: true }),
+      ).toBeVisible();
+      await expect(
+        transport.getByRole('button', { name: '진행 방식 변경', exact: true }),
+      ).toHaveAttribute('data-ui', 'primary');
+      await expect(page.locator('[data-ui="season-overview"] button')).toHaveCount(0);
+      await expect(page.locator('main footer')).toHaveCount(0);
+      await expect(
+        page.getByText('수동 진행 · 다음 이벤트를 선택하세요', { exact: true }),
+      ).toHaveCount(0);
       await expect(
         transport.getByRole('button', { name: '다음 이벤트', exact: true }),
       ).toBeVisible();
+      const nextAction = await transport
+        .getByRole('button', { name: '다음 이벤트', exact: true })
+        .evaluate((button) => {
+          const box = button.getBoundingClientRect();
+          const bar = button.closest('section')!.getBoundingClientRect();
+          const css = getComputedStyle(button);
+          return {
+            height: box.height,
+            padding: parseFloat(css.paddingTop),
+            above: box.top - bar.top,
+            below: bar.bottom - box.bottom,
+            icon: !!button.querySelector('svg,img'),
+          };
+        });
+      expect(nextAction.height).toBeGreaterThanOrEqual(44);
+      expect(nextAction.padding).toBeGreaterThanOrEqual(8);
+      expect(nextAction.above).toBeGreaterThanOrEqual(8);
+      expect(nextAction.below).toBeGreaterThanOrEqual(8);
+      expect(nextAction.icon).toBe(true);
+      expect(
+        (
+          await transport
+            .getByRole('button', { name: '다음 이벤트', exact: true })
+            .evaluate(textContrast)
+        ).ratio,
+      ).toBeGreaterThanOrEqual(4.5);
 
       if (width === 360 || width === 390) {
         await navigate(page, '리그');

@@ -5,6 +5,7 @@ import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { horizontalOverflow } from './layout';
+import { openSaveMenu } from './save-menu';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
   // Simulates a full season with staff, academy and market days; slow CI browsers need longer.
   test.slow();
@@ -107,14 +108,18 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
   const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const saveMenu = await openSaveMenu(page);
+  await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await download;
+  await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const raw = readFileSync((await file.path())!);
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
-  await page
+  await (
+    await openSaveMenu(page)
+  )
     .locator('input[type=file]')
     .last()
     .setInputFiles({ name: 'career.json', mimeType: 'application/json', buffer: raw });

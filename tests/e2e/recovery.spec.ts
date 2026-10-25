@@ -6,6 +6,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import { currentDay } from '../../packages/engine/src/calendar';
 import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
+import { openSaveMenu } from './save-menu';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -100,8 +101,10 @@ test('recovers prior checkpoint after active corruption without clearing another
   await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toHaveCount(0);
   await expect(page.getByTestId('game-round')).toHaveText(`${previous.round}`);
   const downloading = page.waitForEvent('download');
-  await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const saveMenu = await openSaveMenu(page);
+  await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
+  await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const restored = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
   expect({
     day: currentDay(restored),
@@ -172,7 +175,8 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   );
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(before);
   const event = page.waitForEvent('download');
-  await page.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const saveMenu = await openSaveMenu(page);
+  await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await event;
   const memory = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
   expect(memory.round).toBe(1);
@@ -181,6 +185,7 @@ test('quota failure preserves disk save, exports actual memory progress and retr
     (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = false;
   });
   await page.getByRole('button', { name: '저장 재시도' }).click();
+  await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await page.reload();
   await expect(page.getByTestId('game-round')).toHaveText('1');
@@ -193,7 +198,9 @@ test('unsupported import leaves the current world and manifest intact', async ({
     return { manifest: m, raw };
   });
   const future = { ...JSON.parse(data.raw), schema: 99 };
-  await page
+  await (
+    await openSaveMenu(page)
+  )
     .locator('input[type=file]')
     .last()
     .setInputFiles({
@@ -258,7 +265,7 @@ test('a new game goes into another slot, both careers survive switching and back
   await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
   await expect(page).toHaveURL(/\/training$/);
   await expect(page.getByRole('tablist', { name: '훈련·육성 보기', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   const slotScreen = page.getByTestId('game-slots');
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');
   await slotScreen
@@ -285,7 +292,7 @@ test('a new game goes into another slot, both careers survive switching and back
   // The URL updates before the deferred page commits. Wait for the intended departure page
   // before scrolling to its footer, which moves when that page replaces the previous one.
   await expect(page.getByRole('tablist', { name: '구단 운영 보기', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen
     .getByRole('listitem', { name: '슬롯 1' })
@@ -308,7 +315,7 @@ test('deleting the game in play stays on the slot screen, even with every slot e
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   const slotScreen = page.getByTestId('game-slots');
   const slot = slotScreen.getByRole('listitem', { name: '슬롯 1' });
   await expect(slot).toContainText('진행 중');
@@ -352,7 +359,7 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   const notice = page.getByText('감독이 떠났어요.');
   await expect(alarm).toBeVisible();
   await expect(notice).toBeVisible();
-  await page.getByRole('button', { name: '게임 슬롯' }).click();
+  await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   const slotScreen = page.getByTestId('game-slots');
   await slotScreen
     .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
@@ -362,7 +369,7 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   await expect(page.getByTestId('calendar')).toHaveText('1950 · A NEW BEGINNING');
   await expect(page.getByTestId('hud-cash')).toHaveCount(0);
   await expect(page.getByText('Parked Crisis')).toHaveCount(0);
-  await expect(page.getByTestId('save-status')).toHaveText('로그인 없이 시작하세요');
+  await expect(page.getByTestId('save-status')).toHaveCount(0);
   await expect(alarm).toHaveCount(0);
   await expect(notice).toHaveCount(0);
   // The parked game brings its bands back when it is continued.

@@ -1,4 +1,4 @@
-import { openWatchAction, watchNext } from './watch';
+import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -117,7 +117,7 @@ test('watching a match pauses the calendar and retains playback across page swit
   page,
 }) => {
   await found(page);
-  await watchNext(page);
+  await watchNext(page, { manual: true });
   await expect(
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
@@ -126,12 +126,28 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The theatre has no season clock; the calendar waits while we watch.
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   await expect(page.getByTestId('mini-clock')).toHaveCount(0);
-  // Home resumes the unfinished observation without starting another match.
+  // Browser back leaves the observation in place; next-event repeatedly reopens its report.
   const theatre = page.getByTestId('match-theatre');
-  await theatre.getByRole('button', { name: '홈', exact: true }).click();
-  const returning = await openWatchAction(page);
-  await expect(returning).toHaveAccessibleName('관전 이어보기');
-  await returning.click();
+  await page.goBack();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const upcoming = page.getByRole('region', { name: '다음 경기', exact: true });
+  await expect(upcoming.getByRole('button', { name: '관전 이어보기' })).toHaveCount(0);
+  const report = page.getByRole('dialog', { name: '관전 이어보기', exact: true });
+  const round = await page.getByTestId('game-round').innerText();
+  await expect(report).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^관전 이어보기/ })).toHaveCount(0);
+  for (let reopen = 0; reopen < 2; reopen++) {
+    await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+    await expect(report).toBeVisible();
+    await expect(report.getByTestId('resume-match-card')).toContainText('MATCH · 관전 중');
+    await expect(page.getByTestId('game-date')).toHaveText(matchDay!);
+    await expect(page.getByTestId('game-round')).toHaveText(round);
+    await report.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await expect(report).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^관전 이어보기/ })).toHaveCount(0);
+  }
+  await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+  await report.getByRole('button', { name: '관전 이어보기', exact: true }).click();
   await expect(theatre.getByRole('heading', { name: '매치데이' })).toBeVisible();
   await expect(date).toHaveText(matchDay!);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();

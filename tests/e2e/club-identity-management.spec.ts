@@ -9,6 +9,7 @@ import {
 import type { ClubIdentity } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
+import { openSaveMenu } from './save-menu';
 
 /**
  * KIT-9/10/12, WEB-39/71/74/86, SAVE-20: 구단 운영 › 구단 디자인 keeps a per-career draft until an
@@ -362,7 +363,9 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
   ]);
   ownClub(world).identity = newer;
   ownClub(world).color = newer.colours[0];
-  await page
+  await (
+    await openSaveMenu(page)
+  )
     .locator('input[type=file]')
     .last()
     .setInputFiles({

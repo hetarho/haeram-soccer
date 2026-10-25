@@ -15,6 +15,7 @@ import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
 import { textContrast } from './contrast';
+import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
@@ -60,9 +61,11 @@ for (const { id: theme } of baseline.themeRegistry.entries)
         );
       }, theme);
       await loadPausedGame(page);
-      const importControl = page.locator('[data-ui="sidebar"] label:has(input[type="file"])');
-      if (width > 760)
-        expect((await importControl.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+      const saveMenu = await openSaveMenu(page);
+      const importControl = saveMenu.locator('label:has(input[type="file"])');
+      await settle(page);
+      expect((await importControl.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
+      await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
       await page.getByRole('button', { name: /진행 방식 변경/ }).click();
       await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
       const date = await page.getByTestId('game-date').innerText();

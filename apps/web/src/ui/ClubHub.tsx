@@ -7,8 +7,7 @@ import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
-import { useMatchView, useNavigation } from './state';
-import { useGameState } from '../runtime/store';
+import { useNavigation } from './state';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -18,32 +17,7 @@ import { FacilityArt } from './FacilityArt';
 import { PixelIcon } from './PixelIcon';
 import { CashAlarm } from './CashAlarm';
 
-/** Home can resume an existing match; only the eve dialog starts a new one. */
-export function MatchAction({ onReturn }: { onReturn: () => void }) {
-  const live = useGameState((state) => state.playback?.record.id);
-  const view = useMatchView();
-  if (!live || view.matchId !== live || view.finished) return null;
-  return (
-    <button
-      data-testid="home-watch"
-      className={`${s.play} ${s.returning}`}
-      aria-label="관전 이어보기"
-      onClick={onReturn}
-    >
-      관전 이어보기 <span aria-hidden="true">▶</span>
-    </button>
-  );
-}
-
-export function NextMatchCard({
-  w,
-  onPrepare,
-  matchAction,
-}: {
-  w: World;
-  onPrepare: () => void;
-  matchAction: ReactNode;
-}) {
+export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
@@ -76,7 +50,6 @@ export function NextMatchCard({
         </p>
       </div>
       <div className={s.fixtureActions}>
-        {matchAction}
         <button
           className={s.prepare}
           disabled={!!w.critical}
@@ -191,12 +164,10 @@ export function ClubHub({
   w,
   client,
   journal,
-  matchAction,
 }: {
   w: World;
   client: GameClient;
   journal: ReactNode;
-  matchAction: ReactNode;
 }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
@@ -224,7 +195,6 @@ export function ClubHub({
       data-home-active={!away}
       aria-label="클럽 키우기"
     >
-      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} matchAction={matchAction} />
       <div className={s.seasonOverview}>
         <div className={s.seasonMeter} data-home-part="season-meter">
           <span>
@@ -282,6 +252,7 @@ export function ClubHub({
         </button>
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
+      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {journalOpen && (
