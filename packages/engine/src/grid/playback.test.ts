@@ -326,14 +326,15 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-1` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-4` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
     // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`,
-    // T442's shut lanes `candidate-et-2`, T443's box scene `candidate-et-0`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-1']) {
-      const extraTime = id === 'candidate-et-1';
+    // T442's shut lanes `candidate-et-2`, T443's box scene `candidate-et-0`, T444's deliveries
+    // into the zones `candidate-et-1`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-4']) {
+      const extraTime = id === 'candidate-et-4';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -1007,7 +1008,11 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     };
     const frames = buildFrames(old, watched.setup, w.seed);
     expect(frameTimeIssues(frames)).toEqual([]);
-    const corner = old.trace.findIndex((e, n) => n > 0 && e.action === 'corner');
+    // The first corner after running play (T444's deliveries made `candidate-1`'s first corner
+    // follow a throw-in that went out, a restart straight after a restart).
+    const corner = old.trace.findIndex(
+      (e, n) => n > 0 && e.action === 'corner' && old.trace[n - 1]!.tags !== undefined,
+    );
     const [a, e] = [old.trace[corner - 1]!, old.trace[corner]!];
     const during = frames
       .filter((f) => f.period === e.period)

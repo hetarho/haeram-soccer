@@ -132,11 +132,23 @@ export interface LaneReach {
   stretch: boolean;
 }
 
-/** A path's reach: the opponent the ball meets first, if any, and every reaching opponent's summed weight. */
+/**
+ * A path's reach: the opponent the ball meets first, if any, the first it meets of those who get
+ * there cleanly (`cleanReach`, T444: a delivery is his even past a man who only just got there),
+ * and every reaching opponent's summed weight.
+ */
 export interface PathReach {
   first?: LaneReach;
+  clean?: LaneReach;
   weight: number;
 }
+
+/**
+ * Whether he gets there cleanly: within `LANE_CONFIG.reach` with `LANE_CONFIG.sure` to spare, so
+ * a failed pass he meets is his, where a man who only just gets there deflects it loose (T441).
+ */
+export const cleanReach = (reach: Pick<LaneReach, 'spare' | 'stretch'>) =>
+  !reach.stretch && reach.spare >= LANE_CONFIG.sure;
 
 /** An opponent's weight in a lane he reaches (`LANE_CONFIG.weight`). */
 function laneWeight(reach: Pick<LaneReach, 'spare' | 'stretch'>): number {
@@ -166,8 +178,9 @@ function runSeconds(d: number, u0: number, vmax: number): number {
  * 위치선정 share of the wind-up before the kick), then runs straight there: his speed toward it
  * carried over, accelerating within the movement rules up to his top speed with fatigue
  * (`speedOf`). His reach times are closed-form (`runSeconds`), scanned only over the part of the
- * path he could get to at top speed. Returns the opponent the ball meets first and the summed
- * weights (`laneWeight`) of all who reach it.
+ * path he could get to at top speed. Returns the opponent the ball meets first, the first who
+ * gets there cleanly and the summed weights (`laneWeight`) of all who reach it; opponents `leave`
+ * picks out (T444: a lofted ball's zone men, left to the aerial duel) are not read.
  */
 export function reachOnPath(
   s: GridState,
@@ -175,13 +188,15 @@ export function reachOnPath(
   from: readonly [number, number],
   to: readonly [number, number],
   kickAt: number,
+  leave?: (gp: GridPlayer) => boolean,
 ): PathReach {
   const L = LANE_CONFIG;
   const m = aim(from, to);
   let first: LaneReach | undefined;
+  let clean: LaneReach | undefined;
   let weight = 0;
   for (const gp of s.players[other(side)]) {
-    if (!onPitch(gp) || !runAt(s, side, gp, kickAt)) continue;
+    if (!onPitch(gp) || leave?.(gp) || !runAt(s, side, gp, kickAt)) continue;
     // Within reach of a point he is within stretch of it too, so his reach starts no earlier.
     const wide = firstReach(m.lo, m.hi, L.stretch);
     if (Number.isNaN(wide)) continue;
@@ -199,8 +214,9 @@ export function reachOnPath(
     };
     weight += laneWeight(r);
     if (!first || r.along < first.along) first = r;
+    if (cleanReach(r) && (!clean || r.along < clean.along)) clean = r;
   }
-  return { first, weight };
+  return { first, clean, weight };
 }
 
 /**

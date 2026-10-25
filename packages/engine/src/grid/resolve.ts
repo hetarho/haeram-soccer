@@ -27,7 +27,8 @@ import {
 } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
-import { LANE_CONFIG, reachOnPath } from './lanes';
+import { BOX_CONFIG, DELIVERY_ACTION, deliveryPoint, lofted, type DeliveryAim } from './box';
+import { cleanReach, LANE_CONFIG, reachOnPath, type LaneReach } from './lanes';
 
 type Kind = NonNullable<Decision['kind']>;
 type Ref = [0 | 1, number];
@@ -116,11 +117,9 @@ export const DUEL_CONFIG = {
   candidate: {
     foul: 1.2,
     boxFoul: 0.06,
-    /**
-     * A cross's target (T398, →MATCH-17): a teammate arriving on a box run counts this many
-     * aerial-rating points more in the draw of whom the ball is played to. Neutral at 0.
-     */
-    crossArriving: 0,
+    // T398's `crossArriving` (a teammate on a box run counting more aerial-rating points as the
+    // cross's target, neutral at 0) is gone: an open-play delivery's runner is drawn among the
+    // zones attacked (T444, `BOX_CONFIG.delivery`, `resolveDelivery`).
     /**
      * A cross under pressure (T399, →MATCH-11): a crosser with a defender on him (his `pressure`
      * tag, up to 1) delivers `crossPressure` less often, the closed-down cross being blocked.
@@ -441,7 +440,7 @@ export function resolvePass(
     onCandidate(s) && from[0] < I.upTo ? I.share[s.setup.tactics[other(side)]] : P.lost.intercepted;
   if (lane) {
     if (u < intercepted && first)
-      return !first.stretch && first.spare >= LANE_CONFIG.sure
+      return cleanReach(first)
         ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
         : looseBall(s, first.at, r, [side, target]);
   } else if (u < intercepted && marker) {
@@ -562,10 +561,7 @@ function headerTarget(
       gp,
       v:
         aerialRating(s, side, gp.idx, 0.6) *
-          actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial') +
-        (onCandidate(s) && gp.run?.kind === 'box' && gp.run.until > s.elapsed
-          ? DUEL_CONFIG.candidate.crossArriving
-          : 0),
+        actionWeight(slotOf(s, gp).role, gp.player.traits, 'aerial'),
     }));
   if (!pool.length) return undefined;
   let top = -Infinity;
@@ -597,29 +593,10 @@ export function resolveCross(
   const X = DUEL_CONFIG.cross;
   const foe = other(side);
   const attacker = headerTarget(s, side, idx, r);
-  const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
-  const attackers = s.players[side].filter(
-    (gp) => gp.idx !== idx && onPitch(gp) && inBox(attackFrame(side, gp.pos)),
-  );
-  const p = clamp(
-    X.base +
-      (skill(s, side, idx, 'crossing') - 60) * X.skill -
-      Math.max(0, defenders.length - attackers.length) * X.crowd -
-      (onCandidate(s) ? DUEL_CONFIG.candidate.crossPressure * Math.min(1, tags.pressure) : 0),
-    X.min,
-    X.max,
-  );
-  const delivered = r() < p;
-  const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
+  const delivered = r() < crossChance(s, side, idx, tags);
   if (!delivered || !attacker) {
-    const out = r() < X.failOut;
-    if (out && keeper && onCandidate(s) && r() < DUEL_CONFIG.candidate.crossKeeper)
-      return { kind: 'held', by: keeper.idx };
-    const at = toEngine(side, [
-      PITCH.length,
-      clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
-    ]);
-    if (out) return { kind: 'out', at, lastTouch: side, over: 'byline' };
+    const over = crossOverhit(s, side, idx, r);
+    if (over) return over;
     const spot: Point = attacker
       ? attackFrame(side, attacker.pos)
       : [PITCH.length - 10, PITCH.width / 2];
@@ -627,43 +604,95 @@ export function resolveCross(
     if (r() < X.intercept) return { kind: 'intercepted', by, at: toEngine(side, spot) };
     return { kind: 'loose', at: toEngine(side, spot), winner: [foe, by] };
   }
+  const won = aerialDelivery(s, side, attacker, tags, r, [attacker.pos[0], attacker.pos[1]]);
+  if (won.kind !== 'header') return won;
+  return {
+    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, { header: true }),
+    header: true,
+    ...(won.aerial === undefined ? {} : { aerial: won.aerial }),
+  };
+}
+
+/**
+ * A cross's delivery chance (→MATCH-11): the crosser's 크로스 against the box's crowd (defenders
+ * beyond his teammates there) and, on the candidate model, the pressure on him (T399).
+ */
+function crossChance(s: GridState, side: 0 | 1, idx: number, tags: Pick<Tags, 'pressure'>) {
+  const X = DUEL_CONFIG.cross;
+  const inBoxOf = (sd: 0 | 1) =>
+    s.players[sd].filter(
+      (gp) => (sd !== side || gp.idx !== idx) && onPitch(gp) && inBox(attackFrame(side, gp.pos)),
+    ).length;
+  return clamp(
+    X.base +
+      (skill(s, side, idx, 'crossing') - 60) * X.skill -
+      Math.max(0, inBoxOf(other(side)) - inBoxOf(side)) * X.crowd -
+      (onCandidate(s) ? DUEL_CONFIG.candidate.crossPressure * Math.min(1, tags.pressure) : 0),
+    X.min,
+    X.max,
+  );
+}
+
+/** A cut-back's delivery chance (→MATCH-11): the passer's 크로스. */
+function cutBackChance(s: GridState, side: 0 | 1, idx: number) {
+  const K = DUEL_CONFIG.cutBack;
+  return clamp(K.base + (skill(s, side, idx, 'crossing') - 60) * K.skill, K.min, K.max);
+}
+
+/**
+ * Where a failed cross of `idx` goes out of play, if it does: over the byline `cross.failOut` of
+ * the time, the keeper gathering `candidate.crossKeeper` of those first on the candidate model
+ * (T371). Undefined while it stays in play. One draw, and one more for the keeper.
+ */
+function crossOverhit(s: GridState, side: 0 | 1, idx: number, r: () => number) {
+  const keeper = s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp));
+  const out = r() < DUEL_CONFIG.cross.failOut;
+  if (out && keeper && onCandidate(s) && r() < DUEL_CONFIG.candidate.crossKeeper)
+    return { kind: 'held' as const, by: keeper.idx };
+  if (!out) return undefined;
+  const at = toEngine(side, [
+    PITCH.length,
+    clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width),
+  ]);
+  return { kind: 'out' as const, at, lastTouch: side, over: 'byline' as const };
+}
+
+/**
+ * A cross delivered to `attacker` where it comes down, at `to` (engine frame). Draws, in order:
+ * the keeper's claim; the aerial duel with his marker, the defender in the box nearest to `to`;
+ * controlled or headed. Having won it he brings it down at `to`, or heads it at goal: a header,
+ * whose draws the caller makes, under `SHOT_CONFIG.headerPressure` when a marker contested it.
+ */
+function aerialDelivery(
+  s: GridState,
+  side: 0 | 1,
+  attacker: GridPlayer,
+  tags: Pick<Tags, 'phase'>,
+  r: () => number,
+  to: [number, number],
+): Outcome | { kind: 'header'; pressure: number; aerial?: 0 | 1 } {
+  const X = DUEL_CONFIG.cross;
+  const foe = other(side);
+  const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
   const claimP = X.claim + (keeper ? (skill(s, foe, keeper.idx, 'handling') - 60) / 400 : 0);
   if (keeper && r() < claimP) return { kind: 'held', by: keeper.idx };
-  // His marker: the defender in the box nearest to him.
-  const at = attackFrame(side, attacker.pos);
+  const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
+  const at = attackFrame(side, to);
   const defender = defenders.reduce<{ gp: GridPlayer; d: number } | undefined>((best, gp) => {
     const o = attackFrame(side, gp.pos);
     const d = s.math.hypot(o[0] - at[0], o[1] - at[1]);
     return !best || d < best.d ? { gp, d } : best;
   }, undefined)?.gp;
   if (defender) {
-    const duel = resolveAerial(
-      s,
-      [side, attacker.idx],
-      [foe, defender.idx],
-      [88.5, attackFrame(side, attacker.pos)[1]],
-      r,
-    );
-    if (duel.kind === 'loose' && duel.winner[0] === foe) {
-      const at = toEngine(side, [88.5, attackFrame(side, attacker.pos)[1]]);
-      return { kind: 'loose', at, winner: duel.winner, aerial: foe };
-    }
+    const duel = resolveAerial(s, [side, attacker.idx], [foe, defender.idx], [88.5, at[1]], r);
+    if (duel.kind === 'loose' && duel.winner[0] === foe)
+      return { kind: 'loose', at: toEngine(side, [88.5, at[1]]), winner: duel.winner, aerial: foe };
   }
   const aerial = defender ? { aerial: side } : {};
   if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))
-    return {
-      kind: 'complete',
-      to: [attacker.pos[0], attacker.pos[1]],
-      receiver: attacker.idx,
-      ...aerial,
-    };
+    return { kind: 'complete', to, receiver: attacker.idx, ...aerial };
   // A header won against a marker is a header under pressure.
-  const pressure = { pressure: defender ? SHOT_CONFIG.headerPressure : 0 };
-  return {
-    ...resolveShot(s, side, attacker.idx, pressure, ctx, r, { header: true }),
-    header: true,
-    ...aerial,
-  };
+  return { kind: 'header', pressure: defender ? SHOT_CONFIG.headerPressure : 0, ...aerial };
 }
 
 /** The opponent nearest to `at` (the side's attack frame). */
@@ -690,11 +719,104 @@ export function resolveCutBack(
   target: number,
   r: () => number,
 ): Outcome {
-  const K = DUEL_CONFIG.cutBack;
   const to = attackFrame(side, s.players[side][target]!.pos);
-  const p = clamp(K.base + (skill(s, side, idx, 'crossing') - 60) * K.skill, K.min, K.max);
-  if (r() < p) return { kind: 'complete', to: toEngine(side, to), receiver: target };
+  if (r() < cutBackChance(s, side, idx))
+    return { kind: 'complete', to: toEngine(side, to), receiver: target };
   return { kind: 'intercepted', by: nearestDefender(s, side, to), at: toEngine(side, to) };
+}
+
+/**
+ * The finish a delivery leaves its runner (T444): his next action, a first-time shot struck where
+ * the ball met him at the zone. A header under the pressure its aerial duel left, else with the
+ * foot, with a cut-back's chance when the ball was pulled back or squared across the goal area.
+ */
+export type Finish = { header: true; pressure: number } | { header: false; cutBack: boolean };
+
+/** A delivery's outcome, and the finish it leaves its runner when it reaches him. */
+export interface DeliveryResult {
+  outcome: Outcome;
+  finish?: Finish;
+}
+
+/**
+ * An open-play cross or cut-back of `idx` on the candidate model (→MATCH-11, MATCH-31, MATCH-33,
+ * T444), played into the zone `aim` names (`deliveryPoint`), not to the feet of its runner
+ * `target`, as a through ball goes into the runner's path; kicked `kickAt` seconds from now.
+ * - Contested first (`reachOnPath`): the first opponent the ball meets who gets there cleanly
+ *   (`cleanReach`, as a pass is intercepted cleanly, T441) wins it at his reach point, past any
+ *   man who only just got there before him. He cuts it out `cross.intercept` of the time and heads
+ *   it clear the rest. A low ball is contested along its whole path into its zone. A lofted ball's
+ *   zone is the aerial duel's (MATCH-31): its path is read up to the zone's edge
+ *   (`delivery.freeRadius` m from its point), and the men in the zone meet it in the air.
+ * - Otherwise it is as good as its delivery (MATCH-11's 크로스): a cross's chance (`crossChance`)
+ *   or a cut-back's beats a man who only just gets there. A bad cross may run out over the byline
+ *   (`crossOverhit`). Otherwise a bad ball is deflected loose where the first man meets it, or with
+ *   nobody reaching it lost at the zone, in a 50/50 there (`looseBall`, MATCH-31).
+ * - A good lofted ball meets the keeper's claim and the aerial duel at the zone (`aerialDelivery`):
+ *   its runner brings it down there or heads it. A good low one reaches him at the zone for a
+ *   first-time shot with the foot. Either way it is a reception at the zone; a header or a shot is
+ *   his `Finish`, struck there once he has met it (`resolveFinish`).
+ */
+export function resolveDelivery(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  target: number,
+  aim: DeliveryAim,
+  tags: Tags,
+  r: () => number,
+  kickAt = 0,
+): DeliveryResult {
+  const from = s.players[side][idx]!.pos;
+  const zone = deliveryPoint(side, aim);
+  const high = lofted(aim.kind);
+  const radius = BOX_CONFIG.delivery.freeRadius;
+  const inZone = (gp: GridPlayer) =>
+    s.math.hypot(gp.pos[0] - zone[0], gp.pos[1] - zone[1]) <= radius;
+  const length = s.math.hypot(zone[0] - from[0], zone[1] - from[1]);
+  const k = high ? Math.max(0, 1 - radius / Math.max(1e-9, length)) : 1;
+  const end: [number, number] = [
+    from[0] + (zone[0] - from[0]) * k,
+    from[1] + (zone[1] - from[1]) * k,
+  ];
+  const { first, clean } = reachOnPath(s, side, from, end, kickAt, high ? inZone : undefined);
+  const won = (by: LaneReach): Outcome =>
+    r() < DUEL_CONFIG.cross.intercept
+      ? { kind: 'intercepted', by: by.gp.idx, at: by.at }
+      : { kind: 'loose', at: by.at, winner: [other(side), by.gp.idx] };
+  if (clean) return { outcome: won(clean) };
+  const cross = DELIVERY_ACTION[aim.kind] === 'cross';
+  if (r() >= (cross ? crossChance(s, side, idx, tags) : cutBackChance(s, side, idx))) {
+    const over = cross ? crossOverhit(s, side, idx, r) : undefined;
+    return { outcome: over ?? looseBall(s, first?.at ?? zone, r, [side, target]) };
+  }
+  const received: Outcome = { kind: 'complete', to: zone, receiver: target };
+  if (!high) return { outcome: received, finish: { header: false, cutBack: aim.kind !== 'near' } };
+  const aerial = aerialDelivery(s, side, s.players[side][target]!, tags, r, zone);
+  if (aerial.kind !== 'header') return { outcome: aerial };
+  return {
+    outcome: { ...received, ...(aerial.aerial === undefined ? {} : { aerial: aerial.aerial }) },
+    finish: { header: true, pressure: aerial.pressure },
+  };
+}
+
+/**
+ * A delivery's first-time finish by `(side, idx)`, struck where he stands having met the ball at
+ * its zone (T444): a header under its duel's pressure, else a shot with the foot under `tags`'
+ * pressure, a cut-back's chance when the ball was pulled back or squared.
+ */
+export function resolveFinish(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  finish: Finish,
+  tags: Pick<Tags, 'pressure'>,
+  ctx: ShotContext,
+  r: () => number,
+): ShotOutcome {
+  if (!finish.header) return resolveShot(s, side, idx, tags, ctx, r, { cutBack: finish.cutBack });
+  const pressure = { pressure: finish.pressure };
+  return { ...resolveShot(s, side, idx, pressure, ctx, r, { header: true }), header: true };
 }
 
 /** The share of his fouls a defender keeps where the carrier stands (attack frame): in his box, his third, elsewhere. */

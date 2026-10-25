@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-25T02:30:16.441Z",
-  "sourceCommit": "02d6355a0e90cda3aa6363d9d4f1d6c225de2378",
+  "snapshotAt": "2026-10-25T02:30:34.178Z",
+  "sourceCommit": "903440403248f9d770fd52a35e37ef6016ad4022",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -19,6 +19,32 @@
       "branch": "main",
       "remote": "origin",
       "at": "2026-10-25T00:38:42.828Z"
+    },
+    "runner": {
+      "id": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-25T02:30:32.382Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
     },
     "lastRun": {
       "id": "9ed81f4a-8ad0-4e62-a900-bc192e17e38d",
@@ -66,10 +92,10 @@
   },
   "summary": {
     "total": 23,
-    "completed": 14,
-    "remaining": 9,
+    "completed": 15,
+    "remaining": 8,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 8
   },
@@ -185,14 +211,6 @@
         "T445"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T444",
-      "title": "Crosses and cut-backs are delivered into the zones the runners attack",
-      "dep": [
-        "T443"
-      ],
-      "status": "approved"
     },
     {
       "id": "T445",
@@ -1803,8 +1821,8 @@
       "contributors": [
         "9ed81f4a-8ad0-4e62-a900-bc192e17e38d/worker-1"
       ],
-      "status": "approved",
-      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-25T00:38:43.103Z",
       "startCommit": "02d6355a0e90cda3aa6363d9d4f1d6c225de2378",
       "verifiedCommit": "07e715421b8606c176d8124e95853525860f288a",
@@ -11681,6 +11699,55 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1277,
+      "at": "2026-10-25T02:30:32.400Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-25T02:30:32.382Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1278,
+      "at": "2026-10-25T02:30:32.475Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "68434180-9531-4e3c-9d35-152266d150ed",
+      "taskId": "T444",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

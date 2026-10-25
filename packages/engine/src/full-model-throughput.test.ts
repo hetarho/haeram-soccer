@@ -100,11 +100,14 @@ const facts = (w: World) => ({
  * T443's box scene (the attack's runs to the near post, far post, spot and edge, the defence's
  * line drop and zone guards; calibration round 71, core, 600 observed matches: crosses with an
  * attacker at the near post as the ball arrives 7.2 → 31.4%, goals 3.52 → 3.72 a match) changed
- * the candidate rounds only; d1930531c407a468 before.
+ * the candidate rounds only; d1930531c407a468 before. T444's deliveries into the zones the runners
+ * attack (calibration round 72, core, 600 matches: crosses 22.6 → 14.2 a team with completion
+ * 23.4 → 14.5%, goals 3.73 → 4.18 a match) changed the candidate rounds only; 71af67206af43161
+ * before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: '71af67206af43161',
+  candidateRounds: 'b6a3fb4600202334',
 };
 
 describe('complete-result throughput (T285)', () => {

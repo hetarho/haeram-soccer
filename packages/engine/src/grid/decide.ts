@@ -5,6 +5,7 @@ import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
+import { deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
 import {
   attackFrame,
   cellBand,
@@ -44,6 +45,8 @@ export interface Decision {
   point?: [number, number];
   kind?: 'short' | 'long' | 'switch' | 'through';
   lineBreaking?: boolean;
+  /** Candidate model (T444, →MATCH-33): the zone a cross or cut-back is played into; `target` is its runner. */
+  delivery?: DeliveryAim;
 }
 
 /** Initial values (design §6); T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
@@ -229,11 +232,9 @@ export const DECISION_CONFIG = {
      * lost passes and added shots and goals, and took offsides and tackles outside.
      */
     patience: { seconds: 30, pass: 1, shot: 1, cross: 1 },
-    /**
-     * A pass into the box or a cut-back (T398, →MATCH-17): a teammate arriving on a box run scores
-     * this much more. Neutral at 0.
-     */
-    arriving: 0,
+    // T398's `arriving` (a teammate on a box run scoring more as a pass's or cut-back's target,
+    // neutral at 0) is gone: T444's deliveries draw their runner among the zones attacked
+    // (`BOX_CONFIG.delivery`, `chooseDelivery`).
   },
   /**
    * Candidate model only (→MATCH-8, T278): within `seconds` of a regain a listed side plays forward,
@@ -460,6 +461,13 @@ export function actionMix(
     mix.cutBack = 0;
   }
   if (tags.band >= 5) mix.clearance = 0;
+  // No blind delivery (candidate model, T444, →MATCH-33): he crosses or cuts back only into a zone
+  // a teammate attacks; with none for either, he carries, passes or shoots by the rest of the mix.
+  if (candidate && (mix.cross > 0 || mix.cutBack > 0)) {
+    const open = deliveries(s, side, idx);
+    if (!open.some((d) => DELIVERY_ACTION[d.kind] === 'cross')) mix.cross = 0;
+    if (!open.some((d) => DELIVERY_ACTION[d.kind] === 'cutBack')) mix.cutBack = 0;
+  }
   let total = 0;
   for (const a of ACTIONS) total += mix[a];
   if (total <= 0) return { ...mix, carry: 1 };
@@ -613,14 +621,6 @@ export function passOptions(
           (beyondLine ? past.through : 1)
         : 0;
     const combo = combination(s, gp, idx, c);
-    // A midfielder arriving in the box is found there (candidate model, T398).
-    const arriving =
-      candidate &&
-      (opts.crossOnly || inBox(p)) &&
-      gp.run?.kind === 'box' &&
-      gp.run.until > s.elapsed
-        ? DECISION_CONFIG.candidate.arriving
-        : 0;
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -637,7 +637,6 @@ export function passOptions(
       P.risk * (opts.riskScale ?? 1) * risk -
       Math.max(0, dist - P.tooFar) / 10 +
       through +
-      arriving +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'
@@ -710,7 +709,7 @@ function lineDepth(
 
 /** The probabilities `choosePass` draws from, aligned with the options; `math` is the match's. */
 export function passProbabilities(
-  options: readonly PassOption[],
+  options: readonly Pick<PassOption, 'score' | 'prior'>[],
   tau: number,
   math: MatchMath = HOST_MATH,
 ): number[] {
@@ -750,6 +749,25 @@ export function choosePass(
     r,
   );
   return { target: chosen.target, kind: chosen.kind, lineBreaking: chosen.lineBreaking };
+}
+
+/**
+ * The zone and runner a carrier who crosses or cuts back plays to (candidate model, T444,
+ * →MATCH-33): one draw among `deliveries` of that action by `exp(score / τ)` with his temperature,
+ * so a sharper head finds the free, suited runner more surely. Undefined with none to play to.
+ */
+export function chooseDelivery(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  tags: Tags,
+  action: 'cross' | 'cutBack',
+  r: () => number,
+): Delivery | undefined {
+  const options = deliveries(s, side, idx).filter((d) => DELIVERY_ACTION[d.kind] === action);
+  if (!options.length) return undefined;
+  const weighed = options.map((d) => ({ score: d.score, prior: 1 }));
+  return draw(options, passProbabilities(weighed, temperature(s, side, idx, tags), s.math), r);
 }
 
 /** Where a carry ends (engine frame): five headings scored by the xT they gain and the pressure they meet. */
@@ -884,7 +902,14 @@ export function decide(
     ACTIONS.map((a) => mix[a]),
     r,
   );
-  if (action === 'pass' || action === 'cross' || action === 'cutBack') {
+  if ((action === 'cross' || action === 'cutBack') && s.setup.model !== undefined) {
+    // Into a zone a teammate attacks (T444); the mix leaves no cross or cut-back without one.
+    const delivery = chooseDelivery(s, side, idx, tags, action, r);
+    if (delivery) {
+      const { zone, kind, ball } = delivery;
+      return { action, target: delivery.runner, delivery: { zone, kind, ball } };
+    }
+  } else if (action === 'pass' || action === 'cross' || action === 'cutBack') {
     const pass = choosePass(s, side, idx, tags, r, action === 'pass' ? {} : { crossOnly: true });
     if (pass)
       return { action, target: pass.target, kind: pass.kind, lineBreaking: pass.lineBreaking };

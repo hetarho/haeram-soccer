@@ -1,7 +1,7 @@
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
 import type { MatchRecord, Score } from '../../../contracts/src/types';
 import { choosePass, decide, DECISION_CONFIG, throughPoint, type Decision } from './decide';
-import { computeTags } from './tags';
+import { computeTags, type Tags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
   DUEL_CONFIG,
@@ -11,11 +11,14 @@ import {
   resolveClearance,
   resolveCross,
   resolveCutBack,
+  resolveDelivery,
+  resolveFinish,
   resolveHoldUp,
   resolvePass,
   resolveShot,
   resolveTakeOn,
   shotContext,
+  type Finish,
   type Outcome,
   type ShotOutcome,
 } from './resolve';
@@ -28,6 +31,7 @@ import {
   type Restart,
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
+import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
@@ -103,12 +107,21 @@ export const ADDED_CONFIG = {
  */
 export type PassLosses = Record<'intercepted' | 'deflected' | 'receiver' | 'out', [number, number]>;
 
+/**
+ * Candidate model (→MATCH-33, T444): each side's open-play deliveries into the box's zones by kind,
+ * attempted and reaching their runner (brought down or finished by him).
+ */
+export type DeliveryCounts = Record<
+  DeliveryKind,
+  { attempts: [number, number]; completed: [number, number] }
+>;
+
 export interface GridResult {
   record: MatchRecord;
   trace?: TraceEntry[];
   /** Match seconds played, dead time included. */
   elapsed: number;
-  diagnostics: GridDiagnostics & { passLosses?: PassLosses };
+  diagnostics: GridDiagnostics & { passLosses?: PassLosses; deliveries?: DeliveryCounts };
 }
 
 type Ref = [0 | 1, number];
@@ -162,8 +175,14 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The take-on that came immediately before the current action (an assist needs a pass, not a dribble). */
   let prevBeat: Ref | undefined;
   let holdBias = false;
+  /** A delivery's runner who met it at its zone, and the first-time finish his next action is (T444). */
+  let finishing: { side: 0 | 1; idx: number; finish: Finish } | undefined;
   const passLosses: PassLosses | undefined = candidate
     ? { intercepted: [0, 0], deflected: [0, 0], receiver: [0, 0], out: [0, 0] }
+    : undefined;
+  const none = (): DeliveryCounts[DeliveryKind] => ({ attempts: [0, 0], completed: [0, 0] });
+  const deliveries: DeliveryCounts | undefined = candidate
+    ? { near: none(), far: none(), back: none(), square: none() }
     : undefined;
   /** When the last corner or free kick was taken, and whether the current restart is a penalty. */
   let setPieceAt: number | undefined;
@@ -537,14 +556,11 @@ export function playGrid(setup: GridSetup): GridResult {
       return ahead('clearance', upfield, cellOf(c));
     }
     if (d.target === undefined) return undefined;
-    const mate = s.players[side][d.target]!.pos;
-    if (d.action === 'cross') return ahead('cross', [mate[0], mate[1]], cellOf(c));
-    if (d.action === 'cutBack') {
-      const aim = ahead('cutBack', [mate[0], mate[1]], cellOf(c));
-      // The cut-back's finish follows it.
-      return { ...aim, flight: aim.flight + flightSeconds(mate, goal, 'shot') };
-    }
+    // A cross or cut-back goes into its zone (T444); its runner's finish is an action of its own.
+    if (d.action === 'cross' || d.action === 'cutBack')
+      return d.delivery ? ahead(d.action, deliveryPoint(side, d.delivery), cellOf(c)) : undefined;
     if (d.action !== 'pass') return undefined;
+    const mate = s.players[side][d.target]!.pos;
     const lead = d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
     return ahead(d.kind ?? 'short', lead ?? [mate[0], mate[1]]);
   }
@@ -616,10 +632,47 @@ export function playGrid(setup: GridSetup): GridResult {
   }
 
   /**
+   * Candidate model (T444, →MATCH-31, MATCH-33): `idx`'s cross or cut-back into the zone `aim`
+   * names, to its runner `target`, kicked as a pass is (T441): at once after his in-stride carry,
+   * else after the wind-up its flight leaves of the action. One that reaches him is a reception at
+   * the zone, the action lasting until he gets there (`motionOf`); the header or shot it leaves him
+   * (`finishing`) is his next action, struck from there.
+   */
+  function deliver(
+    side: 0 | 1,
+    idx: number,
+    action: 'cross' | 'cutBack',
+    target: number,
+    aim: DeliveryAim,
+    tags: Tags,
+    jitter: number,
+    carry?: Carry,
+  ): { key: ActionKey; outcome: Outcome } {
+    const passer = s.players[side][idx]!;
+    const zone = deliveryPoint(side, aim);
+    const kickAt = carry
+      ? 0
+      : Math.max(0, secondsOf(action) * jitter - flightSeconds(passer.pos, zone, 'pass'));
+    const from = attackFrame(side, passer.pos);
+    const receiverAt = attackFrame(side, s.players[side][target]!.pos);
+    const { outcome: o, finish } = resolveDelivery(s, side, idx, target, aim, tags, r, kickAt);
+    const ok = o.kind === 'complete';
+    tally.passEvent(side, idx, { from, to: attackFrame(side, zone), receiverAt, ok, kind: action });
+    const count = deliveries![aim.kind];
+    count.attempts[side]++;
+    if (ok) count.completed[side]++;
+    else losePass(s, side, idx, target);
+    apply(side, idx, o);
+    if (finish) finishing = { side, idx: target, finish };
+    return { key: action, outcome: o };
+  }
+
+  /**
    * One decision by the player on the ball; returns the timing key of what was played and its
    * outcome. `jitter` is the action's drawn time factor and `carry` his in-stride carry before it
    * (candidate model): after a carry he kicks at once, else after the wind-up his flight leaves of
-   * the action, which is when the opponents' reach of a pass is read from (→MATCH-31, T441).
+   * the action, which is when the opponents' reach of a pass is read from (→MATCH-31, T441). A shot
+   * with a `finish` is a delivery's first-time finish (T444).
    */
   function play(
     side: 0 | 1,
@@ -627,10 +680,13 @@ export function playGrid(setup: GridSetup): GridResult {
     d: Decision,
     jitter = 0,
     carry?: Carry,
+    finish?: Finish,
   ): { key: ActionKey; outcome: Outcome | 'offside' } {
     // His first touch has been decided (T397).
     s.received = undefined;
     const tags = computeTags(s, side, idx);
+    if ((d.action === 'cross' || d.action === 'cutBack') && d.delivery && d.target !== undefined)
+      return deliver(side, idx, d.action, d.target, d.delivery, tags, jitter, carry);
     switch (d.action) {
       case 'pass': {
         if (d.target === undefined) break;
@@ -768,7 +824,9 @@ export function playGrid(setup: GridSetup): GridResult {
         return { key: 'takeOn', outcome: o };
       }
       case 'shot': {
-        const o = resolveShot(s, side, idx, tags, ctx, r);
+        const o = finish
+          ? resolveFinish(s, side, idx, finish, tags, ctx, r)
+          : resolveShot(s, side, idx, tags, ctx, r);
         apply(side, idx, o);
         return { key: 'shot', outcome: o };
       }
@@ -814,6 +872,8 @@ export function playGrid(setup: GridSetup): GridResult {
       if (pending) {
         prevBeat = undefined;
         justBeat = undefined;
+        // A dead ball (an injury's drop ball, the whistle) ends a delivery's unplayed finish.
+        finishing = undefined;
         const rs = pending;
         pending = undefined;
         // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
@@ -919,8 +979,13 @@ export function playGrid(setup: GridSetup): GridResult {
         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const tags = computeTags(s, owner[0], owner[1]);
         tally.material?.touch(owner[0], owner[1], from, tags.phase);
+        // A delivery's runner who has met it at its zone finishes it first time (T444).
+        const finish =
+          finishing?.side === owner[0] && finishing.idx === owner[1] ? finishing.finish : undefined;
+        finishing = undefined;
         let d: Decision;
-        if (holdBias) {
+        if (finish) d = { action: 'shot' };
+        else if (holdBias) {
           holdBias = false;
           const pass = choosePass(s, owner[0], owner[1], tags, r, {
             backBias: DECISION_CONFIG.pass.backBias,
@@ -939,14 +1004,14 @@ export function playGrid(setup: GridSetup): GridResult {
         tracer.hold();
         // The action's time is drawn before it is played, so his in-stride carry can fill it; the
         // match runs through the carry and he plays the ball, and it is resolved, where it took him
-        // (→MATCH-12 r27).
-        const jitter = candidate ? 0.85 + 0.3 * r() : 0;
-        const carry = candidate ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once.
+        const jitter = candidate && !finish ? 0.85 + 0.3 * r() : 0;
+        const carry = candidate && !finish ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
-        const played = play(owner[0], owner[1], d, jitter, carry);
+        const played = play(owner[0], owner[1], d, jitter, carry, finish);
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
@@ -1060,6 +1125,7 @@ export function playGrid(setup: GridSetup): GridResult {
       ...tally.diagnostics,
       freshness: [sideFreshness(s, 0), sideFreshness(s, 1)],
       ...(passLosses ? { passLosses } : {}),
+      ...(deliveries ? { deliveries } : {}),
     },
   };
 }
