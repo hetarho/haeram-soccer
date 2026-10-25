@@ -10,7 +10,7 @@
  *   pnpm exec tsx scripts/grid-bands.ts --quick     150 matches
  *   options: --matches N, --year Y (default 2024), --candidate (MATCH_MODEL_REVISION, explicitly)
  *
- * Calibration report: the candidate model (requested explicitly; the release switch stays off)
+ * Calibration report: the candidate model (requested explicitly, whatever the release switch says)
  * across CORPUS_CONFIG's core, tactic-pairing, gap, tier, era and knockout conditions, through the
  * shared target, outcome-curve and invariant reports and MATCH-29's tactic-pairing verdicts over
  * the tactics family, written with its source fingerprint.

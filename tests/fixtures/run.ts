@@ -13,6 +13,7 @@ import {
   clubOf,
 } from '../../packages/engine/src/index';
 import { currency, priceIndex } from '../../packages/catalogs/src/index';
+import { DISABLED_RELEASE } from './worlds';
 export interface FixtureDefinition {
   name: string;
   input: Founding;
@@ -25,8 +26,10 @@ export interface FixtureDefinition {
   expected?: unknown;
 }
 export function runFixture(definition: FixtureDefinition) {
-  const w = createWorld(definition.input);
-  // Freeze the portable v1 scenarios to their original authority, independently of new-game defaults.
+  // Freeze the portable v1 scenarios to their original authority, independently of new-game
+  // defaults: the pre-feature match model they were recorded on (the released full model of new
+  // careers, T286, is not part of portable v1) and, unless asked, the original settings.
+  const w = createWorld(definition.input, DISABLED_RELEASE);
   if (!definition.currentRules) w.settings = legacySettings(2);
   if (definition.year) {
     // A synthetic start epoch establishes identities there, rather than changing retained births.

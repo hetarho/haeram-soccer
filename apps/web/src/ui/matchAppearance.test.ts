@@ -183,13 +183,30 @@ describe('the actual keeper in each sample (→KIT-8)', () => {
     );
     const keepers = keepersBySample(samples, playback.squads);
     expect(keepers).toHaveLength(samples.length);
+    // On the released model this 1950 match (no substitutes) loses the away keeper to an injury
+    // at 85′: until the stoppage puts an outfield player in goal (`coverGoal`), nobody keeps it,
+    // and the sample shows no keeper rather than an invented one.
+    const keeperOut = (playback.record.incidents ?? []).filter(
+      (x) =>
+        x.kind !== 'yellow' &&
+        playback.squads[x.side]!.some((p) => p.id === x.player && p.position === 'GK'),
+    );
+    let empty = 0;
     samples.forEach((sample, i) =>
       ([0, 1] as const).forEach((side) => {
         const players = sample.players![side];
         const engineKeeper = players.find((m) => m.state === 'keeper')?.id;
+        if (keepers[i]![side] === undefined) {
+          empty++;
+          expect(engineKeeper).toBeUndefined();
+          const minute = Number(playback.frames[sample.frame]!.label.match(/\d+/)![0]);
+          expect(keeperOut.some((x) => x.side === side && x.minute <= minute + 1)).toBe(true);
+          return;
+        }
         expect(players.map((m) => m.id)).toContain(keepers[i]![side]);
         if (engineKeeper) expect(keepers[i]![side]).toBe(engineKeeper);
       }),
     );
+    expect(empty).toBeLessThanOrEqual(keeperOut.length * 3);
   });
 });

@@ -18,7 +18,9 @@ import {
   managerCandidates,
   managerHireCost,
   managerPayoff,
+  MATCH_MODEL_RELEASE,
   sponsorSlots,
+  trackingBoundary,
 } from '../packages/engine/src/index';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
@@ -43,6 +45,13 @@ import {
 } from '../tests/fixtures/identity-workload';
 import { payloadBytes } from '../apps/web/src/adapters/compression';
 import { pack } from '../apps/web/src/adapters/packing';
+import {
+  ACTIVATION_FOUNDING,
+  assertCompleteModel,
+  modelEvidence,
+  writerActivation,
+} from '../tests/fixtures/full-model-workload';
+import { DISABLED_RELEASE } from '../tests/fixtures/worlds';
 
 /**
  * The storage benchmark in phases (T308): `pnpm run benchmark` runs every phase in one process,
@@ -51,9 +60,14 @@ import { pack } from '../apps/web/src/adapters/packing';
  * phase measures under `.tmp/benchmark/<source fingerprint>/`, so phases of different sources
  * never mix, and `report` assembles them and fails unless every phase ran on this source.
  * `--smoke` runs two seasons a profile into a directory of its own and writes no report.
+ * T286: the century profiles found with the release switch as it stands (`createWorld`'s default),
+ * so a released switch tracks them on the full model from their first day, and `activation` loads
+ * a supported career founded before the release through the worker host's writer path, which
+ * activates it mid-season (→SAVE-23).
  */
 const PHASES = [
   'retained',
+  'activation',
   'baseline-1',
   'baseline-2',
   'baseline-checkpoints',
@@ -81,6 +95,10 @@ const HALF = SEASONS / 2;
 const MID_SEASON = HALF - 1;
 const ERA_END = smoke ? FOUNDING_YEAR + 2 : 2025;
 const ERA_HALF = smoke ? FOUNDING_YEAR + 1 : 1988;
+/** Whole seasons the activation profile plays on the pre-feature model before its writer load. */
+const PRE_RELEASE_SEASONS = smoke ? 1 : 10;
+/** Seasons it then closes on the full model after the activated season. */
+const ACTIVATED_SEASONS = smoke ? 1 : 2;
 
 let measurements: Record<string, unknown>[] = [];
 /**
@@ -125,6 +143,7 @@ function sourceFingerprint() {
       'patches',
       'tests/fixtures/retained-workload.ts',
       'tests/fixtures/identity-workload.ts',
+      'tests/fixtures/full-model-workload.ts',
       'package.json',
       'pnpm-lock.yaml',
       'pnpm-workspace.yaml',
@@ -245,6 +264,27 @@ async function measure(w: World, label: string) {
 }
 function retainedFacts(w: World) {
   return { history: [...w.history], ownMatches: [...w.ownMatches], events: [...w.events] };
+}
+/**
+ * `w` still holds `before`'s facts, compared by content, for worlds read back from a checkpoint;
+ * own records apart from their post-match material, which a season close reduces (→MATCH-5).
+ * Across season closes the event log is only required kept (its entries' later state may move).
+ */
+function assertRetainedContent(
+  w: World,
+  before: ReturnType<typeof retainedFacts>,
+  keys: readonly ('history' | 'ownMatches' | 'events')[] = ['history', 'ownMatches', 'events'],
+) {
+  if (w.events.length < before.events.length) throw new Error('History retention failed: events');
+  const settled = (key: 'history' | 'ownMatches' | 'events', facts: World[typeof key]) =>
+    canonical(
+      key === 'ownMatches'
+        ? (facts as World['ownMatches']).map((m) => ({ ...m, material: undefined }))
+        : facts,
+    );
+  for (const key of keys)
+    if (settled(key, w[key].slice(0, before[key].length)) !== settled(key, before[key]))
+      throw new Error('History retention failed: ' + key);
 }
 function assertRetained(w: World, before: ReturnType<typeof retainedFacts>) {
   for (const key of ['history', 'ownMatches', 'events'] as const)
@@ -620,9 +660,17 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   };
 }
 
+type ModelEvidence = ReturnType<typeof modelEvidence>;
+/**
+ * A century checkpoint's full-model data: complete from the founding when the switch is released,
+ * otherwise read as it is (the pre-feature path).
+ */
+const centuryModel = (w: World) =>
+  MATCH_MODEL_RELEASE.enabled ? assertCompleteModel(w, 'founding') : modelEvidence(w);
 interface CheckpointData {
   centuryCheckpointSha256?: string;
   manager: { century: ManagerEvidence; round23: ManagerEvidence };
+  model: { century: ModelEvidence; round23: ModelEvidence };
 }
 /**
  * A profile's kept worlds measured and resumed: the mid-career active round and the round after
@@ -641,6 +689,7 @@ async function checkpoints(variant: Variant): Promise<CheckpointData> {
   const century = loadWorld(`${variant}-century`);
   const { raw, restored } = await measure(century, variant + ' century');
   const atCentury = await managerEvidence(variant, century, restored);
+  const modelAtCentury = centuryModel(restored);
   let centuryCheckpointSha256: string | undefined;
   if (variant === 'baseline') {
     writeFileSync('.tmp/release-century.haeram-save.json', raw);
@@ -649,6 +698,7 @@ async function checkpoints(variant: Variant): Promise<CheckpointData> {
   const active = loadWorld(`${variant}-round23`);
   const { restored: back } = await measure(active, checkpointLabel(variant));
   const atRound = await managerEvidence(variant, active, back);
+  const modelAtRound = centuryModel(back);
   if (played.identity) assertPendingChoice(back, played.identity.choice);
   const continued = structuredClone(active);
   simulateSeason(continued);
@@ -663,6 +713,77 @@ async function checkpoints(variant: Variant): Promise<CheckpointData> {
   return {
     ...(centuryCheckpointSha256 ? { centuryCheckpointSha256 } : {}),
     manager: { century: atCentury, round23: atRound },
+    model: { century: modelAtCentury, round23: modelAtRound },
+  };
+}
+
+/** The writer tab's load of `raw` through the worker host, as the client sends it (→SAVE-3/23). */
+async function writerLoad(raw: string) {
+  const host = new Host();
+  const reply = await host.handle({
+    protocol: 1,
+    session: 'benchmark',
+    requestId: 'activation-load',
+    expectedRevision: -1,
+    generation: 2,
+    parentGeneration: 1,
+    body: { type: 'inspect', raw, activate: true, upgrade: true },
+  });
+  if (!reply.ok || !host.world) throw new Error('Writer load failed: ' + reply.error);
+  return { world: host.world, raw: reply.raw };
+}
+/**
+ * T286: a supported career founded before the release plays `PRE_RELEASE_SEASONS` seasons and half
+ * of the next on the pre-feature model, is saved, and is loaded by the worker host's writer path
+ * with the switch as it stands. Released, that load records the model mid-season, one revision on,
+ * exactly as `writerActivation` predicts, rewriting nothing settled. The activated checkpoint
+ * round-trips; the season resumed from it settles as the uninterrupted one does; and after
+ * `ACTIVATED_SEASONS` more seasons the career still fits its limits with complete aggregates and
+ * every newer own record complete, the pre-feature ones as they were.
+ */
+async function activation() {
+  const legacy = createWorld(ACTIVATION_FOUNDING, DISABLED_RELEASE);
+  for (let n = 0; n < PRE_RELEASE_SEASONS; n++) simulateSeason(legacy);
+  for (let round = 0; round < 23; round++) advanceRound(legacy, undefined, false);
+  const before = retainedFacts(legacy);
+  const { raw: legacyRaw } = await measure(legacy, 'activation pre-release career mid-season');
+  if (!MATCH_MODEL_RELEASE.enabled) return { released: false, legacy: modelEvidence(legacy) };
+  const t = performance.now();
+  const loaded = await writerLoad(legacyRaw);
+  const loadMs = Math.round(performance.now() - t);
+  const activated = loaded.world;
+  if (canonical(activated) !== canonical(writerActivation(legacy)))
+    throw new Error('The writer load differs from writerActivation');
+  if (!loaded.raw || canonical((await decode(loaded.raw)).world) !== canonical(activated))
+    throw new Error('The writer load did not write the activated career');
+  assertRetainedContent(activated, before);
+  if (
+    activated.revision !== legacy.revision + 1 ||
+    canonical(activated.matchModel!.trackedFrom) !== canonical(trackingBoundary(legacy))
+  )
+    throw new Error('Activation did not record the model at the next unplayed day');
+  const atActivation = assertCompleteModel(activated, 'activation', legacy.ownMatches.length);
+  const { restored } = await measure(activated, 'activation writer load mid-season');
+  const continued = structuredClone(activated);
+  simulateSeason(continued);
+  simulateSeason(restored);
+  if (loadedCanonical(continued) !== loadedCanonical(restored))
+    throw new Error('Season resumed from the activated checkpoint differs from uninterrupted');
+  for (let n = 0; n < ACTIVATED_SEASONS; n++) simulateSeason(continued);
+  for (let round = 0; round < 23; round++) advanceRound(continued, undefined, false);
+  assertRetainedContent(continued, before, ['history', 'ownMatches']);
+  const later = assertCompleteModel(continued, 'activation', legacy.ownMatches.length);
+  await measure(continued, `activation ${ACTIVATED_SEASONS} seasons later round 23`);
+  return {
+    released: true,
+    founding: ACTIVATION_FOUNDING,
+    preReleaseSeasons: PRE_RELEASE_SEASONS,
+    activatedSeasons: ACTIVATED_SEASONS,
+    writerLoadMs: loadMs,
+    legacyRevision: legacy.revision,
+    activated: atActivation,
+    later,
+    resumedSeasonReplay: true,
   };
 }
 
@@ -726,6 +847,8 @@ async function run(phase: Phase): Promise<unknown> {
   switch (phase) {
     case 'retained':
       return retained();
+    case 'activation':
+      return activation();
     case 'baseline-1':
       return firstHalf('baseline');
     case 'baseline-2':
@@ -766,6 +889,7 @@ function report() {
     { started: PhaseResult; played: PhaseResult<ProfileData>; checked: PhaseResult<CheckpointData> }
   >;
   const era = results['era-2'].data as ReturnType<typeof eraProbe>;
+  const activated = results.activation.data as Awaited<ReturnType<typeof activation>>;
   const worstPhase = all.reduce((a, b) =>
     b.worst.checkpointBytes > a.worst.checkpointBytes ? b : a,
   );
@@ -800,6 +924,7 @@ function report() {
       ownedMatchesPerSecond: Math.round((played.data.ownedMatches * 100000) / elapsedMs) / 100,
       allRetainedFactsPreserved: true,
       managerHistory: checked.data.manager,
+      matchModel: checked.data.model,
     };
   });
   const active = profiles['active-management'].played.data.identity!;
@@ -818,10 +943,12 @@ function report() {
   const centuryCheckpointSha256 = profiles.baseline.checked.data.centuryCheckpointSha256!;
   const report = {
     phase:
-      'T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile; T308 adds own-manager tracking from the founding (container 4), a same-day appointment, replacement and reappointment four times in the active-management century and a settled round after the century in the baseline too',
-    task: 'T308',
+      'T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile; T308 adds own-manager tracking from the founding (container 4), a same-day appointment, replacement and reappointment four times in the active-management century and a settled round after the century in the baseline too; T286 founds both centuries with the released full match model (complete records and NPC aggregates from the first day) and adds a supported pre-release career activated mid-season by the worker host writer load',
+    task: 'T286',
     feature:
-      'Own-manager tenures and attributed results (HIST-18/19, SAVE-24) carried and read on the century profiles',
+      'The released continuous-match and complete aggregate-result model (MATCH_MODEL_RELEASE, SAVE-23, HIST-17) on the century profiles, beside own-manager tenures (HIST-18/19, SAVE-24) and club identities (KIT)',
+    matchModelRelease: { ...MATCH_MODEL_RELEASE },
+    activation: activated,
     synthetic: true,
     date: new Date().toISOString(),
     node: process.version,
@@ -863,6 +990,7 @@ function report() {
     losslessRoundtrip: true,
     resumedSeasonReplay: true,
     managerHistoryRoundTrip: true,
+    completeModelFromFounding: MATCH_MODEL_RELEASE.enabled,
     passed: true,
     scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (${identityEvidence.edits} edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${FOUNDING_YEAR}–${ERA_END} era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
   };
@@ -871,7 +999,11 @@ function report() {
     return {};
   }
   mkdirSync('docs/benchmarks', { recursive: true });
-  writeFileSync('docs/benchmarks/manager-history.json', JSON.stringify(report, null, 2) + '\n');
+  // This feature's report; T308's manager-history.json stays as T308 recorded it.
+  writeFileSync(
+    'docs/benchmarks/T286-full-model-storage.json',
+    JSON.stringify(report, null, 2) + '\n',
+  );
   // The one-process run (the Benchmark workflow) also refreshes the reports first-play.mjs reads;
   // a phased run writes only this feature's report.
   if (!named) {

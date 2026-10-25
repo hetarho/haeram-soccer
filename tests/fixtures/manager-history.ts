@@ -23,10 +23,12 @@ import {
   recordManagerTenureChange,
 } from '../../packages/engine/src/manager-history';
 import {
+  activateMatchModel,
   advanceRound,
   createWorld,
   ensureManagerHistory,
   managerCandidates,
+  MATCH_MODEL_RELEASE,
   operate,
   simulateSeason,
 } from '../../packages/engine/src/index';
@@ -36,7 +38,7 @@ import {
   type ManagerLegacyView,
   type ManagerTenureView,
 } from '../../apps/web/src/ui/managerHistoryView';
-import { withoutManagerHistory } from './worlds';
+import { DISABLED_RELEASE, withoutManagerHistory } from './worlds';
 
 /**
  * Marked synthetic manager-history fixtures (T305; →ARCH-21, HIST-18/19, WEB-92): small
@@ -437,17 +439,21 @@ const legacyViews = (views: ReturnType<typeof managerRowView>[]) =>
   views.filter((view): view is ManagerLegacyView => view.kind === 'legacy');
 
 /**
- * A supported career saved before manager history: one season with a mid-season appointment and
- * three rounds into the next, its facts and links stripped as an older writer left it.
+ * A supported career saved before manager history and the full match model's release: one season
+ * on the pre-feature model with a mid-season appointment and three rounds into the next, its facts
+ * and links stripped as an older writer left it.
  */
 export async function managerActivationCareer(): Promise<ManagerActivationCareer> {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Activation Athletic',
-    color: '#4a3b2a',
-    seed: 'manager-activation',
-    level: 'easy',
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Activation Athletic',
+      color: '#4a3b2a',
+      seed: 'manager-activation',
+      level: 'easy',
+    },
+    DISABLED_RELEASE,
+  );
   w.cash = '999999999999';
   // Every business decision delegated, so the seeded seasons leave no owner answer pending.
   const responsibilities = w.settings!.responsibilities;
@@ -460,8 +466,10 @@ export async function managerActivationCareer(): Promise<ManagerActivationCareer
   for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
   const world = withoutManagerHistory(w);
   const stored = (await managerHistoryRead(world)).views;
-  // The writer's activation (Host.adoptManagerHistory): the next revision, tracked from today.
+  // The writer's activation (Host.adoptModel, then adoptManagerHistory): the next revision, the
+  // released model and manager tracking both from today.
   const activated = { ...structuredClone(world), revision: world.revision + 1 };
+  activateMatchModel(activated, MATCH_MODEL_RELEASE);
   ensureManagerHistory(activated);
   const { views } = await managerHistoryRead(activated);
   return {

@@ -2,17 +2,23 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { withoutManagerHistory } from '../fixtures/worlds';
+import { DISABLED_RELEASE, withoutManagerHistory } from '../fixtures/worlds';
 
-/** A career of the current rules, one round in. */
+/**
+ * A career of the current rules, one round in, founded before the full match model's release, so
+ * the earlier-rules copies below carry no model data those rules never wrote (→SAVE-23).
+ */
 async function current() {
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Legacy Century',
-    color: '#385577',
-    seed: 'legacy-browser-upgrade',
-    level: 'easy' as const,
-  });
+  const world = createWorld(
+    {
+      country: 'ENG',
+      name: 'Legacy Century',
+      color: '#385577',
+      seed: 'legacy-browser-upgrade',
+      level: 'easy' as const,
+    },
+    DISABLED_RELEASE,
+  );
   advanceRound(world, undefined, false);
   return { world, raw: await encode(world, 1, 0) };
 }

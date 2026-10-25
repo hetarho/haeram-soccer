@@ -1,24 +1,28 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { advanceRound, createWorld } from '../../packages/engine/src/index';
-import { withCandidateModel } from '../fixtures/worlds';
+import { DISABLED_RELEASE, withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption, selectOptions } from './select';
 
 /**
  * Complete statistics in the existing league lenses and the player comparison (→WEB-89, HIST-17).
- * Marked synthetic careers: a fresh founding on the candidate match model (the release switch stays
- * off; `withCandidateModel` stands in for the activation writer), every result real football.
+ * Marked synthetic careers founded before the full model's release, `before` rounds on the
+ * pre-feature model, then on the released model (`withCandidateModel`: the activation the writer
+ * applies) from that boundary — from the first day when `before` is 0 — every result real football.
  */
 function career(seed: string, before: number, after: number): World {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Full Stats',
-    color: '#2a4d6a',
-    seed,
-    level: 'normal',
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Synthetic Full Stats',
+      color: '#2a4d6a',
+      seed,
+      level: 'normal',
+    },
+    DISABLED_RELEASE,
+  );
   for (let n = 0; n < before; n++) advanceRound(w, undefined, false);
   withCandidateModel(w);
   for (let n = 0; n < after; n++) advanceRound(w, undefined, false);

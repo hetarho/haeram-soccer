@@ -24,13 +24,15 @@ export interface MatchModelRelease {
   readonly enabled: boolean;
 }
 /**
- * The internal release switch: off until the combined accuracy, compatibility, storage and speed
- * gates pass (→MATCH-28, ARCH-31). While off no world activates the candidate; tests and
- * measurements pass an enabled release explicitly, and no player control or timing ever selects it.
+ * The internal release switch, on since T286 measured the combined model's throughput, capacity
+ * and continuity gates passing (→ARCH-31, SAVE-23; its accuracy is reported beside it, →MATCH-28):
+ * a new career is tracked from its founding and a supported rules-4.0.0 career activates at its
+ * next writer load. Tests and measurements of the pre-feature path pass a disabled release
+ * explicitly, and no player control or timing ever selects it.
  */
 export const MATCH_MODEL_RELEASE: MatchModelRelease = {
   revision: MATCH_MODEL_REVISION,
-  enabled: false,
+  enabled: true,
 };
 
 /**

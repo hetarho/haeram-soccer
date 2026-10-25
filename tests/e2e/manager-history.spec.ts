@@ -218,6 +218,8 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
   expect(activated.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
   const facts = activated.world.managerHistory!;
   expect(facts.coverage).toBe('activation');
+  // The same writer load records the released full model there too (→SAVE-23).
+  expect(activated.world.matchModel?.coverage).toBe('activation');
   expect(facts.tenures).toHaveLength(1);
   expect(facts.tenures[0]!.knownSince).toBe(career.world.manager.since);
   expect(facts.tenures[0]).not.toHaveProperty('appointed');

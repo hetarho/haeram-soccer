@@ -5,24 +5,32 @@
  * observation, record settlement, complete seasons of both century workload profiles and the
  * checkpoint codec separately, then plays a pilot sample of the core condition on both paths through
  * the registry's coverage, target, invariant and equivalence reports (scripts/lib/match-parity.ts).
- * It reads the public engine API only: it never changes the production dispatch or a candidate
- * release switch, and it measures a candidate aggregate path only when the engine exports one.
+ * It reads the public engine API only and never reads or writes the release switch: every world is
+ * founded with an explicit release — the isolated fixtures and the pilot on the pre-feature path
+ * careers founded before the release keep, the century seasons on the full model with
+ * `--model candidate` — and it measures a candidate aggregate path only when the engine exports one.
+ * A candidate run reports ARCH-31's absolute release gates (→releaseGates); `--release` marks the
+ * full 100-season run on the reference machine whose quiet result is release evidence (T286).
  *
  *   pnpm exec tsx scripts/match-model-baseline.ts --smoke
  *   pnpm exec tsx scripts/match-model-baseline.ts --fixtures 200 --seasons 100 --out FILE
  *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 10 \
  *     --paired-with BASELINE.json --out FILE
+ *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --release \
+ *     --paired-with BASELINE.json --out docs/benchmarks/t286/candidate-100.json
  *   options: --out FILE (default docs/benchmarks/match-model-baseline.json), --fixtures N (timed
  *            fixtures per path), --seasons N (per century profile), --pilot N (pilot matches per path),
  *            --model candidate (T285: the century seasons, own fixtures and settlement run on worlds
  *            with the candidate model and its complete statistics; the codec is measured at the
  *            last season's final round, while the season's ledger is full), --paired-with FILE (a
- *            baseline report of this runner: ARCH-31's paired gates against it, →comparePerformance)
+ *            baseline report of this runner: the paired ratios against it, context only,
+ *            →comparePerformance), --release (a release run: candidate model, full mode, the
+ *            release season count and the default fixtures; not provisional, →releaseGates)
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { arch, cpus, platform, totalmem } from 'node:os';
+import { arch, cpus, loadavg, platform, totalmem } from 'node:os';
 import { dirname } from 'node:path';
 import type {
   Fixture,
@@ -68,7 +76,7 @@ import { buildAggregateInput } from '../packages/engine/src/aggregate/input';
 import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
 import { aggregateStreams } from '../packages/engine/src/aggregate/team';
 import { eraRules } from '../packages/engine/src/grid/setup';
-import { withCandidateModel } from '../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE, withCandidateModel } from '../tests/fixtures/worlds';
 import {
   buildParityReport,
   buildPerformanceReport,
@@ -83,6 +91,7 @@ import {
   METRIC_REGISTRY,
   PARITY_CONFIG,
   PERFORMANCE_CONFIG,
+  releaseGates,
   TARGET_BANDS,
   type MatchSample,
   type PerformanceComponent,
@@ -111,7 +120,8 @@ const pairedWith = args.includes('--paired-with')
   ? args[args.indexOf('--paired-with') + 1]!
   : undefined;
 if (pairedWith && !candidateModel)
-  throw new Error('--paired-with gates a candidate run: add --model candidate');
+  throw new Error('--paired-with pairs a candidate run: add --model candidate');
+const releaseRun = args.includes('--release');
 const settings = {
   mode: smoke ? 'smoke' : 'full',
   fixtures: count(
@@ -131,6 +141,16 @@ const settings = {
     smoke ? CORPUS_CONFIG.smokePerCondition : calibrationSize(CORPUS_CONFIG.conditions[0]!),
   ),
 };
+if (
+  releaseRun &&
+  (!candidateModel ||
+    smoke ||
+    settings.seasons !== PERFORMANCE_CONFIG.seasons.release ||
+    settings.fixtures !== PERFORMANCE_CONFIG.fixtures.default)
+)
+  throw new Error(
+    `--release measures the candidate model in full mode over ${PERFORMANCE_CONFIG.seasons.release} seasons and ${PERFORMANCE_CONFIG.fixtures.default} fixtures`,
+  );
 
 // ---- Provenance -----------------------------------------------------------------------------------
 /** What the timings depend on: the engine, contracts, catalogs, codec adapters, tooling and lockfile. */
@@ -215,10 +235,13 @@ async function timedAsync<T>(work: () => Promise<T>): Promise<[T, number]> {
   return [value, performance.now() - start];
 }
 const memory = { peakHeapBytes: 0, peakRssBytes: 0 };
+/** The 1-minute load average at each memory sample: whether the run had the machine to itself. */
+const loads: number[] = [];
 function sampleMemory() {
   const m = process.memoryUsage();
   memory.peakHeapBytes = Math.max(memory.peakHeapBytes, m.heapUsed);
   memory.peakRssBytes = Math.max(memory.peakRssBytes, m.rss);
+  loads.push(loadavg()[0]!);
 }
 /** Exact checks; null when the run had nothing to compare. */
 const checks: {
@@ -261,13 +284,18 @@ const started = performance.now();
 console.error(`match-model baseline (${settings.mode}): source ${source.sha256.slice(0, 12)}`);
 
 // ---- Isolated fixtures and settlement on the century baseline world --------------------------------
-const world = createWorld({
-  country: 'ENG',
-  name: 'Century Athletic',
-  color: '#284e35',
-  seed: PERFORMANCE_CONFIG.profiles.baseline,
-  level: 'easy',
-});
+// The pre-feature path careers founded before the release keep; the candidate path is measured
+// on the same world through `simulateAggregate` and on a copy carrying the model.
+const world = createWorld(
+  {
+    country: 'ENG',
+    name: 'Century Athletic',
+    color: '#284e35',
+    seed: PERFORMANCE_CONFIG.profiles.baseline,
+    level: 'easy',
+  },
+  DISABLED_RELEASE,
+);
 const ordered = [...world.fixtures].sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1));
 const isOwn = (f: Fixture) => f.home === world.playerClub || f.away === world.playerClub;
 const ownFixtures = ordered.filter(isOwn);
@@ -453,15 +481,18 @@ function manage(w: World, season: number) {
 }
 const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
-  const founded = createWorld({
-    country: 'ENG',
-    name: profile === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
-    color: '#284e35',
-    seed,
-    level: 'easy',
-  });
+  const founded = createWorld(
+    {
+      country: 'ENG',
+      name: profile === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
+      color: '#284e35',
+      seed,
+      level: 'easy',
+    },
+    candidateModel ? ENABLED_RELEASE : DISABLED_RELEASE,
+  );
   // The candidate model from founding: complete statistics tracked from the first day.
-  const w = candidateModel ? withCandidateModel(founded) : founded;
+  const w = candidateModel ? withCandidateModel(founded, 'founding') : founded;
   let raw: string | undefined;
   for (let season = 0; season < settings.seasons; season++) {
     const last = season === settings.seasons - 1;
@@ -523,7 +554,7 @@ const params = core.params as {
 if (params.pairing !== 'world-country-roster' || params.tactics !== 'club')
   throw new Error(`the runner builds only world-country-roster pairs playing their clubs' tactics`);
 const pairs = params.worldSeeds.flatMap((seed) => {
-  const w = createWorld({ ...params.world, seed });
+  const w = createWorld({ ...params.world, seed }, DISABLED_RELEASE);
   return params.countries.flatMap((country) => {
     const clubs = w.clubs
       .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)
@@ -585,8 +616,18 @@ const pilotSizing = conditionValidationSize(pilotNeeds(reference, core));
 if (sourceFingerprint().sha256 !== source.sha256)
   throw new Error('Source changed during the measurement; rerun after edits settle');
 const components = [...timings.values()];
-const performanceReport = buildPerformanceReport({ components, provisional: true });
-/** ARCH-31's gates against a baseline report of this runner, when one is named. */
+const performanceReport = buildPerformanceReport({ components, provisional: !releaseRun });
+const sortedLoads = [...loads].sort((a, b) => a - b);
+const load = {
+  samples: loads.length,
+  load1Median: loads.length ? Number(median(sortedLoads).toFixed(2)) : null,
+  load1Max: loads.length ? Number(sortedLoads.at(-1)!.toFixed(2)) : null,
+};
+/** ARCH-31's absolute release gates on this run (a candidate run only). */
+const gates = candidateModel
+  ? releaseGates({ provenance, report: performanceReport, maxLoad: load.load1Max ?? undefined })
+  : null;
+/** The paired ratios to a baseline report of this runner, when one is named: context only. */
 const pairedComparison = pairedWith
   ? (() => {
       const baseline = JSON.parse(readFileSync(pairedWith, 'utf8')) as {
@@ -621,14 +662,18 @@ const report = {
   version: MATCH_PARITY_VERSION,
   mode: settings.mode,
   model,
-  provisional: true,
-  provisionalReason: candidateModel
-    ? 'A T285 exploration run of the candidate model before T286 settles the final combined model: its timings guide optimisation and are not release evidence (→ARCH-31).'
-    : 'A baseline-path run of this source. T273 recorded the release baseline at 9f69553 (post-T255, before the match-model football changes); paired gates re-run that source on the measuring machine (→ARCH-31).',
-  releaseEvidence: false,
+  provisional: !releaseRun,
+  provisionalReason: releaseRun
+    ? null
+    : candidateModel
+      ? 'A candidate run outside --release (fewer seasons, smoke or other fixtures): its gate results guide work and are not release evidence (→ARCH-31).'
+      : 'A baseline-path run of this source. T273 recorded the release baseline at 9f69553 (post-T255, before the match-model football changes); paired runs re-run that source on the measuring machine (→ARCH-31).',
+  releaseGates: gates,
+  releaseEvidence: gates?.releaseEvidence ?? false,
+  load,
   pairedComparison,
   pairedNote: pairedWith
-    ? 'Gates pair this run with the named baseline report only when machine, toolchain and worlds match, and settingsMatch says whether both ran the same seasons, fixtures, warm-up and repetitions; timings from a shared machine are context for T286, never release evidence.'
+    ? 'Ratios pair this run with the named baseline report only when machine, toolchain and worlds match, and settingsMatch says whether both ran the same seasons, fixtures, warm-up and repetitions; ARCH-31 reports them as context, never as the release gate.'
     : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
@@ -655,7 +700,7 @@ const report = {
   productionDispatch: {
     ownLeagueEngine: OWN_LEAGUE_ENGINE,
     changedByRunner: false,
-    candidateReleaseSwitch: 'not read or written',
+    releaseSwitch: 'not read or written: every world names its release',
   },
   candidate: {
     available: !!candidateFn,
@@ -695,7 +740,8 @@ console.log(
     `wrote ${out} (${settings.mode}, ${report.elapsedMs} ms)`,
     `median ms: summary ${by('fixture.summary')?.toFixed(3)}, grid ${by('fixture.grid')?.toFixed(1)}, settlement ${by('settlement.npc')?.toFixed(3)}`,
     `candidate ms: fixture ${by('fixture.candidate')?.toFixed(3)} (preparation ${by('candidate.preparation')?.toFixed(3)}, generation ${by('candidate.generation')?.toFixed(3)}, attribution ${by('candidate.attribution')?.toFixed(3)}, record ${by('candidate.record')?.toFixed(3)}), own ${by('fixture.own-candidate')?.toFixed(1)}, settlement ${by('settlement.candidate')?.toFixed(3)}`,
-    `paired: ${pairedComparison ? JSON.stringify(pairedComparison.gates.map((g) => [g.id, g.status, g.ratio === undefined ? null : Number(g.ratio.toFixed(3))])) : 'none'}`,
+    `release gates: ${gates ? JSON.stringify(gates.gates.map((g) => [g.id, g.status, g.medianMs === undefined ? null : Number(g.medianMs.toFixed(3))])) : 'none'}; evidence ${gates?.releaseEvidence ?? false}${gates?.reasons.length ? ` (${gates.reasons.join('; ')})` : ''}; load median ${load.load1Median}, max ${load.load1Max}`,
+    `paired ratios: ${pairedComparison ? JSON.stringify(pairedComparison.ratios.map((r) => [r.id, r.status, r.ratio === undefined ? null : Number(r.ratio.toFixed(3))])) : 'none'}`,
     `season s: baseline ${((by('season.baseline') ?? NaN) / 1000).toFixed(2)}, active ${((by('season.active-management') ?? NaN) / 1000).toFixed(2)}`,
     `pilot ${settings.pilot} matches: ${JSON.stringify(statuses)}, constants ${parity.equivalence.constants.join(' ')}, blocking ${parity.equivalence.blocking.length}`,
     `checks: ${JSON.stringify(checks)}`,

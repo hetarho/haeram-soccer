@@ -1453,16 +1453,34 @@ export function conditionValidationSize(needs: PilotNeeds) {
 export type PerformanceCategory =
   'preparation' | 'computation' | 'observation' | 'settlement' | 'season' | 'codec';
 /**
- * ARCH-31's paired budgets and the unchanged browser/storage limits (→ARCH-28, SAVE-4). Fixture
+ * ARCH-31's release budgets and the unchanged browser/storage limits (→ARCH-28, SAVE-4). Fixture
  * components time whole processing including preparation; `preparation.*` times it alone.
  */
 export const PERFORMANCE_CONFIG = {
-  /** 2: the candidate aggregate stages, own candidate fixtures and candidate settlement (T285). */
-  version: 2,
-  /** Fixtures without the own club: candidate median over the baseline summary median. */
-  npcFixtureBudget: 0.5,
-  /** Complete-season engine time over the baseline, for each century workload profile. */
-  seasonBudget: 0.8,
+  /**
+   * 3: ARCH-31 r19's absolute budgets on the recorded reference machine gate the release, and the
+   * paired ratios to the baseline summary path are context (T286); 2 added the candidate aggregate
+   * stages, own candidate fixtures and candidate settlement (T285).
+   */
+  version: 3,
+  release: {
+    /** A fixture without the own club, full numerical records enabled: the median, in ms. */
+    npcFixtureMs: 1,
+    /** Complete-season engine time, the median for each century workload profile, in ms. */
+    seasonMs: 15_000,
+    /**
+     * The machine the budgets were set on (the owner's MacBook Pro, 261022): timings from any
+     * other machine are context only.
+     */
+    referenceMachine: { platform: 'darwin', arch: 'arm64', cpu: 'Apple M1 Max', logicalCpus: 10 },
+    /**
+     * A quiet window: the 1-minute load average sampled through the run, the run's own busy core
+     * included, stays at or below half the reference machine's cores. The timed work is
+     * single-threaded, so it always had a performance core (8 of the 10) to itself; T285's runs
+     * under other sessions' work sat at a median of 9–12.
+     */
+    quietLoad: 5,
+  },
   profiles: {
     baseline: 'release-century-baseline',
     'active-management': 'release-century-active-management',
@@ -3726,18 +3744,23 @@ export function buildPerformanceReport(input: {
   };
 }
 
-export interface GateResult {
+const PROFILES = Object.keys(
+  PERFORMANCE_CONFIG.profiles,
+) as (keyof typeof PERFORMANCE_CONFIG.profiles)[];
+const medianOf = (r: PerformanceReport, id: PerformanceComponent) =>
+  r.components.find((c) => c.id === id)?.medianMs;
+
+/** One paired ratio to the baseline summary path: context for the release, never its gate. */
+export interface RatioResult {
   id: string;
-  budget: number;
-  status: 'pass' | 'fail' | 'missing' | 'unpaired';
+  status: 'measured' | 'missing' | 'unpaired';
   ratio?: number;
   baselineMs?: number;
   candidateMs?: number;
 }
 /**
- * ARCH-31's relative gates between two runs. Runs on another machine, toolchain or world set are
- * unpaired: their timings are context, never a gate result. A provisional run is never release
- * evidence.
+ * The paired ratios between two runs (→ARCH-31: context, not a gate). Runs on another machine,
+ * toolchain or world set are unpaired: their ratios are not reported as paired results.
  */
 export function comparePerformance(
   baseline: { provenance: Provenance; report: PerformanceReport },
@@ -3756,55 +3779,79 @@ export function comparePerformance(
     )
     .map((key) => `${key} differs`);
   const paired = reasons.length === 0;
-  const medianOf = (r: PerformanceReport, id: PerformanceComponent) =>
-    r.components.find((c) => c.id === id)?.medianMs;
-  const gate = (
-    id: string,
-    budget: number,
-    from: PerformanceComponent,
-    to: PerformanceComponent,
-  ): GateResult => {
+  const ratio = (id: string, from: PerformanceComponent, to: PerformanceComponent): RatioResult => {
     const baselineMs = medianOf(baseline.report, from),
       candidateMs = medianOf(candidate.report, to);
-    if (!paired) return { id, budget, status: 'unpaired' };
+    if (!paired) return { id, status: 'unpaired' };
     if (baselineMs === undefined || candidateMs === undefined)
-      return { id, budget, status: 'missing', baselineMs, candidateMs };
-    const ratio = candidateMs / baselineMs;
-    return {
-      id,
-      budget,
-      status: ratio <= budget ? 'pass' : 'fail',
-      ratio,
-      baselineMs,
-      candidateMs,
-    };
+      return { id, status: 'missing', baselineMs, candidateMs };
+    return { id, status: 'measured', ratio: candidateMs / baselineMs, baselineMs, candidateMs };
   };
-  const gates = [
-    gate(
-      'npc-fixture',
-      PERFORMANCE_CONFIG.npcFixtureBudget,
-      'fixture.summary',
-      'fixture.candidate',
-    ),
-    ...(
-      Object.keys(PERFORMANCE_CONFIG.profiles) as (keyof typeof PERFORMANCE_CONFIG.profiles)[]
-    ).map((profile) =>
-      gate(
-        `season.${profile}`,
-        PERFORMANCE_CONFIG.seasonBudget,
-        `season.${profile}`,
-        `season.${profile}`,
-      ),
-    ),
-  ];
   return {
     paired,
     reasons,
+    ratios: [
+      ratio('npc-fixture', 'fixture.summary', 'fixture.candidate'),
+      ...PROFILES.map((profile) =>
+        ratio(`season.${profile}`, `season.${profile}`, `season.${profile}`),
+      ),
+    ],
+  };
+}
+
+/** One of ARCH-31's absolute release budgets against a run's median. */
+export interface GateResult {
+  id: string;
+  budgetMs: number;
+  status: 'pass' | 'fail' | 'missing';
+  medianMs?: number;
+}
+/**
+ * ARCH-31's release gates on one run (r19): a fixture without the own club at most
+ * `release.npcFixtureMs` median and complete-season engine time at most `release.seasonMs` median
+ * for both century profiles. A gate result is release evidence only from the reference machine, in
+ * a quiet window and from a run that is not provisional; any other run's results are context.
+ */
+export function releaseGates(run: {
+  provenance: Provenance;
+  report: PerformanceReport;
+  /** The highest 1-minute load average sampled through the run, when sampled. */
+  maxLoad?: number;
+}) {
+  const { release } = PERFORMANCE_CONFIG;
+  const gate = (id: string, budgetMs: number, component: PerformanceComponent): GateResult => {
+    const medianMs = medianOf(run.report, component);
+    if (medianMs === undefined) return { id, budgetMs, status: 'missing' };
+    return { id, budgetMs, status: medianMs <= budgetMs ? 'pass' : 'fail', medianMs };
+  };
+  const gates = [
+    gate('npc-fixture', release.npcFixtureMs, 'fixture.candidate'),
+    ...PROFILES.map((profile) => gate(`season.${profile}`, release.seasonMs, `season.${profile}`)),
+  ];
+  const { machine } = run.provenance;
+  const reference = release.referenceMachine;
+  const reasons = [
+    ...(machine.platform !== reference.platform ||
+    machine.arch !== reference.arch ||
+    machine.cpu !== reference.cpu ||
+    machine.logicalCpus !== reference.logicalCpus
+      ? [`not the reference machine (${reference.cpu}, ${reference.logicalCpus} cores)`]
+      : []),
+    ...(run.maxLoad === undefined
+      ? ['load not sampled']
+      : run.maxLoad > release.quietLoad
+        ? [`not quiet: load ${run.maxLoad} > ${release.quietLoad}`]
+        : []),
+    ...(run.report.provisional ? ['provisional run'] : []),
+  ];
+  const passed = gates.every((g) => g.status === 'pass');
+  return {
+    referenceMachine: !reasons.some((r) => r.startsWith('not the reference')),
+    /** Why the run's results are context only; empty for release evidence. */
+    reasons,
     gates,
-    releaseEvidence:
-      paired &&
-      !baseline.report.provisional &&
-      !candidate.report.provisional &&
-      gates.every((g) => g.status === 'pass'),
+    passed,
+    /** The gates passed on the reference machine, quietly, in a release run: activation may go on. */
+    releaseEvidence: reasons.length === 0 && passed,
   };
 }

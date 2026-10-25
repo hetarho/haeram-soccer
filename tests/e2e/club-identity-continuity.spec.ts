@@ -289,8 +289,8 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
 /**
  * Writer activation has committed the pre-identity career once (→SAVE-3/21): at the next
  * generation, missing designs installed with every visible crest and colour kept (→KIT-15), no
- * recorded kit invented, manager tracking started there in its container (→SAVE-24), and the
- * original kept verbatim as the verified previous copy.
+ * recorded kit invented, the released full match model and manager tracking started there in its
+ * container (→SAVE-23/24), and the original kept verbatim as the verified previous copy.
  */
 async function expectAdopted(page: Page, legacy: World, original: string) {
   await expect.poll(() => committedRaw(page), { timeout: 20000 }).not.toBe(original);

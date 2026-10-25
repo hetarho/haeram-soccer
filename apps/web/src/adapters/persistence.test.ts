@@ -28,6 +28,7 @@ import { featureState } from '../../../../tests/fixtures/feature-state';
 import {
   cachedWorld,
   DISABLED_RELEASE,
+  ENABLED_RELEASE,
   simulatedWorld,
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
@@ -107,16 +108,6 @@ const unmodelled = (rounds = 0): World =>
         advanceRound(w);
         return w;
       });
-/**
- * `w` without the full model's data (→SAVE-23), for a shared fixture of an earlier container whose
- * world follows the release switch: no model state, season aggregates or record revisions.
- */
-function withoutMatchModel(w: World): World {
-  delete w.matchModel;
-  delete w.npcSeason;
-  for (const m of w.ownMatches) delete m.model;
-  return w;
-}
 const features = () => cachedWorld('feature-state', () => featureState());
 const sha256 = async (bytes: Uint8Array<ArrayBuffer>) =>
   Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
@@ -797,7 +788,7 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     // Container 2 with identities and recorded appearances, and container 1 before identities,
     // both written before the full model and manager history.
     const identity = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
-    const legacy = withoutMatchModel(preIdentityCareer());
+    const legacy = preIdentityCareer();
     for (const [w, raw] of [
       [identity, await seal(identity, pack(identity), 2)],
       [legacy, await containerOneCheckpoint(legacy)],
@@ -1008,14 +999,14 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   });
 
   it('a pre-identity career in container 1 reads unchanged; adoption adds only designs, with the exact legacy crests', async () => {
-    const legacy = withoutMatchModel(preIdentityCareer());
+    const legacy = preIdentityCareer();
     const read = await decode(await containerOneCheckpoint(legacy));
     expect(read.envelope.schema).toBe(1);
     expect(canonical(read.world)).toBe(canonical(legacy));
     expect(read.world.clubs.some((club) => club.identity)).toBe(false);
     expect(read.world.ownMatches.length).toBeGreaterThan(0);
     expect(read.world.ownMatches.some((match) => 'appearance' in match)).toBe(false);
-    const adopted = adoptedCareer(read.world);
+    const adopted = adoptedCareer(read.world, ENABLED_RELEASE);
     const crests = legacyCrestMap(legacy);
     for (const club of adopted.clubs) {
       const before = legacy.clubs.find((c) => c.id === club.id)!;
@@ -1024,11 +1015,16 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
       expect(club.identity!.crest).toEqual(crests.get(club.id));
       expect(club.identity!.colours).toEqual([before.color, crests.get(club.id)!.secondary]);
     }
-    // Beside the designs, the activation only starts manager tracking there (→SAVE-24).
+    // Beside the designs, the activation only records the full model and starts manager tracking
+    // there (→SAVE-23/24): nothing settled before it changes.
+    expect(adopted.matchModel?.coverage).toBe('activation');
+    expect(adopted.matchModel?.activated.revision).toBe(adopted.revision);
     const designless = (w: World) => ({
       ...w,
       revision: 0,
       managerHistory: undefined,
+      matchModel: undefined,
+      npcSeason: undefined,
       clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
     });
     expect(canonical(designless(adopted))).toBe(canonical(designless(legacy)));
@@ -1075,7 +1071,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   );
 
   it('a failed write of the adopted career keeps the original checkpoint loadable as its verified previous copy', async () => {
-    const legacy = withoutMatchModel(preIdentityCareer());
+    const legacy = preIdentityCareer();
     const raw = await containerOneCheckpoint(legacy);
     const port = new Memory();
     const previous = new MemoryPrevious();
@@ -1083,7 +1079,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
     await saves.commit(raw);
     const manifest = port.getItem(MANIFEST);
     port.fail = SLOT[0];
-    await expect(saves.save(adoptedCareer(legacy))).rejects.toThrow('Quota');
+    await expect(saves.save(adoptedCareer(legacy, ENABLED_RELEASE))).rejects.toThrow('Quota');
     expect(port.getItem(SLOT[0])).toBe(raw);
     expect(port.getItem(MANIFEST)).toBe(manifest);
     expect(previous.value).toBe(raw);
@@ -1091,7 +1087,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
       canonical(legacy),
     );
     port.fail = '';
-    await saves.save(adoptedCareer(legacy));
+    await saves.save(adoptedCareer(legacy, ENABLED_RELEASE));
     const reloaded = (await new Saves(port, decode, previous).load())!;
     // The adopted career is tracked from that write on, in its container (→SAVE-24).
     expect(reloaded.envelope).toMatchObject({
@@ -1099,7 +1095,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
       generation: 2,
       parentGeneration: 1,
     });
-    expect(canonical(reloaded.world)).toBe(canonical(adoptedCareer(legacy)));
+    expect(canonical(reloaded.world)).toBe(canonical(adoptedCareer(legacy, ENABLED_RELEASE)));
     expect(previous.value).toBe(raw);
   });
 });
