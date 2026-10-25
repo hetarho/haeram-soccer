@@ -304,6 +304,29 @@ export function coachingPeople(w: World): readonly PersonCareer[] {
   }
   return hit.coached;
 }
+/** Each world's people with a coaching profile, from `peopleOf`'s list (T450). */
+const profiledIndexes = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; profiled: PersonCareer[] }
+>();
+/**
+ * The people with a coaching profile (`coaching`), in the registry's order: the only ones the
+ * coaching market can place. Rebuilt after anyone joins the registry or is given a profile
+ * (`coachingProfiled`), the only write that adds one.
+ */
+export function profiledCoaches(w: World): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = profiledIndexes.get(w);
+  if (!hit || hit.people !== people) {
+    hit = { people, profiled: people.filter((person) => person.coaching) };
+    profiledIndexes.set(w, hit);
+  }
+  return hit.profiled;
+}
+/** Every write of a person's coaching profile ends with this, so `profiledCoaches` reads it. */
+export function coachingProfiled(w: World) {
+  profiledIndexes.delete(w);
+}
 export function syncMentorExposures(w: World) {
   // The date each sync would read for itself: nothing in a sync moves it (T450).
   const at = careerDate(w);
