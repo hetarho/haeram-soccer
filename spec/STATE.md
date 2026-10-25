@@ -305,9 +305,9 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
-| T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | todo |
+| T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
+| T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | doing@261026.k5n2 |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
@@ -326,10 +326,12 @@
 
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
-- k5n2 (261026, autopilot until 09:30 KST): T458 finished on its branch (manager-history closer, CI WebKit waits) and integrated (9e54c848); group gate running on 9e54c848 in a scratch worktree, branch CI on the same tree; then one push to main (`git push origin HEAD:main` from the group head after merging origin/main again), CI, then T286 done
+- k5n2 (261026, autopilot until 09:30 KST): T458 integrated (9e54c848) and the group gate passed on it (Chromium 274); main pushed from the group head, its CI closes T458 and T286
+- T435 implemented on task/v9n4-release/T435-main (pushed; not yet in the group): revision 2 and the upgrade at the writer load, task checks on its own tests; its full `vitest run --changed` and integration follow
 - after T286: T435 → T432 → T433, then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T458 group gate pass (k5n2): 9e54c848 typecheck, lint, format, unit 2141, contract 39, catalogs, build, Chromium 274; main push and CI next
 - 261026 v9n4 session end (owner's 07:00 KST stop): group gate failed 11 Chromium journeys → T458; group branch pushed, main unchanged
 - 261026 create-task T458 (v9n4): the Chromium journeys on the released football; T286 dep + T458
 - 261026 T286 integrated (v9n4, 325c1158): switch on, season gate pass 13.37 / 13.41 s, capacity and browser pass; origin/main merged (6d52ed79); this group's T446 T447 T450 renumbered T455 T456 T457
@@ -349,4 +351,3 @@
 - 261026 T448 done (r8m2): unified bottom controls, no visible footer/hints; 34 affected unit tests and fast/build checks pass; subsequent layout/report steering in T449.
 - 261026 create-task freshness (r8m2): WEB r151 changes management controls/footer only; inactive todo T286/T434 base WEB@150→151, contracts unchanged.
 - 261026 create-task T448 + implement-task start (r8m2): unified bottom mode/transport controls and no visible footer/generic hints.
-- 261026 update-ssot WEB r151 (r8m2): WEB-10/18/96 group mode and progression below across management views, remove visible footer and generic guidance.
