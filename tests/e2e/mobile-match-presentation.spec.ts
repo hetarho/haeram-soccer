@@ -160,13 +160,13 @@ test('mobile result-only continuation preserves the exiting card position', asyn
   }
 });
 
-/** A founding whose first match has goals at 2′ (home), 46′ and 66′ (away). */
+/** A founding whose first match has goals at 2′ (home), 13′ and 32′ (away) on the released model. */
 function goalWorld() {
   const world = createWorld({
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    seed: 'goal-feedback',
+    seed: 'goal-feedback-221',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';

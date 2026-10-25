@@ -341,7 +341,8 @@ test('jumps between recorded periods without changing the final result or calend
   await half.click();
   // Half-time opens the second half's first minute.
   await expect(page.getByTestId('pitch-theatre')).toContainText('46′ ·');
-  expect((await half.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  // A 44 px target can lay out at 43.99997 px; compare whole pixels.
+  expect(Math.round((await half.boundingBox())!.height)).toBeGreaterThanOrEqual(44);
   await expect(page.getByRole('button', { name: '재생', exact: true })).toHaveCount(0);
   await page.getByRole('radio', { name: '1×', exact: true }).click();
   await moments.getByRole('button', { name: '경기 종료 · 90분', exact: true }).click();

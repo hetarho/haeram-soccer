@@ -28,6 +28,7 @@ import {
   createWorld,
   ensureManagerHistory,
   managerCandidates,
+  managerTerm,
   MATCH_MODEL_RELEASE,
   operate,
   simulateSeason,
@@ -390,7 +391,11 @@ export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
     for (let round = 0; round < 46 && !cup()?.winner; round++) advanceRound(w, undefined, false);
     if (cup()?.winner !== w.playerClub) continue;
     const cupYear = w.year;
-    const closer = freeManager(w)!;
+    // He must still be in charge on the first day of 1951: a one-season school (the firefighter
+    // manager-journey-2 offers first on the released model) leaves at the 1950 close instead.
+    const closer = managerCandidates(w).find(
+      (offer) => offer.source === 'free' && managerTerm(offer) > 1,
+    )!;
     hire(w, closer.id);
     simulateSeason(w);
     // The first day of 1951: another manager, then the one he replaced again.

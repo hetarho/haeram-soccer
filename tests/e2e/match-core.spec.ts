@@ -333,17 +333,18 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
-  // The first match of this founding scored 2′ (home), 46′ and 66′ (away).
+  // The first match of this founding scored 2′ (home), 13′ and 32′ (away) on the released model;
+  // goal-feedback's first match has no goals since then (→T458).
   const world = createWorld({
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    seed: 'goal-feedback',
+    seed: 'goal-feedback-221',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 46, 66]);
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 13, 32]);
   await importResponsibilityCareer(page, world);
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
@@ -364,8 +365,8 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(score).toHaveText('1 : 2');
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 46′ goal lets playback cross it again.
-  await scrubber.fill('44');
+  // Going back before the 13′ goal lets playback cross it again.
+  await scrubber.fill('11');
   await expect(score).toHaveText('1 : 0');
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await expect(cue).toBeVisible({ timeout: replayMinuteMs + 4000 });

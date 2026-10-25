@@ -36,7 +36,8 @@ async function step(page: Page) {
   // Reopening a dismissed match report deliberately leaves the date unchanged.
   if ((await match.isVisible()) && (await page.getByTestId('game-date').innerText()) === before) {
     await match.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-    await expect(match).toHaveCount(0);
+    // The worker plays the match on the released model first: CI WebKit 40233059787 took over 5 s.
+    await expect(match).toHaveCount(0, { timeout: 15000 });
   }
   await expect(page.getByTestId('game-date')).not.toHaveText(before);
 }

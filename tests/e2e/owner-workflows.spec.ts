@@ -294,8 +294,11 @@ test('keeps a foreign league selected across all competition lenses without subs
     .first()
     .getAttribute('aria-label');
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
-  await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toContainText('독일 1부');
-  await expect(page.getByRole('table', { name: '리그 득점 순위표' })).toHaveCount(0);
+  // On the released model a foreign league's leaders come from its own season records (→T286).
+  const players = page.getByRole('region', { name: '선수 세부 기록', exact: true });
+  await expect(players.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
+  await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toHaveCount(0);
+  await expect(players).not.toContainText('Haeram');
   await expect(page).toHaveURL(/league=GER\.0\.0/);
   await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
   const teams = page.getByRole('table', { name: '리그 팀 기록표' });
