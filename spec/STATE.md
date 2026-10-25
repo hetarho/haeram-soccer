@@ -316,6 +316,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261026 fix home milestone journey (r8m2): classify the founding/three-export/full-match/reload case as slow, preserving all assertions. CI 40211951722 passed checks/unit/Chromium/WebKit; Firefox had 271 passes, 2 skips and one 30 s journey timeout whose first trace completed its assertions. Type/lint/format/build/spec checks and all three Firefox viewport cases now pass; reuse the unchanged application's previous batch successes.
 - 261026 T451 done + T446–T451 publication verified (r8m2): unit 2131 + 4 existing skips, contracts 39, catalogs/resources/build and Chromium 274 covered (269 first run + five corrected-driver reruns). Owner-authorized commit/push follows.
 - 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.
 - 261026 publication fix (r8m2): the first Chromium batch found configureResponsibilities still reading mode from the removed metadata/button aria-label; stop that run and read the separate progression-mode status. Unit 2131 + 4 skips, contracts 39, catalogs/resources/build already passed and are reused.
@@ -335,4 +336,3 @@
 - 261026 T447 done (r8m2): transport inherits on-dark foregrounds; resume opens only on next-event, ordinary event access preserved; 45 unit tests/type/lint/format/build/spec checks pass, browser batch pending, uncommitted.
 - 261026 create-task freshness (r8m2): WEB r150 affects resume entry only; inactive todo T286/T434 base WEB@149→150, contracts unchanged.
 - 261026 create-task T447 + implement-task start (r8m2): shared dark-surface text roles and next-event-only resume, retaining ordinary event access.
-- 261026 update-ssot WEB r150 (r8m2): WEB-83 removes persistent resume notification; ordinary event access retained.
