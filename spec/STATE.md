@@ -293,7 +293,6 @@
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 | todo |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T445 | Shots meet the bodies in front of goal before the keeper, and second balls are contested | MATCH ARCH | T444 | todo |
 | T437 | Recalibrate the candidate's scoring after the in-stride carry and the final-third rework | MATCH ARCH | T426 T445 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
@@ -310,12 +309,13 @@
 | full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 23 | 15 | 8 | 0 | 0 | 0 | 2026-10-25T02:30:34.178Z | [history](work/v9n4-release.json) |
+| v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:15:51.406Z | [history](work/v9n4-release.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261025 T445 integrated
 - 261025 T444 integrated
 - 261025 T443 integrated
 - 261024 T442 integrated
@@ -335,4 +335,3 @@
 - 261025 T438 freshness (u6p2): WEB r148 changes presentation only; T286/T431/T434 keep engine/release contracts and advance WEB base 147→148; no executing attempt for those tasks
 - 261025 update-ssot WEB r148 + create-task/start T438 (u6p2): audit sticker-club and shared theme details; preserve v9n4-release work and game facts
 - 261025 decide T426 + create-task T437 (v9n4): goals 4.10 after MATCH r27; defenders' read restored in T426, T437 recalibrates before T286
-- 261025 v9n4 hand-off at 01:30: group v9n4-release continues in a new session (STATE next); integrated T415–T422 and T420 with green CI after two e2e fixes; planned T426, T431–T436 and MATCH r25–r27, STAFF r35, PLAYER r10, SAVE r53

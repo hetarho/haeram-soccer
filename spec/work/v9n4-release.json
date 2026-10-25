@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-25T02:30:34.178Z",
-  "sourceCommit": "903440403248f9d770fd52a35e37ef6016ad4022",
+  "snapshotAt": "2026-10-25T04:15:51.406Z",
+  "sourceCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -92,12 +92,12 @@
   },
   "summary": {
     "total": 23,
-    "completed": 15,
-    "remaining": 8,
+    "completed": 16,
+    "remaining": 7,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 8
+    "unassigned": 7
   },
   "tasks": [
     {
@@ -209,14 +209,6 @@
       "dep": [
         "T426",
         "T445"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T445",
-      "title": "Shots meet the bodies in front of goal before the keeper, and second balls are contested",
-      "dep": [
-        "T444"
       ],
       "status": "todo"
     }
@@ -1829,6 +1821,8 @@
       "submittedBase": "02d6355a0e90cda3aa6363d9d4f1d6c225de2378",
       "submissionId": "343824c1-45f6-4035-bb52-b405962d7021",
       "submittedAt": "2026-10-25T02:22:56.573Z",
+      "integratedCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+      "integratedAt": "2026-10-25T02:31:05.200Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -1929,6 +1923,156 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-25T02:20:22.162Z",
           "finishedAt": "2026-10-25T02:22:56.196Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-25T02:30:34.360Z",
+          "finishedAt": "2026-10-25T02:31:04.973Z"
+        }
+      ]
+    },
+    {
+      "id": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "group": "v9n4-release",
+      "taskId": "T445",
+      "tasks": [
+        "T445"
+      ],
+      "lane": null,
+      "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/worker-1",
+      "contributors": [
+        "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-25T02:31:05.465Z",
+      "startCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+      "verifiedCommit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+      "submittedBase": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+      "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
+      "submittedAt": "2026-10-25T04:07:50.191Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "873 changed lines (limit 300)",
+          "outside touches: packages/engine/src/grid/playback.test.ts packages/engine/src/grid/trace.ts packages/engine/src/material.test.ts",
+          "reworked after a review or integration failure",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 873,
+        "files": 14
+      },
+      "dispatch": {
+        "id": "977bdd33-93ec-4528-bcfe-54b163baadd6",
+        "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-25T04:07:52.906Z",
+        "finishedAt": "2026-10-25T04:15:49.665Z",
+        "error": null,
+        "summary": "T445's correction (d546ef57 against base 9c16eb1a) fixes the one blocking finding from review 121d4fe0. It also handles all four P3s, and I found no new P1/P2.\n\nThe P2 was the ball turning in open space at a second ball's touch. motionOf now pushes a last plan entry `{gp: via player, holdUntil: dt}`. advance() keeps a player's last plan entry, so this entry overrides his `before`/readAt entry. He therefore stands on `secondBall`'s `via.pos` for the whole motion. A carried shot's state is resolved after the carry, so via.pos is his place after the carry.\n\nNearly every non-first-time shot is carried, so this case matters. Observed carried shots now record `tracer.kick` at their kick. Playback's generic `kickAfter`/`positionAt` then draw everyone from that snapshot. The snapshot is read only and consumed by the shot's own `push` right after, so no stale kick leaks to a later entry. The pre-feature path records none, which the playback test still asserts.\n\nRestart shots also go through motionOf, so set-piece and penalty second balls get the same hold. The new engine.test assertion copies positionAt's rule: it starts from the recorded kick when present, else the entry before. It checks every block and parry left in play across 16 observed fixtures, open play and restarts, against LANE_CONFIG.reach. The test comment now says what it checks.\n\nThe P3s:\n- A penalty parry's side is now drawn when the shot comes from the middle line, and this is tested.\n- `secondBall`'s tie-break now picks, at the same point, more time in hand and then the defending side. The code, its doc and §7.4 agree, and there is an equal-spot test.\n- The `kickAt` 0 reading for set-piece headers, free kicks and penalties is documented in §7.4.\n- The header and set-piece calibration question stays with the planner.\n\nEdits outside touches are justified. The playback.test changes are a fixture swap plus filtering restart kicks by `e.spot`. The material.test change takes whichever playoff ties were played, with the same assertions. The trace.ts change is a comment.\n\nAcceptance holds as reviewed before: blockers drawn before the keeper and nearest first, xG × unblocked with goalChance read without the bodies, decision weight unblocked^(1/τ), rebound geometry, reachOnPath across both sides, first-time rebound shots, digests re-recorded and pre-feature digests untouched, round 73 reported.\n\nI also checked whether the shooter gets a head start toward his own rebound. The early read only covers the shot's flight, about 0.3–0.6 s, because nearly every shot is carried and so has kickAt 0. I did not count this as a defect.\n\nThis was a static review only. The pinned checkout has no node_modules and plan mode forbids installing, so I re-ran nothing. I relied on the worker's record (typecheck, lint, format:check, vitest --changed in 8 shards, release-on runs), which is not by itself grounds for approval. The batch gate, e2e and the spec lint remain for integration."
+      },
+      "review": {
+        "id": "bc0f0218-cb35-4300-a124-4ddd6fa2bae6",
+        "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T445's correction (d546ef57 against base 9c16eb1a) fixes the one blocking finding from review 121d4fe0. It also handles all four P3s, and I found no new P1/P2.\n\nThe P2 was the ball turning in open space at a second ball's touch. motionOf now pushes a last plan entry `{gp: via player, holdUntil: dt}`. advance() keeps a player's last plan entry, so this entry overrides his `before`/readAt entry. He therefore stands on `secondBall`'s `via.pos` for the whole motion. A carried shot's state is resolved after the carry, so via.pos is his place after the carry.\n\nNearly every non-first-time shot is carried, so this case matters. Observed carried shots now record `tracer.kick` at their kick. Playback's generic `kickAfter`/`positionAt` then draw everyone from that snapshot. The snapshot is read only and consumed by the shot's own `push` right after, so no stale kick leaks to a later entry. The pre-feature path records none, which the playback test still asserts.\n\nRestart shots also go through motionOf, so set-piece and penalty second balls get the same hold. The new engine.test assertion copies positionAt's rule: it starts from the recorded kick when present, else the entry before. It checks every block and parry left in play across 16 observed fixtures, open play and restarts, against LANE_CONFIG.reach. The test comment now says what it checks.\n\nThe P3s:\n- A penalty parry's side is now drawn when the shot comes from the middle line, and this is tested.\n- `secondBall`'s tie-break now picks, at the same point, more time in hand and then the defending side. The code, its doc and §7.4 agree, and there is an equal-spot test.\n- The `kickAt` 0 reading for set-piece headers, free kicks and penalties is documented in §7.4.\n- The header and set-piece calibration question stays with the planner.\n\nEdits outside touches are justified. The playback.test changes are a fixture swap plus filtering restart kicks by `e.spot`. The material.test change takes whichever playoff ties were played, with the same assertions. The trace.ts change is a comment.\n\nAcceptance holds as reviewed before: blockers drawn before the keeper and nearest first, xG × unblocked with goalChance read without the bodies, decision weight unblocked^(1/τ), rebound geometry, reachOnPath across both sides, first-time rebound shots, digests re-recorded and pre-feature digests untouched, round 73 reported.\n\nI also checked whether the shooter gets a head start toward his own rebound. The early read only covers the shot's flight, about 0.3–0.6 s, because nearly every shot is carried and so has kickAt 0. I did not count this as a defect.\n\nThis was a static review only. The pinned checkout has no node_modules and plan mode forbids installing, so I re-ran nothing. I relied on the worker's record (typecheck, lint, format:check, vitest --changed in 8 shards, release-on runs), which is not by itself grounds for approval. The batch gate, e2e and the spec lint remain for integration.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid-throughput.test.ts:207-209 (T445 digest history comment)",
+            "message": "The comment says T445 'moved every value but 1995's shoot-out facts'. Compared with T444's values listed right after it, 1995's shoot-out facts did move: d43e40ae9649b414 on tie 3 became 94ae1e80115f126d on tie 4. The exception is left over from comparing against the first submission (eea18e01), where that digest happened to be unchanged. Restore 'moved every value and the knockout ties', or say which baseline the exception refers to."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/playback.ts:372-381 (T445 kick snapshot on carried shots; outside touches)",
+            "message": "Recording `TraceEntry.kick` on carried shots changes two things in playback. Positions now come from the kick, as intended. `shownAt` now also shows the kick snapshot's targets, states and intentions for every sample during the shot's in-stride carry, where before it showed the entry before. This is harmless, but the result only reports the position effect. `kickAfter`/`shownAt` docs still describe a restart only, which the worker noted. When playback.ts is next touched, update those comments and decide whether the carry's samples should show the kick's snapshot."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/resolve.ts:687-688 / trace.ts:150-151 (T445 corner blocks)",
+            "message": "A block that goes for a corner (`blockThen` 65%) still has no `via`. Its flight runs straight from the shooter to the byline point given by `shotEnd`, at least 5 m wide of the centre, without touching the blocker who was just drawn in its path. This is pre-existing, but it is far more visible now that blocks are 36% of shots and come from bodies in the triangle. In a follow-up (MATCH-12), consider a `touch` knot at the blocker before the byline for corner blocks."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T445 result limits (2)/(3), for the planner before T437/T286 (not a blocker under MATCH-28 r23)",
+            "message": "The autopilot decision from round 73 is still waiting for the owner. Headers are blocked 66.3%. Headed goals are 4.8% (band 14–20%) and set-piece goals 9.0% (band 20–28%). Blocked share is 36.3% (real 24–29%) and on-target share 24.0% (band 30–37%). The worker recommends option (b), a header-specific scale on BOX_CONFIG.shot.block. The planner needs to decide among (a), (b) and (c) before T437 calibrates; this reviewer has not decided it."
+          }
+        ],
+        "commit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+        "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+        "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
+        "createdAt": "2026-10-25T04:07:51.152Z",
+        "finishedAt": "2026-10-25T04:15:49.642Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "121d4fe0-4082-4a07-bc96-eb4b5a3830f8",
+          "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T445 meets nearly all of its acceptance. Blockers are drawn nearest the shooter first, before the keeper. Recorded and decision xG read unblocked(), and goalChance reads the chance without the bodies. The pre-feature branch and its digests are untouched, blocks stay shots, and digests were re-recorded with comments. Round 73 is reported in the task result. The bands.test guards are back at 3.6 on measured evidence, and the playback.test edit outside touches is a justified data swap. One MATCH-12 defect blocks approval. The new second-ball touch knot sits at the blocker's or keeper's position at the start of the action, but motionOf leaves that player free to move until the ball reaches him. Because of read = 3, he starts reacting to the post-rebound state from the start of the action. So in playback the ball can turn in open space. The new engine test checks the decision-time position rather than where he is drawn at the touch. Static review only: dependencies are not installed in this pinned checkout and plan mode forbade installing them, so I did not re-run any checks. I relied on the worker's verification record (typecheck, lint, format, vitest --changed in 8 shards, release-on runs), which is not grounds for approval by itself.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/grid/engine.ts:491 (T445 motionOf via leg; plan at :515-520)",
+              "message": "The shot's 'touch' knot is placed at `o.via`, which is the blocker's or keeper's position when the action starts (`secondBall` uses `via.pos`). Nothing in motionOf's plan holds that player there until the touch. He is in the `before` group with `readAt(s, p, actor[0], windUp)`, and with GRID_MOVEMENT_CONFIG.read = 3 any defender with 위치선정 ≥ 33 reads from t = 0. So he heads to his post-action target from the start of the action. That target already reflects the resolved rebound, because updateIntentions runs after apply() with the winner on the ball. He keeps moving for the whole wind-up (about 1–1.8 s with no carry) plus the shot's flight to him. In playback the ball deflects off a point he has left, and the defenders visibly react to the deflection before the shot is struck. MATCH-12 requires the ball to meet the players where the engine draws them, and 'ball turning in open space' is a playback bug the owner has reported before (T376). The engine.test assertion ('It meets the keeper … where he stood at the kick: where the entry holds him') compares the knot with the trace entry's decision-time positions, not with his drawn position at the touch time, so this is not tested. Fix: hold the via player on `via` until kick + times[0], for example with a holdUntil plan entry, so he reacts only once the ball has met him. Alternatively, resolve the touch where he actually is at that time. Then add an assertion over the 16 observed fixtures, for both blocks and parries, that the via player's drawn frame position at the touch time is within LANE_CONFIG.reach of the touch knot, and correct the test comment."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:1161 / :441 (T445 resolvePenalty → saveRebound)",
+              "message": "A penalty taker stands on the spot, at y = 34 in the attack frame, so `from[1] < PITCH.width / 2` is always false. Every candidate penalty parry therefore falls to the same side (+y). Pick the side with a draw from the match stream (or from the save's direction) when the shot comes from the goal's middle line."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:395-401 (T445 secondBall)",
+              "message": "The doc comment and the design doc §7.4 say equal meeting points go by more spare, then the defending side, then player ID. The code falls straight to `byId` across sides and never prefers the defending side. Make the code and the docs agree."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:1017 / restarts.ts:425 (T445 readings (e)/(f))",
+              "message": "Set-piece headers resolved at the restart kick, and direct free kicks, contest their second ball with kickAt 0. reachOnPath therefore ignores the corner or free-kick delivery's flight (about 1–2 s) and the restart's wind-up, which undercounts who can reach the path and pushes these balls toward the soonest-runner fallback. Acceptable as a documented reading, but consider passing the delivery's flight time once T437 touches set pieces."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T445 result limits (2)/(3), for the planner/T437 (not a blocker under MATCH-28 r23)",
+              "message": "Calibration round 73 puts several MATCH-23 rows far outside their bands. Headers are blocked 64.1% and headed goals are 5.6% (band 14–20%). Set-piece goals are 8.9% (band 20–28%), blocked share is 36.1% (real 24–29%) and on-target share is 24.4% (band 30–37%). Part of this follows from the acceptance's parameters. In particular, the marker who lost the aerial duel counts as a blocker at nearness 1 even though `headerPressure` already priced him. The worker raised this correctly with options (a)–(c). It needs a planner decision before T437/T286, and the reviewer has not decided it."
+            }
+          ],
+          "commit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+          "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+          "submissionId": "d642c854-a5c7-4616-938a-074ee340c102",
+          "createdAt": "2026-10-25T03:22:50.798Z",
+          "finishedAt": "2026-10-25T03:31:53.021Z",
+          "invalidatedAt": "2026-10-25T03:31:53.094Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T445",
+          "commit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+          "at": "2026-10-25T04:07:50.136Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-25T04:05:17.326Z",
+              "finishedAt": "2026-10-25T04:07:49.797Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-25T04:05:17.326Z",
+          "finishedAt": "2026-10-25T04:07:49.797Z"
         }
       ]
     }
@@ -11744,6 +11888,747 @@
       "group": "v9n4-release",
       "attemptId": "68434180-9531-4e3c-9d35-152266d150ed",
       "taskId": "T444",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1279,
+      "at": "2026-10-25T02:31:05.132Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "68434180-9531-4e3c-9d35-152266d150ed",
+      "taskId": "T444",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-25T02:30:34.360Z",
+            "finishedAt": "2026-10-25T02:31:04.973Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1280,
+      "at": "2026-10-25T02:31:05.200Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "68434180-9531-4e3c-9d35-152266d150ed",
+      "taskId": "T444",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+        "integratedAt": "2026-10-25T02:31:05.200Z"
+      }
+    },
+    {
+      "sequence": 1281,
+      "at": "2026-10-25T02:31:05.465Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+        "group": "v9n4-release",
+        "taskId": "T445",
+        "tasks": [
+          "T445"
+        ],
+        "lane": null,
+        "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/worker-1",
+        "contributors": [
+          "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-25T02:31:05.465Z",
+        "startCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462"
+      }
+    },
+    {
+      "sequence": 1282,
+      "at": "2026-10-25T02:31:06.560Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1283,
+      "at": "2026-10-25T02:31:06.909Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b6dd414c-1f36-4686-8c4f-affa89b20f3c",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-25T02:31:06.909Z"
+        }
+      }
+    },
+    {
+      "sequence": 1284,
+      "at": "2026-10-25T02:31:07.086Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b6dd414c-1f36-4686-8c4f-affa89b20f3c",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-25T02:31:06.909Z"
+        }
+      }
+    },
+    {
+      "sequence": 1285,
+      "at": "2026-10-25T03:20:17.357Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1286,
+      "at": "2026-10-25T03:20:17.961Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1287,
+      "at": "2026-10-25T03:20:18.010Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1288,
+      "at": "2026-10-25T03:22:49.867Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+        "submittedBase": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+        "submissionId": "d642c854-a5c7-4616-938a-074ee340c102",
+        "submittedAt": "2026-10-25T03:22:49.867Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "785 changed lines (limit 300)",
+            "outside touches: packages/engine/src/grid/playback.test.ts",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 785,
+          "files": 12
+        },
+        "steps": [
+          {
+            "taskId": "T445",
+            "commit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+            "at": "2026-10-25T03:22:49.815Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-25T03:20:18.294Z",
+                "finishedAt": "2026-10-25T03:22:49.472Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-25T03:20:18.294Z",
+            "finishedAt": "2026-10-25T03:22:49.472Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1289,
+      "at": "2026-10-25T03:22:49.892Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "b6dd414c-1f36-4686-8c4f-affa89b20f3c",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-25T02:31:06.909Z",
+          "finishedAt": "2026-10-25T03:22:49.892Z",
+          "error": null,
+          "summary": "T445 is implemented on the candidate model, and the pre-feature path is unchanged: its digests pass as they were. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against the base in 8 shards (220 files), and the touched files plus playback.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run here.\n\n**What changed in play**\n- **Blocks before the keeper:** every outfield opponent ahead of the ball and within 1.5 m of the triangle from the ball to the two posts may block the shot. His chance is 0.35 × nearness (1 at the shooter down to 0.4 at the goal line) × his 위치선정 factor. The draws go nearest the shooter first, and only a shot nobody blocks meets the keeper. This replaces the old miss-then-block order.\n- **xG:** the shot's xG is the chance's xG × the chance nobody blocks it, so recorded xG still equals the average player's goal probability. The keeper's part reads the xG without the bodies, so nothing counts twice. In the box the decision's shot weight reads the same share, raised to 1/temperature, so a sharper head passes up a blocked view more often.\n- **Second balls:** a loose block falls 4–9 m back toward the shooter; a parry falls 5–10 m out from the keeper, wide on the shot's side. Whoever of either side `reachOnPath` finds first on that path wins it where it meets him; penalties' parries work the same way. An attacker who wins it in the box decides as usual, and a shot he draws is struck first time, with no carry.\n\n**Calibration round 73** (600 core matches, before → after, reported not gated): goals 4.09 → 2.96 a match, blocked share 27.5 → 36.1%, on target 36.7 → 24.4%, xG per shot 0.140 → 0.099, rebound shots 0.43 → 0.62 a team. All 600 records were valid.\n\n**Tests and digests**\n- The six named tests are added in box, resolve and engine tests.\n- Candidate digests are re-recorded with this evidence in the comments: grid-throughput (knockout ties rescanned) and full-model-throughput (candidate rounds b6a3fb46 → 5ba3d490). The aggregate records digest did not move.\n- Both coarse goal guards in bands.test are back at their original 3.6 ceiling, because goals now measure below it (3.19 and 2.89).\n\n**Limits**\n1. **Edit outside the touch list:** `playback.test.ts`, whose extra-time case now uses `candidate-et-2`, the first tie that still reaches extra time.\n2. **Headers, for the planner or T437:** headers are now blocked 64% of the time (36% before), so headed goals fall from 11.6% to 5.6%, against MATCH-23's 14–20%. My recommendation is a header-specific block scale in `BOX_CONFIG.shot` that T437 can fit.\n3. **Left to T437:** on-target share (24.4%, band 30–37%) and blocked share (36%, real 24–29%) are now outside real football.\n4. **Not recorded:** docs/CALIBRATION.md (outside touches) does not record round 73's use; the figures are in the task result and docs/MATCH-ENGINE-DESIGN.md §7.4.\n5. **Not run here:** the spec lint (the haeram CLI is outside this session's allow list). `printenv` was also denied, so I passed the brief's base commit 9c16eb1a to `--changed` explicitly.\n\nThe probe scripts are in /private/tmp/claude-501/-Users-ihaelam-project--haeram-worktrees-haeram-soccer-7b6c81df-v9n4-release-T445-800de184/fa4d37df-f3e0-4091-bb9d-c3b608f9e9b5/scratchpad/."
+        }
+      }
+    },
+    {
+      "sequence": 1290,
+      "at": "2026-10-25T03:22:50.798Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "121d4fe0-4082-4a07-bc96-eb4b5a3830f8",
+          "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+          "status": "reviewing",
+          "commit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+          "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+          "submissionId": "d642c854-a5c7-4616-938a-074ee340c102",
+          "createdAt": "2026-10-25T03:22:50.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 1291,
+      "at": "2026-10-25T03:22:52.477Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c1a375ea-b2af-4ec8-892b-fdd9bacaa551",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-25T03:22:52.477Z"
+        }
+      }
+    },
+    {
+      "sequence": 1292,
+      "at": "2026-10-25T03:22:52.501Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c1a375ea-b2af-4ec8-892b-fdd9bacaa551",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-25T03:22:52.477Z"
+        }
+      }
+    },
+    {
+      "sequence": 1293,
+      "at": "2026-10-25T03:31:53.021Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T445 meets nearly all of its acceptance. Blockers are drawn nearest the shooter first, before the keeper. Recorded and decision xG read unblocked(), and goalChance reads the chance without the bodies. The pre-feature branch and its digests are untouched, blocks stay shots, and digests were re-recorded with comments. Round 73 is reported in the task result. The bands.test guards are back at 3.6 on measured evidence, and the playback.test edit outside touches is a justified data swap. One MATCH-12 defect blocks approval. The new second-ball touch knot sits at the blocker's or keeper's position at the start of the action, but motionOf leaves that player free to move until the ball reaches him. Because of read = 3, he starts reacting to the post-rebound state from the start of the action. So in playback the ball can turn in open space. The new engine test checks the decision-time position rather than where he is drawn at the touch. Static review only: dependencies are not installed in this pinned checkout and plan mode forbade installing them, so I did not re-run any checks. I relied on the worker's verification record (typecheck, lint, format, vitest --changed in 8 shards, release-on runs), which is not grounds for approval by itself.",
+        "review": {
+          "id": "121d4fe0-4082-4a07-bc96-eb4b5a3830f8",
+          "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T445 meets nearly all of its acceptance. Blockers are drawn nearest the shooter first, before the keeper. Recorded and decision xG read unblocked(), and goalChance reads the chance without the bodies. The pre-feature branch and its digests are untouched, blocks stay shots, and digests were re-recorded with comments. Round 73 is reported in the task result. The bands.test guards are back at 3.6 on measured evidence, and the playback.test edit outside touches is a justified data swap. One MATCH-12 defect blocks approval. The new second-ball touch knot sits at the blocker's or keeper's position at the start of the action, but motionOf leaves that player free to move until the ball reaches him. Because of read = 3, he starts reacting to the post-rebound state from the start of the action. So in playback the ball can turn in open space. The new engine test checks the decision-time position rather than where he is drawn at the touch. Static review only: dependencies are not installed in this pinned checkout and plan mode forbade installing them, so I did not re-run any checks. I relied on the worker's verification record (typecheck, lint, format, vitest --changed in 8 shards, release-on runs), which is not grounds for approval by itself.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/grid/engine.ts:491 (T445 motionOf via leg; plan at :515-520)",
+              "message": "The shot's 'touch' knot is placed at `o.via`, which is the blocker's or keeper's position when the action starts (`secondBall` uses `via.pos`). Nothing in motionOf's plan holds that player there until the touch. He is in the `before` group with `readAt(s, p, actor[0], windUp)`, and with GRID_MOVEMENT_CONFIG.read = 3 any defender with 위치선정 ≥ 33 reads from t = 0. So he heads to his post-action target from the start of the action. That target already reflects the resolved rebound, because updateIntentions runs after apply() with the winner on the ball. He keeps moving for the whole wind-up (about 1–1.8 s with no carry) plus the shot's flight to him. In playback the ball deflects off a point he has left, and the defenders visibly react to the deflection before the shot is struck. MATCH-12 requires the ball to meet the players where the engine draws them, and 'ball turning in open space' is a playback bug the owner has reported before (T376). The engine.test assertion ('It meets the keeper … where he stood at the kick: where the entry holds him') compares the knot with the trace entry's decision-time positions, not with his drawn position at the touch time, so this is not tested. Fix: hold the via player on `via` until kick + times[0], for example with a holdUntil plan entry, so he reacts only once the ball has met him. Alternatively, resolve the touch where he actually is at that time. Then add an assertion over the 16 observed fixtures, for both blocks and parries, that the via player's drawn frame position at the touch time is within LANE_CONFIG.reach of the touch knot, and correct the test comment."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:1161 / :441 (T445 resolvePenalty → saveRebound)",
+              "message": "A penalty taker stands on the spot, at y = 34 in the attack frame, so `from[1] < PITCH.width / 2` is always false. Every candidate penalty parry therefore falls to the same side (+y). Pick the side with a draw from the match stream (or from the save's direction) when the shot comes from the goal's middle line."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:395-401 (T445 secondBall)",
+              "message": "The doc comment and the design doc §7.4 say equal meeting points go by more spare, then the defending side, then player ID. The code falls straight to `byId` across sides and never prefers the defending side. Make the code and the docs agree."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:1017 / restarts.ts:425 (T445 readings (e)/(f))",
+              "message": "Set-piece headers resolved at the restart kick, and direct free kicks, contest their second ball with kickAt 0. reachOnPath therefore ignores the corner or free-kick delivery's flight (about 1–2 s) and the restart's wind-up, which undercounts who can reach the path and pushes these balls toward the soonest-runner fallback. Acceptable as a documented reading, but consider passing the delivery's flight time once T437 touches set pieces."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T445 result limits (2)/(3), for the planner/T437 (not a blocker under MATCH-28 r23)",
+              "message": "Calibration round 73 puts several MATCH-23 rows far outside their bands. Headers are blocked 64.1% and headed goals are 5.6% (band 14–20%). Set-piece goals are 8.9% (band 20–28%), blocked share is 36.1% (real 24–29%) and on-target share is 24.4% (band 30–37%). Part of this follows from the acceptance's parameters. In particular, the marker who lost the aerial duel counts as a blocker at nearness 1 even though `headerPressure` already priced him. The worker raised this correctly with options (a)–(c). It needs a planner decision before T437/T286, and the reviewer has not decided it."
+            }
+          ],
+          "commit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+          "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+          "submissionId": "d642c854-a5c7-4616-938a-074ee340c102",
+          "createdAt": "2026-10-25T03:22:50.798Z",
+          "finishedAt": "2026-10-25T03:31:53.021Z"
+        }
+      }
+    },
+    {
+      "sequence": 1294,
+      "at": "2026-10-25T03:31:53.045Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "c1a375ea-b2af-4ec8-892b-fdd9bacaa551",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-25T03:22:52.477Z",
+          "finishedAt": "2026-10-25T03:31:53.045Z",
+          "error": null,
+          "summary": "T445 meets nearly all of its acceptance. Blockers are drawn nearest the shooter first, before the keeper. Recorded and decision xG read unblocked(), and goalChance reads the chance without the bodies. The pre-feature branch and its digests are untouched, blocks stay shots, and digests were re-recorded with comments. Round 73 is reported in the task result. The bands.test guards are back at 3.6 on measured evidence, and the playback.test edit outside touches is a justified data swap. One MATCH-12 defect blocks approval. The new second-ball touch knot sits at the blocker's or keeper's position at the start of the action, but motionOf leaves that player free to move until the ball reaches him. Because of read = 3, he starts reacting to the post-rebound state from the start of the action. So in playback the ball can turn in open space. The new engine test checks the decision-time position rather than where he is drawn at the touch. Static review only: dependencies are not installed in this pinned checkout and plan mode forbade installing them, so I did not re-run any checks. I relied on the worker's verification record (typecheck, lint, format, vitest --changed in 8 shards, release-on runs), which is not grounds for approval by itself."
+        }
+      }
+    },
+    {
+      "sequence": 1295,
+      "at": "2026-10-25T03:31:53.094Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "121d4fe0-4082-4a07-bc96-eb4b5a3830f8",
+            "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T445 meets nearly all of its acceptance. Blockers are drawn nearest the shooter first, before the keeper. Recorded and decision xG read unblocked(), and goalChance reads the chance without the bodies. The pre-feature branch and its digests are untouched, blocks stay shots, and digests were re-recorded with comments. Round 73 is reported in the task result. The bands.test guards are back at 3.6 on measured evidence, and the playback.test edit outside touches is a justified data swap. One MATCH-12 defect blocks approval. The new second-ball touch knot sits at the blocker's or keeper's position at the start of the action, but motionOf leaves that player free to move until the ball reaches him. Because of read = 3, he starts reacting to the post-rebound state from the start of the action. So in playback the ball can turn in open space. The new engine test checks the decision-time position rather than where he is drawn at the touch. Static review only: dependencies are not installed in this pinned checkout and plan mode forbade installing them, so I did not re-run any checks. I relied on the worker's verification record (typecheck, lint, format, vitest --changed in 8 shards, release-on runs), which is not grounds for approval by itself.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/grid/engine.ts:491 (T445 motionOf via leg; plan at :515-520)",
+                "message": "The shot's 'touch' knot is placed at `o.via`, which is the blocker's or keeper's position when the action starts (`secondBall` uses `via.pos`). Nothing in motionOf's plan holds that player there until the touch. He is in the `before` group with `readAt(s, p, actor[0], windUp)`, and with GRID_MOVEMENT_CONFIG.read = 3 any defender with 위치선정 ≥ 33 reads from t = 0. So he heads to his post-action target from the start of the action. That target already reflects the resolved rebound, because updateIntentions runs after apply() with the winner on the ball. He keeps moving for the whole wind-up (about 1–1.8 s with no carry) plus the shot's flight to him. In playback the ball deflects off a point he has left, and the defenders visibly react to the deflection before the shot is struck. MATCH-12 requires the ball to meet the players where the engine draws them, and 'ball turning in open space' is a playback bug the owner has reported before (T376). The engine.test assertion ('It meets the keeper … where he stood at the kick: where the entry holds him') compares the knot with the trace entry's decision-time positions, not with his drawn position at the touch time, so this is not tested. Fix: hold the via player on `via` until kick + times[0], for example with a holdUntil plan entry, so he reacts only once the ball has met him. Alternatively, resolve the touch where he actually is at that time. Then add an assertion over the 16 observed fixtures, for both blocks and parries, that the via player's drawn frame position at the touch time is within LANE_CONFIG.reach of the touch knot, and correct the test comment."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/resolve.ts:1161 / :441 (T445 resolvePenalty → saveRebound)",
+                "message": "A penalty taker stands on the spot, at y = 34 in the attack frame, so `from[1] < PITCH.width / 2` is always false. Every candidate penalty parry therefore falls to the same side (+y). Pick the side with a draw from the match stream (or from the save's direction) when the shot comes from the goal's middle line."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/resolve.ts:395-401 (T445 secondBall)",
+                "message": "The doc comment and the design doc §7.4 say equal meeting points go by more spare, then the defending side, then player ID. The code falls straight to `byId` across sides and never prefers the defending side. Make the code and the docs agree."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/grid/resolve.ts:1017 / restarts.ts:425 (T445 readings (e)/(f))",
+                "message": "Set-piece headers resolved at the restart kick, and direct free kicks, contest their second ball with kickAt 0. reachOnPath therefore ignores the corner or free-kick delivery's flight (about 1–2 s) and the restart's wind-up, which undercounts who can reach the path and pushes these balls toward the soonest-runner fallback. Acceptable as a documented reading, but consider passing the delivery's flight time once T437 touches set pieces."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T445 result limits (2)/(3), for the planner/T437 (not a blocker under MATCH-28 r23)",
+                "message": "Calibration round 73 puts several MATCH-23 rows far outside their bands. Headers are blocked 64.1% and headed goals are 5.6% (band 14–20%). Set-piece goals are 8.9% (band 20–28%), blocked share is 36.1% (real 24–29%) and on-target share is 24.4% (band 30–37%). Part of this follows from the acceptance's parameters. In particular, the marker who lost the aerial duel counts as a blocker at nearness 1 even though `headerPressure` already priced him. The worker raised this correctly with options (a)–(c). It needs a planner decision before T437/T286, and the reviewer has not decided it."
+              }
+            ],
+            "commit": "eea18e01cdbf1f6d2c7c1b83f5834c796693bd5f",
+            "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+            "submissionId": "d642c854-a5c7-4616-938a-074ee340c102",
+            "createdAt": "2026-10-25T03:22:50.798Z",
+            "finishedAt": "2026-10-25T03:31:53.021Z",
+            "invalidatedAt": "2026-10-25T03:31:53.094Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1296,
+      "at": "2026-10-25T03:31:53.195Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "126a9ecf-2e92-47fb-bd38-90844eb6eeac",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-25T03:31:53.195Z"
+        }
+      }
+    },
+    {
+      "sequence": 1297,
+      "at": "2026-10-25T03:31:53.366Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "126a9ecf-2e92-47fb-bd38-90844eb6eeac",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-25T03:31:53.195Z"
+        }
+      }
+    },
+    {
+      "sequence": 1298,
+      "at": "2026-10-25T04:05:16.453Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1299,
+      "at": "2026-10-25T04:05:17.009Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1300,
+      "at": "2026-10-25T04:05:17.053Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1301,
+      "at": "2026-10-25T04:07:50.191Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
+        "submittedAt": "2026-10-25T04:07:50.191Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "873 changed lines (limit 300)",
+            "outside touches: packages/engine/src/grid/playback.test.ts packages/engine/src/grid/trace.ts packages/engine/src/material.test.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 873,
+          "files": 14
+        },
+        "steps": [
+          {
+            "taskId": "T445",
+            "commit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+            "at": "2026-10-25T04:07:50.136Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-25T04:05:17.326Z",
+                "finishedAt": "2026-10-25T04:07:49.797Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-25T04:05:17.326Z",
+            "finishedAt": "2026-10-25T04:07:49.797Z"
+          }
+        ],
+        "verifiedCommit": "d546ef57844dbbee4bd97751b9ad330191e17bed"
+      }
+    },
+    {
+      "sequence": 1302,
+      "at": "2026-10-25T04:07:50.217Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "126a9ecf-2e92-47fb-bd38-90844eb6eeac",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-25T03:31:53.195Z",
+          "finishedAt": "2026-10-25T04:07:50.217Z",
+          "error": null,
+          "summary": "I fixed all five review findings for T445. The pre-feature path and aggregate digests are unchanged and the candidate digests are re-recorded. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against 9c16eb1a in 8 shards (220 files), and the touched files plus material.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run.\n\n**P2, the ball turning in open space at the touch.** The reviewer's fix alone (holding the blocker or keeper) was not enough. Playback draws every player except the one on the ball in a straight line between action snapshots. For a shot after an in-stride carry, that line starts before the carry, so the drawn position at the touch still missed. Two changes fix it:\n- The blocker or keeper now stands where `secondBall` read him for the whole shot, until the second ball is won.\n- An observed shot after a carry records every player's position at its kick, using the trace's existing `kick` snapshot. Playback already reads that snapshot for any entry, so `playback.ts` is unchanged, and observing still changes no facts.\n- Over 40 observed fixtures (182 second balls), the player is now drawn at the touch a median 0.000 m away, p90 0.02 m, at most 0.56 m. The submitted version was a median 1.28 m, p90 4.0 m, at most 16.8 m.\n- engine.test now asserts, for every block and parry left in play across its 16 fixtures (open play and restarts), that the touch is within `LANE_CONFIG.reach` of where playback draws the player.\n\n**P3 fixes:**\n- A penalty parry no longer always falls to one side: when the shot comes from the goal's middle line, one extra draw picks the side.\n- `secondBall` now breaks ties at the same point as its doc says: more time in hand, then the defending side. A test covers two equal players on one spot.\n- Set-piece headers, direct free kicks and penalties still time their second ball from the restart's kick (`kickAt` 0). This is now documented and left for T437.\n\n**Calibration round 73, re-measured on the corrected source:** goals 4.09 → 2.96 a match, blocked share 27.5 → 36.3%, on target 36.7 → 24.0%, xG per shot 0.140 → 0.098. These are within noise of the first submission. The bands.test ceilings stay at 3.6, measured at 3.16 and 2.97.\n\n**Edits outside the touch list:**\n- `playback.test.ts`: the restart-preparation case now reads only restart entries' kicks, and a comment is corrected.\n- `material.test.ts`: the promotion-playoff case now takes whichever playoff ties the own club played, since the changed football decides that.\n- `trace.ts`: one doc comment.\n\n**Still open, for the planner before T437/T286:** headers are blocked 66% of the time (headed goals 4.8% against a 14–20% band; set-piece goals 9.0% against 20–28%). My recommendation is a header-specific block scale that T437 can calibrate.\n\nThe spec lint was not run because the haeram CLI is outside this session's allow list."
+        }
+      }
+    },
+    {
+      "sequence": 1303,
+      "at": "2026-10-25T04:07:51.152Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "bc0f0218-cb35-4300-a124-4ddd6fa2bae6",
+          "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+          "status": "reviewing",
+          "commit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+          "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+          "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
+          "createdAt": "2026-10-25T04:07:51.152Z"
+        }
+      }
+    },
+    {
+      "sequence": 1304,
+      "at": "2026-10-25T04:07:52.906Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "977bdd33-93ec-4528-bcfe-54b163baadd6",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-25T04:07:52.906Z"
+        }
+      }
+    },
+    {
+      "sequence": 1305,
+      "at": "2026-10-25T04:07:52.931Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "977bdd33-93ec-4528-bcfe-54b163baadd6",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-25T04:07:52.906Z"
+        }
+      }
+    },
+    {
+      "sequence": 1306,
+      "at": "2026-10-25T04:15:49.642Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "bc0f0218-cb35-4300-a124-4ddd6fa2bae6",
+          "owner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T445's correction (d546ef57 against base 9c16eb1a) fixes the one blocking finding from review 121d4fe0. It also handles all four P3s, and I found no new P1/P2.\n\nThe P2 was the ball turning in open space at a second ball's touch. motionOf now pushes a last plan entry `{gp: via player, holdUntil: dt}`. advance() keeps a player's last plan entry, so this entry overrides his `before`/readAt entry. He therefore stands on `secondBall`'s `via.pos` for the whole motion. A carried shot's state is resolved after the carry, so via.pos is his place after the carry.\n\nNearly every non-first-time shot is carried, so this case matters. Observed carried shots now record `tracer.kick` at their kick. Playback's generic `kickAfter`/`positionAt` then draw everyone from that snapshot. The snapshot is read only and consumed by the shot's own `push` right after, so no stale kick leaks to a later entry. The pre-feature path records none, which the playback test still asserts.\n\nRestart shots also go through motionOf, so set-piece and penalty second balls get the same hold. The new engine.test assertion copies positionAt's rule: it starts from the recorded kick when present, else the entry before. It checks every block and parry left in play across 16 observed fixtures, open play and restarts, against LANE_CONFIG.reach. The test comment now says what it checks.\n\nThe P3s:\n- A penalty parry's side is now drawn when the shot comes from the middle line, and this is tested.\n- `secondBall`'s tie-break now picks, at the same point, more time in hand and then the defending side. The code, its doc and §7.4 agree, and there is an equal-spot test.\n- The `kickAt` 0 reading for set-piece headers, free kicks and penalties is documented in §7.4.\n- The header and set-piece calibration question stays with the planner.\n\nEdits outside touches are justified. The playback.test changes are a fixture swap plus filtering restart kicks by `e.spot`. The material.test change takes whichever playoff ties were played, with the same assertions. The trace.ts change is a comment.\n\nAcceptance holds as reviewed before: blockers drawn before the keeper and nearest first, xG × unblocked with goalChance read without the bodies, decision weight unblocked^(1/τ), rebound geometry, reachOnPath across both sides, first-time rebound shots, digests re-recorded and pre-feature digests untouched, round 73 reported.\n\nI also checked whether the shooter gets a head start toward his own rebound. The early read only covers the shot's flight, about 0.3–0.6 s, because nearly every shot is carried and so has kickAt 0. I did not count this as a defect.\n\nThis was a static review only. The pinned checkout has no node_modules and plan mode forbids installing, so I re-ran nothing. I relied on the worker's record (typecheck, lint, format:check, vitest --changed in 8 shards, release-on runs), which is not by itself grounds for approval. The batch gate, e2e and the spec lint remain for integration.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid-throughput.test.ts:207-209 (T445 digest history comment)",
+              "message": "The comment says T445 'moved every value but 1995's shoot-out facts'. Compared with T444's values listed right after it, 1995's shoot-out facts did move: d43e40ae9649b414 on tie 3 became 94ae1e80115f126d on tie 4. The exception is left over from comparing against the first submission (eea18e01), where that digest happened to be unchanged. Restore 'moved every value and the knockout ties', or say which baseline the exception refers to."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/playback.ts:372-381 (T445 kick snapshot on carried shots; outside touches)",
+              "message": "Recording `TraceEntry.kick` on carried shots changes two things in playback. Positions now come from the kick, as intended. `shownAt` now also shows the kick snapshot's targets, states and intentions for every sample during the shot's in-stride carry, where before it showed the entry before. This is harmless, but the result only reports the position effect. `kickAfter`/`shownAt` docs still describe a restart only, which the worker noted. When playback.ts is next touched, update those comments and decide whether the carry's samples should show the kick's snapshot."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/resolve.ts:687-688 / trace.ts:150-151 (T445 corner blocks)",
+              "message": "A block that goes for a corner (`blockThen` 65%) still has no `via`. Its flight runs straight from the shooter to the byline point given by `shotEnd`, at least 5 m wide of the centre, without touching the blocker who was just drawn in its path. This is pre-existing, but it is far more visible now that blocks are 36% of shots and come from bodies in the triangle. In a follow-up (MATCH-12), consider a `touch` knot at the blocker before the byline for corner blocks."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T445 result limits (2)/(3), for the planner before T437/T286 (not a blocker under MATCH-28 r23)",
+              "message": "The autopilot decision from round 73 is still waiting for the owner. Headers are blocked 66.3%. Headed goals are 4.8% (band 14–20%) and set-piece goals 9.0% (band 20–28%). Blocked share is 36.3% (real 24–29%) and on-target share 24.0% (band 30–37%). The worker recommends option (b), a header-specific scale on BOX_CONFIG.shot.block. The planner needs to decide among (a), (b) and (c) before T437 calibrates; this reviewer has not decided it."
+            }
+          ],
+          "commit": "d546ef57844dbbee4bd97751b9ad330191e17bed",
+          "baseCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+          "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
+          "createdAt": "2026-10-25T04:07:51.152Z",
+          "finishedAt": "2026-10-25T04:15:49.642Z"
+        }
+      }
+    },
+    {
+      "sequence": 1307,
+      "at": "2026-10-25T04:15:49.665Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "977bdd33-93ec-4528-bcfe-54b163baadd6",
+          "runner": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-25T04:07:52.906Z",
+          "finishedAt": "2026-10-25T04:15:49.665Z",
+          "error": null,
+          "summary": "T445's correction (d546ef57 against base 9c16eb1a) fixes the one blocking finding from review 121d4fe0. It also handles all four P3s, and I found no new P1/P2.\n\nThe P2 was the ball turning in open space at a second ball's touch. motionOf now pushes a last plan entry `{gp: via player, holdUntil: dt}`. advance() keeps a player's last plan entry, so this entry overrides his `before`/readAt entry. He therefore stands on `secondBall`'s `via.pos` for the whole motion. A carried shot's state is resolved after the carry, so via.pos is his place after the carry.\n\nNearly every non-first-time shot is carried, so this case matters. Observed carried shots now record `tracer.kick` at their kick. Playback's generic `kickAfter`/`positionAt` then draw everyone from that snapshot. The snapshot is read only and consumed by the shot's own `push` right after, so no stale kick leaks to a later entry. The pre-feature path records none, which the playback test still asserts.\n\nRestart shots also go through motionOf, so set-piece and penalty second balls get the same hold. The new engine.test assertion copies positionAt's rule: it starts from the recorded kick when present, else the entry before. It checks every block and parry left in play across 16 observed fixtures, open play and restarts, against LANE_CONFIG.reach. The test comment now says what it checks.\n\nThe P3s:\n- A penalty parry's side is now drawn when the shot comes from the middle line, and this is tested.\n- `secondBall`'s tie-break now picks, at the same point, more time in hand and then the defending side. The code, its doc and §7.4 agree, and there is an equal-spot test.\n- The `kickAt` 0 reading for set-piece headers, free kicks and penalties is documented in §7.4.\n- The header and set-piece calibration question stays with the planner.\n\nEdits outside touches are justified. The playback.test changes are a fixture swap plus filtering restart kicks by `e.spot`. The material.test change takes whichever playoff ties were played, with the same assertions. The trace.ts change is a comment.\n\nAcceptance holds as reviewed before: blockers drawn before the keeper and nearest first, xG × unblocked with goalChance read without the bodies, decision weight unblocked^(1/τ), rebound geometry, reachOnPath across both sides, first-time rebound shots, digests re-recorded and pre-feature digests untouched, round 73 reported.\n\nI also checked whether the shooter gets a head start toward his own rebound. The early read only covers the shot's flight, about 0.3–0.6 s, because nearly every shot is carried and so has kickAt 0. I did not count this as a defect.\n\nThis was a static review only. The pinned checkout has no node_modules and plan mode forbids installing, so I re-ran nothing. I relied on the worker's record (typecheck, lint, format:check, vitest --changed in 8 shards, release-on runs), which is not by itself grounds for approval. The batch gate, e2e and the spec lint remain for integration."
+        }
+      }
+    },
+    {
+      "sequence": 1308,
+      "at": "2026-10-25T04:15:49.724Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

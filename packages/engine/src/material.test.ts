@@ -193,11 +193,11 @@ describe('post-match material', () => {
 
     closeSeason(w);
 
-    const playoff = [`${year}:lower-promotion:0:0`, `${year}:lower-promotion:1:0`].map((id) =>
-      w.ownMatches.find((m) => m.id === id)!,
-    );
+    // Whichever ties it played: its semi-final, and the final when it wins that (the football
+    // decides which, so T445's second balls changed them).
+    const playoff = w.ownMatches.filter((m) => m.id.startsWith(`${year}:lower-promotion:`));
+    expect(playoff.length).toBeGreaterThan(0);
     for (const m of playoff) {
-      expect(m).toBeDefined();
       expect(m.material).toBeUndefined();
       // Outcomes, highlights, match xG and counters stay (→MATCH-5).
       expect(m.score).toBeDefined();

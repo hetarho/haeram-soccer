@@ -3,9 +3,10 @@
  * docs/MATCH-ENGINE-DESIGN.md §4.8). With the ball wide in the final third or in a cut-back zone
  * (MATCH-14), the attack occupies the box's zones with runs timed to the delivery and the defence
  * protects the same zones goal-side. The zones are points in the attacking side's frame, named by
- * the ball's side of the goal: deliveries are played into them (T444) and T445 drops second balls
- * near them. Everything here reads the state and changes nothing: `coordination.ts` gives out the
- * jobs, `intentions.ts` keeps and ends them, `shape.ts` moves the players.
+ * the ball's side of the goal: deliveries are played into them (T444). `BOX_CONFIG.shot` sets how
+ * the bodies in front of goal block a shot and where its second ball falls (T445, `resolve.ts`).
+ * Everything here reads the state and changes nothing: `coordination.ts` gives out the jobs,
+ * `intentions.ts` keeps and ends them, `shape.ts` moves the players.
  */
 import type { Attribute, Position, RoleId } from '../../../contracts/src/player';
 import { lineOf } from '../player';
@@ -111,6 +112,25 @@ export const BOX_CONFIG = {
     suit: 0.8,
     lofted: { heading: 0.6, strength: 0.4 } as Partial<Record<Attribute, number>>,
     low: { finishing: 0.7, composure: 0.3 } as Partial<Record<Attribute, number>>,
+  },
+  /**
+   * The bodies in front of goal (T445, →MATCH-35; `shotBlockers`, `resolveShot`). Every outfield
+   * opponent within `lane` m of the triangle from the ball to the two posts, ahead of the ball, may
+   * block the shot: `block` × his nearness (1 at the shooter, falling linearly to `far` at the
+   * goal line, along the line to the goal's middle) × (1 + (위치선정 − 55) ×
+   * `SHOT_CONFIG.block.skill`). A block that stays in play falls `rebound.block` m back toward the
+   * shooter from the blocker; a save the keeper parries loose falls `rebound.save` m out from him,
+   * `rebound.wide` m sideways a metre out toward the shot's side of the goal (one draw each).
+   */
+  shot: {
+    lane: 1.5,
+    block: 0.35,
+    far: 0.4,
+    rebound: {
+      block: [4, 9] as readonly [number, number],
+      save: [5, 10] as readonly [number, number],
+      wide: [0.5, 1.5] as readonly [number, number],
+    },
   },
 } as const;
 

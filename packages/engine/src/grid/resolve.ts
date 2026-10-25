@@ -28,7 +28,10 @@ import {
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
 import { BOX_CONFIG, DELIVERY_ACTION, deliveryPoint, lofted, type DeliveryAim } from './box';
+import { byId } from './coordination';
 import { cleanReach, LANE_CONFIG, reachOnPath, type LaneReach } from './lanes';
+import { flightSeconds, reachSeconds } from './movement';
+import { speedOf } from './shape';
 
 type Kind = NonNullable<Decision['kind']>;
 type Ref = [0 | 1, number];
@@ -53,6 +56,13 @@ export type Outcome =
       by?: number;
       header?: boolean;
       aerial?: 0 | 1;
+      /**
+       * Candidate model (T445): a loose block or save's second ball — where the blocker or keeper
+       * met the shot (`via`), where the ball meets its `winner` (`at`), all engine frame.
+       */
+      via?: [number, number];
+      at?: [number, number];
+      winner?: Ref;
     };
 export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
@@ -285,6 +295,154 @@ function nearestToSegment(s: GridState, side: 0 | 1, a: Point, b: Point) {
   return best;
 }
 
+/** An outfield opponent in a shot's path (T445) and his chance to block it. */
+export interface ShotBlocker {
+  gp: GridPlayer;
+  chance: number;
+}
+
+/**
+ * The bodies in a shot from `from` (`side`'s attack frame) on the candidate model (→MATCH-35,
+ * T445, `BOX_CONFIG.shot`): every outfield opponent on the pitch ahead of the ball and within
+ * `lane` m of the triangle from it to the two posts, nearest the shooter first (equal distances by
+ * player ID), each with his chance to block it: `block` × his nearness (1 at the ball, `far` at
+ * the goal line, by how far along the line to the goal's middle he stands) × (1 + (위치선정 − 55)
+ * × `SHOT_CONFIG.block.skill`), within 0–1.
+ */
+export function shotBlockers(s: GridState, side: 0 | 1, from: Point): ShotBlocker[] {
+  const B = BOX_CONFIG.shot;
+  const { hypot } = s.math;
+  const goal: Point = [PITCH.length, PITCH.width / 2];
+  const posts: [Point, Point] = [
+    [PITCH.length, PITCH.width / 2 - BOX_CONFIG.post],
+    [PITCH.length, PITCH.width / 2 + BOX_CONFIG.post],
+  ];
+  const gx = goal[0] - from[0],
+    gy = goal[1] - from[1];
+  const len2 = gx * gx + gy * gy;
+  const cross = (o: Point, a: Point, p: Point) =>
+    (a[0] - o[0]) * (p[1] - o[1]) - (a[1] - o[1]) * (p[0] - o[0]);
+  const found: (ShotBlocker & { d: number })[] = [];
+  for (const gp of s.players[other(side)]) {
+    if (!onPitch(gp) || gp.slot <= 0) continue;
+    const o = attackFrame(side, gp.pos);
+    const along = len2 > 0 ? ((o[0] - from[0]) * gx + (o[1] - from[1]) * gy) / len2 : 0;
+    if (along <= 0) continue;
+    const [c1, c2, c3] = [
+      cross(from, posts[0], o),
+      cross(posts[0], posts[1], o),
+      cross(posts[1], from, o),
+    ];
+    const inside = (c1 >= 0 && c2 >= 0 && c3 >= 0) || (c1 <= 0 && c2 <= 0 && c3 <= 0);
+    const gap = inside
+      ? 0
+      : Math.min(
+          toSegment(o, from, posts[0], hypot).d,
+          toSegment(o, posts[0], posts[1], hypot).d,
+          toSegment(o, posts[1], from, hypot).d,
+        );
+    if (gap > B.lane) continue;
+    const near = 1 - (1 - B.far) * Math.min(1, along);
+    const read = 1 + (skill(s, other(side), gp.idx, 'positioning') - 55) * SHOT_CONFIG.block.skill;
+    found.push({
+      gp,
+      chance: clamp(B.block * near * read, 0, 1),
+      d: hypot(o[0] - from[0], o[1] - from[1]),
+    });
+  }
+  found.sort((a, b) => a.d - b.d || byId(a.gp, b.gp));
+  return found.map(({ gp, chance }) => ({ gp, chance }));
+}
+
+/** The chance that none of `blockers` blocks the shot (T445): the chance's share that reaches the keeper. */
+export function unblocked(blockers: readonly ShotBlocker[]): number {
+  let open = 1;
+  for (const b of blockers) open *= 1 - b.chance;
+  return open;
+}
+
+/**
+ * A shot's loose second ball on the candidate model (→MATCH-31, MATCH-35, T445): it leaves `via`
+ * (the blocker or the keeper, who met it) for `land` (`side`'s attack frame, kept on the pitch),
+ * the shot struck `kickAt` seconds from now and reaching him its flight later. Whoever of either
+ * side `reachOnPath` finds first on that path wins it where it meets him (the same point: more
+ * time in hand first, then the defending side); with nobody reaching it the one who runs to its
+ * resting place soonest (`reachSeconds`, equal times by player ID) wins it there. `via` himself
+ * plays no part: he stands where he met the shot until it is won (`playGrid`'s motion).
+ */
+export function secondBall(
+  s: GridState,
+  side: 0 | 1,
+  shooter: GridPlayer,
+  via: GridPlayer,
+  land: Point,
+  kickAt: number,
+): Required<Pick<ShotOutcome, 'via' | 'at' | 'winner'>> {
+  const start: [number, number] = [via.pos[0], via.pos[1]];
+  const end = toEngine(side, [
+    clamp(land[0], 0.5, PITCH.length - 0.5),
+    clamp(land[1], 0.5, PITCH.width - 0.5),
+  ]);
+  const off = kickAt + flightSeconds(shooter.pos, start, 'shot');
+  const leave = (gp: GridPlayer) => gp === via;
+  // `reachOnPath` reads the opponents of the side it is given: the defenders' first, then the
+  // attackers', who take it only by meeting it earlier or, at the same point, with more in hand.
+  const defence = reachOnPath(s, side, start, end, off, leave).first;
+  const attack = reachOnPath(s, other(side), start, end, off, leave).first;
+  const first =
+    attack &&
+    (!defence ||
+      attack.along < defence.along ||
+      (attack.along === defence.along && attack.spare > defence.spare))
+      ? attack
+      : defence;
+  if (first) return { via: start, at: first.at, winner: [first.gp.side, first.gp.idx] };
+  let best: { gp: GridPlayer; t: number } | undefined;
+  for (const roster of [s.players[other(side)], s.players[side]])
+    for (const gp of roster) {
+      if (!onPitch(gp) || gp === via) continue;
+      const t = reachSeconds(gp, end, speedOf(s, gp));
+      if (!best || t < best.t || (t === best.t && byId(gp, best.gp) < 0)) best = { gp, t };
+    }
+  const winner = best?.gp ?? via;
+  return { via: start, at: end, winner: [winner.side, winner.idx] };
+}
+
+/**
+ * Where a blocked shot from `from` falls (T445, `side`'s attack frame): `rebound.block` m (one
+ * draw) back toward the shooter from the blocker at `by`, or back along the shot when he stands on
+ * the ball.
+ */
+export function blockRebound(from: Point, by: Point, r: () => number): Point {
+  const [lo, hi] = BOX_CONFIG.shot.rebound.block;
+  const d = lo + (hi - lo) * r();
+  let dx = from[0] - by[0],
+    dy = from[1] - by[1];
+  let n = Math.sqrt(dx * dx + dy * dy);
+  if (n < 0.1) {
+    [dx, dy] = [from[0] - PITCH.length, from[1] - PITCH.width / 2];
+    n = Math.sqrt(dx * dx + dy * dy) || 1;
+  }
+  return [by[0] + (dx / n) * d, by[1] + (dy / n) * d];
+}
+
+/**
+ * Where a save the keeper at `keeper` parries loose falls (T445, the attack frame): `rebound.save`
+ * m out from him, `rebound.wide` m sideways a metre out toward the side of the goal the shot came
+ * from (`from`), one draw each; a shot from the goal's middle line (a penalty from its spot) is
+ * pushed to a side one more draw picks.
+ */
+export function saveRebound(from: Point, keeper: Point, r: () => number): Point {
+  const R = BOX_CONFIG.shot.rebound;
+  const mid = PITCH.width / 2;
+  const d = R.save[0] + (R.save[1] - R.save[0]) * r();
+  const spread = R.wide[0] + (R.wide[1] - R.wide[0]) * r();
+  const toward = from[1] < mid ? -1 : from[1] > mid ? 1 : r() < 0.5 ? -1 : 1;
+  const wide = spread * toward;
+  const n = Math.sqrt(1 + wide * wide);
+  return [keeper[0] - d / n, keeper[1] + (wide / n) * d];
+}
+
 /** The pre-feature lane term: e^(−d/2) for each opponent beside the segment; the candidate reads `reachOnPath`. */
 function laneRisk(s: GridState, side: 0 | 1, a: Point, b: Point): number {
   const { exp, hypot } = s.math;
@@ -474,7 +632,17 @@ export function resolveAerial(
   return { kind: 'loose', at: [at[0], at[1]], winner };
 }
 
-/** A shot by `(side, idx)` from where he stands: open play, a header, a cut-back chance or a direct free kick. */
+/**
+ * A shot by `(side, idx)` from where he stands: open play, a header, a cut-back chance or a direct
+ * free kick, struck `kickAt` seconds from now (its second ball's timing).
+ *
+ * On the candidate model (→MATCH-11, MATCH-35, T445) the bodies in its path come first: one draw
+ * each, nearest the shooter first (`shotBlockers`), the first who blocks it ending it; only a shot
+ * nobody blocks meets the keeper, whose part (`goalChance`) reads the chance's xG without them. Its
+ * xG, recorded and for big chances, is that chance's times the share nobody blocks (`unblocked`).
+ * A block that stays in play and a save the keeper parries loose fall where they would and go to
+ * whoever reaches them first (`secondBall`).
+ */
 export function resolveShot(
   s: GridState,
   side: 0 | 1,
@@ -482,14 +650,16 @@ export function resolveShot(
   tags: Pick<Tags, 'pressure'>,
   ctx: ShotContext,
   r: () => number,
-  opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean } = {},
+  opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean; kickAt?: number } = {},
 ): ShotOutcome {
   const C = SHOT_CONFIG;
-  const from = attackFrame(side, s.players[side][idx]!.pos);
+  const { kickAt = 0, ...kind } = opts;
+  const me = s.players[side][idx]!;
+  const from = attackFrame(side, me.pos);
   const xg = chanceXg(
     from,
     {
-      ...opts,
+      ...kind,
       pressure: tags.pressure,
       candidate: onCandidate(s),
     },
@@ -503,6 +673,34 @@ export function resolveShot(
     s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
   const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
   const onTarget = targetChance(goal, shooting);
+  if (onCandidate(s)) {
+    const blockers = shotBlockers(s, side, from);
+    const through = xg * unblocked(blockers);
+    const shot = {
+      kind: 'shot',
+      shooter: idx,
+      xg: through,
+      recordedXg: Math.min(C.maxXg, through * ctx.levelFactor),
+    } as const;
+    for (const { gp, chance } of blockers) {
+      if (r() >= chance) continue;
+      const then = r() < C.blockThen.corner ? 'corner' : 'loose';
+      const block = { ...shot, result: 'block', then, by: gp.idx } as const;
+      if (then === 'corner') return block;
+      const land = blockRebound(from, attackFrame(side, gp.pos), r);
+      return { ...block, ...secondBall(s, side, me, gp, land, kickAt) };
+    }
+    const u = r();
+    if (u < goal) return { ...shot, result: 'goal' };
+    if (u >= goal + (onTarget - goal) * C.saveShare)
+      return { ...shot, result: 'miss', then: 'goalKick' };
+    const v = r();
+    const then = v < C.save.hold ? 'hold' : v < C.save.hold + C.save.corner ? 'corner' : 'loose';
+    const save = { ...shot, result: 'save', then, by: keeper.idx } as const;
+    if (then !== 'loose') return save;
+    const land = saveRebound(from, attackFrame(side, keeper.pos), r);
+    return { ...save, ...secondBall(s, side, me, keeper, land, kickAt) };
+  }
   const recordedXg = Math.min(C.maxXg, xg * ctx.levelFactor);
   const u = r();
   if (u < goal) return { kind: 'shot', shooter: idx, result: 'goal', xg, recordedXg };
@@ -947,7 +1145,7 @@ export function resolvePenalty(s: GridState, side: 0 | 1, idx: number, r: () => 
   const kicker = 0.6 * skill(s, side, idx, 'finishing') + 0.4 * skill(s, side, idx, 'composure');
   const p = clamp(C.base + (kicker - skill(s, foe, keeper.idx, 'reflexes')) / 300, C.min, C.max);
   if (r() < p) return { kind: 'shot', shooter: idx, result: 'goal', xg: C.xg, recordedXg: C.xg };
-  return {
+  const save = {
     kind: 'shot',
     shooter: idx,
     result: 'save',
@@ -955,5 +1153,10 @@ export function resolvePenalty(s: GridState, side: 0 | 1, idx: number, r: () => 
     recordedXg: C.xg,
     then: 'loose',
     by: keeper.idx,
-  };
+  } as const;
+  if (!onCandidate(s)) return save;
+  // The parry falls where the save sends it and goes to whoever reaches it first (T445).
+  const me = s.players[side][idx]!;
+  const land = saveRebound(attackFrame(side, me.pos), attackFrame(side, keeper.pos), r);
+  return { ...save, ...secondBall(s, side, me, keeper, land, 0) };
 }

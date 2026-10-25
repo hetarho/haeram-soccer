@@ -44,7 +44,7 @@ import {
   takeBall,
   updateIntentions,
 } from './intentions';
-import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
+import { attackFrame, cellOf, inBox, PITCH, toEngine } from './pitch';
 import {
   createState,
   kickOff,
@@ -177,6 +177,8 @@ export function playGrid(setup: GridSetup): GridResult {
   let holdBias = false;
   /** A delivery's runner who met it at its zone, and the first-time finish his next action is (T444). */
   let finishing: { side: 0 | 1; idx: number; finish: Finish } | undefined;
+  /** An attacker who won his side's shot's second ball in the box: a shot he decides is first time (T445). */
+  let rebound: Ref | undefined;
   const passLosses: PassLosses | undefined = candidate
     ? { intercepted: [0, 0], deflected: [0, 0], receiver: [0, 0], out: [0, 0] }
     : undefined;
@@ -279,6 +281,11 @@ export function playGrid(setup: GridSetup): GridResult {
     } else if (o.then === 'goalKick') {
       pending = classifyOut({ at, lastTouch: side, over: 'byline' });
       rest();
+    } else if (o.winner && o.at) {
+      // Candidate model (T445): the second ball goes to whoever reached it first, where it met him;
+      // an attacker who wins it in the box may shoot again at once.
+      setOwner(o.winner[0], o.winner[1], o.at);
+      if (o.winner[0] === side && inBox(attackFrame(side, o.at))) rebound = o.winner;
     } else {
       const loose: [number, number] = [
         side === 0 ? PITCH.length - 5 : 5,
@@ -481,7 +488,13 @@ export function playGrid(setup: GridSetup): GridResult {
         const p = s.players[actor[0]][shooter]!.pos;
         legs.push({ to: [p[0], p[1]], speed });
       }
-      legs.push({ to: [s.ball[0], s.ball[1]], speed: shot ? 'shot' : speed });
+      // A second ball (T445): the shot meets the blocker or the keeper, then runs on to its winner.
+      const via = shot ? o.via : undefined;
+      if (via) legs.push({ to: [via[0], via[1]], speed: 'shot' });
+      legs.push({
+        to: [s.ball[0], s.ball[1]],
+        speed: shot && !via ? 'shot' : via ? 'pass' : speed,
+      });
     }
     const times: number[] = [];
     let flight = 0,
@@ -506,6 +519,10 @@ export function playGrid(setup: GridSetup): GridResult {
         if (p !== owner && p !== gp && onPitch(p))
           plan.push({ gp: p, before: to, readAt: readAt(s, p, actor[0], windUp) });
       });
+    // A second ball (T445): the blocker or keeper stands where he meets the shot, as `secondBall`
+    // read him, until it is won; he plays no part in it (→MATCH-12).
+    if (o !== 'offside' && o.kind === 'shot' && o.via && o.by !== undefined)
+      plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
     const knots: MotionKnot[] = [];
     if (carry)
       knots.push(
@@ -824,9 +841,20 @@ export function playGrid(setup: GridSetup): GridResult {
         return { key: 'takeOn', outcome: o };
       }
       case 'shot': {
+        // On the candidate model its second ball is read from the kick: at once after a carry or
+        // first time, else after the wind-up its flight leaves of the action (T445).
+        const at = s.players[side][idx]!.pos;
+        const kickAt =
+          candidate && !carry && jitter > 0
+            ? Math.max(
+                0,
+                secondsOf('shot') * jitter -
+                  flightSeconds(at, toEngine(side, [PITCH.length, PITCH.width / 2]), 'shot'),
+              )
+            : 0;
         const o = finish
           ? resolveFinish(s, side, idx, finish, tags, ctx, r)
-          : resolveShot(s, side, idx, tags, ctx, r);
+          : resolveShot(s, side, idx, tags, ctx, r, candidate ? { kickAt } : {});
         apply(side, idx, o);
         return { key: 'shot', outcome: o };
       }
@@ -872,8 +900,10 @@ export function playGrid(setup: GridSetup): GridResult {
       if (pending) {
         prevBeat = undefined;
         justBeat = undefined;
-        // A dead ball (an injury's drop ball, the whistle) ends a delivery's unplayed finish.
+        // A dead ball (an injury's drop ball, the whistle) ends a delivery's unplayed finish and
+        // a second ball's first-time shot.
         finishing = undefined;
+        rebound = undefined;
         const rs = pending;
         pending = undefined;
         // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
@@ -983,6 +1013,9 @@ export function playGrid(setup: GridSetup): GridResult {
         const finish =
           finishing?.side === owner[0] && finishing.idx === owner[1] ? finishing.finish : undefined;
         finishing = undefined;
+        // An attacker who won a second ball in the box decides as ever; a shot is first time (T445).
+        const again = rebound?.[0] === owner[0] && rebound[1] === owner[1];
+        rebound = undefined;
         let d: Decision;
         if (finish) d = { action: 'shot' };
         else if (holdBias) {
@@ -1004,11 +1037,17 @@ export function playGrid(setup: GridSetup): GridResult {
         tracer.hold();
         // The action's time is drawn before it is played, so his in-stride carry can fill it; the
         // match runs through the carry and he plays the ball, and it is resolved, where it took him
-        // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once.
-        const jitter = candidate && !finish ? 0.85 + 0.3 * r() : 0;
-        const carry = candidate && !finish ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once,
+        // as a second ball's shot is (T445).
+        const firstTime = finish !== undefined || (again && d.action === 'shot');
+        const jitter = candidate && !firstTime ? 0.85 + 0.3 * r() : 0;
+        const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
+        // A shot after his carry (T445): an observed match records every slot at its kick, as a
+        // restart's (T359), so playback draws the bodies in its path, and the blocker or keeper a
+        // second ball leaves from, where the carry took them (→MATCH-12). It only reads the state.
+        if (carry && d.action === 'shot') tracer.kick(s);
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d, jitter, carry, finish);

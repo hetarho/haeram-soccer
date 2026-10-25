@@ -75,17 +75,18 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * selection and build-up interceptions, for T371's restarts, finishers and balanced block and for
  * T384's offside calls by 판단력, for T397's balls in behind, first touches and cut-backs, for
  * T398's late box runs, for T399's flank beside a back three, for T426's in-stride carry, for
- * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene and
- * for T444's deliveries into the zones, the first tie of each kind; T345's were 20/4, 1/16 and
- * 9/5, T348's 7/10, 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's
- * 26/6, 1/17 and 0/19, T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and
- * 3/0, T399's 5/16, 7/2 and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's
- * 2/16, 2/0 and 5/1, T443's 1/2, 0/1 and 6/3).
+ * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene, for
+ * T444's deliveries into the zones and for T445's shots through the bodies in front of goal and
+ * their second balls, the first tie of each kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10,
+ * 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19,
+ * T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2
+ * and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1,
+ * T443's 1/2, 0/1 and 6/3, T444's 5/2, 0/3 and 13/1).
  */
 const CASES = {
-  1975: { extraTime: 5, shootout: 2 },
-  1995: { extraTime: 0, shootout: 3 },
-  2024: { extraTime: 13, shootout: 1 },
+  1975: { extraTime: 1, shootout: 0 },
+  1995: { extraTime: 7, shootout: 4 },
+  2024: { extraTime: 2, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -198,31 +199,43 @@ interface CandidateDigests {
  * 3c108dbb0e02b660, 2024 30f08f0bf85411b6, 8964a2388fd5bb2a, 32b65f20c115078e and positions 1975
  * 31842e9f5af0aee9, f154cf1da07db9ff, 1995 38a0baf0b245e582, 75cdf7850cb39d75, 2024
  * 5df9e432ad3cc5ac, 28c832067a6702c5. The pre-feature facts did not move.
+ * T445's shots through the bodies in front of goal (each outfielder in the shot's path blocks it
+ * first, nearest the shooter first, its xG reading them; a loose block or parry falls where it
+ * would and goes to whoever reaches it first while the blocker or keeper stands where he met it,
+ * an attacker winning it in the box shooting first time; an observed shot after an in-stride
+ * carry records every slot at its kick; calibration round 73, core, 600 observed matches: blocked
+ * share of shots 27.5 → 36.3%, on target 36.7 → 24.0%, xG per shot 0.140 → 0.098, rebound shots
+ * 0.43 → 0.63 a team, goals 4.09 → 2.96 a match) moved every value but 1995's shoot-out facts and
+ * the knockout ties (rescanned above); before it, facts
+ * 1975 76b5fd1a4ce755ae, 4b92745d989704a9, cb6ecdc833e6990a, 1995 634a262d6f1aabe3,
+ * 39e4ae3e5a4ed4f7, d43e40ae9649b414, 2024 abe6d99012360921, fb268d12a73d355b, ad622101dd51cab1
+ * and positions 1975 5e50d68e08f33eba, 1605f44ccffaeb88, 1995 1178c80d9315ab6d,
+ * 644dbefc58b01ffb, 2024 75e68eaf731f13ca, f22fde17b921bf26. The pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '76b5fd1a4ce755ae',
-      extraTime: '4b92745d989704a9',
-      shootout: 'cb6ecdc833e6990a',
+      league: '7d4e5fc81f9733c7',
+      extraTime: 'a69d1c0455f65535',
+      shootout: '62021d557722660d',
     },
-    positions: { observed: '5e50d68e08f33eba', shootout: '1605f44ccffaeb88' },
+    positions: { observed: '98a350dd7da5e9d0', shootout: 'fd13d38e6e592f07' },
   },
   1995: {
     facts: {
-      league: '634a262d6f1aabe3',
-      extraTime: '39e4ae3e5a4ed4f7',
-      shootout: 'd43e40ae9649b414',
+      league: '0c26fac316a61074',
+      extraTime: '04074bf48cb46a4e',
+      shootout: '94ae1e80115f126d',
     },
-    positions: { observed: '1178c80d9315ab6d', shootout: '644dbefc58b01ffb' },
+    positions: { observed: 'c61c58ff8b084dfb', shootout: '61bd61d96516d630' },
   },
   2024: {
     facts: {
-      league: 'abe6d99012360921',
-      extraTime: 'fb268d12a73d355b',
-      shootout: 'ad622101dd51cab1',
+      league: '448f341a21ca816b',
+      extraTime: '47fdd227e2cf33e0',
+      shootout: 'dce7e342f49cf48f',
     },
-    positions: { observed: '75e68eaf731f13ca', shootout: 'f22fde17b921bf26' },
+    positions: { observed: 'afd5c596bab19e43', shootout: '0241143543502b07' },
   },
 };
 

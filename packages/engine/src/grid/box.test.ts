@@ -3,10 +3,20 @@ import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { CELL_BASELINES } from './baselines';
+import { random } from '../primitives';
 import { BOX_CONFIG, boxScene, boxSide, boxZones, deliveries, type Delivery } from './box';
 import { setIntention } from './intentions';
 import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './pitch';
+import {
+  chanceXg,
+  resolveShot,
+  SHOT_CONFIG,
+  shotBlockers,
+  shotContext,
+  unblocked,
+} from './resolve';
 import { createState, skill, type GridState } from './state';
+import { computeTags } from './tags';
 import { gridKit } from './testkit';
 
 // Side 0 plays possession (4-3-3), side 1 balanced (3-5-2), both parked at their own ends.
@@ -181,5 +191,94 @@ describe('the delivery into the zones (→MATCH-33, T444)', () => {
     expect(f.square!.score).toBeGreaterThan(f.far!.score);
     expect(h.far!.score).toBeGreaterThan(h.square!.score);
     expect(share(f, 'square')).toBeGreaterThan(share(h, 'square'));
+  });
+});
+
+describe('the bodies in front of goal (→MATCH-35, T445)', () => {
+  /**
+   * A candidate state, every skill 60 with no day shift: side 0's striker on the ball at `at`,
+   * side 1's keeper on his line, everyone else parked in a far corner, then side 1's `bodies`
+   * (roster index → engine point; side 0 attacks toward x = 105).
+   */
+  function shotLab(at: Point, bodies: Record<number, Point> = {}): GridState {
+    const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
+    s.setup.shift = [0, 0];
+    for (const roster of s.players)
+      for (const gp of roster) {
+        gp.base.fill(60);
+        gp.pos = gp.side === 0 ? [3, 2] : [102, 66];
+      }
+    s.players[1][0]!.pos = [104.5, 34];
+    for (const [idx, p] of Object.entries(bodies)) s.players[1][Number(idx)]!.pos = [p[0], p[1]];
+    s.possession = 0;
+    s.owner = [0, 9];
+    s.players[0][9]!.pos = [at[0], at[1]];
+    s.ball = [at[0], at[1]];
+    return s;
+  }
+  /** `n` shots of the striker: how many were blocked, and by whom. */
+  const shoot = (s: GridState, n: number, seed: string) => {
+    const ctx = shotContext(s);
+    const tags = computeTags(s, 0, 9);
+    const r = random(seed);
+    const out = { block: 0, by: {} as Record<number, number> };
+    for (let i = 0; i < n; i++) {
+      const o = resolveShot(s, 0, 9, tags, ctx, r);
+      if (o.result !== 'block') continue;
+      out.block++;
+      out.by[o.by!] = (out.by[o.by!] ?? 0) + 1;
+    }
+    return out;
+  };
+  /** A body's chance by `BOX_CONFIG.shot`: `block` × his nearness × his 위치선정's factor. */
+  const chanceOf = (s: GridState, idx: number, from: Point) => {
+    const B = BOX_CONFIG.shot;
+    const [x, y] = s.players[1][idx]!.pos;
+    const [gx, gy] = [105 - from[0], 34 - from[1]];
+    const along = ((x - from[0]) * gx + (y - from[1]) * gy) / (gx * gx + gy * gy);
+    const read = 1 + (skill(s, 1, idx, 'positioning') - 55) * SHOT_CONFIG.block.skill;
+    return B.block * (1 - (1 - B.far) * along) * read;
+  };
+
+  it('two defenders in the shot’s path block it more often than one', () => {
+    const from: Point = [90, 34];
+    const one = shotLab(from, { 4: [96, 34] });
+    const two = shotLab(from, { 4: [96, 34], 5: [101, 33] });
+    const [b1, b2] = [shotBlockers(one, 0, from), shotBlockers(two, 0, from)];
+    expect(b1.map((b) => b.gp.idx)).toEqual([4]);
+    expect(b1[0]!.chance).toBeCloseTo(chanceOf(one, 4, from), 12);
+    // Nearest the shooter first; the one nearer the goal line is the less likely to block it.
+    expect(b2.map((b) => b.gp.idx)).toEqual([4, 5]);
+    expect(b2[1]!.chance).toBeCloseTo(chanceOf(two, 5, from), 12);
+    expect(b2[1]!.chance).toBeLessThan(b2[0]!.chance);
+    expect(unblocked(b2)).toBeCloseTo((1 - b2[0]!.chance) * (1 - b2[1]!.chance), 12);
+    const n = 20000;
+    const [a, b] = [shoot(one, n, 'block-one'), shoot(two, n, 'block-two')];
+    expect(Math.abs(a.block / n - b1[0]!.chance)).toBeLessThan(0.015);
+    expect(Math.abs(b.block / n - (1 - unblocked(b2)))).toBeLessThan(0.015);
+    expect(b.block).toBeGreaterThan(a.block);
+    // The nearer one draws first: the farther blocks only what gets past him.
+    const past = (1 - b2[0]!.chance) * b2[1]!.chance;
+    expect(Math.abs((b.by[5] ?? 0) / n - past)).toBeLessThan(0.015);
+    // A better reader of the play gets in the way more often.
+    const sharp = shotLab(from, { 4: [96, 34] });
+    sharp.players[1][4]!.base[ATTRIBUTES.indexOf('positioning')] = 90;
+    expect(shotBlockers(sharp, 0, from)[0]!.chance).toBeGreaterThan(b1[0]!.chance);
+  });
+
+  it('a shot with nobody in its path is never blocked', () => {
+    const from: Point = [90, 34];
+    // Beside the triangle to the posts by more than `lane` (1.76 m off its edge, 1.71 m square to
+    // it), a step behind the ball and well wide; the keeper is no outfielder.
+    const s = shotLab(from, { 4: [100, 38.2], 5: [89, 34], 6: [96, 25] });
+    expect(shotBlockers(s, 0, from)).toEqual([]);
+    expect(shoot(s, 5000, 'open').block).toBe(0);
+    // With nobody in its path the shot's xG is the chance's.
+    const tags = computeTags(s, 0, 9);
+    const o = resolveShot(s, 0, 9, tags, shotContext(s), random('open-xg'));
+    expect(o.xg).toBe(chanceXg(from, { pressure: tags.pressure, candidate: true }, s.math));
+    // 1.26 m off the edge (1.22 m square to it) he is in its path.
+    const edge = shotLab(from, { 4: [100, 37.7] });
+    expect(shotBlockers(edge, 0, from).map((b) => b.gp.idx)).toEqual([4]);
   });
 });
