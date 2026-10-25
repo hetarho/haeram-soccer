@@ -13,9 +13,10 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| v9n4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-25T12:05Z | 2026-10-25T12:05Z | T450 |
 
 ## inbox
-- 261025 suggest T286 ARCH-31 T441 T443 T426: T286's season throughput gate fails on the final candidate (seasons about 13 s rising to 21 s by season 61–80, budget 15 s; baseline 7.6 s median) → recommend a throughput task before T286 that profiles a candidate season and cuts the per-action cost added since T285 (the reach scans of T441–T446, the box scene of T443, the in-stride read of T426), keeping digests and football (alt: raise the budget, an owner decision under ARCH-31 | release with the switch off and measure later)
+- 261025 decided T286 ARCH-31 T450: T286's season throughput gate fails on the final candidate (seasons about 13 s rising to 21 s by season 61–80, budget 15 s; baseline 7.6 s median) → T450 (explore 5 h, delegated) profiles an early and a late-century candidate season and cuts the per-action and per-season cost with every digest unchanged, then T286 re-runs its `--seasons 100` gate: switch on if it passes, off with the exact follow-up if not (alt: raise the budget, an owner decision under ARCH-31 | release with the switch off and measure later)
 - 261025 decided T447 MATCH-14 MATCH-24 MATCH-33: T447 (delegated) moved the far-post zone 3 → 8 m and added a keeper claim of 0.15 on open-play lofted balls → goals 2.97 → 2.84 on validation round 70 (inside MATCH-23's 2.6–2.9, short of the task's 2.57–2.77), goal-area shots 7.1%, no row inside → outside; a far-post ball is now met outside the goal-area cell MATCH-14 names 파 포스트, and narration keeps reading the cell where the ball is met (alt: narrate the delivery's target zone, which MATCH-24's recorded-events rule does not allow)
 - 261025 decided T446 T447 T286: T446 (delegated) made lofted far-post balls arrive (0.2 → 22.9% reach their runner) but goals rose 2.77 → 3.06 on validation round 69, because the far-post zone sits 3 m out and every arriving ball is a goal-area finish → T447 (explore 1 h, delegated) sets the zone depths and the keeper's claim on lofted balls to bring goals back to 2.57–2.77 before T286 (alt: release at about 3.0 goals and leave it to T410 | a header block of 1.0, which undid T437's header fix)
 - 261025 decided MATCH-31 MATCH-33 T444 T446 T286: T444 left a structural question — the reach read no flight height, so the centre-backs cut out almost every lofted far-post ball (near post 1.5%, far post 0.03% reach their runner), and the delivery draw read no lanes → MATCH r30: a lofted delivery is contested only at the crosser's foot and at its zone, the choice reads the reach and does not deliver when every path is cut out; T446 (explore 2 h, delegated) before T286 holds T437's goals at 2.57–2.77 (alt: leave both and tune T437's numbers only | make every lofted pass fly over players now)
@@ -296,7 +297,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T446 T447 | todo |
+| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T446 T447 T450 | todo |
+| T450 | Cut the candidate's season cost to the 15 s budget without changing its football | ARCH MATCH | T447 | doing@261025.v9n4 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
 | T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | todo |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
@@ -316,11 +318,12 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- p4w8 hand-off (261025 21:10 KST, account switch): resume T286 from local branch task/v9n4-release/T286-main 97bfd1ea (worktree .claude/worktrees/agent-abeb76f2995c876f0): the season gate fails (candidate seasons 13 → 21 s against 15 s), so apply docs/benchmarks/t286/handoff/edit_switch_off.py, finish the measurements listed in T286's limits line, and keep the switch off until a throughput task passes the gate (see the inbox suggest)
-- work group v9n4-release: group branch work/v9n4-release f1400a8b+ holds T437, T446 and T447 (merged, not yet through the full gate, not pushed; main is f980e188). Unit gate = fast checks, group gate = full suite + Chromium, push off: run the group gate once on the final tree, then push main once
-- after T286: T435 → T432 → T433 → T410, T434 (main-session tasks, delegated to sub-sessions in p4w8)
+- T450 (throughput, delegated sub-session on task/v9n4-release/T450-main from the group head) → merge → T286 resumes from task/v9n4-release/T286-main 97bfd1ea with the group merged: re-run its `--seasons 100` gate (switch on if it passes, else docs/benchmarks/t286/handoff/edit_switch_off.py) and finish the measurements in its limits line
+- work group v9n4-release: group branch holds T437, T446, T447 (merged, not yet through the full gate, not pushed; main is f980e188). Unit gate = fast checks, group gate = full suite + Chromium, push off: run the group gate once on the final tree with T286, then push main once
+- after T286: T435 → T432 → T433 → T410, T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261025 create-task T450 (v9n4): the candidate season throughput before T286, T286 dep + T450
 - 261025 p4w8 session end (account switch): T286 handed off at 97bfd1ea with the season gate failing; T437/T446/T447 merged on the group branch, full gate pending
 - 261025 T447 done (delegated, merged): far-post zone 8 m, lofted claim 0.15, goals 2.84 on validation round 70
 - 261025 T446 done (delegated, merged): far-post reach 0.2 → 22.9%, goals 3.06 on validation round 69; create-task T447 (p4w8), T286 dep + T447
@@ -340,4 +343,3 @@
 - 261025 T438 final sync (u6p2): pulled docs-only b8358cc7, retained p4w8 planning/active state and T431 dep T426; verified runtime and browser sources unchanged
 - 261025 create-task T431 T435 T432 dep (p4w8): T431 dep T426 without the revision gate, its per-match computation moved to T435 (dep T286 T431), T432 dep T431 T435
 - 261025 T438 publication verified (u6p2): pulled 1e060b3b; units2061+4 existing skips/contracts39/static checks pass; Chromium272 covered after two entrance-motion assertion reruns pass; commit/push authorized, hosted CI follows
-- 261025 T438 browser assertion timing (u6p2): two new remedy contrast checks sampled entrance opacity 0 (ratio 1); wait for existing finite motion before reading the settled contrast; application code unchanged
