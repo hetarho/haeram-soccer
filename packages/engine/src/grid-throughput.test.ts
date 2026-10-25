@@ -77,19 +77,19 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T398's late box runs, for T399's flank beside a back three, for T426's in-stride carry, for
  * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene, for
  * T444's deliveries into the zones, for T445's shots through the bodies in front of goal and
- * their second balls, for T437's recalibration and for T446's lofted deliveries over the crowd,
- * the first tie of each kind; T345's were 20/4,
+ * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
+ * for T447's box zone depths, the first tie of each kind; T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
  * 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19,
  * T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2
  * and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1,
  * T443's 1/2, 0/1 and 6/3, T444's 5/2, 0/3 and 13/1, T445's 1/0, 7/4 and 2/0, T437's 1/0, 3/8
- * and 5/15).
+ * and 5/15, T446's 0/1, 0/3 and 2/0).
  */
 const CASES = {
-  1975: { extraTime: 0, shootout: 1 },
-  1995: { extraTime: 0, shootout: 3 },
-  2024: { extraTime: 2, shootout: 0 },
+  1975: { extraTime: 4, shootout: 2 },
+  1995: { extraTime: 2, shootout: 5 },
+  2024: { extraTime: 16, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -235,31 +235,39 @@ interface CandidateDigests {
  * 85545a9d5babc464 and positions 1975 28f2abb7b98fcda2, 21f7f1e0cd812d9f, 1995
  * 37a089dcee500268, c3030ced54399671, 2024 43ec6c13eaa7e33d, dc9b6c3acbe0737e. The pre-feature
  * facts did not move.
+ * T447's box zone depths (the far-post zone 3 → 8 m out, the keeper's claim on a lofted delivery
+ * +0.15; calibration round 76, core, 600 matches: goal-area shots 9.6 → 6.7%, far-post deliveries
+ * reaching their runner 21.9 → 17.2%, goals 3.00 → 2.73 a match; validation round 70, 2,400:
+ * goals 2.97 → 2.84) moved every value and the knockout ties (rescanned above); before it, facts
+ * 1975 bc50f6a7f405b359, e8a26e408c15f210, 56e3c0d6fe1112e8, 1995 cffd8027492b1613,
+ * fbb69ebb02f96b08, 8a7b5a6d07c12315, 2024 754fdc2ada509b3a, 66392957bbef0472, 99cc133dd7439a18
+ * and positions 1975 da77dcd869b05a14, 1cbbf86a7af506ac, 1995 734b72709cff6baf, 2c1aa9caf17259f1,
+ * 2024 1dae5f1755497eef, 2362ea450611199a. The pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'bc50f6a7f405b359',
-      extraTime: 'e8a26e408c15f210',
-      shootout: '56e3c0d6fe1112e8',
+      league: 'a29eb278c768540c',
+      extraTime: 'a74abb8cfd489a58',
+      shootout: 'cb404e2c025fb3f4',
     },
-    positions: { observed: 'da77dcd869b05a14', shootout: '1cbbf86a7af506ac' },
+    positions: { observed: '07c822b4e9c902d3', shootout: '10e90c63b1226de8' },
   },
   1995: {
     facts: {
-      league: 'cffd8027492b1613',
-      extraTime: 'fbb69ebb02f96b08',
-      shootout: '8a7b5a6d07c12315',
+      league: '7f87afd0e25ba811',
+      extraTime: 'dad4ff2e8fdfcf1a',
+      shootout: 'd84decf0069941c7',
     },
-    positions: { observed: '734b72709cff6baf', shootout: '2c1aa9caf17259f1' },
+    positions: { observed: 'fa795c0e24ba2c5e', shootout: 'd026d8cfaaeca681' },
   },
   2024: {
     facts: {
-      league: '754fdc2ada509b3a',
-      extraTime: '66392957bbef0472',
-      shootout: '99cc133dd7439a18',
+      league: '350be78318430d71',
+      extraTime: '7a6282dbe15f7b44',
+      shootout: 'e9132add2a2297e4',
     },
-    positions: { observed: '1dae5f1755497eef', shootout: '2362ea450611199a' },
+    positions: { observed: 'b9e0c5c071922d28', shootout: 'd79ba1087cbcb882' },
   },
 };
 

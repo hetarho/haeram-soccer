@@ -51,8 +51,12 @@ describe('the box scene (→MATCH-33, T443)', () => {
       expect(scene.zones.farPost[1]).toBeCloseTo(34 + post + Z.farPost.beyond, 9);
       expect(scene.zones.spot).toEqual([105 - Z.spot.out, 34]);
       expect(scene.zones.edge).toEqual([105 - Z.edge.out, 34]);
-      // Each post zone lies in its half of the goal-area centre (→MATCH-14's 니어/파 포스트).
+      // Each post zone lies on its side of the goal's middle (→MATCH-14's 니어/파 포스트): the near
+      // post in the goal area, the far post beyond the six-yard line in the box, where a lofted
+      // ball to it is met (T447, 8 m out).
       expect(scene.zones.nearPost[0]).toBeGreaterThanOrEqual(BAND_EDGES[7]);
+      expect(scene.zones.farPost[0]).toBeLessThan(BAND_EDGES[7]);
+      expect(scene.zones.farPost[0]).toBeGreaterThanOrEqual(BAND_EDGES[6]);
       expect(scene.zones.nearPost[1]).toBeLessThan(34);
       expect(scene.zones.farPost[1]).toBeGreaterThan(34);
       // On the right the posts swap, mirrored across the centre line.

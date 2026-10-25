@@ -74,11 +74,14 @@ export const BOX_CONFIG = {
   /**
    * The zones, in metres from the goal line (`out`) and across from the posts: the near post 3 m
    * inside the near post, the far post 1 m beyond the far post, the penalty spot and the edge of
-   * the box (아크 정면) on the goal's middle.
+   * the box (아크 정면) on the goal's middle. T447: the far post 8 m out, beyond the six-yard line,
+   * where a lofted ball to it is met (3 m before, inside the goal area; calibration round 76, core
+   * 600: goals 3.00 → 2.71 a match, goal-area shots 9.6 → 6.7%, 5.5 m 2.96, 6.5 m 2.91, 7.5 m
+   * 2.74). The near post's depth moved nothing (4.5 m 2.94, 5.5 m 3.00) and stays.
    */
   zones: {
     nearPost: { out: 3.5, inside: 3 },
-    farPost: { out: 3, beyond: 1 },
+    farPost: { out: 8, beyond: 1 },
     spot: { out: 11 },
     edge: { out: 19 },
   },
@@ -128,6 +131,12 @@ export const BOX_CONFIG = {
      * path (near post 2.34 → 1.95 a team against 1) and completes the most crosses (21.8%).
      */
     risk: 3,
+    /**
+     * The keeper's claim on a lofted delivery above `DUEL_CONFIG.cross.claim` (T447): 0.15. With
+     * the far post 8 m out it took validation round 70's 2,400 core matches from 2.85 to 2.84 goals
+     * a match, and far-post balls reaching their runner from 21.3 to 17.2% (calibration round 76).
+     */
+    claim: 0.15,
   },
   /**
    * The bodies in front of goal (T445, →MATCH-35; `shotBlockers`, `resolveShot`). Every outfield
