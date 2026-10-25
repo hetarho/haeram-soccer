@@ -45,6 +45,36 @@ export function peopleOf(w: World): readonly PersonCareer[] {
   if (!list) peopleLists.set(registry, (list = Object.values(registry)));
   return list;
 }
+/** Each world's active players by club, from `peopleOf`'s list (T450); dropped as one moves. */
+const playingIndexes = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; byClub: Map<string, PersonCareer[]> }
+>();
+/**
+ * The people playing for `club` now (`playing` active, `club` it), in the registry's order:
+ * `peopleOf(w).filter(...)` read from an index rebuilt after anyone joins the registry or changes
+ * whom or whether he plays for (`playingChanged`).
+ */
+export function playingFor(w: World, club: string): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = playingIndexes.get(w);
+  if (!hit || hit.people !== people) {
+    const byClub = new Map<string, PersonCareer[]>();
+    for (const person of people) {
+      if (person.playing !== 'active' || person.club === undefined) continue;
+      const list = byClub.get(person.club);
+      if (list) list.push(person);
+      else byClub.set(person.club, [person]);
+    }
+    hit = { people, byClub };
+    playingIndexes.set(w, hit);
+  }
+  return hit.byClub.get(club) ?? NOBODY;
+}
+/** Every write of a person's `playing` or `club` ends with this, so `playingFor` reads it. */
+export function playingChanged(w: World) {
+  playingIndexes.delete(w);
+}
 /** An ID an object orders first, as an array index, rather than by insertion. */
 const indexLike = (id: string) => /^(0|[1-9]\d*)$/.test(id) && Number(id) < 2 ** 32 - 1;
 function enrolled(registry: Registry, person: PersonCareer) {
@@ -141,6 +171,7 @@ export function openEmployment(
   if (role === 'player') {
     person.playing = 'active';
   }
+  playingChanged(w);
   return job;
 }
 export function closeEmployment(w: World, id: string, role: CareerRole, to = careerDate(w)) {
@@ -154,11 +185,19 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   if (remaining) person.club = remaining.club;
   else delete person.club;
   if (role === 'player') person.playing = 'released';
+  playingChanged(w);
   syncMentorExposure(w, person, to);
 }
 
-export const isCoachingRole = (role: CareerRole) =>
-  ['assistant', 'attack', 'defense', 'goalkeeping', 'fitness', 'youth'].includes(role);
+const COACHING_ROLES: readonly CareerRole[] = [
+  'assistant',
+  'attack',
+  'defense',
+  'goalkeeping',
+  'fitness',
+  'youth',
+];
+export const isCoachingRole = (role: CareerRole) => COACHING_ROLES.includes(role);
 const DAY_MS = 86400000;
 export const careerOrdinal = (date: CareerDate) =>
   Math.floor(Date.UTC(date.year, 7, 1) / DAY_MS) + date.day;
