@@ -80,12 +80,20 @@ const SHARED_DETAIL = (Object.keys(PD) as (keyof typeof PD)[]).filter(
   (key): key is keyof typeof PD & keyof typeof TD => key in TD,
 );
 
-function atMost(out: string[], what: string, part: number, whole: number) {
-  if (part > whole) out.push(`${what}: ${part} > ${whole}`);
+/** The label is joined only on a failure: a valid record builds no strings (T286, T450's read). */
+function atMost(out: string[], who: string, what: string, part: number, whole: number) {
+  if (part > whole) out.push(`${who} ${what}: ${part} > ${whole}`);
 }
-function rowIssues(out: string[], what: string, row: Metrics | undefined, width: number) {
-  if (row?.length !== width) out.push(`${what} width ${row?.length} ≠ ${width}`);
-  else if (row.some((v) => !Number.isSafeInteger(v) || v < 0)) out.push(`${what} holds ${row}`);
+function rowIssues(
+  out: string[],
+  who: string,
+  what: string,
+  row: Metrics | undefined,
+  width: number,
+) {
+  if (row?.length !== width) out.push(`${who} ${what} width ${row?.length} ≠ ${width}`);
+  else if (row.some((v) => !Number.isSafeInteger(v) || v < 0))
+    out.push(`${who} ${what} holds ${row}`);
 }
 
 /**
@@ -109,14 +117,14 @@ export function validateFullMatchRecord(r: MatchRecord): string[] {
   if (out.length) return out;
   const full = r as FullMatchRecord;
   for (const side of sides) {
-    rowIssues(out, `side ${side} metrics`, full.metrics[side], METRICS_SIZE);
-    rowIssues(out, `side ${side} detail`, full.detail[side], TEAM_DETAIL_SIZE);
+    rowIssues(out, `side ${side}`, 'metrics', full.metrics[side], METRICS_SIZE);
+    rowIssues(out, `side ${side}`, 'detail', full.detail[side], TEAM_DETAIL_SIZE);
     if (!(full.xg[side] >= 0) || !Number.isFinite(full.xg[side]))
       out.push(`side ${side} xG ${full.xg[side]}`);
   }
   for (const p of full.players) {
-    rowIssues(out, `${p.id} metrics`, p.metrics, METRICS_SIZE);
-    rowIssues(out, `${p.id} detail`, p.detail, PLAYER_DETAIL_SIZE);
+    rowIssues(out, p.id, 'metrics', p.metrics, METRICS_SIZE);
+    rowIssues(out, p.id, 'detail', p.detail, PLAYER_DETAIL_SIZE);
   }
   if (full.lineCounts[0] + full.lineCounts[1] !== full.players.length)
     out.push(`line split ${full.lineCounts} ≠ ${full.players.length} lines`);
@@ -155,33 +163,29 @@ function resultIssues(r: FullMatchRecord) {
       who = `side ${side}`;
     if (m[M.goals] !== goals[side]) out.push(`${who} goals ${m[M.goals]} ≠ score ${goals[side]}`);
     if (m[M.minutes] !== lengthOf(r)) out.push(`${who} match length ${m[M.minutes]}`);
-    atMost(out, `${who} completed passes`, m[M.completed]!, m[M.passes]!);
-    atMost(out, `${who} goals`, m[M.goals]!, m[M.onTarget]!);
-    atMost(out, `${who} shots on target`, m[M.onTarget]!, m[M.shots]!);
-    atMost(out, `${who} assists`, m[M.assists]!, t[TD.keyPasses]!);
-    atMost(out, `${who} key passes`, t[TD.keyPasses]!, m[M.shots]!);
-    atMost(out, `${who} big chances scored`, t[TD.bigChancesScored]!, t[TD.bigChances]!);
-    atMost(out, `${who} big chances scored`, t[TD.bigChancesScored]!, m[M.goals]!);
-    atMost(out, `${who} big chances`, t[TD.bigChances]!, t[TD.boxShots]!);
-    atMost(out, `${who} box shots`, t[TD.boxShots]!, m[M.shots]!);
+    atMost(out, who, 'completed passes', m[M.completed]!, m[M.passes]!);
+    atMost(out, who, 'goals', m[M.goals]!, m[M.onTarget]!);
+    atMost(out, who, 'shots on target', m[M.onTarget]!, m[M.shots]!);
+    atMost(out, who, 'assists', m[M.assists]!, t[TD.keyPasses]!);
+    atMost(out, who, 'key passes', t[TD.keyPasses]!, m[M.shots]!);
+    atMost(out, who, 'big chances scored', t[TD.bigChancesScored]!, t[TD.bigChances]!);
+    atMost(out, who, 'big chances scored', t[TD.bigChancesScored]!, m[M.goals]!);
+    atMost(out, who, 'big chances', t[TD.bigChances]!, t[TD.boxShots]!);
+    atMost(out, who, 'box shots', t[TD.boxShots]!, m[M.shots]!);
     atMost(
       out,
-      `${who} final-third completions`,
+      who,
+      'final-third completions',
       t[TD.finalThirdCompleted]!,
       t[TD.finalThirdPasses]!,
     );
-    atMost(out, `${who} crosses completed`, t[TD.crossesCompleted]!, t[TD.crosses]!);
-    atMost(
-      out,
-      `${who} through balls completed`,
-      t[TD.throughBallsCompleted]!,
-      t[TD.throughBalls]!,
-    );
-    atMost(out, `${who} penalties scored`, t[TD.penaltiesScored]!, t[TD.penalties]!);
-    atMost(out, `${who} dribbles`, m[M.dribbles]!, t[TD.takeOns]!);
-    atMost(out, `${who} final-third passes`, t[TD.finalThirdPasses]!, m[M.passes]!);
-    atMost(out, `${who} progressive passes`, t[TD.progressivePasses]!, m[M.completed]!);
-    atMost(out, `${who} build-up passes`, t[TD.buildUpPasses]!, m[M.passes]!);
+    atMost(out, who, 'crosses completed', t[TD.crossesCompleted]!, t[TD.crosses]!);
+    atMost(out, who, 'through balls completed', t[TD.throughBallsCompleted]!, t[TD.throughBalls]!);
+    atMost(out, who, 'penalties scored', t[TD.penaltiesScored]!, t[TD.penalties]!);
+    atMost(out, who, 'dribbles', m[M.dribbles]!, t[TD.takeOns]!);
+    atMost(out, who, 'final-third passes', t[TD.finalThirdPasses]!, m[M.passes]!);
+    atMost(out, who, 'progressive passes', t[TD.progressivePasses]!, m[M.completed]!);
+    atMost(out, who, 'build-up passes', t[TD.buildUpPasses]!, m[M.passes]!);
     if (m[M.shots] === 0 && r.xg[side] !== 0) out.push(`${who} xG without shots`);
   }
   return out;
@@ -201,57 +205,62 @@ function participationIssues(r: FullMatchRecord) {
         d = p.detail;
       minutes += m[M.minutes]!;
       if (m[M.minutes]! < 1 || m[M.minutes]! > length) out.push(`${p.id} minutes ${m[M.minutes]}`);
-      atMost(out, `${p.id} completed passes`, m[M.completed]!, m[M.passes]!);
-      atMost(out, `${p.id} goals`, m[M.goals]!, m[M.onTarget]!);
-      atMost(out, `${p.id} shots on target`, m[M.onTarget]!, m[M.shots]!);
+      atMost(out, p.id, 'completed passes', m[M.completed]!, m[M.passes]!);
+      atMost(out, p.id, 'goals', m[M.goals]!, m[M.onTarget]!);
+      atMost(out, p.id, 'shots on target', m[M.onTarget]!, m[M.shots]!);
       // An assist is the key pass of a goal (→MATCH-11): nobody assists more than he set up.
-      atMost(out, `${p.id} assists`, m[M.assists]!, d[PD.keyPasses]!);
-      atMost(out, `${p.id} dribbles`, m[M.dribbles]!, d[PD.takeOns]!);
+      atMost(out, p.id, 'assists', m[M.assists]!, d[PD.keyPasses]!);
+      atMost(out, p.id, 'dribbles', m[M.dribbles]!, d[PD.takeOns]!);
       atMost(
         out,
-        `${p.id} final-third completions`,
+        p.id,
+        'final-third completions',
         d[PD.finalThirdCompleted]!,
         d[PD.finalThirdPasses]!,
       );
-      atMost(out, `${p.id} crosses completed`, d[PD.crossesCompleted]!, d[PD.crosses]!);
+      atMost(out, p.id, 'crosses completed', d[PD.crossesCompleted]!, d[PD.crosses]!);
       atMost(
         out,
-        `${p.id} through balls completed`,
+        p.id,
+        'through balls completed',
         d[PD.throughBallsCompleted]!,
         d[PD.throughBalls]!,
       );
-      atMost(out, `${p.id} big chances created`, d[PD.bigChancesCreated]!, d[PD.keyPasses]!);
-      atMost(out, `${p.id} xG`, d[PD.xg]!, MAX_SHOT_XG * m[M.shots]!);
-      atMost(out, `${p.id} xA`, d[PD.xa]!, MAX_SHOT_XG * d[PD.keyPasses]!);
+      atMost(out, p.id, 'big chances created', d[PD.bigChancesCreated]!, d[PD.keyPasses]!);
+      atMost(out, p.id, 'xG', d[PD.xg]!, MAX_SHOT_XG * m[M.shots]!);
+      atMost(out, p.id, 'xA', d[PD.xa]!, MAX_SHOT_XG * d[PD.keyPasses]!);
     }
     if (minutes > 11 * length) out.push(`${who} minutes ${minutes} > ${11 * length}`);
-    const sum = (row: (p: FullMatchRecord['players'][number]) => Metrics, index: number) =>
-      lines.reduce((n, p) => n + row(p)[index]!, 0);
+    const metricSum = (index: number) => {
+      let n = 0;
+      for (const p of lines) n += p.metrics[index]!;
+      return n;
+    };
+    const detailSum = (index: number) => {
+      let n = 0;
+      for (const p of lines) n += p.detail[index]!;
+      return n;
+    };
     const team = r.metrics[side],
       detail = r.detail[side],
       opponent = r.detail[side === 0 ? 1 : 0];
     for (let index = 0; index < M.minutes; index++)
-      if (sum((p) => p.metrics, index) !== team[index])
-        out.push(
-          `${who} metric ${index}: players ${sum((p) => p.metrics, index)}, team ${team[index]}`,
-        );
+      if (metricSum(index) !== team[index])
+        out.push(`${who} metric ${index}: players ${metricSum(index)}, team ${team[index]}`);
     for (const key of SHARED_DETAIL)
-      if (sum((p) => p.detail, PD[key]) !== detail[TD[key]])
-        out.push(
-          `${who} ${key}: players ${sum((p) => p.detail, PD[key])}, team ${detail[TD[key]]}`,
-        );
+      if (detailSum(PD[key]) !== detail[TD[key]])
+        out.push(`${who} ${key}: players ${detailSum(PD[key])}, team ${detail[TD[key]]}`);
     atMost(
       out,
-      `${who} big chances created`,
-      sum((p) => p.detail, PD.bigChancesCreated),
+      who,
+      'big chances created',
+      detailSum(PD.bigChancesCreated),
       detail[TD.bigChances]!,
     );
-    if (sum((p) => p.detail, PD.foulsWon) !== opponent[TD.fouls])
-      out.push(
-        `${who} fouls won ${sum((p) => p.detail, PD.foulsWon)} ≠ opponent fouls ${opponent[TD.fouls]}`,
-      );
+    if (detailSum(PD.foulsWon) !== opponent[TD.fouls])
+      out.push(`${who} fouls won ${detailSum(PD.foulsWon)} ≠ opponent fouls ${opponent[TD.fouls]}`);
     // Player xG is each shot's rounded hundredths: within half a hundredth a shot of the side's.
-    const xg = sum((p) => p.detail, PD.xg),
+    const xg = detailSum(PD.xg),
       expected = Math.round(r.xg[side] * 100);
     if (Math.abs(xg - expected) > 0.5 + 0.5 * team[M.shots]!)
       out.push(`${who} player xG ${xg} against team ${expected}`);
