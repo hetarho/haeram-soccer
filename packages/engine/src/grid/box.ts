@@ -3,18 +3,19 @@
  * docs/MATCH-ENGINE-DESIGN.md §4.8). With the ball wide in the final third or in a cut-back zone
  * (MATCH-14), the attack occupies the box's zones with runs timed to the delivery and the defence
  * protects the same zones goal-side. The zones are points in the attacking side's frame, named by
- * the ball's side of the goal, so T444 can aim deliveries at them and T445 can drop second balls
+ * the ball's side of the goal: deliveries are played into them (T444) and T445 drops second balls
  * near them. Everything here reads the state and changes nothing: `coordination.ts` gives out the
  * jobs, `intentions.ts` keeps and ends them, `shape.ts` moves the players.
  */
-import type { Position, RoleId } from '../../../contracts/src/player';
+import type { Attribute, Position, RoleId } from '../../../contracts/src/player';
 import { lineOf } from '../player';
+import { CELL_BASELINES } from './baselines';
 import { byId, COORDINATION_CONFIG, gap } from './coordination';
-import { attackFrame, BAND_EDGES, clamp, laneOf, PITCH, toEngine } from './pitch';
+import { attackFrame, BAND_EDGES, cellOf, clamp, laneOf, PITCH, toEngine } from './pitch';
 import type { Point } from './pitch';
 import { BOX_ROLES, SHAPE_CONFIG } from './shape';
 import { SPOTS } from './spots';
-import { onPitch, other, slotOf, type GridPlayer, type GridState } from './state';
+import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 
 /** The zones the attack occupies, in the order a tie between equal distances takes them. */
 export const BOX_ZONES = ['nearPost', 'farPost', 'spot', 'edge'] as const;
@@ -23,6 +24,29 @@ export type BoxZone = (typeof BOX_ZONES)[number];
 export type BoxGuard = BoxZone | 'middle';
 /** The ball's side of the goal in the attacking side's frame: −1 its left (low y), 1 its right. */
 export type BallSide = -1 | 1;
+/** How a delivery is played into its zone (T444, `BOX_CONFIG.delivery.kinds`). */
+export type DeliveryKind = 'near' | 'far' | 'back' | 'square';
+/** The carrier's action each kind is (→MATCH-16's mix decides which he plays): a cut-back is pulled back. */
+export const DELIVERY_ACTION: Record<DeliveryKind, 'cross' | 'cutBack'> = {
+  near: 'cross',
+  far: 'cross',
+  square: 'cross',
+  back: 'cutBack',
+};
+/** A ball lofted into its zone (his head), against one played low to his feet. */
+export const lofted = (kind: DeliveryKind) => kind === 'far';
+
+/** Where a delivery is played (T444): the zone of a scene named for the ball's side, and how. */
+export interface DeliveryAim {
+  zone: BoxZone;
+  kind: DeliveryKind;
+  ball: BallSide;
+}
+/** A delivery the carrier may play: its aim, the runner arriving there and his weight in the draw. */
+export interface Delivery extends DeliveryAim {
+  runner: number;
+  score: number;
+}
 
 /**
  * A box-scene job an intention carries (T443): the zone a runner attacks or a defender guards, and
@@ -66,6 +90,27 @@ export const BOX_CONFIG = {
     line: [5.5, 11] as readonly [number, number],
     /** The share of its distance from the centre line a back-line player keeps as it narrows. */
     narrow: 0.6,
+  },
+  /**
+   * The delivery into the zones (T444, →MATCH-33). `kinds` by zone: `near` driven low to the near
+   * post, `far` lofted to the far post, `back` a cut-back to the spot or the edge, `square` low
+   * across the goal area to the far-post runner (from the goal-area band only, the cut-back zones
+   * included). A runner's weight in the draw is `free` × whether he arrives free (no opponent
+   * within `freeRadius` m of his zone) + `suit` × how the ball suits him (`lofted` or `low`, his
+   * attributes' 0–1 shares) + his zone's xT.
+   */
+  delivery: {
+    kinds: {
+      nearPost: ['near'],
+      farPost: ['far', 'square'],
+      spot: ['back'],
+      edge: ['back'],
+    } as Record<BoxZone, readonly DeliveryKind[]>,
+    free: 1,
+    freeRadius: 2,
+    suit: 0.8,
+    lofted: { heading: 0.6, strength: 0.4 } as Partial<Record<Attribute, number>>,
+    low: { finishing: 0.7, composure: 0.3 } as Partial<Record<Attribute, number>>,
   },
 } as const;
 
@@ -229,6 +274,48 @@ export function boxRunPoint(
 ): [number, number] {
   const p = boxZones(ball)[zone];
   return toEngine(side, attack ? p : [p[0] - B.load, p[1]]);
+}
+
+/** The point `side`'s delivery `aim` is played into (engine frame): its zone itself (T444). */
+export const deliveryPoint = (side: 0 | 1, aim: DeliveryAim): [number, number] =>
+  toEngine(side, boxZones(aim.ball)[aim.zone]);
+
+/** How a ball of `kind` suits `side`'s runner `idx`: his `lofted` or `low` attributes' 0–1 shares. */
+function suits(s: GridState, side: 0 | 1, idx: number, kind: DeliveryKind): number {
+  let sum = 0;
+  for (const [a, w] of Object.entries(lofted(kind) ? B.delivery.lofted : B.delivery.low))
+    sum += w! * (clamp(skill(s, side, idx, a as Attribute), 1, 99) / 99);
+  return sum;
+}
+
+/**
+ * The deliveries `side`'s carrier `idx` may play now (→MATCH-33, T444): one into each zone a
+ * teammate attacks in the box scene (`boxScene`'s runners, on the zone's run or picked for it), of
+ * each kind `delivery.kinds` names for it, a `square` ball only with the carrier in the goal-area
+ * band. None while the scene is off: the ball is not delivered blind. Each weighs `delivery.free`
+ * when no opponent stands within `freeRadius` m of the zone, `suit` × how the ball suits the runner
+ * (`suits`) and the zone's xT.
+ */
+export function deliveries(s: GridState, side: 0 | 1, idx: number): Delivery[] {
+  const scene = boxScene(s, side);
+  if (!scene) return [];
+  const D = B.delivery;
+  const byline = attackFrame(side, s.players[side][idx]!.pos)[0] >= BAND_EDGES[7];
+  const opponents = s.players[other(side)].filter(onPitch).map((gp) => attackFrame(side, gp.pos));
+  const out: Delivery[] = [];
+  for (const zone of BOX_ZONES) {
+    const runner = scene.runners[zone];
+    if (runner === undefined || runner === idx) continue;
+    const at = scene.zones[zone];
+    const free = opponents.every((o) => gap(o, at) > D.freeRadius) ? D.free : 0;
+    const threat = CELL_BASELINES[cellOf(at)]!.xT;
+    for (const kind of D.kinds[zone]) {
+      if (kind === 'square' && !byline) continue;
+      const score = free + D.suit * suits(s, side, runner, kind) + threat;
+      out.push({ zone, kind, ball: scene.ball, runner, score });
+    }
+  }
+  return out;
 }
 
 /**

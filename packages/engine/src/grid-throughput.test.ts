@@ -75,16 +75,17 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * selection and build-up interceptions, for T371's restarts, finishers and balanced block and for
  * T384's offside calls by 판단력, for T397's balls in behind, first touches and cut-backs, for
  * T398's late box runs, for T399's flank beside a back three, for T426's in-stride carry, for
- * T441's passes cut out where they are reached, for T442's shut lanes and for T443's box scene,
- * the first tie of each kind; T345's were 20/4, 1/16 and 9/5, T348's 7/10, 16/3 and 9/0, T365's
- * 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19, T384's 1/11, 7/9 and
- * 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2 and 3/1, T426's 7/2,
- * 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1).
+ * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene and
+ * for T444's deliveries into the zones, the first tie of each kind; T345's were 20/4, 1/16 and
+ * 9/5, T348's 7/10, 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's
+ * 26/6, 1/17 and 0/19, T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and
+ * 3/0, T399's 5/16, 7/2 and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's
+ * 2/16, 2/0 and 5/1, T443's 1/2, 0/1 and 6/3).
  */
 const CASES = {
-  1975: { extraTime: 1, shootout: 2 },
-  1995: { extraTime: 0, shootout: 1 },
-  2024: { extraTime: 6, shootout: 3 },
+  1975: { extraTime: 3, shootout: 36 },
+  1995: { extraTime: 8, shootout: 13 },
+  2024: { extraTime: 10, shootout: 1 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -186,31 +187,41 @@ interface CandidateDigests {
  * f74becf51e0b99f0, 2024 bcafe9152a69d3bd, f287fc350d1045ad, a3b4e932e381fdac and positions 1975
  * 350a67f60513a2fc, a3b25d3bce2120b5, 1995 5b66267c6e2a4fcc, 44a1e8a1de4f43c1, 2024
  * 8dd31f09ec973fcc, 4aa3c8bbf628efb6. The pre-feature facts did not move.
+ * T444's deliveries into the zones (a cross or cut-back only into a zone a teammate attacks, its
+ * runner drawn by how free he arrives, how the ball suits him and the zone's xT, the ball cut out
+ * by an opponent who cleanly reaches its path or a low ball's zone, and the deliveries counted by
+ * kind in the diagnostics; calibration round 72, core, 600 matches: crosses 22.6 → 14.3 a team
+ * with completion 23.4 → 16.7%, cut-backs 0.29 → 0.31, shots 14.3 → 15.4, goals 3.73 → 4.31 a
+ * match) moved every value and the knockout ties (rescanned above); before it, facts 1975
+ * 3f9cfdff85bd45ef, 9a6f5a42fdd5fe59, bc3460cfeb8a48ad, 1995 422b64c39c11e06e, 9fae62be96978f74,
+ * 3c108dbb0e02b660, 2024 30f08f0bf85411b6, 8964a2388fd5bb2a, 32b65f20c115078e and positions 1975
+ * 31842e9f5af0aee9, f154cf1da07db9ff, 1995 38a0baf0b245e582, 75cdf7850cb39d75, 2024
+ * 5df9e432ad3cc5ac, 28c832067a6702c5. The pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '3f9cfdff85bd45ef',
-      extraTime: '9a6f5a42fdd5fe59',
-      shootout: 'bc3460cfeb8a48ad',
+      league: '37cc6a07a1add078',
+      extraTime: 'f07517b5f6ae9fc7',
+      shootout: '303e602d3be24d75',
     },
-    positions: { observed: '31842e9f5af0aee9', shootout: 'f154cf1da07db9ff' },
+    positions: { observed: '19eebee57a49c51a', shootout: '7d6757d94c05672e' },
   },
   1995: {
     facts: {
-      league: '422b64c39c11e06e',
-      extraTime: '9fae62be96978f74',
-      shootout: '3c108dbb0e02b660',
+      league: '9ca04af35219e3ab',
+      extraTime: '07abb83f8c9e5bc8',
+      shootout: 'ee35e4b753cc6063',
     },
-    positions: { observed: '38a0baf0b245e582', shootout: '75cdf7850cb39d75' },
+    positions: { observed: '3452e34c842f986c', shootout: 'd6170d0419914f67' },
   },
   2024: {
     facts: {
-      league: '30f08f0bf85411b6',
-      extraTime: '8964a2388fd5bb2a',
-      shootout: '32b65f20c115078e',
+      league: 'faff38bf949c34eb',
+      extraTime: 'b5b60ff00bd10754',
+      shootout: '9f4b34017ace8c45',
     },
-    positions: { observed: '5df9e432ad3cc5ac', shootout: '28c832067a6702c5' },
+    positions: { observed: 'e9b5bcd60a6046f3', shootout: '664638a35782d4e3' },
   },
 };
 

@@ -5,6 +5,7 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { actionWeight } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
+import { BOX_CONFIG, boxScene, DELIVERY_ACTION } from './box';
 import {
   actionMix,
   ACTIONS,
@@ -721,11 +722,14 @@ describe('grid decisions', () => {
     expect(firstTouch(true, 3, true) / firstTouch(true, 1, true)).toBeCloseTo(3, 9);
     expect(firstTouch(true, 3, false)).toBeCloseTo(firstTouch(true, 1, false), 12);
     expect(firstTouch(false, 3, true)).toBeCloseTo(firstTouch(false, 1, true), 12);
-    // Cut-back share: of a cut-back zone's crosses, the candidate's share is played back.
+    // Cut-back share: of a cut-back zone's crosses, the candidate's share is played back (with a
+    // runner for each, T444: the other forward on the near post, a box-to-box midfielder on the spot).
     const cutBack = (candidate: boolean, share: number) =>
       withCandidate({ cutBackShare: share }, () => {
         const sc = scene(ST, centre(7, 1));
         if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        place(sc.s, 10, [97, 33]);
+        place(sc.s, 7, [92, 34]);
         const mix = actionMix(sc.s, 0, ST, sc.tags());
         return mix.cutBack / (mix.cutBack + mix.cross);
       });
@@ -773,6 +777,87 @@ describe('grid decisions', () => {
     // Within it, and on the pre-feature model, no change.
     expect(ratio(true, 10, patience)).toBeCloseTo(ratio(true, 10, neutral), 12);
     expect(ratio(false, 40, patience)).toBeCloseTo(ratio(false, 40, neutral), 12);
+  });
+
+  it('a cross goes to a zone a teammate attacks (T444)', () => {
+    // The left wing-back wide in the final third (3-5-2): the strikers short of the posts, the
+    // box-to-box midfielder short of the spot and the mezzala short of the edge.
+    const attack = (candidate: boolean) => {
+      const sc = scene(1, [92, 6]);
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      place(sc.s, 9, [96, 32]);
+      place(sc.s, 10, [97, 40]);
+      place(sc.s, 7, [90, 34]);
+      place(sc.s, 8, [82, 34]);
+      return sc;
+    };
+    const sc = attack(true);
+    const { runners } = boxScene(sc.s, 0)!;
+    expect(runners).toEqual({ nearPost: 9, farPost: 10, spot: 7, edge: 8 });
+    const tags = sc.tags();
+    const r = random('t444-cross');
+    const zones = new Set<string>();
+    let crosses = 0;
+    for (let i = 0; i < 4000; i++) {
+      const d = decide(sc.s, 0, 1, tags, r);
+      if (d.action !== 'cross' && d.action !== 'cutBack') continue;
+      // No cut-back short of the cut-back zones: a cross, into a zone, to the runner attacking it.
+      expect(d.action).toBe('cross');
+      crosses++;
+      const { zone, kind } = d.delivery!;
+      expect(d.target).toBe(runners[zone]);
+      expect(BOX_CONFIG.delivery.kinds[zone]).toContain(kind);
+      expect(DELIVERY_ACTION[kind]).toBe('cross');
+      zones.add(zone);
+    }
+    expect(crosses).toBeGreaterThan(100);
+    // Driven to the near post or lofted to the far post; nothing squared short of the byline.
+    expect([...zones].sort()).toEqual(['farPost', 'nearPost']);
+    // The pre-feature model still plays it to a teammate in the box, aiming at no zone.
+    const old = attack(false);
+    const r2 = random('t444-cross');
+    for (let i = 0; i < 1000; i++) {
+      const d = decide(old.s, 0, 1, old.tags(), r2);
+      if (d.action === 'cross') expect(d.delivery).toBeUndefined();
+    }
+  });
+
+  it('no cross or cut-back with nobody attacking a zone (T444)', () => {
+    // A striker in a cut-back zone with nobody of his side near the box.
+    const lone = (candidate: boolean) => {
+      const sc = scene(ST, centre(7, 1));
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      return sc;
+    };
+    const pre = lone(false);
+    const before = actionMix(pre.s, 0, ST, pre.tags());
+    expect(before.cross).toBeGreaterThan(0);
+    expect(before.cutBack).toBeGreaterThan(0);
+    const sc = lone(true);
+    expect(boxScene(sc.s, 0)!.runners).toEqual({});
+    const mix = actionMix(sc.s, 0, ST, sc.tags());
+    expect(mix.cross).toBe(0);
+    expect(mix.cutBack).toBe(0);
+    // He carries, passes or shoots by the rest of the table.
+    expect(ACTIONS.reduce((sum, a) => sum + mix[a], 0)).toBeCloseTo(1, 9);
+    expect(mix.shot).toBeGreaterThan(0);
+    const r = random('t444-blind');
+    const tags = sc.tags();
+    for (let i = 0; i < 2000; i++)
+      expect(['cross', 'cutBack']).not.toContain(decide(sc.s, 0, ST, tags, r).action);
+    // One zone attacked: the other forward on the near post lets him cross but not cut back, a
+    // midfielder on the spot the other way round.
+    const withRunner = (idx: number, p: Point) => {
+      const x = lone(true);
+      place(x.s, idx, p);
+      return actionMix(x.s, 0, ST, x.tags());
+    };
+    const nearPost = withRunner(10, [97, 33]);
+    expect(nearPost.cross).toBeGreaterThan(0);
+    expect(nearPost.cutBack).toBe(0);
+    const spot = withRunner(7, [92, 34]);
+    expect(spot.cross).toBe(0);
+    expect(spot.cutBack).toBeGreaterThan(0);
   });
 
   it('weighs a forward pass into the final third and stretches a carry outside the box, on the candidate model only (T408)', () => {
