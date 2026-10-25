@@ -366,8 +366,9 @@ export function unblocked(blockers: readonly ShotBlocker[]): number {
  * (the blocker or the keeper, who met it) for `land` (`side`'s attack frame, kept on the pitch),
  * the shot struck `kickAt` seconds from now and reaching him its flight later. Whoever of either
  * side `reachOnPath` finds first on that path wins it where it meets him (the same point: more
- * time in hand first, then the defending side, then player ID); with nobody reaching it the one
- * who runs to its resting place soonest (`reachSeconds`) wins it there. `via` himself plays no part.
+ * time in hand first, then the defending side); with nobody reaching it the one who runs to its
+ * resting place soonest (`reachSeconds`, equal times by player ID) wins it there. `via` himself
+ * plays no part: he stands where he met the shot until it is won (`playGrid`'s motion).
  */
 export function secondBall(
   s: GridState,
@@ -384,22 +385,17 @@ export function secondBall(
   ]);
   const off = kickAt + flightSeconds(shooter.pos, start, 'shot');
   const leave = (gp: GridPlayer) => gp === via;
-  // `reachOnPath` reads the opponents of the side it is given: the defenders, then the attackers.
-  const reaches = [
-    reachOnPath(s, side, start, end, off, leave).first,
-    reachOnPath(s, other(side), start, end, off, leave).first,
-  ];
-  let first: LaneReach | undefined;
-  for (const reach of reaches)
-    if (
-      reach &&
-      (!first ||
-        reach.along < first.along ||
-        (reach.along === first.along &&
-          (reach.spare > first.spare ||
-            (reach.spare === first.spare && byId(reach.gp, first.gp) < 0))))
-    )
-      first = reach;
+  // `reachOnPath` reads the opponents of the side it is given: the defenders' first, then the
+  // attackers', who take it only by meeting it earlier or, at the same point, with more in hand.
+  const defence = reachOnPath(s, side, start, end, off, leave).first;
+  const attack = reachOnPath(s, other(side), start, end, off, leave).first;
+  const first =
+    attack &&
+    (!defence ||
+      attack.along < defence.along ||
+      (attack.along === defence.along && attack.spare > defence.spare))
+      ? attack
+      : defence;
   if (first) return { via: start, at: first.at, winner: [first.gp.side, first.gp.idx] };
   let best: { gp: GridPlayer; t: number } | undefined;
   for (const roster of [s.players[other(side)], s.players[side]])
@@ -433,12 +429,16 @@ export function blockRebound(from: Point, by: Point, r: () => number): Point {
 /**
  * Where a save the keeper at `keeper` parries loose falls (T445, the attack frame): `rebound.save`
  * m out from him, `rebound.wide` m sideways a metre out toward the side of the goal the shot came
- * from (`from`), one draw each.
+ * from (`from`), one draw each; a shot from the goal's middle line (a penalty from its spot) is
+ * pushed to a side one more draw picks.
  */
 export function saveRebound(from: Point, keeper: Point, r: () => number): Point {
   const R = BOX_CONFIG.shot.rebound;
+  const mid = PITCH.width / 2;
   const d = R.save[0] + (R.save[1] - R.save[0]) * r();
-  const wide = (R.wide[0] + (R.wide[1] - R.wide[0]) * r()) * (from[1] < PITCH.width / 2 ? -1 : 1);
+  const spread = R.wide[0] + (R.wide[1] - R.wide[0]) * r();
+  const toward = from[1] < mid ? -1 : from[1] > mid ? 1 : r() < 0.5 ? -1 : 1;
+  const wide = spread * toward;
   const n = Math.sqrt(1 + wide * wide);
   return [keeper[0] - d / n, keeper[1] + (wide / n) * d];
 }

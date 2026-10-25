@@ -98,13 +98,18 @@ export interface TraceEntry {
   /**
    * Candidate model only (T359, →MATCH-12/17): on a restart prepared on the clock, every slot at
    * its kick, the instant `restartTaken` runs — where the walk-in ended and the restart's
-   * intentions (the places walked to) still held. The entry itself is after the delivery. Absent
-   * on older traces, at a period's kick-off and on the pre-feature path.
+   * intentions (the places walked to) still held. On a shot after an in-stride carry (T445),
+   * every slot at its kick, where the carry took them. The entry itself is after the delivery or
+   * the shot. Absent on older traces, at a period's kick-off, on other open play and on the
+   * pre-feature path.
    */
   kick?: TraceKick;
 }
 
-/** A restart's kick (`TraceEntry.kick`): the clock and every slot, laid out as an entry's. */
+/**
+ * A restart's or a carried shot's kick (`TraceEntry.kick`): the clock and every slot, laid out as
+ * an entry's.
+ */
 export type TraceKick = Pick<
   TraceEntry,
   'elapsed' | 'positions' | 'slots' | 'targets' | 'states' | 'intentions'

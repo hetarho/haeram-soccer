@@ -5,8 +5,8 @@ import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { BOX_CONFIG } from './box';
-import { reachOnPath } from './lanes';
-import { benchPoint, flightSeconds, IN_STRIDE_CONFIG } from './movement';
+import { LANE_CONFIG, reachOnPath } from './lanes';
+import { benchPoint, flightSeconds, IN_STRIDE_CONFIG, type MotionKnot } from './movement';
 import { attackFrame, inBox, toEngine, type Point } from './pitch';
 import { M, Tally } from './record';
 import { saveRebound, secondBall } from './resolve';
@@ -109,12 +109,22 @@ function receptions(id: string) {
   }
 }
 
+/** A slot's place in a snapshot (the trace's 32-bit positions). */
+const placeIn = (snap: Pick<TraceEntry, 'positions' | 'slots'>, [side, idx]: [0 | 1, number]) => {
+  const slot = Array.from(snap.slots).indexOf(idx, side * 11);
+  return [snap.positions[slot * 2]!, snap.positions[slot * 2 + 1]!] as [number, number];
+};
+
 /**
- * Every open-play shot of observed candidate fixtures whose block or save stayed in play (T445):
- * its flight touches the blocker or keeper on the way to its second ball. With the next touch and
- * where the man who met the shot stood (the entry's 32-bit positions). Played once, shared.
+ * Every shot of observed candidate fixtures whose block or save stayed in play (T445), in open
+ * play or at a restart: its flight touches the blocker or keeper on the way to its second ball (a
+ * set-piece header touches its header taker first). With that touch, the next touch, and where
+ * playback draws the man who met the shot at the touch's time: like every player but the actor
+ * (`positionAt`), on the line from his place in the snapshot before it — the entry's recorded kick
+ * when that comes first, else the entry before — to his place in the entry's own. Played once.
  */
-let looseShots: { e: TraceEntry; next?: TraceEntry; met: [number, number] }[] | undefined;
+let looseShots:
+  { e: TraceEntry; touch: MotionKnot; drawn: [number, number]; next?: TraceEntry }[] | undefined;
 function secondBalls() {
   if (looseShots) return looseShots;
   looseShots = [];
@@ -123,12 +133,16 @@ function secondBalls() {
     expect(validateFullMatchRecord(record), record.id).toEqual([]);
     const plays = trace!.filter((x) => x.outcome !== 'incident');
     plays.forEach((e, k) => {
-      if (e.action !== 'shot' || e.spot || (e.result !== 'save' && e.result !== 'block')) return;
-      if (!e.knots?.some((knot) => knot.kind === 'touch')) return;
-      const slot = Array.from(e.slots).indexOf(e.by![1], e.by![0] * 11);
-      const met: [number, number] = [e.positions[slot * 2]!, e.positions[slot * 2 + 1]!];
+      if (e.result !== 'save' && e.result !== 'block') return;
+      const touches = (e.knots ?? []).filter((knot) => knot.kind === 'touch');
+      if (touches.length !== (e.receiver !== undefined ? 2 : 1)) return;
+      const touch = touches.at(-1)!;
+      const before = e.kick && e.kick.elapsed < touch.at ? e.kick : trace![trace!.indexOf(e) - 1]!;
+      const [a, b] = [placeIn(before, e.by!), placeIn(e, e.by!)];
+      const f = (touch.at - before.elapsed) / (e.elapsed - before.elapsed);
+      const drawn: [number, number] = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
       const next = plays[k + 1]?.period === e.period ? plays[k + 1] : undefined;
-      looseShots!.push({ e, ...(next ? { next } : {}), met });
+      looseShots!.push({ e, touch, drawn, ...(next ? { next } : {}) });
     });
   }
   return looseShots;
@@ -436,6 +450,18 @@ describe('grid engine', () => {
       expect(land[0]).toBeLessThan(keeperAt[0]);
       expect(Math.sign(land[1] - keeperAt[1])).toBe(wide);
     }
+    // From the goal's middle line (a penalty from its spot) one more draw picks the side.
+    const draws =
+      (...v: number[]) =>
+      () =>
+        v.shift() ?? 0;
+    for (const [pick, wide] of [
+      [0.2, -1],
+      [0.8, 1],
+    ] as const) {
+      const land = saveRebound([94, 34], keeperAt, draws(0.5, 0.5, pick));
+      expect(Math.sign(land[1] - keeperAt[1])).toBe(wide);
+    }
     // A keeper's parry from a shot struck at (92, 28): whoever of either side reaches its path
     // first plays it where it meets him, never the keeper who parried it.
     const from: Point = [92, 28];
@@ -447,12 +473,23 @@ describe('grid engine', () => {
         model: MATCH_MODEL_REVISION,
       });
       const s = createState(setup);
+      // Every skill 60 with no day shift, so only where they stand tells them apart.
+      s.setup.shift = [0, 0];
       for (const roster of s.players)
-        for (const gp of roster) gp.pos = [20 + 10 * gp.side, 4 + 5 * gp.idx];
+        for (const gp of roster) {
+          gp.pos = [20 + 10 * gp.side, 4 + 5 * gp.idx];
+          gp.base.fill(60);
+        }
       s.players[1][0]!.pos = [...keeperAt];
       s.players[0][9]!.pos = [...from];
-      s.players[0][8]!.pos = [...attacker];
-      s.players[1][3]!.pos = [...defender];
+      for (const [gp, at] of [
+        [s.players[0][8]!, attacker],
+        [s.players[1][3]!, defender],
+      ] as const) {
+        gp.pos = [...at];
+        // His top speed reads his own 속도 (`speedOf`): the same for both, on a copy of him.
+        gp.player = { ...gp.player, attrs: { ...gp.player.attrs, pace: 60 } };
+      }
       const keeper = s.players[1][0]!;
       const ball = secondBall(s, 0, s.players[0][9]!, keeper, land, 0);
       // Each side's first reach, read independently (`reachOnPath` reads the other side's men).
@@ -476,25 +513,37 @@ describe('grid engine', () => {
     const d = lab(beyond, onPath);
     expect(d.ball.winner).toEqual([1, 3]);
     expect(d.ball.at).toEqual(d.byDefence!.at);
+    // Both on the same spot, they meet it at the same point with as much in hand: the defending
+    // side plays it.
+    const level = lab(onPath, onPath);
+    expect(level.byAttack!.along).toBe(level.byDefence!.along);
+    expect(level.byAttack!.spare).toBe(level.byDefence!.spare);
+    expect(level.ball.winner).toEqual([1, 3]);
     // With nobody near its path it comes to rest where it falls, for whoever gets there first.
     const far = lab([30, 10], [40, 10]);
     expect(far.byAttack).toBeUndefined();
     expect(far.byDefence).toBeUndefined();
     expect(far.ball.at).toEqual(far.end);
     expect(far.ball.winner).not.toEqual([1, 0]);
-    // In observed play every parry flies on from the keeper to the man who meets it, out from
-    // the keeper within `save` m, and that man plays the next ball from there.
-    const saves = secondBalls().filter(({ e }) => e.result === 'save');
+    // In observed play every block and parry left in play, in open play or at a restart, meets the
+    // man who blocked or parried it at the shot's speed where playback draws him as it arrives:
+    // he stands there until the second ball is won, and a shot after an in-stride carry records
+    // every slot at its kick (→MATCH-12).
+    const loose = secondBalls();
+    expect(loose.filter(({ e }) => e.result === 'block').length).toBeGreaterThan(20);
+    expect(loose.filter(({ e }) => e.spot !== undefined).length).toBeGreaterThan(2);
+    for (const { e, touch, drawn } of loose) {
+      const knots = e.knots!;
+      const off = knots[knots.indexOf(touch) - 1]!;
+      expect(touch.at - off.at).toBeCloseTo(flightSeconds(off.ball, touch.ball, 'shot'), 6);
+      const gap = Math.hypot(drawn[0] - touch.ball[0], drawn[1] - touch.ball[1]);
+      expect(gap, `${e.action} ${e.result} at ${touch.at}`).toBeLessThanOrEqual(LANE_CONFIG.reach);
+    }
+    // Every parry flies on from the keeper to the man who meets it, out from the keeper within
+    // `save` m, and that man plays the next ball from there.
+    const saves = loose.filter(({ e }) => e.result === 'save');
     expect(saves.length).toBeGreaterThan(4);
-    for (const { e, next, met } of saves) {
-      const kick = e.knots!.find((k) => k.kind === 'kick')!;
-      const touch = e.knots!.findLast((k) => k.kind === 'touch')!;
-      // It meets the keeper at the shot's speed where he stood at the kick: where the entry holds
-      // him with no carry before the shot, within his run during one (it holds the decision's places).
-      expect(touch.at - kick.at).toBeCloseTo(flightSeconds(kick.ball, touch.ball, 'shot'), 6);
-      const carried = e.knots![0]!.kind === 'carry' ? kick.at - e.knots![0]!.at : 0;
-      const moved = Math.hypot(touch.ball[0] - met[0], touch.ball[1] - met[1]);
-      expect(moved).toBeLessThanOrEqual(carried * 10 + 1e-3);
+    for (const { e, next, touch } of saves) {
       expect(e.knots!.at(-1)!).toMatchObject({ kind: 'receive', ball: e.to });
       const to = e.to!;
       expect(Math.hypot(to[0] - touch.ball[0], to[1] - touch.ball[1])).toBeLessThanOrEqual(

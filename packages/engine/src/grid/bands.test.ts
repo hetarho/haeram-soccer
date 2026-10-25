@@ -63,7 +63,7 @@ describe('grid engine distributions', () => {
 
     expect(goals / n).toBeGreaterThanOrEqual(2.0);
     // The released candidate (vitest.release-on.config.ts) played these 120 at 3.7 after T444's
-    // deliveries into the zones; T445's bodies in front of goal took it to 2.89, so the ceiling is
+    // deliveries into the zones; T445's bodies in front of goal took it to 2.97, so the ceiling is
     // 3.6 again. The pre-feature path plays them at 2.57, unmoved by either.
     expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(shots / n / 2).toBeGreaterThanOrEqual(9);
@@ -114,7 +114,7 @@ describe('grid engine distributions', () => {
     // so the goals come from the no-blind rule, carriers who no longer cross blind carrying,
     // passing and shooting in the box), so the ceiling stood at that level. T445's bodies in front
     // of goal (each outfielder in the shot's path blocks it before the keeper; round 73's 600 core
-    // matches 4.09 → 2.96) took these 80 to 3.1875, so the ceiling is 3.6 again.
+    // matches 4.09 → 2.96) took these 80 to 3.1625, so the ceiling is 3.6 again.
     expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);

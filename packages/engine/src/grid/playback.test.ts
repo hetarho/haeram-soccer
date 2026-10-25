@@ -540,7 +540,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
           // The entry just before: the dead ball, or an incident at its time.
           last: trace[n - 1],
           next: later[0]?.elapsed ?? Infinity,
-          // A restart next: its preparation shows its own places from the delivery's end (T359).
+          // A recorded kick next (a restart's preparation, T359, or a carried shot's kick, T445): from
+          // the delivery's end until that kick the samples show its snapshot.
           prepared: later[0]?.kick !== undefined,
           since: retrieve.at + e.dead!,
           window: samples.filter(
@@ -939,7 +940,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       );
       trace.forEach((e, n) => {
         const kick = e.kick;
-        if (!kick) return;
+        // A restart's kick; a shot after an in-stride carry records its kick too (T445).
+        if (!kick || !e.spot) return;
         // The entry before: the dead ball, or an incident at its time; then the preparation.
         const a = trace[n - 1]!;
         expect(a.period).toBe(e.period);

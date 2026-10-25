@@ -519,6 +519,10 @@ export function playGrid(setup: GridSetup): GridResult {
         if (p !== owner && p !== gp && onPitch(p))
           plan.push({ gp: p, before: to, readAt: readAt(s, p, actor[0], windUp) });
       });
+    // A second ball (T445): the blocker or keeper stands where he meets the shot, as `secondBall`
+    // read him, until it is won; he plays no part in it (→MATCH-12).
+    if (o !== 'offside' && o.kind === 'shot' && o.via && o.by !== undefined)
+      plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
     const knots: MotionKnot[] = [];
     if (carry)
       knots.push(
@@ -1040,6 +1044,10 @@ export function playGrid(setup: GridSetup): GridResult {
         const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
+        // A shot after his carry (T445): an observed match records every slot at its kick, as a
+        // restart's (T359), so playback draws the bodies in its path, and the blocker or keeper a
+        // second ball leaves from, where the carry took them (→MATCH-12). It only reads the state.
+        if (carry && d.action === 'shot') tracer.kick(s);
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d, jitter, carry, finish);
