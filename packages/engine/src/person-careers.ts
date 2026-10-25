@@ -433,7 +433,8 @@ export function activeCoachingEmployment(w: World) {
     hit = coachingIndexes.get(w);
   if (hit && hit.people === w.people && hit.version === version) return hit.active;
   const active: { person: PersonCareer; job: CareerEmployment }[] = [];
-  for (const person of peopleOf(w))
+  // Only someone who ever coached holds a coaching job (`coachingPeople`, T450).
+  for (const person of coachingPeople(w))
     for (const job of person.employment)
       if (!job.to && isCoachingRole(job.role)) active.push({ person, job });
   coachingIndexes.set(w, { people: w.people, version, active });
