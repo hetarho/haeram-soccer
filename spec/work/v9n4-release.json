@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-25T04:15:51.406Z",
-  "sourceCommit": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
+  "snapshotAt": "2026-10-25T04:35:28.540Z",
+  "sourceCommit": "a7135c1f1eb930840bb2a018a9be791d058cf4e4",
   "group": {
     "id": "v9n4-release",
     "branch": "work/v9n4-release",
@@ -12,6 +12,26 @@
       "reviewers": 1,
       "maxPending": 8
     },
+    "verified": {
+      "commit": "a7135c1f1eb930840bb2a018a9be791d058cf4e4",
+      "checks": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+          "startedAt": "2026-10-25T04:16:22.549Z",
+          "finishedAt": "2026-10-25T04:35:25.745Z"
+        }
+      ],
+      "at": "2026-10-25T04:35:25.929Z",
+      "excluded": [
+        "T286",
+        "T410",
+        "T432",
+        "T433",
+        "T434",
+        "T435",
+        "T437"
+      ]
+    },
     "push": null,
     "review": "risky",
     "pushed": {
@@ -20,7 +40,7 @@
       "remote": "origin",
       "at": "2026-10-25T00:38:42.828Z"
     },
-    "runner": {
+    "lastRun": {
       "id": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
       "adapter": "builtin",
       "providers": {
@@ -43,49 +63,10 @@
         }
       ],
       "startedAt": "2026-10-25T02:30:32.382Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "9ed81f4a-8ad0-4e62-a900-bc192e17e38d",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-25T00:04:27.803Z",
-      "stoppedAt": "2026-10-25T02:30:14.235Z",
-      "dispatched": 7,
-      "outcome": "interrupted",
-      "failures": [
-        {
-          "attempt": "68434180-9531-4e3c-9d35-152266d150ed",
-          "role": "worker",
-          "error": "adapter timeout"
-        },
-        {
-          "attempt": "68434180-9531-4e3c-9d35-152266d150ed",
-          "submissionId": "343824c1-45f6-4035-bb52-b405962d7021",
-          "commit": "07e715421b8606c176d8124e95853525860f288a",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        }
-      ],
+      "stoppedAt": "2026-10-25T04:35:26.490Z",
+      "dispatched": 4,
+      "outcome": "main-session",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -1953,6 +1934,8 @@
       "submittedBase": "9c16eb1af204624f979a64cf7ae06a41c5e8c462",
       "submissionId": "02a0a702-bc90-406e-90ad-b05a114daff4",
       "submittedAt": "2026-10-25T04:07:50.191Z",
+      "integratedCommit": "a7135c1f1eb930840bb2a018a9be791d058cf4e4",
+      "integratedAt": "2026-10-25T04:16:21.276Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -2073,6 +2056,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-25T04:05:17.326Z",
           "finishedAt": "2026-10-25T04:07:49.797Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-25T04:15:51.512Z",
+          "finishedAt": "2026-10-25T04:16:21.053Z"
         }
       ]
     }
@@ -12633,6 +12623,111 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1309,
+      "at": "2026-10-25T04:16:21.199Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-25T04:15:51.512Z",
+            "finishedAt": "2026-10-25T04:16:21.053Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1310,
+      "at": "2026-10-25T04:16:21.276Z",
+      "type": "attempt",
+      "group": "v9n4-release",
+      "attemptId": "800de184-ec09-48a8-9ac4-a7efb3ae7b45",
+      "taskId": "T445",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "a7135c1f1eb930840bb2a018a9be791d058cf4e4",
+        "integratedAt": "2026-10-25T04:16:21.276Z"
+      }
+    },
+    {
+      "sequence": 1311,
+      "at": "2026-10-25T04:35:25.955Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "a7135c1f1eb930840bb2a018a9be791d058cf4e4",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run build && PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium",
+              "startedAt": "2026-10-25T04:16:22.549Z",
+              "finishedAt": "2026-10-25T04:35:25.745Z"
+            }
+          ],
+          "at": "2026-10-25T04:35:25.929Z",
+          "excluded": [
+            "T286",
+            "T410",
+            "T432",
+            "T433",
+            "T434",
+            "T435",
+            "T437"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 1312,
+      "at": "2026-10-25T04:35:26.490Z",
+      "type": "group",
+      "group": "v9n4-release",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "c8769a60-a5ab-4f31-8ed9-8d2fe8c841ce",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-25T02:30:32.382Z",
+          "stoppedAt": "2026-10-25T04:35:26.490Z",
+          "dispatched": 4,
+          "outcome": "main-session",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
