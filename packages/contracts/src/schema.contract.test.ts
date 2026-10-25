@@ -11,7 +11,8 @@ import { validateWorld, type LoadCatalog } from './schema';
 import type { LedgerKind, Sponsor, SponsorContract, World } from './types';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
 import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
-import { createWorld, simulateSeason } from '../../engine/src/index';
+import { createWorld, simulateSeason, type MatchModelRelease } from '../../engine/src/index';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 it('round trips exact monetary strings without losing integer precision', () => {
   const facts = {
@@ -22,14 +23,17 @@ it('round trips exact monetary strings without losing integer precision', () => 
   expect(JSON.parse(canonical(facts))).toEqual(facts);
 });
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Contract Rovers',
-    color: '#224466',
-    seed: 'contracts',
-    level: 'easy' as const,
-  });
+const world = (release?: MatchModelRelease) =>
+  createWorld(
+    {
+      country: 'ENG',
+      name: 'Contract Rovers',
+      color: '#224466',
+      seed: 'contracts',
+      level: 'easy' as const,
+    },
+    release,
+  );
 /** The world as rules 1.15 saved it, with that rule's single sponsor. */
 const legacy = (w: World, sponsor: Sponsor) => ({
   ...structuredClone(w),
@@ -492,8 +496,9 @@ describe('match-model metadata on load (→SAVE-23)', () => {
     expect(loaded.matchModel).toEqual(matchModel);
     expect(loaded.npcSeason).toEqual(npcSeason);
     expect(loaded.ownMatches.every((m) => m.model === MATCH_MODEL_REVISION)).toBe(true);
-    // A world without them loads as the pre-feature model, with nothing installed.
-    const plain = validateWorld(structuredClone(w));
+    // A world without them (a career founded before the release) loads as the pre-feature model,
+    // with nothing installed.
+    const plain = validateWorld(world(DISABLED_RELEASE));
     expect(plain.matchModel).toBeUndefined();
     expect(plain.npcSeason).toBeUndefined();
   });

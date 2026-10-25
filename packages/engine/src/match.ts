@@ -33,7 +33,6 @@ import { simulateAggregate } from './aggregate/engine';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
-import { assertFullMatchRecord } from './match-model';
 export { MATCH_MOTION_CONFIG, teamMotionProfile } from './grid/playback';
 export { matchdayRole, playerTendencies } from './grid/tendencies';
 export const METRICS = [
@@ -543,7 +542,7 @@ export function simulateMatch(
  * playoff or Europe — the complete aggregate path with the competition's knockout `decide`.
  * Observing adds the own match's frames only; `keepPlayers` and the measurement-only
  * `setOwnLeagueEngine` never reach this choice. Both results pass the shared full record check
- * before anything settles them (the aggregate record checks itself as it is built).
+ * once, in `recordMatch`, before anything settles them (→MATCH-27).
  */
 function candidateMatch(
   w: World,
@@ -555,7 +554,6 @@ function candidateMatch(
   if (!own) return simulateAggregate(w, f, decide);
   const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
   const result = playGrid(setup);
-  assertFullMatchRecord(result.record);
   return {
     record: result.record,
     frames: observe ? buildFrames(result, setup, w.seed) : [],

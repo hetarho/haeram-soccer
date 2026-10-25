@@ -1,0 +1,115 @@
+{"at":"2026-10-25T15:17:14.182Z","load1":2.34033203125,"freeGiB":6.53,"busy":[]}
+{"at":"2026-10-25T15:17:44.219Z","load1":2.28857421875,"freeGiB":6.53,"busy":[{"cpu":114.5,"comm":"node"}]}
+{"at":"2026-10-25T15:18:14.220Z","load1":2.27294921875,"freeGiB":6.53,"busy":[{"cpu":116.3,"comm":"node"}]}
+{"at":"2026-10-25T15:18:44.221Z","load1":1.77001953125,"freeGiB":6.53,"busy":[{"cpu":101.7,"comm":"node"},{"cpu":23.9,"comm":"WindowServer"}]}
+{"at":"2026-10-25T15:19:14.222Z","load1":2.232421875,"freeGiB":6.53,"busy":[{"cpu":103.4,"comm":"node"},{"cpu":21.8,"comm":"WindowServer"}]}
+{"at":"2026-10-25T15:19:44.224Z","load1":2.18505859375,"freeGiB":6.53,"busy":[{"cpu":100.7,"comm":"node"}]}
+{"at":"2026-10-25T15:20:14.226Z","load1":2.09423828125,"freeGiB":6.53,"busy":[{"cpu":103.2,"comm":"node"},{"cpu":73.2,"comm":"mobileassetd"}]}
+{"at":"2026-10-25T15:20:44.228Z","load1":2.10498046875,"freeGiB":6.53,"busy":[{"cpu":110.5,"comm":"node"},{"cpu":75.6,"comm":"fseventsd"}]}
+{"at":"2026-10-25T15:21:14.229Z","load1":2.59814453125,"freeGiB":6.53,"busy":[{"cpu":102.2,"comm":"node"}]}
+{"at":"2026-10-25T15:21:44.230Z","load1":2.02490234375,"freeGiB":6.53,"busy":[{"cpu":100.6,"comm":"node"}]}
+{"at":"2026-10-25T15:22:14.232Z","load1":1.78759765625,"freeGiB":6.53,"busy":[{"cpu":100.9,"comm":"node"}]}
+{"at":"2026-10-25T15:22:44.234Z","load1":1.60888671875,"freeGiB":6.53,"busy":[{"cpu":109.1,"comm":"node"}]}
+{"at":"2026-10-25T15:23:14.235Z","load1":2.18115234375,"freeGiB":6.53,"busy":[{"cpu":101.1,"comm":"node"}]}
+{"at":"2026-10-25T15:23:44.236Z","load1":1.76806640625,"freeGiB":6.53,"busy":[{"cpu":100.7,"comm":"node"}]}
+{"at":"2026-10-25T15:24:14.238Z","load1":1.830078125,"freeGiB":6.53,"busy":[{"cpu":102.3,"comm":"node"}]}
+{"at":"2026-10-25T15:24:44.240Z","load1":2.08349609375,"freeGiB":6.53,"busy":[{"cpu":100.4,"comm":"node"},{"cpu":60.4,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:25:14.240Z","load1":2.04345703125,"freeGiB":6.53,"busy":[{"cpu":101.6,"comm":"node"}]}
+{"at":"2026-10-25T15:25:44.242Z","load1":2.9375,"freeGiB":6.53,"busy":[{"cpu":99.4,"comm":"node"},{"cpu":73.4,"comm":"mobileassetd"}]}
+{"at":"2026-10-25T15:26:14.243Z","load1":3.91650390625,"freeGiB":6.53,"busy":[{"cpu":97.3,"comm":"node"},{"cpu":76.3,"comm":"Code Helper (Renderer)"},{"cpu":21.4,"comm":"Code Helper"},{"cpu":21.3,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:26:44.244Z","load1":3.48291015625,"freeGiB":6.53,"busy":[{"cpu":101.3,"comm":"node"}]}
+{"at":"2026-10-25T15:27:14.245Z","load1":7.341796875,"freeGiB":6.53,"busy":[{"cpu":102.2,"comm":"node"}]}
+{"at":"2026-10-25T15:27:44.247Z","load1":5.43994140625,"freeGiB":6.53,"busy":[{"cpu":98.5,"comm":"node"}]}
+{"at":"2026-10-25T15:28:14.248Z","load1":4.248046875,"freeGiB":6.53,"busy":[{"cpu":150.4,"comm":"node"}]}
+{"at":"2026-10-25T15:28:44.249Z","load1":3.19482421875,"freeGiB":6.53,"busy":[{"cpu":99.8,"comm":"node"}]}
+{"at":"2026-10-25T15:29:14.250Z","load1":2.9404296875,"freeGiB":6.53,"busy":[{"cpu":105.2,"comm":"node"}]}
+{"at":"2026-10-25T15:29:44.251Z","load1":2.78369140625,"freeGiB":6.53,"busy":[{"cpu":100.4,"comm":"node"}]}
+{"at":"2026-10-25T15:30:14.252Z","load1":2.328125,"freeGiB":6.53,"busy":[{"cpu":99.3,"comm":"node"}]}
+{"at":"2026-10-25T15:30:44.252Z","load1":5.72021484375,"freeGiB":6.52,"busy":[{"cpu":173.6,"comm":"Code Helper (Renderer)"},{"cpu":84.3,"comm":"node"},{"cpu":58.5,"comm":"Code"},{"cpu":52.7,"comm":"Code Helper"},{"cpu":33.7,"comm":"mds"}]}
+{"at":"2026-10-25T15:31:14.254Z","load1":5.0703125,"freeGiB":6.52,"busy":[{"cpu":179.2,"comm":"node"},{"cpu":173.4,"comm":"node"},{"cpu":102.8,"comm":"node"},{"cpu":80.6,"comm":"deleted"},{"cpu":56.6,"comm":"cloudd"}]}
+{"at":"2026-10-25T15:31:44.255Z","load1":3.9306640625,"freeGiB":6.52,"busy":[{"cpu":98.7,"comm":"node"},{"cpu":73.5,"comm":"Code Helper (Renderer)"},{"cpu":63.8,"comm":"Code Helper (Renderer)"},{"cpu":58.6,"comm":"Code Helper"},{"cpu":56,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:32:14.257Z","load1":3.2314453125,"freeGiB":6.52,"busy":[{"cpu":100.8,"comm":"node"}]}
+{"at":"2026-10-25T15:32:44.260Z","load1":3.0126953125,"freeGiB":6.34,"busy":[{"cpu":101.7,"comm":"node"}]}
+{"at":"2026-10-25T15:33:14.262Z","load1":3.005859375,"freeGiB":6.34,"busy":[{"cpu":99.3,"comm":"node"}]}
+{"at":"2026-10-25T15:33:44.264Z","load1":3.6904296875,"freeGiB":6.34,"busy":[{"cpu":179.3,"comm":"node"},{"cpu":144.8,"comm":"node"},{"cpu":103.7,"comm":"node"}]}
+{"at":"2026-10-25T15:34:14.266Z","load1":4.33935546875,"freeGiB":6.34,"busy":[{"cpu":100.6,"comm":"node"}]}
+{"at":"2026-10-25T15:34:44.269Z","load1":3.33935546875,"freeGiB":6.34,"busy":[{"cpu":100.4,"comm":"node"}]}
+{"at":"2026-10-25T15:35:14.271Z","load1":2.72509765625,"freeGiB":6.34,"busy":[{"cpu":99.9,"comm":"node"}]}
+{"at":"2026-10-25T15:35:44.273Z","load1":2.82373046875,"freeGiB":6.34,"busy":[{"cpu":99.2,"comm":"node"}]}
+{"at":"2026-10-25T15:36:14.275Z","load1":2.4892578125,"freeGiB":6.34,"busy":[{"cpu":99.4,"comm":"node"}]}
+{"at":"2026-10-25T15:36:44.277Z","load1":3.0078125,"freeGiB":6.51,"busy":[{"cpu":100.4,"comm":"node"},{"cpu":76.8,"comm":"fseventsd"}]}
+{"at":"2026-10-25T15:37:14.280Z","load1":2.66748046875,"freeGiB":6.52,"busy":[{"cpu":99.4,"comm":"node"},{"cpu":92.8,"comm":"fseventsd"}]}
+{"at":"2026-10-25T15:37:44.282Z","load1":2.314453125,"freeGiB":6.52,"busy":[{"cpu":100.5,"comm":"node"}]}
+{"at":"2026-10-25T15:38:14.284Z","load1":2.0107421875,"freeGiB":6.52,"busy":[{"cpu":102.3,"comm":"node"}]}
+{"at":"2026-10-25T15:38:44.286Z","load1":2.1015625,"freeGiB":6.52,"busy":[{"cpu":100.7,"comm":"node"}]}
+{"at":"2026-10-25T15:39:14.289Z","load1":1.853515625,"freeGiB":6.52,"busy":[{"cpu":100.4,"comm":"node"}]}
+{"at":"2026-10-25T15:39:44.267Z","load1":1.7685546875,"freeGiB":6.52,"busy":[{"cpu":100.4,"comm":"node"}]}
+{"at":"2026-10-25T15:40:14.266Z","load1":1.78271484375,"freeGiB":6.52,"busy":[{"cpu":99.2,"comm":"node"},{"cpu":77.5,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:40:44.268Z","load1":1.8525390625,"freeGiB":6.52,"busy":[{"cpu":100,"comm":"node"},{"cpu":73.9,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:41:14.269Z","load1":1.5888671875,"freeGiB":6.52,"busy":[{"cpu":99.8,"comm":"node"}]}
+{"at":"2026-10-25T15:41:44.271Z","load1":1.83984375,"freeGiB":6.52,"busy":[{"cpu":114.7,"comm":"node"}]}
+{"at":"2026-10-25T15:42:14.273Z","load1":2.52734375,"freeGiB":6.53,"busy":[{"cpu":100,"comm":"node"},{"cpu":94.2,"comm":"fseventsd"}]}
+{"at":"2026-10-25T15:42:44.275Z","load1":2.91552734375,"freeGiB":6.53,"busy":[{"cpu":99.6,"comm":"node"}]}
+{"at":"2026-10-25T15:43:14.276Z","load1":2.5908203125,"freeGiB":6.53,"busy":[{"cpu":100.8,"comm":"node"}]}
+{"at":"2026-10-25T15:43:44.276Z","load1":2.27734375,"freeGiB":6.53,"busy":[{"cpu":100,"comm":"node"}]}
+{"at":"2026-10-25T15:44:14.279Z","load1":1.7734375,"freeGiB":6.53,"busy":[{"cpu":99.4,"comm":"node"}]}
+{"at":"2026-10-25T15:44:44.280Z","load1":1.4677734375,"freeGiB":6.53,"busy":[{"cpu":100.8,"comm":"node"}]}
+{"at":"2026-10-25T15:45:14.282Z","load1":1.41552734375,"freeGiB":6.53,"busy":[{"cpu":100.5,"comm":"node"}]}
+{"at":"2026-10-25T15:45:44.284Z","load1":1.4912109375,"freeGiB":6.53,"busy":[{"cpu":100.7,"comm":"node"}]}
+{"at":"2026-10-25T15:46:14.286Z","load1":2.02197265625,"freeGiB":6.53,"busy":[{"cpu":105.8,"comm":"node"}]}
+{"at":"2026-10-25T15:46:44.286Z","load1":1.896484375,"freeGiB":6.53,"busy":[{"cpu":114,"comm":"node"}]}
+{"at":"2026-10-25T15:47:14.288Z","load1":2.26123046875,"freeGiB":6.53,"busy":[{"cpu":101.6,"comm":"node"},{"cpu":66.8,"comm":"mobileassetd"},{"cpu":29.4,"comm":"WindowServer"}]}
+{"at":"2026-10-25T15:47:44.290Z","load1":4.10986328125,"freeGiB":6.52,"busy":[{"cpu":101.7,"comm":"node"},{"cpu":79.9,"comm":"fseventsd"}]}
+{"at":"2026-10-25T15:48:14.291Z","load1":3.3759765625,"freeGiB":6.52,"busy":[{"cpu":99.6,"comm":"node"}]}
+{"at":"2026-10-25T15:48:44.291Z","load1":2.7578125,"freeGiB":6.52,"busy":[{"cpu":100.9,"comm":"node"},{"cpu":75.9,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:49:14.293Z","load1":2.79736328125,"freeGiB":6.52,"busy":[{"cpu":111.4,"comm":"node"},{"cpu":31.6,"comm":"WindowServer"},{"cpu":22.4,"comm":"Code Helper (Renderer)"},{"cpu":20.8,"comm":"loginwindow"}]}
+{"at":"2026-10-25T15:49:44.292Z","load1":2.7880859375,"freeGiB":6.52,"busy":[{"cpu":99.8,"comm":"node"}]}
+{"at":"2026-10-25T15:50:14.293Z","load1":2.77001953125,"freeGiB":6.52,"busy":[{"cpu":100.9,"comm":"node"}]}
+{"at":"2026-10-25T15:50:44.294Z","load1":2.9921875,"freeGiB":6.52,"busy":[{"cpu":100.5,"comm":"node"},{"cpu":31.5,"comm":"WindowServer"},{"cpu":21.8,"comm":"loginwindow"}]}
+{"at":"2026-10-25T15:51:14.295Z","load1":2.74560546875,"freeGiB":6.52,"busy":[{"cpu":132.2,"comm":"Code Helper (Renderer)"},{"cpu":84.1,"comm":"node"},{"cpu":34.9,"comm":"Code Helper"},{"cpu":34.8,"comm":"Code Helper (Renderer)"},{"cpu":31.5,"comm":"WindowServer"}]}
+{"at":"2026-10-25T15:51:44.296Z","load1":4.01708984375,"freeGiB":6.5,"busy":[{"cpu":177.7,"comm":"node"},{"cpu":166.2,"comm":"node"},{"cpu":113.5,"comm":"node"},{"cpu":99.4,"comm":"node"},{"cpu":68.9,"comm":"mediaanalysisd"}]}
+{"at":"2026-10-25T15:52:14.297Z","load1":3.52783203125,"freeGiB":6.34,"busy":[{"cpu":99.8,"comm":"node"}]}
+{"at":"2026-10-25T15:52:44.297Z","load1":3.64404296875,"freeGiB":6.33,"busy":[{"cpu":100.5,"comm":"node"},{"cpu":52.8,"comm":"cloudd"},{"cpu":52.4,"comm":"deleted"}]}
+{"at":"2026-10-25T15:53:14.298Z","load1":3.86083984375,"freeGiB":6.33,"busy":[{"cpu":102.1,"comm":"node"}]}
+{"at":"2026-10-25T15:53:44.300Z","load1":3.23974609375,"freeGiB":6.33,"busy":[{"cpu":101.1,"comm":"node"}]}
+{"at":"2026-10-25T15:54:14.300Z","load1":2.8955078125,"freeGiB":6.33,"busy":[{"cpu":101,"comm":"node"}]}
+{"at":"2026-10-25T15:54:44.301Z","load1":2.427734375,"freeGiB":6.33,"busy":[{"cpu":100.2,"comm":"node"}]}
+{"at":"2026-10-25T15:55:14.302Z","load1":2.0419921875,"freeGiB":6.33,"busy":[{"cpu":100.7,"comm":"node"}]}
+{"at":"2026-10-25T15:55:44.303Z","load1":2.087890625,"freeGiB":6.34,"busy":[{"cpu":100.2,"comm":"node"}]}
+{"at":"2026-10-25T15:56:14.304Z","load1":1.8408203125,"freeGiB":6.34,"busy":[{"cpu":102.4,"comm":"node"}]}
+{"at":"2026-10-25T15:56:44.306Z","load1":1.79638671875,"freeGiB":6.33,"busy":[{"cpu":255.5,"comm":"Code Helper (Renderer)"},{"cpu":96.2,"comm":"node"},{"cpu":50.8,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:57:14.307Z","load1":3.21728515625,"freeGiB":6.34,"busy":[{"cpu":146.3,"comm":"node"},{"cpu":98.4,"comm":"node"},{"cpu":90,"comm":"Code Helper (Renderer)"},{"cpu":63.3,"comm":"mdsync"},{"cpu":37.5,"comm":"mds_stores"}]}
+{"at":"2026-10-25T15:57:44.307Z","load1":3.0068359375,"freeGiB":6.34,"busy":[{"cpu":100.3,"comm":"node"},{"cpu":50.3,"comm":"Code Helper (Renderer)"}]}
+{"at":"2026-10-25T15:58:14.308Z","load1":2.951171875,"freeGiB":6.52,"busy":[{"cpu":100.2,"comm":"node"},{"cpu":44.7,"comm":"triald_system"},{"cpu":41,"comm":"deleted"},{"cpu":40.7,"comm":"cloudd"}]}
+{"at":"2026-10-25T15:58:44.309Z","load1":3.1162109375,"freeGiB":6.52,"busy":[{"cpu":100.1,"comm":"node"},{"cpu":93.3,"comm":"fseventsd"},{"cpu":44,"comm":"WeatherWidget"}]}
+{"at":"2026-10-25T15:59:14.310Z","load1":2.96826171875,"freeGiB":6.52,"busy":[{"cpu":99.1,"comm":"node"},{"cpu":22.4,"comm":"WindowServer"}]}
+{"at":"2026-10-25T15:59:44.312Z","load1":2.92529296875,"freeGiB":6.52,"busy":[{"cpu":98.6,"comm":"node"}]}
+{"at":"2026-10-25T16:00:14.314Z","load1":3.8583984375,"freeGiB":6.52,"busy":[{"cpu":184.2,"comm":"node"},{"cpu":164.4,"comm":"node"},{"cpu":124.7,"comm":"node"},{"cpu":84.8,"comm":"node"},{"cpu":62.7,"comm":"node"}]}
+{"at":"2026-10-25T16:00:44.315Z","load1":5.1748046875,"freeGiB":6.52,"busy":[{"cpu":100.8,"comm":"node"},{"cpu":31.3,"comm":"runningboardd"}]}
+{"at":"2026-10-25T16:01:14.316Z","load1":4.11669921875,"freeGiB":6.51,"busy":[{"cpu":103.9,"comm":"node"}]}
+{"at":"2026-10-25T16:01:44.317Z","load1":3.96826171875,"freeGiB":6.51,"busy":[{"cpu":100.3,"comm":"node"}]}
+{"at":"2026-10-25T16:02:14.318Z","load1":3.61572265625,"freeGiB":6.51,"busy":[{"cpu":100.5,"comm":"node"}]}
+{"at":"2026-10-25T16:02:44.318Z","load1":3.7431640625,"freeGiB":6.51,"busy":[{"cpu":114.5,"comm":"node"},{"cpu":100.4,"comm":"node"}]}
+{"at":"2026-10-25T16:03:14.319Z","load1":3.7197265625,"freeGiB":6.33,"busy":[{"cpu":150.2,"comm":"mediaanalysisd"},{"cpu":100.3,"comm":"node"}]}
+{"at":"2026-10-25T16:03:44.321Z","load1":2.9775390625,"freeGiB":6.33,"busy":[{"cpu":100.9,"comm":"node"}]}
+{"at":"2026-10-25T16:04:14.346Z","load1":7.03369140625,"freeGiB":6.28,"busy":[{"cpu":114.5,"comm":"node"},{"cpu":113.8,"comm":"node"},{"cpu":101.9,"comm":"node"},{"cpu":97.8,"comm":"node"},{"cpu":92.5,"comm":"node"}]}
+{"at":"2026-10-25T16:04:44.368Z","load1":13.5146484375,"freeGiB":6.41,"busy":[{"cpu":108.7,"comm":"node"},{"cpu":104.7,"comm":"node"},{"cpu":102.6,"comm":"node"},{"cpu":102.4,"comm":"node"},{"cpu":89.5,"comm":"node"}]}
+{"at":"2026-10-25T16:05:14.374Z","load1":15.5849609375,"freeGiB":6.33,"busy":[{"cpu":105.8,"comm":"node"},{"cpu":98.8,"comm":"node"},{"cpu":96.4,"comm":"node"},{"cpu":95.7,"comm":"node"},{"cpu":93.8,"comm":"node"}]}
+{"at":"2026-10-25T16:05:44.377Z","load1":16.65576171875,"freeGiB":6.14,"busy":[{"cpu":146.2,"comm":"node"},{"cpu":112.9,"comm":"node"},{"cpu":105.2,"comm":"node"},{"cpu":89.8,"comm":"node"},{"cpu":89.7,"comm":"node"}]}
+{"at":"2026-10-25T16:06:14.384Z","load1":18.1572265625,"freeGiB":5.99,"busy":[{"cpu":108.3,"comm":"node"},{"cpu":100,"comm":"node"},{"cpu":92.7,"comm":"node"},{"cpu":92.1,"comm":"node"},{"cpu":91.2,"comm":"node"}]}
+{"at":"2026-10-25T16:06:44.387Z","load1":23.08154296875,"freeGiB":5.81,"busy":[{"cpu":118.4,"comm":"node"},{"cpu":116.5,"comm":"node"},{"cpu":99.8,"comm":"node"},{"cpu":96.1,"comm":"node"},{"cpu":89.6,"comm":"node"}]}
+{"at":"2026-10-25T16:07:14.388Z","load1":26.10693359375,"freeGiB":5.6,"busy":[{"cpu":120,"comm":"node"},{"cpu":101.7,"comm":"node"},{"cpu":101,"comm":"node"},{"cpu":93.7,"comm":"node"},{"cpu":91.9,"comm":"node"}]}
+{"at":"2026-10-25T16:07:44.391Z","load1":23.0908203125,"freeGiB":5.46,"busy":[{"cpu":102,"comm":"node"},{"cpu":96,"comm":"node"},{"cpu":94.9,"comm":"node"},{"cpu":90.4,"comm":"node"},{"cpu":87.9,"comm":"node"}]}
+{"at":"2026-10-25T16:08:14.392Z","load1":18.2421875,"freeGiB":5.25,"busy":[{"cpu":99.3,"comm":"chrome-headless-shell"},{"cpu":94.9,"comm":"node"},{"cpu":65.7,"comm":"mediaanalysisd"},{"cpu":40,"comm":"chrome-headless-shell"},{"cpu":37.2,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:08:44.395Z","load1":13.30810546875,"freeGiB":5.17,"busy":[{"cpu":104.9,"comm":"chrome-headless-shell"},{"cpu":98.2,"comm":"node"},{"cpu":32.5,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:09:14.396Z","load1":9.0869140625,"freeGiB":5.11,"busy":[{"cpu":98.4,"comm":"node"},{"cpu":27.1,"comm":"chrome-headless-shell"},{"cpu":26.4,"comm":"node"},{"cpu":24,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:09:44.398Z","load1":7.90576171875,"freeGiB":4.98,"busy":[{"cpu":94,"comm":"node"},{"cpu":84.7,"comm":"Code Helper (Renderer)"},{"cpu":34.2,"comm":"chrome-headless-shell"},{"cpu":32.2,"comm":"node"}]}
+{"at":"2026-10-25T16:10:14.401Z","load1":8.03662109375,"freeGiB":4.91,"busy":[{"cpu":108,"comm":"chrome-headless-shell"},{"cpu":97.9,"comm":"node"},{"cpu":43.4,"comm":"node"},{"cpu":27.8,"comm":"node"},{"cpu":26.7,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:10:44.403Z","load1":6.11181640625,"freeGiB":5.05,"busy":[{"cpu":103.3,"comm":"chrome-headless-shell"},{"cpu":100.2,"comm":"chrome-headless-shell"},{"cpu":97.6,"comm":"Code Helper (Plugin)"},{"cpu":91.5,"comm":"node"},{"cpu":59.6,"comm":"node"}]}
+{"at":"2026-10-25T16:11:14.406Z","load1":5.60205078125,"freeGiB":4.98,"busy":[{"cpu":98.1,"comm":"node"},{"cpu":86.9,"comm":"chrome-headless-shell"},{"cpu":69.8,"comm":"chrome-headless-shell"},{"cpu":67.4,"comm":"chrome-headless-shell"},{"cpu":29.4,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:11:44.408Z","load1":5.93798828125,"freeGiB":4.97,"busy":[{"cpu":98.8,"comm":"node"},{"cpu":34.6,"comm":"chrome-headless-shell"},{"cpu":22.1,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:12:14.409Z","load1":5.17724609375,"freeGiB":5.23,"busy":[{"cpu":124.8,"comm":"chrome-headless-shell"},{"cpu":97,"comm":"node"},{"cpu":43.3,"comm":"node"},{"cpu":27.3,"comm":"chrome-headless-shell"},{"cpu":26.8,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:12:44.410Z","load1":5.9453125,"freeGiB":5.03,"busy":[{"cpu":96,"comm":"node"},{"cpu":69.7,"comm":"chrome-headless-shell"},{"cpu":58.5,"comm":"chrome-headless-shell"},{"cpu":55.4,"comm":"node"},{"cpu":37.1,"comm":"node"}]}
+{"at":"2026-10-25T16:13:14.412Z","load1":6.2236328125,"freeGiB":5.04,"busy":[{"cpu":122.9,"comm":"chrome-headless-shell"},{"cpu":87.8,"comm":"node"},{"cpu":85.6,"comm":"node"},{"cpu":62.8,"comm":"fseventsd"},{"cpu":62.8,"comm":"chrome-headless-shell"}]}
+{"at":"2026-10-25T16:13:44.414Z","load1":6.060546875,"freeGiB":4.86,"busy":[{"cpu":103.3,"comm":"chrome-headless-shell"},{"cpu":98.1,"comm":"node"},{"cpu":96.1,"comm":"fseventsd"}]}
+{"at":"2026-10-25T16:14:14.416Z","load1":5.71435546875,"freeGiB":4.69,"busy":[{"cpu":133.3,"comm":"node"},{"cpu":104.7,"comm":"node"},{"cpu":73.7,"comm":"chrome-headless-shell"}]}

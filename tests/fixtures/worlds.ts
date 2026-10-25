@@ -251,7 +251,10 @@ export function withoutManagerHistory<T extends World>(w: T): T {
   return w;
 }
 
-/** The release switch turned on, for tests and measurements; production keeps it off. */
+/**
+ * The release switch turned on, whatever the default: for tests and measurements of what a new
+ * career plays.
+ */
 export const ENABLED_RELEASE: MatchModelRelease = { ...MATCH_MODEL_RELEASE, enabled: true };
 
 /**
@@ -274,8 +277,8 @@ export function declaredRelease(): MatchModelRelease {
 }
 
 /**
- * `w` on the candidate match model (→SAVE-23), for tests and measurements while the release switch
- * stays off: production's `activateMatchModel` with an enabled release, so the model is recorded at
+ * `w` on the released match model (→SAVE-23), for tests and measurements whatever the switch says:
+ * production's `activateMatchModel` with an enabled release, so the model is recorded at
  * the world's current boundary with its season's complete aggregates opened there — `founding`
  * coverage for a world straight from `createWorld`, `activation` otherwise. A world already on a
  * model keeps it. `coverage`, when given, is what the caller expects and throws when it differs.

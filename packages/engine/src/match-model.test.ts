@@ -91,10 +91,11 @@ function fullRecord(): FullMatchRecord {
 }
 
 describe('the full match record (→MATCH-13, MATCH-27)', () => {
-  it('keeps production activation off and plays the pre-feature model without metadata', () => {
-    // The switch as the source declares it, which the release-on probe keeps before turning it on.
-    expect(declaredRelease()).toEqual({ revision: MATCH_MODEL_REVISION, enabled: false });
-    expect(MATCH_MODEL_RELEASE.revision).toBe(MATCH_MODEL_REVISION);
+  it('releases the full model to new and supported careers (T286)', () => {
+    // The switch as the source declares it, which the release-on probe keeps before setting it.
+    expect(declaredRelease()).toEqual({ revision: MATCH_MODEL_REVISION, enabled: true });
+    expect(MATCH_MODEL_RELEASE).toEqual({ revision: MATCH_MODEL_REVISION, enabled: true });
+    // A world without model data still plays the pre-feature model, with no metadata.
     expect(activeMatchModel({})).toBeUndefined();
     expect(validateFullMatchRecord(fullRecord())).toEqual([]);
     expect(() => assertFullMatchRecord(fullRecord())).not.toThrow();
@@ -270,8 +271,10 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
       trackedFrom: boundary,
       competitions: [],
     });
-    // Founding with the switch on is the same career recorded from its first day.
+    // Founding with the switch on is the same career recorded from its first day, and a founding
+    // now takes the switch as released.
     expect(canonical(createWorld(founding, ENABLED_RELEASE))).toBe(canonical(founded));
+    expect(canonical(createWorld(founding))).toBe(canonical(founded));
     expect(createWorld(founding, DISABLED_RELEASE).matchModel).toBeUndefined();
     // Mid-season only the model and its empty ledger are added; every settled fact stays.
     const played = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);

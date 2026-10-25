@@ -12,12 +12,14 @@ import { chooseOption } from './select';
 import { watchNext } from './watch';
 
 /**
- * A supported career activated mid-season on the full match model (T402; →SAVE-22/23, HIST-17,
- * WEB-89/94/95, KIT-12), imported into the build, whose release switch stays off: the career plays
- * on under the model it recorded. Earlier results keep their pre-feature records and the league
- * names where counting started; the watched match runs at a uniform pace with its goals held and
- * cued in order, the ball owner shown and the set-piece shapes recorded (T348); save, reload, export
- * and import keep the aggregates, the tracking boundary and the saved appearances.
+ * A supported career saved before the full match model's release, imported into the build
+ * (T402, T286; →SAVE-22/23, HIST-17, WEB-89/94/95, KIT-12). With the release switch on, the build's
+ * writer load activates it mid-season (`Host.adoptModel`); with it off, the career arrives
+ * activated in Node the same way. Either way it plays on under the model from there. Earlier
+ * results keep their pre-feature records and the league names where counting started; the
+ * watched match runs at a uniform pace with its goals held and cued in order, the ball owner shown
+ * and the set-piece shapes recorded (T348); save, reload, export and import keep the aggregates,
+ * the tracking boundary and the saved appearances.
  */
 const VIEWPORTS = [
   { name: 'desktop', width: 1280, height: 900 },
@@ -60,8 +62,19 @@ for (const viewport of VIEWPORTS)
   test(`continues a mid-season activated career on ${viewport.name}`, async ({ page, browser }) => {
     test.slow();
     await page.setViewportSize(viewport);
-    const { world, coverage, from, untracked, next } = continuityCareer();
-    await importResponsibilityCareer(page, world);
+    const { world, activated, imported, buildActivates, coverage, from, untracked, next } =
+      continuityCareer();
+    expect(world.matchModel).toBeUndefined();
+    expect(imported.matchModel === undefined).toBe(buildActivates);
+    await importResponsibilityCareer(page, imported);
+
+    // The model is recorded at the next unplayed day, one revision on, by the build's writer load
+    // once the switch is on, and nothing settled before it changed (→SAVE-23).
+    const loaded = (await decode(await exportRaw(page))).world;
+    expect(loaded.matchModel).toEqual(activated.matchModel);
+    expect(loaded.matchModel!.coverage).toBe('activation');
+    expect(loaded.revision).toBe(world.revision + 1);
+    expect(canonical(loaded)).toBe(canonical(activated));
 
     // Counting starts at the activation: the earlier matches are untracked, never zero.
     await expect(await coverageLine(page)).toHaveText(coverage);
@@ -204,8 +217,8 @@ for (const viewport of VIEWPORTS)
     // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
     expect(file.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     const saved = file.world;
-    expect(saved.matchModel).toEqual(world.matchModel);
-    expect(saved.npcSeason!.trackedFrom).toEqual(world.matchModel!.trackedFrom);
+    expect(saved.matchModel).toEqual(activated.matchModel);
+    expect(saved.npcSeason!.trackedFrom).toEqual(activated.matchModel!.trackedFrom);
     expect(saved.npcSeason!.competitions.length).toBeGreaterThan(0);
     expect(canonical(saved.npcSeason)).toBe(canonical(exported.npcSeason));
     expect(canonical(saved.ownMatches.slice(0, world.ownMatches.length))).toBe(

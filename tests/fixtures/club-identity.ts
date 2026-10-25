@@ -4,12 +4,15 @@ import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identit
 import type { Founding, World } from '../../packages/contracts/src/types';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import {
+  activateMatchModel,
   createWorld,
   ensureManagerHistory,
   identityOf,
   installMissingIdentities,
+  MATCH_MODEL_RELEASE,
+  type MatchModelRelease,
 } from '../../packages/engine/src/index';
-import { simulatedWorld, withoutManagerHistory } from './worlds';
+import { DISABLED_RELEASE, simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
  * Marked synthetic fixtures for the club-identity continuity journeys (T254; →KIT-9/12/15,
@@ -96,12 +99,13 @@ export const LEGACY_FOUNDING: Founding = {
   level: 'easy',
 };
 /**
- * A current-rules career as it was saved before club identities: two rounds played, then every
- * identity, recorded appearance and pending kit choice taken away, and the manager history that
- * came later still (→SAVE-24).
+ * A current-rules career as it was saved before club identities: founded and played two rounds on
+ * the pre-feature match model, as every career before the full model's release was (→SAVE-23),
+ * then every identity, recorded appearance and pending kit choice taken away, and the manager
+ * history that came later still (→SAVE-24).
  */
 export function preIdentityCareer(): World {
-  const w = withoutManagerHistory(simulatedWorld(LEGACY_FOUNDING, { rounds: 2 }));
+  const w = withoutManagerHistory(simulatedWorld(LEGACY_FOUNDING, { rounds: 2 }, DISABLED_RELEASE));
   for (const club of w.clubs) delete club.identity;
   for (const match of w.ownMatches) delete match.appearance;
   delete w.kitChoice;
@@ -119,13 +123,15 @@ export async function containerOneCheckpoint(w: World, generation = 1, parentGen
   });
 }
 /**
- * What writer activation makes of a pre-identity career: missing designs, one revision, and own-
- * manager tracking started there (→SAVE-24), no more.
+ * What writer activation makes of a pre-identity career: missing designs, one revision, the full
+ * match model recorded there when `release` is on (the build's switch by default, →SAVE-23) and
+ * own-manager tracking started there (→SAVE-24), no more — the host's order and single revision.
  */
-export function adoptedCareer(legacy: World) {
+export function adoptedCareer(legacy: World, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
   const w = structuredClone(legacy);
   installMissingIdentities(w);
   w.revision++;
+  activateMatchModel(w, release);
   ensureManagerHistory(w);
   return w;
 }

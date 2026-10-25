@@ -51,9 +51,11 @@ import {
   normalQuantile,
   observe,
   outcomeTarget,
+  PERFORMANCE_CONFIG,
   pilotNeeds,
   poissonReading,
   rareComparisonPower,
+  releaseGates,
   requiredRareEvents,
   ruleExclusions,
   SCORING_CONCENTRATION_TARGET,
@@ -607,18 +609,18 @@ describe('match parity registry', () => {
       conditions: [],
       partitions: {},
     };
+    // The paired ratios to the summary path are context (→ARCH-31 r19), never a gate.
     const paired = comparePerformance(
       { provenance, report: baseline },
       { provenance, report: candidate },
     );
     expect(paired.paired).toBe(true);
-    expect(paired.gates.map((g) => [g.id, g.status])).toEqual([
-      ['npc-fixture', 'pass'],
-      ['season.baseline', 'pass'],
-      ['season.active-management', 'pass'],
+    expect(paired.ratios.map((r) => [r.id, r.status, r.ratio])).toEqual([
+      ['npc-fixture', 'measured', 0.5],
+      ['season.baseline', 'measured', 6000 / 8050],
+      ['season.active-management', 'measured', 6400 / 8200],
     ]);
-    // A provisional baseline is never release evidence.
-    expect(paired.releaseEvidence).toBe(false);
+    expect(paired).not.toHaveProperty('releaseEvidence');
     const elsewhere = comparePerformance(
       { provenance, report: baseline },
       {
@@ -627,7 +629,7 @@ describe('match parity registry', () => {
       },
     );
     expect(elsewhere).toMatchObject({ paired: false, reasons: ['machine differs'] });
-    expect(elsewhere.gates.every((g) => g.status === 'unpaired')).toBe(true);
+    expect(elsewhere.ratios.every((r) => r.status === 'unpaired')).toBe(true);
     expect(() =>
       buildPerformanceReport({
         provisional: true,
@@ -640,6 +642,76 @@ describe('match parity registry', () => {
         components: [timing('fixture.grid+codec' as PerformanceComponent, [1])],
       }),
     ).toThrow(/unknown/);
+  });
+
+  it('gates the release on absolute budgets, as evidence only from a quiet reference run', () => {
+    const timing = (id: PerformanceComponent, samplesMs: number[]) => ({
+      id,
+      samplesMs,
+      warmup: 1,
+      repetitions: 1,
+    });
+    const run = (fixtureMs: number[], seasonMs: number[], provisional = false) =>
+      buildPerformanceReport({
+        provisional,
+        components: [
+          timing('fixture.candidate', fixtureMs),
+          timing('season.baseline', seasonMs),
+          timing('season.active-management', seasonMs),
+        ],
+      });
+    const { referenceMachine, npcFixtureMs, seasonMs, quietLoad } = PERFORMANCE_CONFIG.release;
+    const provenance: Provenance = {
+      date: '2026-10-25T00:00:00.000Z',
+      source: {
+        gitHead: 'synthetic',
+        gitDirty: false,
+        fingerprint: { algorithm: 'sha256', sha256: '0'.repeat(64), files: 1, scope: ['packages'] },
+      },
+      toolchain: { node: 'v26.8.1' },
+      machine: { ...referenceMachine, memoryBytes: 1 },
+      seeds: {},
+      conditions: [],
+      partitions: {},
+    };
+    // Each budget holds at its value and fails just past it; the median decides.
+    const at = releaseGates({
+      provenance,
+      report: run([0.5, npcFixtureMs, 9], [1, seasonMs, 99_999]),
+      maxLoad: quietLoad,
+    });
+    expect(at.gates.map((g) => [g.id, g.status, g.budgetMs])).toEqual([
+      ['npc-fixture', 'pass', npcFixtureMs],
+      ['season.baseline', 'pass', seasonMs],
+      ['season.active-management', 'pass', seasonMs],
+    ]);
+    expect(at).toMatchObject({ referenceMachine: true, reasons: [], passed: true });
+    expect(at.releaseEvidence).toBe(true);
+    const over = releaseGates({
+      provenance,
+      report: run([npcFixtureMs + 0.001], [seasonMs]),
+      maxLoad: 1,
+    });
+    expect(over.gates.map((g) => g.status)).toEqual(['fail', 'pass', 'pass']);
+    expect(over).toMatchObject({ passed: false, releaseEvidence: false, reasons: [] });
+    // Another machine, a loaded or unsampled window and a provisional run are context only.
+    const context = (input: Partial<Parameters<typeof releaseGates>[0]>) =>
+      releaseGates({ provenance, report: run([0.5], [1]), maxLoad: 1, ...input });
+    expect(
+      context({ provenance: { ...provenance, machine: { ...provenance.machine, cpu: 'Xeon' } } }),
+    ).toMatchObject({ referenceMachine: false, passed: true, releaseEvidence: false });
+    expect(context({ maxLoad: quietLoad + 0.01 }).reasons).toEqual([
+      `not quiet: load ${quietLoad + 0.01} > ${quietLoad}`,
+    ]);
+    expect(context({ maxLoad: undefined }).reasons).toEqual(['load not sampled']);
+    expect(context({ report: run([0.5], [1], true) }).reasons).toEqual(['provisional run']);
+    expect(
+      releaseGates({
+        provenance,
+        report: buildPerformanceReport({ provisional: false, components: [] }),
+        maxLoad: 1,
+      }).gates.every((g) => g.status === 'missing'),
+    ).toBe(true);
   });
 
   it('fails exact invariants without tolerance', () => {

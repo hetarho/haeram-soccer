@@ -206,4 +206,17 @@ describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => 
     expect(ties.some((r) => r.regulation)).toBe(true);
     expect(ties.some((r) => r.shootout)).toBe(true);
   });
+
+  it('checks each record once, at settlement, on either path', () => {
+    // Neither builder checks its record: recordMatch is the one check, before anything settles.
+    const w = world(ENABLED_RELEASE);
+    const round = w.fixtures.filter((f) => f.id.startsWith('1950:ENG:4:') && f.round === 1);
+    const saved = w.ownMatches.length;
+    for (const f of [round.find((f) => isOwn(w, f))!, round.find((f) => !isOwn(w, f))!]) {
+      const playback = simulateMatch(w, f, false, true);
+      playback.record.metrics[0][M.goals]++;
+      expect(() => recordMatch(w, playback, true)).toThrow(/경기 기록 불일치/);
+    }
+    expect(w.ownMatches).toHaveLength(saved);
+  });
 });

@@ -1,0 +1,1252 @@
+
+> haeram-soccor@0.1.0 benchmark:browser /Users/ihaelam/project/haeram-soccer/.claude/worktrees/agent-abeb76f2995c876f0
+> node scripts/first-play.mjs
+
+{
+  date: '2026-10-25T20:25:01.329Z',
+  browser: '153.0.8010.12',
+  playwright: '1.63.0',
+  node: 'v26.8.1',
+  gitHead: '130162253ceefd3395cf59fc172d9c0172f4c8e2',
+  gitDirty: true,
+  currentHeadVerified: false,
+  verifiedSource: 'uncommitted working tree',
+  sourceFingerprint: {
+    algorithm: 'sha256',
+    sha256: 'cea9a6f52ea3d4fb27a09b112d3a39818fbabd979edf5bd221175a51251f9c62',
+    files: 1292
+  },
+  buildFingerprint: {
+    algorithm: 'sha256',
+    sha256: '9b6e507a04627869ea71230fcae9642eb2a9df363284950dbc38046683752d57',
+    files: 646
+  },
+  servedBuildVerification: {
+    origin: 'http://127.0.0.1:4181',
+    requestTimeoutMs: 5000,
+    requestConcurrency: 4,
+    files: [
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object], [Object], [Object],
+      [Object], [Object], [Object], [Object],
+      ... 14 more items
+    ],
+    passed: true
+  },
+  synthetic: true,
+  reference: {
+    pageCpuSlowdown: 4,
+    network: 'Fast 4G',
+    downloadMbps: 9,
+    uploadMbps: 1.5,
+    latencyMs: 60,
+    seed: 'first-play-reference'
+  },
+  desktop: {
+    viewport: [ 1440, 1000 ],
+    coldLoadAndFoundMs: 5642,
+    foundingCommandMs: 1858,
+    animationFps: 60,
+    observedKits: [ [Object], [Object] ]
+  },
+  mobile: {
+    viewport: [ 390, 844 ],
+    deviceScaleFactor: 2,
+    coldLoadAndFoundMs: 5523,
+    foundingCommandMs: 2364,
+    animationFps: 60,
+    observedKits: [ [Object], [Object] ],
+    inputSamples: 12,
+    pointerToSecondFrameP95Ms: 27
+  },
+  entryGzipBytes: 300376,
+  entryGzipLimit: 256000,
+  entry: {
+    gzipBytes: 300376,
+    rawBytes: 972611,
+    limit: 256000,
+    withinBudget: false,
+    beforeRelease: {
+      gzipBytes: 300378,
+      rawBytes: 972611,
+      source: 'e4de4490 production build, MATCH_MODEL_RELEASE off (T286; f1400a8b: 300,192 gzip, 972,162 raw)',
+      followUp: 'a first-play entry task: move eager screens and shared schema/settlement modules out of the entry until it is at most 256,000 gzip bytes (→ARCH-28)'
+    },
+    regression: false,
+    nameSlackBytes: 64
+  },
+  entryFiles: [
+    { file: 'assets/index-CowKBC-2.js', gzipBytes: 132756 },
+    { file: 'assets/rolldown-runtime-hePW80VL.js', gzipBytes: 428 },
+    { file: 'assets/jsx-runtime-BNakU3Ej.js', gzipBytes: 3113 },
+    { file: 'assets/App.module-D-QR63-H.js', gzipBytes: 2004 },
+    { file: 'assets/motion-_9hWX0lp.js', gzipBytes: 1859 },
+    { file: 'assets/Dialog-HJLfnQd0.js', gzipBytes: 3264 },
+    { file: 'assets/react-6DsfQTtk.js', gzipBytes: 431 },
+    { file: 'assets/store-DcdChiLf.js', gzipBytes: 1094 },
+    { file: 'assets/build-m9WWC_8b.js', gzipBytes: 248 },
+    { file: 'assets/kit-selection-DerPY0N-.js', gzipBytes: 3066 },
+    { file: 'assets/schemas-DH7l2hbh.js', gzipBytes: 27025 },
+    { file: 'assets/club-identity-D2Bp9XiJ.js', gzipBytes: 673 },
+    { file: 'assets/pitch-BW4xTmzo.js', gzipBytes: 2694 },
+    { file: 'assets/versions-DXhqlBwL.js', gzipBytes: 845 },
+    { file: 'assets/material-CEO3YsG-.js', gzipBytes: 1156 },
+    { file: 'assets/settlement-DJUEGMTl.js', gzipBytes: 68230 },
+    { file: 'assets/board-DQ7GnpfK.js', gzipBytes: 4438 },
+    { file: 'assets/format-BlZeuP83.js', gzipBytes: 1144 },
+    { file: 'assets/Money-sfmAQeBP.js', gzipBytes: 452 },
+    { file: 'assets/taskMemory-Dxs8pWJZ.js', gzipBytes: 532 },
+    { file: 'assets/state-BVGAaVfr.js', gzipBytes: 2762 },
+    { file: 'assets/Select-BZZ4UQV0.js', gzipBytes: 2537 },
+    { file: 'assets/profile-BWCjKhvB.js', gzipBytes: 1478 },
+    { file: 'assets/identitySchema-Bb1_xp_P.js', gzipBytes: 509 },
+    { file: 'assets/preload-helper-DjzSQ1t3.js', gzipBytes: 749 },
+    { file: 'assets/liveState-CAstsF59.js', gzipBytes: 303 },
+    { file: 'assets/ClubCrest-CWTwOMkI.js', gzipBytes: 2370 },
+    { file: 'assets/ClubLink-DhzEQUGN.js', gzipBytes: 478 },
+    { file: 'assets/intervention-Bp0yO3FK.js', gzipBytes: 324 },
+    { file: 'assets/league-Bhd2Thjd.js', gzipBytes: 2681 },
+    { file: 'assets/Segments-sq6lZGmq.js', gzipBytes: 319 },
+    { file: 'assets/App-BCLAKhOq.css', gzipBytes: 10588 },
+    { file: 'assets/Money-Cu9qy8do.css', gzipBytes: 371 },
+    { file: 'assets/Select-BitlUVtn.css', gzipBytes: 923 },
+    { file: 'assets/ClubCrest-2liMRO71.css', gzipBytes: 156 },
+    { file: 'assets/ClubLink-B7h1mIqt.css', gzipBytes: 414 },
+    { file: 'assets/index-Bu-x7uue.css', gzipBytes: 17962 }
+  ],
+  buildGzipBytes: 1903332,
+  buildGzipLimit: null,
+  buildFiles: [
+    { file: 'Analysis-VPfzf5FQ.css', gzipBytes: 1514 },
+    { file: 'Analysis.module-CCX15IKK.js', gzipBytes: 299 },
+    { file: 'App-BCLAKhOq.css', gzipBytes: 10588 },
+    { file: 'App.module-D-QR63-H.js', gzipBytes: 2004 },
+    { file: 'AwaySummary-CCA2SpoL.js', gzipBytes: 1398 },
+    { file: 'AwaySummary-QrYJOn2U.css', gzipBytes: 313 },
+    { file: 'ClubCrest-2liMRO71.css', gzipBytes: 156 },
+    { file: 'ClubCrest-CWTwOMkI.js', gzipBytes: 2370 },
+    { file: 'ClubDesignView-CqzrkxwQ.css', gzipBytes: 501 },
+    { file: 'ClubDesignView-D2f1e7RX.js', gzipBytes: 1781 },
+    { file: 'ClubIdentityEditor-BHTzLZ8W.css', gzipBytes: 817 },
+    { file: 'ClubIdentityEditor-pQY-5_If.js', gzipBytes: 2869 },
+    { file: 'ClubLink-B7h1mIqt.css', gzipBytes: 414 },
+    { file: 'ClubLink-DhzEQUGN.js', gzipBytes: 478 },
+    { file: 'CupHistory-a7iok4yN.css', gzipBytes: 1524 },
+    { file: 'CupHistory-akDjuQTK.js', gzipBytes: 6920 },
+    { file: 'CupsView-6grAQBzG.css', gzipBytes: 1651 },
+    { file: 'CupsView-WuiGzleo.js', gzipBytes: 7074 },
+    { file: 'Dialog-HJLfnQd0.js', gzipBytes: 3264 },
+    { file: 'FixtureNotebook-BuWQlNKQ.js', gzipBytes: 1989 },
+    { file: 'FormationPitch-CbFwHFH-.js', gzipBytes: 863 },
+    { file: 'FormationPitch-xbK_Kka8.css', gzipBytes: 669 },
+    { file: 'GameSlotScreen-BVrXJokg.css', gzipBytes: 907 },
+    { file: 'GameSlotScreen-DJN1LiJL.js', gzipBytes: 2331 },
+    { file: 'Glossary-X2kFFB62.css', gzipBytes: 660 },
+    { file: 'Glossary.module-BUQVJWGx.js', gzipBytes: 7876 },
+    { file: 'GlossarySheet-LUj6hU2R.js', gzipBytes: 835 },
+    { file: 'KitPitchPreview-BiOsFWdr.js', gzipBytes: 1139 },
+    { file: 'KitPitchPreview-C5Eb5EPK.css', gzipBytes: 288 },
+    { file: 'KitSwatch-CcHAMyxb.js', gzipBytes: 2517 },
+    { file: 'KitSwatch-DnVFohR1.css', gzipBytes: 122 },
+    { file: 'LeagueFullStats-rrI_nbR2.js', gzipBytes: 1806 },
+    { file: 'MatchMaterial-BL9sSMRV.js', gzipBytes: 5855 },
+    { file: 'MatchMaterial-Cex01wld.css', gzipBytes: 1210 },
+    { file: 'MatchReport-DVzBr3Tb.js', gzipBytes: 2821 },
+    { file: 'Money-Cu9qy8do.css', gzipBytes: 371 },
+    { file: 'Money-sfmAQeBP.js', gzipBytes: 452 },
+    { file: 'OwnerOfficeView-By8vhDlX.js', gzipBytes: 3616 },
+    { file: 'OwnerOfficeView-Ca7edP3D.css', gzipBytes: 961 },
+    { file: 'PastSeason-CgA98NbS.js', gzipBytes: 4465 },
+    { file: 'Pitch-BFAWZYVv.js', gzipBytes: 13159 },
+    { file: 'Pitch-CFbZkD2p.css', gzipBytes: 2201 },
+    { file: 'PlayGuide-CikdNAYY.css', gzipBytes: 405 },
+    { file: 'PlayGuide-D9_B5CtL.js', gzipBytes: 1239 },
+    { file: 'PlayerProfile-C8JMA6Sp.css', gzipBytes: 1203 },
+    { file: 'PlayerProfile-wsKQ_1Wk.js', gzipBytes: 4706 },
+    { file: 'PlayerSheetDialog-zJOXEXag.js', gzipBytes: 3968 },
+    { file: 'RecordsRoom-BiC6jtHC.css', gzipBytes: 1364 },
+    { file: 'RecordsRoom-C-XFdtle.js', gzipBytes: 24031 },
+    { file: 'Rich-CQaRG8ca.js', gzipBytes: 40685 },
+    { file: 'Rich-ChecNBQO.css', gzipBytes: 8345 },
+    { file: 'SeasonReview-ht2mv7rq.css', gzipBytes: 2356 },
+    { file: 'SeasonReview.module-CZ7ByaqA.js', gzipBytes: 478 },
+    { file: 'Segments-sq6lZGmq.js', gzipBytes: 319 },
+    { file: 'Select-BZZ4UQV0.js', gzipBytes: 2537 },
+    { file: 'Select-BitlUVtn.css', gzipBytes: 923 },
+    { file: 'StrategyBoard-CG8ayrov.css', gzipBytes: 2791 },
+    { file: 'StrategyBoard-CnrHAuLY.js', gzipBytes: 9647 },
+    { file: 'StrategyPanel-2Yu9jVwM.js', gzipBytes: 9368 },
+    { file: 'StrategyPanel-wu2Qkb0m.css', gzipBytes: 2013 },
+    { file: 'TeamSheetDialog-D0MMBjHK.js', gzipBytes: 2559 },
+    { file: 'Term-BFT0ta1f.js', gzipBytes: 2205 },
+    { file: 'board-DQ7GnpfK.js', gzipBytes: 4438 },
+    { file: 'build-m9WWC_8b.js', gzipBytes: 248 },
+    { file: 'career-assessment-CNvZyij8.js', gzipBytes: 448 },
+    { file: 'careerRecords-DOt6j6u1.js', gzipBytes: 1336 },
+    { file: 'checkpointWriter-DRlqw4gK.js', gzipBytes: 789 },
+    { file: 'club-identity-D2Bp9XiJ.js', gzipBytes: 673 },
+    { file: 'codec-DLlkxRmR.js', gzipBytes: 564074 },
+    { file: 'contracts-ZHwT_MKj.js', gzipBytes: 2578 },
+    { file: 'controller-B7K59eFv.js', gzipBytes: 3170 },
+    { file: 'decompress-IiLW5Ce9.js', gzipBytes: 59773 },
+    { file: 'fixtures-B6zuoIiy.js', gzipBytes: 271 },
+    { file: 'fonts-BxzBnM-N.js', gzipBytes: 246 },
+    { file: 'format-BlZeuP83.js', gzipBytes: 1144 },
+    { file: 'fullStatsView-ZKb5oExc.js', gzipBytes: 1989 },
+    { file: 'identitySchema-Bb1_xp_P.js', gzipBytes: 509 },
+    { file: 'index-Bu-x7uue.css', gzipBytes: 17962 },
+    { file: 'index-CowKBC-2.js', gzipBytes: 132756 },
+    { file: 'intervention-Bp0yO3FK.js', gzipBytes: 324 },
+    { file: 'jsx-runtime-BNakU3Ej.js', gzipBytes: 3113 },
+    { file: 'kit-selection-DerPY0N-.js', gzipBytes: 3066 },
+    { file: 'league-Bhd2Thjd.js', gzipBytes: 2681 },
+    { file: 'legacyReset-64LreTIo.js', gzipBytes: 1598 },
+    { file: 'liveState-CAstsF59.js', gzipBytes: 303 },
+    { file: 'material-CEO3YsG-.js', gzipBytes: 1156 },
+    { file: 'motion-_9hWX0lp.js', gzipBytes: 1859 },
+    { file: 'persistence-CcTyxcjB.js', gzipBytes: 2688 },
+    { file: 'pitch-BW4xTmzo.js', gzipBytes: 2694 },
+    { file: 'playerAnalysis-SyjAGb71.js', gzipBytes: 1200 },
+    { file: 'preload-helper-DjzSQ1t3.js', gzipBytes: 749 },
+    { file: 'presentationPreferences-Cl9oNVO_.js', gzipBytes: 388 },
+    { file: 'presentationResources-DOMxYUSm.js', gzipBytes: 885 },
+    { file: 'profile-BWCjKhvB.js', gzipBytes: 1478 },
+    { file: 'react-6DsfQTtk.js', gzipBytes: 431 },
+    { file: 'registry--3ggD4Fl.js', gzipBytes: 709 },
+    { file: 'rolldown-runtime-hePW80VL.js', gzipBytes: 428 },
+    { file: 'schemas-DH7l2hbh.js', gzipBytes: 27025 },
+    { file: 'scouting-PklKRLNT.js', gzipBytes: 573 },
+    { file: 'settlement-DJUEGMTl.js', gzipBytes: 68230 },
+    ... 13 more items
+  ],
+  firstPlayPageTargetTransfers: [
+    { url: 'http://127.0.0.1:4181/', type: 'Document', bytes: 1696 },
+    {
+      url: 'http://127.0.0.1:4181/assets/rolldown-runtime-hePW80VL.js',
+      type: 'Script',
+      bytes: 1087
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/App.module-D-QR63-H.js',
+      type: 'Script',
+      bytes: 2664
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/motion-_9hWX0lp.js',
+      type: 'Script',
+      bytes: 2519
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/jsx-runtime-BNakU3Ej.js',
+      type: 'Script',
+      bytes: 3773
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Dialog-HJLfnQd0.js',
+      type: 'Script',
+      bytes: 3924
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/App-BCLAKhOq.css',
+      type: 'Stylesheet',
+      bytes: 11242
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Money-Cu9qy8do.css',
+      type: 'Stylesheet',
+      bytes: 1023
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Select-BitlUVtn.css',
+      type: 'Stylesheet',
+      bytes: 1575
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubCrest-2liMRO71.css',
+      type: 'Stylesheet',
+      bytes: 808
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubLink-B7h1mIqt.css',
+      type: 'Stylesheet',
+      bytes: 1066
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/index-Bu-x7uue.css',
+      type: 'Stylesheet',
+      bytes: 18616
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/react-6DsfQTtk.js',
+      type: 'Script',
+      bytes: 1090
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/build-m9WWC_8b.js',
+      type: 'Script',
+      bytes: 907
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/store-DcdChiLf.js',
+      type: 'Script',
+      bytes: 1754
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/kit-selection-DerPY0N-.js',
+      type: 'Script',
+      bytes: 3726
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/index-CowKBC-2.js',
+      type: 'Script',
+      bytes: 133418
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/club-identity-D2Bp9XiJ.js',
+      type: 'Script',
+      bytes: 1332
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/pitch-BW4xTmzo.js',
+      type: 'Script',
+      bytes: 3354
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/versions-DXhqlBwL.js',
+      type: 'Script',
+      bytes: 1504
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/material-CEO3YsG-.js',
+      type: 'Script',
+      bytes: 1816
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/schemas-DH7l2hbh.js',
+      type: 'Script',
+      bytes: 27686
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/board-DQ7GnpfK.js',
+      type: 'Script',
+      bytes: 5098
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/format-BlZeuP83.js',
+      type: 'Script',
+      bytes: 1804
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Money-sfmAQeBP.js',
+      type: 'Script',
+      bytes: 1111
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/taskMemory-Dxs8pWJZ.js',
+      type: 'Script',
+      bytes: 1191
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/state-BVGAaVfr.js',
+      type: 'Script',
+      bytes: 3422
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/settlement-DJUEGMTl.js',
+      type: 'Script',
+      bytes: 68891
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Select-BZZ4UQV0.js',
+      type: 'Script',
+      bytes: 3197
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/profile-BWCjKhvB.js',
+      type: 'Script',
+      bytes: 2138
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/identitySchema-Bb1_xp_P.js',
+      type: 'Script',
+      bytes: 1168
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/preload-helper-DjzSQ1t3.js',
+      type: 'Script',
+      bytes: 1408
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/liveState-CAstsF59.js',
+      type: 'Script',
+      bytes: 962
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubCrest-CWTwOMkI.js',
+      type: 'Script',
+      bytes: 3030
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubLink-DhzEQUGN.js',
+      type: 'Script',
+      bytes: 1137
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/intervention-Bp0yO3FK.js',
+      type: 'Script',
+      bytes: 983
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/league-Bhd2Thjd.js',
+      type: 'Script',
+      bytes: 3341
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Segments-sq6lZGmq.js',
+      type: 'Script',
+      bytes: 978
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/registry--3ggD4Fl.js',
+      type: 'Script',
+      bytes: 1368
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/fonts-BxzBnM-N.js',
+      type: 'Script',
+      bytes: 905
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/presentationPreferences-Cl9oNVO_.js',
+      type: 'Script',
+      bytes: 1047
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/presentationResources-DOMxYUSm.js',
+      type: 'Script',
+      bytes: 1544
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/controller-B7K59eFv.js',
+      type: 'Script',
+      bytes: 3830
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/contracts-ZHwT_MKj.js',
+      type: 'Script',
+      bytes: 3238
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/themeResources-B2kUjUeg.js',
+      type: 'Script',
+      bytes: 1821
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/locales/index.json',
+      type: 'Fetch',
+      bytes: 744
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/index.json',
+      type: 'Fetch',
+      bytes: 866
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/locales/ko-KR.json',
+      type: 'Fetch',
+      bytes: 3161
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/matchday-print.json',
+      type: 'Fetch',
+      bytes: 3978
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/matchday-print.css',
+      type: 'Stylesheet',
+      bytes: 2047
+    },
+    {
+      url: 'http://127.0.0.1:4181/fonts/Pretendard-Regular.woff2',
+      type: 'Font',
+      bytes: 766435
+    },
+    {
+      url: 'http://127.0.0.1:4181/fonts/Pretendard-Bold.woff2',
+      type: 'Font',
+      bytes: 791699
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/paper.webp',
+      type: 'Image',
+      bytes: 43382
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/ink.webp',
+      type: 'Image',
+      bytes: 64766
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-dark.webp',
+      type: 'Image',
+      bytes: 89272
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/rule-light.webp',
+      type: 'Image',
+      bytes: 1873
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-history.webp',
+      type: 'Image',
+      bytes: 24994
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-league.webp',
+      type: 'Image',
+      bytes: 19636
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-cup.webp',
+      type: 'Image',
+      bytes: 19144
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-office.webp',
+      type: 'Image',
+      bytes: 22290
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/paper-quiet.webp',
+      type: 'Image',
+      bytes: 28278
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-training.webp',
+      type: 'Image',
+      bytes: 14892
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-home.webp',
+      type: 'Image',
+      bytes: 17130
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/rule-dark.webp',
+      type: 'Image',
+      bytes: 3897
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-selected.webp',
+      type: 'Image',
+      bytes: 77176
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-people.webp',
+      type: 'Image',
+      bytes: 13070
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/sidebar-terrace.webp',
+      type: 'Image',
+      bytes: 99422
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/standard/grain.png',
+      type: 'Image',
+      bytes: 25098
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-button.webp',
+      type: 'Image',
+      bytes: 47742
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/legacyReset-64LreTIo.js',
+      type: 'Script',
+      bytes: 2258
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/masthead.webp',
+      type: 'Image',
+      bytes: 10788
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-stamp.webp',
+      type: 'Image',
+      bytes: 89478
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/vermilion.webp',
+      type: 'Image',
+      bytes: 95972
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-ticket.webp',
+      type: 'Image',
+      bytes: 59038
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/KitSwatch-DnVFohR1.css',
+      type: 'Stylesheet',
+      bytes: 774
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Analysis-VPfzf5FQ.css',
+      type: 'Stylesheet',
+      bytes: 2167
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Analysis.module-CCX15IKK.js',
+      type: 'Script',
+      bytes: 958
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/usePitchSkin-B3Kkoi94.js',
+      type: 'Script',
+      bytes: 2411
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/KitSwatch-CcHAMyxb.js',
+      type: 'Script',
+      bytes: 3177
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Pitch-BFAWZYVv.js',
+      type: 'Script',
+      bytes: 13820
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Pitch-CFbZkD2p.css',
+      type: 'Stylesheet',
+      bytes: 2854
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Glossary-X2kFFB62.css',
+      type: 'Stylesheet',
+      bytes: 1312
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/FormationPitch-xbK_Kka8.css',
+      type: 'Stylesheet',
+      bytes: 1321
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/PlayerProfile-C8JMA6Sp.css',
+      type: 'Stylesheet',
+      bytes: 1856
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Rich-ChecNBQO.css',
+      type: 'Stylesheet',
+      bytes: 8998
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Rich-CQaRG8ca.js',
+      type: 'Script',
+      bytes: 41346
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/playerAnalysis-SyjAGb71.js',
+      type: 'Script',
+      bytes: 1860
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/fullStatsView-ZKb5oExc.js',
+      type: 'Script',
+      bytes: 2649
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Term-BFT0ta1f.js',
+      type: 'Script',
+      bytes: 2865
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Glossary.module-BUQVJWGx.js',
+      type: 'Script',
+      bytes: 8536
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/PlayerProfile-wsKQ_1Wk.js',
+      type: 'Script',
+      bytes: 5366
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/career-assessment-CNvZyij8.js',
+      type: 'Script',
+      bytes: 1107
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-manager.webp',
+      type: 'Image',
+      bytes: 18020
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-menu.webp',
+      type: 'Image',
+      bytes: 15418
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/FormationPitch-CbFwHFH-.js',
+      type: 'Script',
+      bytes: 1522
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-tile.webp',
+      type: 'Image',
+      bytes: 51868
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/rule-light-vertical.webp',
+      type: 'Image',
+      bytes: 1334
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-shirt.webp',
+      type: 'Image',
+      bytes: 15964
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-boot.webp',
+      type: 'Image',
+      bytes: 14294
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-supporters.webp',
+      type: 'Image',
+      bytes: 15546
+    },
+    ... 13 more items
+  ],
+  mobileFirstPlayPageTargetTransfers: [
+    { url: 'http://127.0.0.1:4181/', type: 'Document', bytes: 1696 },
+    {
+      url: 'http://127.0.0.1:4181/assets/rolldown-runtime-hePW80VL.js',
+      type: 'Script',
+      bytes: 1087
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/motion-_9hWX0lp.js',
+      type: 'Script',
+      bytes: 2519
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/App.module-D-QR63-H.js',
+      type: 'Script',
+      bytes: 2664
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/jsx-runtime-BNakU3Ej.js',
+      type: 'Script',
+      bytes: 3773
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Dialog-HJLfnQd0.js',
+      type: 'Script',
+      bytes: 3924
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/App-BCLAKhOq.css',
+      type: 'Stylesheet',
+      bytes: 11242
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Money-Cu9qy8do.css',
+      type: 'Stylesheet',
+      bytes: 1023
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Select-BitlUVtn.css',
+      type: 'Stylesheet',
+      bytes: 1575
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubCrest-2liMRO71.css',
+      type: 'Stylesheet',
+      bytes: 808
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubLink-B7h1mIqt.css',
+      type: 'Stylesheet',
+      bytes: 1066
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/index-Bu-x7uue.css',
+      type: 'Stylesheet',
+      bytes: 18616
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/react-6DsfQTtk.js',
+      type: 'Script',
+      bytes: 1090
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/build-m9WWC_8b.js',
+      type: 'Script',
+      bytes: 907
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/store-DcdChiLf.js',
+      type: 'Script',
+      bytes: 1754
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/kit-selection-DerPY0N-.js',
+      type: 'Script',
+      bytes: 3726
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/index-CowKBC-2.js',
+      type: 'Script',
+      bytes: 133418
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/club-identity-D2Bp9XiJ.js',
+      type: 'Script',
+      bytes: 1332
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/pitch-BW4xTmzo.js',
+      type: 'Script',
+      bytes: 3354
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/versions-DXhqlBwL.js',
+      type: 'Script',
+      bytes: 1504
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/material-CEO3YsG-.js',
+      type: 'Script',
+      bytes: 1816
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/schemas-DH7l2hbh.js',
+      type: 'Script',
+      bytes: 27686
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/board-DQ7GnpfK.js',
+      type: 'Script',
+      bytes: 5098
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/format-BlZeuP83.js',
+      type: 'Script',
+      bytes: 1804
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Money-sfmAQeBP.js',
+      type: 'Script',
+      bytes: 1111
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/taskMemory-Dxs8pWJZ.js',
+      type: 'Script',
+      bytes: 1191
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/state-BVGAaVfr.js',
+      type: 'Script',
+      bytes: 3422
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/settlement-DJUEGMTl.js',
+      type: 'Script',
+      bytes: 68891
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Select-BZZ4UQV0.js',
+      type: 'Script',
+      bytes: 3197
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/profile-BWCjKhvB.js',
+      type: 'Script',
+      bytes: 2138
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/identitySchema-Bb1_xp_P.js',
+      type: 'Script',
+      bytes: 1168
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/preload-helper-DjzSQ1t3.js',
+      type: 'Script',
+      bytes: 1408
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/liveState-CAstsF59.js',
+      type: 'Script',
+      bytes: 962
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubCrest-CWTwOMkI.js',
+      type: 'Script',
+      bytes: 3030
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/ClubLink-DhzEQUGN.js',
+      type: 'Script',
+      bytes: 1137
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/intervention-Bp0yO3FK.js',
+      type: 'Script',
+      bytes: 983
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Segments-sq6lZGmq.js',
+      type: 'Script',
+      bytes: 978
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/league-Bhd2Thjd.js',
+      type: 'Script',
+      bytes: 3341
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/registry--3ggD4Fl.js',
+      type: 'Script',
+      bytes: 1368
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/fonts-BxzBnM-N.js',
+      type: 'Script',
+      bytes: 905
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/presentationPreferences-Cl9oNVO_.js',
+      type: 'Script',
+      bytes: 1047
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/presentationResources-DOMxYUSm.js',
+      type: 'Script',
+      bytes: 1544
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/controller-B7K59eFv.js',
+      type: 'Script',
+      bytes: 3830
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/contracts-ZHwT_MKj.js',
+      type: 'Script',
+      bytes: 3238
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/themeResources-B2kUjUeg.js',
+      type: 'Script',
+      bytes: 1821
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/locales/index.json',
+      type: 'Fetch',
+      bytes: 744
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/index.json',
+      type: 'Fetch',
+      bytes: 866
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/locales/ko-KR.json',
+      type: 'Fetch',
+      bytes: 3161
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/matchday-print.json',
+      type: 'Fetch',
+      bytes: 3978
+    },
+    {
+      url: 'http://127.0.0.1:4181/presentation/themes/matchday-print.css',
+      type: 'Stylesheet',
+      bytes: 2047
+    },
+    {
+      url: 'http://127.0.0.1:4181/fonts/Pretendard-Regular.woff2',
+      type: 'Font',
+      bytes: 766435
+    },
+    {
+      url: 'http://127.0.0.1:4181/fonts/Pretendard-Bold.woff2',
+      type: 'Font',
+      bytes: 791699
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/rule-dark.webp',
+      type: 'Image',
+      bytes: 3897
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/paper-quiet.webp',
+      type: 'Image',
+      bytes: 28278
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/paper.webp',
+      type: 'Image',
+      bytes: 43382
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/standard/grain.png',
+      type: 'Image',
+      bytes: 25098
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/legacyReset-64LreTIo.js',
+      type: 'Script',
+      bytes: 2258
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-button.webp',
+      type: 'Image',
+      bytes: 47742
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-stamp.webp',
+      type: 'Image',
+      bytes: 89478
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-ticket.webp',
+      type: 'Image',
+      bytes: 59038
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/vermilion.webp',
+      type: 'Image',
+      bytes: 95972
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/KitSwatch-DnVFohR1.css',
+      type: 'Stylesheet',
+      bytes: 774
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Analysis-VPfzf5FQ.css',
+      type: 'Stylesheet',
+      bytes: 2167
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Analysis.module-CCX15IKK.js',
+      type: 'Script',
+      bytes: 958
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/usePitchSkin-B3Kkoi94.js',
+      type: 'Script',
+      bytes: 2411
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/KitSwatch-CcHAMyxb.js',
+      type: 'Script',
+      bytes: 3177
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Pitch-BFAWZYVv.js',
+      type: 'Script',
+      bytes: 13820
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Pitch-CFbZkD2p.css',
+      type: 'Stylesheet',
+      bytes: 2854
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Glossary-X2kFFB62.css',
+      type: 'Stylesheet',
+      bytes: 1312
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/FormationPitch-xbK_Kka8.css',
+      type: 'Stylesheet',
+      bytes: 1321
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/PlayerProfile-C8JMA6Sp.css',
+      type: 'Stylesheet',
+      bytes: 1856
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Rich-ChecNBQO.css',
+      type: 'Stylesheet',
+      bytes: 8998
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Rich-CQaRG8ca.js',
+      type: 'Script',
+      bytes: 41346
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/playerAnalysis-SyjAGb71.js',
+      type: 'Script',
+      bytes: 1860
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/fullStatsView-ZKb5oExc.js',
+      type: 'Script',
+      bytes: 2649
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Term-BFT0ta1f.js',
+      type: 'Script',
+      bytes: 2865
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/Glossary.module-BUQVJWGx.js',
+      type: 'Script',
+      bytes: 8536
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/PlayerProfile-wsKQ_1Wk.js',
+      type: 'Script',
+      bytes: 5366
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/career-assessment-CNvZyij8.js',
+      type: 'Script',
+      bytes: 1107
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-tile.webp',
+      type: 'Image',
+      bytes: 51868
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-cup.webp',
+      type: 'Image',
+      bytes: 19144
+    },
+    {
+      url: 'http://127.0.0.1:4181/assets/FormationPitch-CbFwHFH-.js',
+      type: 'Script',
+      bytes: 1522
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/rule-light-vertical.webp',
+      type: 'Image',
+      bytes: 1334
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-selected.webp',
+      type: 'Image',
+      bytes: 77176
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-play.webp',
+      type: 'Image',
+      bytes: 13710
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-boot.webp',
+      type: 'Image',
+      bytes: 14294
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-supporters.webp',
+      type: 'Image',
+      bytes: 15546
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-bell.webp',
+      type: 'Image',
+      bytes: 14070
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-history.webp',
+      type: 'Image',
+      bytes: 24994
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-office.webp',
+      type: 'Image',
+      bytes: 22290
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-heart.webp',
+      type: 'Image',
+      bytes: 15778
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/ink.webp',
+      type: 'Image',
+      bytes: 64766
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/frame-dark.webp',
+      type: 'Image',
+      bytes: 89272
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-manager.webp',
+      type: 'Image',
+      bytes: 18020
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-shirt.webp',
+      type: 'Image',
+      bytes: 15964
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-people.webp',
+      type: 'Image',
+      bytes: 13070
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-menu.webp',
+      type: 'Image',
+      bytes: 15418
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-home.webp',
+      type: 'Image',
+      bytes: 17130
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-league.webp',
+      type: 'Image',
+      bytes: 19636
+    },
+    {
+      url: 'http://127.0.0.1:4181/art/matchday-print/home/icon-training.webp',
+      type: 'Image',
+      bytes: 14892
+    },
+    ... 10 more items
+  ],
+  firstPlayPageTargetTransferBytes: 3796058,
+  mobileFirstPlayPageTargetTransferBytes: 3683975,
+  transferNote: 'Page-target CDP transfers may omit dedicated-worker target requests; build inventory additionally counts every worker/lazy JavaScript and CSS file as a conservative upper bound.',
+  centuryLoadMs: 3927,
+  centuryCheckpointSha256: '5b114f427384b304f08b02272afa27d7b1bd1193b2d9dbf39eaf2d095f877dcc',
+  centuryRestoreReference: 'Separate unthrottled 100-season initialization measurement',
+  initializationLimitMs: 5000,
+  inputSamples: 30,
+  pointerToSecondFrameP95Ms: 38,
+  inputLimitMs: 100,
+  minimumFps: 30,
+  mobileHorizontalOverflow: false,
+  patternRendering: true,
+  pageErrors: [],
+  passed: false,
+  releasePassed: true,
+  scope: 'Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback, after the founded club chose its striped home shirt for that fixture in preparation, so both pitches paint a recorded patterned shirt (observedKits names the worn shirts from the match legend). Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS is budgeted; the conservative all-asset compressed inventory, including the lazy engine worker, is reported separately; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim.'
+}
+exit 0

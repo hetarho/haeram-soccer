@@ -1,10 +1,10 @@
 import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
 import {
-  activateMatchModel,
   advanceRound,
   advanceToNextMatch,
   createWorld,
   fullStatsRead,
+  MATCH_MODEL_RELEASE,
 } from '../../packages/engine/src/index';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
@@ -13,15 +13,19 @@ import {
   WATCH_SPEEDS,
 } from '../../apps/web/src/ui/presentationClock';
 import { fullStatsCoverage, leagueStatsScope } from '../../apps/web/src/ui/fullStatsView';
-import { ENABLED_RELEASE } from './worlds';
+import { writerActivation } from './full-model-workload';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from './worlds';
 
 /**
- * Marked synthetic fixture for the full-model continuity journey (T402; →SAVE-22/23, HIST-17,
- * WEB-89/94/95, KIT-12). A supported rules-4.0.0 career founded on the pre-feature model plays its
- * first rounds, then `activateMatchModel` records the full model mid-season with an explicit
- * enabled release — the activation the worker's writer applies — and the build, whose switch stays
- * off, imports it and plays on under the model the career recorded. Every result is real football;
- * every responsibility is delegated so nothing holds the watch.
+ * Marked synthetic fixture for the full-model continuity journey (T402, T286; →SAVE-22/23, HIST-17,
+ * WEB-89/94/95, KIT-12). A supported rules-4.0.0 career founded before the full model's release
+ * plays its first rounds on the pre-feature model and is saved without model data. With the
+ * release switch on (since T286) the build imports it as it is and its writer load
+ * (`Host.adoptModel`) records the full model mid-season at the next unplayed day; with the switch
+ * off the activation is done in Node with an explicit enabled release and imported (T402).
+ * `activated` is that activation the host's way (`writerActivation`, checked against the host in
+ * full-model-workload.test.ts), so the journey knows what the build must hold either way. Every
+ * result is real football; every responsibility is delegated so nothing holds the watch.
  */
 export const ROUNDS_BEFORE = 3;
 const SEEDS = ['full-model-continuity', 'full-model-continuity-2', 'full-model-continuity-3'];
@@ -36,7 +40,14 @@ export interface Who {
   index: number;
 }
 export interface ContinuityCareer {
+  /** The career as a writer before the release saved it: no model data. */
   world: World;
+  /** The writer load's activation of it: one revision on, the model recorded there. */
+  activated: World;
+  /** What the journey imports: `world` for the build to activate, else `activated` (switch off). */
+  imported: World;
+  /** Whether the build's own writer load activates the imported career (the switch is on). */
+  buildActivates: boolean;
   /** The coverage line the build shows for the own league at import (→WEB-89). */
   coverage: string;
   /** Its start, kept through play, reload and import: `<day>부터 기록`. */
@@ -61,20 +72,22 @@ export interface ContinuityCareer {
 }
 
 function career(seed: string): World {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Full Model Continuity',
-    color: '#2a4d6a',
-    seed,
-    level: 'easy',
-  });
+  const w = createWorld(
+    {
+      country: 'ENG',
+      name: 'Full Model Continuity',
+      color: '#2a4d6a',
+      seed,
+      level: 'easy',
+    },
+    DISABLED_RELEASE,
+  );
   const settings = w.settings!;
   for (const key of Object.keys(
     settings.responsibilities,
   ) as (keyof typeof settings.responsibilities)[])
     settings.responsibilities[key] = 'delegated';
   for (let n = 0; n < ROUNDS_BEFORE; n++) advanceRound(w, undefined, false);
-  if (!activateMatchModel(w, ENABLED_RELEASE)) throw new Error('the career did not activate');
   return w;
 }
 
@@ -115,7 +128,9 @@ function setPieceShot(playback: MatchPlayback) {
 export function continuityCareer(): ContinuityCareer {
   for (const seed of SEEDS) {
     const world = career(seed);
-    const playback = advanceToNextMatch(structuredClone(world));
+    // What the build holds after the import, whichever side activates it.
+    const activated = writerActivation(world, ENABLED_RELEASE);
+    const playback = advanceToNextMatch(structuredClone(activated));
     if (!playback) continue;
     const record = playback.record;
     const goals = record.highlights.filter((h) => h.action === '골');
@@ -129,10 +144,16 @@ export function continuityCareer(): ContinuityCareer {
     if (scores.at(-1) !== `${record.score.home} : ${record.score.away}`)
       throw new Error(`goal highlights ${scores.at(-1)} disagree with the score`);
     // The own league's lens reads this scope (→WEB-89).
-    const coverage = fullStatsCoverage(fullStatsRead(world, leagueStatsScope(world)), world.year);
+    const coverage = fullStatsCoverage(
+      fullStatsRead(activated, leagueStatsScope(activated)),
+      activated.year,
+    );
     if (coverage.status !== 'partial') throw new Error(`coverage ${coverage.status} at activation`);
     return {
       world,
+      activated,
+      imported: MATCH_MODEL_RELEASE.enabled ? world : activated,
+      buildActivates: MATCH_MODEL_RELEASE.enabled,
       coverage: coverage.text,
       from: coverage.text.split(' · ')[0]!,
       untracked: coverage.untracked,

@@ -39,7 +39,6 @@ import {
   targetChance,
   type Prepared,
 } from '../match';
-import { assertFullMatchRecord } from '../match-model';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { slotOvr } from '../world';
@@ -430,7 +429,10 @@ export function playAggregate(
   }
 }
 
-/** The full-model record of an aggregate match (→MATCH-26), validated before it is returned. */
+/**
+ * The full-model record of an aggregate match (→MATCH-26); `recordMatch` checks it before it
+ * settles (→MATCH-27).
+ */
 export function aggregateRecord(
   f: Fixture,
   rosters: readonly [readonly Player[], readonly Player[]],
@@ -482,7 +484,6 @@ export function aggregateRecord(
     }),
     ...(match.shootout && { shootout: match.shootout }),
   };
-  assertFullMatchRecord(record);
   return record;
 }
 

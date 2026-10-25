@@ -12,8 +12,8 @@ import { watchNext } from './watch';
 /**
  * Both sides through a delivered set piece in observation (→MATCH-12, MATCH-17, MATCH-18, T348),
  * from the walk-in to its recorded kick (T359) to the second ball. Marked synthetic career: a fresh
- * founding on the candidate match model (the release switch stays off; `withCandidateModel` stands
- * in for the activation writer), every responsibility delegated so nothing holds the watch. The
+ * founding on the released match model (`withCandidateModel` keeps it explicit whatever the switch
+ * says), every responsibility delegated so nothing holds the watch. The
  * scene is the engine's own recorded one: a reference run of the same seeded match finds the first
  * delivery the defenders keep their set-piece jobs through, and the page is paused on those
  * recorded samples.

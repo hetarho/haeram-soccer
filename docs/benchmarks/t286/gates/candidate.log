@@ -1,0 +1,29 @@
+2026-10-25T17:53:35.254Z match-model baseline (full): source 5be52cf06612
+2026-10-25T17:56:03.534Z baseline: 10/100 seasons
+2026-10-25T17:58:04.713Z baseline: 20/100 seasons
+2026-10-25T18:00:14.901Z baseline: 30/100 seasons
+2026-10-25T18:02:15.160Z baseline: 40/100 seasons
+2026-10-25T18:04:24.712Z baseline: 50/100 seasons
+2026-10-25T18:06:43.181Z baseline: 60/100 seasons
+2026-10-25T18:08:57.750Z baseline: 70/100 seasons
+2026-10-25T18:11:19.317Z baseline: 80/100 seasons
+2026-10-25T18:13:44.484Z baseline: 90/100 seasons
+2026-10-25T18:19:55.257Z baseline: 100/100 seasons
+2026-10-25T18:21:47.616Z active-management: 10/100 seasons
+2026-10-25T18:23:45.011Z active-management: 20/100 seasons
+2026-10-25T18:25:45.483Z active-management: 30/100 seasons
+2026-10-25T18:27:48.160Z active-management: 40/100 seasons
+2026-10-25T18:30:00.917Z active-management: 50/100 seasons
+2026-10-25T18:32:16.485Z active-management: 60/100 seasons
+2026-10-25T18:34:35.132Z active-management: 70/100 seasons
+2026-10-25T18:37:00.554Z active-management: 80/100 seasons
+2026-10-25T18:39:46.947Z active-management: 90/100 seasons
+2026-10-25T18:46:15.619Z active-management: 100/100 seasons
+2026-10-25T18:46:41.254Z wrote docs/benchmarks/t286/candidate-100.json (full, 3186089 ms)
+2026-10-25T18:46:41.254Z median ms: summary 0.076, grid 26.6, settlement 0.010
+2026-10-25T18:46:41.254Z candidate ms: fixture 0.654 (preparation 0.014, generation 0.260, attribution 0.312, record 0.003), own 132.5, settlement 0.042
+2026-10-25T18:46:41.254Z release gates: [["npc-fixture","pass",0.654],["season.baseline","pass",13366.177],["season.active-management","pass",13409.383]]; evidence true; load median 1.73, max 3.33
+2026-10-25T18:46:41.254Z paired ratios: [["npc-fixture","measured",8.767],["season.baseline","measured",1.756],["season.active-management","measured",1.8]]
+2026-10-25T18:46:41.254Z season s: baseline 13.37, active 13.41
+2026-10-25T18:46:41.255Z pilot 600 matches: {"insufficient":14,"different":21,"equivalent":2,"missing":66,"not-applicable":3,"underpowered":2}, constants team.minutes, blocking 109
+2026-10-25T18:46:41.255Z checks: {"repeatsIdentical":true,"observedMatchesUnobserved":true,"candidateStagesMatchWhole":true}

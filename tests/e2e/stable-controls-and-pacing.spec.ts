@@ -187,9 +187,9 @@ test('keeps browsing available and management edits locked over real automatic t
 });
 
 /**
- * Marked synthetic career on the pre-feature path the build plays (its release switch stays off),
- * every responsibility delegated so nothing holds the watch: a reference run in Node plays the same
- * seeded match the page watches.
+ * Marked synthetic career founded the way the build founds it (on the released full model since
+ * T286), every responsibility delegated so nothing holds the watch: a reference run in Node plays
+ * the same seeded match the page watches.
  */
 function paceCareer() {
   const world = createWorld({
