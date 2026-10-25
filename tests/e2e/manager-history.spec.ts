@@ -58,7 +58,9 @@ for (const viewport of VIEWPORTS)
   test(`reads tenures page by page and comes back from their seasons on ${viewport.name}`, async ({
     page,
   }) => {
-    test.slow();
+    // The released model plays this two-season career in Node first: about 25 s locally, past
+    // the slow 90 s budget with the browser part on CI (run 40243569140).
+    test.setTimeout(240_000);
     await page.setViewportSize(viewport);
     const career: ManagerJourneyCareer = await managerJourneyCareer();
     const total = career.views.length;
@@ -273,7 +275,8 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
 });
 
 test('never shows one game’s manager history in another', async ({ page }) => {
-  test.slow();
+  // The same Node-played career as above: past 90 s on CI (run 40243569140).
+  test.setTimeout(240_000);
   await page.setViewportSize({ width: 1280, height: 900 });
   const career = await managerJourneyCareer();
   await importResponsibilityCareer(page, career.world);
