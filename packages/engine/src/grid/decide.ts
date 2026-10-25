@@ -5,7 +5,7 @@ import { lineOf } from '../player';
 import { actionWeight } from '../match';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
-import { deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
+import { BOX_CONFIG, deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
 import {
   attackFrame,
   cellBand,
@@ -482,9 +482,10 @@ export function actionMix(
   }
   if (tags.band >= 5) mix.clearance = 0;
   // No blind delivery (candidate model, T444, →MATCH-33): he crosses or cuts back only into a zone
-  // a teammate attacks; with none for either, he carries, passes or shoots by the rest of the mix.
+  // a teammate attacks, and only when one such ball is not cut out cleanly as everyone stands
+  // (T446); with none for either, he carries, passes or shoots by the rest of the mix.
   if (candidate && (mix.cross > 0 || mix.cutBack > 0)) {
-    const open = deliveries(s, side, idx);
+    const open = deliveries(s, side, idx).filter((d) => !d.cut);
     if (!open.some((d) => DELIVERY_ACTION[d.kind] === 'cross')) mix.cross = 0;
     if (!open.some((d) => DELIVERY_ACTION[d.kind] === 'cutBack')) mix.cutBack = 0;
   }
@@ -774,7 +775,9 @@ export function choosePass(
 /**
  * The zone and runner a carrier who crosses or cuts back plays to (candidate model, T444,
  * →MATCH-33): one draw among `deliveries` of that action by `exp(score / τ)` with his temperature,
- * so a sharper head finds the free, suited runner more surely. Undefined with none to play to.
+ * so a sharper head finds the free, suited runner more surely. Each score loses
+ * `BOX_CONFIG.delivery.risk` × its path's reach (T446, →MATCH-31), as a pass's loses its lane's.
+ * Undefined with none to play to, or when every one is cut out cleanly as everyone stands.
  */
 export function chooseDelivery(
   s: GridState,
@@ -785,8 +788,9 @@ export function chooseDelivery(
   r: () => number,
 ): Delivery | undefined {
   const options = deliveries(s, side, idx).filter((d) => DELIVERY_ACTION[d.kind] === action);
-  if (!options.length) return undefined;
-  const weighed = options.map((d) => ({ score: d.score, prior: 1 }));
+  if (options.every((d) => d.cut)) return undefined;
+  const risk = BOX_CONFIG.delivery.risk;
+  const weighed = options.map((d) => ({ score: d.score - risk * d.reach, prior: 1 }));
   return draw(options, passProbabilities(weighed, temperature(s, side, idx, tags), s.math), r);
 }
 

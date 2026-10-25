@@ -5,11 +5,12 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { actionWeight } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
-import { BOX_CONFIG, boxScene, DELIVERY_ACTION } from './box';
+import { BOX_CONFIG, boxScene, deliveries, DELIVERY_ACTION, deliveryPoint } from './box';
 import {
   actionMix,
   ACTIONS,
   chooseCarry,
+  chooseDelivery,
   choosePass,
   decide,
   DECISION_CONFIG,
@@ -858,6 +859,86 @@ describe('grid decisions', () => {
     const spot = withRunner(7, [92, 34]);
     expect(spot.cross).toBe(0);
     expect(spot.cutBack).toBeGreaterThan(0);
+  });
+
+  it('a delivery whose path is cleanly reached is chosen less often (T446)', () => {
+    // T444's wing-back wide in the final third, his strikers attacking the posts.
+    const wide = (blocked: boolean) => {
+      const sc = scene(1, [92, 6]);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      place(sc.s, 9, [96, 32]);
+      place(sc.s, 10, [97, 40]);
+      const { ball } = boxScene(sc.s, 0)!;
+      const zone = deliveryPoint(0, { zone: 'nearPost', kind: 'near', ball });
+      // Side 1's man standing midway along the ground to the near post.
+      if (blocked) sc.s.players[1][3]!.pos = [(92 + zone[0]) / 2, (6 + zone[1]) / 2];
+      return sc;
+    };
+    const share = (blocked: boolean) => {
+      const sc = wide(blocked);
+      const tags = sc.tags();
+      const r = random('t446-risk');
+      let near = 0;
+      for (let i = 0; i < 4000; i++)
+        if (chooseDelivery(sc.s, 0, 1, tags, 'cross', r)?.zone === 'nearPost') near++;
+      return near / 4000;
+    };
+    const open = deliveries(wide(false).s, 0, 1);
+    expect(open.map((d) => [d.kind, d.reach, d.cut])).toEqual([
+      ['near', 0, false],
+      ['far', 0, false],
+    ]);
+    const shut = deliveries(wide(true).s, 0, 1);
+    const near = shut.find((d) => d.kind === 'near')!;
+    expect(near.cut).toBe(true);
+    expect(near.reach).toBe(1);
+    // The lofted ball to the far post flies over him.
+    expect(shut.find((d) => d.kind === 'far')).toMatchObject({ reach: 0, cut: false });
+    expect(near.score).toBeCloseTo(open.find((d) => d.kind === 'near')!.score, 12);
+    const before = share(false),
+      after = share(true);
+    expect(before).toBeGreaterThan(0.2);
+    expect(after).toBeLessThan(before * 0.75);
+    // With no risk the choice reads his scores only, as before.
+    const risk = BOX_CONFIG.delivery.risk;
+    try {
+      (BOX_CONFIG.delivery as { risk: number }).risk = 0;
+      expect(share(true)).toBeCloseTo(before, 1);
+    } finally {
+      (BOX_CONFIG.delivery as { risk: number }).risk = risk;
+    }
+  });
+
+  it('no delivery when every option is cleanly reached (T446)', () => {
+    // T444's striker in a cut-back zone, the other forward attacking the near post.
+    const lone = (blocked: boolean, far: boolean) => {
+      const sc = scene(ST, centre(7, 1));
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      place(sc.s, 10, [97, 33]);
+      if (far) place(sc.s, 8, [97, 41]);
+      const { ball } = boxScene(sc.s, 0)!;
+      const zone = deliveryPoint(0, { zone: 'nearPost', kind: 'near', ball });
+      const c = sc.s.players[0][ST]!.pos;
+      if (blocked) sc.s.players[1][3]!.pos = [(c[0] + zone[0]) / 2, (c[1] + zone[1]) / 2];
+      return sc;
+    };
+    const open = lone(false, false);
+    expect(boxScene(open.s, 0)!.runners).toEqual({ nearPost: 10 });
+    expect(actionMix(open.s, 0, ST, open.tags()).cross).toBeGreaterThan(0);
+    // The only ball, along the ground to the near post, is cut out: he does not cross blind.
+    const sc = lone(true, false);
+    expect(deliveries(sc.s, 0, ST)).toMatchObject([{ kind: 'near', cut: true }]);
+    const tags = sc.tags();
+    const mix = actionMix(sc.s, 0, ST, tags);
+    expect(mix.cross).toBe(0);
+    expect(ACTIONS.reduce((sum, a) => sum + mix[a], 0)).toBeCloseTo(1, 9);
+    expect(chooseDelivery(sc.s, 0, ST, tags, 'cross', random('t446-none'))).toBeUndefined();
+    const r = random('t446-cut');
+    for (let i = 0; i < 2000; i++) expect(decide(sc.s, 0, ST, tags, r).action).not.toBe('cross');
+    // A man attacking the far post too: the lofted ball over the crowd is on again.
+    const both = lone(true, true);
+    expect(boxScene(both.s, 0)!.runners).toMatchObject({ nearPost: 10, farPost: 8 });
+    expect(actionMix(both.s, 0, ST, both.tags()).cross).toBeGreaterThan(0);
   });
 
   it('weighs a forward pass into the final third and stretches a carry outside the box, on the candidate model only (T408)', () => {

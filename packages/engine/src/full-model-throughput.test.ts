@@ -108,11 +108,15 @@ const facts = (w: World) => ({
  * shot 0.140 → 0.098, goals 4.09 → 2.96 a match) changed the candidate rounds only;
  * b6a3fb4600202334 before. T437's recalibration of the candidate's scoring and lanes (calibration
  * round 74, core, 600 matches: shots 15.2 → 13.6 a team, interceptions 7.7 → 11.4, goals 3.09 →
- * 2.75 a match) changed the candidate rounds only; c44be6ea04964a0b before.
+ * 2.75 a match) changed the candidate rounds only; c44be6ea04964a0b before. T446's lofted
+ * deliveries over the crowd and the delivery choice reading its path's reach (calibration round
+ * 75, core, 600 matches: far-post deliveries reaching their runner 0.2 → 22.9%, cross completion
+ * 13.8 → 21.8%, goals 2.63 → 2.93 a match) changed the candidate rounds only; 9418c4eb633877dd
+ * before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: '9418c4eb633877dd',
+  candidateRounds: '613d48d6033512fa',
 };
 
 describe('complete-result throughput (T285)', () => {

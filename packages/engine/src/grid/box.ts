@@ -14,6 +14,7 @@ import { CELL_BASELINES } from './baselines';
 import { byId, COORDINATION_CONFIG, gap } from './coordination';
 import { attackFrame, BAND_EDGES, cellOf, clamp, laneOf, PITCH, toEngine } from './pitch';
 import type { Point } from './pitch';
+import { reachOnPath, type LaneReach, type PathReach } from './lanes';
 import { BOX_ROLES, SHAPE_CONFIG } from './shape';
 import { SPOTS } from './spots';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
@@ -43,10 +44,16 @@ export interface DeliveryAim {
   kind: DeliveryKind;
   ball: BallSide;
 }
-/** A delivery the carrier may play: its aim, the runner arriving there and his weight in the draw. */
+/**
+ * A delivery the carrier may play: its aim, the runner arriving there and his weight in the draw;
+ * its path's reach as it stands (T446, `deliveryReach` kicked now): the reaching opponents' summed
+ * weight, and whether one of them cuts it out cleanly.
+ */
 export interface Delivery extends DeliveryAim {
   runner: number;
   score: number;
+  reach: number;
+  cut: boolean;
 }
 
 /**
@@ -98,7 +105,9 @@ export const BOX_CONFIG = {
    * across the goal area to the far-post runner (from the goal-area band only, the cut-back zones
    * included). A runner's weight in the draw is `free` × whether he arrives free (no opponent
    * within `freeRadius` m of his zone) + `suit` × how the ball suits him (`lofted` or `low`, his
-   * attributes' 0–1 shares) + his zone's xT.
+   * attributes' 0–1 shares) + his zone's xT, less `risk` × his path's reach (T446, `deliveryReach`:
+   * the reaching opponents' summed lane weights). A lofted ball is reachable only within `loft.foot`
+   * m off the crosser's foot and its last `loft.drop` m before its zone.
    */
   delivery: {
     kinds: {
@@ -112,6 +121,13 @@ export const BOX_CONFIG = {
     suit: 0.8,
     lofted: { heading: 0.6, strength: 0.4 } as Partial<Record<Attribute, number>>,
     low: { finishing: 0.7, composure: 0.3 } as Partial<Record<Attribute, number>>,
+    loft: { foot: 3, drop: 2 },
+    /**
+     * T446: 3. No value moved goals beyond the noise (calibration round 75, core 600: 2.91 at 0,
+     * 2.94 at 1, 2.93 at 3, 2.96 at 8 a match); 3 sends the fewest balls along a reached ground
+     * path (near post 2.34 → 1.95 a team against 1) and completes the most crosses (21.8%).
+     */
+    risk: 3,
   },
   /**
    * The bodies in front of goal (T445, →MATCH-35; `shotBlockers`, `resolveShot`). Every outfield
@@ -314,6 +330,43 @@ export function boxRunPoint(
 export const deliveryPoint = (side: 0 | 1, aim: DeliveryAim): [number, number] =>
   toEngine(side, boxZones(aim.ball)[aim.zone]);
 
+/**
+ * Who reaches `side`'s delivery `aim` from `from` (engine frame), kicked `kickAt` seconds from now
+ * (→MATCH-31, MATCH-33; T444, T446): a ball along the ground on its whole path into its zone, as a
+ * pass is; a lofted one on its path to its zone's edge (`delivery.freeRadius` m from its point), the
+ * men in the zone left to the aerial duel, and only within `loft.foot` m off the crosser's foot and
+ * its last `loft.drop` m (`reachOnPath`'s lofted mode). `cut` is the man who cuts it out: the first
+ * who gets there cleanly, for a lofted ball only at the crosser's foot. A lofted ball's `marker` is
+ * the man who gets to its drop first when nobody stands in its zone: he meets it in the air there.
+ */
+export function deliveryReach(
+  s: GridState,
+  side: 0 | 1,
+  from: readonly [number, number],
+  aim: DeliveryAim,
+  kickAt: number,
+): PathReach & { cut?: LaneReach; marker?: GridPlayer } {
+  const D = B.delivery;
+  const zone = deliveryPoint(side, aim);
+  if (!lofted(aim.kind)) {
+    const reach = reachOnPath(s, side, from, zone, kickAt);
+    return { ...reach, cut: reach.clean };
+  }
+  const inZone = (gp: GridPlayer) =>
+    s.math.hypot(gp.pos[0] - zone[0], gp.pos[1] - zone[1]) <= D.freeRadius;
+  const length = s.math.hypot(zone[0] - from[0], zone[1] - from[1]);
+  const k = Math.max(0, 1 - D.freeRadius / Math.max(1e-9, length));
+  const end: [number, number] = [
+    from[0] + (zone[0] - from[0]) * k,
+    from[1] + (zone[1] - from[1]) * k,
+  ];
+  const reach = reachOnPath(s, side, from, end, kickAt, inZone, D.loft);
+  const cut = reach.clean && reach.clean.along <= D.loft.foot ? reach.clean : undefined;
+  const guarded = s.players[other(side)].some((gp) => onPitch(gp) && inZone(gp));
+  const marker = guarded ? undefined : reach.drop?.gp;
+  return { ...reach, ...(cut ? { cut } : {}), ...(marker ? { marker } : {}) };
+}
+
 /** How a ball of `kind` suits `side`'s runner `idx`: his `lofted` or `low` attributes' 0–1 shares. */
 function suits(s: GridState, side: 0 | 1, idx: number, kind: DeliveryKind): number {
   let sum = 0;
@@ -328,13 +381,15 @@ function suits(s: GridState, side: 0 | 1, idx: number, kind: DeliveryKind): numb
  * each kind `delivery.kinds` names for it, a `square` ball only with the carrier in the goal-area
  * band. None while the scene is off: the ball is not delivered blind. Each weighs `delivery.free`
  * when no opponent stands within `freeRadius` m of the zone, `suit` × how the ball suits the runner
- * (`suits`) and the zone's xT.
+ * (`suits`) and the zone's xT, and carries its path's reach as everyone stands (`deliveryReach`
+ * kicked now, T446), which the carrier's choice reads (`chooseDelivery`).
  */
 export function deliveries(s: GridState, side: 0 | 1, idx: number): Delivery[] {
   const scene = boxScene(s, side);
   if (!scene) return [];
   const D = B.delivery;
-  const byline = attackFrame(side, s.players[side][idx]!.pos)[0] >= BAND_EDGES[7];
+  const from = s.players[side][idx]!.pos;
+  const byline = attackFrame(side, from)[0] >= BAND_EDGES[7];
   const opponents = s.players[other(side)].filter(onPitch).map((gp) => attackFrame(side, gp.pos));
   const out: Delivery[] = [];
   for (const zone of BOX_ZONES) {
@@ -346,7 +401,9 @@ export function deliveries(s: GridState, side: 0 | 1, idx: number): Delivery[] {
     for (const kind of D.kinds[zone]) {
       if (kind === 'square' && !byline) continue;
       const score = free + D.suit * suits(s, side, runner, kind) + threat;
-      out.push({ zone, kind, ball: scene.ball, runner, score });
+      const aim = { zone, kind, ball: scene.ball };
+      const path = deliveryReach(s, side, from, aim, 0);
+      out.push({ ...aim, runner, score, reach: path.weight, cut: path.cut !== undefined });
     }
   }
   return out;

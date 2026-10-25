@@ -135,12 +135,23 @@ export interface LaneReach {
 /**
  * A path's reach: the opponent the ball meets first, if any, the first it meets of those who get
  * there cleanly (`cleanReach`, T444: a delivery is his even past a man who only just got there),
- * and every reaching opponent's summed weight.
+ * and every reaching opponent's summed weight. A lofted ball's (`Loft`, T446) also names the first
+ * it meets where it drops, past its first `foot` m.
  */
 export interface PathReach {
   first?: LaneReach;
   clean?: LaneReach;
+  drop?: LaneReach;
   weight: number;
+}
+
+/**
+ * A lofted ball's reachable stretches (T446, →MATCH-33): its first `foot` m off the kicker's foot
+ * and its last `drop` m before it comes down; in between it flies over everyone.
+ */
+export interface Loft {
+  foot: number;
+  drop: number;
 }
 
 /**
@@ -180,7 +191,10 @@ function runSeconds(d: number, u0: number, vmax: number): number {
  * (`speedOf`). His reach times are closed-form (`runSeconds`), scanned only over the part of the
  * path he could get to at top speed. Returns the opponent the ball meets first, the first who
  * gets there cleanly and the summed weights (`laneWeight`) of all who reach it; opponents `leave`
- * picks out (T444: a lofted ball's zone men, left to the aerial duel) are not read.
+ * picks out (T444: a lofted ball's zone men, left to the aerial duel) are not read. A lofted ball
+ * (`loft`, T446) is reachable only within its first `loft.foot` m and its last `loft.drop` m, the
+ * whole path when they meet; a man's seconds to spare are read within the stretch he reaches, and
+ * the first reaching it past `loft.foot` is its `drop`. Without `loft` the whole path is.
  */
 export function reachOnPath(
   s: GridState,
@@ -189,19 +203,23 @@ export function reachOnPath(
   to: readonly [number, number],
   kickAt: number,
   leave?: (gp: GridPlayer) => boolean,
+  loft?: Loft,
 ): PathReach {
   const L = LANE_CONFIG;
   const m = aim(from, to);
+  // A lofted ball flies over the middle of its path; the stretches meet on a short one.
+  const gap = loft && loft.foot < m.length - loft.drop ? loft : undefined;
   let first: LaneReach | undefined;
   let clean: LaneReach | undefined;
+  let drop: LaneReach | undefined;
   let weight = 0;
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp) || leave?.(gp) || !runAt(s, side, gp, kickAt)) continue;
     // Within reach of a point he is within stretch of it too, so his reach starts no earlier.
-    const wide = firstReach(m.lo, m.hi, L.stretch);
+    const wide = reachFrom(m.lo, L.stretch, gap);
     if (Number.isNaN(wide)) continue;
     const wideSpare = m.spare;
-    const close = firstReach(wide, m.hi, L.reach);
+    const close = reachFrom(wide, L.reach, gap);
     const stretch = Number.isNaN(close);
     const meets = stretch ? wide : close;
     const r: LaneReach = {
@@ -215,8 +233,26 @@ export function reachOnPath(
     weight += laneWeight(r);
     if (!first || r.along < first.along) first = r;
     if (cleanReach(r) && (!clean || r.along < clean.along)) clean = r;
+    if (loft && r.along > loft.foot && (!drop || r.along < drop.along)) drop = r;
   }
-  return { first, clean, weight };
+  return loft ? { first, clean, drop, weight } : { first, clean, weight };
+}
+
+/**
+ * The runner's first reach within `radius` from `lo` m along `RUN`'s path to its scan's end
+ * (`RUN.hi`), `firstReach` over the whole of it, or over a lofted ball's two reachable stretches
+ * (`gap`, T446) in turn: the most margin then read within the stretch where he reaches it.
+ */
+function reachFrom(lo: number, radius: number, gap: Loft | undefined): number {
+  const m = RUN;
+  if (!gap) return firstReach(lo, m.hi, radius);
+  const foot = Math.min(m.hi, gap.foot);
+  if (lo <= foot) {
+    const found = firstReach(lo, foot, radius);
+    if (!Number.isNaN(found)) return found;
+  }
+  const drop = Math.max(lo, m.length - gap.drop);
+  return drop <= m.hi ? firstReach(drop, m.hi, radius) : NaN;
 }
 
 /**
