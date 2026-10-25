@@ -19,9 +19,12 @@ const median = (xs) => {
 const steps = lines(`${G}/steps.jsonl`);
 function step(name) {
   const start = steps.filter((s) => s.step === name && s.event === 'start').at(-1);
-  const end = steps.filter((s) => s.step === name && s.event === 'end').at(-1);
-  const loads = lines(`${G}/${name}.load.jsonl`).map((l) => l.load1);
-  const others = lines(`${G}/${name}.load.jsonl`).flatMap((l) => l.busy.filter((b) => b.comm !== 'node'));
+  const end = steps.filter((s) => s.step === name && s.event === 'end' && s.at >= (start?.at ?? '')).at(-1);
+  // The load file is appended to: only the samples of this step's last run count.
+  const within = (l) => start && l.at >= start.at && (!end || l.at <= end.at);
+  const samples = lines(`${G}/${name}.load.jsonl`).filter(within);
+  const loads = samples.map((l) => l.load1);
+  const others = samples.flatMap((l) => l.busy.filter((b) => b.comm !== 'node'));
   return start
     ? {
         at: start.at,
