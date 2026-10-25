@@ -181,7 +181,7 @@ const report = {
       runnerFingerprint: candidate.provenance.source.fingerprint.sha256,
       storageFingerprint: storage?.sourceFingerprint?.sha256 ?? null,
       firstPlayFingerprint: firstPlay?.sourceFingerprint?.sha256 ?? null,
-      note: 'T286 at f5fc5c09 merged with work/v9n4-release (T437, T446, T447, T450: football bit-identical, seasons faster) and the full-record check run once at settlement with lazy labels (same outcome)',
+      note: 'T286 at f5fc5c09 merged with work/v9n4-release (T437, T446, T447, T450: football bit-identical, seasons faster) and the full-record check run once at settlement with lazy labels (same outcome). The throughput runs measured cb64026c/e4de4490 (runner fingerprint 5be52cf06612); the final source differs from it only by scripts/first-play.mjs (the browser benchmark following the streamlined home), on which the storage and browser benchmarks ran',
     },
     baseline: {
       content: '9f695530d740807c6fd2b0cded4e86b5d16c8b7f (git archive into a scratch repository, run 261025)',
@@ -208,6 +208,15 @@ const report = {
       checks: candidate.checks,
       memory: candidate.memory,
       report: rel(candidatePath),
+      firstRun: {
+        report: rel(`${raw}/candidate-100-cb64026c-1.json`),
+        gates: gateFigures(read(`${raw}/candidate-100-cb64026c-1.json`)),
+        reasons: read(`${raw}/candidate-100-cb64026c-1.json`).releaseGates.reasons,
+        load: read(`${raw}/candidate-100-cb64026c-1.json`).load,
+        samplerLoad: loadSummary(`${logs}/candidate-1.load.jsonl`),
+        seasonDecades: decades(`${logs}/candidate-1.log`),
+        note: 'another session\'s batch (vitest, then Chromium e2e) ran beside it from 16:04Z',
+      },
       preT450: {
         report: rel(preT450Path),
         gitHead: preT450.provenance.source.gitHead,
@@ -230,6 +239,7 @@ const report = {
             worst: storage.worstCheckpoint && { label: storage.worstCheckpoint.label, checkpointBytes: storage.worstCheckpoint.checkpointBytes, streams: storage.worstCheckpoint.streams?.slice(0, 6) },
             checkpoints: storage.measurements?.map((m) => ({ label: m.label, checkpointBytes: m.checkpointBytes, totalBytes: m.totalBytes, container: m.container, passed: m.passed })),
             run: step('storage'),
+            firstRun: { log: 'docs/benchmarks/t286/gates/storage-1.log', samplerLoad: loadSummary(`${logs}/storage-1.load.jsonl`), fingerprint: '2012e0b33c36e7b98d84adb045e853a1aaa98651a0c3f19f3006d4f1a043f04d', note: 'same sizes and verdicts before the first-play fix; re-run so the browser benchmark reads one fingerprint' },
             samplerLoad: loadSummary(`${logs}/storage.load.jsonl`),
             elapsedMs: storage.elapsedMs,
             losslessRoundtrip: storage.losslessRoundtrip,
@@ -260,6 +270,7 @@ const report = {
           pageErrors: firstPlay.pageErrors,
           date: firstPlay.date,
           gitHead: firstPlay.gitHead ?? firstPlay.source?.gitHead,
+          check: fs.existsSync(`${raw}/first-play-check.json`) ? { report: rel(`${raw}/first-play-check.json`), note: 'the fixed flow run once from first-play-check.mjs against the first storage run (entry baseline still f1400a8b there)', releasePassed: read(`${raw}/first-play-check.json`).releasePassed } : null,
         }
       : 'not run',
   },
@@ -286,7 +297,11 @@ const report = {
       t401Round64NonTactics: parityRows(r64Path, (c) => !c.startsWith('tactics:')).totals,
     },
   },
-  pending: [],
+  pending: [
+    'the pre-push batch (Chromium) and CI on the final source, with tests/e2e/full-model-continuity.spec.ts and the other changed journeys (ARCH-30; the coordinator runs it)',
+    'parity part T: the sixteen tactics conditions at validation round 71 (moved to T410 by the owner)',
+    'the first-play entry above ARCH-28 (pre-existing; a first-play entry task)',
+  ],
   artifacts: [candidatePath, preT450Path, baselinePath, storage ? storagePath : null, firstPlayPath, detailedPath, aggregatePath, partBPath, r64Path, t450Path]
     .filter((p) => p && fs.existsSync(p))
     .map((p) => artifact(p)),
