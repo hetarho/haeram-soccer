@@ -1,0 +1,42 @@
+2026-10-25T19:00:16.021Z 
+2026-10-25T19:00:16.021Z > haeram-soccor@0.1.0 benchmark /Users/ihaelam/project/haeram-soccer/.claude/worktrees/agent-abeb76f2995c876f0
+2026-10-25T19:00:16.021Z > tsx scripts/benchmark.ts
+2026-10-25T19:00:16.021Z 
+2026-10-25T19:01:02.736Z marked synthetic retained career and cross-season promise: 734730 checkpoint bytes, 3128 people, 1 promises, 4 tenures
+2026-10-25T19:01:10.311Z retained workload after actual season close: 228214 checkpoint bytes, 3287 people, 1 promises, 4 tenures
+2026-10-25T19:01:10.404Z retained: done in 54 s
+2026-10-25T19:01:59.485Z activation pre-release career mid-season: 529968 checkpoint bytes, 4310 people, 0 promises, 2 tenures
+2026-10-25T19:02:02.835Z activation writer load mid-season: 530186 checkpoint bytes, 4310 people, 0 promises, 2 tenures
+2026-10-25T19:03:18.371Z activation 2 seasons later round 23: 1060842 checkpoint bytes, 4861 people, 0 promises, 2 tenures
+2026-10-25T19:03:18.876Z activation: done in 128 s
+2026-10-25T19:03:19.369Z baseline founding: 89698 checkpoint bytes, 2114 people, 0 promises, 1 tenures
+2026-10-25T19:05:28.168Z baseline: 10/100 seasons, 4379 retained people, 2 tenures
+2026-10-25T19:07:29.860Z baseline: 20/100 seasons, 6100 retained people, 2 tenures
+2026-10-25T19:09:40.469Z baseline: 30/100 seasons, 7911 retained people, 2 tenures
+2026-10-25T19:11:39.088Z baseline: 40/100 seasons, 9675 retained people, 2 tenures
+2026-10-25T19:13:50.375Z baseline: 50/100 seasons, 11472 retained people, 2 tenures
+2026-10-25T19:13:59.231Z baseline-1: done in 642 s
+2026-10-25T19:16:17.151Z baseline: 60/100 seasons, 13279 retained people, 2 tenures
+2026-10-25T19:18:31.305Z baseline: 70/100 seasons, 15084 retained people, 2 tenures
+2026-10-25T19:20:53.072Z baseline: 80/100 seasons, 16916 retained people, 2 tenures
+2026-10-25T19:23:18.406Z baseline: 90/100 seasons, 18720 retained people, 2 tenures
+2026-10-25T19:25:46.735Z baseline: 100/100 seasons, 20579 retained people, 2 tenures
+2026-10-25T19:25:55.554Z baseline-2: done in 716 s
+2026-10-25T19:28:00.000Z baseline mid-career active round: 1466268 checkpoint bytes, 11472 people, 0 promises, 2 tenures
+2026-10-25T19:31:21.375Z baseline century: 1915292 checkpoint bytes, 20579 people, 0 promises, 2 tenures
+2026-10-25T19:35:04.276Z baseline century round 23: 2463516 checkpoint bytes, 20579 people, 0 promises, 2 tenures
+2026-10-25T19:35:31.491Z baseline-checkpoints: done in 576 s
+2026-10-25T19:35:31.816Z active-management founding: 89436 checkpoint bytes, 2115 people, 0 promises, 1 tenures
+2026-10-25T19:37:24.948Z active-management: 10/100 seasons, 4464 retained people, 4 tenures
+2026-10-25T19:39:19.992Z active-management: 20/100 seasons, 6203 retained people, 4 tenures
+2026-10-25T19:41:20.288Z active-management: 30/100 seasons, 7963 retained people, 4 tenures
+2026-10-25T19:43:22.113Z active-management: 40/100 seasons, 9793 retained people, 6 tenures
+2026-10-25T19:45:34.405Z active-management: 50/100 seasons, 11588 retained people, 8 tenures
+2026-10-25T19:45:42.565Z active-management-1: done in 611 s
+2026-10-25T19:48:00.861Z active-management: 60/100 seasons, 13372 retained people, 14 tenures
+2026-10-25T19:50:18.812Z active-management: 70/100 seasons, 15085 retained people, 16 tenures
+2026-10-25T19:52:42.394Z active-management: 80/100 seasons, 16857 retained people, 18 tenures
+2026-10-25T19:55:10.866Z active-management: 90/100 seasons, 18608 retained people, 23 tenures
+2026-10-25T19:57:41.325Z active-management: 100/100 seasons, 20405 retained people, 25 tenures
+2026-10-25T19:57:50.315Z active-management-2: done in 728 s
+2026-10-25T19:59:56.718Z active-management mid-career active round: 1420190 checkpoint bytes, 11593 people, 0 promises, 8 tenures
