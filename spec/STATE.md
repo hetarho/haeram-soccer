@@ -326,7 +326,7 @@
 
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
-- next unit: T458 from its pushed branch task/v9n4-release/T458-main 90e42c1f (8 of 11 journeys fixed; manager-history's cause, a replaced market coach missing from the market on the released model, in its impl notes), then the group gate once on the final tree, one push to main (`git push origin HEAD:main` from the group head after merging origin/main again), CI, then T286 done
+- k5n2 (261026, autopilot until 09:30 KST): T458 finished on its branch (manager-history closer, CI WebKit waits) and integrated (9e54c848); group gate running on 9e54c848 in a scratch worktree, branch CI on the same tree; then one push to main (`git push origin HEAD:main` from the group head after merging origin/main again), CI, then T286 done
 - after T286: T435 → T432 → T433, then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
