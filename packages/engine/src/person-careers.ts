@@ -406,6 +406,15 @@ function occupiedPostByOther(w: World, role: CareerRole, club: string, person: s
 function employmentChanged(w: World, person: PersonCareer, job: CareerEmployment, active: boolean) {
   const previous = employmentVersions.get(w) ?? 0;
   employmentVersions.set(w, previous + 1);
+  // Another role's job leaves the active coaching jobs as they were: their index stays (T450).
+  const coaching = coachingIndexes.get(w);
+  if (
+    coaching &&
+    coaching.people === w.people &&
+    coaching.version === previous &&
+    !isCoachingRole(job.role)
+  )
+    coaching.version = previous + 1;
   const hit = postIndexes.get(w);
   if (!hit || hit.people !== w.people || hit.version !== previous) return;
   if (job.role !== 'player') {
