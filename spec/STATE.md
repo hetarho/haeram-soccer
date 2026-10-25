@@ -13,6 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| k5n2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-25T23:03Z | 2026-10-25T23:03Z | T458 |
 
 ## inbox
 - 261026 decided T458 T286 ARCH-30: the group gate on 6d52ed79 passed typecheck, lint, format, unit (381 s), contract, catalogs and build but failed 11 of 274 Chromium journeys (scene searches and pinned expectations on the released football: set-piece-defence, mobile goal cue, match-core goal minutes, manager-history's hire, owner-workflows' foreign league note, analysis's sub-pixel bound) → T458 fixes the journeys first, then the gate once, one push to main and CI close T286; main stays at 5727ee01 and the group branch is pushed for visibility and its CI read (alt: push main with the failures, which the fix-CI-first rule forbids)
