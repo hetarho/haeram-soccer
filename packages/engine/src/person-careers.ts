@@ -165,6 +165,7 @@ export function openEmployment(
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
   person.employment.push(job);
+  if (isCoachingRole(role)) coachingIndexesEver.delete(w);
   employmentChanged(w, person, job, true);
   syncMentorExposure(w, person, from);
   person.club = club;
@@ -279,8 +280,31 @@ export function syncMentorExposure(w: World, person: PersonCareer, at = careerDa
     from: { ...at },
   });
 }
+/** Each world's people who ever coached or had a mentor, from `peopleOf`'s list (T450). */
+const coachingIndexesEver = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; coached: PersonCareer[] }
+>();
+/**
+ * The people who ever held a coaching job or had a mentor, in the registry's order: the only ones
+ * whose mentors a sync touches or whom coaching service can qualify (`coachingService`). Rebuilt
+ * after anyone joins the registry or opens a coaching job, the only writes that add one.
+ */
+export function coachingPeople(w: World): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = coachingIndexesEver.get(w);
+  if (!hit || hit.people !== people) {
+    const coached = people.filter(
+      (person) =>
+        person.mentors.length > 0 || person.employment.some((job) => isCoachingRole(job.role)),
+    );
+    hit = { people, coached };
+    coachingIndexesEver.set(w, hit);
+  }
+  return hit.coached;
+}
 export function syncMentorExposures(w: World) {
-  for (const person of peopleOf(w))
+  for (const person of coachingPeople(w))
     if (
       person.mentors.some((m) => !m.to) ||
       person.employment.some((job) => !job.to && isCoachingRole(job.role))

@@ -12,7 +12,7 @@ const total = (id) =>
   (dt.get(id) ?? 0) + (byId.get(id).children ?? []).reduce((a, c) => a + total(c), 0);
 const agg = new Map();
 for (const n of p.nodes) {
-  if (n.callFrame.functionName !== target) continue;
+  if (!new RegExp(target).test(n.callFrame.functionName)) continue;
   let at = parent.get(n.id);
   const chain = [];
   for (let k = 0; k < +depth && at !== undefined; k++) {

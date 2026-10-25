@@ -1,6 +1,6 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { managerialGrade } from './aptitude';
-import { careerDate, coachingService, longestMentor, peopleOf } from './person-careers';
+import { careerDate, coachingPeople, coachingService, longestMentor } from './person-careers';
 import { integer, random } from './primitives';
 import { candidateStyles } from './styles';
 
@@ -25,7 +25,8 @@ export function managerialProfile(
 /** Dated processing owns initialization; candidate/profile/history reads only consume it. */
 export function qualifyManagers(w: World) {
   const at = careerDate(w);
-  for (const person of peopleOf(w)) {
+  // Only someone who has coached can have the service that qualifies him (T450).
+  for (const person of coachingPeople(w)) {
     if (person.management || !managerialEntryReady(person, at)) continue;
     person.management = managerialProfile(
       person,
