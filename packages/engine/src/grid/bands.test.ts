@@ -110,10 +110,10 @@ describe('grid engine distributions', () => {
     // released candidate went 3.33 → 2.98, round 70's 300 paired core matches 3.54 → 3.65), and
     // T443's box scene 3.675 → 4.0 (round 71's 600 core matches 3.52 → 3.72; with the defence
     // alone, its runs off, 3.50), and T444's deliveries into the zones 4.0 → 4.5125 (round 72's
-    // 600 core matches 3.73 → 4.31: the low balls that reach their runner are first-time shots
-    // from the posts and the spot, and with no delivery ever reaching its runner the no-blind rule
-    // alone gave 4.07), so the ceiling stands at the measured level until T437 restores 3.6
-    // before T286.
+    // 600 core matches 3.73 → 4.18: 3.3% of these fixtures' 1,054 deliveries reach their runner,
+    // so the goals come from the no-blind rule, carriers who no longer cross blind carrying,
+    // passing and shooting in the box), so the ceiling stands at the measured level until T437
+    // restores 3.6 before T286.
     expect(goals / n).toBeLessThanOrEqual(4.52);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);

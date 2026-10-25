@@ -12,11 +12,13 @@ import {
   resolveCross,
   resolveCutBack,
   resolveDelivery,
+  resolveFinish,
   resolveHoldUp,
   resolvePass,
   resolveShot,
   resolveTakeOn,
   shotContext,
+  type Finish,
   type Outcome,
   type ShotOutcome,
 } from './resolve';
@@ -29,7 +31,7 @@ import {
   type Restart,
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
-import { deliveryPoint, lofted, type DeliveryAim, type DeliveryKind } from './box';
+import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
@@ -173,6 +175,8 @@ export function playGrid(setup: GridSetup): GridResult {
   /** The take-on that came immediately before the current action (an assist needs a pass, not a dribble). */
   let prevBeat: Ref | undefined;
   let holdBias = false;
+  /** A delivery's runner who met it at its zone, and the first-time finish his next action is (T444). */
+  let finishing: { side: 0 | 1; idx: number; finish: Finish } | undefined;
   const passLosses: PassLosses | undefined = candidate
     ? { intercepted: [0, 0], deflected: [0, 0], receiver: [0, 0], out: [0, 0] }
     : undefined;
@@ -552,14 +556,9 @@ export function playGrid(setup: GridSetup): GridResult {
       return ahead('clearance', upfield, cellOf(c));
     }
     if (d.target === undefined) return undefined;
-    // A cross or cut-back goes into its zone (T444); a low one's first-time finish follows it.
-    if (d.action === 'cross' || d.action === 'cutBack') {
-      if (!d.delivery) return undefined;
-      const zone = deliveryPoint(side, d.delivery);
-      const aim = ahead(d.action, zone, cellOf(c));
-      if (lofted(d.delivery.kind)) return aim;
-      return { ...aim, flight: aim.flight + flightSeconds(zone, goal, 'shot') };
-    }
+    // A cross or cut-back goes into its zone (T444); its runner's finish is an action of its own.
+    if (d.action === 'cross' || d.action === 'cutBack')
+      return d.delivery ? ahead(d.action, deliveryPoint(side, d.delivery), cellOf(c)) : undefined;
     if (d.action !== 'pass') return undefined;
     const mate = s.players[side][d.target]!.pos;
     const lead = d.kind === 'through' ? throughPoint(s, side, idx, d.target) : undefined;
@@ -635,8 +634,9 @@ export function playGrid(setup: GridSetup): GridResult {
   /**
    * Candidate model (T444, →MATCH-31, MATCH-33): `idx`'s cross or cut-back into the zone `aim`
    * names, to its runner `target`, kicked as a pass is (T441): at once after his in-stride carry,
-   * else after the wind-up its flight leaves of the action. A low ball he finishes first time is
-   * first a reception at the zone, as a completed cut-back is before its forced shot.
+   * else after the wind-up its flight leaves of the action. One that reaches him is a reception at
+   * the zone, the action lasting until he gets there (`motionOf`); the header or shot it leaves him
+   * (`finishing`) is his next action, struck from there.
    */
   function deliver(
     side: 0 | 1,
@@ -655,20 +655,15 @@ export function playGrid(setup: GridSetup): GridResult {
       : Math.max(0, secondsOf(action) * jitter - flightSeconds(passer.pos, zone, 'pass'));
     const from = attackFrame(side, passer.pos);
     const receiverAt = attackFrame(side, s.players[side][target]!.pos);
-    const o = resolveDelivery(s, side, idx, target, aim, tags, ctx, r, kickAt);
-    const ok = o.kind === 'complete' || o.kind === 'shot';
+    const { outcome: o, finish } = resolveDelivery(s, side, idx, target, aim, tags, r, kickAt);
+    const ok = o.kind === 'complete';
     tally.passEvent(side, idx, { from, to: attackFrame(side, zone), receiverAt, ok, kind: action });
     const count = deliveries![aim.kind];
     count.attempts[side]++;
     if (ok) count.completed[side]++;
-    if (!ok) losePass(s, side, idx, target);
-    if (o.kind === 'shot' && !o.header) {
-      apply(side, idx, { kind: 'complete', to: zone, receiver: target });
-      applyShot(side, o);
-    } else {
-      if (o.kind === 'shot') lastPasser = [side, idx];
-      apply(side, idx, o);
-    }
+    else losePass(s, side, idx, target);
+    apply(side, idx, o);
+    if (finish) finishing = { side, idx: target, finish };
     return { key: action, outcome: o };
   }
 
@@ -676,7 +671,8 @@ export function playGrid(setup: GridSetup): GridResult {
    * One decision by the player on the ball; returns the timing key of what was played and its
    * outcome. `jitter` is the action's drawn time factor and `carry` his in-stride carry before it
    * (candidate model): after a carry he kicks at once, else after the wind-up his flight leaves of
-   * the action, which is when the opponents' reach of a pass is read from (→MATCH-31, T441).
+   * the action, which is when the opponents' reach of a pass is read from (→MATCH-31, T441). A shot
+   * with a `finish` is a delivery's first-time finish (T444).
    */
   function play(
     side: 0 | 1,
@@ -684,6 +680,7 @@ export function playGrid(setup: GridSetup): GridResult {
     d: Decision,
     jitter = 0,
     carry?: Carry,
+    finish?: Finish,
   ): { key: ActionKey; outcome: Outcome | 'offside' } {
     // His first touch has been decided (T397).
     s.received = undefined;
@@ -827,7 +824,9 @@ export function playGrid(setup: GridSetup): GridResult {
         return { key: 'takeOn', outcome: o };
       }
       case 'shot': {
-        const o = resolveShot(s, side, idx, tags, ctx, r);
+        const o = finish
+          ? resolveFinish(s, side, idx, finish, tags, ctx, r)
+          : resolveShot(s, side, idx, tags, ctx, r);
         apply(side, idx, o);
         return { key: 'shot', outcome: o };
       }
@@ -873,6 +872,8 @@ export function playGrid(setup: GridSetup): GridResult {
       if (pending) {
         prevBeat = undefined;
         justBeat = undefined;
+        // A dead ball (an injury's drop ball, the whistle) ends a delivery's unplayed finish.
+        finishing = undefined;
         const rs = pending;
         pending = undefined;
         // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
@@ -978,8 +979,13 @@ export function playGrid(setup: GridSetup): GridResult {
         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const tags = computeTags(s, owner[0], owner[1]);
         tally.material?.touch(owner[0], owner[1], from, tags.phase);
+        // A delivery's runner who has met it at its zone finishes it first time (T444).
+        const finish =
+          finishing?.side === owner[0] && finishing.idx === owner[1] ? finishing.finish : undefined;
+        finishing = undefined;
         let d: Decision;
-        if (holdBias) {
+        if (finish) d = { action: 'shot' };
+        else if (holdBias) {
           holdBias = false;
           const pass = choosePass(s, owner[0], owner[1], tags, r, {
             backBias: DECISION_CONFIG.pass.backBias,
@@ -998,14 +1004,14 @@ export function playGrid(setup: GridSetup): GridResult {
         tracer.hold();
         // The action's time is drawn before it is played, so his in-stride carry can fill it; the
         // match runs through the carry and he plays the ball, and it is resolved, where it took him
-        // (→MATCH-12 r27).
-        const jitter = candidate ? 0.85 + 0.3 * r() : 0;
-        const carry = candidate ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once.
+        const jitter = candidate && !finish ? 0.85 + 0.3 * r() : 0;
+        const carry = candidate && !finish ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
-        const played = play(owner[0], owner[1], d, jitter, carry);
+        const played = play(owner[0], owner[1], d, jitter, carry, finish);
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.

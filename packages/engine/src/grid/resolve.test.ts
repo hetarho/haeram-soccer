@@ -12,11 +12,13 @@ import {
   SHOT_CONFIG,
   resolveCross,
   resolveDelivery,
+  resolveFinish,
   resolvePass,
   resolvePenalty,
   resolveShot,
   resolveTakeOn,
   shotContext,
+  type DeliveryResult,
   type Outcome,
 } from './resolve';
 import { deliveryPoint, type DeliveryAim } from './box';
@@ -453,29 +455,62 @@ describe('grid open-play resolution', () => {
       const sc = setUp(place);
       const r = random(seed);
       const tags = sc.tags();
-      const ctx = shotContext(sc.s);
-      return Array.from({ length: 4000 }, () => resolveDelivery(sc.s, 0, 1, 9, near, tags, ctx, r));
+      return Array.from({ length: 4000 }, () => resolveDelivery(sc.s, 0, 1, 9, near, tags, r));
     };
     const his = (o: Outcome, idx: number) =>
       (o.kind === 'intercepted' && o.by === idx) ||
       (o.kind === 'loose' && o.winner[0] === 1 && o.winner[1] === idx);
     const atOf = (o: Outcome) =>
       o.kind === 'intercepted' || o.kind === 'loose' ? o.at : undefined;
-    // Nobody reaches it: never cut out; a bad ball is lost at the zone, a good one is his shot.
+    const arrived = (results: DeliveryResult[]) =>
+      results.filter((x) => x.outcome.kind === 'complete').length;
+    // Nobody reaches it: never cut out. A good ball reaches the striker at the zone, not at his feet,
+    // for a first-time finish with the foot; a bad one is lost at the zone.
     const open = deliver('t444-open');
-    const kinds = tally(open.length, (i) => open[i]!);
+    const kinds = tally(open.length, (i) => open[i]!.outcome);
     expect(kinds.intercepted ?? 0).toBe(0);
-    expect(kinds.shot).toBeGreaterThan(1500);
-    for (const o of open) if (o.kind === 'loose') expect(o.at).toEqual(zone);
+    expect(kinds.complete).toBeGreaterThan(1500);
+    for (const { outcome: o, finish } of open) {
+      if (o.kind === 'complete') {
+        expect(o).toEqual({ kind: 'complete', to: zone, receiver: 9 });
+        expect(finish).toEqual({ header: false, cutBack: false });
+      } else expect(finish).toBeUndefined();
+      if (o.kind === 'loose') expect(o.at).toEqual(zone);
+    }
     // A centre-back standing in its path, midway: every ball is his where it meets him, cut out
-    // `cross.intercept` of the time and headed clear the rest; one at the zone behind him gets none.
+    // `cross.intercept` of the time and headed clear the rest. Neither one at the zone behind him
+    // nor a man who only just gets to the ball before him (at full stretch 2.3 m off its line,
+    // nearer the crosser) changes that: the ball meets the first who gets there cleanly.
+    const len = Math.hypot(zone[0] - from[0], zone[1] - from[1]);
+    const offLine = (t: number, metres: number): Point => {
+      const p = along(t);
+      return [
+        p[0] + ((zone[1] - from[1]) / len) * metres,
+        p[1] - ((zone[0] - from[0]) / len) * metres,
+      ];
+    };
     const mid = along(0.5);
-    for (const behind of [false, true]) {
-      const lane = deliver('t444-lane', (s) => {
+    const early = offLine(0.3, 2.3);
+    const lanes = {
+      alone: (s: GridState) => (s.players[1][3]!.pos = [mid[0], mid[1]]),
+      behind: (s: GridState) => {
         s.players[1][3]!.pos = [mid[0], mid[1]];
-        if (behind) s.players[1][4]!.pos = [zone[0], zone[1]];
-      });
-      expect(lane.every((o) => his(o, 3))).toBe(true);
+        s.players[1][4]!.pos = [zone[0], zone[1]];
+      },
+      before: (s: GridState) => {
+        s.players[1][3]!.pos = [mid[0], mid[1]];
+        s.players[1][4]!.pos = [early[0], early[1]];
+      },
+    };
+    const reach = reachOnPath(setUp(lanes.before).s, 0, from, zone, 0);
+    expect(reach.first).toMatchObject({ stretch: true, gp: { idx: 4 } });
+    expect(reach.clean).toMatchObject({ gp: { idx: 3 } });
+    for (const [name, place] of Object.entries(lanes)) {
+      const lane = deliver('t444-lane', place).map((x) => x.outcome);
+      expect(
+        lane.every((o) => his(o, 3)),
+        name,
+      ).toBe(true);
       const cut = lane.filter((o) => o.kind === 'intercepted').length / lane.length;
       expect(Math.abs(cut - DUEL_CONFIG.cross.intercept)).toBeLessThan(0.03);
       for (const o of lane) {
@@ -488,58 +523,163 @@ describe('grid open-play resolution', () => {
         );
       }
     }
-    // A man who only just gets there, at full stretch 2.6 m off its line, is beaten by a good ball
-    // (MATCH-31): it reaches the striker as often as an open one does, and a bad one is his.
-    const len = Math.hypot(zone[0] - from[0], zone[1] - from[1]);
-    const off: Point = [
-      mid[0] + ((zone[1] - from[1]) / len) * 2.6,
-      mid[1] - ((zone[0] - from[0]) / len) * 2.6,
-    ];
-    const stretched = (s: GridState) => (s.players[1][3]!.pos = [off[0], off[1]]);
-    expect(reachOnPath(setUp(stretched).s, 0, from, zone, 0).first).toMatchObject({
-      stretch: true,
-      gp: { idx: 3 },
-    });
+    // The man who only just gets there, on his own, is beaten by a good ball (MATCH-31): it reaches
+    // the striker as often as an open one does. A bad one is deflected loose where he meets it, a
+    // 50/50 there, never cut out cleanly.
+    const stretched = (s: GridState) => {
+      const p = offLine(0.5, 2.6);
+      s.players[1][3]!.pos = [p[0], p[1]];
+    };
+    const alone = reachOnPath(setUp(stretched).s, 0, from, zone, 0);
+    expect(alone.first).toMatchObject({ stretch: true, gp: { idx: 3 } });
+    expect(alone.clean).toBeUndefined();
     const stretch = deliver('t444-stretch', stretched);
-    const shots = stretch.filter((o) => o.kind === 'shot').length;
-    expect(Math.abs(shots - (kinds.shot ?? 0))).toBeLessThan(200);
-    for (const o of stretch)
-      if (o.kind !== 'shot' && o.kind !== 'out' && o.kind !== 'held') expect(his(o, 3)).toBe(true);
+    expect(Math.abs(arrived(stretch) - arrived(open))).toBeLessThan(200);
+    let deflected = 0;
+    for (const { outcome: o } of stretch) {
+      expect(o.kind).not.toBe('intercepted');
+      if (o.kind === 'loose') {
+        expect(o.at).toEqual(alone.first!.at);
+        deflected++;
+      }
+    }
+    expect(deflected).toBeGreaterThan(1000);
+  });
+
+  it('a lofted ball onto a guarded far post meets the keeper’s claim and the aerial duel (T444)', () => {
+    // The left wing-back's ball lofted to the striker short of the far post, its full-back guarding
+    // the far post itself: the zone's men meet it in the air, so he never cuts it out on its way.
+    const far: DeliveryAim = { zone: 'farPost', kind: 'far', ball: -1 };
+    const zone = deliveryPoint(0, far);
+    const from: Point = [92, 6];
+    const deliver = (guarded: boolean) => {
+      const sc = scene(1, from);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.players[0][10]!.pos = [zone[0] - 3, zone[1]];
+      if (guarded) sc.s.players[1][5]!.pos = [zone[0], zone[1] - 1];
+      const r = random('t444-far-post');
+      const tags = sc.tags();
+      return {
+        s: sc.s,
+        results: Array.from({ length: 4000 }, () => resolveDelivery(sc.s, 0, 1, 10, far, tags, r)),
+      };
+    };
+    const guarded = deliver(true);
+    // On the ground he would reach the ball cleanly before the zone: the aerial duel is his instead.
+    expect(reachOnPath(guarded.s, 0, from, zone, 0).clean?.gp.idx).toBe(5);
+    const kinds = tally(guarded.results.length, (i) => guarded.results[i]!.outcome);
+    expect(kinds.intercepted ?? 0).toBe(0);
+    expect(kinds.held).toBeGreaterThan(200);
+    let duelsLost = 0,
+      headers = 0;
+    for (const { outcome: o, finish } of guarded.results) {
+      if (o.kind === 'loose' && o.aerial === 1) {
+        expect(o.winner).toEqual([1, 5]);
+        duelsLost++;
+      }
+      if (o.kind === 'complete') {
+        // Won in the air against him: brought down at the zone, or headed there next.
+        expect(o).toMatchObject({ to: zone, receiver: 10, aerial: 0 });
+        if (finish) {
+          expect(finish).toEqual({ header: true, pressure: SHOT_CONFIG.headerPressure });
+          headers++;
+        }
+      }
+    }
+    expect(duelsLost).toBeGreaterThan(300);
+    expect(headers).toBeGreaterThan(100);
+    // Unguarded, nobody in the box contests it in the air: no duel, and a header under no pressure.
+    for (const { outcome: o, finish } of deliver(false).results) {
+      expect('aerial' in o).toBe(false);
+      if (finish) expect(finish).toEqual({ header: true, pressure: 0 });
+    }
   });
 
   it('a low ball across the goal area is shot with the foot, not headed (T444)', () => {
-    // From the left byline, squared to the striker on the far post; nobody near enough to reach it.
+    // From the left byline, squared to the striker running in 4 m short of the far post; nobody
+    // near enough to reach it.
     const square: DeliveryAim = { zone: 'farPost', kind: 'square', ball: -1 };
     const zone = deliveryPoint(0, square);
-    const deliver = (aim: DeliveryAim, seed: string) => {
-      const sc = scene(1, [101, 4]);
-      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      sc.s.players[0][10]!.pos = [zone[0], zone[1]];
-      expect(reachOnPath(sc.s, 0, [101, 4], zone, 0).first).toBeUndefined();
-      const r = random(seed);
-      const tags = sc.tags();
-      const ctx = shotContext(sc.s);
-      return Array.from({ length: 3000 }, () => resolveDelivery(sc.s, 0, 1, 10, aim, tags, ctx, r));
-    };
-    const low = deliver(square, 't444-square');
-    const shots = low.filter((o) => o.kind === 'shot');
-    expect(shots.length).toBeGreaterThan(1200);
-    // Every shot is his, first time with the foot: no header, no aerial duel, a cut-back's chance.
+    const sc = scene(1, [101, 4]);
+    sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+    sc.s.players[0][10]!.pos = [zone[0] - 4, zone[1]];
+    expect(reachOnPath(sc.s, 0, [101, 4], zone, 0).first).toBeUndefined();
+    const r = random('t444-square');
+    const tags = sc.tags();
+    const low = Array.from({ length: 3000 }, () =>
+      resolveDelivery(sc.s, 0, 1, 10, square, tags, r),
+    );
+    // It reaches him at the zone, not where he stood: his first-time finish with the foot follows,
+    // with no aerial duel.
+    const met = low.filter((x) => x.outcome.kind === 'complete');
+    expect(met.length).toBeGreaterThan(1200);
+    for (const { outcome, finish } of met) {
+      expect(outcome).toEqual({ kind: 'complete', to: zone, receiver: 10 });
+      expect(finish).toEqual({ header: false, cutBack: true });
+    }
+    // Struck from the zone once he has met it there: a cut-back's chance, never a header.
+    sc.s.players[0][10]!.pos = [zone[0], zone[1]];
+    const ctx = shotContext(sc.s);
     const xg = chanceXg([zone[0], zone[1]], { cutBack: true, pressure: 0, candidate: true });
     expect(xg).toBeGreaterThan(chanceXg([zone[0], zone[1]], { candidate: true }));
-    for (const o of shots) {
-      expect(o).toMatchObject({ kind: 'shot', shooter: 10 });
-      expect(o.kind === 'shot' && (o.header ?? false)).toBe(false);
+    const finish = met[0]!.finish!;
+    for (let i = 0; i < 500; i++) {
+      const o = resolveFinish(sc.s, 0, 10, finish, computeTags(sc.s, 0, 10), ctx, r);
+      expect(o).toMatchObject({ kind: 'shot', shooter: 10, xg });
+      expect(o.header ?? false).toBe(false);
       expect('aerial' in o).toBe(false);
-      expect(o.kind === 'shot' && o.xg).toBeCloseTo(xg, 12);
     }
-    expect(low.some((o) => o.kind === 'complete')).toBe(false);
-    // Lofted to the same man instead: the keeper's claim and his header, or he brings it down.
-    const high = deliver({ ...square, kind: 'far' }, 't444-far');
-    expect(high.filter((o) => o.kind === 'shot' && o.header).length).toBeGreaterThan(100);
-    expect(high.filter((o) => o.kind === 'shot' && !o.header)).toHaveLength(0);
-    for (const o of high) if (o.kind === 'complete') expect(o.to).toEqual(zone);
-    expect(high.some((o) => o.kind === 'held')).toBe(true);
+  });
+
+  it('a delivery that reaches its runner meets him at its zone, and his finish is struck there (T444)', () => {
+    // Observed candidate fixtures: every completed open-play cross or cut-back flies to the point
+    // it was played into, its runner is there when it lands, and the header or shot he finishes it
+    // with is his next action, struck from there at once.
+    const kit = gridKit(['possession', 'balanced'], undefined, DISABLED_RELEASE);
+    let deliveries = 0,
+      ranIn = 0,
+      finished = 0;
+    // Few deliveries reach their runner (most are cut out, T444's round 72), so 32 fixtures.
+    for (let n = 0; n < 32; n++) {
+      const id = `t444-zone-${n}`;
+      const result = playGrid(
+        buildGridSetup(
+          kit.w,
+          { ...kit.f, id },
+          { observe: true, recordPlayers: true, model: MATCH_MODEL_REVISION },
+        ),
+      );
+      expect(validateFullMatchRecord(result.record), id).toEqual([]);
+      const trace = result.trace!;
+      trace.forEach((e, k) => {
+        const open = (e.action === 'cross' || e.action === 'cutBack') && e.tags;
+        if (!open || e.outcome !== 'complete' || e.receiver === undefined) return;
+        deliveries++;
+        const to = e.to!;
+        expect(e.knots!.at(-1)!).toMatchObject({ kind: 'receive', ball: to });
+        // Where the runner stood before the delivery (side 1's slots follow side 0's).
+        const before = trace.slice(0, k).findLast((x) => x.outcome !== 'incident');
+        const j = before?.slots.findIndex(
+          (v, i) => v === e.receiver && (i < 11 ? 0 : 1) === e.side,
+        );
+        if (before && j !== undefined && j >= 0) {
+          const was = [before.positions[2 * j]!, before.positions[2 * j + 1]!];
+          if (Math.hypot(was[0]! - to[0], was[1]! - to[1]) > 1) ranIn++;
+        }
+        const next = trace.slice(k + 1).find((x) => x.outcome !== 'incident');
+        if (!next || next.side !== e.side || next.idx !== e.receiver) return;
+        // His next action starts where the ball met him (his carry's start when he carries it on).
+        const start = next.knots?.[0]?.kind === 'carry' ? next.knots[0].ball : next.from!;
+        expect(Math.hypot(start[0] - to[0], start[1] - to[1])).toBeLessThan(0.5);
+        if (next.action !== 'shot') return;
+        // A first-time finish: kicked at once from the zone, with no carry before it.
+        expect(next.knots![0]).toMatchObject({ kind: 'kick', ball: next.from });
+        finished++;
+      });
+    }
+    expect(deliveries).toBeGreaterThan(4);
+    expect(ranIn).toBeGreaterThan(0);
+    expect(finished).toBeGreaterThan(4);
   });
 
   it('lets a better dribbler beat his man more often and fouls a set share of failed take-ons', () => {
