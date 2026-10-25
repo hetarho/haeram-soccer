@@ -375,7 +375,8 @@ export interface ManagerJourneyCareer {
  * (the interim plays on), and 21 appointments follow, each after an own match.
  */
 export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
-  for (const seed of ['manager-journey', 'manager-journey-2', 'manager-journey-4']) {
+  // manager-journey-2 wins the 1950 cup on the released model; manager-journey did before it.
+  for (const seed of ['manager-journey-2', 'manager-journey', 'manager-journey-4']) {
     const w = createWorld({
       country: 'ENG',
       name: 'Tenure Journey',

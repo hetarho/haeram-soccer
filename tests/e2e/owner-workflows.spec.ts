@@ -342,8 +342,9 @@ test('chooses a cup once and keeps its archived season through competition and c
 }) => {
   // The journey reads two archived seasons. Simulating them here instead of through some two
   // hundred next-event clicks keeps it off WebKit's stalled web process on CI, which a journey
-  // that long met in every attempt.
-  test.slow();
+  // that long met in every attempt. On the released model the two seasons ran past the slow
+  // 90 s budget on CI Chromium (run 40243569140).
+  test.setTimeout(180_000);
   const w = createWorld({
     country: 'ENG',
     name: 'Haeram Athletic',

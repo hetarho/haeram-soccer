@@ -259,8 +259,9 @@ test('with the manager post delegated a resignation is filled at once and the cl
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // Runs the clock from August to April at the fastest pace. Level 2 keeps the manager's renewal
   // with the owner (from level 3 the staff take it →WEB-45); match eves, offers and the winter
-  // window stop it on the way.
-  test.slow();
+  // window stop it on the way. On the released model those eight months ran past the slow 90 s
+  // budget on CI Firefox (run 40243569140).
+  test.setTimeout(180_000);
   await found(page);
   await chooseLevel(page, 4);
   await setResponsibility(page, '감독 인사', 'direct');
