@@ -16,6 +16,7 @@
 | p4w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-24T17:03Z | 2026-10-24T17:03Z | - |
 
 ## inbox
+- 261025 decided ARCH-30 T444 T445 T437: the owner asks to finish the engine code first and test once at the end → the group's unit gate becomes the fast checks (typecheck, lint, format) and the full gate (unit, contract, catalogs, build, Chromium) runs once at group completion, with the per-unit push to main off until it passes (alt: keep the full gate at every integration)
 - 261025 decided MATCH-11 MATCH-31 T441: T441's review found keeper distributions read the first opponent who reaches the path while MATCH-11's keeper row still named the defender nearest the lane → MATCH r29 aligns that row with MATCH-31, since a keeper's pass is a pass and a defender who cannot reach it should not win it; T441 keeps its reach-based keeper distribution, base MATCH@29 (alt: keep the nearest-lane defender for keeper distributions only)
 - 261025 decided MATCH-31 MATCH-32 MATCH-33 MATCH-34 MATCH-35 T441 T442 T443 T444 T445: the owner asks for a redesigned attack in front of goal and better interceptions in the passing lanes (the 261024 suggest (a)) → MATCH r28: a pass is cut out only where an opponent reaches its path, a side shuts lanes with a cover shadow and a screen, the attack occupies near post / far post / penalty spot / edge with runs timed to the delivery, the defence protects the same zones goal-side, deliveries go into occupied zones and never blind, shots meet the bodies in their path before the keeper and second balls go to whoever reaches them (alt: keep the drawn interception split with a distance cap | retune entries and shot scales again, which T397/T408/T411 found exhausted)
 - 261025 decided T441 T442 T443 T444 T445 T437 T286 T410: where the final-third rework goes → before T437 and T286, so one recalibration covers the carry and the rework and the release measures the final model, as for T426 (alt: after the release as part of match-model revision 2 with the freedom bundle | after T410's re-read)
@@ -315,6 +316,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261025 v9n4-release (p4w8): T441–T445 integrated, group gate green on a7135c1f; unit gate now fast checks, full gate at completion; T437 delegated to a sub-session
 - 261025 T445 integrated
 - 261025 T444 integrated
 - 261025 T443 integrated
@@ -334,4 +336,3 @@
 - 261025 T438 done (u6p2): shared theme details and live stadium preview; units62/type/lint/format/resources/build pass, all four themes audited, 20 open-picker and 12 match browser previews pass; uncommitted
 - 261025 T438 freshness (u6p2): WEB r148 changes presentation only; T286/T431/T434 keep engine/release contracts and advance WEB base 147→148; no executing attempt for those tasks
 - 261025 update-ssot WEB r148 + create-task/start T438 (u6p2): audit sticker-club and shared theme details; preserve v9n4-release work and game facts
-- 261025 decide T426 + create-task T437 (v9n4): goals 4.10 after MATCH r27; defenders' read restored in T426, T437 recalibrates before T286
