@@ -1,0 +1,2 @@
+{"step":"candidate","event":"start","at":"2026-10-25T15:17:14.178Z","cwd":"/Users/ihaelam/project/haeram-soccer/.claude/worktrees/agent-abeb76f2995c876f0","command":"pnpm exec tsx scripts/match-model-baseline.ts --model candidate --release --paired-with docs/benchmarks/t286/baseline-9f69553-100.json --out docs/benchmarks/t286/candidate-100.json"}
+{"step":"candidate","event":"end","at":"2026-10-25T16:14:40.238Z","seconds":3446.06,"status":0}
