@@ -751,10 +751,16 @@ export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic
  */
 const npcBase = new WeakMap<Player[], { ovr: number; load: number }>();
 export function rating(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
+  return ratingOf(w, c, startingSquad(w, c, f));
+}
+/**
+ * `rating` of the XI `startingSquad` gives the club for a fixture (the own club's `ownStarters`),
+ * for a caller that already holds it: `prepareMatch` reads both (T450).
+ */
+export function ratingOf(w: World, c: Club, xi: Player[]) {
   const own = c.id === w.playerClub;
   const slots = formationOf(tacticOf(w, c));
   if (!own) {
-    const xi = startingSquad(w, c, f);
     let base = npcBase.get(xi);
     if (!base) {
       base = { ovr: 0, load: 0 };
@@ -766,7 +772,6 @@ export function rating(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>
     }
     return Math.round((base.ovr * cohesionMultiplier(c) - base.load) / 11);
   }
-  const xi = ownStarters(w, f);
   return Math.round(
     xi.reduce(
       (s, p, i) => s + slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,

@@ -6,6 +6,7 @@ import {
   careerOrdinal,
   closeEmployment,
   openEmployment,
+  profiledCoaches,
 } from './person-careers';
 import { coachingEntryReady } from './coaching-entry';
 import { compareIds, random } from './primitives';
@@ -16,7 +17,10 @@ import { coachSeason } from './coaching';
 export function settleNpcCoaching(w: World, grow = false) {
   const at = careerDate(w),
     now = careerOrdinal(at);
-  for (const { person, job } of activeCoachingEmployment(w)) {
+  const active = activeCoachingEmployment(w);
+  // A day without growth only closes the contracts that have ended by now (T450).
+  if (!grow && firstContractEnd(w, active) > now) return;
+  for (const { person, job } of active) {
     if (job.club === w.playerClub) continue;
     if (grow && person.coaching && (job.grownThrough ?? job.from.year) < w.year) {
       const learned = coachSeason(
@@ -31,6 +35,26 @@ export function settleNpcCoaching(w: World, grow = false) {
     if (job.contractUntil && careerOrdinal(job.contractUntil) <= now)
       closeEmployment(w, person.id, job.role, job.contractUntil);
   }
+}
+/**
+ * The day the first of these contracts of other clubs ends (`careerOrdinal`), Infinity when none
+ * has an end: worked out once per list, which `activeCoachingEmployment` replaces whenever a job
+ * opens or closes, and an end is written only as its job opens.
+ */
+const contractEnds = new WeakMap<readonly unknown[], number>();
+function firstContractEnd(
+  w: World,
+  active: readonly { job: { club: string; contractUntil?: CareerDate } }[],
+) {
+  let first = contractEnds.get(active);
+  if (first === undefined) {
+    first = Infinity;
+    for (const { job } of active)
+      if (job.club !== w.playerClub && job.contractUntil)
+        first = Math.min(first, careerOrdinal(job.contractUntil));
+    contractEnds.set(active, first);
+  }
+  return first;
 }
 export const coachingMarketPass = (draw: number) => draw < 0.25;
 /** One person/date draw, then one suitable vacancy; no per-club attempts and no automatic renewal. */
@@ -48,7 +72,8 @@ export function refreshCoachingMarket(
     .sort((a, b) => compareIds(a.id, b.id));
   const occupied = new Set(activeCoachingEmployment(w).map(({ job }) => `${job.club}:${job.role}`));
   const vacancies = new Map<string, { clubs: typeof clubs; next: number }>();
-  for (const person of Object.values(w.people || {})
+  // Only someone with a coaching profile can be placed (T450).
+  for (const person of profiledCoaches(w)
     .filter((person) => coachingEntryReady(person) && person.coaching)
     .sort((a, b) => compareIds(a.id, b.id))) {
     if (!coachingMarketPass(draw(person, at))) continue;

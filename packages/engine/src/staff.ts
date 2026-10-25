@@ -4,7 +4,7 @@ import {
   expirePlayingCoachProposals,
 } from './playing-coach';
 import { coachingEntryReady } from './coaching-entry';
-import { closeEmployment, openEmployment } from './person-careers';
+import { closeEmployment, openEmployment, peopleOf } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
@@ -346,7 +346,7 @@ export function staffMarket(
   const code = clubOf(w).country,
     employed = new Set((w.staff || []).map((member) => member.id)),
     ready = new Map<StaffRole, PersonCareer[]>();
-  for (const person of Object.values(w.people || {})) {
+  for (const person of peopleOf(w)) {
     const role = person.coaching?.role;
     if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;
     const same = ready.get(role);

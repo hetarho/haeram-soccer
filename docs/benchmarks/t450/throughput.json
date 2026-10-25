@@ -1,0 +1,738 @@
+{
+ "task": "T450",
+ "budget": "ARCH-31 r19: season engine time ≤ 15 s median for both century profiles on the reference machine (and the NPC fixture ≤ 1 ms median); T286's `--seasons 100` run decides the gate",
+ "machine": {
+  "cpu": "Apple M1 Max",
+  "logicalCpus": 10,
+  "memoryBytes": 34359738368,
+  "platform": "darwin",
+  "arch": "arm64",
+  "node": "v26.8.1",
+  "note": "the ARCH-31 reference machine; other sessions were idle, load1 2–5 during the runs is mostly the measured process itself (V8 GC and compiler threads)"
+ },
+ "commits": {
+  "before": "4a8c03dc (group head work/v9n4-release; the engine checked out from it into this worktree for every before run)",
+  "after": "3ab25c44 (engine source as at 6b2d5e55, the last engine change; 0b50961f for the after series)"
+ },
+ "method": [
+  "Worlds: `pnpm exec tsx docs/benchmarks/t450/build-worlds.mts 80 .tmp/t450/before 0,1,5,30,60,80` (baseline profile, seed release-century-baseline) and `… 50 .tmp/t450/active 0,30,50 active-management` (seed release-century-active-management), the candidate model from founding as scripts/match-model-baseline.ts founds them; season-N.world.json is the world at the start of season N+1.",
+  "Seasons: `pnpm exec tsx docs/benchmarks/t450/time-seasons.mts 3 <worlds…>` plays one more season of each kept world from a fresh parse, three times round-robin after one untimed warm-up, and prints a sha256 of the world after it.",
+  "Series: `pnpm exec tsx docs/benchmarks/t450/build-worlds.mts 80 .tmp/t450/series-<side> 30,60,80` plays 80 consecutive baseline seasons in one process, as the benchmark does, and keeps the worlds at seasons 30, 60 and 80.",
+  "Fixture: `pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 1 --pilot 1 --out .tmp/t450/mmb-<side>.json` (200 timed fixtures × 3 repetitions after 10 warm-up).",
+  "Every step ran alone through `node docs/benchmarks/t450/measure.mjs <side> <step…>`, which samples load1 and the busiest other processes every 30 s."
+ ],
+ "reference": {
+  "source": "T286's candidate 100-season run (relayed by the coordinator; its report stays in T286's worktree)",
+  "command": "scripts/match-model-baseline.ts --model candidate --release --seasons 100 on f5fc5c09 (the group football plus T286 switch on), fingerprint 7f1dbca8df8d",
+  "npcFixtureMedianMs": 0.723,
+  "seasonMedianMs": {
+   "baseline": 18561,
+   "active-management": 20230
+  },
+  "quiet": false,
+  "load1": {
+   "median": 2.46,
+   "max": 8.21
+  }
+ },
+ "seasons": {
+  "run": {
+   "before": {
+    "at": "2026-10-25T14:16:47.183Z",
+    "seconds": 243.76,
+    "status": 0,
+    "engine": "4a8c03dc",
+    "dirty": "M  packages/engine/src/aggregate/participation.ts\nM  packages/engine/src/aggregate/team.ts\nM  packages/engine/src/aptitude.ts\nM  packages/engine/src/careers.ts\nM  packages/engine/src/coaching-entry.ts\nM  packages/engine/src/coaching-market.ts\nM  packages/engine/src/grid/coordination.ts\nM  packages/engine/src/grid/tags.ts\nM  packages/engine/src/manager-entry.ts\nM  packages/engine/src/managerMarket.ts\nM  packages/engine/src/match.ts\nM  packages/engine/src/npc-continuity.ts\nM  packages/engine/src/person-careers.ts\nM  packages/engine/src/staff.ts\nM  packages/engine/src/world.ts",
+    "command": "pnpm exec tsx docs/benchmarks/t450/time-seasons.mts 3 .tmp/t450/before/season-1.world.json .tmp/t450/before/season-30.world.json .tmp/t450/before/season-60.world.json .tmp/t450/before/season-80.world.json",
+    "load1": {
+     "median": 2.79,
+     "max": 3.54,
+     "samples": 9
+    },
+    "busyOthers": [
+     "deleted",
+     "cloudd",
+     "fseventsd",
+     "Browser Helper (Renderer)",
+     "WindowServer"
+    ]
+   },
+   "after": {
+    "at": "2026-10-25T14:48:57.452Z",
+    "seconds": 184.635,
+    "status": 0,
+    "engine": "3ab25c44cbad2916e19edc53a180a78dd628ac33",
+    "command": "pnpm exec tsx docs/benchmarks/t450/time-seasons.mts 3 .tmp/t450/before/season-1.world.json .tmp/t450/before/season-30.world.json .tmp/t450/before/season-60.world.json .tmp/t450/before/season-80.world.json",
+    "load1": {
+     "median": 2.89,
+     "max": 3.63,
+     "samples": 7
+    },
+    "busyOthers": [
+     "Browser Helper (Renderer)",
+     "com.docker.backend",
+     "WindowServer",
+     "launchd",
+     "fseventsd"
+    ]
+   }
+  },
+  "baseline": [
+   {
+    "world": "before/season-1.world.json",
+    "season": "1952 (early: season 2, history 1)",
+    "beforeMs": 15350,
+    "afterMs": 13489,
+    "change": "-12.1%",
+    "digestBefore": "77be4f2f93f8d33e422f641580b70da1da7e74cf93024bc732590e4ce05c85ff",
+    "digestAfter": "77be4f2f93f8d33e422f641580b70da1da7e74cf93024bc732590e4ce05c85ff",
+    "sameDigest": true
+   },
+   {
+    "world": "before/season-30.world.json",
+    "season": "1981 (season 31)",
+    "beforeMs": 16645,
+    "afterMs": 12614,
+    "change": "-24.2%",
+    "digestBefore": "ed4009d09f84d0f49a84355b3ea81f1d91b1eb7d9bc447ed83155ce081789c38",
+    "digestAfter": "ed4009d09f84d0f49a84355b3ea81f1d91b1eb7d9bc447ed83155ce081789c38",
+    "sameDigest": true
+   },
+   {
+    "world": "before/season-60.world.json",
+    "season": "2011 (late: season 61)",
+    "beforeMs": 20766,
+    "afterMs": 14389,
+    "change": "-30.7%",
+    "digestBefore": "924899e1573638abf0463be91025eeebc0a1c53c25131f14d5b269453e5c2c9b",
+    "digestAfter": "924899e1573638abf0463be91025eeebc0a1c53c25131f14d5b269453e5c2c9b",
+    "sameDigest": true
+   },
+   {
+    "world": "before/season-80.world.json",
+    "season": "2031 (late: season 81)",
+    "beforeMs": 21913,
+    "afterMs": 14576,
+    "change": "-33.5%",
+    "digestBefore": "deef7246761d49440aa17174a4eaf70e649ac9a055f3fc38bfc961f4f60c5f90",
+    "digestAfter": "deef7246761d49440aa17174a4eaf70e649ac9a055f3fc38bfc961f4f60c5f90",
+    "sameDigest": true
+   }
+  ],
+  "activeManagement": {
+   "run": {
+    "before": {
+     "at": "2026-10-25T14:13:28.040Z",
+     "seconds": 130.41,
+     "status": 0,
+     "engine": "4a8c03dc",
+     "dirty": "M  packages/engine/src/aggregate/participation.ts\nM  packages/engine/src/aggregate/team.ts\nM  packages/engine/src/aptitude.ts\nM  packages/engine/src/careers.ts\nM  packages/engine/src/coaching-entry.ts\nM  packages/engine/src/coaching-market.ts\nM  packages/engine/src/grid/coordination.ts\nM  packages/engine/src/grid/tags.ts\nM  packages/engine/src/manager-entry.ts\nM  packages/engine/src/managerMarket.ts\nM  packages/engine/src/match.ts\nM  packages/engine/src/npc-continuity.ts\nM  packages/engine/src/person-careers.ts\nM  packages/engine/src/staff.ts\nM  packages/engine/src/world.ts",
+     "command": "pnpm exec tsx docs/benchmarks/t450/time-seasons.mts 3 .tmp/t450/active/season-30.world.json .tmp/t450/active/season-50.world.json",
+     "load1": {
+      "median": 3.29,
+      "max": 3.8,
+      "samples": 5
+     },
+     "busyOthers": [
+      "launchd"
+     ]
+    },
+    "after": {
+     "at": "2026-10-25T14:52:02.106Z",
+     "seconds": 92.334,
+     "status": 0,
+     "engine": "3ab25c44cbad2916e19edc53a180a78dd628ac33",
+     "command": "pnpm exec tsx docs/benchmarks/t450/time-seasons.mts 3 .tmp/t450/active/season-30.world.json .tmp/t450/active/season-50.world.json",
+     "load1": {
+      "median": 2.62,
+      "max": 3,
+      "samples": 4
+     },
+     "busyOthers": [
+      "fseventsd"
+     ]
+    }
+   },
+   "worlds": [
+    {
+     "world": "active/season-30.world.json",
+     "season": "1981 (season 31)",
+     "beforeMs": 16642,
+     "afterMs": 12099,
+     "change": "-27.3%",
+     "digestBefore": "117e146db2fa7500854f00360b5e45571edd21fc94d4bb2ec478983333b0e7fb",
+     "digestAfter": "117e146db2fa7500854f00360b5e45571edd21fc94d4bb2ec478983333b0e7fb",
+     "sameDigest": true
+    },
+    {
+     "world": "active/season-50.world.json",
+     "season": "2001 (season 51, about the 100-season median)",
+     "beforeMs": 20051,
+     "afterMs": 13402,
+     "change": "-33.2%",
+     "digestBefore": "ca0b4fae5ad2b2dfa7b84353afc41b0b65a91d178aee1223d21300a517d9cc11",
+     "digestAfter": "ca0b4fae5ad2b2dfa7b84353afc41b0b65a91d178aee1223d21300a517d9cc11",
+     "sameDigest": true
+    }
+   ],
+   "note": "one season of the kept world without the owner actions of `manage` (a small share of a season); worlds built on 9547e854 and checked to the same digests on 4a8c03dc"
+  },
+  "afterFirstRun": {
+   "note": "the same after command 33 min earlier on 0b50961f (same engine source), load1 median 3.7",
+   "baseline": {
+    "before/season-1.world.json": {
+     "season": 1952,
+     "ms": [
+      13867,
+      13647,
+      13833
+     ],
+     "digest": "77be4f2f93f8d33e422f641580b70da1da7e74cf93024bc732590e4ce05c85ff",
+     "medianMs": 13833
+    },
+    "before/season-30.world.json": {
+     "season": 1981,
+     "ms": [
+      12859,
+      12467,
+      12552
+     ],
+     "digest": "ed4009d09f84d0f49a84355b3ea81f1d91b1eb7d9bc447ed83155ce081789c38",
+     "medianMs": 12552
+    },
+    "before/season-60.world.json": {
+     "season": 2011,
+     "ms": [
+      14257,
+      14139,
+      14575
+     ],
+     "digest": "924899e1573638abf0463be91025eeebc0a1c53c25131f14d5b269453e5c2c9b",
+     "medianMs": 14257
+    },
+    "before/season-80.world.json": {
+     "season": 2031,
+     "ms": [
+      14861,
+      14962,
+      14873
+     ],
+     "digest": "deef7246761d49440aa17174a4eaf70e649ac9a055f3fc38bfc961f4f60c5f90",
+     "medianMs": 14873
+    }
+   },
+   "activeManagement": {
+    "active/season-30.world.json": {
+     "season": 1981,
+     "ms": [
+      12330,
+      12343,
+      12461
+     ],
+     "digest": "117e146db2fa7500854f00360b5e45571edd21fc94d4bb2ec478983333b0e7fb",
+     "medianMs": 12343
+    },
+    "active/season-50.world.json": {
+     "season": 2001,
+     "ms": [
+      13915,
+      14011,
+      13751
+     ],
+     "digest": "ca0b4fae5ad2b2dfa7b84353afc41b0b65a91d178aee1223d21300a517d9cc11",
+     "medianMs": 13915
+    }
+   }
+  },
+  "earlierBefore": {
+   "note": "the same before command at 12:38Z, right after T286 finished (load1 about 2): s1 14.5, s30 15.6, s60 19.5, s80 20.5 s (medians of 3)"
+  }
+ },
+ "series": {
+  "note": "Medians of 80 consecutive seasons in one process. With 20 more seasons all slower than these, a 100-season median is the mean of the 50th and 51st fastest of the 80: before about 20.2 s, after about 14.4 s.",
+  "before": {
+   "run": {
+    "at": "2026-10-25T14:22:31.657Z",
+    "seconds": 1490.992,
+    "status": 0,
+    "engine": "4a8c03dc",
+    "dirty": "M  packages/engine/src/aggregate/participation.ts\nM  packages/engine/src/aggregate/team.ts\nM  packages/engine/src/aptitude.ts\nM  packages/engine/src/careers.ts\nM  packages/engine/src/coaching-entry.ts\nM  packages/engine/src/coaching-market.ts\nM  packages/engine/src/grid/coordination.ts\nM  packages/engine/src/grid/tags.ts\nM  packages/engine/src/manager-entry.ts\nM  packages/engine/src/managerMarket.ts\nM  packages/engine/src/match.ts\nM  packages/engine/src/npc-continuity.ts\nM  packages/engine/src/person-careers.ts\nM  packages/engine/src/staff.ts\nM  packages/engine/src/world.ts",
+    "command": "pnpm exec tsx docs/benchmarks/t450/build-worlds.mts 80 .tmp/t450/series-before 30,60,80",
+    "load1": {
+     "median": 3.02,
+     "max": 4.39,
+     "samples": 50
+    },
+    "busyOthers": [
+     "Browser Helper (Renderer)",
+     "claude",
+     "fseventsd",
+     "WindowServer",
+     "Arc",
+     "Browser Helper",
+     "triald_system",
+     "cloudd",
+     "deleted",
+     "Code Helper (Renderer)",
+     "triald"
+    ]
+   },
+   "seasons": 80,
+   "medianMs": 18840,
+   "minMs": 12891,
+   "maxMs": 26045,
+   "p90Ms": 22899,
+   "over15sSeasons": 65,
+   "medianOfTenSeasons": {
+    "1-10": 13627.5,
+    "11-20": 14669,
+    "21-30": 16937,
+    "31-40": 17174.5,
+    "41-50": 19533,
+    "51-60": 20947.5,
+    "61-70": 21264,
+    "71-80": 23112.5
+   },
+   "ms": [
+    13682,
+    15120,
+    13732,
+    13507,
+    12891,
+    13235,
+    13670,
+    13115,
+    13585,
+    13698,
+    13552,
+    15802,
+    13953,
+    13824,
+    14041,
+    17171,
+    14472,
+    15107,
+    17556,
+    14866,
+    15067,
+    18119,
+    15615,
+    17578,
+    18497,
+    17830,
+    16296,
+    18753,
+    16067,
+    16181,
+    16990,
+    16511,
+    16192,
+    17289,
+    16407,
+    17060,
+    17616,
+    17381,
+    17601,
+    19729,
+    18996,
+    19137,
+    20269,
+    18927,
+    18252,
+    20029,
+    19513,
+    19553,
+    23343,
+    19946,
+    21673,
+    23098,
+    21602,
+    19558,
+    20820,
+    20173,
+    20326,
+    21919,
+    20676,
+    21075,
+    22750,
+    20616,
+    20651,
+    22596,
+    21117,
+    21135,
+    22899,
+    20954,
+    21393,
+    23328,
+    21559,
+    22049,
+    24073,
+    22463,
+    22530,
+    24810,
+    22885,
+    23340,
+    26045,
+    23958
+   ]
+  },
+  "after": {
+   "run": {
+    "at": "2026-10-25T13:54:06.582Z",
+    "seconds": 1107.187,
+    "status": 0,
+    "engine": "0b50961f9626e535a0f43b179a6ae0afa5f97e17",
+    "command": "pnpm exec tsx docs/benchmarks/t450/build-worlds.mts 80 .tmp/t450/series-after 30,60,80",
+    "load1": {
+     "median": 2.86,
+     "max": 4.27,
+     "samples": 37
+    },
+    "busyOthers": [
+     "Code Helper (Renderer)",
+     "Browser Helper (Renderer)",
+     "deleted",
+     "pkd",
+     "duetexpertd",
+     "fseventsd",
+     "WindowServer",
+     "Arc"
+    ]
+   },
+   "seasons": 80,
+   "medianMs": 14206,
+   "minMs": 11619,
+   "maxMs": 16933,
+   "p90Ms": 15204,
+   "over15sSeasons": 13,
+   "medianOfTenSeasons": {
+    "1-10": 11886,
+    "11-20": 12481.5,
+    "21-30": 13859,
+    "31-40": 12763.5,
+    "41-50": 13643,
+    "51-60": 14633,
+    "61-70": 14378.5,
+    "71-80": 15180.5
+   },
+   "ms": [
+    12803,
+    14149,
+    12160,
+    11685,
+    11619,
+    11666,
+    11928,
+    11674,
+    12051,
+    11844,
+    11905,
+    13824,
+    11807,
+    11923,
+    12310,
+    14829,
+    12330,
+    12893,
+    14575,
+    12633,
+    12767,
+    14722,
+    12881,
+    14705,
+    15228,
+    14854,
+    13013,
+    15179,
+    12686,
+    12798,
+    12667,
+    12727,
+    12637,
+    12762,
+    12765,
+    12574,
+    12853,
+    13040,
+    13301,
+    13588,
+    13287,
+    13461,
+    13267,
+    13351,
+    13317,
+    13825,
+    14420,
+    14255,
+    16517,
+    14349,
+    16683,
+    16933,
+    16431,
+    14495,
+    14742,
+    14882,
+    14275,
+    14323,
+    14467,
+    14524,
+    14308,
+    14287,
+    14217,
+    14673,
+    14402,
+    14355,
+    14520,
+    14195,
+    14438,
+    14501,
+    14533,
+    14921,
+    15204,
+    14995,
+    15074,
+    15354,
+    15164,
+    15443,
+    15620,
+    15197
+   ]
+  },
+  "keptWorldsIdentical": {
+   "season-30.world.json": {
+    "before": "60d97d2782d248395a36c85a348518cd81d9f3e1fc46c532bf113c555a4b4a9e",
+    "after": "60d97d2782d248395a36c85a348518cd81d9f3e1fc46c532bf113c555a4b4a9e",
+    "beforeQuiet": "60d97d2782d248395a36c85a348518cd81d9f3e1fc46c532bf113c555a4b4a9e"
+   },
+   "season-60.world.json": {
+    "before": "4217e654565b21edf6de5b0b94a921b9b000b47092d34fda6830db89f56f6d53",
+    "after": "4217e654565b21edf6de5b0b94a921b9b000b47092d34fda6830db89f56f6d53",
+    "beforeQuiet": "4217e654565b21edf6de5b0b94a921b9b000b47092d34fda6830db89f56f6d53"
+   },
+   "season-80.world.json": {
+    "before": "d36f54cf7d1ac03dc449ee8a0a2e7fe7a392a79863ee769976de2c2927711b55",
+    "after": "d36f54cf7d1ac03dc449ee8a0a2e7fe7a392a79863ee769976de2c2927711b55",
+    "beforeQuiet": "d36f54cf7d1ac03dc449ee8a0a2e7fe7a392a79863ee769976de2c2927711b55"
+   }
+  }
+ },
+ "fixture": {
+  "before": {
+   "run": {
+    "at": "2026-10-25T14:15:38.464Z",
+    "seconds": 68.707,
+    "status": 0,
+    "engine": "4a8c03dc",
+    "dirty": "M  packages/engine/src/aggregate/participation.ts\nM  packages/engine/src/aggregate/team.ts\nM  packages/engine/src/aptitude.ts\nM  packages/engine/src/careers.ts\nM  packages/engine/src/coaching-entry.ts\nM  packages/engine/src/coaching-market.ts\nM  packages/engine/src/grid/coordination.ts\nM  packages/engine/src/grid/tags.ts\nM  packages/engine/src/manager-entry.ts\nM  packages/engine/src/managerMarket.ts\nM  packages/engine/src/match.ts\nM  packages/engine/src/npc-continuity.ts\nM  packages/engine/src/person-careers.ts\nM  packages/engine/src/staff.ts\nM  packages/engine/src/world.ts",
+    "command": "pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 1 --pilot 1 --out .tmp/t450/mmb-before.json",
+    "load1": {
+     "median": 3.5,
+     "max": 3.95,
+     "samples": 3
+    },
+    "busyOthers": [
+     "Browser Helper (Renderer)"
+    ]
+   },
+   "source": {
+    "gitHead": "0b50961f9626e535a0f43b179a6ae0afa5f97e17",
+    "fingerprint": "e2fe89fb749d"
+   },
+   "fixture.candidate": {
+    "medianMs": 0.744812,
+    "p90Ms": 0.962375,
+    "samples": 200
+   },
+   "candidate.generation": {
+    "medianMs": 0.313583,
+    "p90Ms": 0.3415,
+    "samples": 200
+   },
+   "candidate.attribution": {
+    "medianMs": 0.32475,
+    "p90Ms": 0.359583,
+    "samples": 200
+   },
+   "fixture.own-candidate": {
+    "medianMs": 145.898,
+    "p90Ms": 153.455,
+    "samples": 30
+   },
+   "season.baseline (1 season)": {
+    "medianMs": 13522.1,
+    "p90Ms": 13522.1,
+    "samples": 1
+   },
+   "season.active-management (1 season)": {
+    "medianMs": 13770.6,
+    "p90Ms": 13770.6,
+    "samples": 1
+   },
+   "memory": {
+    "peakHeapBytes": 311298376,
+    "peakRssBytes": 654704640
+   },
+   "checks": {
+    "repeatsIdentical": true,
+    "observedMatchesUnobserved": true,
+    "candidateStagesMatchWhole": true
+   }
+  },
+  "after": {
+   "run": {
+    "at": "2026-10-25T14:53:34.457Z",
+    "seconds": 62.05,
+    "status": 0,
+    "engine": "3ab25c44cbad2916e19edc53a180a78dd628ac33",
+    "command": "pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 1 --pilot 1 --out .tmp/t450/mmb-after.json",
+    "load1": {
+     "median": 2.26,
+     "max": 2.51,
+     "samples": 3
+    },
+    "busyOthers": []
+   },
+   "source": {
+    "gitHead": "3ab25c44cbad2916e19edc53a180a78dd628ac33",
+    "fingerprint": "3e1f51e85732"
+   },
+   "fixture.candidate": {
+    "medianMs": 0.681417,
+    "p90Ms": 0.869334,
+    "samples": 200
+   },
+   "candidate.generation": {
+    "medianMs": 0.266417,
+    "p90Ms": 0.297083,
+    "samples": 200
+   },
+   "candidate.attribution": {
+    "medianMs": 0.31977,
+    "p90Ms": 0.355333,
+    "samples": 200
+   },
+   "fixture.own-candidate": {
+    "medianMs": 135.439,
+    "p90Ms": 141.89,
+    "samples": 30
+   },
+   "season.baseline (1 season)": {
+    "medianMs": 12178.1,
+    "p90Ms": 12178.1,
+    "samples": 1
+   },
+   "season.active-management (1 season)": {
+    "medianMs": 12013.9,
+    "p90Ms": 12013.9,
+    "samples": 1
+   },
+   "memory": {
+    "peakHeapBytes": 363063592,
+    "peakRssBytes": 665436160
+   },
+   "checks": {
+    "repeatsIdentical": true,
+    "observedMatchesUnobserved": true,
+    "candidateStagesMatchWhole": true
+   }
+  },
+  "afterFirstRun": {
+   "fixture.candidate": 0.716479,
+   "fixture.own-candidate": 136.509
+  }
+ },
+ "cuts": {
+  "note": "Each cut is a cache, an index, an early exit or an allocation removed; the same draws in the same order. Shares of the late season saving from the before and after profiles of season 61 (profile-before.json, profile-after.json; shares.cjs): inclusive time of the functions each cut changed. They overlap a little and the profiles carry noise (unattributed below).",
+  "profiledSeason61": {
+   "beforeMs": 20206,
+   "afterMs": 14662,
+   "savedMs": 5544,
+   "unattributedMs": -791
+  },
+  "list": [
+   {
+    "cut": "NPC squads read the people registry once (`peopleOf`) and each club's active players from an index (`playingFor`)",
+    "functions": [
+     "continuousSquad src/npc-continuity.ts"
+    ],
+    "beforeMs": 4008,
+    "afterMs": 282,
+    "savedMs": 3726,
+    "shareOfSaving": 67.2
+   },
+   {
+    "cut": "managerial entry reads only people who ever coached (`coachingPeople`); grade and role helpers without allocation; season starts memoized; no coaching job means no service",
+    "functions": [
+     "qualifyManagers src/manager-entry.ts"
+    ],
+    "beforeMs": 1240,
+    "afterMs": 119,
+    "savedMs": 1121,
+    "shareOfSaving": 20.2
+   },
+   {
+    "cut": "mentor sync: people who ever coached, clubs by ID, one date per sync",
+    "functions": [
+     "syncMentorExposures src/person-careers.ts"
+    ],
+    "beforeMs": 368,
+    "afterMs": 129,
+    "savedMs": 239,
+    "shareOfSaving": 4.3
+   },
+   {
+    "cut": "NPC coaching: a day with no ended contract skips the walk, the active coaching index survives other roles' job changes and is built from people who coached; the market reads only people with a coaching profile",
+    "functions": [
+     "settleNpcCoaching src/coaching-market.ts",
+     "refreshCoachingMarket src/coaching-market.ts"
+    ],
+    "beforeMs": 483,
+    "afterMs": 245,
+    "savedMs": 238,
+    "shareOfSaving": 4.3
+   },
+   {
+    "cut": "aggregate kernel without per-call closures (participation's stoppage decision as methods, team.ts pass completion and carry groups as module functions)",
+    "functions": [
+     "__name aggregate/participation.ts",
+     "__name aggregate/team.ts",
+     "decide aggregate/participation.ts",
+     "carriesFrom aggregate/team.ts"
+    ],
+    "beforeMs": 1334,
+    "afterMs": 486,
+    "savedMs": 847,
+    "shareOfSaving": 15.3
+   },
+   {
+    "cut": "grid tags and coordination without per-call closures; each shape place read once per plan",
+    "functions": [
+     "computeTags grid/tags.ts",
+     "defend grid/coordination.ts",
+     "attack grid/coordination.ts"
+    ],
+    "beforeMs": 1376,
+    "afterMs": 1283,
+    "savedMs": 93,
+    "shareOfSaving": 1.7
+   },
+   {
+    "cut": "prepareMatch rates the XIs it chose (`ratingOf`): the XI availability work once per club and fixture",
+    "functions": "startingSquad src/world.ts − squad src/world.ts",
+    "beforeMs": 212,
+    "afterMs": 141,
+    "savedMs": 71,
+    "shareOfSaving": 1.3
+   }
+  ]
+ },
+ "remainingHotSpots": {
+  "note": "Inclusive ms of the after profile of season 61 (14.7 s profiled): where a later cut would have to go.",
+  "aggregateKernel": "simulateAggregate 8409 (about 10.7k fixtures): attributePlayerFacts 4045 (role weights, shares, multinomial and within splits, line credits), settleParticipation 3284 (generateTeamFacts 2483, planParticipation 736, deriveTeamFacts with assertLedger 623). The draws themselves (binomial, multinomialInto) and their float order are fixed, so what is left is per-call overhead.",
+  "gridOwnMatches": "playGrid 4793 (about 135 ms an own match): updateIntentions 1402 with planCoordination 1161 (defend 0.7, attack 0.35), the in-stride carry 1224 of which readsOf 673 (its hypothetical updateIntentions), advance 984 and stepToward, carryInStride 476, the reach scans reachOnPath 312 (T441–T446), boxScene 23 (T443).",
+  "preparation": "prepareMatch 641, of it npcSquad 359: every squad invalidation (about 200 a season) regenerates the queried clubs' 18 players (about 1.6k squads, 28k makePlayer).",
+  "validation": "assertFullMatchRecord 519 (packages/engine/src/match-model.ts, outside T450): each record is checked when it is built and again in recordMatch, and participationIssues builds an `${id} …` label for every player check before knowing there is an issue (about 330 strings a record).",
+  "history": "still growing with the people registry, smaller: refreshCoachingMarket 164, syncMentorExposures 129, qualifyManagers 119, settleNpcCoaching 82 at season 61.",
+  "harness": "tsx's keepNames `__name` (Object.defineProperty, shown as `set toTemporalInstant`) still costs about 0.2 s a season from closures made per call in other hot functions."
+ }
+}

@@ -271,12 +271,6 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
     const mid = (fw * d.forward + lat * d.lateral + back * d.back) / total;
     const pressed = band <= 4 ? (pressing - 1) * C.completion.pressed : 0;
     const base = ref.passCompletion + C.completion.bias + shift - pressed - mid;
-    const q = (offset: number, to: number) =>
-      clamp(
-        base + offset + (inBoxCell(to) && !inBoxCell(c) ? C.completion.intoBox : 0),
-        C.completion.min,
-        C.completion.max,
-      );
     if (crosses) {
       const goalArea = binomial(r, crosses, C.crosses.goalArea);
       const cq = clamp(C.crosses.completion + crossShift, C.completion.min, C.completion.max);
@@ -308,8 +302,8 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
               ? binomial(r, n, C.forward.outside)
               : 0;
           const flank = cell(cellBand(to), lane < 2 ? 0 : 4);
-          group(c, to, kind, n - wide, q(d.forward + extra, to));
-          group(c, flank, kind, wide, q(d.forward + extra, to));
+          group(c, to, kind, n - wide, completionTo(base, d.forward + extra, c, to));
+          group(c, flank, kind, wide, completionTo(base, d.forward + extra, c, to));
         }
       }
     }
@@ -329,16 +323,41 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
       lanes.forEach((l, i) => {
         const to = cell(band, l);
         const k = i === 0 ? left - along : lateral - left;
-        group(c, to, pullBack(c, to) ? 'cutBack' : 'short', k, q(d.lateral, to));
+        group(
+          c,
+          to,
+          pullBack(c, to) ? 'cutBack' : 'short',
+          k,
+          completionTo(base, d.lateral, c, to),
+        );
       });
-      group(c, c, 'short', along, q(d.lateral, cell(band, lanes[0]!)));
+      group(c, c, 'short', along, completionTo(base, d.lateral, c, cell(band, lanes[0]!)));
     }
     if (backward) {
       const to = cell(band - 1, lane);
-      group(c, to, pullBack(c, to) ? 'cutBack' : 'short', backward, q(d.back, to));
+      group(
+        c,
+        to,
+        pullBack(c, to) ? 'cutBack' : 'short',
+        backward,
+        completionTo(base, d.back, c, to),
+      );
     }
     carriesFrom(m, p, side, r, c, n);
   });
+}
+
+/**
+ * A pass group's completion from its origin cell's `base` and its direction's `offset`, more for
+ * a pass into the box from outside it: a function of the module rather than a closure made per
+ * cell (T450).
+ */
+function completionTo(base: number, offset: number, from: number, to: number) {
+  return clamp(
+    base + offset + (inBoxCell(to) && !inBoxCell(from) ? C.completion.intoBox : 0),
+    C.completion.min,
+    C.completion.max,
+  );
 }
 
 /**
@@ -456,32 +475,14 @@ function carriesFrom(m: Match, p: Period, side: AggregateSide, r: Rng, c: number
   if (!(ref.pass > 0)) return;
   const moves = m.sides[side].moves;
   const ahead = band < 7 ? cell(band + 1, cellLane(c)) : c;
-  const push = (kind: AggregateMoveKind, to: number, attempts: number, completed: number) => {
-    if (attempts > 0)
-      moves.push({
-        period: p.period,
-        from: c,
-        to,
-        kind,
-        attempts,
-        completed,
-        lineBreaking: 0,
-        offside: 0,
-        intercepted: 0,
-        outTouch: 0,
-        outByline: 0,
-        cornersWon: 0,
-        recovered: 0,
-      });
-  };
   const carries = poisson(
     r,
     ((passes * ref.carry) / ref.pass) * C.carries.scale * tacticOf(m, side).carries,
   );
   const lost = binomial(r, carries, C.carries.lost);
   const progressive = band < 7 ? binomial(r, carries - lost, C.carries.progressive) : 0;
-  push('carry', c, carries - progressive, carries - lost - progressive);
-  push('carry', ahead, progressive, progressive);
+  pushCarry(moves, p.period, c, 'carry', c, carries - progressive, carries - lost - progressive);
+  pushCarry(moves, p.period, c, 'carry', ahead, progressive, progressive);
   const takeOns = poisson(r, ((passes * ref.takeOn) / ref.pass) * C.takeOns.scale);
   const success = clamp(
     (ref.takeOnSuccess ?? 0.5) +
@@ -491,8 +492,36 @@ function carriesFrom(m: Match, p: Period, side: AggregateSide, r: Rng, c: number
   );
   const won = binomial(r, takeOns, success);
   const through = band < 7 ? binomial(r, won, C.takeOns.progress) : 0;
-  push('takeOn', c, takeOns - through, won - through);
-  push('takeOn', ahead, through, through);
+  pushCarry(moves, p.period, c, 'takeOn', c, takeOns - through, won - through);
+  pushCarry(moves, p.period, c, 'takeOn', ahead, through, through);
+}
+
+/** A carry or take-on group of `attempts` from cell `from`, when there is any (`carriesFrom`). */
+function pushCarry(
+  moves: AggregateMove[],
+  period: AggregatePeriod,
+  from: number,
+  kind: AggregateMoveKind,
+  to: number,
+  attempts: number,
+  completed: number,
+) {
+  if (attempts > 0)
+    moves.push({
+      period,
+      from,
+      to,
+      kind,
+      attempts,
+      completed,
+      lineBreaking: 0,
+      offside: 0,
+      intercepted: 0,
+      outTouch: 0,
+      outByline: 0,
+      cornersWon: 0,
+      recovered: 0,
+    });
 }
 
 /**
