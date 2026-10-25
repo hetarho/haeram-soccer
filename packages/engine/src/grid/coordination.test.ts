@@ -3,6 +3,7 @@ import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { lineOf } from '../player';
+import { BOX_CONFIG, boxGuardPoint, boxLineDepth, boxZones } from './box';
 import {
   closedAt,
   COORDINATION_CONFIG,
@@ -16,6 +17,7 @@ import { combination } from './decide';
 import { playGrid } from './engine';
 import {
   applyCoordination,
+  attackZones,
   defendSetPiece,
   depart,
   inDanger,
@@ -1019,5 +1021,165 @@ describe('shutting the carrier’s lanes (→MATCH-32, T442)', () => {
     expect(t.players[1][7]!.intention).toMatchObject({ kind: 'press', priority: 'danger' });
     expect(t.players[1][7]!.intention!.shadow).toBeUndefined();
     goalSide(t, t.players[1][7]!);
+  });
+});
+
+describe('protecting the box goal-side (→MATCH-34, T443)', () => {
+  /**
+   * Counter's 4-4-2 (side 0) attacks with its right midfielder 8 on the ball wide in the final
+   * third: strikers 9 and 10 by the box, the box-to-box midfielder 6 and the deep-lying playmaker
+   * 7 behind them. Possession's 4-3-3 (side 1) stands in its shape: 1 LB, 2 and 3 CB, 4 RB,
+   * 5 the anchor, 6 and 7 CM.
+   */
+  function boxDefence() {
+    const s = scene(['counter', 'possession'], 8, [88, 62]);
+    put(s, 0, 9, [92, 38]);
+    put(s, 0, 10, [90, 28]);
+    put(s, 0, 6, [82, 36]);
+    put(s, 0, 7, [76, 30]);
+    for (const gp of s.players[1]) gp.pos = shapePlace(s, 1, gp.idx);
+    return s;
+  }
+  /** `side`'s frame x of `p`: metres from its own goal line. */
+  const depth = (side: 0 | 1, p: readonly number[]) => attackFrame(side, [p[0]!, p[1]!])[0];
+  const guardOf = (gp: GridPlayer) =>
+    gp.intention?.kind === 'cover' ? gp.intention.box : undefined;
+  /** Whether `p` lies between the runner and his zone, `markGoalSide` m from him, goal-side. */
+  const between = (p: readonly number[], runner: GridPlayer) => {
+    const job = runner.intention!.box!;
+    // Side 0 attacks in the engine frame, so its zones are engine points.
+    const z = boxZones(job.ball)[job.zone as 'nearPost'];
+    expect(offLine(p, runner.pos, z)).toBeLessThan(1e-9);
+    expect(gap(p, runner.pos)).toBeCloseTo(SHAPE_CONFIG.markGoalSide, 9);
+    expect(gap(p, z)).toBeLessThan(gap(runner.pos, z));
+    expect(depth(1, p)).toBeLessThan(depth(1, runner.pos));
+  };
+  const offLine = (p: readonly number[], a: readonly number[], b: readonly number[]) =>
+    Math.abs((b[0]! - a[0]!) * (p[1]! - a[1]!) - (b[1]! - a[1]!) * (p[0]! - a[0]!)) / gap(a, b);
+
+  it('the defending line drops goal-side with a centre-back at the near post and the far full-back at the far post', () => {
+    const s = boxDefence();
+    const unscened = scene(['counter', 'possession'], 8, [60, 50]);
+    const [lo, hi] = BOX_CONFIG.defend.line;
+    // Without the scene the back line stands well up; with it, at the line's depth and narrower.
+    for (const idx of [1, 2, 3, 4]) {
+      const home = shapePlace(unscened, 1, idx);
+      const now = shapePlace(s, 1, idx);
+      expect(depth(1, home)).toBeGreaterThan(hi);
+      expect(depth(1, now)).toBeCloseTo(boxLineDepth(s, 1), 9);
+      expect(Math.abs(now[1] - 34)).toBeLessThanOrEqual(Math.abs(home[1] - 34) + 1e-9);
+    }
+    expect(boxLineDepth(s, 1)).toBeGreaterThanOrEqual(lo);
+    expect(boxLineDepth(s, 1)).toBeLessThanOrEqual(hi);
+    const plan = planCoordination(s, inDanger(s, 1));
+    const guards = Object.fromEntries(
+      jobsOf(plan, 'cover')
+        .filter((j) => j.intention.box)
+        .map((j) => [j.intention.box!.zone, j.idx]),
+    );
+    // The ball is on side 1's left: its left centre-back takes the near post, the other the
+    // middle, the right back (the far side) the far post.
+    expect(guards).toMatchObject({ nearPost: 2, middle: 3, farPost: 4 });
+    for (const j of jobsOf(plan, 'cover').filter((j) => j.intention.box))
+      expect(j).toMatchObject({ side: 1, intention: { priority: 'tactical', box: { ball: 1 } } });
+    // Their points: the posts' and the middle on the line's depth, each post on its zone's line.
+    const zones = boxZones(1);
+    const near = boxGuardPoint(s, 1, 'nearPost', 1);
+    const far = boxGuardPoint(s, 1, 'farPost', 1);
+    expect(depth(1, near)).toBeCloseTo(boxLineDepth(s, 1), 9);
+    expect(near[1]).toBeCloseTo(zones.nearPost[1], 9);
+    expect(far[1]).toBeCloseTo(zones.farPost[1], 9);
+    const middle = boxGuardPoint(s, 1, 'middle', 1);
+    expect(middle[1]).toBeCloseTo((zones.nearPost[1] + zones.farPost[1]) / 2, 9);
+    // Given out, the guards hold; nobody plans the same guard twice.
+    updateIntentions(s);
+    expect(guardOf(s.players[1][2]!)).toEqual({ zone: 'nearPost', ball: 1 });
+    expect(guardOf(s.players[1][4]!)).toEqual({ zone: 'farPost', ball: 1 });
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    expect(guardOf(s.players[1][2]!)).toEqual({ zone: 'nearPost', ball: 1 });
+    expect(
+      s.players[1].filter((gp) => guardOf(gp)?.zone === 'nearPost').map((gp) => gp.idx),
+    ).toEqual([2]);
+    // The ball played back out of the final third releases the shape: the guards end cleared and
+    // the line steps up together.
+    s.ball = [60, 50];
+    put(s, 0, 8, [60, 50]);
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    for (const idx of [2, 3, 4]) {
+      expect(guardOf(s.players[1][idx]!)).toBeUndefined();
+      expect(s.players[1][idx]!.ended).toMatchObject({ kind: 'cover', reason: 'cleared' });
+    }
+    for (const idx of [1, 2, 3, 4]) expect(depth(1, shapePlace(s, 1, idx))).toBeGreaterThan(hi);
+    // A set piece keeps §4.7's defence: a corner's committed mark leaves the scene off.
+    const t = boxDefence();
+    setIntention(t, t.players[1][2]!, {
+      kind: 'mark',
+      priority: 'committed',
+      target: [96, 34],
+      opponent: 9,
+      until: t.elapsed + 8,
+    });
+    expect(jobsOf(planCoordination(t, false), 'cover').some((j) => j.intention.box)).toBe(false);
+  });
+
+  it('a holding midfielder drops to the edge', () => {
+    const s = boxDefence();
+    updateIntentions(s);
+    const anchor = s.players[1][5]!;
+    expect(slotOf(s, anchor).position).toBe('DM');
+    // Side 0's deep-lying playmaker fills the edge: the anchor, nearest, drops to it.
+    expect(guardOf(s.players[0][7]!)).toBeUndefined();
+    expect(s.players[0][7]!.intention?.box).toEqual({ zone: 'edge', ball: 1 });
+    expect(guardOf(anchor)).toEqual({ zone: 'edge', ball: 1 });
+    expect(boxGuardPoint(s, 1, 'edge', 1)).toEqual([...boxZones(1).edge]);
+    // Only one midfielder drops.
+    expect(
+      s.players[1].filter((gp) => guardOf(gp)?.zone === 'edge' || guardOf(gp)?.zone === 'spot'),
+    ).toHaveLength(1);
+    // With the edge left empty and the spot filled he drops to the spot instead.
+    const t = boxDefence();
+    setIntention(t, t.players[0][7]!, {
+      kind: 'support',
+      support: 'show',
+      priority: 'tactical',
+      target: [80, 50],
+      teammate: 8,
+      until: t.elapsed + 5,
+    });
+    updateIntentions(t);
+    expect(t.players[0][6]!.intention?.box).toEqual({ zone: 'spot', ball: 1 });
+    expect(guardOf(t.players[1][5]!)).toEqual({ zone: 'spot', ball: 1 });
+  });
+
+  it('markers stay goal-side of their runners', () => {
+    const s = boxDefence();
+    updateIntentions(s);
+    s.elapsed += 0.5;
+    updateIntentions(s);
+    const att = s.players[0];
+    // A guard whose zone a runner attacks takes him: between him and the zone, goal-side.
+    const nearRunner = att.find((gp) => gp.intention?.box?.zone === 'nearPost')!;
+    between(targetOf(s, 1, 2), nearRunner);
+    const edgeRunner = att.find((gp) => gp.intention?.box?.zone === 'edge')!;
+    between(targetOf(s, 1, 5), edgeRunner);
+    // The spot's runner has no guard of his own: a marker takes him, between him and the spot.
+    const spotRunner = att.find((gp) => gp.intention?.box?.zone === 'spot')!;
+    const markers = s.players[1].filter(
+      (gp) => gp.intention?.kind === 'mark' && gp.intention.opponent === spotRunner.idx,
+    );
+    expect(markers).toHaveLength(1);
+    between(targetOf(s, 1, markers[0]!.idx), spotRunner);
+    // Nobody marks a runner his zone's guard already takes, and no guard leaves for a mark.
+    expect(
+      s.players[1].some(
+        (gp) => gp.intention?.kind === 'mark' && gp.intention.opponent === nearRunner.idx,
+      ),
+    ).toBe(false);
+    // When he attacks his zone the guard keeps between them all the way.
+    attackZones(s, 0);
+    put(s, 0, nearRunner.idx, [99, 34.5]);
+    between(targetOf(s, 1, 2), nearRunner);
   });
 });

@@ -31,7 +31,15 @@ import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { isLevel, type GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
-import { carryTo, depart, interruptAll, losePass, takeBall, updateIntentions } from './intentions';
+import {
+  attackZones,
+  carryTo,
+  depart,
+  interruptAll,
+  losePass,
+  takeBall,
+  updateIntentions,
+} from './intentions';
 import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
 import {
   createState,
@@ -926,6 +934,8 @@ export function playGrid(setup: GridSetup): GridResult {
               }
             : decide(s, owner[0], owner[1], tags, r);
         } else d = decide(s, owner[0], owner[1], tags, r);
+        // The box scene's runners attack their zones once a delivery is decided (T443, →MATCH-33).
+        if (candidate && (d.action === 'cross' || d.action === 'cutBack')) attackZones(s, owner[0]);
         tracer.hold();
         // The action's time is drawn before it is played, so his in-stride carry can fill it; the
         // match runs through the carry and he plays the ball, and it is resolved, where it took him

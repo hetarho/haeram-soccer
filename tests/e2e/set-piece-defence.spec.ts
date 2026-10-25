@@ -53,6 +53,8 @@ const placed = (p: PlayerMotion | undefined) =>
  * he marks who keeps his box spot, a zone guard and the defending keeper throughout. Before it, the
  * walk-in to the delivery's recorded kick (T359): the preparation's samples, where the marker, his
  * man and the guard hold their restart places, the last of them at the kick, standing on them.
+ * Set-piece jobs are committed; the open-play box scene's guards (T443, §4.8) are tactical and
+ * never held while a set piece's jobs are, so they never count here.
  */
 function recordedScene(seed: string) {
   const playback = advanceToNextMatch(career(seed))!;
@@ -119,6 +121,15 @@ function recordedScene(seed: string) {
         ];
       };
       if (kick < 0 || !scene(kick).every(placed)) continue;
+      // Only a delivered set piece whose set-piece preparation ends at its kick (→WEB-32)
+      // qualifies; the search moves on past any other. After T443's football the first seed's
+      // first candidate was a free kick in minute 17 whose restart samples still show the ball on
+      // its spot 2 s after the recorded kick: the clock's preparation ends at that sample, so none
+      // ends at the kick.
+      const preparation = setPiecePreparations(playback.frames).find(
+        ({ to }) => Math.abs(to - samples[kick]!.time) <= 0.1,
+      );
+      if (!preparation) continue;
       // At the kick the walk-in is done: each of them stands on his place.
       for (const p of scene(kick)) {
         expect(p!.position[0]).toBeCloseTo(p!.intention!.target[0], 3);
@@ -126,16 +137,11 @@ function recordedScene(seed: string) {
       }
       let walk = kick;
       while (walk > 0 && scene(walk - 1).every(placed)) walk--;
-      // The walk-in lies inside the restart's set-piece preparation, which ends at the kick
-      // (→WEB-32): the part of the timeline drawn in about 1.5 s.
-      const preparation = setPiecePreparations(playback.frames).find(
-        ({ to }) => Math.abs(to - samples[kick]!.time) <= 0.1,
-      );
-      if (preparation)
-        for (let i = walk; i <= kick; i++) {
-          expect(samples[i]!.time).toBeGreaterThanOrEqual(preparation.from);
-          expect(samples[i]!.time).toBeLessThanOrEqual(preparation.to + 0.1);
-        }
+      // The walk-in lies inside that preparation: the part of the timeline drawn in about 1.5 s.
+      for (let i = walk; i <= kick; i++) {
+        expect(samples[i]!.time).toBeGreaterThanOrEqual(preparation.from);
+        expect(samples[i]!.time).toBeLessThanOrEqual(preparation.to + 0.1);
+      }
       const who = (s: 0 | 1, id: string): Who => ({
         side: s,
         index: playback.squads[s].findIndex((p) => p.id === id),

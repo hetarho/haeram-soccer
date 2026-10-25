@@ -14,6 +14,7 @@ import type {
   INTENTION_KINDS,
   INTENTION_PRIORITIES,
 } from '../../../contracts/src/match-model';
+import { boxHeld, boxRunPoint, boxSide, type BoxJob } from './box';
 import {
   closedAt,
   gap,
@@ -40,7 +41,8 @@ export const INTENTION_REASONS = {
   arrival: 'achieved',
   /**
    * What it answered is over: the danger passed, the runner stopped, the presser stopped; for a
-   * screen, the carrier played the ball or the receiver left the lane (T442).
+   * screen, the carrier played the ball or the receiver left the lane (T442); for a box-scene run
+   * or guard, the ball left the scene's area, went to the other side of goal or was cleared (T443).
    */
   cleared: 'achieved',
   expiry: 'expired',
@@ -90,6 +92,11 @@ export interface Intention {
    * the middle of the goal line his keeper guards; its target follows `guardPoint`.
    */
   zone?: [number, number];
+  /**
+   * A box-scene job (T443, →MATCH-33/34): the zone a committed box run attacks, or the zone a
+   * defender's `cover` guards (`boxGuardPoint`), and the ball's side it was named for.
+   */
+  box?: BoxJob;
   /** Elapsed match seconds it started and expires at. */
   since: number;
   until: number;
@@ -343,6 +350,30 @@ export function defendSetPiece(
 }
 
 /**
+ * Sends `gp`'s box-scene run (T443) to his load point, or into his zone itself (`attack`). The
+ * target and the run's view are replaced rather than changed in place, as a hypothetical update
+ * (the defenders' read, `engine.ts`) restores them by their old values.
+ */
+function boxRunTo(gp: GridPlayer, attack: boolean): void {
+  const i = gp.intention!;
+  const { zone, ball } = i.box!;
+  if (zone === 'middle') return;
+  const target = inside(boxRunPoint(gp.side, ball, zone, attack));
+  i.target = target;
+  if (gp.run) gp.run = { ...gp.run, target: [target[0], target[1]] };
+}
+
+/**
+ * The carrier of `side` has decided a cross or a cut-back (→MATCH-33, T443): every runner of its
+ * box scene attacks his zone itself from now on, read at the decision as the defenders read the
+ * decided pass (T426), so he arrives as the ball does.
+ */
+export function attackZones(s: GridState, side: 0 | 1): void {
+  for (const gp of s.players[side])
+    if (gp.intention?.kind === 'run' && gp.intention.box && onPitch(gp)) boxRunTo(gp, true);
+}
+
+/**
  * Whether `side`, out of possession, faces an urgent danger: the carrier within `danger` m of its
  * goal, or a runner already beyond its second-last player.
  */
@@ -384,6 +415,8 @@ function verdict(
       break;
     case 'run':
       if (s.possession !== gp.side) return 'turnover';
+      // A box-scene run holds while the ball stays in the scene's area on its side of goal (T443).
+      if (i.box && !boxHeld(s, gp.side, i.box.ball)) return 'cleared';
       // A committed run holds its spot (a box spot kept for the second ball) until it expires.
       if (i.priority === 'committed') return undefined;
       // An overlap is a combination with its carrier: it ends once he has played on or its space is taken.
@@ -403,6 +436,8 @@ function verdict(
         return 'cleared';
       return gap(gp.pos, foe.pos) > C.markLose ? 'unreachable' : undefined;
     case 'cover':
+      // A box guard holds until the ball leaves the scene's area or is cleared (T443).
+      if (i.box) return boxHeld(s, other(gp.side), i.box.ball) ? undefined : 'cleared';
       // A set-piece guard holds until the second ball is over (T348).
       if (i.zone) return secondBallOver(s, other(gp.side)) ? 'cleared' : undefined;
       return mate?.intention?.kind === 'press' ? undefined : 'cleared';
@@ -426,9 +461,10 @@ function verdict(
  * carry or turnover as it happens: ends the intentions that are achieved, expired or no longer
  * feasible, follows the references of the ones that hold (a screen keeps to its lane), then gives
  * out the jobs both sides planned from that one snapshot (`planCoordination`): the defending side
- * presses with a cover shadow, covers, marks runners, screens a lane and recovers (an urgent
- * danger displaces lower jobs), the side with the ball shows for a pressured carrier, clears his
- * lane and runs. An ordinary update keeps every feasible intention.
+ * presses with a cover shadow, guards the box's zones (T443), covers, marks runners, screens a
+ * lane and recovers (an urgent danger displaces lower jobs), the side with the ball runs to the
+ * box's zones, shows for a pressured carrier, clears his lane and runs. A box runner waits at his
+ * load point again while the scene is on. An ordinary update keeps every feasible intention.
  * `inFlight` (T373): the update that reads a delivery's kick when its taker has played the ball
  * and nobody has it yet. It reads no carrier: no urgent danger and no jobs to give, so nobody
  * presses the taker while the ball is in the air and the scene keeps its set-piece jobs.
@@ -460,6 +496,8 @@ export function updateIntentions(s: GridState, inFlight = false): void {
         gp.intention?.kind === 'cover' || gp.intention?.kind === 'mark' ? review(gp) : undefined;
       if (reason) endIntention(s, gp, reason);
     }
+  // The side whose box scene is on, and its ball's side of goal (T443).
+  const scene = boxSide(s, s.possession);
   for (const roster of s.players)
     for (const gp of roster) {
       const i = gp.intention;
@@ -469,6 +507,10 @@ export function updateIntentions(s: GridState, inFlight = false): void {
         const foes = s.players[other(gp.side)];
         i.target = inside(screenPoint(s, gp, foes[i.opponent!]!, foes[i.shadow!]!) ?? i.target);
       }
+      // A box runner waits at his load point again while the scene is on (T443): the delivery he
+      // attacked is over and the ball is with a carrier out wide again.
+      else if (i?.box && i.kind === 'run' && gp.side === s.possession && scene === i.box.ball)
+        boxRunTo(gp, false);
     }
   // With no carrier `planCoordination` plans nothing (its empty plan), so it is not asked.
   if (!inFlight) applyCoordination(s, planCoordination(s, danger));

@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { FORMATIONS } from '../player';
+import { BOX_CONFIG, boxScene, boxSide, boxZones } from './box';
 import { playGrid } from './engine';
 import {
+  attackZones,
   carryTo,
   depart,
   INTENTION_REASONS,
@@ -17,6 +19,7 @@ import {
   type EndedIntention,
   type Intention,
 } from './intentions';
+import type { Point } from './pitch';
 import { MOTION_STATES, buildFrames } from './playback';
 import { buildGridSetup } from './setup';
 import { runPlan, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
@@ -548,5 +551,157 @@ describe('late box runs (T398)', () => {
     // The pre-feature model keeps its own odds.
     expect(runs(false, 7, 2)).toBe(runs(false, 7, 1));
     expect(runs(true, 7, 1)).toBe(runs(false, 7, 1));
+  });
+});
+
+describe('the box scene’s runs (→MATCH-33, T443)', () => {
+  /**
+   * Side 0's right winger 10 on the ball wide in the final third; its false nine 9, left winger 8,
+   * mezzala 6 and deep-lying playmaker 7 around the box, the anchor 5 and the centre-backs 2 and 3
+   * behind, the full-backs wide. Side 1 stands deep and away from it (`lab`).
+   */
+  function wide(): GridState {
+    const s = lab();
+    s.owner = [0, 10];
+    s.ball = [85, 62];
+    const at: Record<number, [number, number]> = {
+      1: [70, 10],
+      2: [55, 26],
+      3: [55, 42],
+      4: [72, 56],
+      5: [66, 34],
+      6: [80, 28],
+      7: [74, 40],
+      8: [86, 14],
+      9: [90, 36],
+      10: [85, 62],
+    };
+    for (const [idx, p] of Object.entries(at)) s.players[0][Number(idx)]!.pos = p;
+    return s;
+  }
+  const zones = boxZones(1);
+  const boxJob = (gp: GridPlayer) => (gp.intention?.kind === 'run' ? gp.intention.box : undefined);
+
+  it('with the ball wide in the final third the forwards attack the near and far post and a midfielder the penalty spot', () => {
+    const s = wide();
+    expect(boxSide(s, 0)).toBe(1);
+    updateIntentions(s);
+    const p = s.players[0];
+    // The forwards take the posts (the false nine the nearer), the mezzala the spot, the
+    // deep-lying playmaker the edge; each a committed box run named for the ball's side.
+    expect(p[9]!.intention).toMatchObject({
+      kind: 'run',
+      run: 'box',
+      priority: 'committed',
+      box: { zone: 'nearPost', ball: 1 },
+    });
+    expect(boxJob(p[8]!)).toEqual({ zone: 'farPost', ball: 1 });
+    expect(boxJob(p[6]!)).toEqual({ zone: 'spot', ball: 1 });
+    expect(boxJob(p[7]!)).toEqual({ zone: 'edge', ball: 1 });
+    // One attacker per zone, and nobody else on a box-scene run.
+    expect(p.filter((gp) => boxJob(gp)).map((gp) => gp.idx)).toEqual([6, 7, 8, 9]);
+    expect(p[9]!.run).toMatchObject({ kind: 'box' });
+    // Who goes is read from the snapshot: the same state plans the same scene.
+    const again = wide();
+    expect(boxScene(again, 0)!.runners).toEqual({ nearPost: 9, farPost: 8, spot: 6, edge: 7 });
+    // A forward already on a tactical run in behind is taken into the scene; a committed run stays.
+    const t = wide();
+    run(t, t.players[0][9]!, [96, 36]);
+    expect(boxScene(t, 0)!.runners.nearPost).toBe(9);
+    takeBall(t, t.players[0][9]!, [90, 36]);
+    expect(boxScene(t, 0)!.runners.nearPost).not.toBe(9);
+  });
+
+  it('runners wait at their load points and attack the zones when a cross is decided', () => {
+    const s = wide();
+    updateIntentions(s);
+    const p = s.players[0];
+    const load = (z: Point): [number, number] => [z[0] - BOX_CONFIG.load, z[1]];
+    expect(p[9]!.intention!.target).toEqual(load(zones.nearPost));
+    expect(p[8]!.intention!.target).toEqual(load(zones.farPost));
+    expect(p[6]!.intention!.target).toEqual(load(zones.spot));
+    expect(p[7]!.intention!.target).toEqual(load(zones.edge));
+    expect(p[9]!.run!.target).toEqual(load(zones.nearPost));
+    // An ordinary update keeps them there: they wait rather than stand in the zone.
+    p[9]!.pos = [95, 35];
+    s.elapsed += 1;
+    updateIntentions(s);
+    expect(p[9]!.intention).toMatchObject({ box: { zone: 'nearPost' } });
+    expect(p[9]!.intention!.target).toEqual(load(zones.nearPost));
+    // The carrier decides a cross: each attacks his zone itself, and movement goes there.
+    attackZones(s, 0);
+    expect(p[9]!.intention!.target).toEqual([...zones.nearPost]);
+    expect(p[8]!.intention!.target).toEqual([...zones.farPost]);
+    expect(p[6]!.intention!.target).toEqual([...zones.spot]);
+    expect(p[7]!.intention!.target).toEqual([...zones.edge]);
+    expect(p[9]!.run!.target).toEqual([...zones.nearPost]);
+    expect(targetOf(s, 0, 9)).toEqual([...zones.nearPost]);
+    // With the ball wide with a carrier again they go back to wait at their load points.
+    s.elapsed += 1;
+    updateIntentions(s);
+    expect(p[9]!.intention!.target).toEqual(load(zones.nearPost));
+    // The ball played back out of the final third ends the scene's runs.
+    s.ball = [60, 50];
+    p[10]!.pos = [60, 50];
+    s.elapsed += 1;
+    updateIntentions(s);
+    for (const idx of [6, 7, 8, 9]) {
+      expect(boxJob(p[idx]!)).toBeUndefined();
+      expectEnded(p[idx]!, 'run', 'cleared');
+    }
+  });
+
+  it('the box jobs never share a moment with a set piece’s jobs or take a guard’s committed priority', () => {
+    // §4.7's own jobs, which tests/e2e/set-piece-defence.spec.ts reads as the scene's: a committed
+    // box spot without a box-scene job, a committed mark, a committed zone or goal guard.
+    const setPiece = (i: Intention) =>
+      i.priority === 'committed' &&
+      !i.box &&
+      (i.kind === 'run' || i.kind === 'mark' || (i.kind === 'cover' && !!i.zone));
+    let boxJobs = 0,
+      setPieceMoments = 0;
+    for (const { result } of watched)
+      for (const e of result.trace!) {
+        const holding = (e.intentions ?? []).filter((i): i is Intention => !!i && held(i));
+        const box = holding.filter((i) => i.box);
+        boxJobs += box.length;
+        // A box guard is a tactical cover, a box runner a committed run (§4.8).
+        for (const i of box)
+          expect([i.kind, i.priority]).toEqual(
+            i.kind === 'cover' ? ['cover', 'tactical'] : ['run', 'committed'],
+          );
+        if (!holding.some(setPiece)) continue;
+        setPieceMoments++;
+        expect(box, `${e.elapsed}`).toEqual([]);
+      }
+    expect(boxJobs).toBeGreaterThan(0);
+    expect(setPieceMoments).toBeGreaterThan(0);
+  });
+
+  it('the rest defence stays home', () => {
+    const s = wide();
+    // The anchor and a centre-back stand nearest the edge and the spot.
+    s.players[0][5]!.pos = [86, 34];
+    s.players[0][2]!.pos = [93, 33];
+    updateIntentions(s);
+    const p = s.players[0];
+    for (const idx of [2, 3, 5]) expect(boxJob(p[idx]!)).toBeUndefined();
+    expect(boxScene(wide(), 0)!.runners).toMatchObject({ spot: 6, edge: 7 });
+    // With the midfielders busy the zones stay empty rather than call the rest defence up.
+    const t = wide();
+    t.players[0][5]!.pos = [86, 34];
+    for (const idx of [6, 7])
+      setIntention(t, t.players[0][idx]!, {
+        kind: 'support',
+        support: 'show',
+        priority: 'tactical',
+        target: [80, 50],
+        teammate: 10,
+        until: t.elapsed + 5,
+      });
+    const scene = boxScene(t, 0)!;
+    expect(scene.runners.spot).toBeUndefined();
+    expect(scene.runners.edge).toBeUndefined();
+    expect(Object.values(scene.runners)).not.toContain(5);
   });
 });

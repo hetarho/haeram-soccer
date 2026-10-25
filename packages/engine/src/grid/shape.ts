@@ -6,6 +6,7 @@ import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch
 import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { MatchMath } from '../portable-math';
+import { boxBackLine, boxGuardTarget, boxMarkPoint, defendingBox } from './box';
 import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, skill, slotOf } from './state';
@@ -198,7 +199,8 @@ export function tacticShape(s: GridState, side: 0 | 1): TacticShape {
 type Line = 'DF' | 'MF' | 'FW';
 const BEHIND_ROLES = ['attackingMidfielder', 'shadowStriker', 'trequartista'];
 const OVERLAP_ROLES = ['overlappingFullBack', 'attackingWingBack'];
-const BOX_ROLES = ['boxToBox', 'mezzala', 'shadowStriker'];
+/** Roles whose run is a late run into the box (`runPlan`); the box scene reads them too (T443). */
+export const BOX_ROLES: readonly RoleId[] = ['boxToBox', 'mezzala', 'shadowStriker'];
 const CENTRE = PITCH.width / 2;
 const MID = PITCH.length / 2;
 
@@ -270,6 +272,8 @@ export interface ShapeCache {
   defence: [number?, number?];
   /** Each side's on-pitch outfielders in roster order, the players a marker leans toward. */
   outfield?: [GridPlayer[]?, GridPlayer[]?];
+  /** Each side's defence against a box scene (`defendingBox`, candidate model, T443): the ball's side, or 0. */
+  box?: [number?, number?];
 }
 
 /** A player's target in the engine frame. */
@@ -403,6 +407,13 @@ export function shapePlace(
     x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
     y += (ny - y) * SHAPE_CONFIG.markBlend;
   }
+  // Against a box scene the back line drops toward its goal and narrows (candidate model, T443).
+  if (
+    own === 'DF' &&
+    s.setup.model !== undefined &&
+    ((cache.box ??= [])[side] ??= defendingBox(s, side) ?? 0) !== 0
+  )
+    return toEngine(side, boxBackLine(s, side, y));
   if (own === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);
 }
@@ -451,9 +462,11 @@ export function coverPoint(side: 0 | 1, mate: GridPlayer, math: MatchMath): [num
 
 /**
  * Where `gp`'s intention takes him now (engine frame, →MATCH-17): a press or a mark goes goal-side of
- * the opponent it tracks (a tactical press bent to keep the option it names behind him, T442), a
- * cover behind the teammate who presses, a set-piece guard to its zone or goal (`guardPoint`);
- * every other kind holds the target it was given. A reference that has left the pitch falls back
+ * the opponent it tracks (a tactical press bent to keep the option it names behind him, T442; a
+ * mark of a box-scene runner between him and his zone, T443), a cover behind the teammate who
+ * presses, a set-piece guard to its zone or goal (`guardPoint`), a box guard to its zone or
+ * goal-side of the runner attacking it (`boxGuardTarget`); every other kind holds the target it
+ * was given. A reference that has left the pitch falls back
  * to that target.
  */
 export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] {
@@ -472,7 +485,10 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
       option && onPitch(option) ? attackFrame(side, option.pos) : undefined,
     );
   }
-  if (foe && onPitch(foe) && i.kind === 'mark') return goalSideOf(side, foe);
+  // A runner on a box-scene run is marked between him and his zone (T443).
+  if (foe && onPitch(foe) && i.kind === 'mark')
+    return boxMarkPoint(side, foe) ?? goalSideOf(side, foe);
+  if (i.kind === 'cover' && i.box) return boxGuardTarget(s, gp, i.box.zone, i.box.ball);
   if (i.kind === 'cover' && i.zone) return guardPoint(s, gp, i.zone);
   if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate, s.math);
   return [i.target[0], i.target[1]];

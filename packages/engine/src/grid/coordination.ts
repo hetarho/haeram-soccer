@@ -2,10 +2,10 @@
  * Side-level coordination of the candidate model's intentions (→MATCH-16, MATCH-17;
  * docs/MATCH-ENGINE-DESIGN.md §4.6). After every action each side reads one snapshot and plans
  * its jobs at once. The defending side presses the carrier (keeping his most dangerous option in
- * the presser's cover shadow), covers the presser, marks runners (handing a runner over to the
- * teammate whose zone he enters), screens a lane into a receiver and recovers. The side with the
- * ball shows for a pressured carrier, clears the lane he is shown in, and runs, while its rest
- * defence stays home. Each job goes to one player. Candidates are ranked by cost with the player's
+ * the presser's cover shadow), guards the box's zones against a box scene (`box.ts`), covers the
+ * presser, marks runners (handing a runner over to the teammate whose zone he enters), screens a
+ * lane into a receiver and recovers. The side with the ball runs to the box's zones, shows for a
+ * pressured carrier, clears the lane he is shown in, and runs, while its rest defence stays home. Each job goes to one player. Candidates are ranked by cost with the player's
  * ID breaking ties, never by the order the roster is visited, and a player claimed for one job
  * cannot take another. Planning reads the state and changes nothing; `updateIntentions` applies
  * the plan.
@@ -17,6 +17,16 @@ import { actionWeight } from '../match';
 import { lineOf } from '../player';
 import { hypot } from '../portable-math';
 import { random } from '../primitives';
+import {
+  BOX_CONFIG,
+  BOX_ZONES,
+  boxGuardPoint,
+  boxGuards,
+  boxRunPoint,
+  boxScene,
+  type BoxGuard,
+  type BoxScene,
+} from './box';
 import { CHANGES_CONFIG } from './changes';
 import { dangerousOption, nearbyThreat, SHADOW_CONFIG, threatGain } from './lanes';
 import { attackFrame, clamp, laneOf, PITCH, toEngine } from './pitch';
@@ -116,8 +126,11 @@ const free = (gp: GridPlayer, p: IntentionPriority) =>
 /** Whether he marks the runner his set-piece place names (T348's committed mark). */
 const setPieceMark = (gp: GridPlayer) =>
   gp.intention?.kind === 'mark' && gp.intention.priority === 'committed';
+/** Whether he guards a zone of the box scene (T443's `cover` with a `box` job). */
+const boxGuard = (gp: GridPlayer) =>
+  gp.intention?.kind === 'cover' && gp.intention.box !== undefined;
 /** Stable order of equal costs: the player's ID, never his roster index or the visiting order. */
-const byId = (a: GridPlayer, b: GridPlayer) =>
+export const byId = (a: GridPlayer, b: GridPlayer) =>
   a.player.id < b.player.id ? -1 : a.player.id > b.player.id ? 1 : 0;
 
 /**
@@ -217,8 +230,11 @@ export function planCoordination(s: GridState, danger: boolean): CoordinationPla
   if (!carrier || !onPitch(carrier)) return plan;
   const claimed = new Set<GridPlayer>();
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
-  defend(s, other(att), carrier, danger, plan, claimed, cache);
-  attack(s, att, carrier, plan, claimed);
+  // The attack's box scene (T443): who attacks which zone, read before either side plans, so the
+  // defence knows which zones the attack fills.
+  const box = boxScene(s, att);
+  defend(s, other(att), carrier, danger, plan, claimed, cache, box);
+  attack(s, att, carrier, plan, claimed, box);
   return plan;
 }
 
@@ -231,11 +247,23 @@ function defend(
   plan: CoordinationPlan,
   claimed: Set<GridPlayer>,
   cache: ShapeCache,
+  box: BoxScene | undefined,
 ): void {
   const players = s.players[side].filter(outfield);
   const place = (gp: GridPlayer) => shapePlace(s, side, gp.idx, cache);
-  const job = (gp: GridPlayer, intention: Job['intention'], reason: Job['reason'] = 'replaced') => {
-    plan.jobs.push({ side, idx: gp.idx, intention, reason });
+  const job = (
+    gp: GridPlayer,
+    intention: Job['intention'],
+    reason: Job['reason'] = 'replaced',
+    seconds?: number,
+  ) => {
+    plan.jobs.push({
+      side,
+      idx: gp.idx,
+      intention,
+      ...(seconds === undefined ? {} : { seconds }),
+      reason,
+    });
     claimed.add(gp);
   };
   const near = (a: GridPlayer, b: GridPlayer) =>
@@ -299,6 +327,32 @@ function defend(
     );
     all.push(c.gp);
   }
+  // The box (T443, →MATCH-34): while the attack's box scene is on, the back line protects its
+  // zones goal-side (tactical guards). A guard stands between the runner who attacks his zone and
+  // it (`boxGuardTarget`), so that runner needs no other marker; any other runner's marker stands
+  // between him and his zone (`boxMarkPoint`), and nobody leaves a guard to mark.
+  const guarded = new Set<BoxGuard>();
+  for (const gp of players) if (boxGuard(gp)) guarded.add(gp.intention!.box!.zone);
+  if (box)
+    for (const { gp, guard } of boxGuards(
+      s,
+      side,
+      box,
+      (gp) => !gp.intention && !claimed.has(gp),
+    )) {
+      guarded.add(guard);
+      job(
+        gp,
+        {
+          kind: 'cover',
+          priority: 'tactical',
+          target: boxGuardPoint(s, side, guard, box.ball),
+          box: { zone: guard, ball: box.ball },
+        },
+        'replaced',
+        BOX_CONFIG.seconds,
+      );
+    }
   // Cover: one defender or holding midfielder steps behind the nearest presser, a covering role first.
   const presser = [...all].sort(near)[0];
   const covered = players.some(
@@ -360,8 +414,17 @@ function defend(
   const pairs: { runner: GridPlayer; gp: GridPlayer; d: number }[] = [];
   for (const runner of runners) {
     if (marked.has(runner.idx)) continue;
+    // His zone's guard takes him goal-side (T443).
+    const zone = runner.intention!.box?.zone;
+    if (zone !== undefined && guarded.has(zone)) continue;
     for (const gp of players) {
-      if (claimed.has(gp) || pressing.includes(gp) || !free(gp, priority) || setPieceMark(gp))
+      if (
+        claimed.has(gp) ||
+        pressing.includes(gp) ||
+        !free(gp, priority) ||
+        setPieceMark(gp) ||
+        boxGuard(gp)
+      )
         continue;
       const d = gap(gp.pos, runner.pos);
       if (d <= CC.mark.pick) pairs.push({ runner, gp, d });
@@ -550,6 +613,7 @@ function attack(
   carrier: GridPlayer,
   plan: CoordinationPlan,
   claimed: Set<GridPlayer>,
+  box: BoxScene | undefined,
 ): void {
   const mates = s.players[side].filter((gp) => outfield(gp) && gp !== carrier);
   // The rest defence stays home while the ball is in the opponent's half.
@@ -566,6 +630,29 @@ function attack(
     });
     claimed.add(gp);
   };
+  // The box (T443, →MATCH-33): while its scene is on, each zone's attacker takes a committed box
+  // run to his load point, `BOX_CONFIG.load` m short of it; one already on it keeps it.
+  if (box)
+    for (const zone of BOX_ZONES) {
+      const idx = box.runners[zone];
+      if (idx === undefined) continue;
+      const gp = s.players[side][idx]!;
+      if (gp.intention?.box?.zone === zone) {
+        claimed.add(gp);
+        continue;
+      }
+      job(
+        gp,
+        {
+          kind: 'run',
+          run: 'box',
+          priority: 'committed',
+          target: boxRunPoint(side, box.ball, zone, false),
+          box: { zone, ball: box.ball },
+        },
+        BOX_CONFIG.seconds,
+      );
+    }
   // Support: the nearest presser makes the carrier look for a teammate to show (→MATCH-16).
   let presser: GridPlayer | undefined,
     closest: number = TAG_CONFIG.pressureRadius;
@@ -661,7 +748,8 @@ function attack(
       timing * fresh(s, gp) * breaking,
       breaking > 1,
     );
-    return p ? [{ gp, p }] : [];
+    // While the box scene is on its runs replace the box run's spot (T443).
+    return p && !(box && p.kind === 'box') ? [{ gp, p }] : [];
   });
   // One overlap per flank: one under way keeps it, else the overlapper nearest his space takes it.
   const flank = (p: readonly number[]) => (p[1]! < CENTRE ? 0 : 1);

@@ -326,14 +326,14 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // A knockout tie level after 90 minutes: `candidate-et-0` plays extra time (T321's tuning
+    // A knockout tie level after 90 minutes: `candidate-et-1` plays extra time (T321's tuning
     // settled `candidate-et-0` in 90 minutes, T324's `candidate-et-3`, T345's score state
     // `candidate-et-4`, T365's side share and possession runs `candidate-et-7`, T397's balls in
     // behind and first touches `candidate-et-2`, T398's late box runs `candidate-et-0`, T399's
     // flank beside a back three `candidate-et-1`, T426's in-stride carry `candidate-et-19`,
-    // T442's shut lanes `candidate-et-2`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-0']) {
-      const extraTime = id === 'candidate-et-0';
+    // T442's shut lanes `candidate-et-2`, T443's box scene `candidate-et-0`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-1']) {
+      const extraTime = id === 'candidate-et-1';
       const { result, frames } =
         id === 'candidate-1'
           ? watched
@@ -737,6 +737,13 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
         const att = e.side;
         const def = att === 0 ? 1 : 0;
         const kick = e.kick!;
+        // An incident after the delivery (an injury, a substitution) may end a job as its
+        // reference leaves (`departed`, T443's `set-piece-3`): the samples are read up to it.
+        const trace = played.result.trace!;
+        const incident =
+          trace
+            .slice(trace.indexOf(e) + 1)
+            .find((x) => x.outcome === 'incident' && x.period === e.period)?.elapsed ?? Infinity;
         /** The intention an entry or the kick records for `side`'s roster index `idx`. */
         const held = (snap: typeof e | typeof kick, side: 0 | 1, idx: number) =>
           snap.intentions?.[slotFor(played, snap, side, ids(side)[idx]!)];
@@ -786,7 +793,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
           if (i.kind === 'mark') expect(runnerOf.has(e.slots[k]!), `${since} ${pid}`).toBe(false);
           for (const m of window) {
             if (m.elapsedSeconds < since) continue;
-            if (m.elapsedSeconds >= next || (prepared && m.elapsedSeconds > e.elapsed)) break;
+            if (m.elapsedSeconds >= next || m.elapsedSeconds >= incident) break;
+            if (prepared && m.elapsedSeconds > e.elapsed) break;
             const label = `${sceneOf(e)} at ${m.elapsedSeconds} ${pid}`;
             const p = m.players[def].find((x) => x.id === pid)!;
             // The kick's own sample: the place he walked to. A set-piece job he was given there ended
