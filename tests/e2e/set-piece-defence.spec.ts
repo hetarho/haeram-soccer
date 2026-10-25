@@ -163,10 +163,15 @@ function recordedScene(seed: string) {
 /**
  * The first of a few seeded careers whose reference match has such a delivery: a football change
  * can leave one match without it (after T370 and T371 the first seed's only one held its jobs
- * through a single sample), and the scene, not the seed, is what this journey checks.
+ * through a single sample; on the released model, after T455 and T456, none of the first three
+ * had one), and the scene, not the seed, is what this journey checks.
  */
 function sceneCareer() {
-  for (const seed of ['set-piece-defence', 'set-piece-defence-2', 'set-piece-defence-3']) {
+  const seeds = [
+    'set-piece-defence',
+    ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `set-piece-defence-${n}`),
+  ];
+  for (const seed of seeds) {
     const scene = recordedScene(seed);
     if (scene) return { scene, career: career(seed) };
   }
