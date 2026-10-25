@@ -1,6 +1,6 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { managerialGrade } from './aptitude';
-import { careerDate, coachingService, longestMentor } from './person-careers';
+import { careerDate, coachingService, longestMentor, peopleOf } from './person-careers';
 import { integer, random } from './primitives';
 import { candidateStyles } from './styles';
 
@@ -25,7 +25,7 @@ export function managerialProfile(
 /** Dated processing owns initialization; candidate/profile/history reads only consume it. */
 export function qualifyManagers(w: World) {
   const at = careerDate(w);
-  for (const person of Object.values(w.people ?? {})) {
+  for (const person of peopleOf(w)) {
     if (person.management || !managerialEntryReady(person, at)) continue;
     person.management = managerialProfile(
       person,

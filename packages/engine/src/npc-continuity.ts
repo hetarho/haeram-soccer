@@ -2,7 +2,7 @@ import { endPlayingCoachForDeparture } from './playing-coach';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
-import { careerDate, closeEmployment, openEmployment, retainPerson } from './person-careers';
+import { careerDate, closeEmployment, openEmployment, peopleOf, retainPerson } from './person-careers';
 import { invalidateNpcSquads, makePlayer, npcSquad } from './world';
 import { lineOf } from './player';
 
@@ -64,7 +64,7 @@ function identity(p: Player, person: PersonCareer): Player {
 export function continuousSquad(w: World, c: Club): Player[] {
   const raw = npcSquad(w.seed, w.year, c);
   if (!w.people) return raw;
-  const people = Object.values(w.people).filter(
+  const people = peopleOf(w).filter(
     (person) => person.playing === 'active' && person.club === c.id,
   );
   const used = new Set<string>();

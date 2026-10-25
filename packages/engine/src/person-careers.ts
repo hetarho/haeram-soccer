@@ -28,6 +28,31 @@ export const compareCareerDates = (a: CareerDate, b: CareerDate) =>
 export function resolvePerson(w: World, id: string) {
   return w.people?.[id];
 }
+type Registry = NonNullable<World['people']>;
+/** Each registry's `Object.values`, read once (T450); `retainPerson` replaces it as it enrolls. */
+const peopleLists = new WeakMap<Registry, readonly PersonCareer[]>();
+const NOBODY: readonly PersonCareer[] = [];
+/**
+ * Everyone in `w.people`, in its own order: `Object.values(w.people)` without copying the
+ * registry on every read, which a century of retired people made the season's largest history
+ * cost (T450). The list is a snapshot, never changed in place, so a caller that enrolls someone
+ * while it walks one keeps walking what it read; enrolment goes through `retainPerson`.
+ */
+export function peopleOf(w: World): readonly PersonCareer[] {
+  const registry = w.people;
+  if (!registry) return NOBODY;
+  let list = peopleLists.get(registry);
+  if (!list) peopleLists.set(registry, (list = Object.values(registry)));
+  return list;
+}
+/** An ID an object orders first, as an array index, rather than by insertion. */
+const indexLike = (id: string) => /^(0|[1-9]\d*)$/.test(id) && Number(id) < 2 ** 32 - 1;
+function enrolled(registry: Registry, person: PersonCareer) {
+  const list = peopleLists.get(registry);
+  if (!list) return;
+  if (indexLike(person.id)) peopleLists.delete(registry);
+  else peopleLists.set(registry, [...list, person]);
+}
 /** Idempotent enrollment; never merge two different people or invent past appearances. */
 export function retainPerson(
   w: World,
@@ -66,6 +91,7 @@ export function retainPerson(
     mentors: [],
   };
   (w.people ??= {})[person.id] = person;
+  enrolled(w.people, person);
   return person;
 }
 function personOf(w: World, id: string) {
@@ -206,7 +232,7 @@ export function syncMentorExposure(w: World, person: PersonCareer, at = careerDa
   });
 }
 export function syncMentorExposures(w: World) {
-  for (const person of Object.values(w.people || {}))
+  for (const person of peopleOf(w))
     if (
       person.mentors.some((m) => !m.to) ||
       person.employment.some((job) => !job.to && isCoachingRole(job.role))
@@ -274,7 +300,7 @@ function occupiedPostByOther(w: World, role: CareerRole, club: string, person: s
   let hit = postIndexes.get(w);
   if (!hit || hit.people !== w.people || hit.version !== version) {
     const posts: Posts = new Map();
-    for (const person of Object.values(w.people ?? {}))
+    for (const person of peopleOf(w))
       for (const job of person.employment)
         if (!job.to && job.role !== 'player') {
           let clubs = posts.get(job.role);
@@ -319,7 +345,7 @@ export function activeCoachingEmployment(w: World) {
   const version = employmentVersions.get(w) ?? 0,
     hit = coachingIndexes.get(w);
   if (hit && hit.people === w.people && hit.version === version) return hit.active;
-  const active = Object.values(w.people || {}).flatMap((person) =>
+  const active = peopleOf(w).flatMap((person) =>
     person.employment
       .filter((job) => !job.to && isCoachingRole(job.role))
       .map((job) => ({ person, job })),

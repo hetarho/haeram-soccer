@@ -1,5 +1,5 @@
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
-import { careerDate, closeEmployment, retainPerson } from './person-careers';
+import { careerDate, closeEmployment, peopleOf, retainPerson } from './person-careers';
 import { invalidateNpcSquads } from './world';
 import type { PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
@@ -67,7 +67,7 @@ export function retirePerson(w: World, person: PersonCareer) {
   invalidateNpcSquads(w);
 }
 function announceNpcRetirements(w: World) {
-  for (const person of Object.values(w.people || {})) {
+  for (const person of peopleOf(w)) {
     if (person.playing === 'retired' || person.club === w.playerClub || person.retirement) continue;
     const age = w.year + 1 - person.born;
     const chance =
@@ -131,7 +131,7 @@ export function retireAtClose(w: World) {
     leaveContract(w, p);
     addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);
   }
-  for (const person of Object.values(w.people || {})) {
+  for (const person of peopleOf(w)) {
     if (person.playing === 'retired' || person.club === w.playerClub) continue;
     if (
       (person.retirement && person.retirement.year <= w.year) ||

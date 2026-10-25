@@ -6,6 +6,7 @@ import {
   careerOrdinal,
   closeEmployment,
   openEmployment,
+  peopleOf,
 } from './person-careers';
 import { coachingEntryReady } from './coaching-entry';
 import { compareIds, random } from './primitives';
@@ -48,7 +49,7 @@ export function refreshCoachingMarket(
     .sort((a, b) => compareIds(a.id, b.id));
   const occupied = new Set(activeCoachingEmployment(w).map(({ job }) => `${job.club}:${job.role}`));
   const vacancies = new Map<string, { clubs: typeof clubs; next: number }>();
-  for (const person of Object.values(w.people || {})
+  for (const person of peopleOf(w)
     .filter((person) => coachingEntryReady(person) && person.coaching)
     .sort((a, b) => compareIds(a.id, b.id))) {
     if (!coachingMarketPass(draw(person, at))) continue;
