@@ -238,6 +238,43 @@ export function planCoordination(s: GridState, danger: boolean): CoordinationPla
   return plan;
 }
 
+/** A job for `gp` of `side` in the plan, and `gp` claimed for it (`defend`, `attack`). */
+function assign(
+  plan: CoordinationPlan,
+  claimed: Set<GridPlayer>,
+  side: 0 | 1,
+  gp: GridPlayer,
+  intention: Job['intention'],
+  reason: Job['reason'] = 'replaced',
+  seconds?: number,
+) {
+  plan.jobs.push({
+    side,
+    idx: gp.idx,
+    intention,
+    ...(seconds === undefined ? {} : { seconds }),
+    reason,
+  });
+  claimed.add(gp);
+}
+/** `assign` for the attack, whose jobs all replace what the man had. */
+const assignRun = (
+  plan: CoordinationPlan,
+  claimed: Set<GridPlayer>,
+  side: 0 | 1,
+  gp: GridPlayer,
+  intention: Job['intention'],
+  seconds?: number,
+) => assign(plan, claimed, side, gp, intention, 'replaced', seconds);
+/** The nearer of two players to the carrier, equal gaps by player ID. */
+const nearer = (carrier: GridPlayer, a: GridPlayer, b: GridPlayer) =>
+  gap(a.pos, carrier.pos) - gap(b.pos, carrier.pos) || byId(a, b);
+/** Whether a teammate is free for an attacking job: the rest defence stays home with the ball upfield. */
+const available = (s: GridState, claimed: Set<GridPlayer>, home: boolean, gp: GridPlayer) =>
+  !gp.intention && !claimed.has(gp) && !(home && CC.rest.includes(slotOf(s, gp).position));
+/** The flank of a point: 0 below the centre line, 1 from it up. */
+const flank = (p: readonly number[]) => (p[1]! < CENTRE ? 0 : 1);
+
 /** The defending side's jobs against `carrier`. */
 function defend(
   s: GridState,
@@ -250,24 +287,9 @@ function defend(
   box: BoxScene | undefined,
 ): void {
   const players = s.players[side].filter(outfield);
-  const place = (gp: GridPlayer) => shapePlace(s, side, gp.idx, cache);
-  const job = (
-    gp: GridPlayer,
-    intention: Job['intention'],
-    reason: Job['reason'] = 'replaced',
-    seconds?: number,
-  ) => {
-    plan.jobs.push({
-      side,
-      idx: gp.idx,
-      intention,
-      ...(seconds === undefined ? {} : { seconds }),
-      reason,
-    });
-    claimed.add(gp);
-  };
-  const near = (a: GridPlayer, b: GridPlayer) =>
-    gap(a.pos, carrier.pos) - gap(b.pos, carrier.pos) || byId(a, b);
+  // Each man's place in the shape, read once: planning changes nothing it reads (T450).
+  const places: ([number, number] | undefined)[] = [];
+  const place = (gp: GridPlayer) => (places[gp.idx] ??= shapePlace(s, side, gp.idx, cache));
   // Press: the carrier's nearest men, their distance shortened by a pressing role, traits and fresh legs.
   const reach = pressReach(s, side);
   const pressing = players.filter(
@@ -275,7 +297,7 @@ function defend(
   );
   // A danger that starts while they already press makes the nearest presser's job urgent.
   if (danger && pressing.length && !pressing.some((gp) => gp.intention!.priority === 'danger'))
-    plan.escalate = [side, [...pressing].sort(near)[0]!.idx];
+    plan.escalate = [side, [...pressing].sort((a, b) => nearer(carrier, a, b))[0]!.idx];
   const candidates = players
     .filter((gp) => !pressing.includes(gp))
     .map((gp) => {
@@ -314,7 +336,10 @@ function defend(
     if (!urgent && c.d > reach) continue;
     const shadow = shadowFor(c.d);
     if (shadow !== undefined) shadowed.add(shadow);
-    job(
+    assign(
+      plan,
+      claimed,
+      side,
       c.gp,
       {
         kind: 'press',
@@ -341,7 +366,10 @@ function defend(
       (gp) => !gp.intention && !claimed.has(gp),
     )) {
       guarded.add(guard);
-      job(
+      assign(
+        plan,
+        claimed,
+        side,
         gp,
         {
           kind: 'cover',
@@ -354,7 +382,7 @@ function defend(
       );
     }
   // Cover: one defender or holding midfielder steps behind the nearest presser, a covering role first.
-  const presser = [...all].sort(near)[0];
+  const presser = [...all].sort((a, b) => nearer(carrier, a, b))[0];
   const covered = players.some(
     (gp) => gp.intention?.kind === 'cover' && all.some((p) => p.idx === gp.intention!.teammate),
   );
@@ -371,7 +399,12 @@ function defend(
       .map((gp) => ({ gp, cost: gap(gp.pos, point) / (COVER_ROLES[slotOf(s, gp).role] ?? 1) }))
       .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp))[0];
     if (cover)
-      job(cover.gp, { kind: 'cover', priority: 'tactical', target: point, teammate: presser.idx });
+      assign(plan, claimed, side, cover.gp, {
+        kind: 'cover',
+        priority: 'tactical',
+        target: point,
+        teammate: presser.idx,
+      });
   }
   // Mark: each runner has one marker; a runner who enters a teammate's zone is handed over to him.
   const priority = danger ? 'danger' : 'tactical';
@@ -401,7 +434,7 @@ function defend(
     if (!next) continue;
     plan.handovers.push({ side, from: marker.idx, to: next.gp.idx });
     claimed.add(marker);
-    job(next.gp, {
+    assign(plan, claimed, side, next.gp, {
       kind: 'mark',
       priority: 'tactical',
       target: [runner.pos[0], runner.pos[1]],
@@ -434,7 +467,10 @@ function defend(
   for (const { runner, gp } of pairs) {
     if (marked.has(runner.idx) || claimed.has(gp)) continue;
     marked.add(runner.idx);
-    job(
+    assign(
+      plan,
+      claimed,
+      side,
       gp,
       { kind: 'mark', priority, target: [runner.pos[0], runner.pos[1]], opponent: runner.idx },
       danger ? 'danger' : 'replaced',
@@ -477,7 +513,7 @@ function defend(
         })
         .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp))[0];
       if (!pick) continue;
-      job(pick.gp, {
+      assign(plan, claimed, side, pick.gp, {
         kind: 'screen',
         priority: 'tactical',
         target: pick.at,
@@ -494,7 +530,7 @@ function defend(
     const shape = place(gp);
     const limit = CC.recover.distance * (1 - CC.recover.read * share(s, gp, 'decisions'));
     if (gap(gp.pos, shape) > limit)
-      job(gp, { kind: 'recover', priority: 'tactical', target: shape });
+      assign(plan, claimed, side, gp, { kind: 'recover', priority: 'tactical', target: shape });
   }
 }
 
@@ -618,18 +654,6 @@ function attack(
   const mates = s.players[side].filter((gp) => outfield(gp) && gp !== carrier);
   // The rest defence stays home while the ball is in the opponent's half.
   const home = attackFrame(side, s.ball)[0] >= PITCH.length / 2;
-  const available = (gp: GridPlayer) =>
-    !gp.intention && !claimed.has(gp) && !(home && CC.rest.includes(slotOf(s, gp).position));
-  const job = (gp: GridPlayer, intention: Job['intention'], seconds?: number) => {
-    plan.jobs.push({
-      side,
-      idx: gp.idx,
-      intention,
-      ...(seconds === undefined ? {} : { seconds }),
-      reason: 'replaced',
-    });
-    claimed.add(gp);
-  };
   // The box (T443, →MATCH-33): while its scene is on, each zone's attacker takes a committed box
   // run to his load point, `BOX_CONFIG.load` m short of it; one already on it keeps it.
   if (box)
@@ -641,7 +665,10 @@ function attack(
         claimed.add(gp);
         continue;
       }
-      job(
+      assignRun(
+        plan,
+        claimed,
+        side,
         gp,
         {
           kind: 'run',
@@ -671,7 +698,7 @@ function attack(
     const best = mates
       .filter(
         (gp) =>
-          available(gp) &&
+          available(s, claimed, home, gp) &&
           !retrying(s, gp, 'support') &&
           gap(gp.pos, carrier.pos) <= CC.support.near,
       )
@@ -687,7 +714,7 @@ function attack(
         carrier.pos[0] + ((to[0] - from[0]) / d) * CC.support.distance,
         carrier.pos[1] + ((to[1] - from[1]) / d) * CC.support.distance,
       ]);
-      job(best.gp, {
+      assignRun(plan, claimed, side, best.gp, {
         kind: 'support',
         support: 'show',
         priority: 'tactical',
@@ -696,7 +723,7 @@ function attack(
       });
       // A teammate standing in the lane the ball would take to him steps out of it, taking his marker along.
       const lane = mates
-        .filter(available)
+        .filter((gp) => available(s, claimed, home, gp))
         .map((gp) => ({ gp, d: fromLane(gp.pos, carrier.pos, target) }))
         .filter((c) => c.d <= CC.open.lane)
         .sort((a, b) => a.d - b.d || byId(a.gp, b.gp))[0];
@@ -708,7 +735,7 @@ function attack(
         const cross =
           dx * (lane.gp.pos[1] - carrier.pos[1]) - dy * (lane.gp.pos[0] - carrier.pos[0]);
         const sign = cross !== 0 ? Math.sign(cross) : lane.gp.pos[1] < CENTRE ? 1 : -1;
-        job(lane.gp, {
+        assignRun(plan, claimed, side, lane.gp, {
           kind: 'support',
           support: 'open',
           priority: 'tactical',
@@ -734,7 +761,7 @@ function attack(
   const SR = CC.settledRuns;
   const settled = breaking === 1 && ctx.band >= SR.from ? (SR.odds[s.setup.tactics[side]] ?? 1) : 1;
   const plans = mates.flatMap((gp) => {
-    if (!available(gp) || retrying(s, gp, 'run')) return [];
+    if (!available(s, claimed, home, gp) || retrying(s, gp, 'run')) return [];
     const timing =
       (CC.timing.min + (CC.timing.max - CC.timing.min) * share(s, gp, 'decisions')) *
       (settled !== 1 && lineOf(slotOf(s, gp).position) !== 'GK' ? settled : 1);
@@ -752,7 +779,6 @@ function attack(
     return p && !(box && p.kind === 'box') ? [{ gp, p }] : [];
   });
   // One overlap per flank: one under way keeps it, else the overlapper nearest his space takes it.
-  const flank = (p: readonly number[]) => (p[1]! < CENTRE ? 0 : 1);
   const overlapped = new Set(
     mates.filter((gp) => gp.intention?.run === 'overlap').map((gp) => flank(gp.intention!.target)),
   );
@@ -766,7 +792,10 @@ function attack(
       if (overlapped.has(flank(p.target))) continue;
       overlapped.add(flank(p.target));
     }
-    job(
+    assignRun(
+      plan,
+      claimed,
+      side,
       gp,
       {
         kind: 'run',
