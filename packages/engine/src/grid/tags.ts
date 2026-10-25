@@ -76,16 +76,11 @@ export function computeTags(
   const dfX = PITCH.length - lineX(s, foe, 'DF');
   const mfX = PITCH.length - lineX(s, foe, 'MF');
   const betweenLines = c[0] >= mfX && c[0] <= dfX && lane >= 1 && lane <= 3;
-  const slotPosition = (gp: GridPlayer) =>
-    FORMATIONS[s.setup.tactics[foe]].slots[gp.slot]?.position;
   let channel = false;
   if ((lane === 1 || lane === 3) && Math.abs(c[0] - dfX) <= TAG_CONFIG.channelReach) {
-    const pick = (positions: readonly string[]) =>
-      opponents
-        .filter(({ gp }) => positions.includes(slotPosition(gp) ?? ''))
-        .sort((a, b) => Math.abs(a.p[1] - c[1]) - Math.abs(b.p[1] - c[1]))[0];
-    const cb = pick(['CB']);
-    const fb = pick(['LB', 'RB', 'LWB', 'RWB']);
+    const slots = FORMATIONS[s.setup.tactics[foe]].slots;
+    const cb = nearestAcross(opponents, slots, CENTRE_BACKS, c);
+    const fb = nearestAcross(opponents, slots, FULL_BACKS, c);
     if (cb && fb)
       channel = c[1] >= Math.min(cb.p[1], fb.p[1]) && c[1] <= Math.max(cb.p[1], fb.p[1]);
   }
@@ -122,7 +117,6 @@ export function computeTags(
       : pass && Math.abs(pass.dx) <= Math.abs(pass.dy) && !nearGoalSide
         ? 'halfTurn'
         : 'facing';
-  const men = (sd: 0 | 1) => s.players[sd].filter(onPitch).length;
   return {
     cell,
     band,
@@ -138,6 +132,25 @@ export function computeTags(
     overload,
     lead: s.score[side] - s.score[foe],
     minute: Math.floor(s.elapsed / 60) + 1,
-    menDiff: men(side) - men(foe),
+    menDiff: menOn(s, side) - menOn(s, foe),
   };
 }
+
+const CENTRE_BACKS: readonly string[] = ['CB'];
+const FULL_BACKS: readonly string[] = ['LB', 'RB', 'LWB', 'RWB'];
+/**
+ * The opponent at one of `positions` (his slot's, `slots`) nearest across to the carrier at `c`
+ * (equal gaps in roster order): a function of the module rather than closures made per call (T450).
+ */
+function nearestAcross(
+  opponents: readonly { gp: GridPlayer; p: Point }[],
+  slots: (typeof FORMATIONS)[keyof typeof FORMATIONS]['slots'],
+  positions: readonly string[],
+  c: Point,
+) {
+  return opponents
+    .filter(({ gp }) => positions.includes(slots[gp.slot]?.position ?? ''))
+    .sort((a, b) => Math.abs(a.p[1] - c[1]) - Math.abs(b.p[1] - c[1]))[0];
+}
+/** A side's players on the pitch. */
+const menOn = (s: GridState, side: 0 | 1) => s.players[side].filter(onPitch).length;

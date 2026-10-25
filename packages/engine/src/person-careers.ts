@@ -1,6 +1,7 @@
 import { clubManager } from './managerMarket';
 import type {
   CareerDate,
+  Club,
   CareerEmployment,
   CareerRole,
   PersonCareer,
@@ -261,7 +262,7 @@ export function syncMentorExposure(w: World, person: PersonCareer, at = careerDa
     for (const mentor of active) mentor.to = { ...at };
     return;
   }
-  const club = w.clubs.find((club) => club.id === job.club);
+  const club = clubById(w, job.club);
   if (!club) return;
   const manager = job.club === w.playerClub ? w.manager : clubManager(w, club);
   if (
@@ -304,12 +305,26 @@ export function coachingPeople(w: World): readonly PersonCareer[] {
   return hit.coached;
 }
 export function syncMentorExposures(w: World) {
+  // The date each sync would read for itself: nothing in a sync moves it (T450).
+  const at = careerDate(w);
   for (const person of coachingPeople(w))
     if (
       person.mentors.some((m) => !m.to) ||
       person.employment.some((job) => !job.to && isCoachingRole(job.role))
     )
-      syncMentorExposure(w, person);
+      syncMentorExposure(w, person, at);
+}
+/** Each clubs list by ID, the first of an ID as `find` reads it (T450); a list that grew is read again. */
+const clubIndexes = new WeakMap<World['clubs'], { size: number; byId: Map<string, Club> }>();
+function clubById(w: World, id: string): Club | undefined {
+  let hit = clubIndexes.get(w.clubs);
+  if (!hit || hit.size !== w.clubs.length) {
+    const byId = new Map<string, Club>();
+    for (const club of w.clubs) if (!byId.has(club.id)) byId.set(club.id, club);
+    hit = { size: w.clubs.length, byId };
+    clubIndexes.set(w.clubs, hit);
+  }
+  return hit.byId.get(id);
 }
 export function longestMentor(person: PersonCareer, at: CareerDate) {
   const employed = coachingIntervals(person, at),
