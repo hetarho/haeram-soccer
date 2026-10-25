@@ -17,7 +17,7 @@
     },
     "preReleaseSeasons": 10,
     "activatedSeasons": 2,
-    "writerLoadMs": 677,
+    "writerLoadMs": 915,
     "legacyRevision": 3391,
     "activated": {
       "model": {
@@ -86,7 +86,7 @@
     "resumedSeasonReplay": true
   },
   "synthetic": true,
-  "date": "2026-10-25T17:52:23.768Z",
+  "date": "2026-10-25T20:23:41.197Z",
   "node": "v26.8.1",
   "toolchain": {
     "pnpm": "10.34.6",
@@ -99,13 +99,13 @@
     "cpu": "Apple M1 Max",
     "logicalCpus": 10
   },
-  "gitHead": "ca1567fef0dde3afe4e8042df9d5c61a2e1046f5",
+  "gitHead": "130162253ceefd3395cf59fc172d9c0172f4c8e2",
   "gitDirty": true,
   "currentHeadVerified": false,
   "verifiedSource": "uncommitted working tree",
   "sourceFingerprint": {
     "algorithm": "sha256",
-    "sha256": "2012e0b33c36e7b98d84adb045e853a1aaa98651a0c3f19f3006d4f1a043f04d",
+    "sha256": "cea9a6f52ea3d4fb27a09b112d3a39818fbabd979edf5bd221175a51251f9c62",
     "files": 1292
   },
   "run": {
@@ -113,53 +113,53 @@
     "phases": [
       {
         "phase": "retained",
-        "date": "2026-10-25T16:17:20.848Z",
-        "elapsedMs": 63881
+        "date": "2026-10-25T19:01:10.403Z",
+        "elapsedMs": 53980
       },
       {
         "phase": "activation",
-        "date": "2026-10-25T16:19:08.594Z",
-        "elapsedMs": 107744
+        "date": "2026-10-25T19:03:18.875Z",
+        "elapsedMs": 128475
       },
       {
         "phase": "baseline-1",
-        "date": "2026-10-25T16:31:25.309Z",
-        "elapsedMs": 736708
+        "date": "2026-10-25T19:13:59.231Z",
+        "elapsedMs": 642103
       },
       {
         "phase": "baseline-2",
-        "date": "2026-10-25T16:43:49.320Z",
-        "elapsedMs": 744010
+        "date": "2026-10-25T19:25:55.553Z",
+        "elapsedMs": 716342
       },
       {
         "phase": "baseline-checkpoints",
-        "date": "2026-10-25T16:58:00.405Z",
-        "elapsedMs": 851078
+        "date": "2026-10-25T19:35:31.491Z",
+        "elapsedMs": 575906
       },
       {
         "phase": "active-management-1",
-        "date": "2026-10-25T17:08:41.917Z",
-        "elapsedMs": 641506
+        "date": "2026-10-25T19:45:42.565Z",
+        "elapsedMs": 611072
       },
       {
         "phase": "active-management-2",
-        "date": "2026-10-25T17:21:19.286Z",
-        "elapsedMs": 757364
+        "date": "2026-10-25T19:57:50.314Z",
+        "elapsedMs": 727747
       },
       {
         "phase": "active-management-checkpoints",
-        "date": "2026-10-25T17:36:03.350Z",
-        "elapsedMs": 884174
+        "date": "2026-10-25T20:07:47.390Z",
+        "elapsedMs": 597073
       },
       {
         "phase": "era-1",
-        "date": "2026-10-25T17:43:50.291Z",
-        "elapsedMs": 466954
+        "date": "2026-10-25T20:15:22.428Z",
+        "elapsedMs": 453047
       },
       {
         "phase": "era-2",
-        "date": "2026-10-25T17:52:23.629Z",
-        "elapsedMs": 513352
+        "date": "2026-10-25T20:23:40.996Z",
+        "elapsedMs": 498565
       }
     ]
   },
@@ -198,9 +198,9 @@
       "compressedPayloadBytes": 642307,
       "checkpointBytes": 734730,
       "totalBytes": 735242,
-      "heapBytes": 234228944,
-      "encodingMs": 348,
-      "decodingMs": 550,
+      "heapBytes": 231620928,
+      "encodingMs": 273,
+      "decodingMs": 481,
       "passed": true
     },
     {
@@ -232,9 +232,9 @@
       "compressedPayloadBytes": 199106,
       "checkpointBytes": 228214,
       "totalBytes": 228726,
-      "heapBytes": 302414080,
-      "encodingMs": 122,
-      "decodingMs": 173,
+      "heapBytes": 300664384,
+      "encodingMs": 101,
+      "decodingMs": 140,
       "passed": true
     },
     {
@@ -266,9 +266,9 @@
       "compressedPayloadBytes": 463142,
       "checkpointBytes": 529968,
       "totalBytes": 530480,
-      "heapBytes": 268266752,
-      "encodingMs": 240,
-      "decodingMs": 365,
+      "heapBytes": 295013720,
+      "encodingMs": 346,
+      "decodingMs": 462,
       "passed": true
     },
     {
@@ -300,9 +300,9 @@
       "compressedPayloadBytes": 463332,
       "checkpointBytes": 530186,
       "totalBytes": 530698,
-      "heapBytes": 419902456,
-      "encodingMs": 220,
-      "decodingMs": 369,
+      "heapBytes": 401894584,
+      "encodingMs": 305,
+      "decodingMs": 404,
       "passed": true
     },
     {
@@ -334,9 +334,9 @@
       "compressedPayloadBytes": 927657,
       "checkpointBytes": 1060842,
       "totalBytes": 1061354,
-      "heapBytes": 626822552,
-      "encodingMs": 444,
-      "decodingMs": 845,
+      "heapBytes": 355832016,
+      "encodingMs": 848,
+      "decodingMs": 1419,
       "passed": true
     },
     {
@@ -367,9 +367,9 @@
       "compressedPayloadBytes": 77905,
       "checkpointBytes": 89698,
       "totalBytes": 90210,
-      "heapBytes": 125924848,
-      "encodingMs": 46,
-      "decodingMs": 63,
+      "heapBytes": 125542144,
+      "encodingMs": 98,
+      "decodingMs": 101,
       "passed": true
     },
     {
@@ -401,9 +401,9 @@
       "compressedPayloadBytes": 1454036,
       "checkpointBytes": 1466268,
       "totalBytes": 1466780,
-      "heapBytes": 846481424,
-      "encodingMs": 186067,
-      "decodingMs": 2073,
+      "heapBytes": 705768360,
+      "encodingMs": 120229,
+      "decodingMs": 2061,
       "passed": true
     },
     {
@@ -435,9 +435,9 @@
       "compressedPayloadBytes": 1899605,
       "checkpointBytes": 1915292,
       "totalBytes": 1915804,
-      "heapBytes": 1832118488,
-      "encodingMs": 268782,
-      "decodingMs": 4213,
+      "heapBytes": 1838252504,
+      "encodingMs": 175199,
+      "decodingMs": 4234,
       "passed": true
     },
     {
@@ -469,9 +469,9 @@
       "compressedPayloadBytes": 2443514,
       "checkpointBytes": 2463516,
       "totalBytes": 2464028,
-      "heapBytes": 2320669944,
-      "encodingMs": 321548,
-      "decodingMs": 4785,
+      "heapBytes": 2331785632,
+      "encodingMs": 208481,
+      "decodingMs": 4651,
       "passed": true
     },
     {
@@ -502,9 +502,9 @@
       "compressedPayloadBytes": 77675,
       "checkpointBytes": 89436,
       "totalBytes": 89948,
-      "heapBytes": 112728544,
-      "encodingMs": 47,
-      "decodingMs": 66,
+      "heapBytes": 112206688,
+      "encodingMs": 41,
+      "decodingMs": 61,
       "passed": true
     },
     {
@@ -536,9 +536,9 @@
       "compressedPayloadBytes": 1408397,
       "checkpointBytes": 1420190,
       "totalBytes": 1420702,
-      "heapBytes": 805400616,
-      "encodingMs": 188179,
-      "decodingMs": 2097,
+      "heapBytes": 800651672,
+      "encodingMs": 122227,
+      "decodingMs": 2129,
       "passed": true
     },
     {
@@ -570,9 +570,9 @@
       "compressedPayloadBytes": 1844872,
       "checkpointBytes": 1860126,
       "totalBytes": 1860638,
-      "heapBytes": 1659852408,
-      "encodingMs": 274861,
-      "decodingMs": 4177,
+      "heapBytes": 1561858352,
+      "encodingMs": 179550,
+      "decodingMs": 4153,
       "passed": true
     },
     {
@@ -604,9 +604,9 @@
       "compressedPayloadBytes": 2370958,
       "checkpointBytes": 2390302,
       "totalBytes": 2390814,
-      "heapBytes": 2281841256,
-      "encodingMs": 347267,
-      "decodingMs": 5219,
+      "heapBytes": 2270366288,
+      "encodingMs": 225311,
+      "decodingMs": 4929,
       "passed": true
     }
   ],
@@ -703,12 +703,12 @@
       "trainingCycle": "balanced; century checkpoint adds 23 rounds",
       "ownerManagerHires": 0,
       "sameDayReappointments": 0,
-      "elapsedMs": 2331796,
-      "completedSeasonsPerSecond": 0.04,
-      "simulationMs": 1461443,
-      "simulationSecondsPerSeason": 14.614,
+      "elapsedMs": 1934351,
+      "completedSeasonsPerSecond": 0.05,
+      "simulationMs": 1340036,
+      "simulationSecondsPerSeason": 13.4,
       "ownedMatches": 3364,
-      "ownedMatchesPerSecond": 1.44,
+      "ownedMatchesPerSecond": 1.74,
       "allRetainedFactsPreserved": true,
       "managerHistory": {
         "century": {
@@ -745,8 +745,8 @@
             "legacyRows": 0,
             "recordedMatches": 3348,
             "honours": 12,
-            "firstPageMs": 6,
-            "allPagesMs": 6,
+            "firstPageMs": 5,
+            "allPagesMs": 5,
             "largestReplyBytes": 11105
           },
           "roundTrip": true
@@ -870,12 +870,12 @@
       "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
       "ownerManagerHires": 6,
       "sameDayReappointments": 2,
-      "elapsedMs": 2283044,
-      "completedSeasonsPerSecond": 0.04,
-      "simulationMs": 1377681,
-      "simulationSecondsPerSeason": 13.777,
+      "elapsedMs": 1935892,
+      "completedSeasonsPerSecond": 0.05,
+      "simulationMs": 1318954,
+      "simulationSecondsPerSeason": 13.19,
       "ownedMatches": 3163,
-      "ownedMatchesPerSecond": 1.39,
+      "ownedMatchesPerSecond": 1.63,
       "allRetainedFactsPreserved": true,
       "managerHistory": {
         "century": {
@@ -913,8 +913,8 @@
             "legacyRows": 0,
             "recordedMatches": 3147,
             "honours": 1,
-            "firstPageMs": 6,
-            "allPagesMs": 10,
+            "firstPageMs": 5,
+            "allPagesMs": 8,
             "largestReplyBytes": 30092
           },
           "roundTrip": true
@@ -954,8 +954,8 @@
             "legacyRows": 0,
             "recordedMatches": 3163,
             "honours": 1,
-            "firstPageMs": 5,
-            "allPagesMs": 9,
+            "firstPageMs": 4,
+            "allPagesMs": 7,
             "largestReplyBytes": 30242
           },
           "roundTrip": true
@@ -1094,9 +1094,9 @@
       "restored": true
     }
   },
-  "elapsedMs": 5766771,
-  "heapBytes": 296712624,
-  "peakObservedHeapBytes": 2320669944,
+  "elapsedMs": 5004310,
+  "heapBytes": 296316400,
+  "peakObservedHeapBytes": 2331785632,
   "losslessRoundtrip": true,
   "resumedSeasonReplay": true,
   "managerHistoryRoundTrip": true,
@@ -1104,5 +1104,87 @@
   "scope": "Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (101 edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate 1950–2025 era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.",
   "storagePassed": true,
   "storageReport": "docs/benchmarks/T010-storage.json",
-  "browser": null
+  "browser": {
+    "report": "docs/benchmarks/T010-first-play.json",
+    "date": "2026-10-25T20:25:01.329Z",
+    "browser": "153.0.8010.12",
+    "playwright": "1.63.0",
+    "gitHead": "130162253ceefd3395cf59fc172d9c0172f4c8e2",
+    "gitDirty": true,
+    "sourceFingerprint": {
+      "algorithm": "sha256",
+      "sha256": "cea9a6f52ea3d4fb27a09b112d3a39818fbabd979edf5bd221175a51251f9c62",
+      "files": 1292
+    },
+    "buildFingerprint": {
+      "algorithm": "sha256",
+      "sha256": "9b6e507a04627869ea71230fcae9642eb2a9df363284950dbc38046683752d57",
+      "files": 646
+    },
+    "entryGzipBytes": 300376,
+    "entryGzipLimit": 256000,
+    "entry": {
+      "gzipBytes": 300376,
+      "rawBytes": 972611,
+      "limit": 256000,
+      "withinBudget": false,
+      "beforeRelease": {
+        "gzipBytes": 300378,
+        "rawBytes": 972611,
+        "source": "e4de4490 production build, MATCH_MODEL_RELEASE off (T286; f1400a8b: 300,192 gzip, 972,162 raw)",
+        "followUp": "a first-play entry task: move eager screens and shared schema/settlement modules out of the entry until it is at most 256,000 gzip bytes (→ARCH-28)"
+      },
+      "regression": false,
+      "nameSlackBytes": 64
+    },
+    "buildGzipBytes": 1903332,
+    "firstPlayPageTargetTransferBytes": 3796058,
+    "mobileFirstPlayPageTargetTransferBytes": 3683975,
+    "foundingCommandMs": [
+      1858,
+      2364
+    ],
+    "centuryLoadMs": 3927,
+    "initializationLimitMs": 5000,
+    "pointerToSecondFrameP95Ms": [
+      38,
+      27
+    ],
+    "inputLimitMs": 100,
+    "animationFps": [
+      60,
+      60
+    ],
+    "minimumFps": 30,
+    "observedKits": {
+      "desktop": [
+        {
+          "label": "HAE 홈 유니폼: 세로 줄무늬, 주색 #bf7956, 보조색 #ffffff",
+          "pattern": "세로 줄무늬",
+          "recorded": true
+        },
+        {
+          "label": "R10 세컨 유니폼: 단색, 주색 #0b1f44, 테두리 #7f0d16",
+          "pattern": "단색",
+          "recorded": true
+        }
+      ],
+      "mobile": [
+        {
+          "label": "HAE 홈 유니폼: 세로 줄무늬, 주색 #bf7956, 보조색 #ffffff",
+          "pattern": "세로 줄무늬",
+          "recorded": true
+        },
+        {
+          "label": "R10 세컨 유니폼: 단색, 주색 #0b1f44, 테두리 #7f0d16",
+          "pattern": "단색",
+          "recorded": true
+        }
+      ]
+    },
+    "patternRendering": true,
+    "pageErrors": [],
+    "passed": false,
+    "releasePassed": true
+  }
 }

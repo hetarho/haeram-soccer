@@ -40,3 +40,1114 @@
 2026-10-25T19:57:41.325Z active-management: 100/100 seasons, 20405 retained people, 25 tenures
 2026-10-25T19:57:50.315Z active-management-2: done in 728 s
 2026-10-25T19:59:56.718Z active-management mid-career active round: 1420190 checkpoint bytes, 11593 people, 0 promises, 8 tenures
+2026-10-25T20:03:20.497Z active-management century: 1860126 checkpoint bytes, 20405 people, 0 promises, 25 tenures
+2026-10-25T20:07:20.173Z active-management century active round 23: 2390302 checkpoint bytes, 20405 people, 0 promises, 25 tenures
+2026-10-25T20:07:47.391Z active-management-checkpoints: done in 597 s
+2026-10-25T20:15:22.430Z era-1: done in 453 s
+2026-10-25T20:23:40.998Z era-2: done in 499 s
+2026-10-25T20:24:00.575Z {
+2026-10-25T20:24:00.575Z   "phase": "T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile; T308 adds own-manager tracking from the founding (container 4), a same-day appointment, replacement and reappointment four times in the active-management century and a settled round after the century in the baseline too; T286 founds both centuries with the released full match model (complete records and NPC aggregates from the first day) and adds a supported pre-release career activated mid-season by the worker host writer load",
+2026-10-25T20:24:00.575Z   "task": "T286",
+2026-10-25T20:24:00.575Z   "feature": "The released continuous-match and complete aggregate-result model (MATCH_MODEL_RELEASE, SAVE-23, HIST-17) on the century profiles, beside own-manager tenures (HIST-18/19, SAVE-24) and club identities (KIT)",
+2026-10-25T20:24:00.575Z   "matchModelRelease": {
+2026-10-25T20:24:00.575Z     "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.575Z     "enabled": true
+2026-10-25T20:24:00.575Z   },
+2026-10-25T20:24:00.575Z   "activation": {
+2026-10-25T20:24:00.575Z     "released": true,
+2026-10-25T20:24:00.575Z     "founding": {
+2026-10-25T20:24:00.575Z       "country": "ENG",
+2026-10-25T20:24:00.576Z       "name": "Century Activation",
+2026-10-25T20:24:00.576Z       "color": "#284e35",
+2026-10-25T20:24:00.576Z       "seed": "release-activation",
+2026-10-25T20:24:00.576Z       "level": "easy"
+2026-10-25T20:24:00.576Z     },
+2026-10-25T20:24:00.576Z     "preReleaseSeasons": 10,
+2026-10-25T20:24:00.576Z     "activatedSeasons": 2,
+2026-10-25T20:24:00.576Z     "writerLoadMs": 915,
+2026-10-25T20:24:00.576Z     "legacyRevision": 3391,
+2026-10-25T20:24:00.576Z     "activated": {
+2026-10-25T20:24:00.576Z       "model": {
+2026-10-25T20:24:00.576Z         "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.576Z         "coverage": "activation",
+2026-10-25T20:24:00.576Z         "activated": {
+2026-10-25T20:24:00.576Z           "year": 1960,
+2026-10-25T20:24:00.576Z           "day": 161,
+2026-10-25T20:24:00.576Z           "revision": 3392
+2026-10-25T20:24:00.576Z         },
+2026-10-25T20:24:00.576Z         "trackedFrom": {
+2026-10-25T20:24:00.576Z           "year": 1960,
+2026-10-25T20:24:00.576Z           "day": 162,
+2026-10-25T20:24:00.576Z           "round": 24
+2026-10-25T20:24:00.576Z         }
+2026-10-25T20:24:00.576Z       },
+2026-10-25T20:24:00.576Z       "npcSeason": {
+2026-10-25T20:24:00.576Z         "year": 1960,
+2026-10-25T20:24:00.576Z         "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.576Z         "trackedFrom": {
+2026-10-25T20:24:00.576Z           "year": 1960,
+2026-10-25T20:24:00.576Z           "day": 162,
+2026-10-25T20:24:00.576Z           "round": 24
+2026-10-25T20:24:00.577Z         },
+2026-10-25T20:24:00.577Z         "competitions": 0,
+2026-10-25T20:24:00.577Z         "clubRows": 0,
+2026-10-25T20:24:00.577Z         "playerRows": 0
+2026-10-25T20:24:00.577Z       },
+2026-10-25T20:24:00.577Z       "ownMatches": 484,
+2026-10-25T20:24:00.577Z       "fullRecords": 0,
+2026-10-25T20:24:00.577Z       "preFeatureRecords": 484,
+2026-10-25T20:24:00.577Z       "incompleteFullRecords": 0
+2026-10-25T20:24:00.577Z     },
+2026-10-25T20:24:00.577Z     "later": {
+2026-10-25T20:24:00.577Z       "model": {
+2026-10-25T20:24:00.577Z         "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.577Z         "coverage": "activation",
+2026-10-25T20:24:00.577Z         "activated": {
+2026-10-25T20:24:00.577Z           "year": 1960,
+2026-10-25T20:24:00.577Z           "day": 161,
+2026-10-25T20:24:00.577Z           "revision": 3392
+2026-10-25T20:24:00.577Z         },
+2026-10-25T20:24:00.577Z         "trackedFrom": {
+2026-10-25T20:24:00.577Z           "year": 1960,
+2026-10-25T20:24:00.577Z           "day": 162,
+2026-10-25T20:24:00.577Z           "round": 24
+2026-10-25T20:24:00.577Z         }
+2026-10-25T20:24:00.577Z       },
+2026-10-25T20:24:00.577Z       "npcSeason": {
+2026-10-25T20:24:00.577Z         "year": 1963,
+2026-10-25T20:24:00.577Z         "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.577Z         "trackedFrom": {
+2026-10-25T20:24:00.577Z           "year": 1963,
+2026-10-25T20:24:00.577Z           "day": 1,
+2026-10-25T20:24:00.578Z           "round": 1
+2026-10-25T20:24:00.578Z         },
+2026-10-25T20:24:00.578Z         "competitions": 33,
+2026-10-25T20:24:00.578Z         "clubRows": 1087,
+2026-10-25T20:24:00.578Z         "playerRows": 14061
+2026-10-25T20:24:00.578Z       },
+2026-10-25T20:24:00.578Z       "ownMatches": 625,
+2026-10-25T20:24:00.578Z       "fullRecords": 141,
+2026-10-25T20:24:00.578Z       "preFeatureRecords": 484,
+2026-10-25T20:24:00.578Z       "incompleteFullRecords": 0
+2026-10-25T20:24:00.578Z     },
+2026-10-25T20:24:00.578Z     "resumedSeasonReplay": true
+2026-10-25T20:24:00.578Z   },
+2026-10-25T20:24:00.578Z   "synthetic": true,
+2026-10-25T20:24:00.578Z   "date": "2026-10-25T20:23:41.197Z",
+2026-10-25T20:24:00.578Z   "node": "v26.8.1",
+2026-10-25T20:24:00.578Z   "toolchain": {
+2026-10-25T20:24:00.578Z     "pnpm": "10.34.6",
+2026-10-25T20:24:00.578Z     "typescript": "5.9.3",
+2026-10-25T20:24:00.578Z     "tsx": "4.23.15"
+2026-10-25T20:24:00.578Z   },
+2026-10-25T20:24:00.578Z   "host": {
+2026-10-25T20:24:00.578Z     "platform": "darwin",
+2026-10-25T20:24:00.578Z     "arch": "arm64",
+2026-10-25T20:24:00.578Z     "cpu": "Apple M1 Max",
+2026-10-25T20:24:00.578Z     "logicalCpus": 10
+2026-10-25T20:24:00.578Z   },
+2026-10-25T20:24:00.578Z   "gitHead": "130162253ceefd3395cf59fc172d9c0172f4c8e2",
+2026-10-25T20:24:00.578Z   "gitDirty": true,
+2026-10-25T20:24:00.578Z   "currentHeadVerified": false,
+2026-10-25T20:24:00.578Z   "verifiedSource": "uncommitted working tree",
+2026-10-25T20:24:00.578Z   "sourceFingerprint": {
+2026-10-25T20:24:00.578Z     "algorithm": "sha256",
+2026-10-25T20:24:00.579Z     "sha256": "cea9a6f52ea3d4fb27a09b112d3a39818fbabd979edf5bd221175a51251f9c62",
+2026-10-25T20:24:00.579Z     "files": 1292
+2026-10-25T20:24:00.579Z   },
+2026-10-25T20:24:00.579Z   "run": {
+2026-10-25T20:24:00.579Z     "mode": "one process",
+2026-10-25T20:24:00.579Z     "phases": [
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "retained",
+2026-10-25T20:24:00.579Z         "date": "2026-10-25T19:01:10.403Z",
+2026-10-25T20:24:00.579Z         "elapsedMs": 53980
+2026-10-25T20:24:00.579Z       },
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "activation",
+2026-10-25T20:24:00.579Z         "date": "2026-10-25T19:03:18.875Z",
+2026-10-25T20:24:00.579Z         "elapsedMs": 128475
+2026-10-25T20:24:00.579Z       },
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "baseline-1",
+2026-10-25T20:24:00.579Z         "date": "2026-10-25T19:13:59.231Z",
+2026-10-25T20:24:00.579Z         "elapsedMs": 642103
+2026-10-25T20:24:00.579Z       },
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "baseline-2",
+2026-10-25T20:24:00.579Z         "date": "2026-10-25T19:25:55.553Z",
+2026-10-25T20:24:00.579Z         "elapsedMs": 716342
+2026-10-25T20:24:00.579Z       },
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "baseline-checkpoints",
+2026-10-25T20:24:00.579Z         "date": "2026-10-25T19:35:31.491Z",
+2026-10-25T20:24:00.579Z         "elapsedMs": 575906
+2026-10-25T20:24:00.579Z       },
+2026-10-25T20:24:00.579Z       {
+2026-10-25T20:24:00.579Z         "phase": "active-management-1",
+2026-10-25T20:24:00.580Z         "date": "2026-10-25T19:45:42.565Z",
+2026-10-25T20:24:00.580Z         "elapsedMs": 611072
+2026-10-25T20:24:00.580Z       },
+2026-10-25T20:24:00.580Z       {
+2026-10-25T20:24:00.580Z         "phase": "active-management-2",
+2026-10-25T20:24:00.580Z         "date": "2026-10-25T19:57:50.314Z",
+2026-10-25T20:24:00.580Z         "elapsedMs": 727747
+2026-10-25T20:24:00.580Z       },
+2026-10-25T20:24:00.580Z       {
+2026-10-25T20:24:00.580Z         "phase": "active-management-checkpoints",
+2026-10-25T20:24:00.580Z         "date": "2026-10-25T20:07:47.390Z",
+2026-10-25T20:24:00.580Z         "elapsedMs": 597073
+2026-10-25T20:24:00.580Z       },
+2026-10-25T20:24:00.580Z       {
+2026-10-25T20:24:00.580Z         "phase": "era-1",
+2026-10-25T20:24:00.580Z         "date": "2026-10-25T20:15:22.428Z",
+2026-10-25T20:24:00.580Z         "elapsedMs": 453047
+2026-10-25T20:24:00.580Z       },
+2026-10-25T20:24:00.580Z       {
+2026-10-25T20:24:00.580Z         "phase": "era-2",
+2026-10-25T20:24:00.580Z         "date": "2026-10-25T20:23:40.996Z",
+2026-10-25T20:24:00.580Z         "elapsedMs": 498565
+2026-10-25T20:24:00.580Z       }
+2026-10-25T20:24:00.580Z     ]
+2026-10-25T20:24:00.580Z   },
+2026-10-25T20:24:00.580Z   "engine": "4.0.0",
+2026-10-25T20:24:00.580Z   "catalog": "2026-demo-3",
+2026-10-25T20:24:00.580Z   "catalogHash": "5c4dc847344070fba54562572233a41a00ca2adac9c132f6a93845876b06da4f",
+2026-10-25T20:24:00.580Z   "checkpointLimit": 3145728,
+2026-10-25T20:24:00.580Z   "totalLimit": 3670016,
+2026-10-25T20:24:00.580Z   "measurements": [
+2026-10-25T20:24:00.580Z     {
+2026-10-25T20:24:00.581Z       "label": "marked synthetic retained career and cross-season promise",
+2026-10-25T20:24:00.581Z       "seasons": 3,
+2026-10-25T20:24:00.581Z       "year": 1953,
+2026-10-25T20:24:00.581Z       "round": 21,
+2026-10-25T20:24:00.581Z       "ownedMatches": 149,
+2026-10-25T20:24:00.581Z       "players": 31,
+2026-10-25T20:24:00.581Z       "events": 581,
+2026-10-25T20:24:00.581Z       "seed": "retained-workload",
+2026-10-25T20:24:00.581Z       "canonicalBytes": 7857048,
+2026-10-25T20:24:00.581Z       "canonicalUtf16Bytes": 15644882,
+2026-10-25T20:24:00.581Z       "retainedPeople": 3128,
+2026-10-25T20:24:00.581Z       "employmentSpells": 3365,
+2026-10-25T20:24:00.581Z       "mentorSpells": 243,
+2026-10-25T20:24:00.581Z       "coachingProfiles": 235,
+2026-10-25T20:24:00.581Z       "managerProfiles": 2,
+2026-10-25T20:24:00.581Z       "playingCoachProposals": 1,
+2026-10-25T20:24:00.581Z       "mediations": 1,
+2026-10-25T20:24:00.581Z       "promises": 1,
+2026-10-25T20:24:00.581Z       "pendingPromises": 1,
+2026-10-25T20:24:00.581Z       "trainingFocus": "balanced",
+2026-10-25T20:24:00.581Z       "trainingAt": "1953:21",
+2026-10-25T20:24:00.581Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.581Z       "managerTenures": 4,
+2026-10-25T20:24:00.581Z       "managerOutcomes": 5,
+2026-10-25T20:24:00.581Z       "container": 4,
+2026-10-25T20:24:00.581Z       "compressedPayloadBytes": 642307,
+2026-10-25T20:24:00.581Z       "checkpointBytes": 734730,
+2026-10-25T20:24:00.581Z       "totalBytes": 735242,
+2026-10-25T20:24:00.581Z       "heapBytes": 231620928,
+2026-10-25T20:24:00.581Z       "encodingMs": 273,
+2026-10-25T20:24:00.582Z       "decodingMs": 481,
+2026-10-25T20:24:00.582Z       "passed": true
+2026-10-25T20:24:00.582Z     },
+2026-10-25T20:24:00.582Z     {
+2026-10-25T20:24:00.582Z       "label": "retained workload after actual season close",
+2026-10-25T20:24:00.582Z       "seasons": 4,
+2026-10-25T20:24:00.582Z       "year": 1954,
+2026-10-25T20:24:00.582Z       "round": 0,
+2026-10-25T20:24:00.582Z       "ownedMatches": 174,
+2026-10-25T20:24:00.582Z       "players": 31,
+2026-10-25T20:24:00.582Z       "events": 682,
+2026-10-25T20:24:00.582Z       "seed": "retained-workload",
+2026-10-25T20:24:00.582Z       "canonicalBytes": 4024940,
+2026-10-25T20:24:00.582Z       "canonicalUtf16Bytes": 7972670,
+2026-10-25T20:24:00.582Z       "retainedPeople": 3287,
+2026-10-25T20:24:00.582Z       "employmentSpells": 3597,
+2026-10-25T20:24:00.582Z       "mentorSpells": 316,
+2026-10-25T20:24:00.582Z       "coachingProfiles": 331,
+2026-10-25T20:24:00.582Z       "managerProfiles": 3,
+2026-10-25T20:24:00.582Z       "playingCoachProposals": 1,
+2026-10-25T20:24:00.582Z       "mediations": 1,
+2026-10-25T20:24:00.582Z       "promises": 1,
+2026-10-25T20:24:00.582Z       "pendingPromises": 1,
+2026-10-25T20:24:00.582Z       "trainingFocus": "balanced",
+2026-10-25T20:24:00.582Z       "trainingAt": "1953:46",
+2026-10-25T20:24:00.582Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.582Z       "managerTenures": 4,
+2026-10-25T20:24:00.582Z       "managerOutcomes": 6,
+2026-10-25T20:24:00.582Z       "container": 4,
+2026-10-25T20:24:00.582Z       "compressedPayloadBytes": 199106,
+2026-10-25T20:24:00.582Z       "checkpointBytes": 228214,
+2026-10-25T20:24:00.582Z       "totalBytes": 228726,
+2026-10-25T20:24:00.583Z       "heapBytes": 300664384,
+2026-10-25T20:24:00.583Z       "encodingMs": 101,
+2026-10-25T20:24:00.583Z       "decodingMs": 140,
+2026-10-25T20:24:00.583Z       "passed": true
+2026-10-25T20:24:00.583Z     },
+2026-10-25T20:24:00.583Z     {
+2026-10-25T20:24:00.583Z       "label": "activation pre-release career mid-season",
+2026-10-25T20:24:00.583Z       "seasons": 10,
+2026-10-25T20:24:00.583Z       "year": 1960,
+2026-10-25T20:24:00.583Z       "round": 23,
+2026-10-25T20:24:00.583Z       "ownedMatches": 484,
+2026-10-25T20:24:00.583Z       "players": 111,
+2026-10-25T20:24:00.583Z       "events": 1656,
+2026-10-25T20:24:00.583Z       "seed": "release-activation",
+2026-10-25T20:24:00.583Z       "canonicalBytes": 7529314,
+2026-10-25T20:24:00.583Z       "canonicalUtf16Bytes": 14912102,
+2026-10-25T20:24:00.583Z       "retainedPeople": 4310,
+2026-10-25T20:24:00.583Z       "employmentSpells": 6474,
+2026-10-25T20:24:00.583Z       "mentorSpells": 2229,
+2026-10-25T20:24:00.583Z       "coachingProfiles": 803,
+2026-10-25T20:24:00.583Z       "managerProfiles": 297,
+2026-10-25T20:24:00.583Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.583Z       "mediations": 5,
+2026-10-25T20:24:00.583Z       "promises": 0,
+2026-10-25T20:24:00.583Z       "pendingPromises": 0,
+2026-10-25T20:24:00.583Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.583Z       "trainingAt": "1960:23",
+2026-10-25T20:24:00.583Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.583Z       "managerTenures": 2,
+2026-10-25T20:24:00.583Z       "managerOutcomes": 11,
+2026-10-25T20:24:00.583Z       "container": 4,
+2026-10-25T20:24:00.583Z       "compressedPayloadBytes": 463142,
+2026-10-25T20:24:00.583Z       "checkpointBytes": 529968,
+2026-10-25T20:24:00.583Z       "totalBytes": 530480,
+2026-10-25T20:24:00.583Z       "heapBytes": 295013720,
+2026-10-25T20:24:00.583Z       "encodingMs": 346,
+2026-10-25T20:24:00.583Z       "decodingMs": 462,
+2026-10-25T20:24:00.584Z       "passed": true
+2026-10-25T20:24:00.584Z     },
+2026-10-25T20:24:00.584Z     {
+2026-10-25T20:24:00.584Z       "label": "activation writer load mid-season",
+2026-10-25T20:24:00.584Z       "seasons": 10,
+2026-10-25T20:24:00.584Z       "year": 1960,
+2026-10-25T20:24:00.584Z       "round": 23,
+2026-10-25T20:24:00.584Z       "ownedMatches": 484,
+2026-10-25T20:24:00.584Z       "players": 111,
+2026-10-25T20:24:00.584Z       "events": 1656,
+2026-10-25T20:24:00.584Z       "seed": "release-activation",
+2026-10-25T20:24:00.584Z       "canonicalBytes": 7529616,
+2026-10-25T20:24:00.584Z       "canonicalUtf16Bytes": 14912706,
+2026-10-25T20:24:00.584Z       "retainedPeople": 4310,
+2026-10-25T20:24:00.584Z       "employmentSpells": 6474,
+2026-10-25T20:24:00.584Z       "mentorSpells": 2229,
+2026-10-25T20:24:00.584Z       "coachingProfiles": 803,
+2026-10-25T20:24:00.584Z       "managerProfiles": 297,
+2026-10-25T20:24:00.584Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.584Z       "mediations": 5,
+2026-10-25T20:24:00.584Z       "promises": 0,
+2026-10-25T20:24:00.584Z       "pendingPromises": 0,
+2026-10-25T20:24:00.584Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.584Z       "trainingAt": "1960:23",
+2026-10-25T20:24:00.584Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.584Z       "managerTenures": 2,
+2026-10-25T20:24:00.584Z       "managerOutcomes": 11,
+2026-10-25T20:24:00.584Z       "container": 4,
+2026-10-25T20:24:00.584Z       "compressedPayloadBytes": 463332,
+2026-10-25T20:24:00.584Z       "checkpointBytes": 530186,
+2026-10-25T20:24:00.584Z       "totalBytes": 530698,
+2026-10-25T20:24:00.584Z       "heapBytes": 401894584,
+2026-10-25T20:24:00.584Z       "encodingMs": 305,
+2026-10-25T20:24:00.584Z       "decodingMs": 404,
+2026-10-25T20:24:00.584Z       "passed": true
+2026-10-25T20:24:00.584Z     },
+2026-10-25T20:24:00.585Z     {
+2026-10-25T20:24:00.585Z       "label": "activation 2 seasons later round 23",
+2026-10-25T20:24:00.585Z       "seasons": 13,
+2026-10-25T20:24:00.585Z       "year": 1963,
+2026-10-25T20:24:00.585Z       "round": 23,
+2026-10-25T20:24:00.585Z       "ownedMatches": 625,
+2026-10-25T20:24:00.585Z       "players": 141,
+2026-10-25T20:24:00.585Z       "events": 2142,
+2026-10-25T20:24:00.585Z       "seed": "release-activation",
+2026-10-25T20:24:00.585Z       "canonicalBytes": 12525229,
+2026-10-25T20:24:00.585Z       "canonicalUtf16Bytes": 24869602,
+2026-10-25T20:24:00.585Z       "retainedPeople": 4861,
+2026-10-25T20:24:00.585Z       "employmentSpells": 8392,
+2026-10-25T20:24:00.585Z       "mentorSpells": 3840,
+2026-10-25T20:24:00.585Z       "coachingProfiles": 1069,
+2026-10-25T20:24:00.585Z       "managerProfiles": 467,
+2026-10-25T20:24:00.585Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.585Z       "mediations": 5,
+2026-10-25T20:24:00.585Z       "promises": 0,
+2026-10-25T20:24:00.585Z       "pendingPromises": 0,
+2026-10-25T20:24:00.585Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.585Z       "trainingAt": "1963:23",
+2026-10-25T20:24:00.585Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.585Z       "managerTenures": 2,
+2026-10-25T20:24:00.585Z       "managerOutcomes": 14,
+2026-10-25T20:24:00.585Z       "container": 4,
+2026-10-25T20:24:00.585Z       "compressedPayloadBytes": 927657,
+2026-10-25T20:24:00.585Z       "checkpointBytes": 1060842,
+2026-10-25T20:24:00.585Z       "totalBytes": 1061354,
+2026-10-25T20:24:00.585Z       "heapBytes": 355832016,
+2026-10-25T20:24:00.585Z       "encodingMs": 848,
+2026-10-25T20:24:00.586Z       "decodingMs": 1419,
+2026-10-25T20:24:00.586Z       "passed": true
+2026-10-25T20:24:00.586Z     },
+2026-10-25T20:24:00.586Z     {
+2026-10-25T20:24:00.586Z       "label": "baseline founding",
+2026-10-25T20:24:00.586Z       "seasons": 0,
+2026-10-25T20:24:00.586Z       "year": 1950,
+2026-10-25T20:24:00.586Z       "round": 0,
+2026-10-25T20:24:00.586Z       "ownedMatches": 0,
+2026-10-25T20:24:00.586Z       "players": 20,
+2026-10-25T20:24:00.586Z       "events": 1,
+2026-10-25T20:24:00.586Z       "seed": "release-century-baseline",
+2026-10-25T20:24:00.586Z       "canonicalBytes": 2508974,
+2026-10-25T20:24:00.586Z       "canonicalUtf16Bytes": 5017634,
+2026-10-25T20:24:00.586Z       "retainedPeople": 2114,
+2026-10-25T20:24:00.586Z       "employmentSpells": 2114,
+2026-10-25T20:24:00.586Z       "mentorSpells": 0,
+2026-10-25T20:24:00.586Z       "coachingProfiles": 0,
+2026-10-25T20:24:00.586Z       "managerProfiles": 0,
+2026-10-25T20:24:00.586Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.586Z       "mediations": 0,
+2026-10-25T20:24:00.586Z       "promises": 0,
+2026-10-25T20:24:00.586Z       "pendingPromises": 0,
+2026-10-25T20:24:00.586Z       "trainingFocus": "balanced",
+2026-10-25T20:24:00.587Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.587Z       "managerTenures": 1,
+2026-10-25T20:24:00.587Z       "managerOutcomes": 0,
+2026-10-25T20:24:00.587Z       "container": 4,
+2026-10-25T20:24:00.587Z       "compressedPayloadBytes": 77905,
+2026-10-25T20:24:00.587Z       "checkpointBytes": 89698,
+2026-10-25T20:24:00.587Z       "totalBytes": 90210,
+2026-10-25T20:24:00.587Z       "heapBytes": 125542144,
+2026-10-25T20:24:00.587Z       "encodingMs": 98,
+2026-10-25T20:24:00.587Z       "decodingMs": 101,
+2026-10-25T20:24:00.587Z       "passed": true
+2026-10-25T20:24:00.587Z     },
+2026-10-25T20:24:00.587Z     {
+2026-10-25T20:24:00.587Z       "label": "baseline mid-career active round",
+2026-10-25T20:24:00.587Z       "seasons": 50,
+2026-10-25T20:24:00.587Z       "year": 2000,
+2026-10-25T20:24:00.587Z       "round": 23,
+2026-10-25T20:24:00.587Z       "ownedMatches": 1764,
+2026-10-25T20:24:00.587Z       "players": 516,
+2026-10-25T20:24:00.587Z       "events": 7091,
+2026-10-25T20:24:00.587Z       "seed": "release-century-baseline",
+2026-10-25T20:24:00.587Z       "canonicalBytes": 39068870,
+2026-10-25T20:24:00.587Z       "canonicalUtf16Bytes": 77582686,
+2026-10-25T20:24:00.587Z       "retainedPeople": 11472,
+2026-10-25T20:24:00.587Z       "employmentSpells": 59088,
+2026-10-25T20:24:00.587Z       "mentorSpells": 49518,
+2026-10-25T20:24:00.587Z       "coachingProfiles": 4148,
+2026-10-25T20:24:00.587Z       "managerProfiles": 2387,
+2026-10-25T20:24:00.588Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.588Z       "mediations": 7,
+2026-10-25T20:24:00.588Z       "promises": 0,
+2026-10-25T20:24:00.588Z       "pendingPromises": 0,
+2026-10-25T20:24:00.588Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.588Z       "trainingAt": "2000:23",
+2026-10-25T20:24:00.588Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.588Z       "managerTenures": 2,
+2026-10-25T20:24:00.588Z       "managerOutcomes": 59,
+2026-10-25T20:24:00.588Z       "container": 4,
+2026-10-25T20:24:00.588Z       "compressedPayloadBytes": 1454036,
+2026-10-25T20:24:00.588Z       "checkpointBytes": 1466268,
+2026-10-25T20:24:00.588Z       "totalBytes": 1466780,
+2026-10-25T20:24:00.588Z       "heapBytes": 705768360,
+2026-10-25T20:24:00.588Z       "encodingMs": 120229,
+2026-10-25T20:24:00.588Z       "decodingMs": 2061,
+2026-10-25T20:24:00.588Z       "passed": true
+2026-10-25T20:24:00.588Z     },
+2026-10-25T20:24:00.588Z     {
+2026-10-25T20:24:00.588Z       "label": "baseline century",
+2026-10-25T20:24:00.588Z       "seasons": 100,
+2026-10-25T20:24:00.588Z       "year": 2050,
+2026-10-25T20:24:00.588Z       "round": 0,
+2026-10-25T20:24:00.588Z       "ownedMatches": 3348,
+2026-10-25T20:24:00.588Z       "players": 1013,
+2026-10-25T20:24:00.588Z       "events": 13881,
+2026-10-25T20:24:00.588Z       "seed": "release-century-baseline",
+2026-10-25T20:24:00.588Z       "canonicalBytes": 85386285,
+2026-10-25T20:24:00.588Z       "canonicalUtf16Bytes": 169721856,
+2026-10-25T20:24:00.588Z       "retainedPeople": 20579,
+2026-10-25T20:24:00.588Z       "employmentSpells": 171020,
+2026-10-25T20:24:00.588Z       "mentorSpells": 154686,
+2026-10-25T20:24:00.588Z       "coachingProfiles": 8569,
+2026-10-25T20:24:00.588Z       "managerProfiles": 4594,
+2026-10-25T20:24:00.589Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.589Z       "mediations": 7,
+2026-10-25T20:24:00.589Z       "promises": 0,
+2026-10-25T20:24:00.589Z       "pendingPromises": 0,
+2026-10-25T20:24:00.589Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.589Z       "trainingAt": "2049:46",
+2026-10-25T20:24:00.589Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.589Z       "managerTenures": 2,
+2026-10-25T20:24:00.589Z       "managerOutcomes": 109,
+2026-10-25T20:24:00.589Z       "container": 4,
+2026-10-25T20:24:00.589Z       "compressedPayloadBytes": 1899605,
+2026-10-25T20:24:00.589Z       "checkpointBytes": 1915292,
+2026-10-25T20:24:00.589Z       "totalBytes": 1915804,
+2026-10-25T20:24:00.589Z       "heapBytes": 1838252504,
+2026-10-25T20:24:00.589Z       "encodingMs": 175199,
+2026-10-25T20:24:00.589Z       "decodingMs": 4234,
+2026-10-25T20:24:00.589Z       "passed": true
+2026-10-25T20:24:00.589Z     },
+2026-10-25T20:24:00.589Z     {
+2026-10-25T20:24:00.589Z       "label": "baseline century round 23",
+2026-10-25T20:24:00.589Z       "seasons": 100,
+2026-10-25T20:24:00.589Z       "year": 2050,
+2026-10-25T20:24:00.589Z       "round": 23,
+2026-10-25T20:24:00.589Z       "ownedMatches": 3364,
+2026-10-25T20:24:00.589Z       "players": 1013,
+2026-10-25T20:24:00.589Z       "events": 13940,
+2026-10-25T20:24:00.589Z       "seed": "release-century-baseline",
+2026-10-25T20:24:00.589Z       "canonicalBytes": 91703634,
+2026-10-25T20:24:00.589Z       "canonicalUtf16Bytes": 182351802,
+2026-10-25T20:24:00.589Z       "retainedPeople": 20579,
+2026-10-25T20:24:00.589Z       "employmentSpells": 172543,
+2026-10-25T20:24:00.589Z       "mentorSpells": 156245,
+2026-10-25T20:24:00.589Z       "coachingProfiles": 8569,
+2026-10-25T20:24:00.589Z       "managerProfiles": 4609,
+2026-10-25T20:24:00.590Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.590Z       "mediations": 7,
+2026-10-25T20:24:00.590Z       "promises": 0,
+2026-10-25T20:24:00.590Z       "pendingPromises": 0,
+2026-10-25T20:24:00.590Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.590Z       "trainingAt": "2050:23",
+2026-10-25T20:24:00.590Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.590Z       "managerTenures": 2,
+2026-10-25T20:24:00.590Z       "managerOutcomes": 109,
+2026-10-25T20:24:00.590Z       "container": 4,
+2026-10-25T20:24:00.590Z       "compressedPayloadBytes": 2443514,
+2026-10-25T20:24:00.590Z       "checkpointBytes": 2463516,
+2026-10-25T20:24:00.590Z       "totalBytes": 2464028,
+2026-10-25T20:24:00.590Z       "heapBytes": 2331785632,
+2026-10-25T20:24:00.590Z       "encodingMs": 208481,
+2026-10-25T20:24:00.590Z       "decodingMs": 4651,
+2026-10-25T20:24:00.590Z       "passed": true
+2026-10-25T20:24:00.590Z     },
+2026-10-25T20:24:00.590Z     {
+2026-10-25T20:24:00.590Z       "label": "active-management founding",
+2026-10-25T20:24:00.590Z       "seasons": 0,
+2026-10-25T20:24:00.590Z       "year": 1950,
+2026-10-25T20:24:00.590Z       "round": 0,
+2026-10-25T20:24:00.590Z       "ownedMatches": 0,
+2026-10-25T20:24:00.590Z       "players": 20,
+2026-10-25T20:24:00.590Z       "events": 1,
+2026-10-25T20:24:00.590Z       "seed": "release-century-active-management",
+2026-10-25T20:24:00.590Z       "canonicalBytes": 2509623,
+2026-10-25T20:24:00.590Z       "canonicalUtf16Bytes": 5018932,
+2026-10-25T20:24:00.591Z       "retainedPeople": 2115,
+2026-10-25T20:24:00.591Z       "employmentSpells": 2115,
+2026-10-25T20:24:00.591Z       "mentorSpells": 0,
+2026-10-25T20:24:00.591Z       "coachingProfiles": 0,
+2026-10-25T20:24:00.591Z       "managerProfiles": 0,
+2026-10-25T20:24:00.591Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.591Z       "mediations": 0,
+2026-10-25T20:24:00.591Z       "promises": 0,
+2026-10-25T20:24:00.591Z       "pendingPromises": 0,
+2026-10-25T20:24:00.591Z       "trainingFocus": "balanced",
+2026-10-25T20:24:00.591Z       "trainingFocusEvents": 0,
+2026-10-25T20:24:00.591Z       "managerTenures": 1,
+2026-10-25T20:24:00.591Z       "managerOutcomes": 0,
+2026-10-25T20:24:00.591Z       "container": 4,
+2026-10-25T20:24:00.591Z       "compressedPayloadBytes": 77675,
+2026-10-25T20:24:00.591Z       "checkpointBytes": 89436,
+2026-10-25T20:24:00.591Z       "totalBytes": 89948,
+2026-10-25T20:24:00.591Z       "heapBytes": 112206688,
+2026-10-25T20:24:00.591Z       "encodingMs": 41,
+2026-10-25T20:24:00.591Z       "decodingMs": 61,
+2026-10-25T20:24:00.591Z       "passed": true
+2026-10-25T20:24:00.591Z     },
+2026-10-25T20:24:00.591Z     {
+2026-10-25T20:24:00.591Z       "label": "active-management mid-career active round",
+2026-10-25T20:24:00.591Z       "seasons": 50,
+2026-10-25T20:24:00.591Z       "year": 2000,
+2026-10-25T20:24:00.591Z       "round": 23,
+2026-10-25T20:24:00.591Z       "ownedMatches": 1580,
+2026-10-25T20:24:00.591Z       "players": 498,
+2026-10-25T20:24:00.591Z       "events": 6827,
+2026-10-25T20:24:00.592Z       "seed": "release-century-active-management",
+2026-10-25T20:24:00.592Z       "canonicalBytes": 38725767,
+2026-10-25T20:24:00.592Z       "canonicalUtf16Bytes": 76821430,
+2026-10-25T20:24:00.592Z       "retainedPeople": 11593,
+2026-10-25T20:24:00.592Z       "employmentSpells": 59771,
+2026-10-25T20:24:00.592Z       "mentorSpells": 49777,
+2026-10-25T20:24:00.592Z       "coachingProfiles": 4251,
+2026-10-25T20:24:00.592Z       "managerProfiles": 2371,
+2026-10-25T20:24:00.592Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.592Z       "mediations": 21,
+2026-10-25T20:24:00.592Z       "promises": 0,
+2026-10-25T20:24:00.592Z       "pendingPromises": 0,
+2026-10-25T20:24:00.592Z       "trainingFocus": "balanced",
+2026-10-25T20:24:00.592Z       "trainingAt": "2000:23",
+2026-10-25T20:24:00.592Z       "trainingFocusEvents": 101,
+2026-10-25T20:24:00.592Z       "managerTenures": 8,
+2026-10-25T20:24:00.592Z       "managerOutcomes": 50,
+2026-10-25T20:24:00.592Z       "container": 4,
+2026-10-25T20:24:00.592Z       "compressedPayloadBytes": 1408397,
+2026-10-25T20:24:00.592Z       "checkpointBytes": 1420190,
+2026-10-25T20:24:00.592Z       "totalBytes": 1420702,
+2026-10-25T20:24:00.592Z       "heapBytes": 800651672,
+2026-10-25T20:24:00.592Z       "encodingMs": 122227,
+2026-10-25T20:24:00.592Z       "decodingMs": 2129,
+2026-10-25T20:24:00.592Z       "passed": true
+2026-10-25T20:24:00.592Z     },
+2026-10-25T20:24:00.592Z     {
+2026-10-25T20:24:00.592Z       "label": "active-management century",
+2026-10-25T20:24:00.592Z       "seasons": 100,
+2026-10-25T20:24:00.592Z       "year": 2050,
+2026-10-25T20:24:00.592Z       "round": 0,
+2026-10-25T20:24:00.592Z       "ownedMatches": 3147,
+2026-10-25T20:24:00.592Z       "players": 986,
+2026-10-25T20:24:00.593Z       "events": 13681,
+2026-10-25T20:24:00.593Z       "seed": "release-century-active-management",
+2026-10-25T20:24:00.593Z       "canonicalBytes": 85459491,
+2026-10-25T20:24:00.593Z       "canonicalUtf16Bytes": 169695788,
+2026-10-25T20:24:00.593Z       "retainedPeople": 20405,
+2026-10-25T20:24:00.593Z       "employmentSpells": 173171,
+2026-10-25T20:24:00.593Z       "mentorSpells": 156471,
+2026-10-25T20:24:00.593Z       "coachingProfiles": 8510,
+2026-10-25T20:24:00.593Z       "managerProfiles": 4609,
+2026-10-25T20:24:00.593Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.593Z       "mediations": 48,
+2026-10-25T20:24:00.593Z       "promises": 0,
+2026-10-25T20:24:00.593Z       "pendingPromises": 0,
+2026-10-25T20:24:00.593Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.593Z       "trainingAt": "2049:46",
+2026-10-25T20:24:00.593Z       "trainingFocusEvents": 200,
+2026-10-25T20:24:00.593Z       "managerTenures": 25,
+2026-10-25T20:24:00.593Z       "managerOutcomes": 101,
+2026-10-25T20:24:00.593Z       "container": 4,
+2026-10-25T20:24:00.593Z       "compressedPayloadBytes": 1844872,
+2026-10-25T20:24:00.593Z       "checkpointBytes": 1860126,
+2026-10-25T20:24:00.593Z       "totalBytes": 1860638,
+2026-10-25T20:24:00.593Z       "heapBytes": 1561858352,
+2026-10-25T20:24:00.593Z       "encodingMs": 179550,
+2026-10-25T20:24:00.593Z       "decodingMs": 4153,
+2026-10-25T20:24:00.593Z       "passed": true
+2026-10-25T20:24:00.593Z     },
+2026-10-25T20:24:00.593Z     {
+2026-10-25T20:24:00.593Z       "label": "active-management century active round 23",
+2026-10-25T20:24:00.593Z       "seasons": 100,
+2026-10-25T20:24:00.593Z       "year": 2050,
+2026-10-25T20:24:00.593Z       "round": 23,
+2026-10-25T20:24:00.593Z       "ownedMatches": 3163,
+2026-10-25T20:24:00.593Z       "players": 989,
+2026-10-25T20:24:00.593Z       "events": 13746,
+2026-10-25T20:24:00.593Z       "seed": "release-century-active-management",
+2026-10-25T20:24:00.593Z       "canonicalBytes": 91844850,
+2026-10-25T20:24:00.593Z       "canonicalUtf16Bytes": 182460224,
+2026-10-25T20:24:00.593Z       "retainedPeople": 20405,
+2026-10-25T20:24:00.593Z       "employmentSpells": 174860,
+2026-10-25T20:24:00.593Z       "mentorSpells": 158190,
+2026-10-25T20:24:00.593Z       "coachingProfiles": 8510,
+2026-10-25T20:24:00.593Z       "managerProfiles": 4623,
+2026-10-25T20:24:00.593Z       "playingCoachProposals": 0,
+2026-10-25T20:24:00.594Z       "mediations": 48,
+2026-10-25T20:24:00.594Z       "promises": 0,
+2026-10-25T20:24:00.594Z       "pendingPromises": 0,
+2026-10-25T20:24:00.594Z       "trainingFocus": "hard",
+2026-10-25T20:24:00.594Z       "trainingAt": "2050:23",
+2026-10-25T20:24:00.594Z       "trainingFocusEvents": 202,
+2026-10-25T20:24:00.594Z       "managerTenures": 25,
+2026-10-25T20:24:00.594Z       "managerOutcomes": 101,
+2026-10-25T20:24:00.594Z       "container": 4,
+2026-10-25T20:24:00.594Z       "compressedPayloadBytes": 2370958,
+2026-10-25T20:24:00.594Z       "checkpointBytes": 2390302,
+2026-10-25T20:24:00.594Z       "totalBytes": 2390814,
+2026-10-25T20:24:00.594Z       "heapBytes": 2270366288,
+2026-10-25T20:24:00.594Z       "encodingMs": 225311,
+2026-10-25T20:24:00.594Z       "decodingMs": 4929,
+2026-10-25T20:24:00.594Z       "passed": true
+2026-10-25T20:24:00.594Z     }
+2026-10-25T20:24:00.594Z   ],
+2026-10-25T20:24:00.594Z   "worstCheckpoint": {
+2026-10-25T20:24:00.594Z     "label": "baseline century round 23",
+2026-10-25T20:24:00.594Z     "checkpointBytes": 2463516,
+2026-10-25T20:24:00.594Z     "streams": [
+2026-10-25T20:24:00.594Z       {
+2026-10-25T20:24:00.594Z         "stream": "model.season",
+2026-10-25T20:24:00.594Z         "bytes": 996912,
+2026-10-25T20:24:00.594Z         "brotliBytes": 446512
+2026-10-25T20:24:00.594Z       },
+2026-10-25T20:24:00.594Z       {
+2026-10-25T20:24:00.594Z         "stream": "matchDetail.players",
+2026-10-25T20:24:00.594Z         "bytes": 882636,
+2026-10-25T20:24:00.594Z         "brotliBytes": 324035
+2026-10-25T20:24:00.594Z       },
+2026-10-25T20:24:00.594Z       {
+2026-10-25T20:24:00.594Z         "stream": "careers.jobs",
+2026-10-25T20:24:00.594Z         "bytes": 4551217,
+2026-10-25T20:24:00.594Z         "brotliBytes": 206287
+2026-10-25T20:24:00.594Z       },
+2026-10-25T20:24:00.594Z       {
+2026-10-25T20:24:00.594Z         "stream": "statBits.data",
+2026-10-25T20:24:00.594Z         "bytes": 623774,
+2026-10-25T20:24:00.594Z         "brotliBytes": 204896
+2026-10-25T20:24:00.594Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "standings",
+2026-10-25T20:24:00.595Z         "bytes": 445546,
+2026-10-25T20:24:00.595Z         "brotliBytes": 173966
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "careers.people",
+2026-10-25T20:24:00.595Z         "bytes": 2769733,
+2026-10-25T20:24:00.595Z         "brotliBytes": 155602
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "matchIncidents.rows",
+2026-10-25T20:24:00.595Z         "bytes": 235067,
+2026-10-25T20:24:00.595Z         "brotliBytes": 126720
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "matchDetail.teams",
+2026-10-25T20:24:00.595Z         "bytes": 199851,
+2026-10-25T20:24:00.595Z         "brotliBytes": 118266
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "world.players",
+2026-10-25T20:24:00.595Z         "bytes": 844820,
+2026-10-25T20:24:00.595Z         "brotliBytes": 86441
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "dict",
+2026-10-25T20:24:00.595Z         "bytes": 589800,
+2026-10-25T20:24:00.595Z         "brotliBytes": 68454
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "seasonHeat.rows",
+2026-10-25T20:24:00.595Z         "bytes": 133657,
+2026-10-25T20:24:00.595Z         "brotliBytes": 51141
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.595Z       {
+2026-10-25T20:24:00.595Z         "stream": "careers.mentors",
+2026-10-25T20:24:00.595Z         "bytes": 1203351,
+2026-10-25T20:24:00.595Z         "brotliBytes": 46819
+2026-10-25T20:24:00.595Z       },
+2026-10-25T20:24:00.596Z       {
+2026-10-25T20:24:00.596Z         "stream": "eventStats",
+2026-10-25T20:24:00.596Z         "bytes": 192758,
+2026-10-25T20:24:00.596Z         "brotliBytes": 40021
+2026-10-25T20:24:00.596Z       },
+2026-10-25T20:24:00.596Z       {
+2026-10-25T20:24:00.596Z         "stream": "bracketTies",
+2026-10-25T20:24:00.596Z         "bytes": 99534,
+2026-10-25T20:24:00.596Z         "brotliBytes": 39105
+2026-10-25T20:24:00.596Z       },
+2026-10-25T20:24:00.596Z       {
+2026-10-25T20:24:00.596Z         "stream": "eventDetails",
+2026-10-25T20:24:00.596Z         "bytes": 93290,
+2026-10-25T20:24:00.596Z         "brotliBytes": 38123
+2026-10-25T20:24:00.596Z       }
+2026-10-25T20:24:00.596Z     ]
+2026-10-25T20:24:00.596Z   },
+2026-10-25T20:24:00.596Z   "workloads": [
+2026-10-25T20:24:00.596Z     {
+2026-10-25T20:24:00.596Z       "variant": "baseline",
+2026-10-25T20:24:00.596Z       "seed": "release-century-baseline",
+2026-10-25T20:24:00.596Z       "completedSeasons": 100,
+2026-10-25T20:24:00.596Z       "careerDomesticRoundSettlements": 4623,
+2026-10-25T20:24:00.596Z       "completeSeasonTrainingSelections": 0,
+2026-10-25T20:24:00.596Z       "identityEdits": 0,
+2026-10-25T20:24:00.596Z       "centuryActiveCheckpointTrainingSelections": 0,
+2026-10-25T20:24:00.596Z       "trainingCycle": "balanced; century checkpoint adds 23 rounds",
+2026-10-25T20:24:00.596Z       "ownerManagerHires": 0,
+2026-10-25T20:24:00.596Z       "sameDayReappointments": 0,
+2026-10-25T20:24:00.596Z       "elapsedMs": 1934351,
+2026-10-25T20:24:00.596Z       "completedSeasonsPerSecond": 0.05,
+2026-10-25T20:24:00.596Z       "simulationMs": 1340036,
+2026-10-25T20:24:00.596Z       "simulationSecondsPerSeason": 13.4,
+2026-10-25T20:24:00.596Z       "ownedMatches": 3364,
+2026-10-25T20:24:00.596Z       "ownedMatchesPerSecond": 1.74,
+2026-10-25T20:24:00.596Z       "allRetainedFactsPreserved": true,
+2026-10-25T20:24:00.596Z       "managerHistory": {
+2026-10-25T20:24:00.596Z         "century": {
+2026-10-25T20:24:00.596Z           "coverage": "founding",
+2026-10-25T20:24:00.597Z           "trackedFrom": {
+2026-10-25T20:24:00.597Z             "year": 1950,
+2026-10-25T20:24:00.597Z             "day": 0,
+2026-10-25T20:24:00.597Z             "revision": 0
+2026-10-25T20:24:00.597Z           },
+2026-10-25T20:24:00.597Z           "serial": 2,
+2026-10-25T20:24:00.597Z           "tenures": 2,
+2026-10-25T20:24:00.597Z           "interimTenures": 1,
+2026-10-25T20:24:00.597Z           "zeroMatchTenures": 0,
+2026-10-25T20:24:00.597Z           "repeatedManagers": 0,
+2026-10-25T20:24:00.597Z           "sameDayAppointments": 0,
+2026-10-25T20:24:00.597Z           "departures": {
+2026-10-25T20:24:00.597Z             "expired": 1
+2026-10-25T20:24:00.597Z           },
+2026-10-25T20:24:00.597Z           "outcomes": {
+2026-10-25T20:24:00.597Z             "league-finish": 100,
+2026-10-25T20:24:00.597Z             "promotion": 9
+2026-10-25T20:24:00.597Z           },
+2026-10-25T20:24:00.597Z           "attributedMatches": 3348,
+2026-10-25T20:24:00.597Z           "unattributedMatches": 0,
+2026-10-25T20:24:00.597Z           "packedSection": {
+2026-10-25T20:24:00.597Z             "canonicalBytes": 3680,
+2026-10-25T20:24:00.597Z             "brotliBytes": 400
+2026-10-25T20:24:00.597Z           },
+2026-10-25T20:24:00.597Z           "read": {
+2026-10-25T20:24:00.597Z             "pages": 1,
+2026-10-25T20:24:00.597Z             "pageSize": 20,
+2026-10-25T20:24:00.597Z             "rows": 2,
+2026-10-25T20:24:00.597Z             "tenureRows": 2,
+2026-10-25T20:24:00.597Z             "legacyRows": 0,
+2026-10-25T20:24:00.597Z             "recordedMatches": 3348,
+2026-10-25T20:24:00.597Z             "honours": 12,
+2026-10-25T20:24:00.597Z             "firstPageMs": 5,
+2026-10-25T20:24:00.597Z             "allPagesMs": 5,
+2026-10-25T20:24:00.597Z             "largestReplyBytes": 11105
+2026-10-25T20:24:00.597Z           },
+2026-10-25T20:24:00.597Z           "roundTrip": true
+2026-10-25T20:24:00.597Z         },
+2026-10-25T20:24:00.597Z         "round23": {
+2026-10-25T20:24:00.597Z           "coverage": "founding",
+2026-10-25T20:24:00.598Z           "trackedFrom": {
+2026-10-25T20:24:00.598Z             "year": 1950,
+2026-10-25T20:24:00.598Z             "day": 0,
+2026-10-25T20:24:00.598Z             "revision": 0
+2026-10-25T20:24:00.598Z           },
+2026-10-25T20:24:00.598Z           "serial": 2,
+2026-10-25T20:24:00.598Z           "tenures": 2,
+2026-10-25T20:24:00.598Z           "interimTenures": 1,
+2026-10-25T20:24:00.598Z           "zeroMatchTenures": 0,
+2026-10-25T20:24:00.598Z           "repeatedManagers": 0,
+2026-10-25T20:24:00.598Z           "sameDayAppointments": 0,
+2026-10-25T20:24:00.598Z           "departures": {
+2026-10-25T20:24:00.598Z             "expired": 1
+2026-10-25T20:24:00.598Z           },
+2026-10-25T20:24:00.598Z           "outcomes": {
+2026-10-25T20:24:00.598Z             "league-finish": 100,
+2026-10-25T20:24:00.598Z             "promotion": 9
+2026-10-25T20:24:00.598Z           },
+2026-10-25T20:24:00.598Z           "attributedMatches": 3364,
+2026-10-25T20:24:00.598Z           "unattributedMatches": 0,
+2026-10-25T20:24:00.598Z           "packedSection": {
+2026-10-25T20:24:00.598Z             "canonicalBytes": 3680,
+2026-10-25T20:24:00.598Z             "brotliBytes": 397
+2026-10-25T20:24:00.598Z           },
+2026-10-25T20:24:00.598Z           "read": {
+2026-10-25T20:24:00.598Z             "pages": 1,
+2026-10-25T20:24:00.598Z             "pageSize": 20,
+2026-10-25T20:24:00.598Z             "rows": 2,
+2026-10-25T20:24:00.598Z             "tenureRows": 2,
+2026-10-25T20:24:00.598Z             "legacyRows": 0,
+2026-10-25T20:24:00.598Z             "recordedMatches": 3364,
+2026-10-25T20:24:00.599Z             "honours": 12,
+2026-10-25T20:24:00.599Z             "firstPageMs": 5,
+2026-10-25T20:24:00.599Z             "allPagesMs": 5,
+2026-10-25T20:24:00.599Z             "largestReplyBytes": 11252
+2026-10-25T20:24:00.599Z           },
+2026-10-25T20:24:00.599Z           "roundTrip": true
+2026-10-25T20:24:00.599Z         }
+2026-10-25T20:24:00.599Z       },
+2026-10-25T20:24:00.599Z       "matchModel": {
+2026-10-25T20:24:00.599Z         "century": {
+2026-10-25T20:24:00.599Z           "model": {
+2026-10-25T20:24:00.599Z             "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.599Z             "coverage": "founding",
+2026-10-25T20:24:00.599Z             "activated": {
+2026-10-25T20:24:00.599Z               "year": 1950,
+2026-10-25T20:24:00.599Z               "day": 0,
+2026-10-25T20:24:00.599Z               "revision": 0
+2026-10-25T20:24:00.599Z             },
+2026-10-25T20:24:00.599Z             "trackedFrom": {
+2026-10-25T20:24:00.599Z               "year": 1950,
+2026-10-25T20:24:00.599Z               "day": 1,
+2026-10-25T20:24:00.599Z               "round": 1
+2026-10-25T20:24:00.599Z             }
+2026-10-25T20:24:00.599Z           },
+2026-10-25T20:24:00.599Z           "npcSeason": {
+2026-10-25T20:24:00.599Z             "year": 2050,
+2026-10-25T20:24:00.599Z             "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.599Z             "trackedFrom": {
+2026-10-25T20:24:00.599Z               "year": 2050,
+2026-10-25T20:24:00.599Z               "day": 1,
+2026-10-25T20:24:00.599Z               "round": 1
+2026-10-25T20:24:00.599Z             },
+2026-10-25T20:24:00.599Z             "competitions": 0,
+2026-10-25T20:24:00.599Z             "clubRows": 0,
+2026-10-25T20:24:00.600Z             "playerRows": 0
+2026-10-25T20:24:00.600Z           },
+2026-10-25T20:24:00.600Z           "ownMatches": 3348,
+2026-10-25T20:24:00.600Z           "fullRecords": 3348,
+2026-10-25T20:24:00.600Z           "preFeatureRecords": 0,
+2026-10-25T20:24:00.600Z           "incompleteFullRecords": 0
+2026-10-25T20:24:00.600Z         },
+2026-10-25T20:24:00.600Z         "round23": {
+2026-10-25T20:24:00.600Z           "model": {
+2026-10-25T20:24:00.600Z             "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.600Z             "coverage": "founding",
+2026-10-25T20:24:00.600Z             "activated": {
+2026-10-25T20:24:00.600Z               "year": 1950,
+2026-10-25T20:24:00.600Z               "day": 0,
+2026-10-25T20:24:00.600Z               "revision": 0
+2026-10-25T20:24:00.600Z             },
+2026-10-25T20:24:00.600Z             "trackedFrom": {
+2026-10-25T20:24:00.600Z               "year": 1950,
+2026-10-25T20:24:00.600Z               "day": 1,
+2026-10-25T20:24:00.600Z               "round": 1
+2026-10-25T20:24:00.600Z             }
+2026-10-25T20:24:00.600Z           },
+2026-10-25T20:24:00.600Z           "npcSeason": {
+2026-10-25T20:24:00.600Z             "year": 2050,
+2026-10-25T20:24:00.600Z             "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.600Z             "trackedFrom": {
+2026-10-25T20:24:00.600Z               "year": 2050,
+2026-10-25T20:24:00.600Z               "day": 1,
+2026-10-25T20:24:00.600Z               "round": 1
+2026-10-25T20:24:00.600Z             },
+2026-10-25T20:24:00.600Z             "competitions": 35,
+2026-10-25T20:24:00.600Z             "clubRows": 1147,
+2026-10-25T20:24:00.600Z             "playerRows": 19679
+2026-10-25T20:24:00.600Z           },
+2026-10-25T20:24:00.601Z           "ownMatches": 3364,
+2026-10-25T20:24:00.601Z           "fullRecords": 3364,
+2026-10-25T20:24:00.601Z           "preFeatureRecords": 0,
+2026-10-25T20:24:00.601Z           "incompleteFullRecords": 0
+2026-10-25T20:24:00.601Z         }
+2026-10-25T20:24:00.601Z       }
+2026-10-25T20:24:00.601Z     },
+2026-10-25T20:24:00.601Z     {
+2026-10-25T20:24:00.601Z       "variant": "active-management",
+2026-10-25T20:24:00.601Z       "seed": "release-century-active-management",
+2026-10-25T20:24:00.601Z       "completedSeasons": 100,
+2026-10-25T20:24:00.601Z       "careerDomesticRoundSettlements": 4623,
+2026-10-25T20:24:00.601Z       "completeSeasonTrainingSelections": 200,
+2026-10-25T20:24:00.601Z       "identityEdits": 101,
+2026-10-25T20:24:00.601Z       "centuryActiveCheckpointTrainingSelections": 2,
+2026-10-25T20:24:00.601Z       "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
+2026-10-25T20:24:00.601Z       "ownerManagerHires": 6,
+2026-10-25T20:24:00.601Z       "sameDayReappointments": 2,
+2026-10-25T20:24:00.601Z       "elapsedMs": 1935892,
+2026-10-25T20:24:00.601Z       "completedSeasonsPerSecond": 0.05,
+2026-10-25T20:24:00.601Z       "simulationMs": 1318954,
+2026-10-25T20:24:00.601Z       "simulationSecondsPerSeason": 13.19,
+2026-10-25T20:24:00.601Z       "ownedMatches": 3163,
+2026-10-25T20:24:00.601Z       "ownedMatchesPerSecond": 1.63,
+2026-10-25T20:24:00.601Z       "allRetainedFactsPreserved": true,
+2026-10-25T20:24:00.601Z       "managerHistory": {
+2026-10-25T20:24:00.601Z         "century": {
+2026-10-25T20:24:00.601Z           "coverage": "founding",
+2026-10-25T20:24:00.601Z           "trackedFrom": {
+2026-10-25T20:24:00.602Z             "year": 1950,
+2026-10-25T20:24:00.602Z             "day": 0,
+2026-10-25T20:24:00.602Z             "revision": 0
+2026-10-25T20:24:00.602Z           },
+2026-10-25T20:24:00.602Z           "serial": 25,
+2026-10-25T20:24:00.602Z           "tenures": 25,
+2026-10-25T20:24:00.602Z           "interimTenures": 10,
+2026-10-25T20:24:00.602Z           "zeroMatchTenures": 5,
+2026-10-25T20:24:00.602Z           "repeatedManagers": 2,
+2026-10-25T20:24:00.602Z           "sameDayAppointments": 5,
+2026-10-25T20:24:00.602Z           "departures": {
+2026-10-25T20:24:00.602Z             "expired": 10,
+2026-10-25T20:24:00.602Z             "replaced": 14
+2026-10-25T20:24:00.602Z           },
+2026-10-25T20:24:00.602Z           "outcomes": {
+2026-10-25T20:24:00.602Z             "league-finish": 100,
+2026-10-25T20:24:00.602Z             "promotion": 1
+2026-10-25T20:24:00.602Z           },
+2026-10-25T20:24:00.602Z           "attributedMatches": 3147,
+2026-10-25T20:24:00.602Z           "unattributedMatches": 0,
+2026-10-25T20:24:00.602Z           "packedSection": {
+2026-10-25T20:24:00.602Z             "canonicalBytes": 4796,
+2026-10-25T20:24:00.602Z             "brotliBytes": 697
+2026-10-25T20:24:00.602Z           },
+2026-10-25T20:24:00.602Z           "read": {
+2026-10-25T20:24:00.602Z             "pages": 2,
+2026-10-25T20:24:00.602Z             "pageSize": 20,
+2026-10-25T20:24:00.602Z             "rows": 25,
+2026-10-25T20:24:00.602Z             "tenureRows": 25,
+2026-10-25T20:24:00.602Z             "legacyRows": 0,
+2026-10-25T20:24:00.602Z             "recordedMatches": 3147,
+2026-10-25T20:24:00.602Z             "honours": 1,
+2026-10-25T20:24:00.602Z             "firstPageMs": 5,
+2026-10-25T20:24:00.602Z             "allPagesMs": 8,
+2026-10-25T20:24:00.602Z             "largestReplyBytes": 30092
+2026-10-25T20:24:00.602Z           },
+2026-10-25T20:24:00.602Z           "roundTrip": true
+2026-10-25T20:24:00.602Z         },
+2026-10-25T20:24:00.602Z         "round23": {
+2026-10-25T20:24:00.603Z           "coverage": "founding",
+2026-10-25T20:24:00.603Z           "trackedFrom": {
+2026-10-25T20:24:00.603Z             "year": 1950,
+2026-10-25T20:24:00.603Z             "day": 0,
+2026-10-25T20:24:00.603Z             "revision": 0
+2026-10-25T20:24:00.603Z           },
+2026-10-25T20:24:00.603Z           "serial": 25,
+2026-10-25T20:24:00.603Z           "tenures": 25,
+2026-10-25T20:24:00.603Z           "interimTenures": 10,
+2026-10-25T20:24:00.603Z           "zeroMatchTenures": 5,
+2026-10-25T20:24:00.603Z           "repeatedManagers": 2,
+2026-10-25T20:24:00.603Z           "sameDayAppointments": 5,
+2026-10-25T20:24:00.603Z           "departures": {
+2026-10-25T20:24:00.603Z             "expired": 10,
+2026-10-25T20:24:00.603Z             "replaced": 14
+2026-10-25T20:24:00.603Z           },
+2026-10-25T20:24:00.603Z           "outcomes": {
+2026-10-25T20:24:00.603Z             "league-finish": 100,
+2026-10-25T20:24:00.603Z             "promotion": 1
+2026-10-25T20:24:00.603Z           },
+2026-10-25T20:24:00.603Z           "attributedMatches": 3163,
+2026-10-25T20:24:00.603Z           "unattributedMatches": 0,
+2026-10-25T20:24:00.603Z           "packedSection": {
+2026-10-25T20:24:00.603Z             "canonicalBytes": 4796,
+2026-10-25T20:24:00.603Z             "brotliBytes": 699
+2026-10-25T20:24:00.603Z           },
+2026-10-25T20:24:00.603Z           "read": {
+2026-10-25T20:24:00.603Z             "pages": 2,
+2026-10-25T20:24:00.603Z             "pageSize": 20,
+2026-10-25T20:24:00.603Z             "rows": 25,
+2026-10-25T20:24:00.603Z             "tenureRows": 25,
+2026-10-25T20:24:00.603Z             "legacyRows": 0,
+2026-10-25T20:24:00.603Z             "recordedMatches": 3163,
+2026-10-25T20:24:00.603Z             "honours": 1,
+2026-10-25T20:24:00.603Z             "firstPageMs": 4,
+2026-10-25T20:24:00.603Z             "allPagesMs": 7,
+2026-10-25T20:24:00.603Z             "largestReplyBytes": 30242
+2026-10-25T20:24:00.603Z           },
+2026-10-25T20:24:00.604Z           "roundTrip": true
+2026-10-25T20:24:00.604Z         }
+2026-10-25T20:24:00.604Z       },
+2026-10-25T20:24:00.604Z       "matchModel": {
+2026-10-25T20:24:00.604Z         "century": {
+2026-10-25T20:24:00.604Z           "model": {
+2026-10-25T20:24:00.604Z             "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.604Z             "coverage": "founding",
+2026-10-25T20:24:00.604Z             "activated": {
+2026-10-25T20:24:00.604Z               "year": 1950,
+2026-10-25T20:24:00.604Z               "day": 0,
+2026-10-25T20:24:00.604Z               "revision": 0
+2026-10-25T20:24:00.604Z             },
+2026-10-25T20:24:00.604Z             "trackedFrom": {
+2026-10-25T20:24:00.604Z               "year": 1950,
+2026-10-25T20:24:00.604Z               "day": 1,
+2026-10-25T20:24:00.604Z               "round": 1
+2026-10-25T20:24:00.604Z             }
+2026-10-25T20:24:00.604Z           },
+2026-10-25T20:24:00.604Z           "npcSeason": {
+2026-10-25T20:24:00.604Z             "year": 2050,
+2026-10-25T20:24:00.604Z             "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.604Z             "trackedFrom": {
+2026-10-25T20:24:00.604Z               "year": 2050,
+2026-10-25T20:24:00.604Z               "day": 1,
+2026-10-25T20:24:00.604Z               "round": 1
+2026-10-25T20:24:00.604Z             },
+2026-10-25T20:24:00.604Z             "competitions": 0,
+2026-10-25T20:24:00.604Z             "clubRows": 0,
+2026-10-25T20:24:00.604Z             "playerRows": 0
+2026-10-25T20:24:00.604Z           },
+2026-10-25T20:24:00.604Z           "ownMatches": 3147,
+2026-10-25T20:24:00.604Z           "fullRecords": 3147,
+2026-10-25T20:24:00.604Z           "preFeatureRecords": 0,
+2026-10-25T20:24:00.604Z           "incompleteFullRecords": 0
+2026-10-25T20:24:00.605Z         },
+2026-10-25T20:24:00.605Z         "round23": {
+2026-10-25T20:24:00.605Z           "model": {
+2026-10-25T20:24:00.605Z             "revision": "continuous-aggregate-1",
+2026-10-25T20:24:00.605Z             "coverage": "founding",
+2026-10-25T20:24:00.605Z             "activated": {
+2026-10-25T20:24:00.605Z               "year": 1950,
+2026-10-25T20:24:00.605Z               "day": 0,
+2026-10-25T20:24:00.605Z               "revision": 0
+2026-10-25T20:24:00.605Z             },
+2026-10-25T20:24:00.605Z             "trackedFrom": {
+2026-10-25T20:24:00.605Z               "year": 1950,
+2026-10-25T20:24:00.605Z               "day": 1,
+2026-10-25T20:24:00.605Z               "round": 1
+2026-10-25T20:24:00.605Z             }
+2026-10-25T20:24:00.605Z           },
+2026-10-25T20:24:00.605Z           "npcSeason": {
+2026-10-25T20:24:00.605Z             "year": 2050,
+2026-10-25T20:24:00.605Z             "model": "continuous-aggregate-1",
+2026-10-25T20:24:00.605Z             "trackedFrom": {
+2026-10-25T20:24:00.605Z               "year": 2050,
+2026-10-25T20:24:00.605Z               "day": 1,
+2026-10-25T20:24:00.605Z               "round": 1
+2026-10-25T20:24:00.605Z             },
+2026-10-25T20:24:00.605Z             "competitions": 35,
+2026-10-25T20:24:00.605Z             "clubRows": 1147,
+2026-10-25T20:24:00.605Z             "playerRows": 19670
+2026-10-25T20:24:00.605Z           },
+2026-10-25T20:24:00.605Z           "ownMatches": 3163,
+2026-10-25T20:24:00.605Z           "fullRecords": 3163,
+2026-10-25T20:24:00.605Z           "preFeatureRecords": 0,
+2026-10-25T20:24:00.605Z           "incompleteFullRecords": 0
+2026-10-25T20:24:00.605Z         }
+2026-10-25T20:24:00.605Z       }
+2026-10-25T20:24:00.606Z     }
+2026-10-25T20:24:00.606Z   ],
+2026-10-25T20:24:00.606Z   "centuryCheckpointSha256": "5b114f427384b304f08b02272afa27d7b1bd1193b2d9dbf39eaf2d095f877dcc",
+2026-10-25T20:24:00.606Z   "eraProbe": {
+2026-10-25T20:24:00.606Z     "seasons": 75,
+2026-10-25T20:24:00.606Z     "year": 2025,
+2026-10-25T20:24:00.606Z     "passed": true
+2026-10-25T20:24:00.606Z   },
+2026-10-25T20:24:00.606Z   "identityWorkload": {
+2026-10-25T20:24:00.606Z     "profile": "active-management",
+2026-10-25T20:24:00.606Z     "seed": "release-century-active-management",
+2026-10-25T20:24:00.606Z     "edits": 101,
+2026-10-25T20:24:00.606Z     "firstSeason": 0,
+2026-10-25T20:24:00.606Z     "lastSeason": 100,
+2026-10-25T20:24:00.606Z     "paletteColours": 24,
+2026-10-25T20:24:00.606Z     "paletteSize": 24,
+2026-10-25T20:24:00.606Z     "shirtPatterns": [
+2026-10-25T20:24:00.606Z       "plain",
+2026-10-25T20:24:00.606Z       "stripes",
+2026-10-25T20:24:00.606Z       "hoops",
+2026-10-25T20:24:00.606Z       "halves",
+2026-10-25T20:24:00.606Z       "band",
+2026-10-25T20:24:00.606Z       "sash",
+2026-10-25T20:24:00.606Z       "checks",
+2026-10-25T20:24:00.606Z       "chevron"
+2026-10-25T20:24:00.606Z     ],
+2026-10-25T20:24:00.606Z     "crestCompositions": 6,
+2026-10-25T20:24:00.606Z     "crestCompositionCount": 6,
+2026-10-25T20:24:00.606Z     "representativeColourCounts": {
+2026-10-25T20:24:00.606Z       "1": 34,
+2026-10-25T20:24:00.606Z       "2": 34,
+2026-10-25T20:24:00.606Z       "3": 33
+2026-10-25T20:24:00.606Z     },
+2026-10-25T20:24:00.607Z     "designsSha256": "05019fc04218a252afe3067ab8377764b0aedb56eeef1ecfa6d399b5a88ce7f1",
+2026-10-25T20:24:00.607Z     "appearanceChecks": 102,
+2026-10-25T20:24:00.607Z     "appearancesCompared": 162148,
+2026-10-25T20:24:00.607Z     "recordsWearingAppliedDesign": 3163,
+2026-10-25T20:24:00.607Z     "kitChoices": [
+2026-10-25T20:24:00.607Z       {
+2026-10-25T20:24:00.607Z         "fixtureId": "2050:ENG:4:0:15:3",
+2026-10-25T20:24:00.607Z         "role": "away",
+2026-10-25T20:24:00.607Z         "automatic": "home",
+2026-10-25T20:24:00.607Z         "kind": "lower",
+2026-10-25T20:24:00.607Z         "year": 2050,
+2026-10-25T20:24:00.607Z         "round": 23,
+2026-10-25T20:24:00.607Z         "ownSide": 0,
+2026-10-25T20:24:00.607Z         "shirt": {
+2026-10-25T20:24:00.607Z           "pattern": "chevron",
+2026-10-25T20:24:00.607Z           "primary": "#c9184a",
+2026-10-25T20:24:00.607Z           "secondary": "#a7b0ba",
+2026-10-25T20:24:00.607Z           "trim": "#00a6c8"
+2026-10-25T20:24:00.607Z         }
+2026-10-25T20:24:00.607Z       }
+2026-10-25T20:24:00.607Z     ],
+2026-10-25T20:24:00.607Z     "checkpointAppearances": {
+2026-10-25T20:24:00.607Z       "records": 3163,
+2026-10-25T20:24:00.607Z       "recorded": 3163,
+2026-10-25T20:24:00.607Z       "absent": 0,
+2026-10-25T20:24:00.607Z       "distinct": 1487
+2026-10-25T20:24:00.607Z     },
+2026-10-25T20:24:00.607Z     "checkpointLabel": "active-management century active round 23",
+2026-10-25T20:24:00.607Z     "pendingChoiceDecoded": true,
+2026-10-25T20:24:00.607Z     "resumedSettlementConsumed": {
+2026-10-25T20:24:00.607Z       "uninterrupted": true,
+2026-10-25T20:24:00.607Z       "restored": true
+2026-10-25T20:24:00.607Z     }
+2026-10-25T20:24:00.607Z   },
+2026-10-25T20:24:00.608Z   "elapsedMs": 5004310,
+2026-10-25T20:24:00.608Z   "heapBytes": 296316400,
+2026-10-25T20:24:00.608Z   "peakObservedHeapBytes": 2331785632,
+2026-10-25T20:24:00.608Z   "losslessRoundtrip": true,
+2026-10-25T20:24:00.608Z   "resumedSeasonReplay": true,
+2026-10-25T20:24:00.608Z   "managerHistoryRoundTrip": true,
+2026-10-25T20:24:00.608Z   "completeModelFromFounding": true,
+2026-10-25T20:24:00.608Z   "passed": true,
+2026-10-25T20:24:00.608Z   "scope": "Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (101 edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate 1950–2025 era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings."
+2026-10-25T20:24:00.608Z }
