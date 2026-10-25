@@ -365,6 +365,20 @@ interface Planned {
   slot: number;
   youth: boolean;
 }
+/** One stoppage's decision as `SidePlanner.decide` makes it: its moment, what is left and planned. */
+interface Stoppage {
+  t: number;
+  at: number;
+  minute: number;
+  interval: boolean;
+  /** Substitutes the side may still make at it. */
+  left: number;
+  /** Policy changes it may still make (`change`). */
+  cap: number;
+  changes: Planned[];
+  taken: Set<number>;
+  leaving: Set<number>;
+}
 type Reason = NonNullable<Incident['reason']>;
 
 /** One side's timeline while it is planned: who holds which slot since when, and what is left. */
@@ -625,131 +639,181 @@ class SidePlanner {
     const C = CHANGES_CONFIG,
       era = this.era,
       policy = this.plan.policy;
-    const at = Math.floor(t),
-      minute = at + 1;
+    const at = Math.floor(t);
     const windowsLeft = era.windows === undefined ? Infinity : era.windows - this.windows;
-    let left = interval || windowsLeft > 0 ? era.maxSubs - this.used : 0;
-    const plan: Planned[] = [];
-    const taken = new Set<number>(),
-      leaving = new Set<number>();
+    // One stoppage's state in an object the steps below share, rather than closures made per
+    // stoppage (T450): the same steps in the same order.
+    const d: Stoppage = {
+      t,
+      at,
+      minute: at + 1,
+      interval,
+      left: interval || windowsLeft > 0 ? era.maxSubs - this.used : 0,
+      cap: 0,
+      changes: [],
+      taken: new Set<number>(),
+      leaving: new Set<number>(),
+    };
     const slots = this.input.sides[this.side].slots;
-    const pick = (slot: number, lines?: readonly Line[], young = false) => {
-      let best: number | undefined,
-        value = -Infinity;
-      const options: [number, number][] = [];
-      for (const line of this.bench) {
-        if (taken.has(line)) continue;
-        const c = this.plan.candidates[line]!;
-        if (lines && !lines.includes(c.line)) continue;
-        if (young && this.year - c.born > C.youthAge) continue;
-        const v = c.slotLevel[slot]!;
-        options.push([line, v]);
-        if (v > value) [best, value] = [line, v];
-      }
-      if (
-        best !== undefined &&
-        policy.youth &&
-        this.year - this.plan.candidates[best]!.born > C.youthAge
-      )
-        for (const [line, v] of options)
-          if (
-            this.year - this.plan.candidates[line]!.born <= C.youthAge &&
-            v >= value - C.youthMargin
-          )
-            return line;
-      return best;
-    };
-    const eligible = (line: number) =>
-      this.injured.some((x) => x.line === line) ||
-      (this.slotOf[line] !== undefined && this.start[line]! <= at - 1 && !leaving.has(line));
-    const sub = (out: number, slot: number, lines?: readonly Line[], young = false) => {
-      if (left <= 0 || !eligible(out)) return false;
-      const inn = pick(slot, lines, young);
-      if (inn === undefined) return false;
-      plan.push({ out, in: inn, slot, youth: young });
-      taken.add(inn);
-      leaving.add(out);
-      left--;
-      return true;
-    };
-    const apply = () => {
-      for (const ch of plan) {
-        this.incidents.push({
-          minute,
-          side: this.side,
-          kind: 'sub',
-          player: this.id(ch.out),
-          other: this.id(ch.in),
-        });
-        if (this.slotOf[ch.out] !== undefined) this.leave(ch.out, at);
-        this.enter(ch.in, ch.slot, at);
-        this.bench.splice(this.bench.indexOf(ch.in), 1);
-        this.used++;
-        if (ch.youth) this.youthGiven = true;
-      }
-      if (plan.length && !interval) this.windows++;
-      this.injured = [];
-      this.rebalanced = this.reds;
-      if (policy.data) this.checkpoints = C.dataAt.filter((m) => t >= m + policy.delay).length;
-      this.coverGoal(at);
-    };
 
-    for (const x of [...this.injured]) sub(x.line, x.slot);
-    if (era.injuryOnly) return apply();
-    const timeAt = (threshold: number) => t >= threshold + policy.delay;
+    for (const x of [...this.injured]) this.sub(d, x.line, x.slot);
+    if (era.injuryOnly) return this.apply(d);
     if (this.reds > this.rebalanced) {
       const filled = new Set(this.onPitch().map((line) => this.slotOf[line]!));
-      for (const ch of plan) filled.add(ch.slot);
+      for (const ch of d.changes) filled.add(ch.slot);
       const vacant = slots.findIndex((s, slot) => slot > 0 && !filled.has(slot) && s.line !== 'FW');
       const forward = this.onPitch().find(
-        (line) => eligible(line) && slots[this.slotOf[line]!]!.line === 'FW',
+        (line) => this.eligible(d, line) && slots[this.slotOf[line]!]!.line === 'FW',
       );
-      const men = this.onPitch().length + plan.length;
+      const men = this.onPitch().length + d.changes.length;
       const lines: Line[] = ['DF', 'MF'];
       if (
         men < 11 &&
         vacant >= 0 &&
         forward !== undefined &&
-        left > 0 &&
-        pick(vacant, lines) !== undefined
+        d.left > 0 &&
+        this.pick(d, vacant, lines) !== undefined
       ) {
         // Only the first stoppage after a red answers it, as in the grid (`rebalanced` below).
         const key = `${this.side}:${this.reds}`;
         const made = this.decisions.get(key) ?? true;
         // The forward's slot empties; the newcomer takes the vacant one.
-        if (made) sub(forward, vacant, lines);
-        this.rebalances.push({ side: this.side, minute, key, made });
+        if (made) this.sub(d, forward, vacant, lines);
+        this.rebalances.push({ side: this.side, minute: d.minute, key, made });
       }
     }
-    if (left <= 0) return apply();
-    let cap = era.windows === undefined ? 1 : Math.ceil(left / Math.max(1, windowsLeft));
-    const starters = () =>
-      this.onPitch().filter((line) => line < 11 && this.slotOf[line]! > 0 && eligible(line));
-    const byFatigue = (list: number[]) =>
-      list
-        .map((line) => ({ line, f: this.fatigue(line, t) }))
-        .sort((a, b) => b.f - a.f || a.line - b.line)
-        .map((x) => x.line);
-    const change = (line: number | undefined, young = false) =>
-      line !== undefined && cap > 0 && sub(line, this.slotOf[line]!, undefined, young) && cap--;
-    if (policy.youth && !this.youthGiven && timeAt(C.youthFrom))
-      change(byFatigue(starters())[0], true);
-    if (interval && !policy.earlyPress) return apply();
-    const tired = () =>
-      byFatigue(starters().filter((line) => this.fatigue(line, t) - C.fitness > C.tired));
+    if (d.left <= 0) return this.apply(d);
+    d.cap = era.windows === undefined ? 1 : Math.ceil(d.left / Math.max(1, windowsLeft));
+    if (policy.youth && !this.youthGiven && this.timeAt(t, C.youthFrom))
+      this.change(d, this.byFatigue(this.starters(d), t)[0], true);
+    if (interval && !policy.earlyPress) return this.apply(d);
     if (policy.data) {
-      const due = C.dataAt.filter((m) => timeAt(m)).length;
-      if (due <= this.checkpoints) return apply();
-      const list = due === 1 ? tired() : byFatigue(starters());
-      cap = due === 1 ? left : due === 2 ? Math.ceil(left / 2) : left;
-      for (const line of list) if (!change(line)) break;
-      return apply();
+      const due = C.dataAt.filter((m) => this.timeAt(t, m)).length;
+      if (due <= this.checkpoints) return this.apply(d);
+      const list = due === 1 ? this.tired(d) : this.byFatigue(this.starters(d), t);
+      d.cap = due === 1 ? d.left : due === 2 ? Math.ceil(d.left / 2) : d.left;
+      for (const line of list) if (!this.change(d, line)) break;
+      return this.apply(d);
     }
-    if (interval || timeAt(policy.fatigueFrom))
-      for (const line of tired()) if (!change(line)) break;
-    if (!interval && timeAt(policy.laterFrom))
-      for (const line of byFatigue(starters())) if (!change(line)) break;
-    return apply();
+    if (interval || this.timeAt(t, policy.fatigueFrom))
+      for (const line of this.tired(d)) if (!this.change(d, line)) break;
+    if (!interval && this.timeAt(t, policy.laterFrom))
+      for (const line of this.byFatigue(this.starters(d), t)) if (!this.change(d, line)) break;
+    return this.apply(d);
+  }
+
+  /** Whether a stoppage at `t` is past the manager's `threshold` minute, his delay added. */
+  private timeAt(t: number, threshold: number) {
+    return t >= threshold + this.plan.policy.delay;
+  }
+
+  /** The substitute a stoppage sends on for `slot`: the best at it, or a young one nearly as good. */
+  private pick(d: Stoppage, slot: number, lines?: readonly Line[], young = false) {
+    const C = CHANGES_CONFIG,
+      policy = this.plan.policy;
+    let best: number | undefined,
+      value = -Infinity;
+    const options: [number, number][] = [];
+    for (const line of this.bench) {
+      if (d.taken.has(line)) continue;
+      const c = this.plan.candidates[line]!;
+      if (lines && !lines.includes(c.line)) continue;
+      if (young && this.year - c.born > C.youthAge) continue;
+      const v = c.slotLevel[slot]!;
+      options.push([line, v]);
+      if (v > value) [best, value] = [line, v];
+    }
+    if (
+      best !== undefined &&
+      policy.youth &&
+      this.year - this.plan.candidates[best]!.born > C.youthAge
+    )
+      for (const [line, v] of options)
+        if (
+          this.year - this.plan.candidates[line]!.born <= C.youthAge &&
+          v >= value - C.youthMargin
+        )
+          return line;
+    return best;
+  }
+
+  /** Whether a stoppage may take `line` off: injured, or on since before it and not leaving. */
+  private eligible(d: Stoppage, line: number) {
+    return (
+      this.injured.some((x) => x.line === line) ||
+      (this.slotOf[line] !== undefined && this.start[line]! <= d.at - 1 && !d.leaving.has(line))
+    );
+  }
+
+  /** One change a stoppage plans, when a substitute is left and one suits the slot. */
+  private sub(d: Stoppage, out: number, slot: number, lines?: readonly Line[], young = false) {
+    if (d.left <= 0 || !this.eligible(d, out)) return false;
+    const inn = this.pick(d, slot, lines, young);
+    if (inn === undefined) return false;
+    d.changes.push({ out, in: inn, slot, youth: young });
+    d.taken.add(inn);
+    d.leaving.add(out);
+    d.left--;
+    return true;
+  }
+
+  /** A policy change of `line`, within the stoppage's cap. */
+  private change(d: Stoppage, line: number | undefined, young = false) {
+    return (
+      line !== undefined &&
+      d.cap > 0 &&
+      this.sub(d, line, this.slotOf[line]!, undefined, young) &&
+      d.cap--
+    );
+  }
+
+  /** The starters on the pitch a stoppage may take off. */
+  private starters(d: Stoppage) {
+    return this.onPitch().filter(
+      (line) => line < 11 && this.slotOf[line]! > 0 && this.eligible(d, line),
+    );
+  }
+
+  /** `list`, most tired at `t` first (equal fatigue by line). */
+  private byFatigue(list: number[], t: number) {
+    return list
+      .map((line) => ({ line, f: this.fatigue(line, t) }))
+      .sort((a, b) => b.f - a.f || a.line - b.line)
+      .map((x) => x.line);
+  }
+
+  /** The starters tired beyond the policy's threshold, most tired first. */
+  private tired(d: Stoppage) {
+    const C = CHANGES_CONFIG;
+    return this.byFatigue(
+      this.starters(d).filter((line) => this.fatigue(line, d.t) - C.fitness > C.tired),
+      d.t,
+    );
+  }
+
+  /** Makes a stoppage's planned changes and closes its window. */
+  private apply(d: Stoppage) {
+    const C = CHANGES_CONFIG,
+      policy = this.plan.policy;
+    for (const ch of d.changes) {
+      this.incidents.push({
+        minute: d.minute,
+        side: this.side,
+        kind: 'sub',
+        player: this.id(ch.out),
+        other: this.id(ch.in),
+      });
+      if (this.slotOf[ch.out] !== undefined) this.leave(ch.out, d.at);
+      this.enter(ch.in, ch.slot, d.at);
+      this.bench.splice(this.bench.indexOf(ch.in), 1);
+      this.used++;
+      if (ch.youth) this.youthGiven = true;
+    }
+    if (d.changes.length && !d.interval) this.windows++;
+    this.injured = [];
+    this.rebalanced = this.reds;
+    if (policy.data) this.checkpoints = C.dataAt.filter((m) => d.t >= m + policy.delay).length;
+    this.coverGoal(d.at);
   }
 
   /** Closes every open stint at the end of the match. */

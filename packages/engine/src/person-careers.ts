@@ -199,8 +199,14 @@ const COACHING_ROLES: readonly CareerRole[] = [
 ];
 export const isCoachingRole = (role: CareerRole) => COACHING_ROLES.includes(role);
 const DAY_MS = 86400000;
-export const careerOrdinal = (date: CareerDate) =>
-  Math.floor(Date.UTC(date.year, 7, 1) / DAY_MS) + date.day;
+/** Each year's 1 August as a day number, worked out once a process (T450): it reads only the year. */
+const seasonStarts = new Map<number, number>();
+function seasonStart(year: number) {
+  let day = seasonStarts.get(year);
+  if (day === undefined) seasonStarts.set(year, (day = Math.floor(Date.UTC(year, 7, 1) / DAY_MS)));
+  return day;
+}
+export const careerOrdinal = (date: CareerDate) => seasonStart(date.year) + date.day;
 export function careerDateFromOrdinal(day: number): CareerDate {
   const date = new Date(day * DAY_MS),
     year = date.getUTCMonth() >= 7 ? date.getUTCFullYear() : date.getUTCFullYear() - 1;
@@ -228,6 +234,9 @@ function coachingIntervals(person: PersonCareer, at: CareerDate): Interval[] {
 }
 /** A virtual anniversary advances only by the union of actually employed calendar days. */
 export function coachingService(person: PersonCareer, at: CareerDate) {
+  // Without a coaching job he has no service: what the intervals below give him (T450).
+  if (!person.employment.some((job) => isCoachingRole(job.role)))
+    return { days: 0, qualified: false };
   const intervals = coachingIntervals(person, at),
     days = intervals.reduce((sum, [a, b]) => sum + b - a, 0),
     first = intervals[0]?.[0];
@@ -384,11 +393,10 @@ export function activeCoachingEmployment(w: World) {
   const version = employmentVersions.get(w) ?? 0,
     hit = coachingIndexes.get(w);
   if (hit && hit.people === w.people && hit.version === version) return hit.active;
-  const active = peopleOf(w).flatMap((person) =>
-    person.employment
-      .filter((job) => !job.to && isCoachingRole(job.role))
-      .map((job) => ({ person, job })),
-  );
+  const active: { person: PersonCareer; job: CareerEmployment }[] = [];
+  for (const person of peopleOf(w))
+    for (const job of person.employment)
+      if (!job.to && isCoachingRole(job.role)) active.push({ person, job });
   coachingIndexes.set(w, { people: w.people, version, active });
   return active;
 }
