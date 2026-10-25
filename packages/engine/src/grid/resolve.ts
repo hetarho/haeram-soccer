@@ -122,11 +122,15 @@ export const DUEL_CONFIG = {
    * foul `foul` times as often (within what a duel allows) and a defender in his own box keeps
    * `boxFoul` of his fouls; a failed pass runs loose `passLoose` of the time instead of
    * `pass.lost.loose`, the rest leaving play, and `clearanceOut` of clearances go out for a throw-in.
-   * T371: `boxFoul` 0.05 → 0.06, so penalty goals reach MATCH-23's 6–9% (6.1% → 7.7%).
+   * T371: `boxFoul` 0.05 → 0.06, so penalty goals reach MATCH-23's 6–9% (6.1% → 7.7%). T437:
+   * `foul` 1.3, as more failed passes are cut out than run loose into a 50/50 (`intercept`), and
+   * `boxFoul` 0.046, so a defender's fouls in his box hold where they were while play reaches the
+   * box's edge more often than the goal area: fouls 9.96 → 10.32 a team, penalty goals 7.5 → 7.8%
+   * (calibration round 74, core 600 matches).
    */
   candidate: {
-    foul: 1.2,
-    boxFoul: 0.06,
+    foul: 1.3,
+    boxFoul: 0.046,
     // T398's `crossArriving` (a teammate on a box run counting more aerial-rating points as the
     // cross's target, neutral at 0) is gone: an open-play delivery's runner is drawn among the
     // zones attacked (T444, `BOX_CONFIG.delivery`, `resolveDelivery`).
@@ -156,14 +160,20 @@ export const DUEL_CONFIG = {
      * inside MATCH-30's bands with tackles and interceptions still inside MATCH-23's. T441: the
      * share (and `pass.lost.intercepted` from `upTo` on) splits only a failed pass an opponent
      * reaches (`reachOnPath`), who wins or deflects it; the rest are lost at the receiver.
+     * T437: with only a reacher's share cut out (T441), interceptions fell to 7.7 a team, tackles
+     * and interceptions to 22.9 and PPDA rose to 18.0, so the shares are 0.35–0.42: interceptions
+     * 11.4, tackles and interceptions 26.7, PPDA 15.1, high turnovers 7.2 (MATCH-30 5.7–7.5, which
+     * caps it; calibration round 74, core 600 matches). Counter, waiting at halfway for the pass it
+     * reads, cuts out most: scaled alike (0.31), counter's win share against press fell 0.07
+     * (MATCH-29); at 0.42 it holds where it was.
      */
     intercept: {
       upTo: 70,
       share: {
-        possession: 0.175,
-        press: 0.195,
-        counter: 0.155,
-        balanced: 0.175,
+        possession: 0.35,
+        press: 0.37,
+        counter: 0.42,
+        balanced: 0.35,
       } satisfies Record<Tactic, number>,
     },
     /**
@@ -173,6 +183,14 @@ export const DUEL_CONFIG = {
      * interceptions a cross kept in play would add.
      */
     crossKeeper: 0.47,
+    /**
+     * The deepest a won take-on ends (T437, →MATCH-11, the attack frame's metres), though always
+     * a metre past the man he beat: a defender beaten in the box leaves the attacker a strike from
+     * where he went past him, not a run into the six-yard box. Neutral at 104.5 (`takeOn.past`'s
+     * own bound). T437 keeps 99, short of the goal area's band (99.5 m, where the shot's in-stride
+     * carry would stay), with `DECISION_CONFIG.candidate.goalAreaCarry`.
+     */
+    takeOnDepth: 99,
   },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
@@ -307,10 +325,16 @@ export interface ShotBlocker {
  * `lane` m of the triangle from it to the two posts, nearest the shooter first (equal distances by
  * player ID), each with his chance to block it: `block` × his nearness (1 at the ball, `far` at
  * the goal line, by how far along the line to the goal's middle he stands) × (1 + (위치선정 − 55)
- * × `SHOT_CONFIG.block.skill`), within 0–1.
+ * × `SHOT_CONFIG.block.skill`), within 0–1; a header's `block` is scaled by `header` (T437).
  */
-export function shotBlockers(s: GridState, side: 0 | 1, from: Point): ShotBlocker[] {
+export function shotBlockers(
+  s: GridState,
+  side: 0 | 1,
+  from: Point,
+  header = false,
+): ShotBlocker[] {
   const B = BOX_CONFIG.shot;
+  const block = header ? B.block * B.header : B.block;
   const { hypot } = s.math;
   const goal: Point = [PITCH.length, PITCH.width / 2];
   const posts: [Point, Point] = [
@@ -346,7 +370,7 @@ export function shotBlockers(s: GridState, side: 0 | 1, from: Point): ShotBlocke
     const read = 1 + (skill(s, other(side), gp.idx, 'positioning') - 55) * SHOT_CONFIG.block.skill;
     found.push({
       gp,
-      chance: clamp(B.block * near * read, 0, 1),
+      chance: clamp(block * near * read, 0, 1),
       d: hypot(o[0] - from[0], o[1] - from[1]),
     });
   }
@@ -516,6 +540,18 @@ export function looseBall(
 function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch' | 'byline' } {
   const dx = to[0] - from[0],
     dy = to[1] - from[1];
+  if (dx === 0 && dy === 0) {
+    // A ball played to where it already is (T437: on the candidate a carrier and his receiver
+    // can stand on the same spot on a line, both kept on the pitch) has no direction to run in;
+    // it leaves over the nearest line rather than at a position of 0 × ∞.
+    const lines = [from[0], PITCH.length - from[0], from[1], PITCH.width - from[1]];
+    const k = lines.indexOf(Math.min(...lines));
+    const at: [number, number] = [
+      k === 0 ? 0 : k === 1 ? PITCH.length : clamp(from[0], 0, PITCH.length),
+      k === 2 ? 0 : k === 3 ? PITCH.width : clamp(from[1], 0, PITCH.width),
+    ];
+    return { at, over: k < 2 ? 'byline' : 'touch' };
+  }
   const tx = dx > 0 ? (PITCH.length - from[0]) / dx : dx < 0 ? -from[0] / dx : Infinity;
   const ty = dy > 0 ? (PITCH.width - from[1]) / dy : dy < 0 ? -from[1] / dy : Infinity;
   const t = Math.max(1, Math.min(tx, ty));
@@ -674,7 +710,7 @@ export function resolveShot(
   const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
   const onTarget = targetChance(goal, shooting);
   if (onCandidate(s)) {
-    const blockers = shotBlockers(s, side, from);
+    const blockers = shotBlockers(s, side, from, opts.header);
     const through = xg * unblocked(blockers);
     const shot = {
       kind: 'shot',
@@ -1053,10 +1089,13 @@ export function resolveTakeOn(
   const me = s.players[side][idx]!;
   const c = attackFrame(side, me.pos);
   const foe = inFront(s, side, idx);
+  const beyond = foe ? attackFrame(side, foe.pos)[0] : c[0];
   const past: Point = [
     Math.min(
       PITCH.length - 0.5,
-      (foe ? attackFrame(side, foe.pos)[0] : c[0]) + T.past[0] + (T.past[1] - T.past[0]) / 2,
+      beyond + T.past[0] + (T.past[1] - T.past[0]) / 2,
+      // The candidate's depth, though always a metre past the man he beat.
+      onCandidate(s) ? Math.max(DUEL_CONFIG.candidate.takeOnDepth, beyond + 1) : Infinity,
     ),
     c[1],
   ];

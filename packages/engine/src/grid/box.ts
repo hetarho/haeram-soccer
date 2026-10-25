@@ -124,8 +124,22 @@ export const BOX_CONFIG = {
    */
   shot: {
     lane: 1.5,
-    block: 0.35,
+    /**
+     * T437: 0.35 → 0.26. The initial value blocked 36% of shots (real football about a quarter)
+     * and left 25% on target (MATCH-23 30–37%); at 0.26 23% are blocked and 28% on target
+     * (calibration round 74, core 600 matches). Lower still loses corners (a block goes out for
+     * one 65% of the time): 0.22 took them to 4.2 a team (MATCH-23 4–6).
+     */
+    block: 0.26,
     far: 0.4,
+    /**
+     * A header's block chance against a shot with the foot's (T437, T445's open question): the
+     * bodies in a header's path are the marker its aerial duel already priced (`headerPressure`)
+     * and the men on the line, so the same `block` stopped 66% of headers. T437 keeps 0.15:
+     * set-piece headers blocked 67 → 11%, headed goals 5.6 → 14.3% (MATCH-23 14–20%), set-piece
+     * goals 8.7 → 18.0% (20–28%).
+     */
+    header: 0.15,
     rebound: {
       block: [4, 9] as readonly [number, number],
       save: [5, 10] as readonly [number, number],

@@ -121,14 +121,15 @@ const placeIn = (snap: Pick<TraceEntry, 'positions' | 'slots'>, [side, idx]: [0 
  * set-piece header touches its header taker first). With that touch, the next touch, and where
  * playback draws the man who met the shot at the touch's time: like every player but the actor
  * (`positionAt`), on the line from his place in the snapshot before it — the entry's recorded kick
- * when that comes first, else the entry before — to his place in the entry's own. Played once.
+ * when that comes first, else the entry before — to his place in the entry's own. Played once,
+ * over 24 fixtures (T445's 16 left two rebound shots once T437 cut the blocks to 0.26).
  */
 let looseShots:
   { e: TraceEntry; touch: MotionKnot; drawn: [number, number]; next?: TraceEntry }[] | undefined;
 function secondBalls() {
   if (looseShots) return looseShots;
   looseShots = [];
-  for (let n = 0; n < 16; n++) {
+  for (let n = 0; n < 24; n++) {
     const { record, trace } = candidate(`t445-rebound-${n}`, true);
     expect(validateFullMatchRecord(record), record.id).toEqual([]);
     const plays = trace!.filter((x) => x.outcome !== 'incident');

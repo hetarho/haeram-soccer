@@ -73,6 +73,14 @@ export type BallSpeed = Exclude<keyof typeof GRID_BALL_CONFIG, 'retrieval' | 'pl
 export const IN_STRIDE_CONFIG = {
   speed: 3.5,
   pressureRadius: 3,
+  /**
+   * The share of his stride pace a player keeps in the carry before a shot (T437): he sets
+   * himself to strike it, so it takes him less far toward goal than a carry before a pass. Neutral
+   * at 1. T437 screened it (calibration round 74, core 600 matches; 0.5: goals 3.09 → 2.78 a match,
+   * xG per shot 0.100 → 0.092) and kept 1: once fewer carries and take-ons ran into the goal area
+   * (`DECISION_CONFIG.candidate.goalAreaCarry`), the carry before a shot needed no slowing.
+   */
+  shot: 1,
 } as const;
 
 /** The middle of the 1–99 attribute scale: the pace `IN_STRIDE_CONFIG.speed` is a stride of. */
@@ -288,8 +296,8 @@ export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined 
  * player (a presser, a marker, a cover) is read again every step, so they track the carrier and
  * the men they mark; the rest are read once, as `advance` reads them. A defender in `reads` turns,
  * from its `at` seconds on, to `to`: where the decided pass takes him once he reads it (T324's
- * early read, the carry being the kick's wind-up). Moves everyone and the ball with him; the
- * caller runs the clock.
+ * early read, the carry being the kick's wind-up). `pace` scales his stride pace (a shot's
+ * `IN_STRIDE_CONFIG.shot`). Moves everyone and the ball with him; the caller runs the clock.
  */
 export function carryInStride(
   s: GridState,
@@ -298,9 +306,10 @@ export function carryInStride(
   seconds: number,
   cell?: number,
   reads?: ReadonlyMap<GridPlayer, { to: readonly [number, number]; at: number }>,
+  pace = 1,
 ): void {
   const C = GRID_MOVEMENT_CONFIG;
-  const vmax = strideSpeed(s, gp);
+  const vmax = strideSpeed(s, gp) * pace;
   const speed = s.math.hypot(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);
   const [dx, dy] = strideHeading(s, gp, aim);
   // A point past where his stride takes him, by its braking distance.

@@ -107,6 +107,30 @@ describe('grid open-play resolution', () => {
     return (o.complete ?? 0) / n;
   };
 
+  it('sends a ball played to where it already is out over the nearest line (T437)', () => {
+    // An in-stride carry can take a carrier onto a line beside a teammate kept there too: a pass
+    // with no length that runs out once left its exit point at 0 × ∞, and the match ran on at NaN.
+    for (const [at, line, over] of [
+      [[105, 40], [105, 40], 'byline'],
+      [[60, 1], [60, 0], 'touch'],
+    ] as [Point, Point, string][]) {
+      const sc = scene(7, at);
+      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.players[0][8]!.pos = [...at];
+      const r = random('t437-no-length');
+      const tags = sc.tags();
+      let outs = 0;
+      for (let i = 0; i < 4000; i++) {
+        const o = resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r);
+        if (o.kind !== 'out') continue;
+        outs++;
+        expect(o.at).toEqual(line);
+        expect(o.over).toBe(over);
+      }
+      expect(outs).toBeGreaterThan(0);
+    }
+  });
+
   it('completes a pass within the final third less often by its malus, on the candidate model only (T411)', () => {
     const rate = (candidate: boolean, malus: number, from: Point, to: Point) => {
       const F = DUEL_CONFIG.candidate.finalThirdPass as { malus: number };
