@@ -13,9 +13,11 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| k5n2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-25T23:03Z | 2026-10-25T23:03Z | T458 |
+| k5n2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-25T23:03Z | 2026-10-25T23:41Z | - |
 
 ## inbox
+- 261026 decided T435 SAVE-23 ARCH-30: "revision 2 plays exactly as revision 1 (every digest unchanged)" while each record names the revision that settled it → the aggregate path keeps revision 1's stream names, a test proves the same football on both revisions, and the throughput facts digests (11) are re-recorded for the record label alone with the old values kept in their history comments (alt: keep labelling new records revision 1, against SAVE-23's per-match revision | pin the digest tests to revision 1, leaving revision 2 unmeasured there)
+- 261026 decided T458 STAFF-14: the manager-history journey's closer had left at the 1950 close (a one-season firefighter) → the fixture picks a free manager whose school signs for more than one season (alt: return expired managers to the free market, a STAFF rule change | pin the journey to the disabled release); CI WebKit's two 5 s timeouts get 15 s waits for the same states (alt: mark the journeys slow)
 - 261026 decided T458 T286 ARCH-30: the group gate on 6d52ed79 passed typecheck, lint, format, unit (381 s), contract, catalogs and build but failed 11 of 274 Chromium journeys (scene searches and pinned expectations on the released football: set-piece-defence, mobile goal cue, match-core goal minutes, manager-history's hire, owner-workflows' foreign league note, analysis's sub-pixel bound) → T458 fixes the journeys first, then the gate once, one push to main and CI close T286; main stays at 5727ee01 and the group branch is pushed for visibility and its CI read (alt: push main with the failures, which the fix-CI-first rule forbids)
 - 261026 decided T455 T456 T457: the UI session r8m2 published its own T446, T447 and T450 on main while this group's were unpublished → this group's done T446, T447 and T450 become T455, T456 and T457 (files, STATE, T286 dep, reports); commits, code comments and benchmark paths before 261026 keep the old numbers, and each renamed file says so (alt: renumber r8m2's published tasks, which the clash rule forbids)
 - 261026 decided T457 T286 ARCH-31: T457 (delegated, 96c5359e) cut the candidate season with every digest and world byte unchanged: 80 consecutive baseline seasons median 18.84 → 14.21 s (max 26.0 → 16.9), seasons 71–80 still 15.2 s, fixture 0.745 → 0.681 ms; the margin is thin, so T286's `--seasons 100` gate decides the switch, and T457's named residue (the full-record validation in match-model.ts, about 0.5 s a late season, each record checked twice) is T286's to cut on its branch if the gate misses narrowly (alt: another throughput task before T286)
@@ -307,7 +309,6 @@
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T435 | Match-model revision 2 and its prospective upgrade | SAVE MATCH STAFF PLAYER ARCH | T286 T431 | doing@261026.k5n2 |
 | T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
@@ -327,10 +328,11 @@
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 integrated (9e54c848) and the group gate passed on it (Chromium 274); main pushed from the group head, its CI closes T458 and T286
-- T435 implemented on task/v9n4-release/T435-main (pushed; not yet in the group): revision 2 and the upgrade at the writer load, task checks on its own tests; its full `vitest run --changed` and integration follow
-- after T286: T435 → T432 → T433, then T410 beside T434 (main-session tasks, delegated to sub-sessions)
+- T435 done and integrated (4b8c42af): revision 2 (continuous-aggregate-2) and the upgrade at the writer load; group gate on 4b8c42af running, then main
+- after T286: T432 → T433 (on revision 2, behind `modelAtLeast(setup, 2)`), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T435 done (k5n2, integrated 4b8c42af): match-model revision 2, revision-1 careers upgrade at the writer load; football unchanged, facts digests re-recorded for the record label
 - 261026 T458 group gate pass (k5n2): 9e54c848 typecheck, lint, format, unit 2141, contract 39, catalogs, build, Chromium 274; main push and CI next
 - 261026 v9n4 session end (owner's 07:00 KST stop): group gate failed 11 Chromium journeys → T458; group branch pushed, main unchanged
 - 261026 create-task T458 (v9n4): the Chromium journeys on the released football; T286 dep + T458
@@ -350,4 +352,3 @@
 - 261026 update-ssot WEB r152 (r8m2): primary mode-change action before stable-width mode text; no manual dismissed-match launcher, other decision access preserved.
 - 261026 T448 done (r8m2): unified bottom controls, no visible footer/hints; 34 affected unit tests and fast/build checks pass; subsequent layout/report steering in T449.
 - 261026 create-task freshness (r8m2): WEB r151 changes management controls/footer only; inactive todo T286/T434 base WEB@150→151, contracts unchanged.
-- 261026 create-task T448 + implement-task start (r8m2): unified bottom mode/transport controls and no visible footer/generic hints.
