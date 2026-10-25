@@ -900,8 +900,9 @@ function crossOverhit(s: GridState, side: 0 | 1, idx: number, r: () => number) {
 
 /**
  * A cross delivered to `attacker` where it comes down, at `to` (engine frame). Draws, in order:
- * the keeper's claim; the aerial duel with his marker, `marker` when given (T446: the man who got
- * to a lofted delivery's drop first), else the defender in the box nearest to `to`;
+ * the keeper's claim (`claim` above `cross.claim`, T447); the aerial duel with his marker, `marker`
+ * when given (T446: the man who got to a lofted delivery's drop first), else the defender in the box
+ * nearest to `to`;
  * controlled or headed. Having won it he brings it down at `to`, or heads it at goal: a header,
  * whose draws the caller makes, under `SHOT_CONFIG.headerPressure` when a marker contested it.
  */
@@ -913,11 +914,13 @@ function aerialDelivery(
   r: () => number,
   to: [number, number],
   marker?: GridPlayer,
+  claim = 0,
 ): Outcome | { kind: 'header'; pressure: number; aerial?: 0 | 1 } {
   const X = DUEL_CONFIG.cross;
   const foe = other(side);
   const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp));
-  const claimP = X.claim + (keeper ? (skill(s, foe, keeper.idx, 'handling') - 60) / 400 : 0);
+  const claimP =
+    X.claim + claim + (keeper ? (skill(s, foe, keeper.idx, 'handling') - 60) / 400 : 0);
   if (keeper && r() < claimP) return { kind: 'held', by: keeper.idx };
   const defenders = s.players[foe].filter((gp) => onPitch(gp) && inBox(attackFrame(side, gp.pos)));
   const at = attackFrame(side, to);
@@ -1029,7 +1032,8 @@ export function resolveDelivery(
   }
   const received: Outcome = { kind: 'complete', to: zone, receiver: target };
   if (!high) return { outcome: received, finish: { header: false, cutBack: aim.kind !== 'near' } };
-  const aerial = aerialDelivery(s, side, s.players[side][target]!, tags, r, zone, marker);
+  const runner = s.players[side][target]!;
+  const aerial = aerialDelivery(s, side, runner, tags, r, zone, marker, BOX_CONFIG.delivery.claim);
   if (aerial.kind !== 'header') return { outcome: aerial };
   return {
     outcome: { ...received, ...(aerial.aerial === undefined ? {} : { aerial: aerial.aerial }) },

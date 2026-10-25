@@ -65,8 +65,8 @@ describe('grid engine distributions', () => {
     // The released candidate (vitest.release-on.config.ts) played these 120 at 3.7 after T444's
     // deliveries into the zones; T445's bodies in front of goal took it to 2.97, so the ceiling is
     // 3.6 again, and T437's recalibration to 2.525 (shots 12.7 a team), T446's lofted deliveries
-    // over the crowd to 2.717 (13.3). The pre-feature path plays them at 2.57, unmoved by any of
-    // them.
+    // over the crowd to 2.717 (13.3), T447's box zone depths to 2.583 (13.1). The pre-feature path
+    // plays them at 2.57, unmoved by any of them.
     expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(shots / n / 2).toBeGreaterThanOrEqual(9);
     expect(shots / n / 2).toBeLessThanOrEqual(17);
@@ -120,7 +120,9 @@ describe('grid engine distributions', () => {
     // recalibration (round 74's 600 core matches 3.09 → 2.75, validation round 68's 2,400 2.96 →
     // 2.67) plays them at 3.0875, with fouls 10.28, throw-ins 17.0 and the ball in play 57.93 min.
     // T446's lofted deliveries over the crowd (round 75's 600 core matches 2.63 → 2.93) play them
-    // at 2.8625, with fouls 10.31, throw-ins 16.7 and the ball in play 57.53 min.
+    // at 2.8625, with fouls 10.31, throw-ins 16.7 and the ball in play 57.53 min. T447's box zone
+    // depths (round 76's 600 core matches 3.00 → 2.73) play them at 2.65, with fouls 10.43,
+    // throw-ins 16.7 and the ball in play 57.19 min.
     expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);

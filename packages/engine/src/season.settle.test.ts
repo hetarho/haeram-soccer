@@ -136,7 +136,12 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const other = sideOf(w, f) === 0 ? 1 : 0;
     const club = other === 0 ? f.home : f.away;
     const probe = simulateMatch(w, f, false, true);
-    const hurt = probe.squads[other][4];
+    // A starter with no incident of his own in the match, so the injury is his only one. The fifth
+    // starter, taken before, left an invalid record after T447's box zone depths (an injury at 78
+    // named a substitute off the pitch).
+    const hurt = probe.squads[other]
+      .slice(1, 11)
+      .find((p) => !probe.record.incidents?.some((x) => x.player === p.id || x.other === p.id))!;
     recordMatch(
       w,
       played(w, f, { minute: 20, side: other, kind: 'injury', player: hurt.id }),

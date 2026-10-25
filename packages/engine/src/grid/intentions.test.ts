@@ -558,7 +558,9 @@ describe('the box scene’s runs (→MATCH-33, T443)', () => {
   /**
    * Side 0's right winger 10 on the ball wide in the final third; its false nine 9, left winger 8,
    * mezzala 6 and deep-lying playmaker 7 around the box, the anchor 5 and the centre-backs 2 and 3
-   * behind, the full-backs wide. Side 1 stands deep and away from it (`lab`).
+   * behind, the full-backs wide. Side 1 stands deep and away from it (`lab`). The false nine
+   * stands nearer the near post than the far post, 8 m out since T447 (at [90, 36] he was nearer
+   * the far post).
    */
   function wide(): GridState {
     const s = lab();
@@ -573,7 +575,7 @@ describe('the box scene’s runs (→MATCH-33, T443)', () => {
       6: [80, 28],
       7: [74, 40],
       8: [86, 14],
-      9: [90, 36],
+      9: [95, 37],
       10: [85, 62],
     };
     for (const [idx, p] of Object.entries(at)) s.players[0][Number(idx)]!.pos = p;
