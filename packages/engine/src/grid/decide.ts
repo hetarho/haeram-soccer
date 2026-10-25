@@ -19,7 +19,7 @@ import {
   type Point,
 } from './pitch';
 import { reachOnPath } from './lanes';
-import { chanceXg } from './resolve';
+import { chanceXg, shotBlockers, unblocked } from './resolve';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
@@ -183,7 +183,9 @@ export const DECISION_CONFIG = {
      * Shot selection in the box (T370, →MATCH-16, MATCH-30): a shot's weight there is scaled by
      * its chance's xG (pressure included) against `ref` to the power `power`, at most `most` times,
      * so a carrier passes up a weak angle or a pressured look and a big chance keeps its weight:
-     * fewer box shots and key passes, the same goals.
+     * fewer box shots and key passes, the same goals. T445: the xG reads the bodies in the shot's
+     * path too (the share nobody blocks, to the power 1/his temperature), so a blocked view is
+     * passed up as well, more surely with better 판단력.
      */
     shotQuality: { ref: 0.3, power: 0.5, most: 1 },
     /**
@@ -394,7 +396,12 @@ export function actionMix(
   // The situation.
   if (candidate && inBox(c)) {
     const Q = C.candidate.shotQuality;
-    const xg = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math);
+    // The bodies between the ball and the goal (T445, →MATCH-35): the share of the chance nobody
+    // in its path blocks, to the power 1/his temperature, so a sharp head passes up a blocked view
+    // more surely and pressure on a shaky one less (→MATCH-16); at temperature 1 it is the share.
+    const open = unblocked(shotBlockers(s, side, c));
+    const seen = open < 1 ? s.math.exp(s.math.log(open) / temperature(s, side, idx, tags)) : open;
+    const xg = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) * seen;
     mix.shot *= Math.min(Q.most, s.math.exp(Q.power * s.math.log(xg / Q.ref)));
   }
   if (tags.pressure >= 1) {

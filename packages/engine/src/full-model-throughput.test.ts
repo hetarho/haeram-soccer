@@ -103,11 +103,14 @@ const facts = (w: World) => ({
  * the candidate rounds only; d1930531c407a468 before. T444's deliveries into the zones the runners
  * attack (calibration round 72, core, 600 matches: crosses 22.6 → 14.2 a team with completion
  * 23.4 → 14.5%, goals 3.73 → 4.18 a match) changed the candidate rounds only; 71af67206af43161
- * before.
+ * before. T445's shots through the bodies in front of goal and their contested second balls
+ * (calibration round 73, core, 600 observed matches: blocked share of shots 27.5 → 36.1%, xG per
+ * shot 0.140 → 0.099, goals 4.09 → 2.96 a match) changed the candidate rounds only;
+ * b6a3fb4600202334 before.
  */
 const BEFORE = {
   aggregateRecords: '940dadab556327b9',
-  candidateRounds: 'b6a3fb4600202334',
+  candidateRounds: '5ba3d49008a0e100',
 };
 
 describe('complete-result throughput (T285)', () => {

@@ -62,10 +62,10 @@ describe('grid engine distributions', () => {
     }
 
     expect(goals / n).toBeGreaterThanOrEqual(2.0);
-    // The released candidate (vitest.release-on.config.ts) plays these 120 at 3.7 since T444's
-    // deliveries into the zones, so the ceiling stands at that measured level until T437 restores
-    // 3.6 before T286; the pre-feature path's goals here did not move.
-    expect(goals / n).toBeLessThanOrEqual(3.7);
+    // The released candidate (vitest.release-on.config.ts) played these 120 at 3.7 after T444's
+    // deliveries into the zones; T445's bodies in front of goal took it to 2.89, so the ceiling is
+    // 3.6 again. The pre-feature path plays them at 2.57, unmoved by either.
+    expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(shots / n / 2).toBeGreaterThanOrEqual(9);
     expect(shots / n / 2).toBeLessThanOrEqual(17);
     expect(passes / n / 2).toBeGreaterThanOrEqual(350);
@@ -112,9 +112,10 @@ describe('grid engine distributions', () => {
     // alone, its runs off, 3.50), and T444's deliveries into the zones 4.0 → 4.5125 (round 72's
     // 600 core matches 3.73 → 4.18: 3.3% of these fixtures' 1,054 deliveries reach their runner,
     // so the goals come from the no-blind rule, carriers who no longer cross blind carrying,
-    // passing and shooting in the box), so the ceiling stands at the measured level until T437
-    // restores 3.6 before T286.
-    expect(goals / n).toBeLessThanOrEqual(4.52);
+    // passing and shooting in the box), so the ceiling stood at that level. T445's bodies in front
+    // of goal (each outfielder in the shot's path blocks it before the keeper; round 73's 600 core
+    // matches 4.09 → 2.96) took these 80 to 3.1875, so the ceiling is 3.6 again.
+    expect(goals / n).toBeLessThanOrEqual(3.6);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);
     expect(throwIns / n / 2).toBeGreaterThanOrEqual(15.5);

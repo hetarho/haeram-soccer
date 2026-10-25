@@ -4,11 +4,15 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
-import { benchPoint, IN_STRIDE_CONFIG } from './movement';
-import { attackFrame } from './pitch';
+import { BOX_CONFIG } from './box';
+import { reachOnPath } from './lanes';
+import { benchPoint, flightSeconds, IN_STRIDE_CONFIG } from './movement';
+import { attackFrame, inBox, toEngine, type Point } from './pitch';
 import { M, Tally } from './record';
+import { saveRebound, secondBall } from './resolve';
 import { RESTART_CONFIG } from './restarts';
 import { buildGridSetup, type DecideRule } from './setup';
+import { createState } from './state';
 import type { TraceEntry } from './trace';
 
 // The pre-feature path's world: `candidate` below opts a fixture into the model.
@@ -104,6 +108,33 @@ function receptions(id: string) {
     calls.mockRestore();
   }
 }
+
+/**
+ * Every open-play shot of observed candidate fixtures whose block or save stayed in play (T445):
+ * its flight touches the blocker or keeper on the way to its second ball. With the next touch and
+ * where the man who met the shot stood (the entry's 32-bit positions). Played once, shared.
+ */
+let looseShots: { e: TraceEntry; next?: TraceEntry; met: [number, number] }[] | undefined;
+function secondBalls() {
+  if (looseShots) return looseShots;
+  looseShots = [];
+  for (let n = 0; n < 16; n++) {
+    const { record, trace } = candidate(`t445-rebound-${n}`, true);
+    expect(validateFullMatchRecord(record), record.id).toEqual([]);
+    const plays = trace!.filter((x) => x.outcome !== 'incident');
+    plays.forEach((e, k) => {
+      if (e.action !== 'shot' || e.spot || (e.result !== 'save' && e.result !== 'block')) return;
+      if (!e.knots?.some((knot) => knot.kind === 'touch')) return;
+      const slot = Array.from(e.slots).indexOf(e.by![1], e.by![0] * 11);
+      const met: [number, number] = [e.positions[slot * 2]!, e.positions[slot * 2 + 1]!];
+      const next = plays[k + 1]?.period === e.period ? plays[k + 1] : undefined;
+      looseShots!.push({ e, ...(next ? { next } : {}), met });
+    });
+  }
+  return looseShots;
+}
+/** Where an action's ball starts: his carry's start when he carries it on, else where he plays it. */
+const startOf = (e: TraceEntry) => (e.knots?.[0]?.kind === 'carry' ? e.knots[0].ball : e.from!);
 
 describe('grid engine', () => {
   it('plays deterministically for a seed', () => {
@@ -389,5 +420,110 @@ describe('grid engine', () => {
     }
     expect(pressed).toBeGreaterThan(50);
     expect(away / pressed).toBeGreaterThan(0.8);
+  });
+
+  it('a parried shot falls in front of goal and is played by the player who reaches it first', () => {
+    const R = BOX_CONFIG.shot.rebound;
+    const keeperAt: Point = [104, 34];
+    // It falls `save` m out from the keeper, wide toward the shot's side of the goal.
+    for (const [from, wide] of [
+      [[92, 28], -1],
+      [[92, 40], 1],
+    ] as const) {
+      const land = saveRebound(from, keeperAt, () => 0.5);
+      const out = Math.hypot(land[0] - keeperAt[0], land[1] - keeperAt[1]);
+      expect(out).toBeCloseTo(R.save[0] + (R.save[1] - R.save[0]) * 0.5, 9);
+      expect(land[0]).toBeLessThan(keeperAt[0]);
+      expect(Math.sign(land[1] - keeperAt[1])).toBe(wide);
+    }
+    // A keeper's parry from a shot struck at (92, 28): whoever of either side reaches its path
+    // first plays it where it meets him, never the keeper who parried it.
+    const from: Point = [92, 28];
+    const land = saveRebound(from, keeperAt, () => 0.5);
+    const lab = (attacker: Point, defender: Point) => {
+      const setup = buildGridSetup(w, fixture('t445-parry'), {
+        observe: false,
+        recordPlayers: true,
+        model: MATCH_MODEL_REVISION,
+      });
+      const s = createState(setup);
+      for (const roster of s.players)
+        for (const gp of roster) gp.pos = [20 + 10 * gp.side, 4 + 5 * gp.idx];
+      s.players[1][0]!.pos = [...keeperAt];
+      s.players[0][9]!.pos = [...from];
+      s.players[0][8]!.pos = [...attacker];
+      s.players[1][3]!.pos = [...defender];
+      const keeper = s.players[1][0]!;
+      const ball = secondBall(s, 0, s.players[0][9]!, keeper, land, 0);
+      // Each side's first reach, read independently (`reachOnPath` reads the other side's men).
+      const end = toEngine(0, land);
+      const off = flightSeconds(from, keeperAt, 'shot');
+      const leave = (gp: typeof keeper) => gp === keeper;
+      const [byDefence, byAttack] = [0, 1].map(
+        (side) => reachOnPath(s, side as 0 | 1, keeperAt, end, off, leave).first,
+      );
+      return { ball, byDefence, byAttack, end };
+    };
+    // The attacker on its path, the defender beyond where it falls: the attacker plays it.
+    const onPath: Point = [100.5, 30];
+    const beyond: Point = [97, 27];
+    const a = lab(onPath, beyond);
+    expect(a.ball.via).toEqual(keeperAt);
+    expect(a.ball.winner).toEqual([0, 8]);
+    expect(a.byAttack!.along).toBeLessThan(a.byDefence?.along ?? Infinity);
+    expect(a.ball.at).toEqual(a.byAttack!.at);
+    // Swapped, the defender does.
+    const d = lab(beyond, onPath);
+    expect(d.ball.winner).toEqual([1, 3]);
+    expect(d.ball.at).toEqual(d.byDefence!.at);
+    // With nobody near its path it comes to rest where it falls, for whoever gets there first.
+    const far = lab([30, 10], [40, 10]);
+    expect(far.byAttack).toBeUndefined();
+    expect(far.byDefence).toBeUndefined();
+    expect(far.ball.at).toEqual(far.end);
+    expect(far.ball.winner).not.toEqual([1, 0]);
+    // In observed play every parry flies on from the keeper to the man who meets it, out from
+    // the keeper within `save` m, and that man plays the next ball from there.
+    const saves = secondBalls().filter(({ e }) => e.result === 'save');
+    expect(saves.length).toBeGreaterThan(4);
+    for (const { e, next, met } of saves) {
+      const kick = e.knots!.find((k) => k.kind === 'kick')!;
+      const touch = e.knots!.findLast((k) => k.kind === 'touch')!;
+      // It meets the keeper at the shot's speed where he stood at the kick: where the entry holds
+      // him with no carry before the shot, within his run during one (it holds the decision's places).
+      expect(touch.at - kick.at).toBeCloseTo(flightSeconds(kick.ball, touch.ball, 'shot'), 6);
+      const carried = e.knots![0]!.kind === 'carry' ? kick.at - e.knots![0]!.at : 0;
+      const moved = Math.hypot(touch.ball[0] - met[0], touch.ball[1] - met[1]);
+      expect(moved).toBeLessThanOrEqual(carried * 10 + 1e-3);
+      expect(e.knots!.at(-1)!).toMatchObject({ kind: 'receive', ball: e.to });
+      const to = e.to!;
+      expect(Math.hypot(to[0] - touch.ball[0], to[1] - touch.ball[1])).toBeLessThanOrEqual(
+        R.save[1] + 1e-6,
+      );
+      expect(attackFrame(e.side, to)[0]).toBeLessThanOrEqual(
+        attackFrame(e.side, touch.ball)[0] + 1e-6,
+      );
+      if (!next || next.spot) continue;
+      const start = startOf(next);
+      expect(Math.hypot(start[0] - to[0], start[1] - to[1])).toBeLessThan(0.5);
+    }
+  });
+
+  it('a rebound won near goal is shot at once', () => {
+    // An attacker who wins his side's block or parry in the box shoots, when his decision draws
+    // the shot, first time: kicked at once from where the ball met him, with no carry before it.
+    let won = 0,
+      shots = 0;
+    for (const { e, next } of secondBalls()) {
+      if (!next || next.spot || next.side !== e.side || !inBox(attackFrame(e.side, e.to!)))
+        continue;
+      won++;
+      if (next.action !== 'shot') continue;
+      shots++;
+      expect(next.knots![0]).toMatchObject({ kind: 'kick', ball: next.from });
+      expect(Math.hypot(next.from![0] - e.to![0], next.from![1] - e.to![1])).toBeLessThan(0.5);
+    }
+    expect(won).toBeGreaterThan(4);
+    expect(shots).toBeGreaterThan(2);
   });
 });

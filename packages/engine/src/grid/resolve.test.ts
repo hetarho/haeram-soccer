@@ -7,6 +7,7 @@ import { finishing } from '../match';
 import { random } from '../primitives';
 import { CELL_BASELINES } from './baselines';
 import {
+  blockRebound,
   chanceXg,
   DUEL_CONFIG,
   SHOT_CONFIG,
@@ -17,11 +18,14 @@ import {
   resolvePenalty,
   resolveShot,
   resolveTakeOn,
+  shotBlockers,
   shotContext,
+  unblocked,
   type DeliveryResult,
   type Outcome,
 } from './resolve';
-import { deliveryPoint, type DeliveryAim } from './box';
+import { BOX_CONFIG, deliveryPoint, type DeliveryAim } from './box';
+import { actionMix, DECISION_CONFIG, temperature } from './decide';
 import { playGrid } from './engine';
 import { LANE_CONFIG, reachOnPath } from './lanes';
 import { validateFullMatchRecord } from '../match-model';
@@ -771,6 +775,142 @@ describe('grid open-play resolution', () => {
     expect(one).toBeGreaterThan(B.base - 0.1);
     expect(one).toBeLessThan(B.base + B.perDefender + 0.06);
     expect(run(2)).toBeGreaterThan(one);
+  });
+
+  /** The striker on the ball at `at` on the candidate model, side 1's `bodies` (roster 2 on) placed. */
+  const shotScene = (at: Point, bodies: Point[], model = true) => {
+    const sc = scene(9, at);
+    if (model) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+    bodies.forEach((p, i) => (sc.s.players[1][2 + i]!.pos = [p[0], p[1]]));
+    return sc;
+  };
+
+  it('xG falls with bodies between the ball and the goal (T445)', () => {
+    const at: Point = [92, 34];
+    // More than the pressure radius from him, so only the bodies change.
+    const lines: Point[][] = [
+      [],
+      [[99, 34]],
+      [
+        [99, 34],
+        [101, 33],
+      ],
+      [
+        [99, 34],
+        [101, 33],
+        [103, 35],
+      ],
+    ];
+    let last = Infinity;
+    for (const bodies of lines) {
+      const sc = shotScene(at, bodies);
+      const ctx = shotContext(sc.s);
+      const tags = sc.tags();
+      const o = resolveShot(sc.s, 0, 9, tags, ctx, random('bodies'));
+      const chance = chanceXg(at, { pressure: tags.pressure, candidate: true }, sc.s.math);
+      const open = unblocked(shotBlockers(sc.s, 0, at));
+      if (bodies.length) expect(open).toBeLessThan(1);
+      else expect(open).toBe(1);
+      // The chance's xG times the share nobody blocks, recorded for the level's average players.
+      expect(o.xg).toBeCloseTo(chance * open, 12);
+      expect(o.recordedXg).toBeCloseTo(Math.min(SHOT_CONFIG.maxXg, o.xg * ctx.levelFactor), 12);
+      expect(o.xg).toBeLessThan(last);
+      last = o.xg;
+    }
+    // Recorded xG stays the goal probability for the average finisher and keeper: the keeper's
+    // part reads the chance without the bodies, so they count once.
+    const sc = shotScene(at, lines[2]!);
+    const ctx = shotContext(sc.s);
+    const tags = sc.tags();
+    const r = random('bodies-goals');
+    let goals = 0,
+      recorded = 0;
+    const n = 40000;
+    for (let i = 0; i < n; i++) {
+      const o = resolveShot(sc.s, 0, 9, tags, ctx, r);
+      if (o.result === 'goal') goals++;
+      recorded = o.recordedXg;
+    }
+    expect(Math.abs(goals / n - recorded)).toBeLessThan(0.008);
+    // The decision reads the same bodies: shots against passes fall with them in his way, through
+    // his temperature, so more for a sharp head (→MATCH-16).
+    const Q = DECISION_CONFIG.candidate.shotQuality;
+    const weight = (xg: number) => Math.min(Q.most, (xg / Q.ref) ** Q.power);
+    const factor = (decisions: number) => {
+      const plain = shotScene(at, []);
+      set(plain.s, 0, 9, 'decisions', decisions);
+      const tagsOf = plain.tags();
+      const before = actionMix(plain.s, 0, 9, tagsOf);
+      lines[2]!.forEach((p, i) => (plain.s.players[1][2 + i]!.pos = [p[0], p[1]]));
+      const after = actionMix(plain.s, 0, 9, tagsOf);
+      const f = after.shot / after.pass / (before.shot / before.pass);
+      const chance = chanceXg(at, { pressure: tagsOf.pressure, candidate: true }, plain.s.math);
+      const seen =
+        unblocked(shotBlockers(plain.s, 0, at)) ** (1 / temperature(plain.s, 0, 9, tagsOf));
+      expect(f).toBeCloseTo(weight(chance * seen) / weight(chance), 9);
+      return f;
+    };
+    const [poor, average, sharp] = [factor(30), factor(60), factor(90)];
+    expect(poor).toBeLessThan(1);
+    expect(average).toBeLessThan(poor);
+    expect(sharp).toBeLessThan(average);
+  });
+
+  it('blocks come before the keeper (T445)', () => {
+    const at: Point = [92, 34];
+    const body: Point = [97, 34];
+    const draws =
+      (...v: number[]) =>
+      () =>
+        v.shift() ?? 0;
+    const cand = shotScene(at, [body]);
+    const ctx = shotContext(cand.s);
+    const tags = cand.tags();
+    const chance = shotBlockers(cand.s, 0, at)[0]!.chance;
+    // The first draw is the body's on the candidate model, the keeper's on the pre-feature path.
+    expect(resolveShot(cand.s, 0, 9, tags, ctx, draws(0))).toMatchObject({
+      result: 'block',
+      by: 2,
+      then: 'corner',
+    });
+    const pre = shotScene(at, [body], false);
+    expect(resolveShot(pre.s, 0, 9, pre.tags(), shotContext(pre.s), draws(0)).result).toBe('goal');
+    // Only a shot nobody blocks meets the keeper.
+    expect(resolveShot(cand.s, 0, 9, tags, ctx, draws(0.999, 0)).result).toBe('goal');
+    // So the blocked share is the body's chance whatever the keeper; the keeper decides the rest.
+    const goalShare: number[] = [];
+    for (const reflexes of [20, 95]) {
+      const sc = shotScene(at, [body]);
+      set(sc.s, 1, 0, 'reflexes', reflexes);
+      const r = random(`keeper-${reflexes}`);
+      const counts = { block: 0, goal: 0 };
+      const keeperCtx = shotContext(sc.s);
+      for (let i = 0; i < 20000; i++) {
+        const shot = resolveShot(sc.s, 0, 9, tags, keeperCtx, r);
+        if (shot.result === 'block') counts.block++;
+        if (shot.result === 'goal') counts.goal++;
+      }
+      expect(Math.abs(counts.block / 20000 - chance)).toBeLessThan(0.015);
+      goalShare.push(counts.goal);
+    }
+    expect(goalShare[0]!).toBeGreaterThan(goalShare[1]!);
+    // A block that stays in play runs 4–9 m back toward the shooter from the blocker, here to the
+    // shooter himself, who stands in its way.
+    const loose = resolveShot(cand.s, 0, 9, tags, ctx, draws(0, 0.9, 0.5));
+    expect(loose).toMatchObject({
+      result: 'block',
+      then: 'loose',
+      by: 2,
+      via: body,
+      winner: [0, 9],
+    });
+    const [lo, hi] = BOX_CONFIG.shot.rebound.block;
+    const land = blockRebound(at, body, draws(0.5));
+    expect(land[0]).toBeCloseTo(body[0] - (lo + (hi - lo) * 0.5), 12);
+    expect(land[1]).toBe(34);
+    expect(loose.at![0]).toBeGreaterThanOrEqual(land[0]);
+    expect(loose.at![0]).toBeLessThanOrEqual(body[0]);
+    expect(loose.at![1]).toBeCloseTo(34, 9);
   });
 
   it("records xG for the level's average finisher and keeper", () => {
