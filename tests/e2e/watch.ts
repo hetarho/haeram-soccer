@@ -7,13 +7,24 @@ export async function openWatchAction(page: Page) {
   const watch = page
     .getByTestId('event-card')
     .getByRole('button', { name: '관전하기 ▶', exact: true });
-  if (await watch.isVisible()) return watch;
   const resume = page
     .getByRole('dialog', { name: '관전 이어보기', exact: true })
     .getByRole('button', { name: '관전 이어보기', exact: true });
-  if (await resume.isVisible()) return resume;
-  await dismissMatchReport(page);
-  await page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true }).click();
+  const home = page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true });
+  for (let attempt = 0; ; attempt++) {
+    if (await watch.isVisible()) return watch;
+    if (await resume.isVisible()) return resume;
+    await dismissMatchReport(page);
+    try {
+      await home.click({ timeout: 2000 });
+      break;
+    } catch (error) {
+      if (attempt >= 3) throw error;
+      // The clock a finished match resumed can reach the next eve after the dismissal above, and
+      // its backdrop takes the click (CI Firefox 40262705063, business:266): that eve is the one
+      // this journey wants, so the next pass returns its watch action.
+    }
+  }
   await configureResponsibilities(page, { observations: { matchEve: true } });
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   if (await pace.isVisible()) await chooseOption(pace, 'x10');

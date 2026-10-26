@@ -133,6 +133,8 @@ test('advances real days at each speed, stops and restores the saved calendar', 
 });
 
 test('shows independent player decisions and post-match league context', async ({ page }) => {
+  // Two watched matches on the released model; CI Firefox ran past 30 s twice (40262705063).
+  test.slow();
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('motion-observation');

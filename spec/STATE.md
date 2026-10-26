@@ -334,6 +334,7 @@
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T458 Firefox CI fixes (q7m3): business:266 eve race in openWatchAction's home click (retry, return the eve's watch), season-flow:135 and stable-controls-and-pacing:209 `test.slow()`; fast checks and build pass, Firefox/Chromium specs left to the host gate
 - 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
 - 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
 - 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
@@ -353,5 +354,3 @@
 - 261026 T286 integrated (v9n4, 325c1158): switch on, season gate pass 13.37 / 13.41 s, capacity and browser pass; origin/main merged (6d52ed79); this group's T446 T447 T450 renumbered T455 T456 T457
 - 261026 T457 done (delegated, merged 0e25b481): candidate seasons median 18.84 → 14.21 s over 80 seasons, digests unchanged
 - 261026 fix home milestone journey (r8m2): classify the founding/three-export/full-match/reload case as slow, preserving all assertions. CI 40211951722 passed checks/unit/Chromium/WebKit; Firefox had 271 passes, 2 skips and one 30 s journey timeout whose first trace completed its assertions. Type/lint/format/build/spec checks and all three Firefox viewport cases now pass; reuse the unchanged application's previous batch successes.
-- 261026 T451 done + T446–T451 publication verified (r8m2): unit 2131 + 4 existing skips, contracts 39, catalogs/resources/build and Chromium 274 covered (269 first run + five corrected-driver reruns). Owner-authorized commit/push follows.
-- 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.

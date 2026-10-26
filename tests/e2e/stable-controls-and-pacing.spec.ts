@@ -210,6 +210,9 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   page,
 }) => {
   // The page plays the reference run's recorded match, so the first minute's real length is known.
+  // That reference match is played in Node first, then about 20 s of timed playback follow; on the
+  // released model CI Firefox ran past 30 s on both attempts (40262705063), as the sibling below.
+  test.slow();
   const playback = advanceToNextMatch(paceCareer())!;
   await importResponsibilityCareer(page, paceCareer());
   await watchNext(page);
