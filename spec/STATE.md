@@ -10,11 +10,6 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| m6p4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T13:15Z | 2026-10-26T13:15Z | - |
-
 ## inbox
 - 261027 decided T473 T474 T475 T476 ARCH-30: CI observation reached its 60-minute default while WebKit installation alone took 39–51 minutes → allow one additional bounded 30-minute observation of the same run (alt: leave CI unconfirmed); eight of nine jobs have passed, the final WebKit shard is running tests, and no step has failed. No new code push or test rerun is needed
 - 261026 decided T473 T474 T475 T476 ARCH-30: fresh Codex workers could not install dependencies because their network sandbox returned registry ENOTFOUND → use the available Claude acceptEdits headless provider with the existing pnpm allow rule after its successful install/typecheck probe (alt: park implementation); retain the Codex sandbox and every verification gate
@@ -309,6 +304,7 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
+| dead-balls-and-finishing | open@261027 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -354,9 +350,11 @@
 
 ## next
 - T473 T474 T475 T476 are complete; no implementation task remains.
-- module-1026 passed the final ARCH-30 gate on 5afd5956; finish main publication and CI. Parked product ideations remain parked.
+- module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
+- 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
 - 261026 T469 pushed to main 35f48eef: the batch caught the moment span breaking the themes' NEXT MATCH first-child rule at 1280 (fixed in 35f48eef), then passed on the whole tree; main CI 40319410126 green. Two concurrent batches had timed out integration tests (long-career; calendar ENG/ESP) under host load; they pass on a quiet host
 - 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
@@ -375,5 +373,3 @@
 - 261026 create-task (owner): T469 match-day moment and no visible catch-up (WEB@155 MATCH@32), documentation only, parked for the owner's go
 - 261026 update-ssot WEB r155 (owner, ideation match-day-progress): WEB-18 visible steps one day with owed days only hidden/away, a ≥ 2 s animation-only match-day moment on own fixture days (NEXT MATCH card, bottom controls elsewhere), optional 경기 결과 알림 off by default; replaces r154's late-step indicator (T465 code)
 - 261026 update-ssot WEB start
-- 261026 ideation match-day-progress + calibration-pass start (owner): match day a ≥ 2 s beat at every pace, no visible catch-up; no own-club edge, judged by measurement; T410 follow-ups explained
-- 261026 T468 done: shared production NPC context with measurements, including pre-form gaps; current-revision upgrade and three seeded scenario fixtures refreshed, assertions retained. Typecheck/lint/format, 556 changed unit cases and build passed; full main batch and CI follow.
