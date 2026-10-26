@@ -124,11 +124,13 @@ const facts = (w: World) => ({
  * match) changed the candidate rounds only; ea80c6051b01dc56 before. T466's match-model revision 3
  * (a club nobody owns adds its named manager's context, (ability − 50)/4 with morale at the neutral
  * 60, in place of a flat 4) changed both, label and football; 35f59be3046fd689 and
- * 165c65e37c8f073c before.
+ * 165c65e37c8f073c before. T479's match-model revision 4 (a free kick played as a pass goes to
+ * the nearest suitable player) changed both, label and football; 3e9e6c0090653c92 and
+ * ee38cbfee07ad841 before.
  */
 const BEFORE = {
-  aggregateRecords: '3e9e6c0090653c92',
-  candidateRounds: 'ee38cbfee07ad841',
+  aggregateRecords: 'aa876ab8eda9f1c2',
+  candidateRounds: '5a538fb4c95a42f1',
 };
 
 describe('complete-result throughput (T285)', () => {

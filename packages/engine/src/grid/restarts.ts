@@ -25,7 +25,8 @@ import {
   setPieceTargets,
   type SetPieceScene,
 } from './shape';
-import { onPitch, other, skill, type GridPlayer, type GridState } from './state';
+import { modelAtLeast } from './rules';
+import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { computeTags } from './tags';
 
 export type RestartKind =
@@ -71,6 +72,11 @@ export const RESTART_CONFIG = {
   throwBonus: 0.05,
   throwFree: 3,
   kickoffBackBias: 10,
+  /**
+   * Revision 4 (T479, →MATCH-18): metres from the own goal line, in the side's attack frame, below
+   * which a free kick played as a pass goes to the nearest centre-back or keeper.
+   */
+  ownThird: 35,
   offside: {
     base: 0.03,
     /** Points of 판단력 per unit of offside chance: 200 on the raw scale, times the grid's skill scale (T216). */
@@ -215,6 +221,30 @@ const TAKER_KEY: Record<TakerKey, (gp: GridPlayer) => number> = {
   directFreeKick: (gp) => 0.5 * gp.player.attrs.finishing + 0.5 * gp.player.attrs.crossing,
   corner: (gp) => gp.player.attrs.crossing,
 };
+
+/**
+ * Revision 4 (T479, →MATCH-18): who takes a free kick played as a pass — the nearest player on the
+ * pitch to the spot, in the own third (`RESTART_CONFIG.ownThird`) a centre-back or the keeper,
+ * elsewhere an outfielder — so nobody crosses the pitch to restart play. Ties go to the first in
+ * roster order; it draws nothing.
+ */
+function nearestTaker(s: GridState, side: 0 | 1, spot: readonly [number, number]): number {
+  const own = attackFrame(side, [spot[0], spot[1]])[0] < RESTART_CONFIG.ownThird;
+  const suits = (gp: GridPlayer) =>
+    own ? gp.slot === 0 || slotOf(s, gp).position === 'CB' : gp.slot !== 0;
+  // Without a centre-back or keeper on the pitch, the nearest outfielder.
+  for (const pick of [suits, (gp: GridPlayer) => gp.slot !== 0]) {
+    let best: GridPlayer | undefined,
+      nearest = Infinity;
+    for (const gp of s.players[side]) {
+      if (!onPitch(gp) || !pick(gp)) continue;
+      const d = s.math.hypot(gp.pos[0] - spot[0], gp.pos[1] - spot[1]);
+      if (d < nearest) [best, nearest] = [gp, d];
+    }
+    if (best) return best.idx;
+  }
+  return s.players[side].find(onPitch)!.idx;
+}
 
 /** The set-piece taker; re-picked by the same key among players on the pitch when he has left. */
 function takerFor(s: GridState, side: 0 | 1, key: TakerKey): number {
@@ -426,7 +456,11 @@ export function playRestart(
     };
   }
   const wide = lane === 0 || lane === 4;
-  const taker = takerFor(s, side, wide || band >= 5 ? 'corner' : 'directFreeKick');
+  // Revision 4 (T479): the named takers deliver into the box; any other free kick is the nearest's.
+  const taker =
+    band < 5 && modelAtLeast(s.setup, 4)
+      ? nearestTaker(s, side, rs.spot)
+      : takerFor(s, side, wide || band >= 5 ? 'corner' : 'directFreeKick');
   if (band >= 5) {
     place(taker, setPieceTargets(s, side, taker));
     const tags = computeTags(s, side, taker, { setPiece: true });

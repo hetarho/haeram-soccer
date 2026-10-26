@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { random } from '../primitives';
@@ -456,5 +460,46 @@ describe('grid restarts', () => {
     );
     expect(kick.taker).toBe(0);
     expect(['short', 'long']).toContain(kick.kind);
+  });
+
+  it('revision 4 gives a free kick played as a pass to the nearest suitable player (T479)', () => {
+    // 3-5-2: the keeper 0, the wing-back 1, centre-backs 2–4, forwards 9 and 10.
+    const takers = { ...kit.setup.takers[0] };
+    const scene = (model: MatchModelRevision | undefined, at: Point) => {
+      const s = field();
+      s.setup.model = model;
+      s.setup.takers[0].directFreeKick = 9;
+      s.setup.takers[0].corner = 10;
+      for (const gp of s.players[0]) put(s, 0, gp.idx, [80, 60]);
+      put(s, 0, 0, [5, 34]);
+      put(s, 0, 1, [at[0] + 2, at[1]]);
+      put(s, 0, 2, [at[0] + 6, at[1] + 4]);
+      put(s, 0, 9, [at[0] + 1, at[1] + 1]);
+      return { s, rs: foulRestart(s, 0, [at[0], at[1]]) };
+    };
+    const taker = (model: MatchModelRevision | undefined, at: Point, seed = 'fk') => {
+      const { s, rs } = scene(model, at);
+      return playRestart(s, rs, random(seed), shotContext(s));
+    };
+    try {
+      const [, , third] = MATCH_MODEL_REVISIONS;
+      // Own third: the nearest centre-back or keeper, never the nearer wing-back or forward.
+      expect(taker(MATCH_MODEL_REVISION, [20, 30]).taker).toBe(2);
+      // Midfield: the nearest outfielder, here the forward beside the spot.
+      expect(taker(MATCH_MODEL_REVISION, [55, 30]).taker).toBe(9);
+      // Shot or delivered into the box: the named takers, as on every revision.
+      for (const seed of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
+        const near = taker(MATCH_MODEL_REVISION, [85, 34], seed);
+        expect(near.taker).toBe(near.kind === 'shot' ? 9 : 10);
+      }
+      expect(taker(MATCH_MODEL_REVISION, [95, 6]).taker).toBe(10);
+      // Revision 3 keeps the named taker for every free kick.
+      expect(taker(third, [20, 30]).taker).toBe(9);
+      expect(taker(third, [55, 30]).taker).toBe(9);
+      expect(taker(undefined, [20, 30]).taker).toBe(9);
+    } finally {
+      kit.setup.model = undefined;
+      Object.assign(kit.setup.takers[0], takers);
+    }
   });
 });

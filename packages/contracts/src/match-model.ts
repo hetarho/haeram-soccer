@@ -26,16 +26,21 @@ import {
  * from a newer game. Revision 2 adds the players' freedom and tendencies (T431–T433, →SAVE-23):
  * careers on revision 1 move to it prospectively and their settled matches keep revision 1.
  * Revision 3 gives a club nobody owns its named manager's context on the own club's formula
- * (T466, →MATCH-2); careers on revisions 1 and 2 take it the same way.
+ * (T466, →MATCH-2); careers on revisions 1 and 2 take it the same way. Revision 4 hands free kicks
+ * outside shooting and crossing range to the nearest suitable player, draws a corner's numbers
+ * and lets the late score set them, chooses shots from the chance in a forward ≥ midfielder ≥
+ * defender order and recalibrates its scoring (T479–T482, →MATCH-16, MATCH-18); careers on
+ * revisions 1–3 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
   'continuous-aggregate-2',
   'continuous-aggregate-3',
+  'continuous-aggregate-4',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-3';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-4';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */
