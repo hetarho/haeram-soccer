@@ -11,6 +11,8 @@
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
 ## inbox
+- 261026 decided T458 T286 ARCH-30: (owner, 261026: "CI only before the push to main when the work is done") T458 and T286 closed only on a main push and its CI, which a loop unit cannot make, so T434 and T410 behind T286 could not start → each closes on its own local evidence (T458: the three Firefox journeys on local Firefox; T286: the batch on 2ab7207c and main CI 40262705063 Chromium/WebKit), and the full batch plus CI run once at the end of the work around its single main push; a failure there becomes a fix task (alt: push and wait for CI after T458, which spends a CI run and idles the loop)
+- 261026 decided T433 T434 T410 MATCH-28: (owner, 261026: "1~2만건씩 돌리지 말고 게임성을 확인하는 걸로 전면 개편, 남은 task 개당 20분 안에, 100시즌 말고 10시즌") the remaining explore tasks ran 3–4 h each, mostly resolving-size simulation → each has a 20 m timebox: T433 reads 5 observed fixtures per tactic with at most one adjustment round, T434 probes a 10-season 쉬움 career with 10 seeds, T410 becomes a 10-season gameplay read beside MATCH-2/MATCH-23 bands, all marked indicative; MATCH-28 stays as written (small samples are reported, never a pass) and the pilot-size parity re-read is deferred to the calibration pass the owner orders later (alt: keep T401-size parity, about 6 h; drop the measurements entirely)
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
 - 261026 decided T435 SAVE-23 ARCH-30: "revision 2 plays exactly as revision 1 (every digest unchanged)" while each record names the revision that settled it → the aggregate path keeps revision 1's stream names, a test proves the same football on both revisions, and the throughput facts digests (11) are re-recorded for the record label alone with the old values kept in their history comments (alt: keep labelling new records revision 1, against SAVE-23's per-match revision | pin the digest tests to revision 1, leaving revision 2 unmeasured there)
@@ -304,9 +306,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
-| T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.q7m3 |
-| T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
+| T410 | Gameplay read of the released model over ten seasons | MATCH ARCH | T286 T433 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
@@ -326,9 +326,12 @@
 - f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
-- after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
+- end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433 and T434 now, T410 after T433
 
 ## log
+- 261026 re-scope (q7m3, owner): T433, T434, T410 each within 20 m as gameplay reads (10 seasons, a handful of fixtures); pilot-size parity deferred
+- 261026 T286 done (q7m3): released model evidence = batch on 2ab7207c + main CI 40262705063 Chromium/WebKit; final batch and CI at the end of the work
+- 261026 T458 done (q7m3, 2b8b0b12): Firefox business, season-flow, stable-controls-and-pacing 15/15 on local Firefox (2.0 m)
 - 261026 T458 Firefox CI fixes (q7m3): business:266 eve race in openWatchAction's home click (retry, return the eve's watch), season-flow:135 and stable-controls-and-pacing:209 `test.slow()`; fast checks and build pass, Firefox/Chromium specs left to the host gate
 - 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
 - 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
