@@ -10,12 +10,8 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| k5n2 | ihaelam-ui-MacBookPro | autopilot | 2026-10-25T23:03Z | 2026-10-25T23:41Z | - |
-
 ## inbox
+- 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
 - 261026 decided T435 SAVE-23 ARCH-30: "revision 2 plays exactly as revision 1 (every digest unchanged)" while each record names the revision that settled it → the aggregate path keeps revision 1's stream names, a test proves the same football on both revisions, and the throughput facts digests (11) are re-recorded for the record label alone with the old values kept in their history comments (alt: keep labelling new records revision 1, against SAVE-23's per-match revision | pin the digest tests to revision 1, leaving revision 2 unmeasured there)
 - 261026 decided T458 STAFF-14: the manager-history journey's closer had left at the 1950 close (a one-season firefighter) → the fixture picks a free manager whose school signs for more than one season (alt: return expired managers to the free market, a STAFF rule change | pin the journey to the disabled release); CI WebKit's two 5 s timeouts get 15 s waits for the same states (alt: mark the journeys slow)
 - 261026 decided T458 T286 ARCH-30: the group gate on 6d52ed79 passed typecheck, lint, format, unit (381 s), contract, catalogs and build but failed 11 of 274 Chromium journeys (scene searches and pinned expectations on the released football: set-piece-defence, mobile goal cue, match-core goal minutes, manager-history's hire, owner-workflows' foreign league note, analysis's sub-pixel bound) → T458 fixes the journeys first, then the gate once, one push to main and CI close T286; main stays at 5727ee01 and the group branch is pushed for visibility and its CI read (alt: push main with the failures, which the fix-CI-first rule forbids)
@@ -327,7 +323,7 @@
 
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
-- k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push closes T458 and T286; if it fails, fix it first (season-flow:135 on Firefox is the open one)
+- k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - after T286: T432 → T433 (on revision 2, behind `modelAtLeast(setup, 2)`), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
