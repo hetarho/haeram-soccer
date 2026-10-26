@@ -100,7 +100,10 @@ for (const [label, viewport] of [
       await expect(cabinet).toContainText('승격');
       await expect(cabinet).toContainText('최고 성적');
       await expect(cabinet).toContainText('(1950/51)');
-      await expect(cabinet.locator('svg')).not.toHaveCount(0);
+      await expect(cabinet.locator('[data-ui="trophy"] img')).toHaveCount(
+        await cabinet.getByRole('listitem').count(),
+      );
+      await expect(cabinet.locator('svg')).toHaveCount(0);
       await tab('구단 성장').click();
       await page
         .getByRole('group', { name: '추이 지표' })

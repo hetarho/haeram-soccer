@@ -87,32 +87,6 @@ const glyphs = {
     part(rect(20, 19, 5, 8), 'gold'),
   ],
   star: [part('M16 2L20 11 30 12 23 20 25 30 16 25 7 30 9 20 2 12 12 11Z', 'gold')],
-  liddedCup: [
-    part('M9 9H23V15Q23 23 16 23Q9 23 9 15ZM14 23H18V27H24V30H8V27H14Z', 'gold'),
-    part('M7 8Q16 0 25 8ZM14 2H18V5H14Z', 'gold'),
-    part('M9 11H4V15Q4 20 10 20M23 11H28V15Q28 20 22 20', 'gold', false),
-  ],
-  continentalCup: [
-    part(circle(16, 14, 11), 'blue'),
-    part('M5 14H27M16 3C7 10 7 18 16 25C25 18 25 10 16 3M7 8H25M7 20H25', 'paper', false),
-    part('M13 25H19V28H24V31H8V28H13Z', 'gold'),
-  ],
-  medal: [
-    part('M5 2H13L19 15 12 20ZM19 2H27L20 20 13 15Z', 'red'),
-    part(circle(16, 22, 9), 'gold'),
-    part(circle(16, 22, 4), 'paper'),
-  ],
-  promotion: [part('M16 2L30 16H22V26H10V16H2Z', 'green'), part(rect(7, 29, 18, 2), 'gold')],
-  relegation: [part('M10 3H22V14H30L16 28 2 14H10Z', 'red'), part(rect(7, 29, 18, 2), 'ink')],
-};
-const trophies = {
-  'trophy.league': 'cup',
-  'trophy.cup': 'liddedCup',
-  'trophy.continental': 'continentalCup',
-  'trophy.final': 'medal',
-  'trophy.promotion': 'promotion',
-  'trophy.relegation': 'relegation',
-  'trophy.best': 'star',
 };
 const colours = {
   ink: '#172e27',
@@ -123,8 +97,8 @@ const colours = {
   gold: '#e9b945',
 };
 
-function conceptIcon(name, style, unearned = false) {
-  const drawing = glyphs[trophies[name] ?? name];
+function conceptIcon(name, style) {
+  const drawing = glyphs[name];
   if (!drawing) throw new Error(`Missing original pictogram: ${name}`);
   const layers = [];
   if (style === 'sticker-club')
@@ -138,27 +112,16 @@ function conceptIcon(name, style, unearned = false) {
         strokeLinecap: 'round',
       });
   for (const layer of drawing) {
-    const ink =
-      style === 'matchday-print'
-        ? trophies[name] && !unearned
-          ? '#a63724'
-          : 'currentColor'
-        : unearned
-          ? 'currentColor'
-          : colours.ink;
+    const ink = style === 'matchday-print' ? 'currentColor' : colours.ink;
     const fill =
       style === 'matchday-print'
         ? layer.colour === 'paper'
           ? 'var(--icon-paper, #f6eedb)'
           : ink
-        : unearned
-          ? layer.colour === 'paper'
-            ? 'none'
-            : ink
-          : colours[layer.colour];
+        : colours[layer.colour];
     layers.push({
       d: layer.d,
-      fill: layer.fill && !(style === 'matchday-print' && unearned) ? fill : 'none',
+      fill: layer.fill ? fill : 'none',
       stroke: ink,
       strokeWidth: style === 'matchday-print' ? 1.8 : 1.6,
       strokeLinejoin: style === 'matchday-print' ? 'miter' : 'round',
@@ -383,8 +346,14 @@ async function generateConceptThemes({ check = false } = {}) {
       Object.keys(standard.icons).map((role) => [
         role,
         {
-          default: conceptIcon(role, id),
-          ...(trophies[role] ? { variants: { unearned: conceptIcon(role, id, true) } } : {}),
+          default: role.startsWith('trophy.')
+            ? {
+                type: 'image',
+                resource: `/art/trophies/${id}/${role.slice('trophy.'.length)}.webp`,
+                width: 336,
+                height: 336,
+              }
+            : conceptIcon(role, id),
         },
       ]),
     );
@@ -414,6 +383,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const check = process.argv.includes('--check');
   await generateConceptThemes({ check });
   console.log(
-    `${check ? 'Verified' : 'Generated'} two complete concept packs with 36 original semantic pictograms each.`,
+    `${check ? 'Verified' : 'Generated'} two complete concept packs with semantic pictograms and generated trophy artwork.`,
   );
 }

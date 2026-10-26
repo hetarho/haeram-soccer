@@ -1,0 +1,321 @@
+{
+  "method": "built-in image_gen; ffmpeg resizing and transparent WebP encoding through the existing UI art canvas pipeline",
+  "date": "2026-10-27",
+  "references": [
+    {
+      "url": "https://www.mancity.com/news/club/man-city-treble-trophy-tour-iconic-images-1-63847057",
+      "image": "https://www.mancity.com/meta/media/51obfpzw/united-kingdom.jpg?width=1600",
+      "role": "Visual reference for real league, domestic cup and continental trophy proportions and metalwork; original game artwork generated without inscriptions, sponsors or club branding."
+    }
+  ],
+  "jobs": [
+    {
+      "theme": "standard",
+      "kind": "league",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-1f61dbb7-50d5-4849-8fe9-ed8a6d259e17.png",
+      "file": "standard/league.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 37814,
+      "sha256": "c59eb8e34c3681caf19f844cc1639333921d432847aa7e4a7fe97f17734bdb37"
+    },
+    {
+      "theme": "standard",
+      "kind": "cup",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-bcbad1b2-5e88-442e-b9ec-0d15b690abb7.png",
+      "file": "standard/cup.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 30930,
+      "sha256": "5ad59c571318a513b72a53b75f84896fbcb0c231044fa4be8d542b0f10ebcade"
+    },
+    {
+      "theme": "standard",
+      "kind": "continental",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-1a9bfeaf-5a09-4396-a570-b30ce3d4047c.png",
+      "file": "standard/continental.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 34350,
+      "sha256": "b039eca087f2a58787ad45260789f3c22e0ef3d1123619afff718824342edca7"
+    },
+    {
+      "theme": "standard",
+      "kind": "final",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-30e64f0d-7e60-439e-851b-ec5e47ab4e9c.png",
+      "file": "standard/final.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 27716,
+      "sha256": "d3501a3fba67cbf5529b11d67ff168c1462988e72db536242f5bde7fba75db10"
+    },
+    {
+      "theme": "standard",
+      "kind": "promotion",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-02c03dd2-c856-4319-b419-a594b1f2ad6f.png",
+      "file": "standard/promotion.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 37576,
+      "sha256": "6c08a4a58fe86e3e94cbbd630b368dc3fae1b4c8db6259a301224075cdbc85e7"
+    },
+    {
+      "theme": "standard",
+      "kind": "relegation",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-145b0b58-7dc6-4a39-9c78-146aa777bedc.png",
+      "file": "standard/relegation.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 33044,
+      "sha256": "81144863d26a300c0f0356ae78441c9642da6130189f0cf1349f90a571f89087"
+    },
+    {
+      "theme": "standard",
+      "kind": "best",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: luxury studio product photography with realistic three-dimensional polished silver and antique gold, elegant warm key light from upper left, subtle emerald reflection, deep rich metal shading, convincing physical materials, no cartoon outline. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-ed88a7bb-19c3-4413-89e3-a442b1706b1b.png",
+      "file": "standard/best.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 38864,
+      "sha256": "016fb78bbec03bb5af162a879b02660b645b4a900e83827f33ca0baedba17d3f"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "league",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9b291e5a-306b-4a6f-9bbd-947d44387430.png",
+      "file": "matchday-print/league.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 36950,
+      "sha256": "aa6541b6dfbd17029c8a02e975c546f03ed6c4597fe05b7ade84c94cc6eac7af"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "cup",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-1d6bcaac-658b-4d70-bf08-ec8eb592b6cf.png",
+      "file": "matchday-print/cup.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 32804,
+      "sha256": "3ecf74178ce891b5c35f60bcb6668069a2e39fa4144a1f3d191df4e237f7b0f4"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "continental",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-0e585774-6934-4859-af23-c9cccb894f1d.png",
+      "file": "matchday-print/continental.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 32662,
+      "sha256": "ec6dcfa8e9e66aa811b5a77157529642c62616c332d2f100f8c6cddfaee21dd9"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "final",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-a45f1284-8607-4eea-84f5-66ada2c6f94d.png",
+      "file": "matchday-print/final.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 27462,
+      "sha256": "663c844615066416a702e1afd0329d4ee2dc85f4d75e42079b0cda09e914cd94"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "promotion",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-181fee0f-b204-4adc-923c-1e7d8f3d82d7.png",
+      "file": "matchday-print/promotion.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 35868,
+      "sha256": "d1e04ef92be6a83c1e323e82ea50b8c36f679dedd80ebfc8de86be4b6959a533"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "relegation",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9e6721fd-2833-4e29-9618-4f926f86cb61.png",
+      "file": "matchday-print/relegation.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 36660,
+      "sha256": "bdf00d930ab2b16ea88ac00a00fb209c7f5bff0733f0280f88b8bdc98870cc5f"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "best",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-b1229837-5131-43b9-ba1c-7717e0cfe032.png",
+      "file": "matchday-print/best.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 45256,
+      "sha256": "768f532976e6910e0306e54c085fa914e131e584194e0760f5fa64e29d3ff3e9"
+    },
+    {
+      "theme": "pixel",
+      "kind": "league",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9500ddeb-210b-4bc9-aba3-d1fff6174855.png",
+      "file": "pixel/league.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 45292,
+      "sha256": "42a21bf0c55b09352407523dd0f1e38efc19ecfc8a4d2333c5cf5df3309af70c"
+    },
+    {
+      "theme": "pixel",
+      "kind": "cup",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-84b9842c-b3a2-484d-a032-76e1f1707fb0.png",
+      "file": "pixel/cup.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 37844,
+      "sha256": "94b6693719a659377f16574ac87f26f6d2b20b649e3126a57d8568d2c098771b"
+    },
+    {
+      "theme": "pixel",
+      "kind": "continental",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-77cf17d1-5152-4b70-9bab-10cf22956c31.png",
+      "file": "pixel/continental.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 44232,
+      "sha256": "5348b3f78e3008059f9cadd7ac18775bbcbaabc67e3b3472a94899ade100e2aa"
+    },
+    {
+      "theme": "pixel",
+      "kind": "final",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-048328b1-b566-4c8d-9276-1227b7211109.png",
+      "file": "pixel/final.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 34218,
+      "sha256": "a4898c2fd5caeed6a5f665fefac7d61c234ffc65a9af28b82c5c071f2aaea130"
+    },
+    {
+      "theme": "pixel",
+      "kind": "promotion",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-09c50fbd-7461-435e-9c4d-e0ccfbff42cf.png",
+      "file": "pixel/promotion.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 45264,
+      "sha256": "1c6d93447f8322a0295105e4e85bcd85b7d76cda73a12fc1e64331a3d4b062d5"
+    },
+    {
+      "theme": "pixel",
+      "kind": "relegation",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-d24f04e2-75d4-4fac-a105-58ae59e64a8a.png",
+      "file": "pixel/relegation.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 41022,
+      "sha256": "9f498fc6a3b7ca4d595f73d1aac12538cbc07a266ce7a753d8ce7381f47a0cce"
+    },
+    {
+      "theme": "pixel",
+      "kind": "best",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-f27c6b3b-9697-4b78-9a44-c8befabc143d.png",
+      "file": "pixel/best.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 48220,
+      "sha256": "147a2299ffab58e019b73de6e979cfeebce79575ff902ea2f64f65df5ebacb20"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "league",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-aff1a575-fbb1-4842-b71c-135dff849bba.png",
+      "file": "sticker-club/league.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 38930,
+      "sha256": "c1080d78c29217f53d8291bcdd2e2e2595d9dc3073f74930bf2e6d3ed0684232"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "cup",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-10d74aeb-5c6c-4f77-acc8-4564185c62f2.png",
+      "file": "sticker-club/cup.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 34858,
+      "sha256": "3b383e0e082b3564029eab94e8e123ed3ab5ff0069a90a2d23716e0439ae805a"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "continental",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-4733ed9f-2250-4e8b-adf9-83d34b87cc08.png",
+      "file": "sticker-club/continental.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 37842,
+      "sha256": "8660bfb51cb9230a93a403c8ced4bd7f33323232cac719da81fe2efab131e2d4"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "final",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-b109f3d1-681b-4bc6-b126-6a8a055585e1.png",
+      "file": "sticker-club/final.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 32450,
+      "sha256": "5410ce6f0a5a6b76a52eef8c0e2d4eac9065cf974ce104053d0a5b9845cbd8db"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "promotion",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-efbfd414-5e88-4f37-9e50-170a13f88364.png",
+      "file": "sticker-club/promotion.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 39946,
+      "sha256": "98a559f245c1e8ff9d8f4c0b2f52b5f28876d179cb2b1142d03c8e193869729f"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "relegation",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-5fa9a0d1-62f2-4e88-93c0-6e14df12ee7e.png",
+      "file": "sticker-club/relegation.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 38904,
+      "sha256": "174eaae50f6c92a4236fe86d3292cd15c10e03d264270b2819186879f77650e7"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "best",
+      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
+      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-822ad313-6943-41e3-b643-3ca1270f6d89.png",
+      "file": "sticker-club/best.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 44534,
+      "sha256": "84778443a01ac687b05019ebf7e1e44081a95174a4908b9b597d0002bd199796"
+    }
+  ]
+}

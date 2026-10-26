@@ -131,7 +131,7 @@ function seasonsText(years: number[]) {
     : years.map(seasonName).join(' · ');
 }
 type Tone = 'gold' | 'silver' | 'up' | 'down';
-/** One piece in the cabinet: drawn in its metal once won, an empty outline before. */
+/** One piece in the cabinet: full-colour artwork once earned, muted artwork before. */
 function Trophy({
   label,
   years,

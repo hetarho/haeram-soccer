@@ -941,384 +941,58 @@
     },
     "trophy.league": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M9 5H23V12C23 22 9 22 9 12ZM13 20H19V25H23V29H9V25H13Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M9 8H4V12C4 17 9 17 11 16M23 8H28V12C28 17 23 17 21 16",
-            "fill": "none",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M9 5H23V12C23 22 9 22 9 12ZM13 20H19V25H23V29H9V25H13Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M9 8H4V12C4 17 9 17 11 16M23 8H28V12C28 17 23 17 21 16",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/league.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.cup": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M9 9H23V15Q23 23 16 23Q9 23 9 15ZM14 23H18V27H24V30H8V27H14Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M7 8Q16 0 25 8ZM14 2H18V5H14Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M9 11H4V15Q4 20 10 20M23 11H28V15Q28 20 22 20",
-            "fill": "none",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M9 9H23V15Q23 23 16 23Q9 23 9 15ZM14 23H18V27H24V30H8V27H14Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M7 8Q16 0 25 8ZM14 2H18V5H14Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M9 11H4V15Q4 20 10 20M23 11H28V15Q28 20 22 20",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/cup.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.continental": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M5 14a11 11 0 1 0 22 0a11 11 0 1 0 -22 0Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M5 14H27M16 3C7 10 7 18 16 25C25 18 25 10 16 3M7 8H25M7 20H25",
-            "fill": "none",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M13 25H19V28H24V31H8V28H13Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M5 14a11 11 0 1 0 22 0a11 11 0 1 0 -22 0Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M5 14H27M16 3C7 10 7 18 16 25C25 18 25 10 16 3M7 8H25M7 20H25",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M13 25H19V28H24V31H8V28H13Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/continental.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.final": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M5 2H13L19 15 12 20ZM19 2H27L20 20 13 15Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M7 22a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M12 22a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z",
-            "fill": "var(--icon-paper, #f6eedb)",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M5 2H13L19 15 12 20ZM19 2H27L20 20 13 15Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M7 22a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M12 22a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/final.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.promotion": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M16 2L30 16H22V26H10V16H2Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M7 29h18v2h-18Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M16 2L30 16H22V26H10V16H2Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M7 29h18v2h-18Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/promotion.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.relegation": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M10 3H22V14H30L16 28 2 14H10Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          },
-          {
-            "d": "M7 29h18v2h-18Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M10 3H22V14H30L16 28 2 14H10Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            },
-            {
-              "d": "M7 29h18v2h-18Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/relegation.webp",
+        "width": 336,
+        "height": 336
       }
     },
     "trophy.best": {
       "default": {
-        "type": "svg",
-        "viewBox": "0 0 32 32",
-        "shapeRendering": "geometricPrecision",
-        "layers": [
-          {
-            "d": "M16 2L20 11 30 12 23 20 25 30 16 25 7 30 9 20 2 12 12 11Z",
-            "fill": "#a63724",
-            "stroke": "#a63724",
-            "strokeWidth": 1.8,
-            "strokeLinejoin": "miter",
-            "strokeLinecap": "round"
-          }
-        ]
-      },
-      "variants": {
-        "unearned": {
-          "type": "svg",
-          "viewBox": "0 0 32 32",
-          "shapeRendering": "geometricPrecision",
-          "layers": [
-            {
-              "d": "M16 2L20 11 30 12 23 20 25 30 16 25 7 30 9 20 2 12 12 11Z",
-              "fill": "none",
-              "stroke": "currentColor",
-              "strokeWidth": 1.8,
-              "strokeLinejoin": "miter",
-              "strokeLinecap": "round"
-            }
-          ]
-        }
+        "type": "image",
+        "resource": "/art/trophies/matchday-print/best.webp",
+        "width": 336,
+        "height": 336
       }
     }
   },

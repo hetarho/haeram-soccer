@@ -2983,53 +2983,36 @@
 /* The trophy cabinet: one tile per honour, titles in gold. */
 .trophies {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-/* Each piece stands on its shelf: the trophy drawn in its metal once won, an outline before. */
+/* Full-colour generated trophies stand above the records on each shelf. */
 .trophies li {
   display: grid;
   justify-items: center;
   align-content: start;
   gap: 3px;
   min-width: 0;
-  padding: 16px 10px 14px;
+  padding: 22px 12px 18px;
   text-align: center;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-2);
   box-shadow: none;
 }
-.trophies li svg {
-  width: 56px;
-  height: 56px;
-  margin-bottom: 6px;
-  color: var(--line-strong);
-}
 .trophies li[data-tone='gold'] {
   border-color: var(--gold-edge);
   background: var(--surface-grain, none) var(--surface-2);
 }
-.trophies li[data-tone='gold'] svg,
-.trophies li[data-tone='best'] svg {
-  color: var(--gold);
+.trophies li[data-tone='gold'] [data-ui='trophy'],
+.trophies li[data-tone='best'] [data-ui='trophy'] {
   filter: var(--trophy-gold-shadow);
 }
-.trophies li[data-tone='silver'] svg {
-  color: var(--trophy-silver);
+.trophies li[data-tone='silver'] [data-ui='trophy'] {
   filter: var(--trophy-silver-shadow);
-}
-.trophies li[data-tone='up'] svg {
-  color: var(--accent);
-}
-.trophies li[data-tone='down'] svg {
-  color: var(--danger);
-}
-.trophies li[data-tone='empty'] {
-  opacity: 0.6;
 }
 .trophies li > span {
   font-size: var(--label-size);
@@ -3057,12 +3040,7 @@
     gap: 8px;
   }
   .trophies li {
-    padding: 12px 6px 10px;
-  }
-  .trophies li svg {
-    width: 42px;
-    height: 42px;
-    margin-bottom: 4px;
+    padding: 16px 6px 14px;
   }
   .trophies strong {
     font-size: 18px;

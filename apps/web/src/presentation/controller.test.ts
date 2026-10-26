@@ -388,6 +388,7 @@ describe('one presentation controller', () => {
       },
     );
     await controller.initialize();
+    const iconImages = controller.getSnapshot().theme!.iconImages;
     const release = controller.registerNeed({
       type: 'facility',
       era: 'heritage',
@@ -412,11 +413,13 @@ describe('one presentation controller', () => {
     await changed;
     waiting.resolve();
     await first;
-    expect(staged).toEqual([
+    expect(staged.filter((url) => !iconImages.includes(url))).toEqual([
       '/presentation/themes/synthetic-one/heritage/stadium-0.webp',
       '/presentation/themes/synthetic-one/heritage/stadium-1.webp',
     ]);
-    expect(activated).toEqual(['/presentation/themes/synthetic-one/heritage/stadium-1.webp']);
+    expect(activated.filter((url) => !iconImages.includes(url))).toEqual([
+      '/presentation/themes/synthetic-one/heritage/stadium-1.webp',
+    ]);
     expect(controller.getSnapshot().theme?.id).toBe('synthetic-one');
   }, 10000);
 

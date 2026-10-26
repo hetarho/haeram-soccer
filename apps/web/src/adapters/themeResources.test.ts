@@ -266,17 +266,18 @@ describe('theme resource installation', () => {
     }
   });
 
-  it('loads only selected fonts and optional CSS without preloading facility images', async () => {
+  it('loads selected fonts, image icons and optional CSS without preloading facility scenes', async () => {
     const resolver = theme();
     const memory = memoryPorts();
     const stageFont = vi.fn(memory.ports.stageFont);
     const stageStylesheet = vi.fn(memory.ports.stageStylesheet);
+    const stageImage = vi.fn(memory.ports.stageImage);
     const installed = await installThemeResources(resolver, {
-      ports: { ...memory.ports, stageFont, stageStylesheet },
+      ports: { ...memory.ports, stageFont, stageStylesheet, stageImage },
     });
     expect(stageFont.mock.calls.map(([font]) => font)).toEqual(resolver.fonts);
     expect(stageStylesheet).toHaveBeenCalledExactlyOnceWith('/presentation/themes/pixel.css');
-    expect(memory.events.every((event) => !event.includes('/art/'))).toBe(true);
+    expect(stageImage.mock.calls.map(([url]) => url)).toEqual(resolver.iconImages);
     installed!.dispose();
   });
 
@@ -307,7 +308,7 @@ describe('theme resource installation', () => {
         }),
       ).rejects.toBeInstanceOf(ThemeInstallationError);
       expect(stageImage.mock.calls.map(([url]) => url)).toEqual(
-        missing === 'scene' ? [icon.resource, scene.src] : [icon.resource],
+        missing === 'scene' ? [...candidate.iconImages, scene.src] : candidate.iconImages,
       );
       expect([...memory.active]).toEqual(originalActive);
       expect([...memory.tokens.values()]).toEqual(['#111415']);
@@ -336,6 +337,7 @@ describe('theme resource installation', () => {
     });
     expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
       '/packs/unseen/status.svg',
+      ...theme().iconImages,
       '/packs/unseen/status-quiet.svg',
     ]);
     installed!.dispose();
@@ -363,22 +365,26 @@ describe('theme resource installation', () => {
     expect([...memory.active]).toEqual(['unowned']);
   });
 
-  it('preflights only supplied mounted images and releases them on replacement', async () => {
+  it('preflights icon images and supplied mounted scenes and releases them on replacement', async () => {
     const memory = memoryPorts();
     const stageImage = vi.fn(memory.ports.stageImage);
     const ports = { ...memory.ports, stageImage };
-    const previous = await installThemeResources(theme(), {
+    const previousTheme = theme();
+    const nextTheme = theme('next');
+    const previous = await installThemeResources(previousTheme, {
       ports,
       requiredImages: ['/art/scenes/heritage/stadium-0.webp'],
     });
     const oldImages = memory.resources.filter((resource) => resource.id.startsWith('image:'));
-    const next = await installThemeResources(theme('next'), {
+    const next = await installThemeResources(nextTheme, {
       ports,
       previous: previous!,
       requiredImages: ['/art/scenes/terraces/training-2.webp'],
     });
     expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
+      ...previousTheme.iconImages,
       '/art/scenes/heritage/stadium-0.webp',
+      ...nextTheme.iconImages,
       '/art/scenes/terraces/training-2.webp',
     ]);
     expect(oldImages.every((resource) => resource.disposed)).toBe(true);

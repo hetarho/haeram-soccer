@@ -62,11 +62,6 @@ describe('theme resource resolution', () => {
           expect(standard.icon(role, 'unearned'), role).not.toEqual(
             original.icon(role, 'unearned'),
           );
-          if (data.id !== 'standard')
-            expect(
-              standard.icon(role, 'unearned'),
-              `${data.id}/${role} has a distinct unearned state`,
-            ).not.toEqual(standard.icon(role));
         }
       }
       for (const era of FACILITY_ERAS)
@@ -232,35 +227,36 @@ describe('theme resource resolution', () => {
     ).toEqual(['400', '600 900']);
   });
 
-  it('preserves current icon layers and font weights', () => {
-    const theme = createThemeResolver(pixel, { url });
+  it('preserves current pixel font weights', () => {
     expect(pixel.fonts.map((font) => font.weight)).toEqual(['400', '400', '600 900']);
-    const league = theme.icon('trophy.league');
-    expect(league).toMatchObject({
-      type: 'svg',
-      viewBox: '0 0 24 24',
-      shapeRendering: 'crispEdges',
-      layers: [
-        { fill: '#805529', fillRule: 'evenodd' },
-        { fill: '#c69a48', fillRule: 'evenodd' },
-        { fill: '#ffe3a0', fillRule: 'evenodd' },
-      ],
-    });
-    const unearned = theme.icon('trophy.league', 'unearned');
-    if (unearned.type !== 'svg' || league.type !== 'svg') throw new Error('Expected layered SVG');
-    expect(unearned.layers.map((layer) => layer.d)).toEqual(league.layers.map((layer) => layer.d));
-    expect(unearned.layers.map((layer) => layer.fill)).toEqual([
-      'currentColor',
-      'currentColor',
-      'currentColor',
-    ]);
-    expect(theme.icon('trophy.promotion')).toMatchObject({
-      layers: [{ opacity: 0.4 }, {}, { opacity: 0.5 }],
-    });
-    expect(theme.icon('trophy.promotion', 'unearned')).toMatchObject({
-      layers: [{ opacity: 0.4 }, {}, { opacity: 0.15 }],
-    });
-    expect(theme.icon('trophy.best')).toEqual(theme.icon('star'));
+  });
+
+  it('ships distinct transparent WebP trophy artwork for every registered theme and honour', () => {
+    const artwork = new Set<string>();
+    for (const entry of validateRegistry(registryData, 'theme').entries) {
+      const packUrl = `/presentation/themes/${entry.resource}`;
+      const pack = JSON.parse(
+        readFileSync(new URL(`../../public${packUrl}`, import.meta.url), 'utf8'),
+      );
+      const theme = createThemeResolver(pack, { url: packUrl });
+      for (const role of THEME_ICON_ROLES.filter((role) => role.startsWith('trophy.'))) {
+        const resource = theme.icon(role);
+        if (resource.type !== 'image')
+          throw new Error(`Expected trophy artwork: ${entry.id}/${role}`);
+        const image = readFileSync(new URL(`../../public${resource.resource}`, import.meta.url));
+        expect(image.toString('ascii', 8, 12), resource.resource).toBe('WEBP');
+        expect(image.toString('ascii', 12, 16), resource.resource).toBe('VP8X');
+        expect(image[20] & 0x10, `${resource.resource} keeps transparency`).toBe(0x10);
+        expect(image.length, `${resource.resource} stays compact`).toBeLessThan(100_000);
+        artwork.add(createHash('sha256').update(image).digest('hex'));
+        // Unearned treatment is applied by TrophyIcon while reusing the same image.
+        expect(theme.icon(role, 'unearned')).toEqual(resource);
+      }
+    }
+    expect(artwork.size).toBe(
+      registryData.entries.length *
+        THEME_ICON_ROLES.filter((role) => role.startsWith('trophy.')).length,
+    );
   });
 
   it('applies image treatment from the selected pack', () => {
