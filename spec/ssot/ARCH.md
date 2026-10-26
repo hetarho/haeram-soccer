@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r20 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r21 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -135,22 +135,24 @@
   - Portable fixtures: command sequences and canonical expected facts consumed by the web engine now and the Dart engine later.
   - Playwright: founding → watch/advance → compare metrics → recruit/request tactics → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
-  - A unit test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per source tree and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
+  - A fast unit test isolates a function or component with minimal prepared data; whole-world progression, host/codec round trips and multi-match statistical checks belong to the integration tier. Every existing case remains in exactly one of unit, integration or contract.
+  - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
 - ARCH-22 [o] Scaffolding must provide these executable verification scripts.
   - `pnpm run typecheck`
   - `pnpm run lint`
   - `pnpm run format:check`
   - `pnpm run test:unit`
+  - `pnpm run test:integration`
   - `pnpm run test:contract`
   - `pnpm run validate:catalogs`
   - `pnpm run build`
   - `pnpm run test:e2e`
   - `pnpm run benchmark`
   - `pnpm run verify`
-  - `verify` runs type/lint/format, unit/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
+  - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit tests in three shards, each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser (Chromium, Firefox, WebKit in two shards), each installing only its pinned browser. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser (Chromium, Firefox, WebKit in two shards), each installing only its pinned browser. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -187,14 +189,14 @@
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in three tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
-  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --changed "$HAERAM_DIFF_BASE" --passWithNoTests`.
+  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$HAERAM_DIFF_BASE" --passWithNoTests`.
   - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.
   - an acceptance item naming `tests/e2e` specs is confirmed by the batch run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the batch run in `- limits:`.
   - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
-  - batch, once right before a push to main that carries code (a work-group unit's `work integrate --verify`, which pushes the unit to main; a standalone session's push): `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build`, then every journey on Chromium with `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.
+  - batch, once right before a push to main that carries code (a work-group unit's `work integrate --verify`, which pushes the unit to main; a standalone session's push): `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build`, then every journey on Chromium with `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.
   - browser specs run only in that batch run; a failing spec there stops the push until it is fixed.
   - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `docs/` or Markdown starts no CI and needs no wait.
-  - a work group maps task → `--task-verify`, batch → `--verify`, and omits `--group-verify`: CI is the group gate.
+  - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
 - ARCH-31 [o] The continuous-match and full probabilistic-result release has throughput and capacity gates (→SAVE-23); its accuracy (→MATCH-28) is measured and reported with the release, not a gate. ← the model ships first and its football is calibrated on the released model
@@ -213,6 +215,11 @@
   - Locale/theme preferences are small namespaced browser settings, separate from world saves and worker commands; denied storage leaves session selection usable. Existing stored prose is returned unchanged. Rendering preferences cannot change seeded outcomes, canonical facts, progression or replay position (→ARCH-5/7/11/28).
   - The shipped locale/theme inventory follows the registries and →WEB-90/91; adding a pack does not change shared contracts or introduce a supported-ID list in code. Additional-language catalogs, new theme artwork, complete extraction of existing feature/engine copy, and historical-text conversion are subsequent work.
   - Theme-transition snapshots and animation belong to a progressive browser adapter (→WEB-93). Resource preparation stays asynchronous; installation and presentation publication share one synchronous callback, with a freshness check inside it. Animation failure must not prevent a valid selection.
+
+- ARCH-33 [o] Verification and measurement dependencies follow computation boundaries.
+  - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the grid kernel does not import campaign lifecycle/orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.
+  - Expensive measurement reuse is keyed by the runner/workload and its transitive runtime dependencies, catalog inputs, codec and toolchain. Preserve a separate full-source/build provenance fingerprint; unrelated visual assets or test edits do not invalidate simulation-only phases. A relevant source change always invalidates reuse.
+  - Keep historical measurements immutable and label later values by source, command, environment, selected checks and cache state; structural dependency/selection checks do not imply runtime speedups.
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
@@ -233,6 +240,7 @@
 - Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
 
 ## chg
+- r21 261026 ARCH-21✎ source-wide world cache→dependency-scoped JSON cache and prepared UI checkpoints; ARCH-22✎ unit/contract→unit/integration/contract; ARCH-23✎ mixed unit shards→separate unit/integration jobs; ARCH-30✎ mixed changed tests and per-unit batch→unit-project task checks and one final batch; ARCH-33+ leaf computation boundaries and dependency-scoped measurement reuse
 - r20 261024 ARCH-31✎ paired accuracy, throughput and capacity release gates→throughput and capacity gates with accuracy measured and reported, not a gate; a timebox ending does not pass the release gate→never reports a failing metric as passing
 - r19 261022 ARCH-31✎ throughput gates NPC fixture ≤50% and season engine time ≤80% of the same-machine pre-change baseline→absolute budgets on a recorded reference machine (fixture ≤1 ms median, season engine time ≤15 s median for both century profiles); the paired ratio becomes context
 - r18 261022 ARCH-32✎ fixed single-theme inventory→registry-owned inventory and progressive transition adapter with synchronous guarded commit
