@@ -1,7 +1,8 @@
 /** Open-play resolution: every chosen action is settled by a duel between named players on their attributes (→MATCH-11, MATCH-13). */
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
-import { actionWeight, finishing, goalChance, targetChance } from '../match';
+import { actionWeight } from '../match-weights';
+import { finishing, goalChance, targetChance } from '../match-rules';
 import { FORMATIONS, lineOf } from '../player';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES } from './baselines';

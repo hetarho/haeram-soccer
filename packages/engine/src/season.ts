@@ -44,7 +44,6 @@ import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives
 import {
   activePlayers,
   addEvent,
-  AMATEUR_CLUBS,
   clubOf,
   joinClub,
   makePlayer,
@@ -106,47 +105,9 @@ export const emptyTable = (): TableRow => ({
   ga: 0,
   points: 0,
 });
-export function groupKey(c: Club) {
-  return `${c.country}:${c.tier}:${c.group}`;
-}
-export function fixturesFor(clubs: Club[], year: number, globalRounds = 46): Fixture[] {
-  const ring: (Club | null)[] = [...clubs].sort((a, b) => compareIds(a.id, b.id));
-  if (ring.length % 2) ring.push(null);
-  const n = ring.length;
-  const matches: Fixture[] = [];
-  for (let round = 0; round < (n - 1) * 2; round++) {
-    for (let i = 0; i < n / 2; i++) {
-      let a = ring[i],
-        b = ring[n - 1 - i];
-      if (!a || !b) continue;
-      if (((round % (n - 1)) % 2 === 1) !== round >= n - 1) [a, b] = [b, a];
-      matches.push({
-        id: `${year}:${groupKey(a)}:${round}:${i}`,
-        year,
-        round: Math.floor((round * globalRounds) / ((n - 1) * 2)) + 1,
-        kind: 'league',
-        home: a.id,
-        away: b.id,
-        country: a.country,
-        groupKey: groupKey(a),
-      });
-    }
-    ring.splice(1, 0, ring.pop()!);
-  }
-  return matches;
-}
-/** The amateur clubs the own club meets in the amateur league. */
-function amateurOpponents(w: World) {
-  const own = clubOf(w);
-  return w.clubs
-    .filter(
-      (c) =>
-        c.country === own.country &&
-        c.representative &&
-        c.tier === country(c.country).groups.length,
-    )
-    .slice(0, AMATEUR_CLUBS);
-}
+import { groupKey, amateurOpponents, buildSeasonFixtures } from './league-fixtures';
+export { groupKey, fixturesFor } from './league-fixtures';
+
 /**
  * The average strength of the other clubs in the division the own club plays in, its league group
  * or the amateur clubs it meets: the level their squads are generated at, the scale `makePlayer`
@@ -167,22 +128,7 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
   w.fixtures = [];
   w.tables = {};
   for (const c of w.clubs) w.tables[c.id] = emptyTable();
-  const groups = new Map<string, Club[]>();
-  for (const c of w.clubs)
-    if (!c.representative && c.tier < country(c.country).groups.length) {
-      const k = groupKey(c);
-      groups.set(k, [...(groups.get(k) || []), c]);
-    }
-  for (const cs of groups.values()) w.fixtures.push(...fixturesFor(cs, w.year));
-  if (w.lower) {
-    w.fixtures.push(
-      ...fixturesFor([clubOf(w), ...amateurOpponents(w)], w.year).map((f) => ({
-        ...f,
-        kind: 'lower' as const,
-        groupKey: 'lower',
-      })),
-    );
-  }
+  w.fixtures = buildSeasonFixtures(w);
   w.round = 0;
   w.calendar = { day: 0 };
   // The season turns here only on a lifecycle run; a save's fixture rebuild changes nothing.

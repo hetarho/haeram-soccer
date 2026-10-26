@@ -3,7 +3,7 @@ import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
-import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
+import { fatigueLoad, slotOvr, unhappyPenalty } from '../player-state';
 import { matchModelNumber } from '../../../contracts/src/match-model';
 import type { FreedomState } from './freedom';
 import type { EndedIntention, Intention } from './intentions';

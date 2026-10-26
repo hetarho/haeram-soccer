@@ -2,7 +2,7 @@
 import type { Position } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
-import { actionWeight } from '../match';
+import { actionWeight } from '../match-weights';
 import { HOST_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
 import { BOX_CONFIG, deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';

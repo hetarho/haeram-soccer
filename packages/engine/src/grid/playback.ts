@@ -1,3 +1,5 @@
+import { stampAt, LENGTH } from './clock';
+export { stampAt } from './clock';
 /**
  * Playback frames from the grid trace (design §10.2, §10.4; →MATCH-12, WEB-32): one frame per match
  * minute with the engine's own positions, the ball's flight between its recorded touches, events with
@@ -12,7 +14,6 @@ import type {
   MatchMotionSample,
   Metrics,
   PlayerMotion,
-  PlayerMotionState,
   Tactic,
 } from '../../../contracts/src/types';
 import { FORMATIONS } from '../player';
@@ -28,18 +29,8 @@ import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
 import type { TraceEntry, TraceKick } from './trace';
 
-/** Motion states by the index a trace entry stores them under. */
-export const MOTION_STATES = [
-  'shape',
-  'support',
-  'run',
-  'press',
-  'mark',
-  'recover',
-  'carry',
-  'keeper',
-] as const satisfies readonly PlayerMotionState[];
-
+import { MOTION_STATES, OBSERVATION_STATES } from './observation';
+export { MOTION_STATES } from './observation';
 export const PLAYBACK_CONFIG = {
   /** Motion seconds a match minute takes at pace 1, and its regular ball track points. */
   motionSecondsPerMinute: 8,
@@ -116,7 +107,7 @@ export const PLAYBACK_CONFIG = {
    */
   preFeatureFlight: 0.25,
   /** Metres: farther from his target a player recovers, nearer the ball an attacker supports, nearer an opponent a defender marks. */
-  states: { recover: 15, support: 20, mark: 5 },
+  states: OBSERVATION_STATES,
   /** Minute weights (design §10.4): build-up in the own half, ordinary, chances and set pieces. */
   pace: { quiet: 0.6, normal: 1, busy: 1.6 },
 } as const;
@@ -188,8 +179,7 @@ interface Leg {
 }
 
 const SECONDS_PER_MOTION = 60 / PLAYBACK_CONFIG.motionSecondsPerMinute;
-const OFFSET = [0, 45, 90, 105] as const;
-const LENGTH = [45, 45, 15, 15] as const;
+
 const CARRIES = new Set(['carry', 'takeOn', 'holdUp']);
 const NOTABLE = new Set([
   '슛',
@@ -798,19 +788,6 @@ function kindOf(e: TraceEntry): MatchEvent['kind'] {
  * once past the period's length, at most the period's last frame when its `added` minutes are known.
  * Incidents are stamped with it, so each carries the label of the frame that shows it (→MATCH-24).
  */
-export function stampAt(
-  period: 1 | 2 | 3 | 4,
-  t: number,
-  added = Infinity,
-): { minute: number; added?: number } {
-  const length = LENGTH[period - 1]!;
-  const m = Math.max(0, Math.min(Math.floor(t / 60), length + added - 1)) + 1;
-  return {
-    minute: OFFSET[period - 1]! + Math.min(m, length),
-    ...(m > length ? { added: m - length } : {}),
-  };
-}
-
 /**
  * Sorted match seconds in (`from`, `to`], plus `from` itself when `open`, at least `spacing` apart:
  * a candidate minute's sample or ball-knot times. `to` and the `keep` times (restarts' kicks,

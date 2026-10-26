@@ -1,10 +1,23 @@
-/** Everything a grid match needs before kick-off: era rules, rosters, bench, takers and bends (→MATCH-2, MATCH-18, MATCH-20, CLUB-6). */
-import type { Club, Fixture, Player, Score, Tactic, World } from '../../../contracts/src/types';
 import {
-  activeMatchModel,
-  matchModelNumber,
-  type MatchModelRevision,
-} from '../../../contracts/src/match-model';
+  eraRules,
+  modelAtLeast,
+  DEFAULT_SUB_POLICY,
+  type EraRules,
+  type SubPolicy,
+  type DecideRule,
+} from './rules';
+export {
+  eraRules,
+  modelAtLeast,
+  DEFAULT_SUB_POLICY,
+  isLevel,
+  type EraRules,
+  type SubPolicy,
+  type DecideRule,
+} from './rules';
+/** Everything a grid match needs before kick-off: era rules, rosters, bench, takers and bends (→MATCH-2, MATCH-18, MATCH-20, CLUB-6). */
+import type { Club, Fixture, Player, Tactic, World } from '../../../contracts/src/types';
+import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
 import { bestRoleAt, FORMATIONS, lineOf } from '../player';
 import { clubManager } from '../managerMarket';
 import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
@@ -13,30 +26,6 @@ import { HOST_MATH, PORTABLE_MATH } from '../portable-math';
 import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
 import { playerTendencies, type PlayerTendencies } from './tendencies';
-
-export interface EraRules {
-  /** Substitutes a side may name. */
-  named: number;
-  maxSubs: number;
-  injuryOnly: boolean;
-  /** Substitution windows per side in extra-free play; undefined means unlimited. */
-  windows: number | undefined;
-  /** Whether the era's wording says "cards" (affects text only). */
-  cards: boolean;
-}
-
-/** Substitution rules by season (MATCH-20, MATCH-19). */
-export function eraRules(year: number): EraRules {
-  const cards = year >= 1970;
-  if (year >= 2022) return { named: 9, maxSubs: 5, injuryOnly: false, windows: 3, cards };
-  if (year >= 2008) return { named: 7, maxSubs: 3, injuryOnly: false, windows: undefined, cards };
-  if (year >= 1996) return { named: 5, maxSubs: 3, injuryOnly: false, windows: undefined, cards };
-  if (year >= 1995) return { named: 3, maxSubs: 3, injuryOnly: false, windows: undefined, cards };
-  if (year >= 1987) return { named: 2, maxSubs: 2, injuryOnly: false, windows: undefined, cards };
-  if (year >= 1967) return { named: 1, maxSubs: 1, injuryOnly: false, windows: undefined, cards };
-  if (year >= 1965) return { named: 1, maxSubs: 1, injuryOnly: true, windows: undefined, cards };
-  return { named: 0, maxSubs: 0, injuryOnly: false, windows: undefined, cards };
-}
 
 /** Roster indexes of the set-piece takers. */
 export interface Takers {
@@ -150,45 +139,6 @@ export interface StyleBend {
   lineLow: number;
 }
 
-/** How a manager reads the match for substitutions (→STAFF-22). */
-export interface SubPolicy {
-  fatigueFrom: number;
-  laterFrom: number;
-  earlyPress: boolean;
-  protectLead: boolean;
-  chaseWhenBehind: boolean;
-  youth: boolean;
-  data: boolean;
-  delay: number;
-}
-
-export const DEFAULT_SUB_POLICY: SubPolicy = {
-  fatigueFrom: 60,
-  laterFrom: 70,
-  earlyPress: false,
-  protectLead: false,
-  chaseWhenBehind: false,
-  youth: false,
-  data: false,
-  delay: 0,
-};
-
-/** A knockout tie's earlier leg and whether away goals count (→MATCH-6). */
-export interface DecideRule {
-  first?: Score;
-  awayGoals: boolean;
-}
-/**
- * Whether a knockout tie is still level after this fixture's goals: on aggregate with the first
- * leg (oriented to this fixture) and, under the away-goals rule, on away goals (design §8.4).
- */
-export function isLevel(decide: DecideRule, home: number, away: number) {
-  const first = decide.first ?? { home: 0, away: 0 };
-  if (first.home + home !== first.away + away) return false;
-  // This fixture's home side scored its away goals in the first leg.
-  return !decide.awayGoals || !decide.first || first.home === away;
-}
-
 export interface GridSetup {
   w: World;
   f: Fixture;
@@ -223,10 +173,6 @@ export interface GridSetup {
    */
   offsideDraws?: [0 | 1, number, number, 0 | 1, number][];
 }
-
-/** Whether a match plays `revision` of the candidate model or a later one; T431–T433 gate on 2. */
-export const modelAtLeast = (setup: Pick<GridSetup, 'model'>, revision: number) =>
-  setup.model !== undefined && matchModelNumber(setup.model) >= revision;
 
 /**
  * One side's tendencies (→PLAYER-26): what his club's manager gives him (ours, or the named

@@ -6,7 +6,7 @@ import {
   unpackManagerHistory,
   type PackedManagerHistory,
 } from './managerHistoryPacking';
-import { prepareSeason } from '../../../../packages/engine/src/season';
+import { buildSeasonFixtures } from '../../../../packages/engine/src/league-fixtures';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import type {
@@ -1060,7 +1060,6 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     });
     ranks.done();
   }
-  const copy = { ...p.world };
   let scorerSeason: GoalScorerSeason | undefined;
   if (p.world.scorerSeason !== undefined) {
     if (
@@ -1086,9 +1085,9 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     scorers.done();
   }
   // Rebuild derived fixtures without enrolling people or recording new career facts.
-  prepareSeason(copy, false, false);
+  const fixtures = buildSeasonFixtures(p.world);
   for (const row of p.fixtures) {
-    const fixture = copy.fixtures[row[0] as number];
+    const fixture = fixtures[row[0] as number];
     if (!fixture || fixture.score) throw new Error('일정 참조 손상');
     fixture.score = { home: row[1] as number, away: row[2] as number };
   }
@@ -1098,7 +1097,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     ...(model?.matchModel ? { matchModel: model.matchModel } : {}),
     ...(model?.npcSeason ? { npcSeason: model.npcSeason } : {}),
     ...(managers ? { managerHistory: managers.facts } : {}),
-    fixtures: copy.fixtures,
+    fixtures: fixtures,
     ownMatches: matches,
     history,
     ...(rankHistory ? { rankHistory } : {}),

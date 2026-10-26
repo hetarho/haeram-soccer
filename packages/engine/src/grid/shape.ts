@@ -4,7 +4,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
 import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
 import { FORMATIONS, lineOf } from '../player';
-import { actionWeight } from '../match';
+import { actionWeight } from '../match-weights';
 import type { MatchMath } from '../portable-math';
 import { boxBackLine, boxGuardTarget, boxMarkPoint, defendingBox } from './box';
 import { freedomPlan, looseness } from './freedom';

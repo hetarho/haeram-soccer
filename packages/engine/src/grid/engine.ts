@@ -32,7 +32,8 @@ import {
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
-import { isLevel, type GridSetup } from './setup';
+import { isLevel } from './rules';
+import type { GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
 import {
@@ -58,7 +59,7 @@ import {
 import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges, sideFreshness } from './changes';
 import { shotEnd, Tracer, type TraceEntry } from './trace';
-import { stampAt } from './playback';
+import { stampAt } from './clock';
 import {
   advance,
   benchPoint,

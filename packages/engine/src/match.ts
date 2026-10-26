@@ -1,3 +1,22 @@
+import {
+  MATCH_DUEL_CONFIG,
+  bend,
+  effectiveGap,
+  slotSkill,
+  drainPerMinute,
+  goalChance,
+  targetChance,
+} from './match-rules';
+export {
+  MATCH_DUEL_CONFIG,
+  bend,
+  effectiveGap,
+  finishing,
+  slotSkill,
+  drainPerMinute,
+  goalChance,
+  targetChance,
+} from './match-rules';
 import type {
   Club,
   Fixture,
@@ -10,16 +29,8 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
-import type { PlayTrait, RoleId } from '../../contracts/src/player';
-import {
-  cohesionMultiplier,
-  fatigueLoad,
-  findClub,
-  ownMultiplier,
-  ratingOf,
-  startingSquad,
-  unhappyPenalty,
-} from './world';
+import type { RoleId } from '../../contracts/src/player';
+import { cohesionMultiplier, findClub, ownMultiplier, ratingOf, startingSquad } from './world';
 import { FORMATIONS, isWide, levelFactor as positionLevelFactor, lineOf } from './player';
 import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';
@@ -68,64 +79,6 @@ const FINISH = 0,
   DISTRIBUTE = 12,
   KEYS = 13;
 
-/**
- * What a slot's role and a player's play traits make him attempt more (or less) often (→PLAYER-5,
- * PLAYER-9, MATCH-11). The weights only pick who does it: how many shots, passes and duels a side
- * plays stays as its tactical profile sets them.
- */
-export type MatchAction =
-  'shot' | 'box' | 'long' | 'dribble' | 'cross' | 'key' | 'press' | 'aerial' | 'run' | 'hold';
-const MATCH_ACTIONS: readonly MatchAction[] = [
-  'shot',
-  'box',
-  'long',
-  'dribble',
-  'cross',
-  'key',
-  'press',
-  'aerial',
-  'run',
-  'hold',
-];
-export const ROLE_ACTION: Partial<Record<RoleId, Partial<Record<MatchAction, number>>>> = {
-  stopper: { press: 1.2, aerial: 1.1 },
-  ballPlayingDefender: { key: 1.1 },
-  defensiveFullBack: { cross: 0.8 },
-  overlappingFullBack: { cross: 1.3, run: 1.1 },
-  invertedFullBack: { cross: 0.6, key: 1.1 },
-  defensiveWingBack: { cross: 0.9 },
-  attackingWingBack: { cross: 1.4, dribble: 1.1 },
-  anchor: { press: 1.1 },
-  ballWinner: { press: 1.5 },
-  regista: { key: 1.4 },
-  boxToBox: { run: 1.2, press: 1.2 },
-  mezzala: { run: 1.2, key: 1.1 },
-  deepLyingPlaymaker: { key: 1.3 },
-  wideMidfielder: { cross: 1.3 },
-  widePlaymaker: { key: 1.3, cross: 0.8 },
-  attackingMidfielder: { key: 1.2, long: 1.2 },
-  shadowStriker: { shot: 1.3, run: 1.3 },
-  trequartista: { key: 1.4, dribble: 1.2 },
-  traditionalWinger: { cross: 1.5, dribble: 1.2, shot: 0.8 },
-  invertedWinger: { shot: 1.4, cross: 0.7, dribble: 1.2 },
-  targetMan: { aerial: 1.6, hold: 1.4, shot: 1.1 },
-  poacher: { box: 1.4, shot: 1.3 },
-  falseNine: { key: 1.3, dribble: 1.2, shot: 0.8 },
-  completeForward: { shot: 1.1, key: 1.1, aerial: 1.1 },
-};
-export const TRAIT_ACTION: Partial<Record<PlayTrait, Partial<Record<MatchAction, number>>>> = {
-  workrate: { press: 1.2 },
-  technician: { dribble: 1.4 },
-  playmaker: { key: 1.4 },
-  speedster: { run: 1.4 },
-  linebreaker: { run: 1.3, shot: 1.1 },
-  targetman: { aerial: 1.6, hold: 1.3 },
-  longshot: { long: 1.5 },
-  crosser: { cross: 1.5 },
-  aerial: { aerial: 1.4 },
-  tackler: { press: 1.2 },
-  buildup: { key: 1.1 },
-};
 /** Offsets in MATCH_ACTIONS order; 3 (dribble) and 6 (press) only pick in the grid engine. */
 const SHOT = 0,
   BOX = 1,
@@ -136,108 +89,8 @@ const SHOT = 0,
   RUN = 8,
   HOLD = 9,
   ACTIONS = 10;
-const ROLE_VECTORS = new Map<RoleId, Float64Array>();
-/** A role's multiplier for every action, in MATCH_ACTIONS order. */
-function roleVector(role: RoleId) {
-  let vector = ROLE_VECTORS.get(role);
-  if (!vector) {
-    vector = Float64Array.from(MATCH_ACTIONS, (action) => ROLE_ACTION[role]?.[action] ?? 1);
-    ROLE_VECTORS.set(role, vector);
-  }
-  return vector;
-}
-const TRAIT_VECTORS = new WeakMap<readonly PlayTrait[], Float64Array>();
-/** A player's traits' product for every action; traits are replaced, never edited in place. */
-function traitVector(traits: readonly PlayTrait[]) {
-  let vector = TRAIT_VECTORS.get(traits);
-  if (!vector) {
-    vector = Float64Array.from(MATCH_ACTIONS, (action) =>
-      traits.reduce((product, trait) => product * (TRAIT_ACTION[trait]?.[action] ?? 1), 1),
-    );
-    TRAIT_VECTORS.set(traits, vector);
-  }
-  return vector;
-}
-/** A player's weight for an action at a slot: his role's times his traits', within 0.5–2. */
-export function actionWeight(role: RoleId, traits: readonly PlayTrait[], action: MatchAction) {
-  const i = MATCH_ACTIONS.indexOf(action);
-  return clamp(roleVector(role)[i]! * traitVector(traits)[i]!, 0.5, 2);
-}
-
-/**
- * Named tuning surface for the probabilistic path's chance model (→MATCH-22) and the strength
- * curve both engines share. Starting XI slots: 0 GK, 1–4 DEF, 5–7 MID, 8–10 FWD.
- */
-export const MATCH_DUEL_CONFIG = {
-  /** A chance made by a flank player is a cross this often before his weight: then a header. */
-  crossChance: 0.35,
-  /**
-   * A 스위퍼 키퍼 reads a ball in behind or a run through on goal this often between equal
-   * players, on his 속도 and 발밑 against the runner's 속도 (→PLAYER-5).
-   */
-  sweep: 0.05,
-  /** How much more often a runner (speedster, line breaker, shadow striker) takes a chance himself. */
-  runShare: 0.5,
-  /** Key-duel success between equal players. */
-  keySuccess: 0.62,
-  /** Chance attempts are the team chance rate divided by this realized key-duel success. */
-  keyRealized: 0.6,
-  /** Duel-margin points (after diminishing returns) per unit of key-duel success. */
-  keyScale: 250,
-  /**
-   * Shot attempts per point of the team chance rate: open play plus the set pieces and second
-   * balls the minute model folds in, so a side takes the 10–16 shots of a top-flight match.
-   */
-  volume: 1.7,
-  /** Most of a side's possession minutes that can become chances. */
-  attemptCap: 0.75,
-  /** Big chance, box and long-range expected-goal bands (about 0.1 xG per shot overall). */
-  chances: {
-    big: [0.24, 0.43] as const,
-    box: [0.068, 0.16] as const,
-    long: [0.024, 0.056] as const,
-  },
-  bigShare: 0.13,
-  /** Duel-margin points (after diminishing returns) per unit of big-chance share. */
-  bigScale: 500,
-  boxShare: 0.52,
-  /**
-   * Expected goals scale by exp(bent (shooter attack − keeper) / finishing) and by the shooter's
-   * own attack against a 55 baseline, so sharper leagues finish slightly more chances.
-   */
-  finishing: 90,
-  sharpness: 400,
-  onTarget: 0.4,
-  /** Key-duel and finishing margins between two players bend towards this many points (tanh). */
-  saturation: 30,
-  /**
-   * Diminishing returns on the whole match: a strength gap g plays as g / (1 + (g / S)⁴)^¼ —
-   * close to g up to about 15 points, never more than S. A far stronger side eases off and a far
-   * weaker one parks the bus, so even a massive favourite still drops points.
-   */
-  gapSaturation: 24,
-  /**
-   * Score effects: per goal of lead (up to two) a side ahead sits deeper, ceding this share of
-   * the ball and creating `leadEase` as much from what it keeps, so leads get defended,
-   * equalisers come and routs stay rare.
-   */
-  leadPossession: 0.05,
-  leadEase: 0.8,
-  /**
-   * Match-day form: each side's strength and every player's skills move by a seeded, fat-tailed
-   * draw with this standard deviation in rating points (travel, rotation, a bad day at the
-   * office). It comes on top of the diminishing returns, so it is what topples favourites.
-   */
-  form: 7,
-  /** In-match fatigue: skill points lost by 90′ per missing stamina point. */
-  drainPerStamina: 1 / 12,
-  pressDrain: 1.3,
-  /**
-   * A minute that starts with the ball just won in the opponent's third: the chance rate rises by
-   * this factor and the chance is a big one this much more often.
-   */
-  transition: { chance: 1.25, big: 0.15 },
-} as const;
+import { roleVector, traitVector } from './match-weights';
+export { actionWeight, ROLE_ACTION, TRAIT_ACTION, type MatchAction } from './match-weights';
 
 /**
  * Who carries the ball into the final third and who defends there, from a side's formation lines:
@@ -315,12 +168,6 @@ const OUTFIELD: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 // the host's `Math.*` unless the candidate grid passes its portable table (→ARCH-9, T358), so the
 // summary and aggregate paths keep their bits.
 const C = MATCH_DUEL_CONFIG;
-/** Diminishing returns on a skill margin: about linear up to half the saturation, then flat. */
-export const bend = (margin: number, math: MatchMath = HOST_MATH) =>
-  C.saturation * math.tanh(margin / C.saturation);
-/** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
-export const effectiveGap = (gap: number, math: MatchMath = HOST_MATH) =>
-  gap / Math.sqrt(Math.sqrt(1 + math.powInt(gap / C.gapSaturation, 4)));
 /** The home side's chance to hold a minute once score effects shift the ball to the side behind. */
 const possessionAt = (chance: number, metrics: number[][]) =>
   chance - C.leadPossession * clamp(metrics[0][0] - metrics[1][0], -2, 2);
@@ -363,19 +210,6 @@ function chanceQuality(
   const within = u < big ? u / big : u < box ? (u - big) / boxShare : (u - box) / (1 - box);
   return { xg: band[0] + (band[1] - band[0]) * within, big: u < big, box: u < box };
 }
-/** How much better than a chance's quality this shooter finishes against this keeper. */
-export const finishing = (shooting: number, keeping: number, math: MatchMath = HOST_MATH) =>
-  math.exp(bend(shooting - keeping, math) / C.finishing) * (1 + (shooting - 55) / C.sharpness);
-/** Goal probability of a chance of quality `xg` for this shooter against this keeper. */
-export const goalChance = (
-  xg: number,
-  shooting: number,
-  keeping: number,
-  math: MatchMath = HOST_MATH,
-) => clamp(xg * finishing(shooting, keeping, math), 0.01, 0.8);
-export const targetChance = (goal: number, shooting: number) =>
-  clamp(goal + C.onTarget + (shooting - 55) / 250, goal + 0.05, 0.95);
-
 /**
  * Each side's match-day form in rating points, drawn on its own stream so fast and observed runs
  * of a fixture share it. Form is fat-tailed (Laplace): most days sit near the usual level, a few
@@ -568,24 +402,6 @@ function candidateMatch(
  * handling, an eighth on the rest — and an unhappy player's penalty (→CLUB-27). The one formula
  * of the probabilistic chance model and the aggregate path's skill accessor.
  */
-export function slotSkill(p: Player, value: number, scale: number, keeping = false) {
-  return value * scale - fatigueLoad(p.fatigue) / (keeping ? 10 : 8) - unhappyPenalty(p);
-}
-/** Skill points a player of this `stamina` loses per minute on the pitch for `side` (→MATCH-11). */
-export function drainPerMinute(
-  setup: Pick<MatchSetup, 'tactics' | 'drain'>,
-  side: Side,
-  stamina: number,
-) {
-  return (
-    ((100 - stamina) *
-      C.drainPerStamina *
-      (setup.tactics[side] === 'press' ? C.pressDrain : 1) *
-      setup.drain[side]!) /
-    90
-  );
-}
-
 /**
  * Effective skills per starting slot: pre-match fatigue, an unhappy player's penalty (→CLUB-27),
  * the day's shift and in-match drain (`slotSkill`, `drainPerMinute`). A short list repeats its

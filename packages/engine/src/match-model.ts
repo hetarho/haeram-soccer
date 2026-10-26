@@ -13,7 +13,7 @@ import type { Incident, MatchRecord, Metrics, World } from '../../contracts/src/
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { currentDay } from './calendar';
 import { M } from './grid/record';
-import { eraRules } from './grid/setup';
+import { eraRules } from './grid/rules';
 import { openNpcSeason, trackingBoundary } from './npc-stats';
 import { zeroMetrics } from './primitives';
 

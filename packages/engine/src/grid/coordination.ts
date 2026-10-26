@@ -13,7 +13,7 @@
 import { INTENTION_PRIORITIES } from '../../../contracts/src/match-model';
 import type { Attribute, Position, RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
-import { actionWeight } from '../match';
+import { actionWeight } from '../match-weights';
 import { lineOf } from '../player';
 import { hypot } from '../portable-math';
 import { random } from '../primitives';

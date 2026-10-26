@@ -34,15 +34,10 @@ import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
 import { operatingExpensesAt } from './finance';
 import {
-  adaptationMultiplier,
   adaptationStart,
-  FORMATIONS,
   generateProfile,
-  levelFactor,
   LINE_MINIMUM,
   lineOf,
-  mainOvr,
-  ovrAt,
   type Joined,
   type Slot,
 } from './player';
@@ -54,42 +49,37 @@ export const tacticLabel: Record<Tactic, string> = {
   counter: '역습',
   press: '전방 압박',
 };
-const ownIndex = new WeakMap<readonly Club[], number>();
-/** The owner's club: its place in the clubs array is remembered and checked on every call. */
-export const clubOf = (w: World) => {
-  const known = ownIndex.get(w.clubs);
-  if (known !== undefined && w.clubs[known]?.id === w.playerClub) return w.clubs[known]!;
-  const index = w.clubs.findIndex((c) => c.id === w.playerClub);
-  ownIndex.set(w.clubs, index);
-  return w.clubs[index]!;
+import {
+  clubOf,
+  activePlayers,
+  overall,
+  lineOfPlayer,
+  UNHAPPY_PENALTY,
+  unhappyPenalty,
+  playingAbility,
+  ownMultiplier,
+  cohesionMultiplier,
+  slotOvr,
+  formationOf,
+  FRESH_FATIGUE,
+  fatigueLoad,
+} from './player-state';
+export {
+  clubOf,
+  activePlayers,
+  overall,
+  lineOfPlayer,
+  UNHAPPY_PENALTY,
+  unhappyPenalty,
+  playingAbility,
+  ownMultiplier,
+  cohesionMultiplier,
+  slotOvr,
+  formationOf,
+  FRESH_FATIGUE,
+  fatigueLoad,
 };
-export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
-/** His OVR at his main position in his best role there (→PLAYER-6). */
-export const overall = (p: Player) => Math.round(mainOvr(p));
-/** His line: his main position's (→PLAYER-3). */
-export const lineOfPlayer = (p: Player): Line => lineOf(p.position);
-/** Points an unhappy player plays below his ability (→CLUB-27); his attributes stay as they are. */
-export const UNHAPPY_PENALTY = 3;
-export const unhappyPenalty = (p: Player) => (p.unhappy ? UNHAPPY_PENALTY : 0);
-/** The ability a player plays at: his overall, less the unhappy penalty. */
-export const playingAbility = (p: Player) => overall(p) - unhappyPenalty(p);
-/** An own player plays at his adaptation's multiplier (→PLAYER-10). */
-export const ownMultiplier = (p: Player) => adaptationMultiplier(p.adaptation);
-/** A club nobody owns plays at its 조직력's multiplier (→LEAGUE-12). */
-export const cohesionMultiplier = (c: Club) => adaptationMultiplier(c.cohesion ?? 0.8);
-/**
- * 실효 OVR at a formation slot: his OVR there in its role × his level there × his multiplier, less
- * the unhappy penalty (→PLAYER-6).
- */
-export function slotOvr(p: Player, slot: Slot, multiplier = 1) {
-  return (
-    ovrAt(p.attrs, slot.position, slot.role) *
-      levelFactor(p.positions, slot.position) *
-      multiplier -
-    unhappyPenalty(p)
-  );
-}
-export const formationOf = (tactic: Tactic) => FORMATIONS[tactic].slots;
+
 /** Where a player joining the club starts to settle (→PLAYER-11). */
 export function joinClub(p: Player, joined: Joined, year: number) {
   p.joined = year;
@@ -225,14 +215,6 @@ export function makePlayer(
   return player;
 }
 /**
- * Fatigue up to this level is ordinary match fitness and costs nothing: other clubs carry the same
- * weekly load without it being modelled. Only the excess weakens a player.
- */
-export const FRESH_FATIGUE = 20;
-export function fatigueLoad(fatigue: number) {
-  return Math.max(0, fatigue - FRESH_FATIGUE);
-}
-/**
  * A manager first met in `year`. Market candidates (index 1–98) younger than their prime start
  * below the level they will reach and ask for less (→STAFF-16); the founding manager and an
  * interim keep the drawn level. A candidate of a school is drawn within its bands with the same
@@ -279,7 +261,8 @@ export function makeManager(
 export const EUROPEAN_CUP_START = 1955;
 export const FOUNDING_YEAR = EUROPEAN_CUP_START - 5;
 /** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
-export const AMATEUR_CLUBS = 15;
+import { AMATEUR_CLUBS } from './league-fixtures';
+export { AMATEUR_CLUBS } from './league-fixtures';
 /**
  * Generated strength of a club in a pyramid tier: each professional tier is about 11 points below
  * the one above, and the amateur level (tier = professional depth) sits one more step down.

@@ -1,10 +1,10 @@
 /** Substitutions by the manager and injuries in play (→MATCH-20, MATCH-21, STAFF-45, CLUB-23; design §8.1). */
 import type { Manager } from '../../../contracts/src/types';
-import { injuryChance } from '../careers';
+import { injuryChance } from '../injury-rules';
 import { FORMATIONS, lineOf } from '../player';
-import { slotOvr } from '../world';
+import { slotOvr } from '../player-state';
 import { attackFrame } from './pitch';
-import { DEFAULT_SUB_POLICY, type SubPolicy } from './setup';
+import { DEFAULT_SUB_POLICY, type SubPolicy } from './rules';
 import { enterSlot, onPitch, other, regMinute, type GridPlayer, type GridState } from './state';
 
 /** Thresholds of the managers' substitutions (STAFF-45) and the injury hazard (CLUB-23). */

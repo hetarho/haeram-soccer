@@ -1,5 +1,5 @@
 /** The touch-by-touch trace playback is built from (design §10.1). Only kept when the match is observed. */
-import { MOTION_STATES, PLAYBACK_CONFIG } from './playback';
+import { MOTION_STATES, OBSERVATION_STATES } from './observation';
 import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
 import type { Outcome, ShotOutcome } from './resolve';
 import type { EndedIntention, Intention, IntentionKind } from './intentions';
@@ -247,7 +247,7 @@ function stateOf(
   target: readonly [number, number],
   press: readonly number[],
 ): number {
-  const c = PLAYBACK_CONFIG.states;
+  const c = OBSERVATION_STATES;
   const attacking = s.possession === gp.side;
   // The match's hypot: the observed states replay alike on every host and engine (T358).
   const near = (p: readonly [number, number], d: number) =>
