@@ -3,9 +3,6 @@
   command = "pnpm install --frozen-lockfile && pnpm run build"
   publish = "apps/web/dist"
 
-[build.environment]
-  NODE_VERSION = "24.12.0"
-
 [context.production]
   command = "pnpm install --frozen-lockfile && pnpm run build"
 

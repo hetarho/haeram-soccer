@@ -316,7 +316,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T463 | One pinned Node version for Netlify builds | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -331,11 +330,12 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- T463 (Netlify's Node pin follows .node-version) is runnable; MATCH r31 reconciled the doc-review counter discrepancies without code work.
+- T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 T463 done (q7m3): netlify.toml drops its NODE_VERSION 24.12.0 so Netlify reads .node-version (24.22.1) like CI and engines; tests/config/node-pin.test.ts guards Netlify, engines.node and every setup-node step
 - 261026 create-task (q7m3): T463 Netlify's Node pin follows .node-version (ARCH-23, no rev: the rule already requires one pinned toolchain); MATCH r31 needs no task, both paths already count its zones and line-breaking passes so (T327)
 - 261026 update-ssot MATCH r31 (q7m3): MATCH-13 high-turnover and PPDA zones read MATCH-14's nearest band edges (35 m; two-thirds), aggregate line-breaking passes drawn among passes into a higher band; MATCH-30 source cells state the zone offset, bands unchanged
 - 261026 T410 done (q7m3): 10-season gameplay read of the released model, indicative: top tier 2.91 goals, H/D/A 43.7/21.2/35.2, margins 11–12 every season, champions 2.32 PPG, top scorer 26.8, hat-tricks 0.040; 80 observed fixtures 3.39 goals, 20/37 MATCH-23 rows inside; five follow-ups named, no engine change
@@ -355,4 +355,3 @@
 - 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
 - 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass
-- 261026 ARCH r21 + T459–T462 (f6d2): adopted feedback-cost review; preserve coverage and baseline, isolate caches/test tiers/engine leaves/measurement reuse; other start-vibe session stopped by owner
