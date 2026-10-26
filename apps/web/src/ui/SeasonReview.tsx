@@ -1,7 +1,7 @@
 import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { number, seasonName, signed } from './format';
 import { Money } from './Money';
 import { divisionName } from './league';

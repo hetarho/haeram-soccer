@@ -4,7 +4,10 @@ import { onManagerChange } from './adaptation';
 import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
 import type { ManagerDeparture } from '../../contracts/src/manager-history';
 import { captureManagerChange } from './manager-history-capture';
-import { addEvent, clubOf, makeManager, quote, tacticLabel, TACTICS } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { makeManager, tacticLabel, TACTICS } from './world';
+import { quote } from './quotes';
 import { clamp, random, ratio } from './primitives';
 import {
   checkTerm,

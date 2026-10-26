@@ -2,7 +2,7 @@ import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../contracts/src/
 import { clubIdentitySchema } from '../../contracts/src/identitySchema';
 import type { World } from '../../contracts/src/types';
 import { nextOwnFixture } from './calendar';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 
 /**
  * The owner's identity commands (spec/ssot/KIT.md). Presentation only (KIT-13):

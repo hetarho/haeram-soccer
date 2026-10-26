@@ -1,6 +1,7 @@
 import type { Founding, World } from '../../contracts/src/types';
 import { clubIdentitySchema } from '../../contracts/src/identitySchema';
-import { clubOf, createBase } from './world';
+import { clubOf } from './player-state';
+import { createBase } from './world';
 import { prepareSeason, advanceRound, closeSeason } from './season';
 import { basicStaff } from './staff';
 import { MORALE_START } from './morale';

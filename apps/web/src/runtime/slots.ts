@@ -7,7 +7,7 @@ import {
 } from '../../../../packages/contracts/src/versions';
 import { country } from '../../../../packages/catalogs/src/index';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import {
   GameIndexStore,
   IndexedDbParkedStore,

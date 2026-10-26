@@ -13,7 +13,7 @@ import {
 } from './staff';
 import { coachCriteriaOf } from './hiring';
 import { isDelegated } from './responsibilities';
-import { addEvent } from './world';
+import { addEvent } from './events';
 import { debit } from './transactions';
 import { ratio } from './primitives';
 import { offerContract, staffTalkVerdict, talkFor, talkWindow } from './contracts';

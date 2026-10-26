@@ -2,7 +2,9 @@ import type { Player, World } from '../../contracts/src/types';
 import { buildEffects, buildOf } from './build';
 import { policyEffects, policyOf } from './policy';
 import { credit } from './transactions';
-import { activePlayers, addEvent, clubOf, footballQuote } from './world';
+import { activePlayers, clubOf } from './player-state';
+import { addEvent } from './events';
+import { footballQuote } from './quotes';
 
 /**
  * 지역 기반 and 글로벌 인지도 (→ECON-34): two bases, 0–100, that the 지역 and 글로벌 rows build

@@ -1,6 +1,7 @@
 import type { ClubPolicy, PolicyKey, PolicyLevel, World } from '../../contracts/src/types';
 import { operatingCosts } from './finance';
-import { addEvent, clubOf } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
 
 /** Display and decision order. */
 export const POLICY_KEYS: readonly PolicyKey[] = [

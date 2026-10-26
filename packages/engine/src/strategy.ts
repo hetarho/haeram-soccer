@@ -1,15 +1,8 @@
 import type { Club, Fixture, Player, Tactic, World } from '../../contracts/src/types';
 import { isBanned } from './discipline';
-import {
-  activePlayers,
-  addEvent,
-  clubStyle,
-  fatigueLoad,
-  formationOf,
-  isInjured,
-  ownMultiplier,
-  slotOvr,
-} from './world';
+import { activePlayers, fatigueLoad, formationOf, ownMultiplier, slotOvr } from './player-state';
+import { addEvent } from './events';
+import { clubStyle, isInjured } from './world';
 import { slotLine } from './player';
 import { clamp, compareIds } from './primitives';
 import { managerStyleEffects } from './styles';

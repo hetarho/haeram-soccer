@@ -8,7 +8,7 @@ import type {
 import { cupKey } from '../../../../packages/engine/src/cups';
 import { europeanEras, returnLegRound } from '../../../../packages/engine/src/europe';
 import { roundLabel, tieId } from '../../../../packages/engine/src/knockout';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 
 /** A slot of the tree: a drawn tie, a club through on a bye, or a tie still to be drawn. */
 export type Slot = { tie: number } | { bye: string } | undefined;

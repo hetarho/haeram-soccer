@@ -1,7 +1,8 @@
 import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { ratio } from './primitives';
-import { addEvent, clubOf } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
 export function advanceEconomy(w: World, previousYear: number) {
   const code = clubOf(w).country,
     before = currency(code, previousYear),

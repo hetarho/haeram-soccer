@@ -1,7 +1,9 @@
 import { baseEffects } from './bases';
 import type { SponsorContract, SponsorKind, SponsorSlot, World } from '../../contracts/src/types';
 import { SPONSOR_SLOTS, sponsorSlotOpens, type Observation } from '../../catalogs/src/index';
-import { addEvent, clubOf, footballQuote } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { footballQuote } from './quotes';
 import { ratio } from './primitives';
 import { moneyLabel, SPONSOR_SLOT_LABELS } from './finance';
 import { buildEffects } from './build';

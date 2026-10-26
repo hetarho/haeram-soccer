@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { financeProjection } from '../../../../packages/engine/src/projection';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { Money } from './Money';
 import s from './FinanceOutlook.module.css';
 

@@ -1,5 +1,7 @@
 import type { Club, MatchRecord, World } from '../../contracts/src/types';
-import { activePlayers, clubOf, findClub, footballQuote, initialElo, quote } from './world';
+import { activePlayers, clubOf } from './player-state';
+import { findClub, initialElo } from './world';
+import { footballQuote, quote } from './quotes';
 import { playerValue } from './transfers';
 import { facilityBuiltUnits } from './facilities';
 

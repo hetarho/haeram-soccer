@@ -4,16 +4,9 @@ import { baseEffects } from './bases';
 import type { Line, Player, Position, World, YouthFocus } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { currentDay, seasonDayOf } from './calendar';
-import {
-  activePlayers,
-  addEvent,
-  clubOf,
-  joinClub,
-  lineOfPlayer,
-  makePlayer,
-  overall,
-  ownStarters,
-} from './world';
+import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
+import { addEvent } from './events';
+import { joinClub, makePlayer, ownStarters } from './world';
 import { clamp, compareIds, integer, random } from './primitives';
 import { marketWage, signingClauses } from './contracts';
 import { staffEffects, staffMember } from './staff';

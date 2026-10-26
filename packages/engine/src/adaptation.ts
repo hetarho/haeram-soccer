@@ -10,7 +10,7 @@ import {
   MATCH_GAIN,
   schoolFactor,
 } from './player';
-import { addEvent } from './world';
+import { addEvent } from './events';
 
 /**
  * Adaptation and 조직력 as the world lives them (→PLAYER-4, PLAYER-12–14, LEAGUE-12): starts settle

@@ -1,6 +1,6 @@
 import type { InboxItem, ResponsibilityKey, World } from '../../contracts/src/types';
 import { currentDay, daysUntilNextMatch, nextOwnFixture } from './calendar';
-import { activePlayers } from './world';
+import { activePlayers } from './player-state';
 import { isDelegated, settingsOf } from './responsibilities';
 import { isExpiring, renewalDay, STAFF_INFO, STAFF_ROLES, staffMember } from './staff';
 import { managerRenewal } from './ops-staff';

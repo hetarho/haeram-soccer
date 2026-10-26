@@ -4,15 +4,8 @@ import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
 import { transferOffers } from './ops-squad';
-import {
-  clubOf,
-  fatigueLoad,
-  formationOf,
-  lineOfPlayer,
-  overall,
-  slotOvr,
-  startingSquad,
-} from './world';
+import { clubOf, fatigueLoad, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
+import { startingSquad } from './world';
 import { compareIds } from './primitives';
 import { adaptationMultiplier, adaptationStart, ADAPTATION_NEUTRAL } from './player';
 import { isForeignCandidate } from './ops-squad';

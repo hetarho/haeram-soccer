@@ -20,9 +20,9 @@ import {
   formationOf,
   overall,
   ownMultiplier,
-  ownStarters,
   slotOvr,
-} from '../../../../packages/engine/src/world';
+} from '../../../../packages/engine/src/player-state';
+import { ownStarters } from '../../../../packages/engine/src/world';
 import { OvrBadge } from './OvrBadge';
 import { PositionMap } from './FormationPitch';
 import s from './PlayerProfile.module.css';

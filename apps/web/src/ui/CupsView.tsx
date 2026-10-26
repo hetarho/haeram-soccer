@@ -10,7 +10,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { cupKey, domesticCupName } from '../../../../packages/engine/src/cups';
 import { ownReached } from '../../../../packages/engine/src/knockout';

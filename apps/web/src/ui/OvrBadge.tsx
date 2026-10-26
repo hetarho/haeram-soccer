@@ -1,5 +1,6 @@
 import type { Club, World } from '../../../../packages/contracts/src/types';
-import { cohesionMultiplier, rating } from '../../../../packages/engine/src/world';
+import { cohesionMultiplier } from '../../../../packages/engine/src/player-state';
+import { rating } from '../../../../packages/engine/src/world';
 import s from './OvrBadge.module.css';
 
 /**

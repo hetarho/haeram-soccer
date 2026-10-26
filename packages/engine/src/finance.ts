@@ -1,7 +1,8 @@
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
-import { activePlayers, broadcastQuote, clubOf, footballQuote, quote } from './world';
+import { activePlayers, clubOf } from './player-state';
+import { broadcastQuote, footballQuote, quote } from './quotes';
 import { clamp, ratio, scaleBy } from './primitives';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';

@@ -11,7 +11,7 @@
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
 ## inbox
-- 261026 parked T471 ARCH-30: implementation and isolated checks are ready, but this unit has read-only .git access; installed vibe check cannot snapshot Git objects and the required task commit is unavailable. Host with writable Git access must finalize T471 and commit its related files before T472; leave active/report ownership with the host. Exact checks, deferred batch scopes and changed consumer paths are in T471 result.
+- 261026 decided T471 T472 T473 T474 T475 T476 ARCH-30: the implementation sandbox makes .git read-only → host owns task finalization and commits after checking acceptance and verification logs; fresh implementation sessions edit source and task acceptance/result only, run isolated task checks directly, and return work to the host (alt: park all implementation | change sandbox permissions); existing sandbox and verification scope stay intact
 - 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
 - 261026 parked ideation/club-history-reboot ideation/save-storage-and-fast-pace ideation/set-piece-defence-and-goal-feedback ideation/match-day-progress ideation/difficulty-and-adaptation ideation/match-engine-rebuild ideation/own-club-match-edge ideation/club-identity-and-kits ideation/match-viewing-pace-and-freedom ideation/match-continuity-and-performance ideation/manager-achievements ideation/expert-proposal-review ideation/navigation-and-records ideation/club-direction: legacy converted documents restored to ready because 0.7.6 lint found unresolved questions or nonconforming completion mappings; preserve their historical content and do not plan or implement product changes from them during the owner-authorized module-boundary refactor; audit coverage separately
 - 261026 parked ideation/calibration-pass: still being shaped with the owner; autopilot must not convert it (T469 got the owner's go on 261026 and is done)
@@ -330,7 +330,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T471 | Separate shared world reads, events and price quotes | ARCH | - | blocked@261026 |
 | T472 | Separate transfer calendar queries from negotiation | ARCH | - | todo |
 | T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
 | T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
@@ -350,11 +349,11 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- Host: finalize and commit T471 (implementation ready; this unit cannot write .git); then implement-task T472, T473, T474, T475 and T476 from review/module-boundaries-261026. Owner-authorized refactoring only, until 21:00 KST 261026; periodic verified main pushes, remote hand-off for anything unfinished.
-- T469 is complete and its match-day behavior is preserved; its browser journeys join the next main batch. All legacy ready ideations and calibration-pass are parked during this refactor.
-- Start-vibe host owns full batch checks and the CI wait before/after main publication. Reserve wrap-up time, retain exact pending task IDs, test logs and remote work/WIP branch if the deadline stops implementation.
+- implement-task T472; then T473, T474, T475 and T476 from review/module-boundaries-261026. Deadline 21:00 KST 261026; periodic verified main pushes and remote hand-off for unfinished work.
+- T471 passed its isolated units, typecheck, lint, format and build; host reviewed the exact extraction and finalized it. The host owns Git writes for subsequent sandboxed implementation sessions, as well as the ARCH-30 batch and CI. Parked product ideations stay parked.
 
 ## log
+- 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
 - 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
 - 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy

@@ -5,6 +5,14 @@ import { dependencies, sourceGraph } from './source-graph';
 const closure = (entry: string) =>
   dependencies(sourceGraph(process.cwd()), [entry]).map((file) => relative(process.cwd(), file));
 describe('runtime architecture boundaries', () => {
+  it.each(['events', 'quotes', 'player-state'])(
+    '%s stays below world generation, campaign and match orchestration',
+    (leaf) => {
+      const files = closure(`packages/engine/src/${leaf}.ts`);
+      for (const forbidden of ['world', 'season', 'transfers', 'managerMarket', 'match'])
+        expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
+    },
+  );
   it('executes an already prepared grid match without campaign or presentation code', () => {
     const files = closure('packages/engine/src/grid/engine.ts');
     for (const forbidden of [

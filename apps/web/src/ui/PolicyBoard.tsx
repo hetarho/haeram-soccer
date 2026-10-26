@@ -8,7 +8,7 @@ import {
   marketingFanGain,
 } from '../../../../packages/engine/src/policy';
 import { gateProjection, operatingCosts } from '../../../../packages/engine/src/finance';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { financeProjection } from '../../../../packages/engine/src/projection';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
 import { globalReachOf, localBaseOf, tourTerms } from '../../../../packages/engine/src/bases';

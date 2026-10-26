@@ -1,6 +1,7 @@
 import type { Club, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
-import { clubOf, stature } from './world';
+import { clubOf } from './player-state';
+import { stature } from './world';
 
 /**
  * Supporters follow a club's standing, not its stadium (→ECON-23). Every league round they move

@@ -1,5 +1,7 @@
 import type { Command, World } from '../../contracts/src/types';
-import { addEvent, clubOf, quote } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { quote } from './quotes';
 import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
 import { setPolicy } from './policy';

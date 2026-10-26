@@ -21,7 +21,7 @@ import {
   recordManagerTenureChange,
 } from './manager-history';
 import { careerDate } from './person-careers';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 
 /**
  * Who a tenure names. `since`, his known first season, is kept only where the appointment itself

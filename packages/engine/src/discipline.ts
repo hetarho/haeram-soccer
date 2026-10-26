@@ -10,7 +10,8 @@ import type {
 } from '../../contracts/src/types';
 import { dayCountedFrom } from './calendar';
 import { pushInbox } from './inbox';
-import { addEvent, isInjured } from './world';
+import { addEvent } from './events';
+import { isInjured } from './world';
 
 /**
  * Cards, suspensions and the injuries of clubs nobody owns (→MATCH-19, →LEAGUE-15): one

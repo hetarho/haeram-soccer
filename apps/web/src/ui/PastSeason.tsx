@@ -2,7 +2,7 @@ import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecord
 import { Segments } from './Segments';
 import { memo, useMemo, useState } from 'react';
 import type { MatchRecord, SeasonArchive, World } from '../../../../packages/contracts/src/types';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { country } from '../../../../packages/catalogs/src/index';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';

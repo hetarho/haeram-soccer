@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { dayCountedFrom, seasonDate } from '../../../../packages/engine/src/calendar';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { useProgression, type ClockMark, type ProgressionController } from '../runtime/progression';
 import { useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';

@@ -1,6 +1,8 @@
 import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
-import { addEvent, clubOf, footballQuote, quote } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { footballQuote, quote } from './quotes';
 import { random, ratio } from './primitives';
 import {
   campaignEffectiveness,

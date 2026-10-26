@@ -15,7 +15,7 @@ import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
 import { lineOf } from './player';
 import { compareIds, ratio } from './primitives';
-import { overall } from './world';
+import { overall } from './player-state';
 import { transferOffers } from './ops-squad';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;

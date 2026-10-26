@@ -45,7 +45,7 @@ import {
 } from '../match';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
-import { slotOvr } from '../world';
+import { slotOvr } from '../player-state';
 import { buildAggregateInput } from './input';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';

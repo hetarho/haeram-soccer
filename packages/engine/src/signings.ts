@@ -20,15 +20,14 @@ import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
-  addEvent,
-  joinClub,
   lineOfPlayer,
   overall,
   formationOf,
-  ownStarters,
   slotOvr,
   unhappyPenalty,
-} from './world';
+} from './player-state';
+import { addEvent } from './events';
+import { joinClub, ownStarters } from './world';
 import { directionOption, financeStance } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';

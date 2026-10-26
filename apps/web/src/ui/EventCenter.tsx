@@ -8,7 +8,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { talkFor } from '../../../../packages/engine/src/contracts';

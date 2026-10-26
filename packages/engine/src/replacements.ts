@@ -1,5 +1,6 @@
 import { callUpFor, SQUAD_TARGET } from './squad-target';
-import { activePlayers, refillPosition } from './world';
+import { activePlayers } from './player-state';
+import { refillPosition } from './world';
 import { POSITION_LABEL } from './player';
 import type { Player, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';

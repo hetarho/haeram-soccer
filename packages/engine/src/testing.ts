@@ -1,6 +1,6 @@
 import type { TransferBid, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 import { prepareSeason } from './season';
 import { currentDay } from './calendar';
 import { assessOperatingExpenses } from './finance';

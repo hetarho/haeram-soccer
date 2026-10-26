@@ -8,7 +8,7 @@ import type {
 import { LINES } from '../../../../packages/contracts/src/player';
 import { heatMap, MATERIAL_LAYOUT, ownSideOf } from '../../../../packages/engine/src/material';
 import { lineOf } from '../../../../packages/engine/src/player';
-import { overall } from '../../../../packages/engine/src/world';
+import { overall } from '../../../../packages/engine/src/player-state';
 import { cardCounts, leagueReds, perOwnMatches } from './discipline';
 export type PlayerScope = 'season' | 'career';
 export type PlayerOrder = 'roster' | 'ability' | 'minutes' | 'fatigue' | 'goals90';

@@ -4,7 +4,8 @@ import type {
   SponsorContract,
   SponsorKind,
 } from '../../../../packages/contracts/src/types';
-import { clubOf, quote } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
+import { quote } from '../../../../packages/engine/src/quotes';
 import { financialBreakdown, roundShare } from '../../../../packages/engine/src/finance';
 import {
   SPONSOR_KIND_LABELS,

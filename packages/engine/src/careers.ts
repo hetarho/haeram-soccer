@@ -10,7 +10,9 @@ import { invalidateNpcSquads } from './world';
 import type { PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
-import { activePlayers, addEvent, fatigueLoad, isInjured, overall, ownStarters } from './world';
+import { activePlayers, fatigueLoad, overall } from './player-state';
+import { addEvent } from './events';
+import { isInjured, ownStarters } from './world';
 import { pushInbox } from './inbox';
 import { leaveContract } from './contracts';
 

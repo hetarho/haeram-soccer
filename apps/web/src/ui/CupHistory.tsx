@@ -9,7 +9,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { domesticCupName } from '../../../../packages/engine/src/cups';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { archivedKnockout } from './bracketTree';

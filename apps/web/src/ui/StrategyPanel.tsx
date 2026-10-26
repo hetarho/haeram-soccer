@@ -6,14 +6,16 @@ import {
   activePlayers,
   clubOf,
   formationOf,
+  ownMultiplier,
+  slotOvr,
+} from '../../../../packages/engine/src/player-state';
+import {
   injuryDaysLeft,
   isInjured,
-  ownMultiplier,
-  quote,
-  slotOvr,
   startingSquad,
   tacticLabel,
 } from '../../../../packages/engine/src/world';
+import { quote } from '../../../../packages/engine/src/quotes';
 import {
   lineupPreset,
   lineupSummary,

@@ -30,7 +30,7 @@ import { SALE_BARS } from '../../../../packages/engine/src/transfers';
 import { managerPickPreview } from '../../../../packages/engine/src/managerMarket';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { managerTerm, STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { openTraining, useStaffRequest } from './state';

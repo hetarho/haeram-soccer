@@ -20,7 +20,8 @@ import type { Club, Fixture, Player, Tactic, World } from '../../../contracts/sr
 import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
 import { bestRoleAt, FORMATIONS, lineOf } from '../player';
 import { clubManager } from '../managerMarket';
-import { activePlayers, isInjured, ownMultiplier, slotOvr, squad } from '../world';
+import { activePlayers, ownMultiplier, slotOvr } from '../player-state';
+import { isInjured, squad } from '../world';
 import { prepareMatch, type Prepared } from '../match';
 import { HOST_MATH, PORTABLE_MATH } from '../portable-math';
 import { isUnavailable } from '../discipline';

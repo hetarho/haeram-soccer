@@ -12,7 +12,8 @@ import {
 import { settleRate } from './adaptation';
 import { trainingInjuries } from './careers';
 import { BUILD_SLOTS } from '../../contracts/src/build';
-import { activePlayers, addEvent, overall } from './world';
+import { activePlayers, overall } from './player-state';
+import { addEvent } from './events';
 import { clamp, compareIds, random } from './primitives';
 import { POLICY_INFO, policyEffects, policyOf } from './policy';
 import {

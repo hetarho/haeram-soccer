@@ -1,5 +1,7 @@
 import type { CareKind, MatchRecord, World } from '../../contracts/src/types';
-import { activePlayers, addEvent, clubOf, quote } from './world';
+import { activePlayers, clubOf } from './player-state';
+import { addEvent } from './events';
+import { quote } from './quotes';
 import { MORALE_START } from './morale';
 import { clamp, random } from './primitives';
 import { managerStyleEffects } from './styles';

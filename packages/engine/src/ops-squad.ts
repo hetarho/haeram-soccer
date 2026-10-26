@@ -1,7 +1,9 @@
 import { registrationRoom } from './registration';
 import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
-import { addEvent, clubOf, makePlayer, overall } from './world';
+import { addEvent } from './events';
+import { clubOf, overall } from './player-state';
+import { makePlayer } from './world';
 import { hash, integer, random, scaleBy } from './primitives';
 import {
   declineContract,

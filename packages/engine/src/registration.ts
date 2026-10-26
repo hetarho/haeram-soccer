@@ -1,6 +1,6 @@
 import type { Player, World } from '../../contracts/src/types';
 import { registrationRule, type RegistrationRule } from '../../catalogs/src/index';
-import { activePlayers, clubOf } from './world';
+import { activePlayers, clubOf } from './player-state';
 type Registrant = Pick<Player, 'born' | 'position' | 'loanUntil' | 'graduate' | 'joined'>;
 export function registrationExempt(rule: RegistrationRule, year: number, player: Registrant) {
   const age = year - player.born,

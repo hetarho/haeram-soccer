@@ -16,7 +16,8 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { activeMatchModel } from '../../../../packages/contracts/src/match-model';
 import { nextOwnFixture, seasonDate } from '../../../../packages/engine/src/calendar';
-import { clubOf, startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
+import { startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import type { GameClient } from '../runtime/client';
 import { gameStore, useGameState } from '../runtime/store';

@@ -22,7 +22,10 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { footballIndex } from '../../catalogs/src/index';
-import { addEvent, clubOf, ownStarters, personName, quote } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { ownStarters, personName } from './world';
+import { quote } from './quotes';
 import { clamp, compareIds, integer, random, ratio, scaleBy } from './primitives';
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';

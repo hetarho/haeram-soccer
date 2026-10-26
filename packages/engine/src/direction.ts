@@ -1,6 +1,6 @@
 import type { Direction, DirectionKey, ManagerStyle, World } from '../../contracts/src/types';
 import { MANAGER_STYLES, STYLE_INFO } from './styles';
-import { addEvent } from './world';
+import { addEvent } from './events';
 
 /**
  * The direction rows the delegated staff follow (→ECON-25): 재계약 기조 (→CLUB-26), 선호 학파 and

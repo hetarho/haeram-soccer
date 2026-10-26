@@ -8,7 +8,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { compareIds } from '../../../../packages/engine/src/primitives';
-import { clubOf } from '../../../../packages/engine/src/world';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 
 /** What a closed season's tabs read from the worker: the full archive and our own matches. */

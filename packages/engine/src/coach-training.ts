@@ -7,13 +7,13 @@ import type {
   YouthFocus,
 } from '../../contracts/src/types';
 import { clamp, random } from './primitives';
-import { addEvent } from './world';
+import { addEvent } from './events';
 import { pushInbox } from './inbox';
 import { autoPlayerFocus, autoTrainingAdvice, departStaff, STAFF_INFO, staffMember } from './staff';
 import { activeTrainingFocus, trainingFocusInfo } from './training';
 import { YOUTH_FOCUS_INFO, youthAdvice } from './academy';
 import { ORDER_ROUNDS, tidyOrders } from './orders';
-import { activePlayers } from './world';
+import { activePlayers } from './player-state';
 
 /** Settled rounds between two suggestions to the same coach (→STAFF-19). */
 export const SUGGESTION_ROUNDS = 2;

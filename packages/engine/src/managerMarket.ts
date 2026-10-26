@@ -22,7 +22,9 @@ import {
   staffQuote,
   releaseCost,
 } from './staff';
-import { addEvent, clubOf, FOUNDING_YEAR, makeManager } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';

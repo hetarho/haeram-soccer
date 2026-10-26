@@ -30,7 +30,8 @@ import type {
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
 import type { RoleId } from '../../contracts/src/player';
-import { cohesionMultiplier, findClub, ownMultiplier, ratingOf, startingSquad } from './world';
+import { cohesionMultiplier, ownMultiplier } from './player-state';
+import { findClub, ratingOf, startingSquad } from './world';
 import { FORMATIONS, isWide, levelFactor as positionLevelFactor, lineOf } from './player';
 import { moraleStrength } from './morale';
 import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } from './strategy';

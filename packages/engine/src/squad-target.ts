@@ -1,7 +1,8 @@
 export { SQUAD_TARGET } from './squad-size';
 import type { Line, Position, World } from '../../contracts/src/types';
 import { academyPlayers, promoteYouth, promotionAge } from './academy';
-import { clubOf, makePlayer, overall, joinClub, refillPosition } from './world';
+import { clubOf, overall } from './player-state';
+import { makePlayer, joinClub, refillPosition } from './world';
 import { divisionStrength } from './season';
 import { lineOf, POSITION_LABEL } from './player';
 import { compareIds } from './primitives';

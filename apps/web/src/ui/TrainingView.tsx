@@ -25,7 +25,11 @@ import { playerSuggestionWait } from '../../../../packages/engine/src/coach-trai
 import { settleRate } from '../../../../packages/engine/src/adaptation';
 import { TRAINING_INJURY } from '../../../../packages/engine/src/careers';
 import { HARD_STREAK } from '../../../../packages/engine/src/morale';
-import { activePlayers, ownMultiplier, overall } from '../../../../packages/engine/src/world';
+import {
+  activePlayers,
+  ownMultiplier,
+  overall,
+} from '../../../../packages/engine/src/player-state';
 import {
   ADAPTATION_NEUTRAL,
   MATCH_GAIN,

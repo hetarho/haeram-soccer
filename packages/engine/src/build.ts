@@ -6,7 +6,7 @@ import {
   type ClubBuild,
 } from '../../contracts/src/build';
 import type { World } from '../../contracts/src/types';
-import { addEvent } from './world';
+import { addEvent } from './events';
 import { BUILD_PRESETS } from './preset-data';
 
 /** Everything the club build changes, as additions or multipliers (→ECON-22). */

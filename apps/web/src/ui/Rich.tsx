@@ -16,13 +16,9 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../packages/catalogs/src/index';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
-import {
-  injuryDaysLeft,
-  quote,
-  tacticLabel,
-  overall,
-  UNHAPPY_PENALTY,
-} from '../../../../packages/engine/src/world';
+import { injuryDaysLeft, tacticLabel } from '../../../../packages/engine/src/world';
+import { quote } from '../../../../packages/engine/src/quotes';
+import { overall, UNHAPPY_PENALTY } from '../../../../packages/engine/src/player-state';
 import {
   agentOf,
   agentPremium,

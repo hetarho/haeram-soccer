@@ -1,5 +1,5 @@
 import type { World } from '../../contracts/src/types';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 
 export interface ClubGoal {
   id: string;

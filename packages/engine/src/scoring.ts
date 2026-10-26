@@ -7,7 +7,7 @@ import type {
 } from '../../contracts/src/types';
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 
 function competitionKey(w: World) {
   const club = clubOf(w);

@@ -1,6 +1,8 @@
 import type { FacilityPart, World } from '../../contracts/src/types';
 import { dayCountedFrom } from './calendar';
-import { addEvent, clubOf, footballQuote } from './world';
+import { addEvent } from './events';
+import { clubOf } from './player-state';
+import { footballQuote } from './quotes';
 
 /**
  * The facility parts (→ECON-32): a stadium of eight steps, each an expansion or a rebuild, and a

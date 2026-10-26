@@ -6,12 +6,8 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
-import {
-  activePlayers,
-  clubOf,
-  startingSquad,
-  tacticLabel,
-} from '../../../../packages/engine/src/world';
+import { activePlayers, clubOf } from '../../../../packages/engine/src/player-state';
+import { startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { compactMoney, number } from './format';
 import { orderIds, ownLeagueIds } from './league';

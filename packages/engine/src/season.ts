@@ -41,16 +41,9 @@ import type {
 } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import {
-  activePlayers,
-  addEvent,
-  clubOf,
-  joinClub,
-  makePlayer,
-  ownStarters,
-  refillPosition,
-  rating,
-} from './world';
+import { activePlayers, clubOf } from './player-state';
+import { addEvent } from './events';
+import { joinClub, makePlayer, ownStarters, refillPosition, rating } from './world';
 import { lineOf } from './player';
 import {
   applyClauses,

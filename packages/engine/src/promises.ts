@@ -2,7 +2,7 @@ import type { ReinforcementPromise, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal } from './person-careers';
 import { lineOf } from './player';
 import { pushInbox } from './inbox';
-import { addEvent } from './world';
+import { addEvent } from './events';
 import { compareIds } from './primitives';
 function finish(
   w: World,

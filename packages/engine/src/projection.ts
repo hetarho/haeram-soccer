@@ -1,6 +1,6 @@
 import type { World } from '../../contracts/src/types';
 import { ratio } from './primitives';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 import {
   gateProjection,
   leagueMerit,

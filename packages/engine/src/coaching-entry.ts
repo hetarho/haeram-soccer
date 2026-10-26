@@ -2,7 +2,7 @@ import type { CareerDate, PersonCareer, World } from '../../contracts/src/types'
 import { coachingGrade } from './aptitude';
 import { careerDate, coachingProfiled, retainPerson } from './person-careers';
 import { integer, random } from './primitives';
-import { addEvent } from './world';
+import { addEvent } from './events';
 
 export function personCoachingGrade(person: PersonCareer) {
   return coachingGrade({

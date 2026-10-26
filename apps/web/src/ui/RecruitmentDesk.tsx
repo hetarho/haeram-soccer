@@ -19,7 +19,7 @@ import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
 import { bidKind, freeSigning, visibleBids } from './bids';
-import { clubOf, overall } from '../../../../packages/engine/src/world';
+import { clubOf, overall } from '../../../../packages/engine/src/player-state';
 import {
   recruitmentPreview,
   recruitmentLineNeed,

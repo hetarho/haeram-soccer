@@ -12,16 +12,10 @@ import type {
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clamp, random, ratio, scaleBy } from './primitives';
-import {
-  activePlayers,
-  addEvent,
-  clubOf,
-  footballQuote,
-  overall,
-  ownStarters,
-  tierLevel,
-  UNHAPPY_PENALTY,
-} from './world';
+import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
+import { addEvent } from './events';
+import { footballQuote } from './quotes';
+import { ownStarters, tierLevel } from './world';
 import { policyEffects, policyOf } from './policy';
 import { talkRuleOf } from './hiring';
 import { buildEffects } from './build';

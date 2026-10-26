@@ -9,14 +9,14 @@ import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calen
 import { clamp, compareIds, hash, integer, random, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
-  addEvent,
   clubOf,
   formationOf,
   overall,
   ownMultiplier,
-  ownStarters,
   slotOvr,
-} from './world';
+} from './player-state';
+import { addEvent } from './events';
+import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { transferOffers } from './ops-squad';

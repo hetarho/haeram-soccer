@@ -1,7 +1,7 @@
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
-import { clubOf } from './world';
+import { clubOf } from './player-state';
 import { STYLE_INFO } from './styles';
 import { buildTitleName } from './build';
 
