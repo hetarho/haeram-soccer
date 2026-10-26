@@ -180,7 +180,7 @@ test('pays sponsor installments only for league games after the actual contract'
   // A 1950 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
   await openBusiness(page, '후원');
-  await expect(page.getByRole('region', { name: '후원', exact: true }).first()).toContainText(
+  await expect(page.locator('[data-office-view="sponsor"]')).toContainText(
     '계약 이후 경기만 지급하며',
   );
   await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');

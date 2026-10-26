@@ -317,6 +317,8 @@ for (const [label, viewport] of [
       await expect(page.getByRole('heading', { name: '그해의 각국 리그' })).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '클럽대항전 우승과 순위' })).toHaveCount(0);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+      // The season is a sub-screen; its navigator bar leads back to the tabs (→WEB-54).
+      await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
       await tab('시즌별 기록').focus();
       await page.keyboard.press('End');
       await expect(tab('감독 이력')).toHaveAttribute('aria-selected', 'true');

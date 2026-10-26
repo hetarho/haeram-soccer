@@ -850,3 +850,20 @@ button.resources:active:not(:disabled) {
     font-family: var(--display);
   }
 }
+/* Wide screens pair the office entrance with the season card so home stays on one screen (→WEB-11). */
+@media (min-width: 1100px) {
+  .hub {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    grid-template-areas: 'header office' 'stage stage' 'state state' 'fixture fixture';
+  }
+  .office {
+    align-self: stretch;
+  }
+  /* Strength takes its place in the one row of five conditions. */
+  .state ul {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .state li[data-condition='strength'] {
+    grid-column: auto;
+  }
+}

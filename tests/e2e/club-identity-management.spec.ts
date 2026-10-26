@@ -11,6 +11,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
 import { aroundOffice, leaveOffice, openOfficeArea, outsideOffice } from './office';
+import { savedWorld } from './club-identity-helpers';
 
 /**
  * KIT-9/10/12, WEB-39/71/74/86, SAVE-20: 구단주 사무실 › 구단 디자인 keeps a per-career draft until an
@@ -221,9 +222,13 @@ test('되돌리기 restores the entry design and a failed apply keeps the draft 
   expect(await commands(page)).toBe(1);
   await expect(main).toHaveValue('#E0218A');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
+  expect(ownClub(await savedWorld(page)).identity).toEqual(before);
+  // The export steps out of the office and back (→WEB-39): the notice closes, the draft stays.
   expect(await ownIdentity(page)).toEqual(before);
-  // Retry applies the kept draft.
-  await failure.getByRole('button', { name: '다시 적용', exact: true }).click();
+  await expect(main).toHaveValue('#E0218A');
+  await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
+  // Applying again commits the kept draft.
+  await applyButton(view).click();
   await expect(bar(view).getByRole('status')).toHaveText('적용된 디자인');
   await expect(view.getByRole('alert')).toHaveCount(0);
   expect(await commands(page)).toBe(2);

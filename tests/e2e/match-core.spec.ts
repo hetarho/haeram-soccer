@@ -234,9 +234,15 @@ for (const viewport of [
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
     await expect(leagueTabs).toHaveText(['순위표', '일정·결과', '팀 기록', '선수 기록']);
     for (const tab of await leagueTabs.all()) {
-      const bounds = await tab.boundingBox();
-      expect(bounds!.width, await tab.innerText()).toBeGreaterThanOrEqual(44);
-      expect(bounds!.height, await tab.innerText()).toBeGreaterThanOrEqual(44);
+      // The protocol rounds 44px at fractional positions below 44; read the DOM size itself.
+      const bounds = await tab.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return { width: box.width, height: box.height };
+      });
+      expect(bounds.width, await tab.innerText()).toBeGreaterThanOrEqual(44);
+      expect(Math.round(bounds.height * 100) / 100, await tab.innerText()).toBeGreaterThanOrEqual(
+        44,
+      );
     }
     const overviewTab = page.getByRole('tab', { name: '순위표', exact: true });
     await overviewTab.focus();

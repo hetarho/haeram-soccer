@@ -93,7 +93,8 @@ export function OperationsView({
   return (
     <>
       <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} client={client} />
-      <section aria-label={label} data-office-view={id}>
+      {/* The bar names the area; its own panels carry their regions. */}
+      <div data-office-view={id}>
         {id === 'office' ? (
           <Suspense fallback={null}>
             <OwnerOffice key={w.id} client={client} controller={controller} />
@@ -119,7 +120,7 @@ export function OperationsView({
         ) : (
           <BusinessWorkbench state={state} client={client} part={id} legacy={legacy} />
         )}
-      </section>
+      </div>
     </>
   );
 }

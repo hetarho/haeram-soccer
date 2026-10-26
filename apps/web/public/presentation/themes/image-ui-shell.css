@@ -804,6 +804,16 @@ html[data-theme] {
     visibility: hidden;
   }
 
+  /* Wide home reads all five conditions in one row (→WEB-11/44). */
+  @media (min-width: 1100px) {
+    [data-home-part='conditions'] {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    [data-condition='strength'] {
+      grid-column: auto;
+    }
+  }
+
   @media (min-width: 761px) and (max-width: 1190px) {
     [data-ui='game-shell']:has(> [data-ui='sidebar']) {
       grid-template-columns: 220px minmax(0, 1fr);
@@ -1122,9 +1132,13 @@ html[data-theme] {
     }
   }
 
+  /* Short phones keep the gap below the HUD and still show seven standings rows (→WEB-10). */
   @media (max-width: 760px) and (max-height: 760px) {
     [data-ui='season-overview'] {
-      margin-top: 6px;
+      margin-top: 4px;
+    }
+    [data-testid='view-scroller'] {
+      padding-top: 2px;
     }
   }
 

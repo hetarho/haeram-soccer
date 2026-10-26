@@ -1,7 +1,7 @@
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
-import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
+import { openCurrentClubSeason, openSeasonReview, showRecordTabs } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -129,6 +129,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   // The record book is on the records room's first tab, under 기타 기록.
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  // The records room returns to the season the league opened; its navigator leads back out.
+  await showRecordTabs(page);
   await page.getByRole('tab', { name: '명예·최고기록', exact: true }).click();
   await page
     .getByRole('group', { name: '명예·최고기록 보기' })

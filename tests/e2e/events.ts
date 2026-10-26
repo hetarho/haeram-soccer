@@ -1,6 +1,6 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
-import { LOBBY, leaveOffice, officeBar, officeLobby, officeTitle, openOfficeArea } from './office';
+import { inOffice, LOBBY, officeLobby, officeTitle, openOfficeArea, outsideOffice } from './office';
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -57,8 +57,12 @@ export async function openOffice(page: Page) {
 }
 export async function dismissSettingsToast(page: Page) {
   const toast = page.getByTestId('action-outcome');
-  if (await toast.isVisible())
-    await toast.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+  if (!(await toast.isVisible())) return;
+  // Home's open event group can sit over the toast; it then clears itself after a few seconds.
+  await toast
+    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
+    .click({ timeout: 3000 })
+    .catch(() => expect(toast).toHaveCount(0, { timeout: 10000 }));
 }
 async function confirmAuthority(page: Page, label: string, value: 'direct' | 'delegated') {
   const choice = page
@@ -94,12 +98,12 @@ export async function configureResponsibilities(
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
   // Inside the office there is no menu: return to the office area that was open instead.
-  const inOffice = await officeBar(page).isVisible();
+  const wasInOffice = await inOffice(page);
   const returnLabel =
-    !inOffice && (await nav.count())
+    !wasInOffice && (await nav.count())
       ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
-  const officeArea = inOffice ? (await officeTitle(page).innerText()).trim() : undefined;
+  const officeArea = wasInOffice ? (await officeTitle(page).innerText()).trim() : undefined;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -113,31 +117,9 @@ export async function configureResponsibilities(
       if (attempt >= 3) throw error;
     }
   }
-  // The mode switch lives in the bottom controls, which the office hides (→WEB-39/96).
-  if (options.mode && (await officeBar(page).isVisible())) await leaveOffice(page);
-  if (options.mode) {
-    const mode = page.getByTestId('progression-mode');
-    const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
-    if ((await mode.innerText()) !== expected) {
-      await page.getByRole('button', { name: '진행 방식 변경', exact: true }).click();
-      const dialog = page.getByRole('dialog', {
-        name: '게임 진행 방식이 변경됩니다.',
-        exact: true,
-      });
-      if (await dialog.isVisible())
-        await dialog
-          .getByRole('button', {
-            name: options.mode === 'manual' ? '수동 모드로 변경' : '자동 모드로 변경',
-            exact: true,
-          })
-          .click();
-      await expect(mode).toHaveText(expected);
-      await dismissMatchReport(page);
-      await dismissSettingsToast(page);
-    }
-  }
-  const office = await openOffice(page);
   const entries = Object.entries(options.responsibilities ?? {});
+  // The office opens only for changes to make there; a mode change alone stays outside it.
+  const office = entries.length ? await openOffice(page) : undefined;
   // The bulk control is safe when all nine fields are explicitly requested. Otherwise preserve
   // unspecified report choices by changing only individual business responsibilities.
   const bulkValue =
@@ -147,7 +129,7 @@ export async function configureResponsibilities(
     options.observations?.windowOpen !== undefined
       ? entries[0][1]
       : undefined;
-  if (bulkValue) {
+  if (bulkValue && office) {
     const choice = office.getByRole('button', {
       name: bulkValue === 'delegated' ? '전체 위임' : '전체 보고받기',
       exact: true,
@@ -171,9 +153,34 @@ export async function configureResponsibilities(
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
   }
+  // The mode switch lives in the bottom controls, which the office hides (→WEB-39/96).
+  if (options.mode) await outsideOffice(page);
+  if (options.mode) {
+    const mode = page.getByTestId('progression-mode');
+    const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
+    if ((await mode.innerText()) !== expected) {
+      await page.getByRole('button', { name: '진행 방식 변경', exact: true }).click();
+      const dialog = page.getByRole('dialog', {
+        name: '게임 진행 방식이 변경됩니다.',
+        exact: true,
+      });
+      if (await dialog.isVisible())
+        await dialog
+          .getByRole('button', {
+            name: options.mode === 'manual' ? '수동 모드로 변경' : '자동 모드로 변경',
+            exact: true,
+          })
+          .click();
+      await expect(mode).toHaveText(expected);
+      await dismissMatchReport(page);
+      await dismissSettingsToast(page);
+    }
+  }
   // Explicit report choices are applied after the mode-entry default.
-  for (const [key, value] of Object.entries(options.observations ?? {})) {
-    const choice = office
+  const observations = Object.entries(options.observations ?? {});
+  const reports = observations.length ? await openOffice(page) : office;
+  for (const [key, value] of observations) {
+    const choice = reports!
       .getByRole('group', {
         name: key === 'matchEve' ? '경기 전날 보고' : '이적시장 개장 보고',
         exact: true,
@@ -189,7 +196,7 @@ export async function configureResponsibilities(
   if (officeArea === LOBBY) await officeLobby(page);
   else if (officeArea) await openOfficeArea(page, officeArea);
   else {
-    await leaveOffice(page);
+    await outsideOffice(page);
     if (returnLabel)
       await page
         .getByRole('navigation')
