@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r30 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r31 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -70,17 +70,18 @@
   | final-third pass | pass attempt that starts in the attacking third, and its completions |
   | progressive pass | completed pass into a higher band |
   | take-on | attempted dribble past a marker (dribbles = successful ones) |
-  | high turnover | a sequence that starts with a ball won in open play within 40 m of the opponent's goal (the published Opta convention) |
-  | PPDA | opponent pass attempts in its own 60% of the pitch ÷ own defensive actions there — tackles, interceptions, challenges and fouls (the published convention) |
+  | high turnover | a sequence that starts with a ball won in open play within 35 m of the opponent's goal (the published Opta convention's 40 m, read at →MATCH-14's nearest band edge) |
+  | PPDA | opponent pass attempts in its own two-thirds of the pitch ÷ own defensive actions in that zone — tackles, interceptions, challenges and fouls (the published convention's own 60%, read at →MATCH-14's nearest band edge: the passer's first 70 m, the presser's last 70 m) |
   | field tilt | own final-third passes ÷ both sides' final-third passes |
   | box entry | a completed pass or carry that ends in the box |
   | front-of-box entry | a completed pass or carry that ends in the band in front of the box |
-  | line-breaking pass | a completed pass played beyond the deepest player of an opponent line |
+  | line-breaking pass | a completed pass played beyond the deepest player of an opponent line; the aggregate path, which places no players, draws them among completed passes into a higher band, so it cannot break a line inside one band and holds the count by →MATCH-28 parity |
   | xT added | the expected-threat value gained by a player's completed passes and carries, on the cells' `xT` values in `packages/engine/src/grid/baselines.json` |
   | cut-back | a completed pass from the cut-back zones back into the box |
   | cross | attempted crosses and completions |
   | through ball | attempted passes into the space in behind and completions |
   | progressive carry | a carry into a higher band |
+  - a zone counter reads →MATCH-14's band edges on both paths, never metres between them, so the cell-level aggregate and the positional grid count the same zone; MATCH-14 has no edge at 40 m from goal (65 m) or at 60% (42 m / 63 m).
   - a match carries detail for every saved player or for none; key passes ≤ shots, completions ≤ attempts, big chances scored ≤ big chances ≤ box shots, take-ons ≥ dribbles.
 
 - MATCH-14 [o] The pitch is 40 named cells aligned with its markings: 5 lanes × 8 bands on a 105 × 68 m pitch, in the attacking direction. Every player and the ball stand at a pitch position; the cell containing it is what decision tables, statistics and commentary read. ← every cell has a football name, and 40 cells stay within what real event data supports
@@ -234,8 +235,8 @@
   | final-third passes / completed | 100–121 / 65–85 | SB16 |
   | progressive passes | 116–124 | SB16, completed passes into a higher band |
   | take-ons / success | →MATCH-23 | same definition |
-  | high turnovers | 5.7–7.5 | Opta sequences |
-  | PPDA | 12–14 | Opta sequences |
+  | high turnovers | 5.7–7.5 | Opta sequences, 40 m; the engine's 35 m zone reads lower by the 35–40 m strip |
+  | PPDA | 12–14 | Opta sequences, own 60%; the engine's two-thirds zone holds both more passes and more defensive actions |
   | box entries | 13–16 | SB16 |
   | front-of-box entries | 42.5–45.5 | SB16 |
   | xT added | 2.0–2.3 | SB16, positive per-cell xT gains |
@@ -247,7 +248,7 @@
   | line-breaking passes | unbanded; →MATCH-28 only | comparable public event data lacks complete player positions and line membership |
   - SB16: [StatsBomb open data](https://github.com/statsbomb/open-data), season 27, competitions 2/11/12/7: EPL, La Liga, Serie A and Ligue 1 2015/16, 1,517 matches (Ligue 1: 377); Bundesliga's 34 Leverkusen matches are excluded. Passes include every restart; a missing pass outcome denotes completion. Map the 120×80 coordinates to →MATCH-14 with x edges 6/18/40/60/80/102/114 and y edges 18/30/50/62 in the acting side's attack frame.
   - FBref: archived Opta squad tables, five leagues, 2017/18, 2019/20, 2021/22 and 2023/24; the 18 available league-seasons supply key passes and xAG. Progressive-pass/carry and final-third-entry definitions differ from →MATCH-13 and are not substituted for those counters. FBref through balls count completions and do not supply the attempt band.
-  - Opta sequences: [The Analyst](https://theanalyst.com/) league team sequence tables (`dataviz.theanalyst.com/project-data/soccer/{tmcl}/team-stats.json`), five leagues in 2024/25 and 2025/26, ten completed league-seasons retrieved 261022. High turnovers are open-play sequences starting within 40 m of the opponent's goal; PPDA follows →MATCH-13. Understat's differently scoped PPDA is context only and does not set the band.
+  - Opta sequences: [The Analyst](https://theanalyst.com/) league team sequence tables (`dataviz.theanalyst.com/project-data/soccer/{tmcl}/team-stats.json`), five leagues in 2024/25 and 2025/26, ten completed league-seasons retrieved 261022. High turnovers are open-play sequences starting within 40 m of the opponent's goal; PPDA counts the opponent's own 60%. The bands stay as sourced: no public league-season table uses MATCH-13's band-edge zones, and re-zoning one from engine output would break the rule above. Understat's differently scoped PPDA is context only and does not set the band.
 
 - MATCH-31 [o] A pass is cut out only by an opponent who reaches its path before the ball has passed. ← a defender who could not have got there winning the ball reads as a bug, and one standing in the lane who lets it through reads as no defending
   - whether he reaches it reads where he stands and how he is moving when the ball is kicked, his speed and fatigue and how early he reads the pass (→PLAYER-26), against the ball's travel along its path; the first point an opponent reaches is where the ball meets him, and its flight ends there (→MATCH-12).
@@ -282,6 +283,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r31 261026 MATCH-13✎ high turnover within 40 m→35 m of goal and PPDA zone own 60%→own two-thirds (MATCH-14's nearest band edges, as both paths count since T327); line-breaking pass on the aggregate path→drawn among completed passes into a higher band. MATCH-30✎ high-turnover and PPDA source cells state the zone offset; bands unchanged
 - r30 261025 MATCH-33✎ a delivery reached along its whole path→a lofted one reached only at the crosser's foot and at its zone; no blind delivery with nobody in a zone→also none when every delivery is cut out, the choice reading the reach
 - r29 261025 MATCH-11✎ keeper distribution against the defender nearest the lane→the opponent who reaches its path first (→MATCH-31)
 - r28 261025 MATCH-11✎ pass against the defender nearest the lane→the opponent who reaches its path first; shot quality + the bodies between ball and goal · MATCH-31+ a pass cut out only where reached · MATCH-32+ lanes shut · MATCH-33+ box zones attacked and delivered into · MATCH-34+ box defended goal-side · MATCH-35+ shots blocked before the keeper, second balls contested

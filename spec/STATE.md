@@ -16,6 +16,9 @@
 | q7m3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T04:46Z | 2026-10-26T04:46Z | - |
 
 ## inbox
+- 261026 decided MATCH-13 MATCH-30 T327: MATCH-13 specified 40 m and own 60% while both paths count from MATCH-14's nearest band edges (35 m; two-thirds), as T327 recommended → the definition states the band-edge zones and MATCH-30 keeps the Opta bands with the offset beside them, because the cell-level aggregate cannot read metres inside a band and exact parity matters more than the 35–40 m strip (alt: exact metres on the grid only, a parity gap by construction | re-derive both bands from SB16 events under the band-edge zones, a data task with no published league table to check it)
+- 261026 decided MATCH-13 MATCH-28: the grid counts a line-breaking pass by player positions (55→65 m inside one band) while the aggregate draws them only among passes into a higher band → MATCH-13 states the aggregate's cell-level reading and holds the count by MATCH-28 parity, no code change, since the aggregate places no players (alt: let the ledger accept same-band forward passes, which its generator never draws)
+- 261026 decided ARCH-23 T463: netlify.toml pins Node 24.12.0 while .node-version and package.json require 24.22.1 → T463 removes Netlify's own pin so .node-version is the one source, with a unit test over every pin, no ARCH rev since ARCH-23 already requires one pinned toolchain (alt: set NODE_VERSION 24.22.1 and test equality, kept as T463's fallback)
 - 261026 suggest ideation/own-club-match-edge T434 MATCH-2 MATCH-22: for the owner — on the released model both causes still move results (engine path now about −0.9 points a match for the own club, reversed from +0.7–0.8; one-sided context about 0.4, its sign following the own manager and morale) → recommend C, symmetric context plus parity, with both paths calibrated to MATCH-2's curve since neither holds it on this read (alt: A alone | B alone | D, show the edge) — indicative 1960 amateur read; a top-tier re-run is open
 - 261026 decided T458 T286 ARCH-30: (owner, 261026: "CI only before the push to main when the work is done") T458 and T286 closed only on a main push and its CI, which a loop unit cannot make, so T434 and T410 behind T286 could not start → each closes on its own local evidence (T458: the three Firefox journeys on local Firefox; T286: the batch on 2ab7207c and main CI 40262705063 Chromium/WebKit), and the full batch plus CI run once at the end of the work around its single main push; a failure there becomes a fix task (alt: push and wait for CI after T458, which spends a CI run and idles the loop)
 - 261026 decided T433 T434 T410 MATCH-28: (owner, 261026: "1~2만건씩 돌리지 말고 게임성을 확인하는 걸로 전면 개편, 남은 task 개당 20분 안에, 100시즌 말고 10시즌") the remaining explore tasks ran 3–4 h each, mostly resolving-size simulation → each has a 20 m timebox: T433 reads 5 observed fixtures per tactic with at most one adjustment round, T434 probes a 10-season 쉬움 career with 10 seeds, T410 becomes a 10-season gameplay read beside MATCH-2/MATCH-23 bands, all marked indicative; MATCH-28 stays as written (small samples are reported, never a pass) and the pilot-size parity re-read is deferred to the calibration pass the owner orders later (alt: keep T401-size parity, about 6 h; drop the measurements entirely)
@@ -294,7 +297,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 30 | 30 | - | 0 |
+| MATCH | 31 | 31 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -313,6 +316,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T463 | One pinned Node version for Netlify builds | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -327,11 +331,13 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- update-ssot MATCH: reconcile MATCH-13/26/30 with grid/record.ts COUNTER_ZONES (high turnovers: 40 m specified, 35 m counted; PPDA: own 60% specified, two-thirds counted) and aggregate/ledger.ts (line-breaking needs a higher band; detailed record.test.ts:356 counts 55→65 m across the midfield line within one band). update-ssot ARCH: ARCH-23 requires one pinned toolchain, but netlify.toml pins Node 24.12.0 while .node-version and package.json require 24.22.1. These discrepancies were checked, not changed by doc-review.
+- T463 (Netlify's Node pin follows .node-version) is runnable; MATCH r31 reconciled the doc-review counter discrepancies without code work.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 create-task (q7m3): T463 Netlify's Node pin follows .node-version (ARCH-23, no rev: the rule already requires one pinned toolchain); MATCH r31 needs no task, both paths already count its zones and line-breaking passes so (T327)
+- 261026 update-ssot MATCH r31 (q7m3): MATCH-13 high-turnover and PPDA zones read MATCH-14's nearest band edges (35 m; two-thirds), aggregate line-breaking passes drawn among passes into a higher band; MATCH-30 source cells state the zone offset, bands unchanged
 - 261026 T410 done (q7m3): 10-season gameplay read of the released model, indicative: top tier 2.91 goals, H/D/A 43.7/21.2/35.2, margins 11–12 every season, champions 2.32 PPG, top scorer 26.8, hat-tricks 0.040; 80 observed fixtures 3.39 goals, 20/37 MATCH-23 rows inside; five follow-ups named, no engine change
 - 261026 fix playback test: T433 settles candidate-et-0 in 90 minutes; use candidate-et-1 (2–2 at 90) to retain the four-period last-action assertions. The concurrent 10-season checkpoint timeout passes unchanged in an isolated retry.
 - 261026 T434 done (q7m3): own-club edge probe on the released model, 1960 쉬움 10-season career, 30 fixtures × 10 seeds, indicative: detailed 1.09 / aggregate 1.99 / neutral 1.46 / 2.44 points a match (261023: 2.51 / 1.70 / 2.06 / 1.35); engine gap reversed (~−0.9), context ~0.4; ideation recommends C
@@ -350,5 +356,3 @@
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
 - 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass
 - 261026 ARCH r21 + T459–T462 (f6d2): adopted feedback-cost review; preserve coverage and baseline, isolate caches/test tiers/engine leaves/measurement reuse; other start-vibe session stopped by owner
-- 261026 development-feedback start (f6d2): owner stopped the other session and adopted the architectural audit; preserve historical measurements, implement the complete feedback-cost cleanup, run one final verification, no new century benchmark
-- 261026 review-code development-feedback-261026 complete — 79-module engine cycle, 222/280 dependency-affected tests, fixture/benchmark invalidation and integration-tier hand-offs; no findings adopted
