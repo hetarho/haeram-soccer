@@ -14,8 +14,14 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
+| o7h4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T16:16Z | 2026-10-26T16:16Z | - |
 
 ## inbox
+- 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
+- 261027 decided WEB-10: the tab bar once 구단 leaves it → six tabs 리그·컵·기록 | 홈 | 선수단·훈련, left side unchanged and home kept raised though no longer centred (alt: move 기록 right of home | merge 리그 and 컵 to keep home centred)
+- 261027 decided WEB-98 WEB-39: the clock in a focused office that hides the stop control → entering stops automatic play, leaving restarts it only if entering stopped it (alt: keep running with every change locked | stop and stay stopped)
+- 261027 decided WEB-11 WEB-18 WEB-44: where round, rank, record and strength go → season card on home with round·rank·record over the progress rule (home's information row keeps league and date), strength as the first team-state tile ranked within our division (alt: put rank and record into the information row | keep the round in both places)
+- 261027 decided WEB-54: how "full screen" the season review gets → records tabs give way to a top navigator bar with back and the season's name; HUD, information row and tab bar stay (alt: hide all chrome like the office)
 - 261027 decided T479 T480 T481 T482 SAVE-23: how to ship engine football changes after activation → as match-model revision 4, every change gated by `modelAtLeast(s.setup, 4)` so revisions 1–3 keep their football and a queued playback replays as settled (alt: change revision 3 in place | presentation-only now, engine later)
 - 261027 decided T477 T478 MATCH-12 WEB-32: how the clock learns a stoppage’s rush and beat → frames carry explicit `stoppages` {kind, dead, settled, kick} from the engine’s dead-time samples (alt: the web infers settling from motion samples, fragile at minute ends)
 - 261027 decided T481 MATCH-16 PLAYER-5: playmaker roles looking more for the pass → a revision-4 shot factor 0.85 for regista, deep-lying playmaker, trequartista and wide playmaker inside decide.ts, starting line weights DF 0.5 / MF 0.8 / FW 1 (alt: edit `ROLE_ACTION`, which would change revisions 1–3 and the aggregate path)
@@ -322,7 +328,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 156 | 156 | - | 0 |
+| WEB | 157 | 157 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -352,6 +358,10 @@
 | T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
 | T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
 | T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
+| T490 | Home season card, strength in team state and spacing below the HUD | WEB | - | todo |
+| T491 | Focused owner office entered from home, with the clock stopped inside | WEB | T490 | todo |
+| T492 | Office lobby with six area cards, full-screen areas and 결재 라인 | WEB | T491 | todo |
+| T493 | Records season sub-screen with a navigator bar, player totals up to 100 | WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -368,10 +378,14 @@
 
 ## next
 - implement-task T477, then T478 T479 T480 T481 T482 in order; autopilot k2d7 runs the final batch gate and pushes main once.
+- autopilot o7h4 on work/o7h4: implement-task T490, then T491 T492 T493; final batch gate and one push to main.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 create-task WEB r157 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
+- 261027 update-ssot WEB r157 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
+- 261027 update-ssot WEB start (autopilot o7h4)
 - 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
 - 261027 create-task WEB MATCH start
 - 261027 ideation dead-balls-and-finishing converted
@@ -389,6 +403,3 @@
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
-- 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
-- 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
-- 261026 T469 done (owner's go): visible steps one day, ≥ 2 s match-day moment on own fixture days (NEXT MATCH card, bottom slot elsewhere), optional 경기 결과 알림; task checks passed, batch before the main push
