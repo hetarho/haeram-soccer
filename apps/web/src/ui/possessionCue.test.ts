@@ -8,10 +8,10 @@ import type {
 import { advanceGoalFeedback, goalInstants } from './goalFeedback';
 import { possessionKey, resolvePossessionCue } from './possessionCue';
 import {
+  deadBallBeats,
   locate,
   presentationSamples,
   runningLength,
-  setPiecePreparations,
   type PresentationSample,
 } from './presentationClock';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
@@ -162,13 +162,13 @@ describe('possession cue', () => {
     const { samples, times, sampleBreak } = presentationSamples(frames);
     const record = { highlights: [{ minute: 1, side: 0, player: 'H9', action: '골' }] };
     const goals = goalInstants(record as unknown as MatchRecord, frames, [10, 65]);
-    // The clock the pitch runs: running seconds, with the playback's set-piece preparations.
+    // The clock the pitch runs: running seconds, with the playback's dead-ball beats.
     const held = advanceGoalFeedback({ seconds: 0, next: 0 }, goals, {
       elapsedMs: 10_000,
       speed: 16,
       length: runningLength(2),
       running: true,
-      preparations: setPiecePreparations(frames),
+      preparations: deadBallBeats(frames),
     });
     expect(held.cue).toBeDefined();
     const at = (now: number) => {

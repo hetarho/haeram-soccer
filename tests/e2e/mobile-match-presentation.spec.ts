@@ -7,11 +7,11 @@ import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
-  WATCH_DEFAULT_SPEED,
-  WATCH_MINUTE_MS,
+  deadBallBeats,
   presentationMs,
   runningLength,
-  setPiecePreparations,
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
 } from '../../apps/web/src/ui/presentationClock';
 import { textContrast } from './contrast';
 
@@ -281,12 +281,7 @@ for (const viewport of [
     if (viewport.width !== 360) return;
     // Include actual added time and every goal hold using the presentation clock's own rule.
     const restMs =
-      presentationMs(
-        0,
-        runningLength(playback.frames.length),
-        16,
-        setPiecePreparations(playback.frames),
-      ) +
+      presentationMs(0, runningLength(playback.frames.length), 16, deadBallBeats(playback.frames)) +
       expected.highlights.length * GOAL_FEEDBACK_CONFIG.holdMs +
       5000;
     test.info().setTimeout(test.info().timeout + restMs);

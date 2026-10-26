@@ -6,9 +6,9 @@ import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
+  deadBallBeats,
   presentationMs,
   presentationSamples,
-  setPiecePreparations,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/ui/presentationClock';
@@ -223,7 +223,7 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
   // Running play takes 12 s a minute at 1x (→WEB-32), so 6 s at the 2x the match opens at; only a
-  // set-piece preparation inside it would draw the minute shorter. The first minute shows until
+  // dead-ball beat inside it would draw the minute shorter. The first minute shows until
   // the second minute's first sample: still on after 60% of that and over by its end plus slack.
   const { samples } = presentationSamples(playback.frames);
   const secondMinute = samples.find((sample) => sample.frame === 1)!.time;
@@ -231,7 +231,7 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
     0,
     secondMinute,
     WATCH_DEFAULT_SPEED,
-    setPiecePreparations(playback.frames),
+    deadBallBeats(playback.frames),
   );
   await page.waitForTimeout(openingMinuteMs * 0.6);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
