@@ -16,6 +16,11 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
+- 261027 decided T479 T480 T481 T482 SAVE-23: how to ship engine football changes after activation → as match-model revision 4, every change gated by `modelAtLeast(s.setup, 4)` so revisions 1–3 keep their football and a queued playback replays as settled (alt: change revision 3 in place | presentation-only now, engine later)
+- 261027 decided T477 T478 MATCH-12 WEB-32: how the clock learns a stoppage’s rush and beat → frames carry explicit `stoppages` {kind, dead, settled, kick} from the engine’s dead-time samples (alt: the web infers settling from motion samples, fragile at minute ends)
+- 261027 decided T481 MATCH-16 PLAYER-5: playmaker roles looking more for the pass → a revision-4 shot factor 0.85 for regista, deep-lying playmaker, trequartista and wide playmaker inside decide.ts, starting line weights DF 0.5 / MF 0.8 / FW 1 (alt: edit `ROLE_ACTION`, which would change revisions 1–3 and the aggregate path)
+- 261027 decided T480 MATCH-18: unstated corner details → a defending side behind late leaves 2 up, ahead late 0; rest players goal-side of the outlets near halfway (50 m) and outlets at 55 m in their own half; extra attackers and defenders get extra box and zonal spots (alt: keep 1 outlet late | place rest players at their shape targets, the measured crowding)
+- 261027 decided T482 MATCH-28: recalibration size → explore 3h with 600-match candidate reads and a quick MATCH-2 curve, no resolving-size parity (owner 261026: no 10,000–20,000-match runs) (alt: full parity, about 6 h | no recalibration, leaving forwards’ goals above the band)
 - 261027 decided WEB-32 ideation/dead-balls-and-finishing: the owner set the rush at ≥ 2× running play and beats per kind tied to speed, leaving numbers for review in play → the rush also caps at 1.5 real s at 1x, and starting beats at 1x are throw-in 0.4, goal kick 0.6, kick-off after a goal 0.8, corner/free kick/drop ball 1.0, penalty 1.5, card/injury/substitution 2.0 s with a caption (alt: no cap, so a long walk-in at exactly 2× | one beat for every kind, rejected by the owner)
 - 261027 decided MATCH-16 ideation/dead-balls-and-finishing: how to make the owner’s forward > midfielder > defender shooting order checkable → in the same unpressured chance with a clear view a forward shoots at least as often as a midfielder and a midfielder as a defender in every cell, and goals by line are never held by suppressing a line’s shot choice (alt: an order in the box only | no measurable order)
 - 261027 decided MATCH-18 ideation/dead-balls-and-finishing: scope of the late-score corner rule → corners only, the keeper up in added time when one goal behind; delivered free kicks keep the default numbers (alt: also delivered free kicks | keeper up from the 90th minute at any deficit)
@@ -317,11 +322,11 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 157 | 155 |WEB-32✎ WEB-1✎ WEB-90✎ | 0 |
+| WEB | 157 | 157 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 33 | 32 | MATCH-12✎ MATCH-16✎ MATCH-18✎ | 0 |
+| MATCH | 33 | 33 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -341,7 +346,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T477 | Football-audience language packs | WEB ARCH | - | doing@261027.l8p2 |
+| T483 | Football-audience language packs | WEB ARCH | - | doing@261027.l8p2 |
+| T477 | Players hurry to their places and wait during dead time | MATCH WEB | - | todo |
+| T478 | Dead-ball beat on the presentation clock | WEB MATCH | T477 | todo |
+| T479 | Match-model revision 4 and free-kick takers by place | MATCH SAVE | - | todo |
+| T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
+| T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
+| T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -357,12 +368,14 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- create-task WEB MATCH (WEB@156 MATCH@33: dead-ball beat, free-kick takers, shot choice and recalibration, corner numbers), then implement; autopilot k2d7 pushes main once after the final gate.
+- implement-task T477, then T478 T479 T480 T481 T482 in order; autopilot k2d7 runs the final batch gate and pushes main once.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
-- 261027 T477 start: WEB-1/90 r157 adds eleven language packs in an isolated checkout; other WEB r156 / MATCH r33 planning remains pending
+- 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks
+- 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
+- 261027 create-task WEB MATCH start
 - 261027 ideation dead-balls-and-finishing converted
 - 261027 update-ssot WEB r156 MATCH r33 (autopilot k2d7, ideation dead-balls-and-finishing): WEB-32 dead-ball beat for every stoppage tied to speed; MATCH-12 no straight-line glide in dead time; MATCH-16 shot choice from the chance bent by position, role, traits, tactic and school; MATCH-18 free-kick taker by place, corner numbers drawn and score-dependent late
 - 261027 update-ssot WEB MATCH start
@@ -380,5 +393,3 @@
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
 - 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
 - 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
-- 261026 T469 done (owner's go): visible steps one day, ≥ 2 s match-day moment on own fixture days (NEXT MATCH card, bottom slot elsewhere), optional 경기 결과 알림; task checks passed, batch before the main push
-- 261026 review-code module-boundaries-261026 start: remaining engine cycles, runtime responsibilities and presentation boundaries; preserve current edits and exclude T469 touches
