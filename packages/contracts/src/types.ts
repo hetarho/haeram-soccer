@@ -715,6 +715,13 @@ export interface MatchEvent {
   /** Korean commentary (→MATCH-24). */
   text: string;
 }
+/** A dead ball in an observed frame (→WEB-32's dead-ball beat): `dead` ≤ `settled` ≤ `kick`. */
+export interface FrameStoppage {
+  kind: 'throwIn' | 'goalKick' | 'corner' | 'freeKick' | 'penalty' | 'kickoff' | 'dropBall';
+  dead: number;
+  settled: number;
+  kick: number;
+}
 /** One match minute of a period, added minutes included. */
 export interface MatchFrame {
   /** Match minute, capped at the period's end: added minutes of the first half read 45. */
@@ -751,6 +758,13 @@ export interface MatchFrame {
    * flight, loose or dead). Absent on older frames.
    */
   holders?: [number, string][];
+  /**
+   * The stoppages whose restart is kicked in this minute (→WEB-32, MATCH-12; observed candidate
+   * matches only): when the ball went dead, when every player stood on his place and the kick, in
+   * seconds from this minute's start (as an event's `t`, negative when the ball went dead in an
+   * earlier minute of the period). A period's opening kick-off is a transition, not a stoppage.
+   */
+  stoppages?: FrameStoppage[];
   period: 1 | 2 | 3 | 4;
   /** '23', '45+2', '90+4', '105+1'. */
   label: string;

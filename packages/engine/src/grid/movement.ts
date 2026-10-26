@@ -228,9 +228,15 @@ const inside = (p: readonly [number, number]): [number, number] => [
 /**
  * Moves every player on the pitch for `dt` match seconds in whole steps: the planned ones toward
  * their points, everyone else toward his shape target (→MATCH-17). Targets and top speeds are read
- * once at the start, before anyone moves.
+ * once at the start, before anyone moves. `onStep` sees the state after each step with the seconds
+ * since the start; it only reads (an observed walk-in's samples, T477).
  */
-export function advance(s: GridState, dt: number, plan: readonly Move[] = []): void {
+export function advance(
+  s: GridState,
+  dt: number,
+  plan: readonly Move[] = [],
+  onStep?: (seconds: number) => void,
+): void {
   const C = GRID_MOVEMENT_CONFIG;
   const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
   // Each side's planned moves by roster index; a player planned twice takes his last move.
@@ -266,6 +272,7 @@ export function advance(s: GridState, dt: number, plan: readonly Move[] = []): v
       const m = movers[k]!;
       stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
     }
+    onStep?.(t + h);
   }
 }
 
@@ -447,7 +454,9 @@ export const benchPoint = (side: 0 | 1): [number, number] => [
  * went dead, to the spot and set down while the taker walks there and `scene` takes its places;
  * everyone else moves to his shape. Its dead time is the nominal one or, when longer, what that
  * takes, never both. Advances the clock, hands the taker the ball on the spot, sets `rs.dead` to
- * the time used and returns the retrieval and placement knots.
+ * the time used and returns the retrieval and placement knots. `walk` sees the state as the walk-in
+ * starts and after each movement step, at its match second (an observed match's `Tracer.walk`,
+ * T477); it only reads.
  */
 export function prepareRestart(
   s: GridState,
@@ -455,6 +464,7 @@ export function prepareRestart(
   taker: number,
   rest: readonly [number, number],
   scene: readonly Placement[] = [],
+  walk?: (s: GridState, at: number) => void,
 ): MotionKnot[] {
   const B = GRID_BALL_CONFIG;
   const start = s.elapsed;
@@ -468,7 +478,8 @@ export function prepareRestart(
   s.ball = spot;
   s.possession = rs.side;
   s.owner = [rs.side, taker];
-  advance(s, seconds, plan);
+  walk?.(s, start);
+  advance(s, seconds, plan, walk && ((t) => walk(s, start + t)));
   s.t += seconds;
   s.elapsed += seconds;
   gp.pos = [spot[0], spot[1]];
@@ -487,12 +498,14 @@ export function prepareRestart(
  * retrieval and placement knots go to `out.knots`. At the kick the places are reached; for the
  * second ball the players who went up hold their box spots and the defenders keep their marks,
  * zones and goal for as long (`defendSetPiece`, T348). `kick` sees the state at the kick, before
- * the places end (an observed match's `Tracer.kick`, T359); it only reads, so it changes no play.
+ * the places end (an observed match's `Tracer.kick`, T359), and `walk` the walk-in (its
+ * `Tracer.walk`, T477); they only read, so they change no play.
  */
 export function prepareOnClock(
   rest: readonly [number, number],
   out: { knots: MotionKnot[] },
   kick?: (s: GridState) => void,
+  walk?: (s: GridState, at: number) => void,
 ): RestartPreparer {
   return (s, restart, taker, scene) => {
     const moves: Placement[] = scene ? [...scene.up, ...scene.marks] : [];
@@ -503,7 +516,7 @@ export function prepareOnClock(
             moves.push({ gp, to: kickOffPoint(s.setup, sd, gp.slot) });
     const gp = s.players[restart.side][taker]!;
     restartPlaces(s, [{ gp, to: restart.spot }, ...moves.filter((m) => m.gp !== gp)]);
-    out.knots = prepareRestart(s, restart, taker, rest, moves);
+    out.knots = prepareRestart(s, restart, taker, rest, moves, walk);
     kick?.(s);
     const until = s.elapsed + SHAPE_CONFIG.setPiece.stay;
     restartTaken(s, scene?.up ?? [], until);

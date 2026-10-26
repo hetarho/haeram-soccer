@@ -279,6 +279,73 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
     expect(watched.result.record).toEqual(playGrid(setupFor('candidate-1', false, true)).record);
   });
 
+  it('draws dead time as a hurry to the places and a wait for the kick (T477)', () => {
+    const samples = watched.frames.flatMap((f) => f.motion!);
+    // Pitch metres between two drawn positions (units are percent of 105 × 68 m).
+    const metres = (a: readonly number[], b: readonly number[]) =>
+      Math.hypot(((a[0]! - b[0]!) * PITCH.length) / 100, ((a[1]! - b[1]!) * PITCH.width) / 100);
+    const speeds: number[] = [];
+    let creep = 0;
+    for (const f of watched.frames)
+      for (const st of f.stoppages ?? []) {
+        const [dead, kick] = [f.startSeconds! + st.dead, f.startSeconds! + st.kick];
+        const inside = samples.filter(
+          (m) => m.elapsedSeconds >= dead - 1e-6 && m.elapsedSeconds <= kick + 1e-6,
+        );
+        if (inside.length < 2) continue;
+        for (const side of [0, 1] as const)
+          for (const { id } of inside[0]!.players[side]) {
+            const track = inside.map((m) => ({
+              t: m.elapsedSeconds,
+              at: m.players[side].find((p) => p.id === id)?.position,
+            }));
+            if (track.some((x) => !x.at)) continue;
+            const end = track.at(-1)!.at!;
+            const distance = metres(track[0]!.at!, end);
+            if (distance <= 3) continue;
+            // He arrives at the first sample from which he stays where the kick finds him.
+            let arrive = track.length - 1;
+            while (arrive > 0 && metres(track[arrive - 1]!.at!, end) < 0.2) arrive--;
+            speeds.push(distance / Math.max(1e-9, track[arrive]!.t - track[0]!.t));
+            for (let i = arrive + 1; i < track.length; i++)
+              creep = Math.max(creep, metres(track[i]!.at!, track[arrive]!.at!));
+          }
+      }
+    speeds.sort((a, b) => a - b);
+    expect(speeds.length).toBeGreaterThan(200);
+    // Walking pace or slower before T477 (0.10–0.78 m per match second by restart kind).
+    expect(speeds[Math.floor(speeds.length / 2)]).toBeGreaterThanOrEqual(2);
+    expect(creep).toBeLessThan(0.2);
+  });
+
+  it('lists every restart prepared on the clock as a stoppage of the minute it is kicked in (T477)', () => {
+    const restarts = trace.filter(
+      (e, n) =>
+        n > 0 &&
+        e.spot !== undefined &&
+        e.kick !== undefined &&
+        e.kick.elapsed > trace[n - 1]!.elapsed &&
+        e.kick.elapsed < e.elapsed,
+    );
+    const listed = watched.frames.flatMap((f) =>
+      (f.stoppages ?? []).map((st) => ({ ...st, at: f.startSeconds! + st.kick })),
+    );
+    expect(restarts.length).toBeGreaterThan(50);
+    expect(listed).toHaveLength(restarts.length);
+    listed.forEach((st, i) => {
+      const e = restarts[i]!;
+      expect(st.kind).toBe(e.action === 'indirectFreeKick' ? 'freeKick' : e.action);
+      expect(st.at).toBeCloseTo(e.kick!.elapsed, 1);
+      expect(st.dead).toBeLessThanOrEqual(st.settled);
+      expect(st.settled).toBeLessThanOrEqual(st.kick);
+      // Kicked in this minute (the last minute of a period also takes later kicks).
+      expect(st.kick).toBeGreaterThanOrEqual(0);
+    });
+    // A period's opening kick-off is a transition; only kick-offs after a goal are stoppages.
+    const goals = watched.result.record.score.home + watched.result.record.score.away;
+    expect(listed.filter((st) => st.kind === 'kickoff').length).toBeLessThanOrEqual(goals);
+  });
+
   it('draws every flight from its kick to its arrival at the recorded times', () => {
     let flights = 0;
     for (const e of knotted) {

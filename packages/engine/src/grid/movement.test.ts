@@ -28,13 +28,14 @@ import {
   type MotionKnot,
   type Mover,
 } from './movement';
+import { SAMPLING } from './observation';
 import { attackFrame, cellOf } from './pitch';
 import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
 import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';
 import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf, type SetPieceScene } from './shape';
 import { createState, onPitch, skill, type GridPlayer, type GridState } from './state';
-import type { TraceEntry } from './trace';
+import { Tracer, type TraceEntry } from './trace';
 import { gridKit } from './testkit';
 
 const C = GRID_MOVEMENT_CONFIG;
@@ -244,6 +245,51 @@ describe('grid movement', () => {
       0,
     );
     expect(restarts).toBe(expected - watched.reduce((n, r) => n + r.record.added!.length, 0));
+  });
+
+  it('prepareRestart samples the walk-in until everyone stands (T477)', () => {
+    const s = field();
+    const rs: Restart = {
+      kind: 'goalKick',
+      side: 0,
+      spot: [5.5, 34],
+      dead: RESTART_CONFIG.dead.goalKick,
+    };
+    const tracer = new Tracer(true);
+    prepareRestart(s, rs, 2, [0, 50], [], tracer.walk);
+    tracer.push(s, 0, 2, 'goalKick', 'complete');
+    const e = tracer.entries.at(-1)!;
+    const walk = e.walk!;
+    // The walk-in's start, a sample every spacing while anyone moves, then the instant all stand.
+    expect(walk[0]!.elapsed).toBe(0);
+    expect(e.settled).toBeDefined();
+    expect(e.settled).toBeLessThan(rs.dead);
+    expect(walk.at(-1)!.elapsed).toBe(e.settled);
+    for (let i = 1; i < walk.length - 1; i++)
+      expect(walk[i]!.elapsed - walk[i - 1]!.elapsed).toBeGreaterThanOrEqual(
+        SAMPLING.spacing - 1e-9,
+      );
+    // From that instant to the kick nobody moves.
+    const settled = walk.at(-1)!;
+    for (let k = 0; k < 22; k++) {
+      const idx = settled.slots[k]!;
+      if (idx < 0) continue;
+      const gp = s.players[k < 11 ? 0 : 1][idx]!;
+      expect(
+        gap(gp.pos, [settled.positions[k * 2]!, settled.positions[k * 2 + 1]!]),
+      ).toBeLessThanOrEqual(EPS);
+    }
+    // An unobserved match records nothing.
+    const quiet = new Tracer(false);
+    prepareRestart(
+      field(),
+      { ...rs, dead: RESTART_CONFIG.dead.goalKick },
+      2,
+      [0, 50],
+      [],
+      quiet.walk,
+    );
+    expect(quiet.entries).toEqual([]);
   });
 
   it('keeps off-ball players on their way until they read the kick (T324)', () => {
