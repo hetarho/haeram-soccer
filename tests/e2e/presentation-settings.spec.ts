@@ -33,7 +33,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
   for (const width of [390, 1380])
     test(`shipped ${entry.id}: selection and reload at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
-      await page.goto('/game');
+      await page.goto('/');
       const founding = page.getByTestId('club-founding');
       await expect(founding).toBeVisible();
       const name = founding.getByLabel('클럽 이름', { exact: true });
