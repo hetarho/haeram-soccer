@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:34Z | - |
+| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:35Z | T432 |
 
 ## inbox
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
@@ -310,7 +310,7 @@
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | todo |
+| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | doing@261026.p7r3 |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
