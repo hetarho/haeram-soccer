@@ -10,11 +10,6 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| r8n5 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T09:39Z | 2026-10-26T09:39Z | - |
-
 ## inbox
 - 261026 decided T471 T472 T473 T474 T475 T476 ARCH-30: the implementation sandbox makes .git read-only → host owns task finalization and commits after checking acceptance and verification logs; fresh implementation sessions edit source and task acceptance/result only, run isolated task checks directly, and return work to the host (alt: park all implementation | change sandbox permissions); existing sandbox and verification scope stay intact
 - 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
