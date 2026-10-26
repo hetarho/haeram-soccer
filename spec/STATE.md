@@ -348,10 +348,12 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
+- T469 is on main (35f48eef, with r8n5's T471/T472 beneath it): the batch on 35f48eef passed (unit 1088, integration 1154, contract 39, catalogs, build, Chromium 277/277) and main CI 40319410126 is green on every browser. calibration-pass stays with the owner
 - implement-task T473; remaining module-boundary refactor: T473 T474 T475 T476.
 - Preserve the owner deadline: 21:00 KST on 261026. Verified main publication only; retain unfinished work and exact next steps remotely before stopping. Parked product ideations stay parked.
 
 ## log
+- 261026 T469 pushed to main 35f48eef: the batch caught the moment span breaking the themes' NEXT MATCH first-child rule at 1280 (fixed in 35f48eef), then passed on the whole tree; main CI 40319410126 green. Two concurrent batches had timed out integration tests (long-career; calendar ENG/ESP) under host load; they pass on a quiet host
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
@@ -371,4 +373,3 @@
 - 261026 doc-review artifacts start: retain unimplemented concepts and benchmark measurements; remove duplicate planning and applied UI evidence.
 - 261026 T467 done (q7m3): own-edge-probe buckets by prepared gap against outcomeTarget on revision 3; founding detailed 1.52 v 2.15 (aggregate 2.33), top tier on the curve (1.53 / 1.56 v 1.46); about 90% of T434's −0.9 remains at tier 4; title race unchanged beside T410; lever suggested (grid tier dependence)
 - 261026 fix CI manual progression start: WebKit retains aria-hidden exit copies after the match completed; scope the report assertion to the live dialog and await next-event readiness before checking the manual stop.
-- 261026 T466 done (q7m3): match-model revision 3: a club nobody owns adds its named manager's (ability − 50)/4, morale neutral, in prepareMatch for both paths; revisions 1/2 and pre-feature keep the flat 4; revision 2 digests kept and asserted, revision 3 grid/full-model digests and knockout ties re-recorded; future-revision tests name -4
