@@ -11,6 +11,7 @@
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
 ## inbox
+- 261026 parked T471 ARCH-30: implementation and isolated checks are ready, but this unit has read-only .git access; installed vibe check cannot snapshot Git objects and the required task commit is unavailable. Host with writable Git access must finalize T471 and commit its related files before T472; leave active/report ownership with the host. Exact checks, deferred batch scopes and changed consumer paths are in T471 result.
 - 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
 - 261026 parked ideation/club-history-reboot ideation/save-storage-and-fast-pace ideation/set-piece-defence-and-goal-feedback ideation/match-day-progress ideation/difficulty-and-adaptation ideation/match-engine-rebuild ideation/own-club-match-edge ideation/club-identity-and-kits ideation/match-viewing-pace-and-freedom ideation/match-continuity-and-performance ideation/manager-achievements ideation/expert-proposal-review ideation/navigation-and-records ideation/club-direction: legacy converted documents restored to ready because 0.7.6 lint found unresolved questions or nonconforming completion mappings; preserve their historical content and do not plan or implement product changes from them during the owner-authorized module-boundary refactor; audit coverage separately
 - 261026 parked ideation/calibration-pass: still being shaped with the owner; autopilot must not convert it (T469 got the owner's go on 261026 and is done)
@@ -329,7 +330,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T471 | Separate shared world reads, events and price quotes | ARCH | - | todo |
+| T471 | Separate shared world reads, events and price quotes | ARCH | - | blocked@261026 |
 | T472 | Separate transfer calendar queries from negotiation | ARCH | - | todo |
 | T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
 | T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
@@ -349,11 +350,12 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- implement-task T471; then T472, T473, T474, T475 and T476 from review/module-boundaries-261026. Owner-authorized refactoring only, until 21:00 KST 261026; periodic verified main pushes, remote hand-off for anything unfinished.
+- Host: finalize and commit T471 (implementation ready; this unit cannot write .git); then implement-task T472, T473, T474, T475 and T476 from review/module-boundaries-261026. Owner-authorized refactoring only, until 21:00 KST 261026; periodic verified main pushes, remote hand-off for anything unfinished.
 - T469 is complete and its match-day behavior is preserved; its browser journeys join the next main batch. All legacy ready ideations and calibration-pass are parked during this refactor.
 - Start-vibe host owns full batch checks and the CI wait before/after main publication. Reserve wrap-up time, retain exact pending task IDs, test logs and remote work/WIP branch if the deadline stops implementation.
 
 ## log
+- 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
 - 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
 - 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
 - 261026 T469 done (owner's go): visible steps one day, ≥ 2 s match-day moment on own fixture days (NEXT MATCH card, bottom slot elsewhere), optional 경기 결과 알림; task checks passed, batch before the main push
@@ -373,4 +375,3 @@
 - 261026 T466 done (q7m3): match-model revision 3: a club nobody owns adds its named manager's (ability − 50)/4, morale neutral, in prepareMatch for both paths; revisions 1/2 and pre-feature keep the flat 4; revision 2 digests kept and asserted, revision 3 grid/full-model digests and knockout ties re-recorded; future-revision tests name -4
 - 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
 - 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too
-- 261026 T465 done (q7m3): an automatic step still in flight one pace interval after it began sets ProgressionState.lateStep; the transport's reserved slot shows a decorative spinner with 경기 진행 중… / 진행 중… until it lands or the clock stops; steps and catch-up unchanged, e2e left to the host batch
