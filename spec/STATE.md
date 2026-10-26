@@ -305,7 +305,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
-| T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
+| T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.q7m3 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
@@ -329,6 +329,7 @@
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
 - 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
 - 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
 - 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
