@@ -16,6 +16,18 @@
 - [o] Two separate causes ← each moves results on its own
   - engine path: the same strengths give ~0.7–0.8 points a match more on the detailed engine than on the probabilistic one (~30 points a season)
   - one-sided context: our club adds (지도력 − 50)/4 + (사기 − 60)/10 (+11.2 here) while every other club adds a flat 4, so other clubs' managers and morale never count (~+0.45 points a match here)
+- [o] Re-measured on the released model (T434, 261026, `scripts/own-edge-probe.ts`): a 1950 쉬움 ENG founding (seed `own-edge`) simulated 10 seasons on match model `continuous-aggregate-2`, then its 1960 lower-league season's 30 own league fixtures replayed 10 times each by seed (300 matches a variant, 317 s in all) ← indicative only: low-OVR amateur football, not the 1995/96 OVR-82 top-tier save of 261023, and 300 matches resolve about ±0.1 points a match
+  - inputs: own XI 41 v opponents 31 (25–36); manager 지도력 35 without a style, 사기 53, so the own context is −4.45 against the flat +4 every other club adds; effective gap about +1.5 as played and +10 neutral
+  | variant | points a match (W/D/L %) | 261023 pre-feature |
+  |---|---|---|
+  | detailed engine, as played | 1.09 (25.3/32.7/42.0), goals 0.86–1.18 | 2.51 |
+  | aggregate path other clubs play | 1.99 (58.3/23.7/18.0), goals 1.89–0.83 | 1.70 |
+  | detailed, context +4 | 1.46 (36.7/35.7/27.7), goals 1.08–0.92 | 2.06 |
+  | aggregate, context +4 | 2.44 (75.7/17.0/7.3), goals 2.46–0.56 | 1.35 |
+  - engine path: still the larger cause but reversed — the detailed engine now gives the own club about 0.9 points a match less than the aggregate path on the same strengths (−0.90 as played, −0.98 neutral), where it gave 0.7–0.8 more before
+  - one-sided context: still moves results by about 0.4 points a match (detailed +0.37, aggregate +0.45 when set to +4); its sign follows the own manager and morale — a 지도력 35 founding manager costs the own club here, a 지도력 83 manager helped it on the 1995 save
+  - against MATCH-2's target (Elo, 16 a rating point, venues pooled) the expected scores would be about 0.53 as played and 0.72 neutral; the detailed engine gives 0.42 / 0.55 and the aggregate 0.70 / 0.84, so the two paths miss the curve on opposite sides rather than one holding it (a rough read that takes the shown XI ratings as the match strengths)
+- [o] Recommendation (T434): C, both A and B ← both causes still move results on the released model; the engine gap only changed direction, so fixing context alone (B) or the path alone (A) leaves a ~0.4–0.9 point a match difference the owner cannot see; with A, calibrate both paths to MATCH-2's curve instead of one to the other, since on this read neither holds it. The choice stays with the owner.
 - [x] Treat it as part of 쉬움 ← WEB-3: difficulty sets only the start; every rule is the same at every level
 - [?] A: parity — on equal inputs our fixtures produce the same outcome curve as other clubs' fixtures (calibrate one path to the other, or play both on one path)
 - [?] B: symmetric context — other clubs' match context from their own manager's ability and their morale, on the same formula as ours
@@ -32,8 +44,8 @@
 - LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
 
 ## open
-- Does the candidate model (MATCH_MODEL_RELEASE, T286, aggregate path for other fixtures) already close the engine gap? Re-run the same probe on the candidate before choosing.
-- With A, which path is the reference: the detailed engine's football or the probabilistic curve's results?
+- With A, which path is the reference: the detailed engine's football or the probabilistic curve's results? (T434 leans to neither: MATCH-2's curve, which both miss)
+- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T434 read only 1960 amateur football.
 - With B, what is "morale" for a club nobody owns — form over its last matches, a fixed baseline, or none?
 - How often should a club that is genuinely the strongest win its league (a target band for reference careers)?
-- Reproduce: decode a save with `decode` from `apps/web/src/adapters/persistence.ts`, then for each unplayed own league fixture set `w.seed` to `<seed>:probe<i>` and call `simulateMatch` (detailed) or `summaryMatch(prepareMatch(w, f))` (probabilistic; not exported, needs a temporary export).
+- Reproduce: `pnpm exec tsx scripts/own-edge-probe.ts --seeds 10 --seasons 10 --out <file.json>` (a cached 10-season world; each fixture with `w.seed = <seed>:probe<i>` on `simulateMatch` or `simulateAggregate`); for a save, `decode` from `apps/web/src/adapters/persistence.ts` gives the world instead.
