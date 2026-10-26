@@ -10,6 +10,11 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:34Z | - |
+
 ## inbox
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
 - 261026 decided T435 SAVE-23 ARCH-30: "revision 2 plays exactly as revision 1 (every digest unchanged)" while each record names the revision that settled it → the aggregate path keeps revision 1's stream names, a test proves the same football on both revisions, and the throughput facts digests (11) are re-recorded for the record label alone with the old values kept in their history comments (alt: keep labelling new records revision 1, against SAVE-23's per-match revision | pin the digest tests to revision 1, leaving revision 2 unmeasured there)
