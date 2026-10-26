@@ -3,7 +3,7 @@
  * aggregate path settles exactly the records and ledgers the source before it settled, a fixture's
  * facts never depend on which fixtures were played before it, and per-match caches follow the
  * lineup, availability and tactic of the fixture being played. No wall-clock assertion here; the
- * timings live in scripts/match-model-baseline.ts and docs/benchmarks/full-model-throughput.json.
+ * timings live in scripts/match-model-baseline.ts and artifacts/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';

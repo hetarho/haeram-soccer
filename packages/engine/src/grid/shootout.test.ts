@@ -14,7 +14,7 @@ const script = (...values: number[]) => {
   return () => values[Math.min(i++, values.length - 1)]!;
 };
 
-describe('extra time and penalty shoot-outs (→MATCH-6, design §8.4)', () => {
+describe('extra time and penalty shoot-outs (→MATCH-6)', () => {
   it('plays extra time only when level', () => {
     const { w, f } = gridKit();
     let level = 0,

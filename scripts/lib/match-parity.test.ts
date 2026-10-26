@@ -1407,7 +1407,7 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       expect(by.get(id)!.band).toBeUndefined();
     }
     // T327 counts both under MATCH-13 r18's published conventions and bands them from Opta's
-    // league-season figures (docs/MATCH-BASELINES.md), never the engines' output.
+    // league-season figures (spec/ssot/MATCH.md), never the engines' output.
     expect(by.get('highTurnovers')).toMatchObject({ status: 'inside', band: [5.7, 7.5] });
     expect(by.get('highTurnovers')!.value).toBeCloseTo(6.5, 9);
     expect(by.get('ppda')).toMatchObject({ status: 'inside', band: [12, 14] });

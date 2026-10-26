@@ -35,7 +35,7 @@
   | 미숙 | 60% | any position not listed (a striker at CB) |
   - his main position is always 최상; generated players hold 1 (25%), 2 (35%), 3 (22%), 4 (10%), 5 (5%) or 6 (3%) positions; a side position's mirror is listed 최상 15%, 준수 35%, 어색 50% of the time; other listed positions are 최상 15%, 준수 50%, 어색 35%.
   - starts at a position raise its level: 미숙 → 어색 after 20 starts there, 어색 → 준수 after 40, 준수 → 최상 after 60 (counted from the last change). ← managers retrain players, as full backs became centre backs and midfielders full backs
-- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored. A role also sets where its player stands and moves in each phase and which actions he favours (→MATCH-16, →MATCH-17), as football media describe it (docs/MATCH-BASELINES.md).
+- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored. A role also sets where its player stands and moves in each phase and which actions he favours (→MATCH-16, →MATCH-17), as football media describe it. Role definitions and fit are implemented in `packages/engine/src/player.ts`; phase movement and role tendencies are implemented in `grid/shape.ts` and `grid/tendencies.ts` under that source directory.
   | position | roles |
   |---|---|
   | GK | 스위퍼 키퍼, 슈팅 스토퍼 |

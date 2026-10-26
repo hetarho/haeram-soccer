@@ -18,7 +18,7 @@ import {
 
 /**
  * KIT-2/4/5/9/10/14, WEB-86: the club-design editor's draft as a pure reducer
- * (docs/CLUB-IDENTITY-CONTRACT.md §7). Each action returns a new identity that shares every branch
+ * (spec/ssot/KIT.md). Each action returns a new identity that shares every branch
  * it did not change and never writes to its input, so the entry and applied identities, and the
  * shirts not being edited, cannot change through a draft. The selected role and an open composer are
  * the editor's own UI state, not part of the identity.

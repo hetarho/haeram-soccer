@@ -76,7 +76,7 @@ import {
   type Move,
 } from './movement';
 
-/** Seconds an action takes before the 0.85 + 0.3·r jitter (design §8.2). */
+/** Seconds an action takes before the 0.85 + 0.3·r jitter. */
 export const ACTION_SECONDS = {
   short: 2.3,
   long: 3.6,
@@ -91,7 +91,7 @@ export const ACTION_SECONDS = {
   clearance: 2.8,
 } as const;
 
-/** Added-time credits in seconds and each period's bounds in minutes (design §8.3). */
+/** Added-time credits in seconds and each period's bounds in minutes. */
 export const ADDED_CONFIG = {
   credits: { goal: 45, sub: 30, injury: 90, card: 20, penalty: 60 },
   bounds: [
@@ -353,7 +353,7 @@ export function playGrid(setup: GridSetup): GridResult {
       };
   }
 
-  /** Both managers' changes at a dead ball or at half-time (design §8.1). */
+  /** Both managers' changes at a dead ball or at half-time. */
   function stoppage(rs: Restart) {
     const half = s.period > 1 && s.t === 0;
     for (const side of [0, 1] as const) {
@@ -882,7 +882,7 @@ export function playGrid(setup: GridSetup): GridResult {
     return { key: 'carry', outcome: o };
   }
 
-  // A knockout tie still level after 90 minutes plays extra time (→MATCH-6, design §8.4).
+  // A knockout tie still level after 90 minutes plays extra time (→MATCH-6).
   const periods: (1 | 2 | 3 | 4)[] = [1, 2];
   let regulation: Score | undefined;
   for (const period of periods) {

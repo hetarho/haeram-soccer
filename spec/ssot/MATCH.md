@@ -11,7 +11,7 @@
   - clubs nobody owns do not track fatigue match by match, so a pressing club's squad carries fatigue 32.
   - a strength gap counts with diminishing returns (gap / ⁴√(1 + (gap/24)⁴): 20→18.1, 30→22.0, 40→23.3); each side then adds its match-day form, a seeded fat-tailed draw (sd 7, within ±21) from a stream of its own, so watched and unwatched runs agree. ← even a far stronger side has bad days; a +20 favourite wins about 79%, draws 14% and loses 7%, as in real league data
   - home, manager and morale points and the form move every player's skills too (half the difference between the sides to each), so a strength point counts the same wherever it comes from.
-  - calibration target: Elo with 16 Elo per rating point (docs/CALIBRATION.md); the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, and each calibration records its measured error there.
+  - calibration target: Elo with 16 Elo per rating point; the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, and each calibration records its measured error there. The executable target and comparison registry is `scripts/lib/match-parity.ts`; calibration measurements are historical evidence, not an additional rule source.
 - MATCH-3 [o] Provide possession, goals, assists, shots, shots on target, attempted/completed passes, tackles, interceptions, dribbles, saves, fouls, yellow and red cards, corners, offsides, minutes played, substitutions, injuries and player contributions.
   - possession is a side's share of both sides' attempted passes (the published convention), the same on both paths.
 - MATCH-4 [o] Display counts, denominators and defined ratios; no attempts means no defined percentage. Compare own match, season and career totals.
@@ -76,7 +76,7 @@
   | box entry | a completed pass or carry that ends in the box |
   | front-of-box entry | a completed pass or carry that ends in the band in front of the box |
   | line-breaking pass | a completed pass played beyond the deepest player of an opponent line |
-  | xT added | the expected-threat value gained by a player's completed passes and carries, on the cells' values (→docs/MATCH-BASELINES.md) |
+  | xT added | the expected-threat value gained by a player's completed passes and carries, on the cells' `xT` values in `packages/engine/src/grid/baselines.json` |
   | cut-back | a completed pass from the cut-back zones back into the box |
   | cross | attempted crosses and completions |
   | through ball | attempted passes into the space in behind and completions |
@@ -110,7 +110,7 @@
   - match state: score, minute, men on the pitch.
 - MATCH-16 [o] The carrier chooses his action and its target by probability from a decision table. ← realism is measurable against real data instead of feel; roles, traits and attributes make players differ
   - actions: short pass, long pass, switch of play, through ball, cross, cut-back, carry, take-on, shot, header, hold-up or lay-off, clearance, keeper distribution, set-piece delivery.
-  - the base probabilities are real football's for the cell and the player's position (→docs/MATCH-BASELINES.md); his role's spatial habit (→PLAYER-5), his play traits (→PLAYER-9), the tactic's behaviour (→MATCH-8) and the tags bend them.
+  - the base probabilities are real football's for the cell and the player's position (`packages/engine/src/grid/baselines.json`, exposed by `baselines.ts`); his role's spatial habit (→PLAYER-5), his play traits (→PLAYER-9), the tactic's behaviour (→MATCH-8) and the tags bend them.
   - pressure shortens the options, back to goal favours hold-up and lay-offs, in behind favours a shot or a through ball; a side ahead sits deeper and risks less, more so late, a side behind pushes up and risks more.
   - the target is weighed among teammates by the threat value of their cell, how free they are and the distance; 판단력 sharpens the choice toward the best option and 침착성 keeps that sharpness and the execution under pressure (→PLAYER-2).
   - current intent and a teammate's committed supporting run affect the choice: the carrier may wait for an overlap, combine with a player showing for the ball or release a runner. A lost opportunity, turnover or danger can cancel the plan; options do not reroll without a football reason at every update (→MATCH-17).
@@ -169,7 +169,7 @@
   - the aggregate path may draw one match as at most six consecutive time segments, so the score reached by a segment shapes the later segments' shot volume and risk the way →MATCH-16's score effects shape detailed play; the segments are one joint draw of one match and stay within →ARCH-31's fixture budget. ← without the score state the aggregate's goals follow shots and xG far more tightly than detailed play (shots~goals correlation 0.50 against 0.23, measured 261024)
   - the paths use the same strength factors and intended football targets (→MATCH-2/23/28), including named contributors, discipline, injuries, substitutions, extra time and shootouts. Generated incidents affect availability and subsequent fixtures through the ordinary world rules.
   - a fixture always takes the same path whether observed or not. Performance and release evidence follow →ARCH-31; timing measurements never choose a fixture's path at runtime.
-- MATCH-23 [o] Both engines hold the intended football distributions below for equal top-tier sides (sources and per-cell tables →docs/MATCH-BASELINES.md); comparisons across other conditions follow →MATCH-28. ← the decision tables and aggregate outcomes must describe the same football
+- MATCH-23 [o] Both engines hold the intended football distributions below for equal top-tier sides; comparisons across other conditions follow →MATCH-28. Real-football per-cell tables and their provenance live in `packages/engine/src/grid/baselines.json`; the executable target registry is `scripts/lib/match-parity.ts`. ← the decision tables and aggregate outcomes must describe the same football
   | measure (a team a match unless noted) | band |
   |---|---|
   | passes attempted / completed | 430–520 / 76–84% |
@@ -221,9 +221,33 @@
   | high regains / end-of-match freshness | press highest / press lowest of the four |
   - a band holds only when its 95% interval lies inside it; an ordering holds only when each difference exceeds its interval.
   - a miss is a defect of the engines' tactical behaviour, fixed and remeasured as →MATCH-28 requires; the bands are never widened to pass.
-- MATCH-30 [o] Both engines hold every →MATCH-13 advanced counter at its real-football level for equal top-tier sides under MATCH-13's definitions; each counter's band and public source are kept in →docs/MATCH-BASELINES.md, and a counter with no comparable public source is listed as unbanded and held to →MATCH-28 parity only. ← an advanced counter without an intended level cannot show which engine is wrong
+- MATCH-30 [o] Both engines hold every →MATCH-13 advanced counter at its real-football level for equal top-tier sides under MATCH-13's definitions; each counter's band and public source are kept below, and a counter with no comparable public source is listed as unbanded and held to →MATCH-28 parity only. ← an advanced counter without an intended level cannot show which engine is wrong
   - both paths count a counter by the same definition before its band is read; a definition changes only in MATCH-13.
   - a band is never set from either engine's own output.
+  - Bands are per team per match, normalized to 90 minutes when extra time is played. Take the minimum and maximum cited league-season means and round outward: steps of 0.05 below 1, 0.1 from 1 to 10, 0.5 from 10 to 100, and 1 from 100. PPDA uses the ratio of league-wide numerator and denominator sums, never the mean of team ratios. `ADVANCED_COUNTER_TARGET` in `scripts/lib/match-parity.ts` implements these bands.
+  | counter | band | public source |
+  |---|---|---|
+  | key passes | 8.2–10.7 | SB16, FBref |
+  | xA | 0.75–1.15 | SB16, FBref xAG |
+  | big chances / scored | 0.80–1.05 / 0.40–0.55 | SB16, shots with xG ≥0.30 |
+  | box shots | 6.8–7.7 | SB16 |
+  | final-third passes / completed | 100–121 / 65–85 | SB16 |
+  | progressive passes | 116–124 | SB16, completed passes into a higher band |
+  | take-ons / success | →MATCH-23 | same definition |
+  | high turnovers | 5.7–7.5 | Opta sequences |
+  | PPDA | 12–14 | Opta sequences |
+  | box entries | 13–16 | SB16 |
+  | front-of-box entries | 42.5–45.5 | SB16 |
+  | xT added | 2.0–2.3 | SB16, positive per-cell xT gains |
+  | cut-backs | 0.35–0.60 | SB16, completed passes from a cut-back cell into the box, including crosses |
+  | crosses / completed | →MATCH-23 | same definition |
+  | through balls / completed | 2.0–2.2 / 0.60–0.85 | SB16 through-ball attempts / completions |
+  | progressive carries | 58.5–63 | SB16, carries into a higher band |
+  | field tilt | unbanded; →MATCH-28 only | equal sides give 50% by definition |
+  | line-breaking passes | unbanded; →MATCH-28 only | comparable public event data lacks complete player positions and line membership |
+  - SB16: [StatsBomb open data](https://github.com/statsbomb/open-data), season 27, competitions 2/11/12/7: EPL, La Liga, Serie A and Ligue 1 2015/16, 1,517 matches (Ligue 1: 377); Bundesliga's 34 Leverkusen matches are excluded. Passes include every restart; a missing pass outcome denotes completion. Map the 120×80 coordinates to →MATCH-14 with x edges 6/18/40/60/80/102/114 and y edges 18/30/50/62 in the acting side's attack frame.
+  - FBref: archived Opta squad tables, five leagues, 2017/18, 2019/20, 2021/22 and 2023/24; the 18 available league-seasons supply key passes and xAG. Progressive-pass/carry and final-third-entry definitions differ from →MATCH-13 and are not substituted for those counters. FBref through balls count completions and do not supply the attempt band.
+  - Opta sequences: [The Analyst](https://theanalyst.com/) league team sequence tables (`dataviz.theanalyst.com/project-data/soccer/{tmcl}/team-stats.json`), five leagues in 2024/25 and 2025/26, ten completed league-seasons retrieved 261022. High turnovers are open-play sequences starting within 40 m of the opponent's goal; PPDA follows →MATCH-13. Understat's differently scoped PPDA is context only and does not set the band.
 
 - MATCH-31 [o] A pass is cut out only by an opponent who reaches its path before the ball has passed. ← a defender who could not have got there winning the ball reads as a bug, and one standing in the lane who lets it through reads as no defending
   - whether he reaches it reads where he stands and how he is moving when the ball is kicked, his speed and fatigue and how early he reads the pass (→PLAYER-26), against the ball's travel along its path; the first point an opponent reaches is where the ball meets him, and its flight ends there (→MATCH-12).

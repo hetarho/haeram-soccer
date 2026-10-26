@@ -25,7 +25,7 @@ export const FINANCE_CONFIG = {
 };
 
 /**
- * League distributions (→ECON-28), measured against ECON-29 (docs/FINANCES.md): each
+ * League distributions (→ECON-28), measured against ECON-29 (spec/ssot/ECON.md): each
  * country's equal share a season by division, from the top flight down, the last entry being its
  * amateur league, in 1901 price units before the broadcasting index (→ECON-31); the champion's
  * total against the bottom club's; the share of the lost equal share a relegated club keeps for a
@@ -47,7 +47,7 @@ export const DISTRIBUTION_CONFIG = {
 };
 
 /**
- * Operating expenses (운영 경비, →ECON-30), measured against ECON-29 (docs/FINANCES.md):
+ * Operating expenses (운영 경비, →ECON-30), measured against ECON-29 (spec/ssot/ECON.md):
  * matchday operations, travel, administration, medical care, kit and the club's staff. A season's
  * amount is the larger of `share` of the club's turnover over its last completed season and
  * `floor`, the division amount: each country's by division, from the top flight down, the last

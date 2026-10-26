@@ -14,7 +14,7 @@
  * snapshot) re-records positions alone. On every host each fixture replays bit for bit, the observed
  * league fixture's facts equal the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in
  * either digest. No wall-clock assertion here; the timings live in scripts/match-model-baseline.ts
- * and docs/benchmarks/full-model-throughput.json.
+ * and artifacts/benchmarks/full-model-throughput.json.
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';

@@ -195,7 +195,7 @@
   - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
   - batch, once right before a push to main that carries code (a work-group unit's `work integrate --verify`, which pushes the unit to main; a standalone session's push): `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build`, then every journey on Chromium with `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.
   - browser specs run only in that batch run; a failing spec there stops the push until it is fixed.
-  - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `docs/` or Markdown starts no CI and needs no wait.
+  - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.
   - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
@@ -237,7 +237,7 @@
 - LocalStorage capacity and complete catalog coverage require measured/validated evidence before release claims.
 - A long-career capacity claim requires benchmark evidence; a passing UI demonstration is insufficient.
 - Never label planned scripts, unimplemented milestones, mock catalogs, or drafted backend infrastructure as completed functionality.
-- Current product material: `spec/ideation/club-history-reboot.md`; human PRD: `docs/PRD.md` (repository-relative paths).
+- Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
 - r21 261026 ARCH-21✎ source-wide world cache→dependency-scoped JSON cache and prepared UI checkpoints; ARCH-22✎ unit/contract→unit/integration/contract; ARCH-23✎ mixed unit shards→separate unit/integration jobs; ARCH-30✎ mixed changed tests and per-unit batch→unit-project task checks and one final batch; ARCH-33+ leaf computation boundaries and dependency-scoped measurement reuse

@@ -1,7 +1,7 @@
 import { divisionLevel } from '../packages/engine/src/reputation';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 /**
- * Economy calibration harness (ECON-29, ECON-9, CLUB-25; docs/FINANCES.md).
+ * Economy calibration harness (ECON-29, ECON-9, CLUB-25; spec/ssot/ECON.md).
  *
  * Plays whole careers of ECON-29's reference club from the 1950 founding: every delegation on —
  * the staff run training, the academy, sponsors and every staff post, the 단장's among them, and

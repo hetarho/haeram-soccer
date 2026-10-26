@@ -14,6 +14,6 @@ or a browser. The shared preparation helper isolates complete silhouettes before
 imprecise generated grid gutters cannot cut sticker rims.
 
 The resource contract is documented in
-[Presentation packs](../../../../docs/PRESENTATION-PACKS.md). Keep disposable review captures and
+[Presentation pack contracts](../../../../apps/web/src/presentation/contracts.ts). Keep disposable review captures and
 isolated browser profiles in ignored `.tmp/`, following the
-[theme checklist](../../../../docs/THEME-CHECKLIST.md).
+[shared theme contract](../../../../spec/ssot/ARCH.md).

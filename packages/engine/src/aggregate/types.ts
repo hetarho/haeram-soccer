@@ -1,5 +1,5 @@
 /**
- * The aggregate path's interfaces (→MATCH-22, MATCH-26, MATCH-27; docs/MATCH-MODEL-CONTRACT.md
+ * The aggregate path's interfaces (→MATCH-22, MATCH-26, MATCH-27; spec/ssot/MATCH.md
  * "Full aggregate facts"): what the kernel reads from a prepared fixture, the participation it is
  * conditioned on, its named streams and the coupled team facts with the transient ledger they are
  * derived from. Types only; the kernel is `team.ts`, the ledger's checks and derivations `ledger.ts`.

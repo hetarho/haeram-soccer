@@ -21,7 +21,7 @@ import s from './FixtureKitSelector.module.css';
 
 /**
  * KIT-6/7/8, WEB-88: our shirt for the named next fixture, chosen in preparation
- * (docs/CLUB-IDENTITY-CONTRACT.md §§4–5, 7). Choosing a role only redraws the preview; the one
+ * (spec/ssot/KIT.md). Choosing a role only redraws the preview; the one
  * `match-kit` command names the fixture the preview showed, and the selector never touches tactic
  * or lineup drafts.
  */

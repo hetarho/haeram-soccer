@@ -1,7 +1,7 @@
 import { stampAt, LENGTH } from './clock';
 export { stampAt } from './clock';
 /**
- * Playback frames from the grid trace (design §10.2, §10.4; →MATCH-12, WEB-32): one frame per match
+ * Playback frames from the grid trace (→MATCH-12, WEB-32): one frame per match
  * minute with the engine's own positions, the ball's flight between its recorded touches, events with
  * Korean commentary, the minute's label and pace. Presentation only: it reads a played result and
  * draws from its own stream, never the match's.
@@ -108,7 +108,7 @@ export const PLAYBACK_CONFIG = {
   preFeatureFlight: 0.25,
   /** Metres: farther from his target a player recovers, nearer the ball an attacker supports, nearer an opponent a defender marks. */
   states: OBSERVATION_STATES,
-  /** Minute weights (design §10.4): build-up in the own half, ordinary, chances and set pieces. */
+  /** Minute weights: build-up in the own half, ordinary, chances and set pieces. */
   pace: { quiet: 0.6, normal: 1, busy: 1.6 },
 } as const;
 
@@ -737,7 +737,7 @@ function timeline(p: 1 | 2 | 3 | 4, entries: TraceEntry[], r: () => number): Per
   return P;
 }
 
-/** The frame label of an entry (design §10.2). */
+/** The frame label of an entry. */
 function labelOf(e: TraceEntry): string {
   if (e.outcome === 'incident') return INCIDENT_LABEL[e.action] ?? '';
   if (e.result === 'goal') return '골';
@@ -784,7 +784,7 @@ function kindOf(e: TraceEntry): MatchEvent['kind'] {
 }
 
 /**
- * The minute label of second `t` of a period (design §10.2): its match minute, and the added minute
+ * The minute label of second `t` of a period: its match minute, and the added minute
  * once past the period's length, at most the period's last frame when its `added` minutes are known.
  * Incidents are stamped with it, so each carries the label of the frame that shows it (→MATCH-24).
  */
@@ -816,7 +816,7 @@ function instants(
 }
 
 /**
- * One frame per match minute of each period, added minutes included (design §10.2). `seed` is the
+ * One frame per match minute of each period, added minutes included. `seed` is the
  * world seed; the flights' bend and loft come from `${seed}:${fixture}:ball-decisions`.
  *
  * Candidate traces (`setup.model`, →MATCH-12, WEB-32) carry explicit times instead of a pace: each
@@ -1105,7 +1105,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         return ev;
       });
 
-      // Pace (design §10.4).
+      // Pace.
       const touches = mine.map((i) => entries[i]!).filter((e) => e.outcome !== 'incident');
       const busy = mine.some((i) => {
         const e = entries[i]!;

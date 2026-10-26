@@ -1,6 +1,6 @@
 import { measurementIdentity } from './lib/measurement-identity';
 /**
- * Match-model baseline measurement (→ARCH-31, MATCH-28, docs/MATCH-MODEL-CONTRACT.md).
+ * Match-model baseline measurement (→ARCH-31, MATCH-28, spec/ssot/MATCH.md).
  *
  * On fixed worlds it times fixture preparation, isolated grid and legacy-summary fixtures,
  * observation, record settlement, complete seasons of both century workload profiles and the
@@ -18,8 +18,8 @@ import { measurementIdentity } from './lib/measurement-identity';
  *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 10 \
  *     --paired-with BASELINE.json --out FILE
  *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --release \
- *     --paired-with BASELINE.json --out docs/benchmarks/t286/candidate-100.json
- *   options: --out FILE (default docs/benchmarks/match-model-baseline.json), --fixtures N (timed
+ *     --paired-with BASELINE.json --out artifacts/benchmarks/t286/candidate-100.json
+ *   options: --out FILE (default artifacts/benchmarks/match-model-baseline.json), --fixtures N (timed
  *            fixtures per path), --seasons N (per century profile), --pilot N (pilot matches per path),
  *            --model candidate (T285: the century seasons, own fixtures and settlement run on worlds
  *            with the candidate model and its complete statistics; the codec is measured at the
@@ -113,7 +113,7 @@ function count(name: string, fallback: number) {
 }
 const out = args.includes('--out')
   ? args[args.indexOf('--out') + 1]!
-  : 'docs/benchmarks/match-model-baseline.json';
+  : 'artifacts/benchmarks/match-model-baseline.json';
 const model = args.includes('--model') ? args[args.indexOf('--model') + 1] : 'production';
 if (model !== 'production' && model !== 'candidate')
   throw new Error('--model takes production or candidate');
@@ -681,13 +681,13 @@ const report = {
     : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
-      source: 'docs/CALIBRATION.md T224',
+      source: 'artifacts/benchmarks/CALIBRATION.md T224',
       machine: 'Intel Xeon Silver 4214, Node v24.12.0',
       secondsPerSeason: { baselineWorld: 8.43 },
       contextOnly: true,
     },
     {
-      source: 'docs/CALIBRATION.md T232 century benchmark',
+      source: 'artifacts/benchmarks/CALIBRATION.md T232 century benchmark',
       machine: 'Apple M1 Max, Node 26.8.1',
       secondsPerSeason: { baseline: 8.46, 'active-management': 8.24 },
       contextOnly: true,

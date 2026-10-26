@@ -1033,18 +1033,18 @@ function report() {
     console.log(JSON.stringify(report, null, 2));
     return {};
   }
-  mkdirSync('docs/benchmarks', { recursive: true });
+  mkdirSync('artifacts/benchmarks', { recursive: true });
   // This feature's report; T308's manager-history.json stays as T308 recorded it.
   writeFileSync(
-    'docs/benchmarks/T286-full-model-storage.json',
+    'artifacts/benchmarks/T286-full-model-storage.json',
     JSON.stringify(report, null, 2) + '\n',
   );
   // The one-process run (the Benchmark workflow) also refreshes the reports first-play.mjs reads;
   // a phased run writes only this feature's report.
   if (!named) {
-    writeFileSync('docs/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');
+    writeFileSync('artifacts/benchmarks/T010-storage.json', JSON.stringify(report, null, 2) + '\n');
     writeFileSync(
-      'docs/benchmarks/T232-rules4-storage.json',
+      'artifacts/benchmarks/T232-rules4-storage.json',
       JSON.stringify(report, null, 2) + '\n',
     );
     // T255 feature evidence: this run's storage facts and identity workload on the same source
@@ -1052,14 +1052,14 @@ function report() {
     // `browser` from its own measurements, and `null` there means it has not run on this source.
     const { passed: storagePassed, ...storage } = report;
     writeFileSync(
-      'docs/benchmarks/club-identity-final.json',
+      'artifacts/benchmarks/club-identity-final.json',
       JSON.stringify(
         {
           ...storage,
           task: 'T255',
           feature: 'Club identity and kits (KIT r2, SAVE-20–22) on the final combined source',
           storagePassed,
-          storageReport: 'docs/benchmarks/T010-storage.json',
+          storageReport: 'artifacts/benchmarks/T010-storage.json',
           browser: null,
         },
         null,

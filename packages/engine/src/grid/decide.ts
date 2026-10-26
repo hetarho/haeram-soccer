@@ -50,7 +50,7 @@ export interface Decision {
   delivery?: DeliveryAim;
 }
 
-/** Initial values (design §6); T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
+/** Initial values; T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
 export const DECISION_CONFIG = {
   holdUp: { base: 0.03, backToGoal: 0.15 },
   cutBackShare: 0.1,

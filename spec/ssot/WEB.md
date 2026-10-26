@@ -16,7 +16,7 @@
 - WEB-7 [o] A new game goes into an empty game slot (→WEB-62); starting one over an occupied slot's game requires an explicit in-app replacement choice and offers export first.
 - WEB-8 [o] A runtime error preserves a recoverable save and offers retry/export; do not replace failed loading with a new world.
 
-- WEB-9 [o] Casual growth play follows docs/IMPROVEMENT-GUIDE.md: one-action matches, roster/tactic/fatigue tradeoffs, evidence-backed growth, and no guaranteed win claims.
+- WEB-9 [o] Casual growth play offers one-action matches, roster/tactic/fatigue tradeoffs, evidence-backed growth, and no guaranteed win claims. The play loop is goal → build → match → recorded results and growth → next choice; growth and milestones derive from actual player, match and club facts, never decorative rewards or rerolled outcomes. Layout and interaction requirements remain in this SSOT; deterministic play and save compatibility remain in →ARCH-5 and →SAVE.
 
 - WEB-10 [o] Play uses a game HUD (menu, club crest/name, cash and notifications) and, on mobile, a seven-tab safe-area bar with home centered and selected navigation marked by a persistent underline: league, cups (컵) and records (클럽 기록실) on the left; 선수단, 훈련 and 구단 on the right, the owner's three levers — who joins and stays (→WEB-43), how players develop (→WEB-70) and where the club is going with how it earns and spends (→WEB-39).
   - The match view has no tab (→WEB-40).

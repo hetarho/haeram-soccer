@@ -12,7 +12,7 @@ import { SaveCompatibilityError } from '../../../../packages/contracts/src/versi
 import { packBitColumns, rangeBits, readBitColumns, type BitColumns } from './bitpacking';
 
 /**
- * Container-3 match-model streams (→SAVE-23, HIST-17; docs/SAVE-FORMAT.md): the world's model
+ * Container-3 match-model streams (→SAVE-23, HIST-17; spec/ssot/SAVE.md): the world's model
  * metadata, its current-season NPC aggregates and each own record's model, beside the compact
  * world. Strings (club, player, competition group, name, position) are refs into the packer's shared
  * dictionary; every scalar is stored exactly, a zero as zero and an absent value as absent.

@@ -1,7 +1,7 @@
 /**
  * KIT-1–5, KIT-12: club identity vocabulary — representative colours, crest parts, three saved shirts,
  * a fixture's shirt choice and the appearance frozen on a played own match. Types and constants only:
- * no React, DOM, engine imports or random draws (docs/CLUB-IDENTITY-CONTRACT.md §1–2).
+ * no React, DOM, engine imports or random draws (spec/ssot/KIT.md).
  */
 
 /** The 24 crest colours of WEB-49, in their original order. */

@@ -1,6 +1,6 @@
 import { measurementIdentity } from './lib/measurement-identity';
 /**
- * Aggregate-path measurement (→MATCH-22/26/28/29, docs/MATCH-MODEL-CONTRACT.md, T284): the
+ * Aggregate-path measurement (→MATCH-22/26/28/29, spec/ssot/MATCH.md, T284): the
  * candidate aggregate adapter's samples through the shared registry (scripts/lib/match-parity.ts),
  * on the same condition fixtures and seeds scripts/grid-bands.ts --report plays on the detailed
  * engine. It reads the engine's exported path and never changes the production dispatch.
@@ -11,7 +11,7 @@ import { measurementIdentity } from './lib/measurement-identity';
  *     [--seasons N] [--jobs N] [--out FILE] [--patch JSON] [--reference-cache DIR]
  *     [--sizes id=N,…]
  *   default: calibration partition, round 0, scale 1, every match family, output
- *   docs/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
+ *   artifacts/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
  *   report, kept apart from the intended-target errors; `--seasons N` also plays N founded worlds
  *   one season each through ordinary settlement (season:league-20; `--only season` plays only them);
@@ -1065,7 +1065,7 @@ function reportJobs(): Job[] {
 
 /** The detailed reference artifact's target readings, for the summary-level comparison. */
 function referenceArtifact() {
-  const file = 'docs/benchmarks/detailed-model-calibration.json';
+  const file = 'artifacts/benchmarks/detailed-model-calibration.json';
   if (!existsSync(file)) return undefined;
   let parsed: unknown;
   try {
@@ -1088,7 +1088,7 @@ function referenceArtifact() {
 }
 
 async function runReport() {
-  const out = text('out', 'docs/benchmarks/aggregate-model-calibration.json');
+  const out = text('out', 'artifacts/benchmarks/aggregate-model-calibration.json');
   const jobs = reportJobs();
   const workers = Math.max(1, Math.min(option('jobs', 4), jobs.length + option('seasons', 0)));
   const source = sourceFingerprint();

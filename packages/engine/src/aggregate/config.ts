@@ -1,7 +1,7 @@
 /**
  * The aggregate kernel's one tuning surface (→MATCH-22, MATCH-23). These are starting values
  * aimed at MATCH-23's bands for equal top-tier sides, built on the 40-cell reference tables
- * (grid/baselines.json, docs/MATCH-BASELINES.md); T284 calibrates them against held-out detailed
+ * (grid/baselines.json, spec/ssot/MATCH.md); T284 calibrates them against held-out detailed
  * play and the intended targets. Rates are per action of the kind named, never per minute.
  */
 import type { Tactic } from '../../../contracts/src/types';
@@ -240,7 +240,7 @@ export const AGGREGATE_CONFIG = {
    * MATCH-29's bands with forced pairings that seated each club's XI in the forced formation's
    * slots; T323 re-measured them with squads built for the forced formation at equal strength
    * (T321's conditioning) and kept them: MATCH-29 20 inside, 0 outside, 5 insufficient of 25 on
-   * calibration seeds (docs/CALIBRATION.md, T323). T400 fits the guards to the grid's pairings on
+   * calibration seeds (artifacts/benchmarks/CALIBRATION.md, T323). T400 fits the guards to the grid's pairings on
    * the same fixtures: balanced 0.94 → 1 (its pairings scored 0.2–0.8 goals fewer than the grid's)
    * and counter 0.95 → 0.9 (possession beat counter 6–8 points more often than on the grid).
    */

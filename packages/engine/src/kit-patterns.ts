@@ -1,6 +1,6 @@
 /**
  * KIT-3–5: the one geometry of the eight shirt patterns and the optional trim
- * (docs/CLUB-IDENTITY-CONTRACT.md §4). Kit selection samples it and both Canvas previews paint it,
+ * (spec/ssot/KIT.md). Kit selection samples it and both Canvas previews paint it,
  * so a point gets the same colour everywhere. Pure data and arithmetic: no Canvas, DOM or React.
  *
  * Coordinates are normalized to the shirt's box, 0–1 on both axes, with y growing downward like

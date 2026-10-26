@@ -4,9 +4,11 @@ import { POSITIONS } from '../../../contracts/src/player';
 import { CELL_BASELINES, POSITION_PROFILES, profileKey } from './baselines';
 
 describe('grid baselines', () => {
-  it('copies the documented baselines exactly', () => {
+  it('matches the retained reference dataset exactly', () => {
     const copy = readFileSync(new URL('./baselines.json', import.meta.url));
-    const doc = readFileSync(new URL('../../../../docs/match-baselines-40.json', import.meta.url));
+    const doc = readFileSync(
+      new URL('../../../../artifacts/benchmarks/match-baselines-40.json', import.meta.url),
+    );
     expect(copy.equals(doc)).toBe(true);
   });
 

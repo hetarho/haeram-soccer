@@ -47,7 +47,7 @@ export interface Restart {
   dead: number;
 }
 
-/** Dead time per restart (design §7.2) and the set-piece habits; initial values for T215. */
+/** Dead time per restart and the set-piece habits; initial values for T215. */
 export const RESTART_CONFIG = {
   dead: {
     throwIn: 16,

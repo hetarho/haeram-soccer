@@ -127,7 +127,7 @@ const INCIDENT_REASONS: NonNullable<Incident['reason']>[] = [
   'violent',
 ];
 const MATERIAL_KEYS = ['shots', 'heat', 'network', 'report'] as const;
-/** Columns of one matchExtras row; flag bits are documented in docs/SAVE-FORMAT.md. */
+/** Columns of one matchExtras row; pack/unpack below define and validate its flag bits. */
 const EXTRAS_WIDTH = 11;
 const HEAT_CELLS = 40;
 type Tuple = (number | number[] | number[][])[];

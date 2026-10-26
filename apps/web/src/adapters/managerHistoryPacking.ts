@@ -16,7 +16,7 @@ import {
 } from '../../../../packages/contracts/src/versions';
 
 /**
- * Container-4 own-manager history (→SAVE-24, HIST-18; docs/SAVE-FORMAT.md): the world's tenure and
+ * Container-4 own-manager history (→SAVE-24, HIST-18; spec/ssot/SAVE.md): the world's tenure and
  * outcome facts and each own record's tenure link, beside the compact world, which carries none of
  * them inline. Strings (club, manager, person, name, keys, competition) are refs into the packer's
  * shared dictionary; dates and counters are stored exactly, an absent field as its documented zero.

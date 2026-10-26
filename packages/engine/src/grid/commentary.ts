@@ -1,6 +1,6 @@
 /**
- * Korean live commentary for one trace entry (design §10.3, →MATCH-24): the cell names of MATCH-14 and
- * only the spatial terms docs/MATCH-BASELINES.md marks as verified in Korean football media.
+ * Korean live commentary for one trace entry (→MATCH-24): the cell names of MATCH-14 and
+ * only the spatial terms spec/ssot/MATCH.md marks as verified in Korean football media.
  */
 import { attackFrame, cellBand, cellLane, cellName, cellOf, PITCH, type Point } from './pitch';
 import type { TraceEntry } from './trace';

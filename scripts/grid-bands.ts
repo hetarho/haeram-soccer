@@ -1,7 +1,7 @@
 import { measurementIdentity } from './lib/measurement-identity';
 /**
- * Grid-engine distribution check (MATCH-23, T215, docs/CALIBRATION.md) and the candidate model's
- * calibration report (T278, MATCH-28, docs/MATCH-MODEL-CONTRACT.md).
+ * Grid-engine distribution check (MATCH-23, T215, artifacts/benchmarks/CALIBRATION.md) and the candidate model's
+ * calibration report (T278, MATCH-28, spec/ssot/MATCH.md).
  *
  * Band check: grid matches between equal-strength top-tier sides of ENG/ESP/GER/ITA (ratings within
  * 2 points, the four tactics mixed, modern-era rules); prints every MATCH-23 row with its band, the
@@ -20,7 +20,7 @@ import { measurementIdentity } from './lib/measurement-identity';
  *     [--scale S] [--only core,tactics,gap,tier,era,knockout | --conditions id,…] [--jobs N]
  *     [--out FILE]
  *   default: calibration partition, round 0, scale 1 (CORPUS_CONFIG.calibrationPerCondition each),
- *   output docs/benchmarks/detailed-model-calibration.json
+ *   output artifacts/benchmarks/detailed-model-calibration.json
  */
 import { execFileSync, fork } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -785,7 +785,7 @@ function reportJobs(): Job[] {
 }
 
 async function runReport() {
-  const out = text('out', 'docs/benchmarks/detailed-model-calibration.json');
+  const out = text('out', 'artifacts/benchmarks/detailed-model-calibration.json');
   const jobs = reportJobs();
   const workers = Math.max(1, Math.min(option('jobs', cpus().length - 2), jobs.length));
   const source = sourceFingerprint();
@@ -884,7 +884,7 @@ async function runReport() {
     outcomeCurve: curve,
     tacticPairings,
     advancedCounterTarget: {
-      note: 'MATCH-30 bands and sources: scripts/lib/match-parity.ts ADVANCED_COUNTER_TARGET, docs/MATCH-BASELINES.md',
+      note: 'MATCH-30 bands and sources: scripts/lib/match-parity.ts ADVANCED_COUNTER_TARGET, spec/ssot/MATCH.md',
       unbanded: Object.fromEntries(
         ADVANCED_COUNTER_TARGET.counters.flatMap((c) =>
           'unbanded' in c ? [[c.id, c.unbanded]] : [],

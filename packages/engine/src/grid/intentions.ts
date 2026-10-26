@@ -1,6 +1,6 @@
 /**
  * Individual football intentions on the candidate match model (→MATCH-16, MATCH-17;
- * docs/MATCH-MODEL-CONTRACT.md "Intentions and team reactions"). One lifecycle for every kind: an
+ * spec/ssot/MATCH.md). One lifecycle for every kind: an
  * intention keeps its target and its teammate/opponent while it is feasible, ends when achieved,
  * expired or no longer feasible, and yields only to a higher priority or a reasoned event — a
  * turnover, an urgent danger, a restart, a substitution, an injury or a sending-off — whose reason it

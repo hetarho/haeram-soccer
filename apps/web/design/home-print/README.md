@@ -22,4 +22,4 @@ the print crops, encoding parameters and deployed artwork retain their existing 
 
 Review screenshots and comparison galleries are disposable. Store new captures in ignored
 `.tmp/` and record their findings in the task result. Follow the
-[theme production checklist](../../../../docs/THEME-CHECKLIST.md) for the next theme.
+[shared theme contract](../../../../spec/ssot/ARCH.md) for the next theme.

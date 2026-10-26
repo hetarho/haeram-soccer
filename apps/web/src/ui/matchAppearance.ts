@@ -9,7 +9,7 @@ import type { MatchRecord, Player, PlayerMotion } from '../../../../packages/con
 
 /**
  * KIT-8/12, SAVE-22, WEB-49/50: how a match view draws both sides, taken only from the appearance
- * the record froze at settlement (docs/CLUB-IDENTITY-CONTRACT.md §§5, 7). Nothing here reads a
+ * the record froze at settlement (spec/ssot/KIT.md). Nothing here reads a
  * world, so today's designs never stand in for a played match; a record without a snapshot stays
  * explicitly unrecorded, drawn with neutral stand-ins and a placeholder crest.
  */

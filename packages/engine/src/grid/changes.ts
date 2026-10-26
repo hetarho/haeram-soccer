@@ -1,4 +1,4 @@
-/** Substitutions by the manager and injuries in play (→MATCH-20, MATCH-21, STAFF-45, CLUB-23; design §8.1). */
+/** Substitutions by the manager and injuries in play (→MATCH-20, MATCH-21, STAFF-45, CLUB-23). */
 import type { Manager } from '../../../contracts/src/types';
 import { injuryChance } from '../injury-rules';
 import { FORMATIONS, lineOf } from '../player';
@@ -85,7 +85,7 @@ export function drawInjury(s: GridState, dt: number, r: () => number): GridPlaye
 }
 
 /**
- * In-match fatigue after `minutes` on the pitch (design §8.1): the pre-match fatigue plus the drain
+ * In-match fatigue after `minutes` on the pitch: the pre-match fatigue plus the drain
  * of missing 체력, faster under press and by the side's drain. The aggregate planner applies the
  * same rule (aggregate/participation.ts).
  */
@@ -105,7 +105,7 @@ export function inMatchFatigue(
   );
 }
 
-/** A player's fatigue now: his pre-match fatigue plus what his minutes have drained (design §8.1). */
+/** A player's fatigue now: his pre-match fatigue plus what his minutes have drained. */
 export function matchFatigue(s: GridState, gp: GridPlayer): number {
   const { setup } = s;
   return inMatchFatigue(
@@ -136,7 +136,7 @@ const lineAt = (s: GridState, side: 0 | 1, slot: number) =>
 const halfTime = (s: GridState) => s.period > 1 && s.t === 0;
 
 /**
- * The substitutions a side makes at this stoppage, in the order of design §8.1: injured players
+ * The substitutions a side makes at this stoppage, in manager substitution order: injured players
  * replaced, a red card answered, then the manager's policy, within the era's limits. The plan does
  * not change the state; `applyChanges` does.
  */

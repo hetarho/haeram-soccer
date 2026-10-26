@@ -37,7 +37,7 @@ jobs:
           include-hidden-files: true
           path: |
             apps/web/dist
-            docs/benchmarks/T010-storage.json
-            docs/benchmarks/T232-rules4-storage.json
-            docs/benchmarks/T010-first-play.json
+            artifacts/benchmarks/T010-storage.json
+            artifacts/benchmarks/T232-rules4-storage.json
+            artifacts/benchmarks/T010-first-play.json
             .tmp/benchmark-preview.log

@@ -9,7 +9,7 @@ import { inkOn } from './crests';
 
 /**
  * KIT-3–5, WEB-50/87: one Canvas painter for every shirt marker — the large editor sample, the small
- * preview markers and, later, the live pitch (docs/CLUB-IDENTITY-CONTRACT.md §7). The pattern and
+ * preview markers and, later, the live pitch (spec/ssot/KIT.md). The pattern and
  * trim come from the shared geometry in `kit-patterns.ts`; nothing here restates it.
  *
  * The painter keeps a bounded cache of background sprites: one offscreen canvas per visible style,

@@ -20,4 +20,4 @@ optical weight remain unchanged; their license is retained at
 are unchanged. Image materials never filter the live HTML labels or game-driven diagrams.
 
 Store review captures/profiles in ignored `.tmp/` and remove them after recording verification.
-Follow the [theme production checklist](../../../../docs/THEME-CHECKLIST.md).
+Follow the [shared theme contract](../../../../spec/ssot/ARCH.md).

@@ -9,7 +9,7 @@ import { selectMatchKits } from '../../../../packages/engine/src/kit-selection';
 import { describeShirt } from './kitPainting';
 
 /**
- * KIT-6–8, WEB-87: the club-design editor's pitch preview pairing (docs/CLUB-IDENTITY-CONTRACT.md
+ * KIT-6–8, WEB-87: the club-design editor's pitch preview pairing (spec/ssot/KIT.md
  * §§4, 7). Pure: the opponents are fixed synthetic identities and the pairing comes from the shared
  * `selectMatchKits`, so no world, fixture, command, save, progression or score takes part.
  */

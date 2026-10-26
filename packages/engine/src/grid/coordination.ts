@@ -1,6 +1,6 @@
 /**
  * Side-level coordination of the candidate model's intentions (→MATCH-16, MATCH-17;
- * docs/MATCH-ENGINE-DESIGN.md §4.6). After every action each side reads one snapshot and plans
+ * spec/ssot/MATCH.md). After every action each side reads one snapshot and plans
  * its jobs at once. The defending side presses the carrier (keeping his most dangerous option in
  * the presser's cover shadow), guards the box's zones against a box scene (`box.ts`), covers the
  * presser, marks runners (handing a runner over to the teammate whose zone he enters), screens a

@@ -29,7 +29,7 @@ export interface GridPlayer {
   /** Match seconds since kick-off when he came on (0 for a starter). */
   onAt: number;
   offAt?: number;
-  /** Regulation minutes (design §2.3) when he came on and when he left. */
+  /** Regulation minutes when he came on and when he left. */
   onMin: number;
   offMin?: number;
   /** Attribute values at his slot before the day's shift and in-match drain; index = `ATTRIBUTES.indexOf(a)`. */
@@ -117,7 +117,7 @@ export interface SideChanges {
 const PERIOD_OFFSET = [0, 45, 90, 105] as const;
 const PERIOD_LENGTH = [45, 45, 15, 15] as const;
 
-/** Regulation minutes since kick-off, added time not counted (design §2.3). */
+/** Regulation minutes since kick-off, added time not counted. */
 export function regMinute(s: GridState): number {
   return PERIOD_OFFSET[s.period - 1]! + Math.min(PERIOD_LENGTH[s.period - 1]!, s.t / 60);
 }

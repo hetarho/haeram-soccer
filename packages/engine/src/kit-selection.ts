@@ -12,7 +12,7 @@ import { insideShirtMarker, shirtColourAt } from './kit-patterns';
 
 /**
  * KIT-6/7/8: the shirts both sides wear and the goalkeepers' colours, chosen only from the saved
- * designs (docs/CLUB-IDENTITY-CONTRACT.md §4). Pure and deterministic: no world, time, revision,
+ * designs (spec/ssot/KIT.md). Pure and deterministic: no world, time, revision,
  * randomness or object insertion order takes part, and no saved design is repainted.
  */
 export interface KitSelection {

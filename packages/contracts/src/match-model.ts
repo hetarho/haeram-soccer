@@ -1,6 +1,6 @@
 /**
  * The continuous-match and complete aggregate-result model's shared contracts (→MATCH-12/17/22/26/27,
- * HIST-17, SAVE-23; docs/MATCH-MODEL-CONTRACT.md): its revision, a world's activation and coverage
+ * HIST-17, SAVE-23; spec/ssot/MATCH.md): its revision, a world's activation and coverage
  * metadata, the full match record, current-season NPC aggregates and the explicit match-time
  * coordinate of observed frames. Pure data and checks: no engine imports or random draws.
  */

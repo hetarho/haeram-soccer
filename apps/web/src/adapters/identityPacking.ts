@@ -9,7 +9,7 @@ import { SaveCompatibilityError } from '../../../../packages/contracts/src/versi
 
 /**
  * The own records' appearance snapshots (KIT-12, SAVE-22) beside the compact match columns
- * (docs/CLUB-IDENTITY-CONTRACT.md §6, docs/SAVE-FORMAT.md): each distinct snapshot once, in the
+ * (spec/ssot/KIT.md and spec/ssot/SAVE.md): each distinct snapshot once, in the
  * order it first occurs, and one ref per record — 0 absent, n the n-th snapshot.
  */
 export interface PackedAppearances {

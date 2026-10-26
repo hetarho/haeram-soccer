@@ -1,6 +1,6 @@
 /**
  * The full match model's release switch and the exact record check both result paths share
- * (→MATCH-13, MATCH-27, SAVE-23; docs/MATCH-MODEL-CONTRACT.md).
+ * (→MATCH-13, MATCH-27, SAVE-23; spec/ssot/MATCH.md).
  */
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
 import {

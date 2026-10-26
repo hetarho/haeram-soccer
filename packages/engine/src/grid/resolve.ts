@@ -74,7 +74,7 @@ export type Outcome =
     };
 export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 
-/** Initial values (design §7.1); T215 and T216 tune them. */
+/** Initial values; T215 and T216 tune them. */
 export const DUEL_CONFIG = {
   pass: {
     /** Calibration offset on every cell's real completion rate (T215). */
@@ -206,7 +206,7 @@ const onCandidate = (s: GridState) => s.setup.model !== undefined;
 /** How much more often a challenge is a foul on this fixture's model. */
 const foulScale = (s: GridState) => (onCandidate(s) ? DUEL_CONFIG.candidate.foul : 1);
 
-/** Initial values (design §7.4). */
+/** Initial values. */
 export const SHOT_CONFIG = {
   a: -1.0,
   b: -0.11,

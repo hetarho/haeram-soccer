@@ -1,4 +1,4 @@
-/** The touch-by-touch trace playback is built from (design §10.1). Only kept when the match is observed. */
+/** The touch-by-touch trace playback is built from. Only kept when the match is observed. */
 import { MOTION_STATES, OBSERVATION_STATES } from './observation';
 import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
 import type { Outcome, ShotOutcome } from './resolve';
@@ -240,7 +240,7 @@ const INTENTION_STATE: Record<IntentionKind, (typeof MOTION_STATES)[number]> = {
   screen: 'mark',
 };
 
-/** The motion state the engine gives a player now (design §10.2); an intention shows as its own. */
+/** The motion state the engine gives a player now; an intention shows as its own. */
 function stateOf(
   s: GridState,
   gp: GridPlayer,

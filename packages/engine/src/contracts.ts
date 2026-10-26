@@ -40,7 +40,7 @@ import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
  * carries to a country and year (→ECON-26), measured against the career targets (→ECON-29) with
- * scripts/calibrate-economy.ts (docs/FINANCES.md).
+ * scripts/calibrate-economy.ts (spec/ssot/ECON.md).
  */
 export const MARKET_CONFIG = {
   /**

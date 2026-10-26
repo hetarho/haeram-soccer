@@ -179,7 +179,7 @@ function Choice({
 
 /**
  * KIT-2–5/9/10/14, WEB-86: the one club-design editor for founding and career, as a controlled
- * component (docs/CLUB-IDENTITY-CONTRACT.md §7). Every change goes through `reduceIdentityDraft`
+ * component (spec/ssot/KIT.md). Every change goes through `reduceIdentityDraft`
  * and comes back as a new complete identity through `onChange`; the caller owns the entry copy,
  * apply/cancel, persistence and their errors. The selected shirt, an open composer and the pitch
  * preview's example opponent are local.

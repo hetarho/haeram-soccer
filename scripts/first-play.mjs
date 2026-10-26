@@ -126,13 +126,15 @@ for (let offset = 0; offset < assetPaths.length; offset += requestConcurrency) {
     );
   for (const result of results) if (result.status === 'fulfilled') servedFiles.push(result.value);
 }
-const storageReport = JSON.parse(readFileSync('docs/benchmarks/T010-storage.json', 'utf8'));
+const storageReport = JSON.parse(readFileSync('artifacts/benchmarks/T010-storage.json', 'utf8'));
 if (!storageReport.passed || storageReport.sourceFingerprint?.sha256 !== source.sha256)
   throw new Error(
     'Run the storage benchmark against this working tree before browser verification',
   );
 // The identity feature evidence the storage benchmark wrote for this same source (T255).
-const identityReport = JSON.parse(readFileSync('docs/benchmarks/club-identity-final.json', 'utf8'));
+const identityReport = JSON.parse(
+  readFileSync('artifacts/benchmarks/club-identity-final.json', 'utf8'),
+);
 if (!identityReport.storagePassed || identityReport.sourceFingerprint?.sha256 !== source.sha256)
   throw new Error(
     'Run the storage benchmark against this working tree before browser verification',
@@ -547,16 +549,19 @@ try {
     scope:
       'Built Netlify-policy local CSP preview. Reference pages use CDP 4x page CPU slowdown and cold Fast 4G (9/1.5 Mbps,60ms); mobile uses DPR2. FPS counts actual pitch background paints during playback, after the founded club chose its striped home shirt for that fixture in preparation, so both pitches paint a recorded patterned shirt (observedKits names the worn shirts from the match legend). Pointer-to-second-frame measures presentation latency for post-founding navigation/replay controls. Entry JavaScript/CSS is budgeted; the conservative all-asset compressed inventory, including the lazy engine worker, is reported separately; page-target transfers may omit worker targets. No universal device-speed or live-provider validation claim.',
   };
-  mkdirSync('docs/benchmarks', { recursive: true });
-  writeFileSync('docs/benchmarks/T010-first-play.json', JSON.stringify(report, null, 2) + '\n');
+  mkdirSync('artifacts/benchmarks', { recursive: true });
+  writeFileSync(
+    'artifacts/benchmarks/T010-first-play.json',
+    JSON.stringify(report, null, 2) + '\n',
+  );
   // T255: the browser half of the identity feature evidence, beside the storage run's facts.
   writeFileSync(
-    'docs/benchmarks/club-identity-final.json',
+    'artifacts/benchmarks/club-identity-final.json',
     JSON.stringify(
       {
         ...identityReport,
         browser: {
-          report: 'docs/benchmarks/T010-first-play.json',
+          report: 'artifacts/benchmarks/T010-first-play.json',
           date: report.date,
           browser: report.browser,
           playwright: report.playwright,

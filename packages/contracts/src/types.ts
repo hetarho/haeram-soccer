@@ -607,7 +607,7 @@ export interface Incident {
 }
 /**
  * Post-match material of an own current-season match (→MATCH-25), kept until the season close
- * (→MATCH-5). Flat integer rows; the layouts are docs/MATCH-ENGINE-DESIGN.md §9.4.
+ * (→MATCH-5). Flat integer rows; the field comments below define their layouts.
  */
 export interface MatchMaterial {
   /** Per shot 7 ints: side, line index in `players`, x×10, y×10, xG×100, outcome, header. */
@@ -671,7 +671,7 @@ export interface MatchMotionSample {
   ownerId?: string;
 }
 /**
- * One touch, restart or incident of a grid match minute (docs/MATCH-ENGINE-DESIGN.md §2.4).
+ * One touch, restart or incident of a grid match minute (spec/ssot/MATCH.md).
  * Players are named by ID; positions are playback units of the minute's period. Observation only:
  * never archived.
  */

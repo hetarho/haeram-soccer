@@ -15,7 +15,7 @@ export interface ShootoutKick {
 const kickerSkill = (s: GridState, side: 0 | 1, idx: number) =>
   0.6 * skill(s, side, idx, 'finishing') + 0.4 * skill(s, side, idx, 'composure');
 
-/** The players still on the pitch, best kickers first and the goalkeeper last (design §8.4). */
+/** The players still on the pitch, best kickers first and the goalkeeper last. */
 export function takerOrder(s: GridState, side: 0 | 1) {
   const players = s.players[side].filter(onPitch);
   const keeper = players.filter((gp) => gp.slot === 0);
@@ -25,7 +25,7 @@ export function takerOrder(s: GridState, side: 0 | 1) {
   return [...outfield, ...keeper].map((gp) => gp.idx);
 }
 
-/** The chance a kick goes in: the in-match penalty formula of design §7.4. */
+/** The chance a kick goes in: the in-match penalty formula in resolve.ts. */
 export function kickChance(s: GridState, side: 0 | 1, idx: number) {
   const C = SHOT_CONFIG.penalty;
   const foe = other(side);

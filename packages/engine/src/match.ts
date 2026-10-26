@@ -164,7 +164,7 @@ function weighted(
 const OUTFIELD: readonly number[] = Array.from({ length: 10 }, (_, i) => i + 1);
 
 // Shared chance model: the team-level summary and the grid engine's finishing use the same
-// functions, so both paths follow one calibrated strength curve (docs/CALIBRATION.md). `math` is
+// functions, so both paths follow one calibrated strength curve (artifacts/benchmarks/CALIBRATION.md). `math` is
 // the host's `Math.*` unless the candidate grid passes its portable table (→ARCH-9, T358), so the
 // summary and aggregate paths keep their bits.
 const C = MATCH_DUEL_CONFIG;
@@ -333,7 +333,7 @@ export function prepareMatch(w: World, f: Fixture, math: MatchMath = HOST_MATH):
  * Which engine plays fixtures between other clubs of the own league, whose players are recorded
  * (→MATCH-22); T224 sets it from the measured season budget.
  */
-// T224: grid 42.7 s a season v rules 3.0.0 5.1 s (8.4×, over 125%); summary 8.4 s (docs/CALIBRATION.md).
+// T224: grid 42.7 s a season v rules 3.0.0 5.1 s (8.4×, over 125%); summary 8.4 s (artifacts/benchmarks/CALIBRATION.md).
 export const OWN_LEAGUE_ENGINE: 'grid' | 'summary' = 'summary';
 let ownLeagueEngine: 'grid' | 'summary' = OWN_LEAGUE_ENGINE;
 /** Measurement only (scripts/season-throughput.ts): plays the own league on the other path. */
@@ -608,7 +608,7 @@ function summaryShootout(r: () => number): Score {
 }
 
 /**
- * Cards per team on the probabilistic path: the grid engine's measured rates (T215, docs/CALIBRATION.md:
+ * Cards per team on the probabilistic path: the grid engine's measured rates (T215, artifacts/benchmarks/CALIBRATION.md:
  * 3.93 yellows and 0.14 reds a match), so a fixture nobody watches books players as often.
  */
 export const SUMMARY_DISCIPLINE = { yellows: 1.97, reds: 0.07 };

@@ -10,7 +10,7 @@ export interface CardVerdict {
   reason?: CardReason;
 }
 
-/** Initial values (design §7.5); T215 tunes them to the MATCH-23 band. */
+/** Initial values; T215 tunes them to the MATCH-23 band. */
 export const CARD_CONFIG = {
   yellow: 0.12,
   tacticalYellow: 0.6,

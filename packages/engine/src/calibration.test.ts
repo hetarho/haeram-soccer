@@ -31,7 +31,7 @@ describe.each<[string, Path]>([['summary', 'summary']])('%s: calibrated outcomes
   );
 
   // T216: equal grid sides draw about 21% (1,600 fixtures), as press beats every other tactic
-  // (docs/CALIBRATION.md, 격자 엔진 전력 곡선); run it for the grid once the tactics are balanced.
+  // (artifacts/benchmarks/CALIBRATION.md, 격자 엔진 전력 곡선); run it for the grid once the tactics are balanced.
   it.skipIf(path === 'grid')(
     'gives equal sides real football’s share of draws',
     () => {
@@ -69,7 +69,7 @@ describe.each<[string, Path]>([['summary', 'summary']])('%s: calibrated outcomes
 });
 
 /**
- * The candidate aggregate path on the same guard clubs (T284, docs/CALIBRATION.md 집계 경로 보정):
+ * The candidate aggregate path on the same guard clubs (T284, artifacts/benchmarks/CALIBRATION.md 집계 경로 보정):
  * coarse regression bounds on its strength curve, draws and goals, never the release evidence the
  * corpus report (scripts/match-parity.ts --report) holds.
  */

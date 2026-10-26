@@ -1,14 +1,14 @@
 /**
  * Post-match material of an own match (→MATCH-25) and its season heat maps (→MATCH-5, HIST-16).
  * The grid engine writes the flat integer rows (`grid/record.ts`); these helpers decode them for the
- * UI. Layouts are docs/MATCH-ENGINE-DESIGN.md §9.4.
+ * UI. MATERIAL_LAYOUT and REPORT_SLOTS below define the layouts.
  */
 import type { MatchMaterial, MatchRecord, SeasonArchive, World } from '../../contracts/src/types';
 
 /** Ints per shot, per network node, per network pair, cells per heat map and report ints per side. */
 export const MATERIAL_LAYOUT = { shot: 7, node: 3, pair: 3, cells: 40, report: 30 } as const;
 
-/** Where each tactical-report value sits within a side's 30 ints (design §9.4). */
+/** Where each tactical-report value sits within a side's 30 ints. */
 export const REPORT_SLOTS = {
   finalThirdEntries: 0,
   boxEntries: 5,

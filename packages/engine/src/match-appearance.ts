@@ -5,7 +5,7 @@ import { selectMatchKits, type KitSelection } from './kit-selection';
 
 /**
  * KIT-12, SAVE-22: what both sides actually wore in an own match, frozen once at its settlement
- * (docs/CLUB-IDENTITY-CONTRACT.md §5). It reads only the clubs' current designs and the owner's
+ * (spec/ssot/KIT.md). It reads only the clubs' current designs and the owner's
  * choice named for this fixture — never the score, incidents or a sporting draw — and copies them,
  * so later identity edits cannot reach a recorded appearance.
  */

@@ -56,7 +56,7 @@
 - Management: applied identity → edit draft → preview → apply or cancel; effect timing follows →KIT-12.
 
 ## constraints
-- Stable implementation interfaces and checkpoint-extension vocabulary follow `docs/CLUB-IDENTITY-CONTRACT.md`; product policy remains in this document.
+- Stable implementation interfaces and validation are defined in `packages/contracts/src/identity.ts` and `identitySchema.ts`; checkpoint encoding is defined in `apps/web/src/adapters/identityPacking.ts`. Product policy remains in this document and persistence follows →SAVE-20/21.
 - KIT owns identity and selection policies; →WEB-49/86/87/88 own their presentation and →SAVE-20/21 own persistence and compatibility.
 - Cosmetic options do not authorise changes to gameplay, background progression, retained-history lifetimes or the rules-4.0.0 boundary.
 - The storage, responsiveness and reference-device budgets remain →SAVE-4/13 and →WEB-19; pattern detail must remain legible at the actual match scale.

@@ -11,7 +11,7 @@ import s from './ClubDesignView.module.css';
 
 /**
  * WEB-39/71/86, KIT-9/10/12: 구단 운영 › 구단 디자인, the one career editor of the club's design
- * (docs/CLUB-IDENTITY-CONTRACT.md §7). Edits are a draft kept per career in task memory, so ordinary
+ * (spec/ssot/KIT.md). Edits are a draft kept per career in task memory, so ordinary
  * detours keep it and another game never sees it (WEB-74); only 적용 sends the one `club-identity`
  * command, and only 되돌리기 or a successful apply clears it.
  */

@@ -5,7 +5,7 @@ import { nextOwnFixture } from './calendar';
 import { clubOf } from './world';
 
 /**
- * The owner's identity commands (docs/CLUB-IDENTITY-CONTRACT.md §5). Presentation only (KIT-13):
+ * The owner's identity commands (spec/ssot/KIT.md). Presentation only (KIT-13):
  * no event, news, cash, game day or sporting draw. `operate` counts the one revision.
  */
 

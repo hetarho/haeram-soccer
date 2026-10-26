@@ -17,4 +17,4 @@ rendering while leaving the live pitch alone.
 
 Keep review galleries, profiles and one-off capture scripts under ignored `.tmp/`; record outcomes
 in the task and remove those disposable files. Follow the
-[theme production checklist](../../../../docs/THEME-CHECKLIST.md).
+[shared theme contract](../../../../spec/ssot/ARCH.md).

@@ -13,7 +13,7 @@ import { hash } from './primitives';
 /**
  * KIT-15: the crest every club wore before explicit club identities (WEB-49), moved unchanged from
  * the web crest module so the engine can preserve the visible identities of existing careers
- * (docs/CLUB-IDENTITY-CONTRACT.md §3). Pure: no installation, no Club.color update, no random draw
+ * (spec/ssot/KIT.md). Pure: no installation, no Club.color update, no random draw
  * and no in-place sort of world arrays.
  */
 export interface LegacyCrest {

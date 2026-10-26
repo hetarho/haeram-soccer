@@ -1,5 +1,5 @@
 /**
- * Match-model measurement registry (→MATCH-2/3/4/13/23/27/28, ARCH-31, docs/MATCH-MODEL-CONTRACT.md).
+ * Match-model measurement registry (→MATCH-2/3/4/13/23/27/28, ARCH-31, spec/ssot/MATCH.md).
  *
  * One place for what a match result is measured by: every recorded counter with its level and
  * units, the intended target bands, the exact record invariants, the comparison settings, the corpus
@@ -868,9 +868,9 @@ export const TACTIC_PAIRING_TARGET = {
 /** A season-level measure of MATCH-23's scoring concentration. */
 export type ScoringRow = 'clubTopScorerShare' | 'leagueTopScorerGoals' | 'hatTricksPerMatch';
 /**
- * MATCH-23's scoring concentration of a top-tier 38-round league season, authoritative (ratified
- * from T284's proposal; its source, Premier League 2013/14–2023/24, is in docs/MATCH-BASELINES.md
- * "시즌 득점 집중도"). Readings get verdicts like any band.
+ * MATCH-23's scoring concentration of a top-tier 38-round league season. The source observations
+ * are Premier League 2013/14–2023/24; MATCH-23 owns the target bands.
+ * Readings get verdicts like any band.
  */
 export const SCORING_CONCENTRATION_TARGET = {
   version: 2,
@@ -2163,7 +2163,7 @@ const OPTA_SEQUENCES =
   'Opta via The Analyst team sequence stats 2024/25–2025/26, five leagues (league totals: high turnovers per team-match, PPDA as opposition passes ÷ defensive actions)';
 /**
  * MATCH-30's real-football level of every MATCH-13 advanced counter for equal top-tier sides, per
- * team per match (docs/MATCH-BASELINES.md "MATCH-13 고급 지표 기준값", which holds each band's
+ * team per match (MATCH-30 in spec/ssot/MATCH.md holds each band's
  * sources, league-seasons and mapping): a band is the span of the cited league-season means
  * rounded outward, never an engine's output. Counters MATCH-23 already bands point at that row;
  * a counter without a comparable public source is listed as unbanded with its reason and held to

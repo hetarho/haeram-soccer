@@ -12,7 +12,7 @@ import { hash } from './primitives';
 
 /**
  * KIT-1/11/14/15: seeded default identities, lookup and missing-only installation
- * (docs/CLUB-IDENTITY-CONTRACT.md §3). Hash-only: no sporting PRNG stream, Math.random or world
+ * (spec/ssot/KIT.md). Hash-only: no sporting PRNG stream, Math.random or world
  * mutation outside `installMissingIdentities`.
  */
 

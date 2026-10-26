@@ -14,7 +14,7 @@ import { addEvent, isInjured } from './world';
 
 /**
  * Cards, suspensions and the injuries of clubs nobody owns (→MATCH-19, →LEAGUE-15): one
- * English-style rule for every league and era (docs/MATCH-ENGINE-DESIGN.md §13.3).
+ * English-style rule for every league and era (spec/ssot/MATCH.md).
  */
 
 /** The competition a card or a ban counts in. */

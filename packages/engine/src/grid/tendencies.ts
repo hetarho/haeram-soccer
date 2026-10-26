@@ -24,7 +24,7 @@ export const TENDENCY_CONFIG = {
   /** The flexibility the founding manager and an interim give: no school, the band's middle. */
   neutralFlexibility: 50,
   /**
-   * How freely media describe each role (→PLAYER-5, docs/MATCH-BASELINES.md), 0.2 the slot a
+   * How freely media describe each role (→PLAYER-5, spec/ssot/MATCH.md), 0.2 the slot a
    * manager keeps a player in, 1.0 a free role.
    */
   roleCreativity: {

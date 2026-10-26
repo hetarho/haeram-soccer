@@ -191,7 +191,7 @@ const C = MATERIAL_LAYOUT.cells;
 const RS = MATERIAL_LAYOUT.report;
 
 /**
- * Post-match material of an own match (design §9.4, →MATCH-25), counted into typed arrays sized at
+ * Post-match material of an own match (→MATCH-25), counted into typed arrays sized at
  * kick-off so a touch allocates nothing. Players are roster indexes until `finish` maps them to lines.
  */
 export class MaterialTally {
@@ -413,7 +413,7 @@ export class Tally {
   /** Team (TD) and player (PD) advanced counters (→MATCH-13). */
   private readonly td: [number[], number[]] = [emptyTeamDetail(), emptyTeamDetail()];
   private readonly pd: [number[][], number[][]];
-  /** Post-match material, counted for every match with an own side (design §9.4). */
+  /** Post-match material, counted for every match with an own side. */
   readonly material?: MaterialTally;
   readonly highlights: MatchRecord['highlights'] = [];
   readonly incidents: Incident[] = [];
@@ -740,7 +740,7 @@ export class Tally {
   }
 
   /**
-   * Running team counts for playback (design §10.2): per side `M.goals`…`M.saves`, what possession
+   * Running team counts for playback: per side `M.goals`…`M.saves`, what possession
    * is shared by (MATCH-3: attempted passes on the candidate model, seconds on the ball before it)
    * and xG.
    */

@@ -1,6 +1,6 @@
 /**
  * The box scene of open play on the candidate model (→MATCH-33, MATCH-34, T443;
- * docs/MATCH-ENGINE-DESIGN.md §4.8). With the ball wide in the final third or in a cut-back zone
+ * spec/ssot/MATCH.md). With the ball wide in the final third or in a cut-back zone
  * (MATCH-14), the attack occupies the box's zones with runs timed to the delivery and the defence
  * protects the same zones goal-side. The zones are points in the attacking side's frame, named by
  * the ball's side of the goal: deliveries are played into them (T444). `BOX_CONFIG.shot` sets how

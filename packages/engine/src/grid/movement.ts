@@ -1,6 +1,6 @@
 /**
  * Bounded movement on one match clock for the candidate match model (→MATCH-12, MATCH-17;
- * docs/MATCH-MODEL-CONTRACT.md "One match-time coordinate"): players accelerate, brake and turn
+ * spec/ssot/MATCH.md): players accelerate, brake and turn
  * within limits up to their pace/fatigue speed, the ball flies at bounded speeds, and an action or a
  * restart lasts until its route is physically done. The pre-feature path keeps `moveAll`. Only the
  * candidate moves this way, so its distances and turns use the portable `hypot`, `cos` and `sin`

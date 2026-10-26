@@ -55,7 +55,7 @@ export interface DecideRule {
 }
 /**
  * Whether a knockout tie is still level after this fixture's goals: on aggregate with the first
- * leg (oriented to this fixture) and, under the away-goals rule, on away goals (design §8.4).
+ * leg (oriented to this fixture) and, under the away-goals rule, on away goals.
  */
 export function isLevel(decide: DecideRule, home: number, away: number) {
   const first = decide.first ?? { home: 0, away: 0 };
