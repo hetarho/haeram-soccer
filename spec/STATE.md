@@ -337,7 +337,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
-| T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
 | T475 | Separate view delta publication from the world writer | ARCH | T473 | todo |
 
 ## work
@@ -351,12 +350,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
-| module-1026 | 3 | 4 | 1 | 3 | 2 | 1 | 0 | 2026-10-26T13:25:18.950Z | [history](work/module-1026.json) |
+| module-1026 | 3 | 4 | 2 | 2 | 2 | 0 | 0 | 2026-10-26T13:28:06.598Z | [history](work/module-1026.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261026 T474 integrated
 - 261026 T476 integrated
 - 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
@@ -376,4 +376,3 @@
 - 261026 T468 start: main batch found four revision-dependent fixture assumptions and one measurement adapter retaining the flat NPC context; preserve rules and historical evidence, repair before the authorized main push.
 - 261026 doc-review artifacts tidied (SSOT revs unchanged): removed applied UI packs and duplicate planning prose; retained original raw benchmarks plus 99 measured tables and 12 UI measurement runs with snapshot provenance; current references and disposable capture paths updated. Typecheck, lint, format, source equivalence and spec lint passed; main batch in progress.
 - 261026 doc-review artifacts start: retain unimplemented concepts and benchmark measurements; remove duplicate planning and applied UI evidence.
-- 261026 T467 done (q7m3): own-edge-probe buckets by prepared gap against outcomeTarget on revision 3; founding detailed 1.52 v 2.15 (aggregate 2.33), top tier on the curve (1.53 / 1.56 v 1.46); about 90% of T434's −0.9 remains at tier 4; title race unchanged beside T410; lever suggested (grid tier dependence)

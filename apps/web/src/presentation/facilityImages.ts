@@ -1,4 +1,4 @@
-import { partLevel, partTop } from '../../../../packages/engine/src/facilities';
+import { partLevel, partTop } from '../../../../packages/engine/src/facility-model';
 import type { FacilityKind } from './contracts';
 
 const FACILITY_PART = {

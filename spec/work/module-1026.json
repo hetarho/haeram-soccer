@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-26T13:25:18.950Z",
-  "sourceCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+  "snapshotAt": "2026-10-26T13:28:06.598Z",
+  "sourceCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
   "group": {
     "id": "module-1026",
     "branch": "work/module-1026",
@@ -42,10 +42,10 @@
   },
   "summary": {
     "total": 4,
-    "completed": 1,
-    "remaining": 3,
+    "completed": 2,
+    "remaining": 2,
     "running": 2,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
@@ -58,14 +58,6 @@
       ],
       "lane": "worker-reads",
       "status": "doing"
-    },
-    {
-      "id": "T474",
-      "title": "Separate completed facility facts from construction commands",
-      "dep": [
-        "T471"
-      ],
-      "status": "ready"
     },
     {
       "id": "T475",
@@ -81,7 +73,7 @@
     {
       "id": "c4df5ad0-bd07-4145-abca-117180ad4649",
       "group": "module-1026",
-      "taskId": "T473",
+      "taskId": "T475",
       "tasks": [
         "T473",
         "T475"
@@ -92,18 +84,33 @@
         "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-1"
       ],
       "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-26T13:18:21.904Z",
       "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
       "dispatch": {
-        "id": "c6782351-50db-408b-bcd1-81f478a8f56a",
+        "id": "3d0573f4-62e6-4d1e-8db2-f25f8428f69b",
         "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "running",
-        "startedAt": "2026-10-26T13:18:23.209Z"
-      }
+        "startedAt": "2026-10-26T13:27:53.283Z"
+      },
+      "steps": [
+        {
+          "taskId": "T473",
+          "commit": "ea79044714ee4a92d1b2d40494d68b6f26e92d28",
+          "at": "2026-10-26T13:27:53.147Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-26T13:27:16.732Z",
+              "finishedAt": "2026-10-26T13:27:52.855Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
@@ -117,7 +124,7 @@
       "contributors": [
         "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-26T13:18:23.637Z",
       "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
@@ -135,17 +142,30 @@
         "files": 6
       },
       "dispatch": {
-        "id": "b4ad234e-1d16-440d-8a9b-38b3098920a0",
+        "id": "c5c265c4-a486-497f-ae84-994a4aa4354c",
         "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
-        "role": "worker",
-        "slot": 2,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-26T13:18:24.448Z",
-        "finishedAt": "2026-10-26T13:25:16.759Z",
+        "startedAt": "2026-10-26T13:25:55.140Z",
+        "finishedAt": "2026-10-26T13:28:05.400Z",
         "error": null,
-        "summary": "T474 is done. Facility artwork no longer depends on construction code. The new packages/engine/src/facility-model.ts holds the facility ladders, limits and completed-state reads, moved over unchanged, and it has no runtime imports. facilities.ts imports and re-exports these by name and keeps only construction: WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep, nextWork, startFacilityWork and progressFacilityWorks. apps/web/src/presentation/facilityImages.ts now imports facility-model.ts instead of facilities.ts.\n\nNew tests:\n- scripts/lib/facility-architecture.test.ts checks that the artwork code reaches only facilityImages.ts, presentation/contracts.ts and facility-model.ts, and never facilities, world, season, calendar, events or quotes. It also checks that facility-model.ts imports nothing and that facilities.ts builds on it.\n- facility-model.test.ts uses minimal data to pin the stage limits, a new club's defaults, stadium capacity during expansion and rebuild works, training bases, academy terms, costs, upkeep and built units, and that the re-exports are the same functions.\n- facilityImages.test.ts checks stage tops and that construction targets are ignored.\n\nChecks run and passed: pnpm install, typecheck, lint, format:check, git diff --check, and the affected unit tests (`pnpm exec vitest run --project unit --changed a3b0cdd2`: 73 files, 562 tests). These included the existing facility-parts, facilityScene, theme, validate-presentation and outcome tests. `pnpm run build` also passed.\n\nNot run:\n- Spec lint: the sandbox denied the CLI command.\n- The final batch is left to the coordinator: test:unit, test:integration, test:contract, validate:catalogs, build and the Chromium journeys. It covers the integration-tier finance, goals, investment, business, academy, training and coach-training tests, plus tests/e2e/facility-art.spec.ts.\n\nOther modules that read facility values still import facilities.ts; they keep working through the re-exports. All edits are inside the task's touches plus the task file's acceptance and result. Nothing was committed."
+        "summary": "T474 meets all four acceptance items and is consistent with ARCH-3, ARCH-4, ARCH-21, ARCH-30, ARCH-32, ARCH-33 and review F4.\n\n**Risk reasons checked first**\n- The 394-line size comes from a move. A sorted line comparison shows the lines removed from facilities.ts match the new facility-model.ts exactly. The only additions are one doc-comment paragraph and a type-only import of FacilityPart and World. Function bodies, ladders, LEVEL_UPKEEP and the upkeep and capacity formulas are unchanged.\n- The worker made no autopilot product decisions. Save schema, levels, Korean wording and event text are untouched.\n\n**Acceptance**\n- facilities.ts re-exports every model name it previously exported, so index.ts (`export * from './facilities'`) and existing consumers are unaffected. It keeps WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep (through the T471 quotes and player-state leaves), nextWork, startFacilityWork and progressFacilityWorks.\n- facility-model.ts has only a type import. source-graph's runtimeImports skips type-only edges, so the leaf test (closure equals the model file alone) holds.\n- facilityImages.ts imports only the model at runtime. contracts is a type-only import.\n- The new scripts/lib/facility-architecture.test.ts follows the existing closure pattern. It forbids facilities, world, season, calendar, events and quotes, and pins an exact allowlist. The shared architecture.test.ts is unchanged, as the task notes require.\n- facility-model.test.ts uses minimal data. I hand-checked its expected values: 411.25 and 4411.25 for upkeep, 9600 and 1530450 for built units, and 2250, 5000, 27000, 40000 and 67500 for capacity during works. It also checks that the re-exports are the same bindings.\n- The existing facilityScene.test.ts case that ignores construction targets is untouched. The new facilityImages.test.ts adds a direct check of the same thing.\n\n**Interaction with the base**\n- The base moved from a3b0cdd2 to 64783061 (T476, motion preference). That change touches none of these files.\n\n**Test evidence**\n- The worker reports typecheck, lint, format:check, the unit run on changed files (73 files, 562 tests, including facility-model, facilityImages, facility-architecture, facilityScene, theme and validate-presentation) and build all passing. That matches the ARCH-30 task tier.\n- Integration consumers (finance, goals, investment, business, academy, training) and tests/e2e/facility-art.spec.ts are correctly left to the coordinator's batch gate.\n- I did not re-run any tests in this read-only review.\n\n**Scope**\n- Other read-only consumers (validate-presentation, FacilityParts, outcome, and engine readers such as synergy and sponsors) still import facilities.ts. The task allows this: it says to update other consumers only when the boundary needs it, and the worker recorded these files under limits."
+      },
+      "review": {
+        "id": "91dea16a-0253-4e43-8f8e-b3f8f84e8ad0",
+        "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T474 meets all four acceptance items and is consistent with ARCH-3, ARCH-4, ARCH-21, ARCH-30, ARCH-32, ARCH-33 and review F4.\n\n**Risk reasons checked first**\n- The 394-line size comes from a move. A sorted line comparison shows the lines removed from facilities.ts match the new facility-model.ts exactly. The only additions are one doc-comment paragraph and a type-only import of FacilityPart and World. Function bodies, ladders, LEVEL_UPKEEP and the upkeep and capacity formulas are unchanged.\n- The worker made no autopilot product decisions. Save schema, levels, Korean wording and event text are untouched.\n\n**Acceptance**\n- facilities.ts re-exports every model name it previously exported, so index.ts (`export * from './facilities'`) and existing consumers are unaffected. It keeps WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep (through the T471 quotes and player-state leaves), nextWork, startFacilityWork and progressFacilityWorks.\n- facility-model.ts has only a type import. source-graph's runtimeImports skips type-only edges, so the leaf test (closure equals the model file alone) holds.\n- facilityImages.ts imports only the model at runtime. contracts is a type-only import.\n- The new scripts/lib/facility-architecture.test.ts follows the existing closure pattern. It forbids facilities, world, season, calendar, events and quotes, and pins an exact allowlist. The shared architecture.test.ts is unchanged, as the task notes require.\n- facility-model.test.ts uses minimal data. I hand-checked its expected values: 411.25 and 4411.25 for upkeep, 9600 and 1530450 for built units, and 2250, 5000, 27000, 40000 and 67500 for capacity during works. It also checks that the re-exports are the same bindings.\n- The existing facilityScene.test.ts case that ignores construction targets is untouched. The new facilityImages.test.ts adds a direct check of the same thing.\n\n**Interaction with the base**\n- The base moved from a3b0cdd2 to 64783061 (T476, motion preference). That change touches none of these files.\n\n**Test evidence**\n- The worker reports typecheck, lint, format:check, the unit run on changed files (73 files, 562 tests, including facility-model, facilityImages, facility-architecture, facilityScene, theme and validate-presentation) and build all passing. That matches the ARCH-30 task tier.\n- Integration consumers (finance, goals, investment, business, academy, training) and tests/e2e/facility-art.spec.ts are correctly left to the coordinator's batch gate.\n- I did not re-run any tests in this read-only review.\n\n**Scope**\n- Other read-only consumers (validate-presentation, FacilityParts, outcome, and engine readers such as synergy and sponsors) still import facilities.ts. The task allows this: it says to update other consumers only when the boundary needs it, and the worker recorded these files under limits.",
+        "findings": [],
+        "commit": "b59d2940465b74028af401eeffbc649a489e7978",
+        "baseCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
+        "submissionId": "58b1ae36-abc7-4949-8f66-e57a72ed04c7",
+        "createdAt": "2026-10-26T13:25:53.376Z",
+        "finishedAt": "2026-10-26T13:28:05.374Z"
       },
       "steps": [
         {
@@ -189,6 +209,8 @@
       "submittedBase": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
       "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
       "submittedAt": "2026-10-26T13:22:45.113Z",
+      "integratedCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
+      "integratedAt": "2026-10-26T13:25:52.849Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -248,6 +270,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-26T13:22:00.578Z",
           "finishedAt": "2026-10-26T13:22:44.751Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-26T13:25:19.322Z",
+          "finishedAt": "2026-10-26T13:25:52.593Z"
         }
       ]
     }
@@ -939,6 +968,335 @@
       "group": "module-1026",
       "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
       "taskId": "T476",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1344,
+      "at": "2026-10-26T13:25:52.777Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-26T13:25:19.322Z",
+            "finishedAt": "2026-10-26T13:25:52.593Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1345,
+      "at": "2026-10-26T13:25:52.849Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
+        "integratedAt": "2026-10-26T13:25:52.849Z"
+      }
+    },
+    {
+      "sequence": 1346,
+      "at": "2026-10-26T13:25:53.376Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "91dea16a-0253-4e43-8f8e-b3f8f84e8ad0",
+          "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+          "status": "reviewing",
+          "commit": "b59d2940465b74028af401eeffbc649a489e7978",
+          "baseCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
+          "submissionId": "58b1ae36-abc7-4949-8f66-e57a72ed04c7",
+          "createdAt": "2026-10-26T13:25:53.376Z"
+        }
+      }
+    },
+    {
+      "sequence": 1347,
+      "at": "2026-10-26T13:25:55.140Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c5c265c4-a486-497f-ae84-994a4aa4354c",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:25:55.140Z"
+        }
+      }
+    },
+    {
+      "sequence": 1348,
+      "at": "2026-10-26T13:25:55.163Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c5c265c4-a486-497f-ae84-994a4aa4354c",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:25:55.140Z"
+        }
+      }
+    },
+    {
+      "sequence": 1349,
+      "at": "2026-10-26T13:27:15.931Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1350,
+      "at": "2026-10-26T13:27:16.445Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1351,
+      "at": "2026-10-26T13:27:16.492Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1352,
+      "at": "2026-10-26T13:27:53.159Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T475",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T475",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T473",
+            "commit": "ea79044714ee4a92d1b2d40494d68b6f26e92d28",
+            "at": "2026-10-26T13:27:53.147Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-26T13:27:16.732Z",
+                "finishedAt": "2026-10-26T13:27:52.855Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1353,
+      "at": "2026-10-26T13:27:53.187Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T475",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6782351-50db-408b-bcd1-81f478a8f56a",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-26T13:18:23.209Z",
+          "finishedAt": "2026-10-26T13:27:53.187Z",
+          "error": null,
+          "summary": "T473 is done: host.ts, protocol.ts and slots.ts no longer import any ui/ module. The task checks passed, but I ran no integration, browser or full suite; those go to your final gate.\n\n**What moved**\n- `apps/web/src/runtime/playerTallies.ts` now owns the tally code and its types (perOwnMatches, cardCounts, leagueReds, appearanceCounts, tallies, and the Cards/Appearances/PlayerTally/Tallies types). The code moved unchanged; `tallies` now asks only for the four World fields it reads.\n- `apps/web/src/presentation/competitionLabels.ts` owns kindLabel, divisionName and competitionLabel.\n- `apps/web/src/presentation/crests.ts` owns Crest, crestMap, crestOf and the fallback crest, using the existing engine identity-legacy code.\n- The old UI files (discipline, playerAnalysis, careerRecords, league, format, crests) re-export the old names and keep only their UI helpers.\n- host.ts and slots.ts import the new owners directly. protocol.ts takes Tallies from playerTallies, and its transferOffers/sponsorSlots import is now type-only. I'm not claiming any speedup from that.\n\n**One small difference:** there were two copies of `divisionName`, in ui/league and ui/careerRecords. They gave the same label for every catalog country. For an unknown country code the careerRecords copy threw, while the league copy returned \"아마추어 리그\". The single shared version keeps the league behaviour. Every caller of the old careerRecords copy passes the own club's country, which is always in the catalog.\n\n**Tests added**\n- `apps/web/src/runtime/playerTallies.test.ts` uses small hand-built data, no generated world. It checks appearances, substitutes, cards, that only league reds count, and season heat. It also checks that the cached result is reused across revisions and rebuilt after a reload, a new own match and a season change.\n- `scripts/lib/architecture.test.ts` now checks host, protocol and slots for direct ui/ imports (type-only ones included) and for ui/, React or Zustand anywhere they reach at runtime. Engine use in host is still allowed. The three shared modules may only reach contracts, catalogs and leaf engine modules, not world/season/match code. I put ui/ imports back into protocol.ts and slots.ts temporarily and the guard failed on both, then restored them.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `git diff --check` passed.\n- `pnpm run format:check` failed once on discipline.ts; I fixed it with prettier and the check then passed.\n- Unit tests changed since a3b0cdd2: 26 files, 187 tests passed. The affected unit files run directly: 9 files, 57 tests passed.\n- `pnpm run build` passed.\n\n**Left for your final gate:** `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. The integration tier covers host.test, host.archive.test, client.test, next-event.test, personCareer.test and ui/league.test. The browser run includes `tests/e2e/club-identity-preparation.spec.ts`, which imports competitionLabel through ui/format.\n\nSpec lint through the haeram CLI was blocked by the sandbox, so it did not run. All edits stay within the task's file list plus the task's own acceptance/result. I did not touch T469 files or make any commits. T475 has not been started."
+        }
+      }
+    },
+    {
+      "sequence": 1354,
+      "at": "2026-10-26T13:27:53.283Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T475",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3d0573f4-62e6-4d1e-8db2-f25f8428f69b",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:27:53.283Z"
+        }
+      }
+    },
+    {
+      "sequence": 1355,
+      "at": "2026-10-26T13:27:53.489Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T475",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3d0573f4-62e6-4d1e-8db2-f25f8428f69b",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:27:53.283Z"
+        }
+      }
+    },
+    {
+      "sequence": 1356,
+      "at": "2026-10-26T13:28:05.374Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "91dea16a-0253-4e43-8f8e-b3f8f84e8ad0",
+          "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T474 meets all four acceptance items and is consistent with ARCH-3, ARCH-4, ARCH-21, ARCH-30, ARCH-32, ARCH-33 and review F4.\n\n**Risk reasons checked first**\n- The 394-line size comes from a move. A sorted line comparison shows the lines removed from facilities.ts match the new facility-model.ts exactly. The only additions are one doc-comment paragraph and a type-only import of FacilityPart and World. Function bodies, ladders, LEVEL_UPKEEP and the upkeep and capacity formulas are unchanged.\n- The worker made no autopilot product decisions. Save schema, levels, Korean wording and event text are untouched.\n\n**Acceptance**\n- facilities.ts re-exports every model name it previously exported, so index.ts (`export * from './facilities'`) and existing consumers are unaffected. It keeps WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep (through the T471 quotes and player-state leaves), nextWork, startFacilityWork and progressFacilityWorks.\n- facility-model.ts has only a type import. source-graph's runtimeImports skips type-only edges, so the leaf test (closure equals the model file alone) holds.\n- facilityImages.ts imports only the model at runtime. contracts is a type-only import.\n- The new scripts/lib/facility-architecture.test.ts follows the existing closure pattern. It forbids facilities, world, season, calendar, events and quotes, and pins an exact allowlist. The shared architecture.test.ts is unchanged, as the task notes require.\n- facility-model.test.ts uses minimal data. I hand-checked its expected values: 411.25 and 4411.25 for upkeep, 9600 and 1530450 for built units, and 2250, 5000, 27000, 40000 and 67500 for capacity during works. It also checks that the re-exports are the same bindings.\n- The existing facilityScene.test.ts case that ignores construction targets is untouched. The new facilityImages.test.ts adds a direct check of the same thing.\n\n**Interaction with the base**\n- The base moved from a3b0cdd2 to 64783061 (T476, motion preference). That change touches none of these files.\n\n**Test evidence**\n- The worker reports typecheck, lint, format:check, the unit run on changed files (73 files, 562 tests, including facility-model, facilityImages, facility-architecture, facilityScene, theme and validate-presentation) and build all passing. That matches the ARCH-30 task tier.\n- Integration consumers (finance, goals, investment, business, academy, training) and tests/e2e/facility-art.spec.ts are correctly left to the coordinator's batch gate.\n- I did not re-run any tests in this read-only review.\n\n**Scope**\n- Other read-only consumers (validate-presentation, FacilityParts, outcome, and engine readers such as synergy and sponsors) still import facilities.ts. The task allows this: it says to update other consumers only when the boundary needs it, and the worker recorded these files under limits.",
+          "findings": [],
+          "commit": "b59d2940465b74028af401eeffbc649a489e7978",
+          "baseCommit": "64783061ea6c285f550fa5226083c05d62c7a8ff",
+          "submissionId": "58b1ae36-abc7-4949-8f66-e57a72ed04c7",
+          "createdAt": "2026-10-26T13:25:53.376Z",
+          "finishedAt": "2026-10-26T13:28:05.374Z"
+        }
+      }
+    },
+    {
+      "sequence": 1357,
+      "at": "2026-10-26T13:28:05.400Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "c5c265c4-a486-497f-ae84-994a4aa4354c",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-26T13:25:55.140Z",
+          "finishedAt": "2026-10-26T13:28:05.400Z",
+          "error": null,
+          "summary": "T474 meets all four acceptance items and is consistent with ARCH-3, ARCH-4, ARCH-21, ARCH-30, ARCH-32, ARCH-33 and review F4.\n\n**Risk reasons checked first**\n- The 394-line size comes from a move. A sorted line comparison shows the lines removed from facilities.ts match the new facility-model.ts exactly. The only additions are one doc-comment paragraph and a type-only import of FacilityPart and World. Function bodies, ladders, LEVEL_UPKEEP and the upkeep and capacity formulas are unchanged.\n- The worker made no autopilot product decisions. Save schema, levels, Korean wording and event text are untouched.\n\n**Acceptance**\n- facilities.ts re-exports every model name it previously exported, so index.ts (`export * from './facilities'`) and existing consumers are unaffected. It keeps WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep (through the T471 quotes and player-state leaves), nextWork, startFacilityWork and progressFacilityWorks.\n- facility-model.ts has only a type import. source-graph's runtimeImports skips type-only edges, so the leaf test (closure equals the model file alone) holds.\n- facilityImages.ts imports only the model at runtime. contracts is a type-only import.\n- The new scripts/lib/facility-architecture.test.ts follows the existing closure pattern. It forbids facilities, world, season, calendar, events and quotes, and pins an exact allowlist. The shared architecture.test.ts is unchanged, as the task notes require.\n- facility-model.test.ts uses minimal data. I hand-checked its expected values: 411.25 and 4411.25 for upkeep, 9600 and 1530450 for built units, and 2250, 5000, 27000, 40000 and 67500 for capacity during works. It also checks that the re-exports are the same bindings.\n- The existing facilityScene.test.ts case that ignores construction targets is untouched. The new facilityImages.test.ts adds a direct check of the same thing.\n\n**Interaction with the base**\n- The base moved from a3b0cdd2 to 64783061 (T476, motion preference). That change touches none of these files.\n\n**Test evidence**\n- The worker reports typecheck, lint, format:check, the unit run on changed files (73 files, 562 tests, including facility-model, facilityImages, facility-architecture, facilityScene, theme and validate-presentation) and build all passing. That matches the ARCH-30 task tier.\n- Integration consumers (finance, goals, investment, business, academy, training) and tests/e2e/facility-art.spec.ts are correctly left to the coordinator's batch gate.\n- I did not re-run any tests in this read-only review.\n\n**Scope**\n- Other read-only consumers (validate-presentation, FacilityParts, outcome, and engine readers such as synergy and sponsors) still import facilities.ts. The task allows this: it says to update other consumers only when the boundary needs it, and the worker recorded these files under limits."
+        }
+      }
+    },
+    {
+      "sequence": 1358,
+      "at": "2026-10-26T13:28:05.455Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
