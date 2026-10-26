@@ -84,7 +84,18 @@ test('keeps league views and nodes across silent progression from home and updat
   await expect(eve).toContainText('내일 경기');
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('game-round')).toHaveText('1');
-  await mini.getByRole('button', { name: '자동 진행 정지' }).click();
+  // On a slow browser the run reaches the next match eve before this stop lands (CI WebKit
+  // 40245403294): the eve has stopped the clock itself and its backdrop takes the click.
+  const stop = mini.getByRole('button', { name: '자동 진행 정지' });
+  while (!(await eveDialog.isVisible()))
+    try {
+      await stop.click({ timeout: 1000 });
+      break;
+    } catch {
+      // Covered by the next eve's backdrop, or not yet actionable: look again.
+    }
+  if (await eveDialog.isVisible())
+    await eveDialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

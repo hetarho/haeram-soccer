@@ -31,10 +31,20 @@ export async function openOffice(page: Page) {
     new URL(page.url()).pathname === '/direction' &&
     (await page.getByTestId('owner-office').isVisible());
   if (!open) {
-    await page
+    const office = page
       .getByRole('navigation')
-      .getByRole('button', { name: '구단 운영', exact: true })
-      .click();
+      .getByRole('button', { name: '구단 운영', exact: true });
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await office.click({ timeout: 2000 });
+        break;
+      } catch (error) {
+        if (attempt >= 3) throw error;
+        // A running clock can reach a match eve after the dismissal above, and the eve's backdrop
+        // takes the click (CI Firefox 40243569140, season-flow on the released model).
+        await dismissMatchReport(page);
+      }
+    }
     const tab = page.getByRole('tab', { name: '구단주 사무실', exact: true });
     for (let attempt = 0; ; attempt++) {
       try {
