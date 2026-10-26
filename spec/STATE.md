@@ -335,6 +335,7 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 fix goal-cue browser fixture: revision 2 leaves goal-feedback-221 with only two goals; goal-feedback-5 gives an early home goal and three goals across both sides. Read the opening goal time from recorded facts, keeping normal-speed, repeat-cue, possession and three-viewport assertions.
 - 261026 T463 done (q7m3): netlify.toml drops its NODE_VERSION 24.12.0 so Netlify reads .node-version (24.22.1) like CI and engines; tests/config/node-pin.test.ts guards Netlify, engines.node and every setup-node step
 - 261026 create-task (q7m3): T463 Netlify's Node pin follows .node-version (ARCH-23, no rev: the rule already requires one pinned toolchain); MATCH r31 needs no task, both paths already count its zones and line-breaking passes so (T327)
 - 261026 update-ssot MATCH r31 (q7m3): MATCH-13 high-turnover and PPDA zones read MATCH-14's nearest band edges (35 m; two-thirds), aggregate line-breaking passes drawn among passes into a higher band; MATCH-30 source cells state the zone offset, bands unchanged
@@ -354,4 +355,3 @@
 - 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
 - 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
-- 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass

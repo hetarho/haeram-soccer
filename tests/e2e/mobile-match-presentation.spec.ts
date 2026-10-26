@@ -172,7 +172,7 @@ function goalWorld() {
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    seed: 'goal-feedback-221',
+    seed: 'goal-feedback-5',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';
@@ -216,7 +216,9 @@ for (const viewport of [
     const world = goalWorld();
     const playback = advanceToNextMatch(structuredClone(world))!;
     const expected = playback.record;
-    expect(expected.highlights[0]).toMatchObject({ minute: 2, side: 0 });
+    const openingGoal = expected.highlights[0];
+    expect(openingGoal).toMatchObject({ side: 0 });
+    expect(openingGoal!.minute).toBeLessThanOrEqual(5);
     expect(expected.highlights.length).toBeGreaterThanOrEqual(3);
     await importResponsibilityCareer(page, world);
     await expect(page.locator('html')).toHaveAttribute(
@@ -250,7 +252,7 @@ for (const viewport of [
     expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(viewport.width);
     const cue = page.getByTestId('goal-cue');
     await expect(cue).toBeVisible({
-      timeout: (2 * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
+      timeout: (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
     });
     await expect(cue).toContainText('GOAL');
     await expect(cue).toContainText('득점');
