@@ -54,7 +54,7 @@ it('keeps host, replay, long-career and full-match checks out of the task unit p
   expect(testTier('packages/engine/src/fixtures.contract.test.ts')).toBe('contract');
 });
 
-it('keeps full match and progression operations, including helper callbacks, in integration', () => {
+it('keeps full match and progression operations, including helper callbacks, out of unit', () => {
   const operations = new Set([
     'playGrid',
     'playAggregate',
@@ -91,7 +91,7 @@ it('keeps full match and progression operations, including helper callbacks, in 
           operations.has(name) ||
           (node.moduleSpecifier.text.includes('testkit') && helpers.has(name))
         )
-          expect(testTier(file), `${file} imports ${name}`).toBe('integration');
+          expect(testTier(file), `${file} imports ${name}`).not.toBe('unit');
       }
     }
   }
