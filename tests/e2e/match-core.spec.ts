@@ -333,15 +333,18 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
-  // The first match of this founding scored 2′ (home), 13′ and 32′ (away) on the released model;
-  // goal-feedback's first match has no goals since then (→T458).
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Goal Feedback',
-    color: '#224466',
-    seed: 'goal-feedback-221',
-    level: 'easy',
-  });
+  // A settled revision-1 match keeps its recorded facts after a writer upgrades the career.
+  // The archived replay exercises those historical goals, independent of the current model.
+  const world = createWorld(
+    {
+      country: 'ENG',
+      name: 'Goal Feedback',
+      color: '#224466',
+      seed: 'goal-feedback-221',
+      level: 'easy',
+    },
+    { revision: 'continuous-aggregate-1', enabled: true },
+  );
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
   expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 13, 32]);

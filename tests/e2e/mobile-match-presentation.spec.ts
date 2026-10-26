@@ -1,12 +1,18 @@
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { createWorld, advanceToNextMatch } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
-import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
+import {
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
+  presentationMs,
+  runningLength,
+  setPiecePreparations,
+} from '../../apps/web/src/ui/presentationClock';
 import { textContrast } from './contrast';
 
 const defaultThemeId = readPresentationBaselines().themeEntry.id;
@@ -160,7 +166,7 @@ test('mobile result-only continuation preserves the exiting card position', asyn
   }
 });
 
-/** A founding whose first match has goals at 2′ (home), 13′ and 32′ (away) on the released model. */
+/** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
   const world = createWorld({
     country: 'ENG',
@@ -194,8 +200,8 @@ for (const viewport of [
   { width: 1280, height: 800 },
 ])
   test(`goal cue and ball ownership in the normal view at ${viewport.width}`, async ({ page }) => {
-    // The first goal lands 1¾ minutes in, about 10 s at the 2x the match opens at; the 360 run then
-    // plays it out at 16x.
+    // Verify the early home goal before entering the browser; later goals and added time come
+    // from the current fixture, so a model revision cannot silently stale the UI expectations.
     test.slow();
     await page.emulateMedia({ reducedMotion: viewport.width === 390 ? 'reduce' : 'no-preference' });
     await page.setViewportSize(viewport);
@@ -207,7 +213,12 @@ for (const viewport of [
           JSON.stringify({ localeId: 'ko-KR', themeId: 'pixel' }),
         ),
       );
-    await importResponsibilityCareer(page, goalWorld());
+    const world = goalWorld();
+    const playback = advanceToNextMatch(structuredClone(world))!;
+    const expected = playback.record;
+    expect(expected.highlights[0]).toMatchObject({ minute: 2, side: 0 });
+    expect(expected.highlights.length).toBeGreaterThanOrEqual(3);
+    await importResponsibilityCareer(page, world);
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme',
       viewport.width === 1280 ? 'pixel' : defaultThemeId,
@@ -264,16 +275,23 @@ for (const viewport of [
     await expect(cue).toHaveCount(0, { timeout: 3000 });
     await expect(score).toHaveText('1 : 0');
     if (viewport.width !== 360) return;
-    // At 16x each later goal still holds once, and the last whistle follows the last cue: up to
-    // 100 running minutes at 750 ms and both holds.
-    const restMs = (100 * WATCH_MINUTE_MS) / 16 + 2 * GOAL_FEEDBACK_CONFIG.holdMs;
+    // Include actual added time and every goal hold using the presentation clock's own rule.
+    const restMs =
+      presentationMs(
+        0,
+        runningLength(playback.frames.length),
+        16,
+        setPiecePreparations(playback.frames),
+      ) +
+      expected.highlights.length * GOAL_FEEDBACK_CONFIG.holdMs +
+      5000;
     test.info().setTimeout(test.info().timeout + restMs);
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: restMs });
-    await expect(score).toHaveText('1 : 2');
+    await expect(score).toHaveText(`${expected.score.home} : ${expected.score.away}`);
     await expect(cue).toHaveCount(0);
     const seen = await cues();
-    expect(seen).toHaveLength(3);
+    expect(seen).toHaveLength(expected.highlights.length);
     expect(seen.every((text) => text.startsWith('GOAL'))).toBe(true);
     const states = await page.evaluate(() => [
       ...(window as unknown as { possessionStates: Set<string> }).possessionStates,
