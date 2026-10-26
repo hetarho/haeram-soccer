@@ -278,6 +278,7 @@
 | set-piece-defence-and-goal-feedback | converted@261022 |
 | own-club-match-edge | open@261023 |
 | match-viewing-pace-and-freedom | converted@261025 |
+| save-storage-and-fast-pace | open@261026 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -323,12 +324,14 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
+- ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB
 - f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433 and T434 now, T410 after T433
 
 ## log
+- 261026 ideation save-storage-and-fast-pace start + recorded (owner): active checkpoint to IndexedDB, then x10 with a "경기 진행 중…" match-day indicator; after the current football tasks
 - 261026 re-scope (q7m3, owner): T433, T434, T410 each within 20 m as gameplay reads (10 seasons, a handful of fixtures); pilot-size parity deferred
 - 261026 T286 done (q7m3): released model evidence = batch on 2ab7207c + main CI 40262705063 Chromium/WebKit; final batch and CI at the end of the work
 - 261026 T458 done (q7m3, 2b8b0b12): Firefox business, season-flow, stable-controls-and-pacing 15/15 on local Firefox (2.0 m)
