@@ -10,11 +10,6 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:35Z | - |
-
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
@@ -304,6 +299,7 @@
 |---|---|
 | outside-t216-t255-261019 | converted@261019 |
 | recent-code-quality-261023 | converted@261023 |
+| development-feedback-261026 | converted@261026 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -332,6 +328,8 @@
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 review-code development-feedback-261026 complete — 79-module engine cycle, 222/280 dependency-affected tests, fixture/benchmark invalidation and integration-tier hand-offs; no findings adopted
+- 261026 review-code development-feedback-261026 start — inspect dependency reach, test tiers, fixture invalidation and simulation costs; application changes remain owned by the existing sessions
 - 261026 T432 done (p7r3): revision 2's freedom, disorder and swaps (drift 60, loosen 0.4, reform 6, threshold 0.35); goals 2.46 → 2.72, a full-back in the far half 47 → 91% of matches; revision 1 and pre-feature digests unchanged
 - 261026 T458 CI budgets (k5n2, 3c003b7d): manager-history ×3, owner-workflows:340, staff:259 timed out at 90 s on CI only; explicit budgets, released cup-winner seed first
 - 261026 T435 done (k5n2, integrated 4b8c42af): match-model revision 2, revision-1 careers upgrade at the writer load; football unchanged, facts digests re-recorded for the record label
