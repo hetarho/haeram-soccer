@@ -85,6 +85,11 @@ export interface ProgressionState {
   background: BackgroundSettings;
   /** A finished run while the owner was away, waiting to be summarized (→WEB-64). */
   away?: ClockMark;
+  /**
+   * An automatic step still in flight one pace interval after it began (→WEB-18): `match` when it
+   * settles the day of an own fixture. Unset once the step lands, is cancelled or the clock stops.
+   */
+  lateStep?: 'match' | 'day';
 }
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
 /** Per-browser stops kept before the level decided them; removed once on start. */
@@ -131,7 +136,7 @@ export function pendingMatchReport(w: World) {
  * One tick of the clock. A multi-day catch-up step lands on a match eve instead of running
  * through the match day, and the host ends it early on the day an enabled event arrives.
  */
-function command(days: number, w: World): Command {
+function command(days: number, w: World): Extract<Command, { type: 'advance-days' }> {
   const until = daysUntilNextMatch(w),
     observations = settingsOf(w).observations;
   return {
@@ -165,6 +170,10 @@ export class ProgressionController {
   private unsubscribe: () => void;
   private unsubscribeClock: () => void;
   private inFlight = false;
+  /** Shows the late-step indicator if the automatic step in flight outlasts its pace interval. */
+  private lateTimer?: ReturnType<typeof setTimeout>;
+  /** What the command in flight settles, for the indicator's caption. */
+  private stepKind: 'match' | 'day' = 'day';
   private suspensionSources = new Set<string>();
   private get suspended() {
     return this.suspensionSources.size > 0;
@@ -520,6 +529,7 @@ export class ProgressionController {
   stop(reason = '자동 진행을 멈췄습니다.') {
     const was = this.store.getState().running;
     this.resumeAfterEvents = false;
+    this.clearLateStep();
     this.store.setState({ running: false, reason });
     if (this.inFlight) this.client.cancel();
     if (!was) return;
@@ -579,12 +589,22 @@ export class ProgressionController {
     const owed = this.owed(w);
     const stepAt = (this.stepAt = Date.now());
     this.inFlight = true;
+    // The indicator never touches the step itself: it only shows that the step is still running.
+    this.lateTimer = setTimeout(() => {
+      this.lateTimer = undefined;
+      if (this.inFlight && this.store.getState().running)
+        this.store.setState({ lateStep: this.stepKind });
+    }, PACE_MS[progress.pace]);
     try {
       let debt = owed.days;
       while (debt > 0) {
         const seen = new Set(stoppingEvents(w).map((item) => item.id));
         const days = owed.catchUp ? Math.min(debt, CATCH_UP_STEP_DAYS) : debt;
-        const reply = await this.client.command(command(days, w), {
+        const step = command(days, w),
+          until = daysUntilNextMatch(w);
+        this.stepKind = until !== undefined && until <= step.days ? 'match' : 'day';
+        if (this.store.getState().lateStep) this.store.setState({ lateStep: this.stepKind });
+        const reply = await this.client.command(step, {
           background: true,
           automatic: true,
         });
@@ -624,14 +644,21 @@ export class ProgressionController {
       this.writeClock();
     } finally {
       this.inFlight = false;
+      this.clearLateStep();
       this.owing = Date.now() - stepAt > PACE_MS[this.store.getState().pace];
       // A stop that came while the step ran saved before the step landed; save what it played.
       if (!this.store.getState().running) this.client.saveSoon();
       this.summarize();
     }
   }
+  private clearLateStep() {
+    if (this.lateTimer !== undefined) clearTimeout(this.lateTimer);
+    this.lateTimer = undefined;
+    if (this.store.getState().lateStep) this.store.setState({ lateStep: undefined });
+  }
   dispose() {
     // Leaving the page keeps the stored clock as it was, so a return can resume it.
+    this.clearLateStep();
     this.store.setState({ running: false, reason: '' });
     if (this.inFlight) this.client.cancel();
     clearInterval(this.timer);

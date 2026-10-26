@@ -121,6 +121,86 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await expect(toggle).toBeVisible();
 });
 
+for (const [width, height] of [
+  [360, 740],
+  [390, 844],
+  [1280, 800],
+]) {
+  test(`a late own match day shows 경기 진행 중… in place without moving the controls ${width}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height });
+    await foundQuiet(page);
+    // Without the match-eve stop, x10 runs straight into our first match day (→WEB-18).
+    await configureResponsibilities(page, {
+      responsibilities: { recruitment: 'delegated', sales: 'delegated' },
+      observations: { matchEve: false },
+    });
+    const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
+    const late = controls.getByTestId('late-step');
+    await expect(late).toHaveAttribute('data-state', 'off');
+    await chooseOption(
+      controls.getByRole('combobox', { name: '자동 진행 배속', exact: true }),
+      'x10',
+    );
+    await settle(page);
+    // Play/pause, the pace dropdown, the mode change button and its text never move (→WEB-17).
+    const pinned = [
+      '[data-progress-mode]',
+      '[data-testid="progression-mode"]',
+      '[aria-label="자동 진행 배속"]',
+      '[data-ui="season-transport"] [role="group"] > button',
+    ];
+    const boxes = () =>
+      page.evaluate(
+        (selectors) =>
+          selectors.map((selector) => {
+            const r = document.querySelector(selector)!.getBoundingClientRect();
+            return [r.x, r.y, r.width, r.height].map(Math.round);
+          }),
+        pinned,
+      );
+    const before = await boxes();
+    const transport = (await controls.boundingBox())!;
+    await controls.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+    // The own match takes the engine far longer than 0.1 s; catch the caption on any frame.
+    const seen = await page.waitForFunction(
+      (selectors) => {
+        const slot = document.querySelector('[data-testid="late-step"]');
+        if (!slot?.textContent?.includes('경기 진행 중…')) return undefined;
+        return {
+          round: document.querySelector('[data-testid="game-round"]')?.textContent,
+          boxes: selectors.map((selector) => {
+            const r = document.querySelector(selector)!.getBoundingClientRect();
+            return [r.x, r.y, r.width, r.height].map(Math.round);
+          }),
+          transport: document.querySelector('[data-ui="season-transport"]')!.getBoundingClientRect()
+            .height,
+          hidden: slot.querySelector('i')?.getAttribute('aria-hidden'),
+          live: !!slot.closest('[aria-live]'),
+        };
+      },
+      pinned,
+      { polling: 'raf', timeout: 20_000 },
+    );
+    const moment = (await seen.jsonValue())!;
+    // Shown while the match is still being played: no result has landed yet.
+    expect(moment.round).toBe('0');
+    expect(moment.boxes).toEqual(before);
+    expect(Math.round(moment.transport)).toBe(Math.round(transport.height));
+    expect(moment.hidden).toBe('true');
+    expect(moment.live).toBe(false);
+    // Once the match day lands its caption goes; stopping clears any later step's indicator.
+    await expect(page.getByTestId('game-round')).toHaveText('1');
+    await expect(late).not.toContainText('경기 진행 중…');
+    await controls.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+    await expect(late).toHaveAttribute('data-state', 'off');
+    await expect(late).toHaveText('');
+    expect(await boxes()).toEqual(before);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  });
+}
+
 test('a hidden tab plays on like an idle game, names the date in its title, and can pause instead', async ({
   page,
 }) => {

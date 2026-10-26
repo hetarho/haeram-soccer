@@ -71,7 +71,7 @@ export const ProgressControls = memo(function ProgressControls({
   controller: ProgressionController;
 }) {
   const state = useGameState((state) => state);
-  const { running, pace } = useProgression(controller, (state) => state);
+  const { running, pace, lateStep } = useProgression(controller, (state) => state);
   // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
   // click landing just after that was aimed at the old label, so it must not start the clock.
   const userStop = useRef(false);
@@ -149,6 +149,19 @@ export const ProgressControls = memo(function ProgressControls({
         >
           {manual ? 'MANUAL' : 'AUTO'}
         </span>
+        {/* Reserved slot: a late step's indicator appears here without moving the controls. */}
+        {!manual && (
+          <span className={p.lateStep} data-testid="late-step" data-state={lateStep ?? 'off'}>
+            {lateStep && (
+              <>
+                <i className={p.lateSpinner} aria-hidden="true" />
+                <span className={p.lateCaption}>
+                  {lateStep === 'match' ? '경기 진행 중…' : '진행 중…'}
+                </span>
+              </>
+            )}
+          </span>
+        )}
       </div>
       <i
         className={p.progress}

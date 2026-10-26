@@ -822,6 +822,132 @@ describe('explicit automatic and manual modes', () => {
   });
 });
 
+describe('late automatic step indicator (WEB-18)', () => {
+  /** Match-eve stops are off so a step from the eve settles the match day itself. */
+  const at = (day: number) => {
+    const world = structuredClone(w);
+    world.settings!.observations.matchEve = false;
+    world.calendar = { day };
+    return world;
+  };
+  /** A client whose replies land only when the test releases them. */
+  function deferredHost(s: ReturnType<typeof setup>, world: typeof w) {
+    const pending: (() => void)[] = [];
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          pending.push(() => resolve({ ok: true, requestId: 'late', view: { world } as View })),
+        ),
+    );
+    return () => pending.splice(0).forEach((land) => land());
+  }
+  const late = () => controller!.store.getState().lateStep;
+
+  it('stays off for a step landing inside its interval', async () => {
+    const s = setup(undefined, at(0));
+    controller = s.controller;
+    const seen: unknown[] = [];
+    controller.store.subscribe((state) => seen.push(state.lateStep));
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () => resolve({ ok: true, requestId: 'quick', view: { world: at(0) } as View }),
+            60,
+          ),
+        ),
+    );
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command.mock.calls.length).toBeGreaterThan(5);
+    expect(seen.filter(Boolean)).toEqual([]);
+  });
+  it('shows 진행 중 one interval into a slow ordinary step and clears when it lands', async () => {
+    const s = setup(undefined, at(0));
+    controller = s.controller;
+    const land = deferredHost(s, at(1));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(999);
+    expect(late()).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(late()).toBe('day');
+    land();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(late()).toBeUndefined();
+    // The step itself is unchanged: one day, and the clock keeps running.
+    expect(s.command).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'advance-days', days: 1 }),
+      { background: true, automatic: true },
+    );
+    expect(controller.store.getState().running).toBe(true);
+  });
+  it('captions an own match day at x10 and clears on stop while in flight', async () => {
+    const s = setup(undefined, at(6));
+    controller = s.controller;
+    deferredHost(s, at(7));
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(s.command).toHaveBeenCalledTimes(1);
+    expect(late()).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(late()).toBe('match');
+    controller.pause();
+    expect(late()).toBeUndefined();
+    expect(s.client.cancel).toHaveBeenCalled();
+  });
+  it('clears on a cancelled reply, on watching and on disposal, and never arms after a stop', async () => {
+    const s = setup(undefined, at(0));
+    controller = s.controller;
+    let cancel: (() => void) | undefined;
+    s.command.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          cancel = () => resolve({ ok: true, requestId: 'late', cancelled: true } as never);
+        }),
+    );
+    vi.mocked(s.client.cancel).mockImplementation(() => cancel?.());
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(200);
+    expect(late()).toBe('day');
+    cancel!();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(late()).toBeUndefined();
+    expect(controller.store.getState().running).toBe(false);
+
+    controller.start();
+    await vi.advanceTimersByTimeAsync(200);
+    expect(late()).toBe('day');
+    controller.beginWatch();
+    expect(late()).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(late()).toBeUndefined();
+
+    controller.endWatch();
+    controller.start();
+    await vi.advanceTimersByTimeAsync(200);
+    expect(late()).toBe('day');
+    controller.dispose();
+    expect(late()).toBeUndefined();
+  });
+  it('never shows for the manual next-event request', async () => {
+    const world = at(0);
+    world.settings!.mode = 'manual';
+    const s = setup(undefined, world);
+    controller = s.controller;
+    const land = deferredHost(s, world);
+    void controller.nextEvent();
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(s.command).toHaveBeenCalledWith({ type: 'next-event' }, { background: true });
+    expect(late()).toBeUndefined();
+    land();
+  });
+});
+
 it('plays through a restored match eve without needing a remembered controller stop', async () => {
   const restored = structuredClone(w);
   restored.calendar = { day: 6 };

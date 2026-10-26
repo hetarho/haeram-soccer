@@ -79,6 +79,37 @@ describe('unified bottom progression controls', () => {
     },
   );
 
+  it.each([
+    ['match', '경기 진행 중…'],
+    ['day', '진행 중…'],
+  ] as const)(
+    'renders a %s late step in its reserved slot without a live region',
+    (lateStep, caption) => {
+      gameStore.getState().view!.world.settings!.mode = 'automatic';
+      const late = {
+        store: createStore(() => ({ running: true, pace: 'x10', reason: '', lateStep })),
+      } as unknown as ProgressionController;
+      const markup = renderToStaticMarkup(
+        createElement(ProgressControls, { client, controller: late }),
+      );
+      const slot = markup.match(/<span[^>]*data-testid="late-step"[^>]*>(.*?)<\/span><\/div>/)?.[0];
+      expect(slot).toContain(`data-state="${lateStep}"`);
+      expect(slot).toContain(`>${caption}<`);
+      expect(slot).toMatch(/<i[^>]*aria-hidden="true"/);
+      expect(slot).not.toContain('aria-live');
+      // Off, the slot stays reserved and empty; manual mode has none.
+      const idle = renderToStaticMarkup(createElement(ProgressControls, { client, controller }));
+      expect(idle).toMatch(/data-testid="late-step"[^>]*data-state="off"[^>]*><\/span>/);
+      expect(idle).not.toContain('진행 중…');
+      gameStore.getState().view!.world.settings!.mode = 'manual';
+      const manual = renderToStaticMarkup(
+        createElement(ProgressControls, { client, controller: late }),
+      );
+      expect(manual).not.toContain('late-step');
+      expect(manual).not.toContain('진행 중…');
+    },
+  );
+
   it('keeps date and round metadata free of mode controls', () => {
     const markup = renderToStaticMarkup(createElement(ProgressOverview, { compact: true }));
     expect(markup).toContain('data-testid="game-date"');
