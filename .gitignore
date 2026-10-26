@@ -1,4 +1,5 @@
-node_modules/
+# Also a symlink, as in worktrees that share the main checkout's install.
+node_modules
 dist/
 coverage/
 playwright-report/
