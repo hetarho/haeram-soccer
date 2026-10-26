@@ -1,5 +1,6 @@
+import ts from 'typescript';
 import { expect, it } from 'vitest';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, matchesGlob } from 'node:path';
 import { INTEGRATION_FILES, testTier } from './test-tiers';
 import config from '../../vitest.config';
@@ -51,4 +52,47 @@ it('keeps host, replay, long-career and full-match checks out of the task unit p
     expect(testTier(file)).toBe('integration');
   expect(testTier('scripts/lib/source-graph.test.ts')).toBe('unit');
   expect(testTier('packages/engine/src/fixtures.contract.test.ts')).toBe('contract');
+});
+
+it('keeps full match and progression operations, including helper callbacks, in integration', () => {
+  const operations = new Set([
+    'playGrid',
+    'playAggregate',
+    'simulateAggregate',
+    'simulateMatch',
+    'generateTeamFacts',
+    'advanceRound',
+    'advanceDays',
+    'simulateSeason',
+  ]);
+  const helpers = new Set([
+    'recordsSameFacts',
+    'played',
+    'sample',
+    'closedSeason',
+    'lastRound',
+    'toLastRound',
+    'archiveLastRound',
+  ]);
+  for (const file of ['packages', 'apps', 'tests/fixtures', 'scripts'].flatMap(tests)) {
+    const tree = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    for (const node of tree.statements) {
+      if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) continue;
+      const bindings = node.importClause?.namedBindings;
+      if (!bindings || !ts.isNamedImports(bindings)) continue;
+      for (const binding of bindings.elements) {
+        const name = (binding.propertyName ?? binding.name).text;
+        if (
+          operations.has(name) ||
+          (node.moduleSpecifier.text.includes('testkit') && helpers.has(name))
+        )
+          expect(testTier(file), `${file} imports ${name}`).toBe('integration');
+      }
+    }
+  }
 });

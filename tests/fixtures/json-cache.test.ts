@@ -1,5 +1,13 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  rmSync,
+  utimesSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { cachedJson, cachedJsonAsync } from './json-cache';
@@ -11,6 +19,20 @@ function options() {
   roots.push(directory);
   return { directory, dependencies: ['tests/fixtures/json-cache.ts'] };
 }
+it('expires unused source scopes while preserving recent data and live builders', () => {
+  const config = options();
+  const old = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+  const expired = join(config.directory, '1111111111111111');
+  const live = join(config.directory, '2222222222222222');
+  const recent = join(config.directory, '3333333333333333');
+  for (const directory of [expired, live, recent]) mkdirSync(directory);
+  writeFileSync(join(live, 'builder.lock'), String(process.pid));
+  for (const directory of [expired, live]) utimesSync(directory, old, old);
+  cachedJson('retention', () => ({ valid: true }), config);
+  expect(existsSync(expired)).toBe(false);
+  expect(existsSync(live)).toBe(true);
+  expect(existsSync(recent)).toBe(true);
+});
 it('returns independent JSON copies and keys closure inputs explicitly', () => {
   const config = options();
   let builds = 0;

@@ -6,9 +6,12 @@ import {
   openSync,
   closeSync,
   readFileSync,
+  readdirSync,
   renameSync,
+  rmSync,
   statSync,
   unlinkSync,
+  utimesSync,
   writeFileSync,
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -24,6 +27,34 @@ const sources = new Map<string, string>();
 const sleeper = new Int32Array(new SharedArrayBuffer(4));
 const STALE_LOCK_MS = 20 * 60 * 1000;
 const FORMAT = 'dependency-json-cache-1';
+const KEEP_OTHER_SCOPES_MS = 2 * 24 * 60 * 60 * 1000;
+const usedDirectories = new Set<string>();
+const prunedBases = new Set<string>();
+
+/** Keep the previous two-day retention, protecting recently used scopes and live builders. */
+function maintainDirectory(directory: string) {
+  if (usedDirectories.has(directory)) return;
+  mkdirSync(directory, { recursive: true });
+  const now = new Date();
+  utimesSync(directory, now, now);
+  usedDirectories.add(directory);
+  const base = dirname(directory);
+  if (prunedBases.has(base)) return;
+  prunedBases.add(base);
+  for (const name of readdirSync(base)) {
+    if (!/^[a-f0-9]{16}$/.test(name)) continue;
+    const other = join(base, name);
+    if (other === directory) continue;
+    try {
+      if (Date.now() - statSync(other).mtimeMs <= KEEP_OTHER_SCOPES_MS) continue;
+      if (readdirSync(other).some((file) => file.endsWith('.lock') && !stale(join(other, file))))
+        continue;
+      rmSync(other, { recursive: true, force: true });
+    } catch {
+      // Another process may have removed or started using this scope.
+    }
+  }
+}
 
 export interface CacheOptions {
   /** The local module(s) whose code the builder executes. Defaults to the calling module. */
@@ -80,6 +111,7 @@ function identity(id: string, build: () => unknown, options: CacheOptions) {
           source.slice(0, 16),
           `${id.replace(/[^\w.-]+/g, '_').slice(0, 80)}-${key.slice(0, 20)}.json`,
         );
+  if (file) maintainDirectory(dirname(file));
   return { key: `${base}:${key}`, file };
 }
 
