@@ -1,5 +1,5 @@
 # IDEATION match-engine-rebuild
-> st:converted@261019 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
+> st:ready@261026 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
 
 ## vision
 - Problem: observed matches do not read as football — the ball sits with a defender and a moment later is a shot; shots leave from odd, distant spots; a forward suddenly plays the ball back to a deep full-back or wing-back. The owner wants a full engine rebuild, not patches.
@@ -69,19 +69,20 @@
 - [x] Cards and injuries in own matches only ← simplest, but opponents always full strength reads unfair
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow (draft): kickoff → the carrier stands in a named cell with his tags (phase, pressure, body orientation, between the lines, overload …) → his decision table — the real-data baseline for that cell and his position, bent by his role, traits, the tactic and the situation — picks an action and a target → a duel on the players' attributes resolves it → the ball reaches a teammate's cell, is lost, goes out or is fouled → a set piece or restart from the real spot → … until full time. Off the ball all 22 move cell to cell by their formation's shape for the phase (in possession, out of possession, transition), their role's habit (e.g. inverted full-back into midfield) and the tactic's block height, shifted toward the ball.
 - v1 in: grid engine with per-touch time and event-only possession changes; fouls, free kicks, corners and penalties; the four tactics deepened; spatial commentary, post-match shot map/heat maps/pass network, new statistics with season and career totals, post-match tactical report; calibration against the current MATCH-2 curve and the real baselines; the unwatched path kept fast on the same scoring curve.
 - v1 also in: cards and suspensions under one English-style rule, era rules for substitutes and cards, in-match substitutions by the manager and in-match injuries; decisions and composure attributes in 실효 OVR for newly generated players; current-season maps and season heat maps; own-league fixtures on the grid engine if the measured cost allows, else on the probabilistic path; cards, suspensions and injuries drawn in unwatched fixtures too.
 - v1 not: continuous agent physics; new tactical instructions; converting earlier careers.
 
 ## domains
-- MATCH →MATCH: MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
-- PLAYER →PLAYER: what roles (PLAYER-5) and play traits (PLAYER-9) mean as spatial habits and decision tendencies; the new 판단력/침착성 attributes (generation, growth, ratings, scouting); in-match injuries and suspensions in availability.
-- STAFF →STAFF: formations and slot roles (STAFF-22) as positions per phase on the pitch.
-- WEB →WEB: live commentary, post-match shot map/heat maps/pass network and tactical report, new statistics in player, season and career views.
-- HIST/SAVE →HIST →SAVE: season and career totals of the new statistics and discipline, current-season maps reduced to season heat maps within the checkpoint limits, the new rules version starting new careers (SAVE-18).
-- CLUB/LEAGUE →CLUB →LEAGUE: suspensions and in-match injuries in squad availability; the league discipline table.
-- ARCH →MATCH: the processing budget of the grid engine for own and recorded fixtures and of the unwatched path.
+- [o] MATCH: Legacy scope MATCH →MATCH; MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
+- [o] PLAYER: Legacy scope PLAYER →PLAYER; what roles (PLAYER-5) and play traits (PLAYER-9) mean as spatial habits and decision tendencies; the new 판단력/침착성 attributes (generation, growth, ratings, scouting); in-match injuries and suspensions in availability.
+- [o] STAFF: Legacy scope STAFF →STAFF; formations and slot roles (STAFF-22) as positions per phase on the pitch.
+- [o] WEB: Legacy scope WEB →WEB; live commentary, post-match shot map/heat maps/pass network and tactical report, new statistics in player, season and career views.
+- [o] HIST: Legacy scope HIST/SAVE →HIST →SAVE; season and career totals of the new statistics and discipline, current-season maps reduced to season heat maps within the checkpoint limits, the new rules version starting new careers (SAVE-18).
+- [o] CLUB: Legacy scope CLUB/LEAGUE →CLUB →LEAGUE; suspensions and in-match injuries in squad availability; the league discipline table.
+- [o] ARCH: Legacy scope ARCH →MATCH; the processing budget of the grid engine for own and recorded fixtures and of the unwatched path.
 
 ## open
 - Determinism (MATCH-7) is assumed kept: watched and unwatched play of a fixture give the same result.

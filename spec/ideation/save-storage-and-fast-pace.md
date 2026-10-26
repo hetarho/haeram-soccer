@@ -1,5 +1,5 @@
 # IDEATION save-storage-and-fast-pace
-> st:converted@261026 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
+> st:ready@261026 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
 
 ## vision
 - Problem (owner, 261026, on the deployed build at x10): the calendar runs 1, 2, 3 … 6 quickly, then halts for about a second, then runs on. The halt is every own league match day. Separately, the game in play's checkpoint is capped at 3 MiB only because it lives in localStorage (about 5 MiB per origin), and writing it blocks the main thread.
@@ -30,13 +30,14 @@
 - [o] The indicator is a looping animation with the caption 경기 진행 중… on own fixture days, else 진행 중…; no scores or results ← results settle at the end of the step, so streaming them needs engine changes outside v1 (autopilot 261026)
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: (1) IndexedDB move → (2) x10: match-day indicator, then the chosen result-identical performance steps
 - v1: the game in play's checkpoint in IndexedDB with migration of existing saves; the "경기 진행 중…" indicator on match days at fast paces / not: the season-archive split, the run-ahead buffer, any change to engine results or dispatch
 
 ## domains
-- SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3
-- ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11
-- WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected →WEB-18
+- [o] SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3
+- [o] ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11
+- [o] WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected →WEB-18
 
 ## open
 - Season-archive split and performance steps (a)/(c): revisit when a profile or the owner's x10 read asks for them

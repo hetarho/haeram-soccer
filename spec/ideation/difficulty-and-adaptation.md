@@ -1,5 +1,5 @@
 # IDEATION difficulty-and-adaptation
-> st:converted@261015 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
+> st:ready@261026 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
 
 ## vision
 - Problem (owner, 261014): a delegated level-4 career at 기본 방향 takes about 40 years to win the top flight, then wins about half of the titles after that. Holding the top is too easy, not reaching it.
@@ -70,6 +70,7 @@
 - [o] A player with a low adaptation rate who joins a club that does not suit him plays well below his OVR: an adaptation failure (적응 실패). ← owner 261014
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: founding (level → starting cash and starting XI) → the manager's formation asks a role of every slot → the coaches pick lineups by positions and roles → starts and training raise adaptation (and OVR toward and past potential) → match strength from the attributes each action uses × adaptation, the opponent's by its 조직력 → summers: other clubs that changed manager or squad lose 조직력 and win it back
 - player card: position(s) with side and level, role fit, OVR on one scale, 14 attributes, personality and play traits, adaptation with its multiplier
 - 훈련 tab: the team's 균형/회복/하드 and per-player exceptions, asked of the assistant as 제안 (stated chance) or 강행 (his cost); the focus in force, who set it and why
@@ -77,15 +78,15 @@
 - not: sugar daddies; per-level coefficients or probabilities; the owner setting training directly; mental attributes beyond personality traits; converting old saves
 
 ## domains
-- PLAYER (new) →PLAYER: 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
-- MATCH →MATCH: each attribute feeds the actions it names (MATCH-11 duels), the formation and the slot roles, the adaptation multiplier and the other club's 조직력 in match strength (MATCH-2)
-- STAFF →STAFF: each school's formation, slot roles, preferred attributes and traits (STAFF-14); a manager change costs adaptation; STAFF-19's training controls move to the 훈련 tab and to single players
-- CLUB →CLUB: training 균형/회복/하드 and its costs (CLUB-11, CLUB-13), per-player training, lineups by positions (CLUB-6); the starting XI per level (CLUB-1); 야망 and other clubs' offers (CLUB-18, CLUB-22)
-- LEAGUE →LEAGUE: other clubs' 조직력 beside LEAGUE-10's rise and fall, the balance bands per level
-- WORLD →WORLD: other clubs' squads generated with positions, roles and traits (WORLD-6)
-- ECON →ECON: ECON-22 preset 동네의 자부심 → 유스 순혈주의
-- WEB →WEB: founding with four levels (WEB-2, WEB-3, WEB-15), the 훈련 tab, the player card
-- SAVE →SAVE: the new model starts new careers; older saves do not open in it
+- [o] PLAYER: Legacy scope PLAYER (new) →PLAYER; 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
+- [o] MATCH: Legacy scope MATCH →MATCH; each attribute feeds the actions it names (MATCH-11 duels), the formation and the slot roles, the adaptation multiplier and the other club's 조직력 in match strength (MATCH-2)
+- [o] STAFF: Legacy scope STAFF →STAFF; each school's formation, slot roles, preferred attributes and traits (STAFF-14); a manager change costs adaptation; STAFF-19's training controls move to the 훈련 tab and to single players
+- [o] CLUB: Legacy scope CLUB →CLUB; training 균형/회복/하드 and its costs (CLUB-11, CLUB-13), per-player training, lineups by positions (CLUB-6); the starting XI per level (CLUB-1); 야망 and other clubs' offers (CLUB-18, CLUB-22)
+- [o] LEAGUE: Legacy scope LEAGUE →LEAGUE; other clubs' 조직력 beside LEAGUE-10's rise and fall, the balance bands per level
+- [o] WORLD: Legacy scope WORLD →WORLD; other clubs' squads generated with positions, roles and traits (WORLD-6)
+- [o] ECON: Legacy scope ECON →ECON; ECON-22 preset 동네의 자부심 → 유스 순혈주의
+- [o] WEB: Legacy scope WEB →WEB; founding with four levels (WEB-2, WEB-3, WEB-15), the 훈련 tab, the player card
+- [o] SAVE: Legacy scope SAVE →SAVE; the new model starts new careers; older saves do not open in it
 
 ## open
 - If the bands are not met without sugar daddies, which lever comes next (the dropped sugar-daddy idea stays recorded above)

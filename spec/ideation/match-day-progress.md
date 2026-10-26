@@ -1,5 +1,5 @@
 # IDEATION match-day-progress
-> st:converted@261026 | An own match day is a steady visible beat of at least 2 s at every pace, and visible automatic play never skips days.
+> st:ready@261026 | An own match day is a steady visible beat of at least 2 s at every pace, and visible automatic play never skips days.
 
 ## vision
 - Problem (owner, 261026): T465's late-step indicator (a small spinner and 경기 진행 중… beside the transport, shown only when a step outlasts one pace interval, followed by catch-up days) is not what the owner wants. At x10 the calendar still halts on match days and then jumps ahead.
@@ -27,11 +27,12 @@
 - [?] With the fixed beat, the result-identical performance steps (parallel aggregate workers, detailed-engine repeated-work cuts) matter only where a match day computes past 2 s or ordinary days run late; revisit after the beat is in play
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: ordinary days at the chosen pace → own match day: a ≥ 2 s match-day moment while it computes → the next day at the chosen pace, no skipped days
 - v1: the ≥ 2 s animation in the home's next-match card (small in the bottom controls elsewhere) on own fixture days at every pace; no visible catch-up or late-step indicator; the result-notice checkbox / not: clubs or score in the moment, other clubs' match days, a beat while hidden, manual mode, performance work
 
 ## domains
-- WEB: WEB-18 automatic play (replaces r154's late-step indicator and visible catch-up), WEB-64 (catch-up only for hidden or away time) →WEB-18
+- [o] WEB: WEB-18 automatic play (replaces r154's late-step indicator and visible catch-up), WEB-64 (catch-up only for hidden or away time) →WEB-18
 
 ## open
 - Performance steps: after the owner has played with the beat

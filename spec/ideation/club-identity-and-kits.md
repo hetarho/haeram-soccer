@@ -1,5 +1,5 @@
 # IDEATION club-identity-and-kits
-> st:converted@261019 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
+> st:ready@261026 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
 
 ## vision
 - Problem: founding exposes one colour, while the resulting crest adds an automatically chosen second colour, shape, field pattern and emblem. Owners cannot deliberately design the identity they later see.
@@ -36,6 +36,7 @@
 - [o] V1 excludes image uploads, freehand drawing, sponsor logos, fabric textures, cosmetic purchases and performance modifiers (→KIT-16).
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - Confirmed flow: founding → choose club colours and crest → configure home/away/third colours and patterns → preview the pitch appearance → found the club → observe those designs in matches.
 - Crest flow: choose a ready-made template → edit its visible 1–3 colour regions → optionally open 직접 꾸미기 to adjust shape, field pattern and emblem → preview the resulting crest.
 - Creation flow: choose a crest template → edit its visible 1–3 colour regions → review suggested kits → optionally customise each kit → inspect a large sample and actual-scale pitch preview → confirm.
@@ -46,9 +47,9 @@
 - Settled policy: 1–3 colours/default two, six crest templates, eight shirt patterns, three starting shirt designs, warned manual clashes, explicit palette reuse and preserved recorded playback (→KIT-4/5/7/10/12/14/15/16).
 
 ## domains
-- KIT: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes →KIT
-- WEB: founding/editor flow, colour-region controls, previews and visible match pairing; WEB-2/15/39/49/50/71 and WEB-86/87/88 →WEB
-- SAVE: preservation of applied designs and fixture choices, supported-career adoption and historical-kit retention; SAVE-20/21/22 →SAVE
+- [o] KIT: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes →KIT
+- [o] WEB: founding/editor flow, colour-region controls, previews and visible match pairing; WEB-2/15/39/49/50/71 and WEB-86/87/88 →WEB
+- [o] SAVE: preservation of applied designs and fixture choices, supported-career adoption and historical-kit retention; SAVE-20/21/22 →SAVE
 
 ## open
 - None; identity policies are settled in KIT r2, WEB r91 and SAVE r47.

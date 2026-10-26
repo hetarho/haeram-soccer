@@ -1,5 +1,5 @@
 # IDEATION club-history-reboot
-> st:converted@261007 | Observe matches and statistics, experiment with football and business decisions, and build a fictional club's long history.
+> st:ready@261026 | Observe matches and statistics, experiment with football and business decisions, and build a fictional club's long history.
 
 ## vision
 - [o] Core value: observe statistics, try different football and business strategies, and accumulate meaningful club history.
@@ -79,6 +79,7 @@
 - [?] Proposal: validate at least 100 seasons of historical browsing; performance budgets are pending.
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - [o] Concept flow: new world → found a club → enter the lowest supported professional division → observe matches/statistics → try football/business decisions → observe outcomes → accumulate club growth and history.
 - [?] Proposed onboarding: select association → enter club name/location/colors → choose initial-capital difficulty → display world-generation progress → validate competition membership → show founding record → begin the first season.
 - [?] Proposed season loop: inspect metrics → hire/recruit/invest or request a tactical change → manager response and agreement/conflict → observe actual matches/business results → compare → adjust → archive → resolve promotion/relegation and personnel renewal → continue.

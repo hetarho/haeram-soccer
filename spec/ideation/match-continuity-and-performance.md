@@ -1,5 +1,5 @@
 # IDEATION match-continuity-and-performance
-> st:converted@261021 | Continuous playback, coordinated player intentions and complete probabilistic world results.
+> st:ready@261026 | Continuous playback, coordinated player intentions and complete probabilistic world results.
 
 ## vision
 The own club should play continuous, purposeful football without slow waiting followed by sudden ball/player movement. Every other fixture should produce the complete meaningful numerical records of a living football world at lower processing cost, calibrated from intended football targets and repeated measurement.
@@ -20,16 +20,17 @@ The own club should play continuous, purposeful football without slow waiting fo
 - [x] Generate each displayed counter independently ← can contradict contribution totals, match events and later world progression.
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: post-identity baseline → versioned common contracts → continuous timing/movement and coordinated intentions → complete aggregate generation and exact accumulation → comparisons and measured calibration → paired speed/storage/browser gates → prospective activation.
 - v1: complete new numerical results, continuous own-match observation, coordinated intentions, current-season NPC comparisons and supported-career coverage metadata.
 - boundary: existing four tactics, manager control, supported identities and archive lifetimes remain; no invented past records or NPC per-frame archive.
 
 ## domains
-- MATCH →MATCH: r14 owns uniform continuity, intention coordination, deterministic dispatch, complete joint records, exact consistency and statistical equivalence.
-- WEB →WEB: r94 owns constant selected speed and complete comparisons with honest historical coverage.
-- PLAYER/STAFF →MATCH: existing attributes, roles and manager authority remain the inputs; coordination policy is MATCH-16/17 without a new player-model revision.
-- ARCH →ARCH: r16 owns paired accuracy/performance evidence and unchanged browser/storage budgets.
-- HIST/SAVE/LEAGUE →HIST →SAVE →MATCH: HIST r16 adds complete current-season accumulation, SAVE r50 adds prospective versioned activation, and MATCH uses the existing league availability/settlement rules.
+- [o] MATCH: Legacy scope MATCH →MATCH; r14 owns uniform continuity, intention coordination, deterministic dispatch, complete joint records, exact consistency and statistical equivalence.
+- [o] WEB: Legacy scope WEB →WEB; r94 owns constant selected speed and complete comparisons with honest historical coverage.
+- [o] PLAYER: Legacy scope PLAYER/STAFF →MATCH; existing attributes, roles and manager authority remain the inputs; coordination policy is MATCH-16/17 without a new player-model revision.
+- [o] ARCH: Legacy scope ARCH →ARCH; r16 owns paired accuracy/performance evidence and unchanged browser/storage budgets.
+- [o] HIST: Legacy scope HIST/SAVE/LEAGUE →HIST →SAVE →MATCH; HIST r16 adds complete current-season accumulation, SAVE r50 adds prospective versioned activation, and MATCH uses the existing league availability/settlement rules.
 
 ## open
 - Policy conversion is complete. Implementation and timeboxed measurement are T272–T286; unresolved measured errors must become concrete follow-up work before activation, rather than a policy waiver.

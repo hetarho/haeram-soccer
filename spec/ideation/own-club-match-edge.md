@@ -1,5 +1,5 @@
 # IDEATION own-club-match-edge
-> st:converted@261026 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
+> st:ready@261026 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
 
 ## vision
 - Problem (owner, 261023, from a 1950–1995 쉬움 career): a squad of OVR ~78–82 keeps winning 1부 titles against rivals shown at 98–102. The owner asked why a weaker side beats far stronger ones season after season.
@@ -51,13 +51,14 @@
 - [x] D: keep the edge but show it — the owner sees "expected strength" including manager/morale/engine so 82 v 99 is not misleading ← does not fix balance
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: measure on the candidate model too → choose A/B/C → update MATCH/CLUB rules → recalibrate → re-measure on this save and reference careers
 - v1: equal-terms parity of results and symmetric match context / not: changing difficulty levels, changing how strong NPC clubs are generated
 
 ## domains
-- MATCH: parity of own and other fixtures' outcome curve (MATCH-2 curve, MATCH-22 paths)
-- CLUB / STAFF: match context from manager ability and morale for every club (morale or a proxy for clubs nobody owns)
-- LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
+- [o] MATCH: parity of own and other fixtures' outcome curve (MATCH-2 curve, MATCH-22 paths)
+- [o] CLUB: Legacy scope CLUB / STAFF; match context from manager ability and morale for every club (morale or a proxy for clubs nobody owns)
+- [o] LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
 
 ## open
 - Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T467: no — at the top tier both paths sit on the curve; the gap stays at the founding's tier-4 level. Is that the level or the founded squad's own inputs? Separate it by playing the founding league's other fixtures on the detailed engine at the same gaps.

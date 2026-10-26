@@ -1,5 +1,5 @@
 # IDEATION expert-proposal-review
-> st:converted@261016 | Shape agreed delegation, progression, second-career and mediation changes from the external proposal; balance stays parked.
+> st:ready@261026 | Shape agreed delegation, progression, second-career and mediation changes from the external proposal; balance stays parked.
 
 ## vision
 - Review material: the owner's supplied Korean proposal, titled “SSOT(r79 / Rules 2.0.0) based scenario, balance and UX improvement design”; its author read documents without playing the app. Its `[cite: n]` markers have no attached source map, so verify claims against repository evidence.
@@ -101,6 +101,7 @@
   - Passing contract tests cannot establish enjoyable delegation, and one 100-season career with a former-player manager cannot establish correct identity retention or appropriately rare progression. Verification must match each chosen policy and actual journey.
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - Discussion scope: delegation, narrative and UX; balance is parked. Discuss delegation first, then narrative and policy access; the remaining order is adjustable by the owner.
 - Delegation flow: open the central responsibility settings → draft direct/delegated choices → inspect who decides and affected pending work → explicitly apply (→WEB-79/82). No optional bulk preset is required by this scope.
 - Responsibility settings: seven direct/delegated choices in one central screen, with appointment/renewal and academy promotion/release grouped as adopted above.
@@ -118,15 +119,15 @@
 - Scope boundary: formalize the adopted planning rules; code implementation and task decomposition are subsequent work. Balance coefficients and measured bands remain untouched.
 
 ## domains
-- WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
-- STAFF: independent responsibilities, natural/encouraged entry, manager qualification, support policy, three-year minimum, high aptitude, ordered coaching specialty, mentor-derived school, separate coach/manager OVR/POT, other-club hires, retained candidate-market entry/contract transitions and playing-coach rules (STAFF-13/15–20/23–44). →STAFF
-- CLUB: retirement continuity, separate acquisition/sale responsibilities, financial-conflict mediation once per manager/request/window, three support outcomes and tracked reinforcement promises; fixed promise lifecycle/fulfilment and unchanged numerical trust evaluation (CLUB-3/13/18/22/24/32–39). →CLUB
-- PLAYER: fixed off-pitch qualities, equally weighted coaching/managerial aptitude, five-grade qualitative evaluation and chief-scout accuracy (PLAYER-1/19/21–25). →PLAYER
-- WORLD: cross-club continuity for coaching prospects/former own players, actual age/retirement and unique role/affiliation links without fabricated history or a full persistent NPC-playing model (WORLD-6/10/11). →WORLD
-- HIST: linked player/coach/manager careers, actual mentor/school exposure and retained mediation/promise facts (HIST-14/15). →HIST
-- SAVE: retain adopted settings, person careers and commitments in new-rule careers; activation at the planned 3.0.0 boundary permits legacy gameplay reset without conversion. Released rules remain 2.0.0 until implemented (SAVE-17/18). →SAVE
-- ECON: the recruitment department exposes the support policy; economic coefficients, financial bands and measured results are unchanged (ECON-25). →ECON
-- LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
+- [o] WEB: seven responsibilities, defaults/observation triggers, two progression modes, manual-match guard, scoped policy sheets, aptitude/career and mediation presentation, pending-work transfer and same-date event grouping (WEB-5/18/42/45/76–83). →WEB
+- [o] STAFF: independent responsibilities, natural/encouraged entry, manager qualification, support policy, three-year minimum, high aptitude, ordered coaching specialty, mentor-derived school, separate coach/manager OVR/POT, other-club hires, retained candidate-market entry/contract transitions and playing-coach rules (STAFF-13/15–20/23–44). →STAFF
+- [o] CLUB: retirement continuity, separate acquisition/sale responsibilities, financial-conflict mediation once per manager/request/window, three support outcomes and tracked reinforcement promises; fixed promise lifecycle/fulfilment and unchanged numerical trust evaluation (CLUB-3/13/18/22/24/32–39). →CLUB
+- [o] PLAYER: fixed off-pitch qualities, equally weighted coaching/managerial aptitude, five-grade qualitative evaluation and chief-scout accuracy (PLAYER-1/19/21–25). →PLAYER
+- [o] WORLD: cross-club continuity for coaching prospects/former own players, actual age/retirement and unique role/affiliation links without fabricated history or a full persistent NPC-playing model (WORLD-6/10/11). →WORLD
+- [o] HIST: linked player/coach/manager careers, actual mentor/school exposure and retained mediation/promise facts (HIST-14/15). →HIST
+- [o] SAVE: retain adopted settings, person careers and commitments in new-rule careers; activation at the planned 3.0.0 boundary permits legacy gameplay reset without conversion. Released rules remain 2.0.0 until implemented (SAVE-17/18). →SAVE
+- [o] ECON: the recruitment department exposes the support policy; economic coefficients, financial bands and measured results are unchanged (ECON-25). →ECON
+- [o] LEAGUE: reference the manual next-event mode and the equivalent all-delegated reference regimen; competitive coefficients, balance bands and measurements are unchanged (LEAGUE-11/13). →LEAGUE
 
 ## open
 - No unresolved policy remains in the adopted proposal scope. Create the complete implementation task batch from STATE pending; exploratory observations and parked balance candidates above are not additional requirements.

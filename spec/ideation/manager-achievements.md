@@ -1,5 +1,5 @@
 # IDEATION manager-achievements
-> st:converted@261021 | Show what each manager achieved for our club alongside his tenure.
+> st:ready@261026 | Show what each manager achieved for our club alongside his tenure.
 
 ## vision
 - Problem: manager history tells the owner when managers served, but does not make their achievements visible.
@@ -19,15 +19,16 @@
 - [o] Keep the first version focused on our club. Other-club honours, deepest-cup-run rankings, combined reappointment rankings, generated praise and claims of sole causation are later work.
 
 ## shape
+- Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: records → manager history → tenure and factual accomplishments → relevant club-season record → preserved manager/list context.
 - v1: current/former/interim own-club tenures, dated honours/promotions, best league finishes, recorded match totals/runs and honest coverage states. Structured attribution survives save/export/import and the summary loads on demand.
 - Scope excludes broader other-club careers, subjective manager ratings, a deepest-cup-run ranking and new gameplay/reward mechanics.
 - delivery: T304 prepares pure fact/query modules and T305 prepares a props-driven view in new files alongside earlier work. T306 integrates engine/save changes after T286, then T307 connects worker/navigation and T308 proves browser/capacity continuity. This changes task boundaries, not the product rules.
 
 ## domains
-- WEB: per-tenure accomplishment summaries, coverage states and contextual club-season navigation (WEB-92). →WEB
-- HIST: stable own-manager tenures, settlement-time attribution and factual summary/coverage rules (HIST-18/19). →HIST
-- SAVE: prospective activation and lossless retention of structured attribution within existing budgets (SAVE-24). →SAVE
+- [o] WEB: per-tenure accomplishment summaries, coverage states and contextual club-season navigation (WEB-92). →WEB
+- [o] HIST: stable own-manager tenures, settlement-time attribution and factual summary/coverage rules (HIST-18/19). →HIST
+- [o] SAVE: prospective activation and lossless retention of structured attribution within existing budgets (SAVE-24). →SAVE
 
 ## open
 - No blocking questions for the scoped first-version tasks. Broader manager-career comparisons and deepest-cup-run rankings require separate planning.

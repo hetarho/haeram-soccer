@@ -11,6 +11,8 @@
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
 ## inbox
+- 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
+- 261026 parked ideation/club-history-reboot ideation/save-storage-and-fast-pace ideation/set-piece-defence-and-goal-feedback ideation/match-day-progress ideation/difficulty-and-adaptation ideation/match-engine-rebuild ideation/own-club-match-edge ideation/club-identity-and-kits ideation/match-viewing-pace-and-freedom ideation/match-continuity-and-performance ideation/manager-achievements ideation/expert-proposal-review ideation/navigation-and-records ideation/club-direction: legacy converted documents restored to ready because 0.7.6 lint found unresolved questions or nonconforming completion mappings; preserve their historical content and do not plan or implement product changes from them during the owner-authorized module-boundary refactor; audit coverage separately
 - 261026 parked ideation/calibration-pass: still being shaped with the owner; autopilot must not convert it (T469 got the owner's go on 261026 and is done)
 - 261026 decided WEB-64 T469: what a return under AWAY_GAP_MS plays once the visible late-step catch-up is gone → the owed days as away catch-up up to the away limit (a 10 s close at x2 plays 20 days on return) (alt: one day, dropping that away time | keep a five-day cap)
 - 261026 suggest ideation/own-club-match-edge T467 MATCH-2 MATCH-22: for the owner's calibration pass — on revision 3 the lever is the detailed engine's tier dependence: at the founding (1960 tier 4, XI 41 v 30, prepared gap +12.2) the grid gives the own club 1.52 points a match against MATCH-2's 2.15 and stays flat (1.43–1.64 from gap +5 to +20, draws 33–40%, 1.8 goals a match) while its aggregate gives 2.33 and the league's other fixtures hold the curve (1.39 v 1.38, 4,200 matches); at the top tier (ENG 1부 median club, XI 83 v 83, gap +1.2) both paths sit on the curve (1.53 / 1.56 v 1.46, ±0.14), so about 90% of T434's −0.9 remains only at the low tier → first separate the level from the founded squad's own inputs by playing the founding league's other fixtures on the detailed engine at the same gaps, then tune the grid's gap response at low levels (alt: the grid's own-side inputs, if those fixtures hold the curve | the aggregate's strength scale, which the reference does not support) — indicative, 10 seeds; the title race showed no widening (champions 2.29, lead 6, beside T410's 2.32, 6)
@@ -283,20 +285,20 @@
 ## ideation
 | id | st |
 |---|---|
-| club-history-reboot | converted@261007 |
-| club-direction | converted@261014 |
-| difficulty-and-adaptation | converted@261015 |
-| navigation-and-records | converted@261015 |
-| expert-proposal-review | converted@261016 |
-| match-engine-rebuild | converted@261019 |
-| club-identity-and-kits | converted@261019 |
-| match-continuity-and-performance | converted@261021 |
-| manager-achievements | converted@261021 |
-| set-piece-defence-and-goal-feedback | converted@261022 |
-| own-club-match-edge | converted@261026 |
-| match-viewing-pace-and-freedom | converted@261025 |
-| save-storage-and-fast-pace | converted@261026 |
-| match-day-progress | converted@261026 |
+| club-history-reboot | ready@261026 |
+| club-direction | ready@261026 |
+| difficulty-and-adaptation | ready@261026 |
+| navigation-and-records | ready@261026 |
+| expert-proposal-review | ready@261026 |
+| match-engine-rebuild | ready@261026 |
+| club-identity-and-kits | ready@261026 |
+| match-continuity-and-performance | ready@261026 |
+| manager-achievements | ready@261026 |
+| set-piece-defence-and-goal-feedback | ready@261026 |
+| own-club-match-edge | ready@261026 |
+| match-viewing-pace-and-freedom | ready@261026 |
+| save-storage-and-fast-pace | ready@261026 |
+| match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
 
 ## ssot
@@ -322,11 +324,17 @@
 | outside-t216-t255-261019 | converted@261019 |
 | recent-code-quality-261023 | converted@261023 |
 | development-feedback-261026 | converted@261026 |
-| module-boundaries-261026 | open@261026 |
+| module-boundaries-261026 | converted@261026 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T471 | Separate shared world reads, events and price quotes | ARCH | - | todo |
+| T472 | Separate transfer calendar queries from negotiation | ARCH | - | todo |
+| T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
+| T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
+| T475 | Separate view delta publication from the world writer | ARCH | T473 | todo |
+| T476 | Remove the theme adapter dependency on React motion | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -341,14 +349,13 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- T467 done (revision 3 curve read: the own club's gap remains only at the founding's tier 4, on the detailed engine; lever in inbox suggest for the owner's calibration pass); T466 done (revision 3 symmetric context): the schema contract, web host/persistence/packing/protocol integration tests (now naming `continuous-aggregate-4` as the future revision) and browser specs run in the host batch; ideation own-club-match-edge converted (choice C, MATCH r32)
-- T469 done (match-day moment, no visible catch-up, 경기 결과 알림; replaces T465's late-step indicator); its e2e journey (progression-settings "an own match day shows the match-day moment in NEXT MATCH for at least 2 s" at 360/390/1280) runs in the batch before the main push. calibration-pass stays with the owner
-- T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch.
-- T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
-- Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
-- end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (T410's completed task record and STATE inbox) wait for the owner's calibration pass
+- implement-task T471; then T472, T473, T474, T475 and T476 from review/module-boundaries-261026. Owner-authorized refactoring only, until 21:00 KST 261026; periodic verified main pushes, remote hand-off for anything unfinished.
+- T469 is complete and its match-day behavior is preserved; its browser journeys join the next main batch. All legacy ready ideations and calibration-pass are parked during this refactor.
+- Start-vibe host owns full batch checks and the CI wait before/after main publication. Reserve wrap-up time, retain exact pending task IDs, test logs and remote work/WIP branch if the deadline stops implementation.
 
 ## log
+- 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
+- 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
 - 261026 T469 done (owner's go): visible steps one day, ≥ 2 s match-day moment on own fixture days (NEXT MATCH card, bottom slot elsewhere), optional 경기 결과 알림; task checks passed, batch before the main push
 - 261026 review-code module-boundaries-261026 start: remaining engine cycles, runtime responsibilities and presentation boundaries; preserve current edits and exclude T469 touches
 - 261026 fix e2e (q7m3): revision 3 moved three seeded scenes: mobile goal cue plays goal-feedback-0 (2′ home), the continuity journey searches ten seeds (full-model-continuity-4), manager-history imports its prepared career upgraded as the writer holds it; Chromium 21/21 on 863bfa4c + fix; batch integration timeouts (calendar ×3, long-career) pass alone, 149 s
@@ -367,5 +374,3 @@
 - 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
 - 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too
 - 261026 T465 done (q7m3): an automatic step still in flight one pace interval after it began sets ProgressionState.lateStep; the transport's reserved slot shows a decorative spinner with 경기 진행 중… / 진행 중… until it lands or the clock stops; steps and catch-up unchanged, e2e left to the host batch
-- 261026 create-task (q7m3): T465 late automatic step progress indicator (WEB@154 MATCH@31)
-- 261026 update-ssot WEB r154 (q7m3, ideation save-storage-and-fast-pace step 2, converted): WEB-18 a step still in flight one pace interval after it began shows 경기 진행 중… / 진행 중… in the transport, no results, step and catch-up unchanged
