@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r53 | Define the browser-demo rules for browser persistence and protocol.
+> r54 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -7,12 +7,13 @@
   - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes; otherwise write brotli-bmp127, quality 11/window 24, using a pinned pure-JavaScript worker implementation.
   - brotli-bmp127 uses fixed 64-character base-63198 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header. Payload is opaque verbatim text; padding/range/length checks precede decompression. The exact byte-to-character mapping and header grammar are defined by `bmpText`/`bmpBytes` in `apps/web/src/adapters/bmp127.ts` and its literal compatibility tests in `bmp127.test.ts`.
   - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
-- SAVE-3 [o] The game in play keeps one active checkpoint in localStorage (haeram-soccor:slot:a) and its previous committed checkpoint in IndexedDB (database haeram-soccor, store checkpoints, key previous); haeram-soccor:manifest names the committed generation. ← one large checkpoint fits a 5 MiB origin with room, two copies of it would not
-  - a commit copies the currently committed checkpoint to IndexedDB and reads it back equal, then writes the validated candidate to the active key and reads it back, and only then switches the manifest; a failure at any step leaves the committed generation loadable.
-  - load takes the manifest's generation, else the newest valid of the active key and the IndexedDB previous copy; the previous copy is the recovery predecessor.
+- SAVE-3 [o] The game in play keeps its active checkpoint and its previous committed checkpoint in IndexedDB (database haeram-soccor, store checkpoints, keys active and previous); haeram-soccor:manifest in localStorage names the committed generation. ← IndexedDB writes do not block the main thread and its allowance is not localStorage's 5 MiB per origin
+  - a commit copies the currently committed checkpoint to previous and reads it back equal, then writes the validated candidate to active and reads it back, and only then switches the manifest; a failure at any step, including writes cut short by a closing tab, leaves the committed generation loadable, and a commit is acknowledged only after all three steps complete.
+  - load takes the manifest's generation, else the newest valid of active and previous; previous is the recovery predecessor.
+  - a game in play still stored in localStorage (haeram-soccor:slot:a, or slot:a/b of the fallback layout) loads from there; the writer's first successful IndexedDB commit moves it, and its localStorage keys are removed only after the manifest names the IndexedDB generation. Read-only tabs never move it (→SAVE-6).
   - IndexedDB unavailable ⇒ the active and previous checkpoints use localStorage keys slot:a/b while both fit the total budget (→SAVE-4), with the previous copy verified before the active checkpoint is overwritten.
   - if a committed checkpoint exists and no verified previous copy can be kept within the budget, fail before overwriting it: retain the committed checkpoint and manifest, preserve exportable in-memory progress and offer export/retry; never report save success. A first checkpoint without a committed predecessor may still be written within →SAVE-4.
-- SAVE-4 [o] Maximum encoded checkpoint is 3 MiB conservative UTF-16, for the active and the previous copy alike; total namespaced localStorage use ≤ 3.5 MiB. Imports cap the file at 8 MiB and decompressed JSON at 32 MiB.
+- SAVE-4 [o] Maximum encoded checkpoint is 3 MiB conservative UTF-16 in every store, for the active and the previous copy alike; total namespaced localStorage use — settings, manifest, slot index, device data and, without IndexedDB, the fallback checkpoints — ≤ 3.5 MiB. Imports cap the file at 8 MiB and decompressed JSON at 32 MiB. ← every checkpoint stays exportable under the import cap and loadable on the localStorage fallback
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
   - the explicitly bounded legacy-gameplay reset at the new-career feature release follows →SAVE-18; it is not general permission to clear data on a validation error.
 - SAVE-6 [o] Exclusive Web Lock owns writing; read-only tabs are notified and queue for the lock, so when the writing tab closes a read-only tab reloads the latest checkpoint and becomes the writer. Commands carry session/request/expected revision; duplicates return the stored acknowledgment or fail stale without repeated effects.
@@ -37,7 +38,7 @@
 
   - Career representation version 3 may group people for compression only with a validated complete permutation restoring the exact original registry order before activation; version 1/2 readers and all literal/reference semantics remain supported. Version-three optional career profiles use bounded sparse scalar columns and exact presence runs; every stored scalar and nested career array survives, while invalid dimensions, presence runs or future metadata cannot activate.
 
-- SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps its active checkpoint and previous copy (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play needs the synchronous localStorage copy; parked games are export envelopes the browser keeps
+- SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps its active checkpoint and previous copy (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play keeps a recovery predecessor and autosaves; parked games are export envelopes the browser keeps
   - switching parks the game in play first: its committed checkpoint is written to IndexedDB and read back equal before the next game is activated through the import path (→SAVE-5, →SAVE-10), so a failed switch leaves the game in play untouched.
   - only the writer tab (→SAVE-6) switches, starts, imports or deletes games.
   - a save present without an index (earlier versions) becomes slot 1.
@@ -91,6 +92,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r54 261026 SAVE-3✎ active checkpoint localStorage slot:a→IndexedDB key active, moved on the first commit; SAVE-4✎ checkpoint cap→every store, localStorage total→settings and fallback only; SAVE-14✎ reason localStorage copy→predecessor and autosaves
 - r53 261025 SAVE-23✎ one model revision→later revisions activate prospectively at the next safe boundary; settled matches keep and replay under their revision
 - r52 261024 SAVE-23✎ activation required →MATCH-28 and →ARCH-31 evidence→→ARCH-31 throughput and capacity evidence, →MATCH-28 accuracy reported, not a gate
 - r51 261021 SAVE-24+ prospective own-manager history activation, lossless attribution round trips and older-reader protection within existing budgets

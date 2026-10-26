@@ -271,6 +271,10 @@
 - 261021 decided T304: the full-model runner claimed T304 from the group branch's pre-split contract (shared season/cups/europe/packing files) while main 944b6aa had split it into new-file-only T304 → that attempt's work is kept as a WIP commit on task/full-model/T304-36f498aa and released, the planning space took main, and the current T304 runs in this group beside the full-model tasks, as mgha's next allows (alt: keep implementing the superseded shared-file contract, which collides with T281)
 - 261021 decided -: owner reported x10 stepping 5–7 days at a time in long careers ("근본적인 해결만") → the engine worker publishes each day as the view parts that changed since the client's view (ARCH-6 "deltas, not the complete world"), the staff market reads the person registry once for every role, and retained career managers' drawn traits are cached; measured on a 20-season ENG career (Node, loaded host): a quiet day's reply 1.76 MB → under 1 KB, worker view work 79 ms + 46 ms copy → about 45 ms, and the UI thread's 14 ms whole-view merge is gone (alt: always one day per step while the screen is visible, which the owner refused because it slows the chosen pace)
 - 261021 suggest -: two smaller costs remain after the view deltas → an autosave posts the whole world to the codec (about 150 ms of engine-worker time at 20 seasons, every 30 s) and a match day resends clubs/fixtures/tables whole (about 1 MB); per-element deltas or an incremental checkpoint mirror would remove them if a long career still steps more than one day
+- 261026 decided ideation/save-storage-and-fast-pace SAVE-4: which checkpoint budget once localStorage no longer holds the game in play? → keep 3 MiB conservative UTF-16 per checkpoint in every store and the 8 / 32 MiB import limits, the 3.5 MiB total covering only localStorage (alt: raise the cap to about 5 MiB under the 8 MiB import file | no cap beyond the import limits) — a century checkpoint is about 2.5 MB, the cap keeps every checkpoint exportable and loadable on the fallback, and raising it later is one SAVE-4 revision once a profile needs it
+- 261026 decided ideation/save-storage-and-fast-pace SAVE-3: keep the IndexedDB-unavailable fallback? → keep localStorage slot:a/b with its budget and failure protection unchanged (alt: refuse saving without IndexedDB) — the code exists and a browser without IndexedDB could otherwise not save at all
+- 261026 decided SAVE-3 T464: how the active copy sits beside previous in IndexedDB → keys active and previous with SAVE-3's copy-then-write order and a `slot: 3` manifest; a localStorage game moves on the writer's first commit and its keys go after the manifest (alt: alternate two IndexedDB keys with no copy, which halves the writes but changes the recovery predecessor's meaning | one transaction for both keys, left as a later optimization) — smallest change to the verified commit path and load rules, and the existing slot:a e2e seeds keep working as the migration case
+- 261026 decided ideation/save-storage-and-fast-pace: one planning slice for the whole ideation or per step? → this slice is step (1), SAVE r54 / ARCH r22 / T464; the x10 indicator questions (which paces, catch-up, what it shows) stay open for the next slice into WEB (alt: settle all now, which would plan WEB work the owner ordered after the move)
 
 ## ideation
 | id | st |
@@ -292,7 +296,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 21 | 21 | - | 2 |
+| ARCH | 22 | 22 | - | 2 |
 | WEB | 153 | 153 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
@@ -303,7 +307,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 17 | 17 | - | 0 |
-| SAVE | 53 | 53 | - | 0 |
+| SAVE | 54 | 54 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -316,6 +320,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T464 | Active checkpoint in IndexedDB | SAVE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -330,11 +335,14 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
+- implement-task T464 (active checkpoint in IndexedDB, SAVE r54 / ARCH r22); then the next planning slice of ideation save-storage-and-fast-pace: settle the x10 indicator questions and update-ssot WEB (WEB-18 automatic play) → create-task
 - T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 create-task (q7m3): T464 active checkpoint in IndexedDB with the localStorage move and the unchanged fallback (SAVE@54 ARCH@22)
+- 261026 update-ssot SAVE r54 ARCH r22 (q7m3, ideation save-storage-and-fast-pace step 1): SAVE-3 active checkpoint in IndexedDB beside previous, localStorage game moves on the first commit; SAVE-4 caps per store, localStorage total for settings and the fallback; ARCH-11/ARCH-14/constraints IndexedDB primary store
 - 261026 fix goal-cue browser fixture: revision 2 leaves goal-feedback-221 with only two goals; goal-feedback-5 gives an early home goal and three goals across both sides. Read the opening goal time from recorded facts, keeping normal-speed, repeat-cue, possession and three-viewport assertions.
 - 261026 T463 done (q7m3): netlify.toml drops its NODE_VERSION 24.12.0 so Netlify reads .node-version (24.22.1) like CI and engines; tests/config/node-pin.test.ts guards Netlify, engines.node and every setup-node step
 - 261026 create-task (q7m3): T463 Netlify's Node pin follows .node-version (ARCH-23, no rev: the rule already requires one pinned toolchain); MATCH r31 needs no task, both paths already count its zones and line-breaking passes so (T327)
@@ -353,5 +361,3 @@
 - 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
 - 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
 - 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
-- 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
-- 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending

@@ -18,6 +18,8 @@
 - [o] (1) The game in play's checkpoint moves to IndexedDB; localStorage keeps only small settings and the manifest ← owner 261026
   - Why localStorage was used: ARCH-11 chose it "for the web demo" at the first ARCH (261007) with no recorded comparison; IndexedDB then took the parked slots (ARCH r6, 261012) and the previous copy (SAVE r48 / ARCH r11, 261019) when space ran out, while ARCH-14 kept "never move the active checkpoint".
   - Checked 261026: IndexedDB writes are asynchronous and can be cut short when a tab closes, but today's checkpoint is already built asynchronously in the codec worker; the IndexedDB code exists (`apps/web/src/adapters/previousStore.ts`, `games.ts`); eviction and Safari's 7-day rule treat localStorage and IndexedDB alike; localStorage's own costs (the 5 MiB origin allowance behind the 3 MiB cap, synchronous main-thread writes) are the ones the game hits.
+- [o] (1) keeps the 3 MiB per-checkpoint cap and the 8 / 32 MiB import limits; the 3.5 MiB total covers only localStorage ← a century checkpoint measures about 2.5 MB, and the cap keeps every checkpoint exportable under the import cap and loadable on the fallback; raise it when a profile needs it (autopilot 261026)
+- [o] (1) keeps the IndexedDB-unavailable fallback on localStorage slot:a/b as it is ← the code and its failure protection exist; without it a browser lacking IndexedDB could not save at all (autopilot 261026)
 - [?] Later, split the checkpoint into the current season (rewritten by every save) and a per-season archive written once at the season close (both in IndexedDB) ← past seasons are about 70% of a century checkpoint (about 20 KB a season, ~1.8 MB of ~2.5 MB) and never change, so autosaves would stop recompressing them; more work than (1) alone
 - [x] Keep the current season in localStorage and only the archive in IndexedDB (the owner's first idea) ← keeps the main-thread write and adds a second store to keep consistent, for no gain over keeping both in IndexedDB
 - [o] (2) At x10 a match day shows a "경기 진행 중…" animation (a loading indicator) while it is computed, instead of a frozen calendar ← owner 261026: a halt the owner expects and can see a reason for does not bother him
@@ -29,13 +31,11 @@
 - v1: the game in play's checkpoint in IndexedDB with migration of existing saves; the "경기 진행 중…" indicator on match days at fast paces / not: the season-archive split, the run-ahead buffer, any change to engine results or dispatch
 
 ## domains
-- SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint
-- ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change
+- SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3
+- ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11
 - WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected
 
 ## open
 - Which paces show the indicator: only x10, or any pace where a match day takes longer than one day's interval?
 - After the indicator, does the clock catch up the owed days (today up to 5 days at once), or resume at the normal pace from the match day?
-- The new checkpoint budget once localStorage no longer caps it, and the import file and decompressed limits (8 / 32 MiB today).
 - What the indicator shows: only an animation and caption, or also the own match's score or other results as they settle?
-- Keep the IndexedDB-unavailable fallback on localStorage as it is today?

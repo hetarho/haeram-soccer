@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r21 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r22 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -20,7 +20,7 @@
   | `apps/web/src/app` | React entry, routing, feature composition, error boundaries |
   | `apps/web/src/features` | founding, dashboard, matches, statistics, club operations, history |
   | `apps/web/src/rendering` | Canvas pitch and SVG chart presentation |
-  | `apps/web/src/adapters` | worker bridge, localStorage, save import/export |
+  | `apps/web/src/adapters` | worker bridge, browser storage, save import/export |
   | `apps/web/src/workers` | engine host and background save codec |
   | `packages/contracts` | commands, events, projections, save/catalog DTOs, boundary schemas |
   | `packages/engine` | framework-independent simulation and domain state |
@@ -72,11 +72,11 @@
   - Historical gaps and future estimates have explicit source status.
   - World generation is local and seeded; it does not require an LLM or external API call.
   - Keep supported old catalog versions available when needed by saves, or provide an explicit tested migration.
-- ARCH-11 [o] The browser save repository uses localStorage for the web demo.
-  - Checkpoint layout and storage fallback follow →SAVE-3; parked game slots follow →SAVE-14. Small settings and the manifest live in localStorage; export/import files stay the portable copy.
+- ARCH-11 [o] The browser save repository keeps game checkpoints in IndexedDB for the web demo.
+  - Checkpoint layout and storage fallback follow →SAVE-3; parked game slots follow →SAVE-14. Small settings, the manifest and the slot index live in localStorage; export/import files stay the portable copy.
   - Namespace application keys; do not clear unrelated origin storage.
-  - UI-thread adapters own localStorage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
-  - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
+  - UI-thread adapters own browser storage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
+  - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application, so it holds checkpoints only as →SAVE-3's fallback. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
 - ARCH-12 [o] Save format: versioned JSON envelope with losslessly compressed canonical state and a SHA-256 integrity checksum (→SAVE-2).
   - Envelope fields and codec selection follow →SAVE-2.
   - Use browser Compression/Decompression Streams in a worker; support is checked at startup. [CompressionStream](https://developer.mozilla.org/en-US/docs/Web/API/CompressionStream)
@@ -95,7 +95,7 @@
   - Catch actual quota failures even when estimated usage is below budget; do not assume other applications or browser modes leave the full quota available.
   - Measure representative eight-country worlds at founding, a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
   - A 100-season capacity claim requires a passing recorded benchmark.
-  - If the budget fails, optimize encoding within the retention policy (→ARCH-25); do not silently prune agreed history or move the active checkpoint to IndexedDB/cloud storage.
+  - If the budget fails, optimize encoding within the retention policy (→ARCH-25); do not silently prune agreed history or move checkpoints to cloud storage.
 - ARCH-15 [o] Persist game facts and history, not rendering noise.
   - Persist current world state, settled fixtures, season standings/honors, meaningful club/personnel/economic decisions, and the player's club career records.
   - Use compact IDs, shared dictionaries, and aggregate rows; do not save React stores, event subscriptions, per-frame coordinates, or repeated whole-player objects.
@@ -232,14 +232,15 @@
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
 
 ## constraints
-- The web demo's primary save store is localStorage; alternate storage or cloud synchronization is not an implicit fallback.
+- The web demo's primary save store is IndexedDB, with localStorage only as →SAVE-3's bounded fallback; cloud synchronization is not an implicit fallback.
 - Animation, network availability, frontend render count, and device time must not redefine game results.
-- LocalStorage capacity and complete catalog coverage require measured/validated evidence before release claims.
+- Browser storage capacity and complete catalog coverage require measured/validated evidence before release claims.
 - A long-career capacity claim requires benchmark evidence; a passing UI demonstration is insufficient.
 - Never label planned scripts, unimplemented milestones, mock catalogs, or drafted backend infrastructure as completed functionality.
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r22 261026 ARCH-11✎ save repository uses localStorage→keeps checkpoints in IndexedDB, localStorage for settings/manifest/slot index and SAVE-3's fallback; ARCH-14✎ never move the active checkpoint to IndexedDB/cloud→never move checkpoints to cloud storage; constraints✎ primary save store localStorage→IndexedDB with the bounded localStorage fallback
 - r21 261026 ARCH-21✎ source-wide world cache→dependency-scoped JSON cache and prepared UI checkpoints; ARCH-22✎ unit/contract→unit/integration/contract; ARCH-23✎ mixed unit shards→separate unit/integration jobs; ARCH-30✎ mixed changed tests and per-unit batch→unit-project task checks and one final batch; ARCH-33+ leaf computation boundaries and dependency-scoped measurement reuse
 - r20 261024 ARCH-31✎ paired accuracy, throughput and capacity release gates→throughput and capacity gates with accuracy measured and reported, not a gate; a timebox ending does not pass the release gate→never reports a failing metric as passing
 - r19 261022 ARCH-31✎ throughput gates NPC fixture ≤50% and season engine time ≤80% of the same-machine pre-change baseline→absolute budgets on a recorded reference machine (fixture ≤1 ms median, season engine time ≤15 s median for both century profiles); the paired ratio becomes context
