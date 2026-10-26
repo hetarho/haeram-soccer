@@ -1,8 +1,8 @@
 # WEB Browser game delivery
-> r155 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r156 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
-- WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
+- WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
 - WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, club identity and home/away/third shirts (→KIT-1/2/3), seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Dashboard, match observation, league/Europe, people (squad, market, manager and coaches), training, operations and history are playable views, with progress and actionable errors.
@@ -447,9 +447,10 @@
   - probability-generated game facts are not shown as missing or estimates solely because of their engine path. Missing historical periods remain unavailable; partial tracking names its starting point and sample size, never a fabricated full season or zero.
   - retain existing navigation and load detail on request; no engine-selection control or new world-simulation settings are introduced.
 
-- WEB-90 [o] Locale availability comes from one central registry and its message resources; the foundation exposes only `ko-KR` and preserves current Korean presentation (→ARCH-32).
+- WEB-90 [o] Locale availability comes from one central registry and its message resources, with `ko-KR` as the default (→ARCH-32).
+  - Offer English (`en-GB`), Spanish (`es-ES`), Brazilian Portuguese (`pt-BR`), French (`fr-FR`), German (`de-DE`), Italian (`it-IT`), Dutch (`nl-NL`), Turkish (`tr-TR`), Arabic (`ar-SA`), Japanese (`ja-JP`) and Indonesian (`id-ID`), with native-language registry labels and Arabic right-to-left direction. Every shipped pack translates all default-pack message IDs and preserves their parameters, with locale-appropriate plural forms.
   - Existing Korean labels in this SSOT describe the default locale. Shared translation and number/date-formatting services accept the selected registry locale; adding a locale resource and its registry entry requires no locale-specific components, switches or feature edits.
-  - Initially connect the shared shell/navigation, presentation settings and facility-image descriptions to the Korean message pack. Complete extraction of remaining feature/engine source copy and actual additional-language content are subsequent work; this foundation does not claim complete multilingual delivery.
+  - Localize the shared shell/navigation, save/import/export, game slots, presentation settings, facility-image descriptions and extracted match cues through the selected message pack. Remaining feature/engine source copy is outside this translated inventory; additional packs do not imply complete translation of the game.
   - Previously stored titles, details, names and historical prose remain unchanged; no translation-key migration, retrospective translation, save-format change or relocalization of saved strings is required.
   - Language and theme settings are accessible before founding, on game slots and in the HUD menu. Both controls derive their choices from their registry even when each has one option. Preferences apply to the browser across games, survive reload when storage is available, and remain usable in read-only game tabs without taking save ownership.
   - A preference change preserves game facts, navigation, pending drafts, progression and playback position. An unavailable preference uses its registered default, and failed resource loading preserves a usable selection with retry (→ARCH-32).
@@ -521,6 +522,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r156 261027 WEB-1/90✎ Korean-only foundation→Korean default plus eleven complete packs for the extracted UI messages, native labels, locale plurals and Arabic RTL; complete feature/engine extraction remains subsequent work
 - r155 261026 WEB-18✎ a visible late step carried up to 5 owed days→visible steps one day, owed days only for hidden/away time; late-step indicator after one pace interval (경기 진행 중… / 진행 중…)→a ≥ 2 s animation-only match-day moment on own fixture days (NEXT MATCH card, bottom controls elsewhere) and an optional 경기 결과 알림 notice, off by default; WEB-11✎ +NEXT MATCH shows the moment; WEB-64✎ +no moment while hidden or away; WEB-79✎ background preferences→automatic preferences incl. 경기 결과 알림
 - r154 261026 WEB-18✎ a late automatic step showed the unchanged calendar→a progress indicator after one pace interval (경기 진행 중… on own fixture days, else 진행 중…), no results shown, step and owed days unchanged
 - r153 261026 WEB-11✎ NEXT MATCH before season progress/stadium/team state→after team state in visual and reading order

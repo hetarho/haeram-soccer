@@ -310,7 +310,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 155 | 155 | - | 0 |
+| WEB | 156 | 156 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -334,6 +334,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T477 | Football-audience language packs | WEB ARCH | - | doing@261027.l8p2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -354,6 +355,8 @@
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T477 start; create-task WEB r156 consumed into eleven language packs and resource-level verification
+- 261027 update-ssot WEB start: expand the shared message inventory to football-audience languages
 - 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
 - 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
 - 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
@@ -372,6 +375,3 @@
 - 261026 review-code module-boundaries-261026 start: remaining engine cycles, runtime responsibilities and presentation boundaries; preserve current edits and exclude T469 touches
 - 261026 fix e2e (q7m3): revision 3 moved three seeded scenes: mobile goal cue plays goal-feedback-0 (2′ home), the continuity journey searches ten seeds (full-model-continuity-4), manager-history imports its prepared career upgraded as the writer holds it; Chromium 21/21 on 863bfa4c + fix; batch integration timeouts (calendar ×3, long-career) pass alone, 149 s
 - 261026 T470 done (owner): large view parts publish as inner patches; match-day delta 0.6–1 MB → 77–202 KB, rebuilt view unchanged
-- 261026 create-task (owner): T469 match-day moment and no visible catch-up (WEB@155 MATCH@32), documentation only, parked for the owner's go
-- 261026 update-ssot WEB r155 (owner, ideation match-day-progress): WEB-18 visible steps one day with owed days only hidden/away, a ≥ 2 s animation-only match-day moment on own fixture days (NEXT MATCH card, bottom controls elsewhere), optional 경기 결과 알림 off by default; replaces r154's late-step indicator (T465 code)
-- 261026 update-ssot WEB start

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { simulatedWorld } from '../fixtures/worlds';
@@ -19,6 +20,60 @@ import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
+
+for (const entry of baseline.localeRegistry.entries.filter(
+  ({ id }) => id !== baseline.localeRegistry.defaultId,
+)) {
+  const pack = JSON.parse(
+    readFileSync(
+      new URL(`../../apps/web/public/presentation/locales/${entry.resource}`, import.meta.url),
+      'utf8',
+    ),
+  );
+  for (const width of [390, 1380])
+    test(`shipped ${entry.id}: selection and reload at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
+      await page.goto('/game');
+      const founding = page.getByTestId('club-founding');
+      await expect(founding).toBeVisible();
+      const name = founding.getByLabel('클럽 이름', { exact: true });
+      await name.fill('언어 변경 뒤에도 남을 이름');
+      await openSettings(page, 'locale');
+      const control = page.getByTestId('presentation-locale');
+      expect(await selectOptions(control)).toEqual(
+        baseline.localeRegistry.entries.map(({ id, label }) => ({
+          value: id,
+          label,
+          disabled: false,
+        })),
+      );
+      await chooseOption(control, entry.id);
+      await expect(page.locator('html')).toHaveAttribute('lang', entry.id);
+      await expect(page.locator('html')).toHaveAttribute('dir', entry.direction);
+      await expect(control).toContainText(entry.label);
+      await expect(control).toHaveAccessibleName(pack.messages['presentation.language']);
+      await expect(page.getByRole('dialog')).toHaveAccessibleName(
+        pack.messages['presentation.title'],
+      );
+      await closeSettings(page);
+      await expect(name).toHaveValue('언어 변경 뒤에도 남을 이름');
+      await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
+        pack.messages['presentation.open'],
+      );
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+      ).toBeLessThanOrEqual(1);
+      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+      await page.reload();
+      await expect(founding).toBeVisible();
+      await expect(page.locator('html')).toHaveAttribute('lang', entry.id);
+      await expect(page.locator('html')).toHaveAttribute('dir', entry.direction);
+      await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
+        pack.messages['presentation.open'],
+      );
+      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+    });
+}
 
 type Field = 'theme' | 'locale';
 const pickerRow = { theme: /^테마 변경/, locale: /^언어 변경/ };
