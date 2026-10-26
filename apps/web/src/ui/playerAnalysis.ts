@@ -1,99 +1,22 @@
-import type {
-  Line,
-  Metrics,
-  Player,
-  Position,
-  World,
-} from '../../../../packages/contracts/src/types';
+import type { Line, Metrics, Player, Position } from '../../../../packages/contracts/src/types';
 import { LINES } from '../../../../packages/contracts/src/player';
-import { heatMap, MATERIAL_LAYOUT, ownSideOf } from '../../../../packages/engine/src/material';
 import { lineOf } from '../../../../packages/engine/src/player';
 import { overall } from '../../../../packages/engine/src/player-state';
-import { cardCounts, leagueReds, perOwnMatches } from './discipline';
+import type { PlayerTally } from '../runtime/playerTallies';
+/** The view's counts live with the Worker's read models; these names stay for the UI. */
+export {
+  appearanceCounts,
+  tallies,
+  type Appearances,
+  type PlayerTally,
+  type Tallies,
+} from '../runtime/playerTallies';
 export type PlayerScope = 'season' | 'career';
 export type PlayerOrder = 'roster' | 'ability' | 'minutes' | 'fatigue' | 'goals90';
 
 export function per90(metrics: Metrics, index: number) {
   return metrics[10] > 0 ? (metrics[index] * 90) / metrics[10] : undefined;
 }
-export interface Appearances {
-  season: number;
-  career: number;
-  seasonSub: number;
-  careerSub: number;
-}
-/**
- * Appearances by player (→HIST-13): one per own-match record whose line for him has minutes, a
- * starter or a substitute (his ID is the `other` of a `sub` incident); a line with 0 minutes gains
- * none. Season is the season in progress, career every own match.
- */
-export const appearanceCounts = perOwnMatches((w: Pick<World, 'ownMatches' | 'year'>) => {
-  const counts = new Map<string, Appearances>();
-  for (const m of w.ownMatches) {
-    const subs = new Set(m.incidents?.flatMap((x) => (x.kind === 'sub' && x.other) || []));
-    const season = m.year === w.year ? 1 : 0;
-    for (const line of m.players) {
-      if (!(line.metrics[10] > 0)) continue;
-      let entry = counts.get(line.id);
-      if (!entry)
-        counts.set(line.id, (entry = { season: 0, career: 0, seasonSub: 0, careerSub: 0 }));
-      const sub = subs.has(line.id) ? 1 : 0;
-      entry.career++;
-      entry.season += season;
-      entry.careerSub += sub;
-      entry.seasonSub += sub * season;
-    }
-  }
-  return counts;
-});
-/** An own player's counts over every own match, season then career (→HIST-13, HIST-16). */
-export interface PlayerTally {
-  apps: [number, number];
-  sub: [number, number];
-  yellow: [number, number];
-  red: [number, number];
-  /** This season's touches per heat-map cell, while its matches keep their material (→MATCH-5). */
-  heat?: number[];
-}
-/**
- * Counts every view carries: the client keeps only the latest own matches, so the host derives them
- * from all of them, again only when an own match is added or the season turns.
- */
-export interface Tallies {
-  /** Own players, past and present, with an appearance, a card or a touch; absent is none. */
-  players: Record<string, PlayerTally>;
-  /** This season's league reds by player, either side of every own match (→LEAGUE-15). */
-  leagueReds: Record<string, number>;
-}
-export const tallies = perOwnMatches((w: World): Tallies => {
-  const apps = appearanceCounts(w),
-    cards = cardCounts(w);
-  const heat: Record<string, number[]> = {};
-  for (const m of w.ownMatches) {
-    if (m.year !== w.year || !m.material) continue;
-    const own = ownSideOf(m, w.playerClub);
-    for (const line of m.players) {
-      const map = heatMap(m, line.id, own);
-      if (!map?.touches) continue;
-      const sum = (heat[line.id] ??= Array<number>(MATERIAL_LAYOUT.cells).fill(0));
-      map.cells.forEach((n, i) => (sum[i] += n));
-    }
-  }
-  const players: Record<string, PlayerTally> = {};
-  for (const p of w.players) {
-    const a = apps.get(p.id),
-      c = cards.get(p.id);
-    if (!a && !c && !heat[p.id]) continue;
-    players[p.id] = {
-      apps: [a?.season ?? 0, a?.career ?? 0],
-      sub: [a?.seasonSub ?? 0, a?.careerSub ?? 0],
-      yellow: [c?.season.yellow ?? 0, c?.career.yellow ?? 0],
-      red: [c?.season.red ?? 0, c?.career.red ?? 0],
-      ...(heat[p.id] ? { heat: heat[p.id] } : {}),
-    };
-  }
-  return { players, leagueReds: leagueReds(w) };
-});
 /** A tally's season or career value. */
 export const ofScope = (pair: [number, number] | undefined, scope: PlayerScope) =>
   pair?.[scope === 'season' ? 0 : 1] ?? 0;

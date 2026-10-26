@@ -1,16 +1,13 @@
-import type { CrestDesign } from '../../../../packages/contracts/src/identity';
-import type { World } from '../../../../packages/contracts/src/types';
-import {
-  colourDistance,
-  contrast,
-  legacyCrestMap,
-} from '../../../../packages/engine/src/identity-legacy';
+import { colourDistance, contrast } from '../../../../packages/engine/src/identity-legacy';
+import type { Crest } from '../presentation/crests';
 
 /**
  * WEB-49: every club wears a crest built from a shape, a field pattern, one to three colours and an
- * emblem (KIT-2/4). The catalog lives in the identity contract and the legacy generator in the
- * engine's legacy leaf (KIT-15); these re-exports keep the names the UI already uses.
+ * emblem (KIT-2/4). The catalog lives in the identity contract, the legacy generator in the
+ * engine's legacy leaf (KIT-15) and the current crest lookup in the shared presentation crests;
+ * these re-exports keep the names the UI already uses.
  */
+export { crestMap, crestOf, type Crest } from '../presentation/crests';
 export {
   CREST_EMBLEMS,
   CREST_PALETTE,
@@ -29,34 +26,6 @@ export {
   inkOn,
   luminance,
 } from '../../../../packages/engine/src/identity-legacy';
-/** A crest as drawn: its secondary and accent are optional, an absent one is negative space. */
-export type Crest = CrestDesign;
-
-const FALLBACK: Crest = {
-  primary: '#455a64',
-  secondary: '#f3e3c3',
-  shape: 'shield',
-  pattern: 'plain',
-  emblem: 'ball',
-};
-
-/**
- * Every club's current crest: its applied identity's, else the exact legacy assignment of
- * `legacyCrestMap` (KIT-15). Built on each call and read from the identities first, so the legacy
- * cache — keyed on seed, clubs and the own colour — never hides a replaced identity. Current
- * identities only: a played match draws the crest it recorded (KIT-12).
- */
-export function crestMap(w: Pick<World, 'seed' | 'clubs' | 'playerClub'>) {
-  const legacy = w.clubs.every((club) => club.identity) ? undefined : legacyCrestMap(w);
-  return new Map<string, Crest>(
-    w.clubs.map((club) => [club.id, club.identity?.crest ?? legacy?.get(club.id) ?? FALLBACK]),
-  );
-}
-export function crestOf(w: Pick<World, 'seed' | 'clubs' | 'playerClub'>, id: string | undefined) {
-  const club = id ? w.clubs.find((c) => c.id === id) : undefined;
-  if (!club) return FALLBACK;
-  return club.identity?.crest ?? legacyCrestMap(w).get(club.id) ?? FALLBACK;
-}
 
 /** The grass the pitch canvas draws; shirts must stand out from it. */
 const GRASS = '#1c543e';

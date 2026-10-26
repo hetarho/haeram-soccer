@@ -33,9 +33,9 @@ import type { financialBreakdown } from '../../../../packages/engine/src/finance
 import type { NewsItem } from '../../../../packages/engine/src/news';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
-import type { Tallies } from '../ui/playerAnalysis';
+import type { Tallies } from './playerTallies';
 import type { managerCandidates } from '../../../../packages/engine/src/managerMarket';
-import { transferOffers, sponsorSlots } from '../../../../packages/engine/src/operations';
+import type { transferOffers, sponsorSlots } from '../../../../packages/engine/src/operations';
 const index = z.number().int().min(0).max(15);
 const staffRole = z.enum([
   'director',

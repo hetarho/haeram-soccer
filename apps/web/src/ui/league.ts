@@ -1,6 +1,9 @@
 import type { Club, Fixture, TableRow, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import { groupKey } from '../../../../packages/engine/src/season';
+import { divisionName } from '../presentation/competitionLabels';
+
+export { divisionName };
 
 const emptyRow = (): TableRow => ({
   played: 0,
@@ -69,12 +72,6 @@ export const ABROAD: Record<string, string> = {
   FIN: '핀란드',
   HUN: '헝가리',
 };
-/** A division of a country: "2부", "3부 B조" for a regional group, "아마추어 리그" below them. */
-export function divisionName(code: string, tier: number, group?: number) {
-  const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier];
-  if (!groups) return '아마추어 리그';
-  return `${tier + 1}부${group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : ''}`;
-}
 /**
  * Where a club plays as a fan would say it: "2부" at home, "독일 1부" or "이탈리아 3부 B조"
  * abroad, "아마추어 리그" below the professional game and "해외 클럽 · 그리스" for continental

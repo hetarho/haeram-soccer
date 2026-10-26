@@ -59,9 +59,8 @@ import {
 } from './protocol';
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
-import { tallies } from '../ui/playerAnalysis';
-import { divisionName } from '../ui/careerRecords';
-import { kindLabel } from '../ui/format';
+import { tallies } from './playerTallies';
+import { divisionName, kindLabel } from '../presentation/competitionLabels';
 /**
  * KIT-15: a copy of the validated candidate with only its missing club identities installed (each
  * club's legacy crest and colour kept), or the candidate itself when none is missing. The revision

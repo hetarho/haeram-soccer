@@ -16,8 +16,8 @@ import {
   type ParkedStore,
   type SlotSummary,
 } from '../adapters/games';
-import { crestOf } from '../ui/crests';
-import { divisionName } from '../ui/league';
+import { divisionName } from '../presentation/competitionLabels';
+import { crestOf } from '../presentation/crests';
 import type { GameClient } from './client';
 
 const browserStorage = {
