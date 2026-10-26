@@ -5,7 +5,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { NextMatchCard, TeamState } from './ClubHub';
+import { NextMatchCard, SeasonCard, TeamState } from './ClubHub';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
 
 vi.mock('../runtime/store', async (importOriginal) => {
@@ -114,6 +114,57 @@ describe('contextual home match access', () => {
   });
 });
 
+describe('home season card', () => {
+  // The amateur league reads its field and rounds from its own fixtures.
+  const lower = () => {
+    const w = world();
+    w.lower = true;
+    w.round = 1;
+    w.fixtures = [
+      {
+        id: 'r1',
+        year: 1950,
+        round: 1,
+        kind: 'lower',
+        home: 'own',
+        away: 'opponent',
+        played: true,
+      },
+      { id: 'r2', year: 1950, round: 2, kind: 'lower', home: 'opponent', away: 'own' },
+    ] as World['fixtures'];
+    w.tables = {
+      own: { played: 1, won: 1, drawn: 0, lost: 0, gf: 2, ga: 0, points: 3 },
+      opponent: { played: 1, won: 0, drawn: 0, lost: 1, gf: 0, ga: 2, points: 0 },
+    } as unknown as World['tables'];
+    return w;
+  };
+  const render = (active: boolean) =>
+    renderToStaticMarkup(createElement(SeasonCard, { w: lower(), active, onOpen: vi.fn() }));
+
+  it('groups the round, our rank and the record in one button above the progress rule', () => {
+    const markup = render(true);
+    const button = markup.match(/<button[^>]*aria-label="시즌 상세"[^>]*>.*?<\/button>/)?.[0];
+    expect(button).toBeDefined();
+    for (const label of ['라운드', '리그 순위', '시즌 전적']) expect(button).toContain(label);
+    expect(button).toContain('data-testid="hub-rank"');
+    expect(button).toContain('1-0-0');
+    expect(button).toContain('승점 3');
+    expect(button).toMatch(/data-testid="game-round"[^>]*>1</);
+    expect(button).toMatch(/data-testid="game-round-total"[^>]*>\/ 2</);
+    // The progress rule stays outside the button, where assistive technology still reads it.
+    expect(button).not.toContain('<progress');
+    expect(markup).toContain('aria-label="시즌 진행률"');
+    expect(markup.indexOf('<progress')).toBeGreaterThan(markup.indexOf('</button>'));
+  });
+
+  it('leaves the round ids to the information row while home is hidden', () => {
+    const markup = render(false);
+    expect(markup).not.toContain('data-testid="game-round"');
+    expect(markup).not.toContain('data-testid="game-round-total"');
+    expect(markup).toContain('라운드');
+  });
+});
+
 describe('home condition warnings', () => {
   beforeEach(() => {
     vi.mocked(cashState).mockReturnValue({
@@ -169,6 +220,18 @@ describe('home condition warnings', () => {
     const recovered = renderConditions(states.map((state) => ({ ...state, advice: undefined })));
     expect(recovered).not.toContain('state-warning-');
     expect(recovered).toContain('팀이 안정적이에요.');
+  });
+
+  it('leads with team strength, which never carries a warning badge', () => {
+    const markup = renderConditions([
+      { key: 'strength', label: '팀 전력', value: '31', status: '리그 14/16위', tone: 'warn' },
+      ...states,
+    ]);
+    expect(markup.indexOf('data-condition="strength"')).toBeLessThan(
+      markup.indexOf('data-condition="fatigue"'),
+    );
+    expect(markup).toContain('aria-label="팀 전력 31 · 리그 14/16위 · 대처 방법 보기"');
+    expect(markup).not.toContain('state-warning-strength');
   });
 
   it('does not call the team stable when the HUD cash needs attention', () => {

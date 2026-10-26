@@ -71,7 +71,11 @@ export function RemedySheet({
           {current.label} {current.value} · {current.status}
         </span>
       </header>
-      {current.advice && <p className={s.remedyAdvice}>{current.advice.text}</p>}
+      {current.advice ? (
+        <p className={s.remedyAdvice}>{current.advice.text}</p>
+      ) : (
+        current.detail && <p className={s.remedyDetail}>{current.detail}</p>
+      )}
       <ul className={s.remedies}>
         {remedies(w, key).map((remedy) => (
           <li

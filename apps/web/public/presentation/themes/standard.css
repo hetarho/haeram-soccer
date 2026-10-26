@@ -115,7 +115,8 @@ html[data-theme='standard'] {
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'],
   [data-home-part='fixture'],
-  [data-home-part='stage'] {
+  [data-home-part='stage'],
+  [data-home-part='season-card'] {
     border-radius: 12px;
   }
 

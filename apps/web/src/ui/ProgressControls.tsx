@@ -31,7 +31,10 @@ const PACES: [Pace, string, string][] = [
   ['x10', 'x10', '0.1초에 하루'],
 ];
 
-/** Calendar information stays near the HUD while transport stays below the scrolling view. */
+/**
+ * Calendar information stays near the HUD while transport stays below the scrolling view. Home
+ * reads the round in its season card (→WEB-11), so only other views show it here.
+ */
 export const ProgressOverview = memo(function ProgressOverview({
   compact = false,
 }: {
@@ -40,7 +43,7 @@ export const ProgressOverview = memo(function ProgressOverview({
   const w = useGameState((state) => state.view!.world);
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
-  const round = ownDivisionRound(w);
+  const round = compact ? ownDivisionRound(w) : undefined;
   return (
     <section
       className={p.overview}
@@ -54,16 +57,18 @@ export const ProgressOverview = memo(function ProgressOverview({
         </small>
         <span data-testid="game-date">{seasonDate(w)}</span>
       </div>
-      <div
-        className={p.round}
-        aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}
-      >
-        <small>ROUND</small>
-        <strong data-testid="game-round">{round.played}</strong>
-        <small className={p.roundTotal} data-testid="game-round-total">
-          / {round.total}
-        </small>
-      </div>
+      {round && (
+        <div
+          className={p.round}
+          aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}
+        >
+          <small>ROUND</small>
+          <strong data-testid="game-round">{round.played}</strong>
+          <small className={p.roundTotal} data-testid="game-round-total">
+            / {round.total}
+          </small>
+        </div>
+      )}
     </section>
   );
 });

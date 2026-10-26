@@ -115,12 +115,13 @@ for (const viewport of [
     }
     await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
     await expect(page.getByTestId('hud-cash')).toBeVisible();
-    await expect(hub.getByText('리그 순위', { exact: true })).toBeVisible();
-    await expect(hub.getByText('팀 전력', { exact: true })).toBeVisible();
-    await expect(hub.getByText('시즌 전적', { exact: true })).toBeVisible();
+    const season = hub.getByRole('button', { name: '시즌 상세', exact: true });
+    for (const figure of ['라운드', '리그 순위', '시즌 전적'])
+      await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
     const state = page.getByRole('region', { name: '팀 상태' });
-    for (const chip of ['피로', '분위기', '감독 입지', '선수단'])
+    // Strength changes with the lineup, fatigue and morale, so it leads team state (→WEB-44).
+    for (const chip of ['팀 전력', '피로', '분위기', '감독 입지', '선수단'])
       await expect(state.getByText(chip, { exact: true })).toBeVisible();
 
     const journalButton = hub.getByRole('button', { name: '시즌 상세', exact: true });

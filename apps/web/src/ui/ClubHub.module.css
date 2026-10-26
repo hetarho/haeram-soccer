@@ -549,6 +549,17 @@ button.resources:active:not(:disabled) {
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+/* A state without advice explains itself without the warning edge. */
+.remedyDetail {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid var(--line);
+  background: var(--surface-grain, none) var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
 .remedies {
   list-style: none;
   margin: 0;
@@ -635,34 +646,50 @@ button.resources:active:not(:disabled) {
   min-height: 0;
   max-height: none;
 }
-.hub .stage > .resources.resources {
-  position: relative;
-  inset: auto;
-  height: auto;
-  min-height: 0;
-  z-index: 1;
-  width: auto;
-  gap: 0;
-  border-top: 1px solid var(--line);
-}
 .hub .scene .stageLabel {
   bottom: 8px;
 }
-.stage > .resources > div {
-  padding: 7px 14px;
+/* The season card: round, rank and record over the season-progress rule (→WEB-11). */
+.seasonCard {
+  grid-area: header;
+  position: relative;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-deep);
 }
-.stage > .resources .more {
-  top: auto;
-  bottom: 4px;
+.seasonCard > .resources {
+  width: auto;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+.seasonCard > .resources > div {
+  padding: 7px 14px;
+}
+.seasonCard > .resources > div:last-of-type {
+  padding-right: 28px;
+  border-right: 0;
+}
+.seasonCard > .resources .more {
+  top: 50%;
   right: 6px;
+  transform: translateY(-50%);
+}
+.seasonCard > .seasonMeter {
+  padding: 8px 14px 10px;
+}
+/* Strength leads team state on a row of its own (→WEB-44). */
+.state li[data-condition='strength'] {
+  grid-column: 1 / -1;
 }
 @media (max-width: 760px) {
-  .stage > .resources > div > small {
-    display: none;
+  .seasonCard > .resources > div {
+    padding: 6px 10px;
   }
-  .stage > .resources b {
-    font-size: 18px;
+  .seasonCard > .resources b {
+    font-size: 20px;
   }
   .fixtureInfo h3 {
     margin: 2px 0;
@@ -723,13 +750,6 @@ button.resources:active:not(:disabled) {
   font-family: var(--display);
 }
 
-.seasonOverview {
-  grid-area: header;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  min-width: 0;
-}
 .seasonMeter {
   display: grid;
   gap: 6px;
@@ -768,16 +788,7 @@ button.resources:active:not(:disabled) {
 .seasonMeter progress::-moz-progress-bar {
   background: var(--surface-grain, none) var(--accent);
 }
-.seasonOverview > button {
-  min-height: 44px;
-  padding: 6px 9px;
-  font-size: 12px;
-  white-space: nowrap;
-}
 @media (max-width: 760px) {
-  .seasonOverview {
-    gap: 12px;
-  }
   .sceneCaption {
     inset: 8px 9px auto;
   }

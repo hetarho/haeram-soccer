@@ -10,7 +10,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
 import { activePlayers, clubOf } from '../../../../packages/engine/src/player-state';
-import { isInjured, startingSquad } from '../../../../packages/engine/src/world';
+import { isInjured, rating, startingSquad } from '../../../../packages/engine/src/world';
 import { quote } from '../../../../packages/engine/src/quotes';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { suggestionChance } from '../../../../packages/engine/src/coach-training';
@@ -25,9 +25,10 @@ import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
 import { nextTicketLevel } from './ticketLevels';
 import type { Page, PeopleRequest, TrainingTab } from './state';
+import { ownLeagueIds } from './league';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
-export type StateKey = 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
+export type StateKey = 'strength' | 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
 export interface StateAction {
   label: string;
   command?: Command;
@@ -64,10 +65,13 @@ export interface TeamStateItem {
   tone: Tone;
   /** Why the state matters and what the owner can do about it now. */
   advice?: { text: string; actions: StateAction[] };
+  /** What a state without advice means, leading its sheet. */
+  detail?: string;
 }
 
 const rank: Record<Tone, number> = { bad: 0, warn: 1, ok: 2, good: 3 };
 export const STATE_TITLES: Record<StateKey, string> = {
+  strength: '팀 전력 끌어올리기',
   fatigue: '피로 관리',
   morale: '분위기 끌어올리기',
   manager: '감독과의 관계',
@@ -128,12 +132,54 @@ function request(w: World, kind: CareKind): Remedy {
   };
 }
 
+/**
+ * Our place among the division's strengths (→WEB-44): equal ratings share a place, the top third
+ * reads good and the bottom third a warning; a field under three clubs has no bottom third.
+ */
+export function strengthPlace(ratings: readonly number[], own: number) {
+  const of = Math.max(1, ratings.length),
+    place = 1 + ratings.filter((value) => value > own).length,
+    third = Math.ceil(of / 3);
+  const tone: Tone = place <= third ? 'good' : of >= 3 && place > of - third ? 'warn' : 'ok';
+  return { place, of, tone };
+}
+
 /** Every choice for one state, available or not, in the order the sheet lists them. */
 export function remedies(w: World, key: StateKey): Remedy[] {
   const club = clubOf(w),
     policy = policyOf(w),
     format = (value: string) => compactMoney(value, club.country, w.year);
   switch (key) {
+    case 'strength':
+      return [
+        {
+          id: 'prepare',
+          label: '전술·선발 준비',
+          effect: '선발 11명과 전술을 직접 골라 다음 경기 전력을 맞춰요',
+          prepare: true,
+        },
+        {
+          id: 'market',
+          label: '이적시장',
+          effect: '부족한 자리에 더 강한 선수를 찾아요',
+          page: 'people',
+          tab: 'market',
+        },
+        {
+          id: 'training',
+          label: '1군 훈련',
+          effect: '코치의 훈련 방향을 보고 선수 성장을 이끌어요',
+          page: 'training',
+          tab: 'training',
+        },
+        {
+          id: 'academy',
+          label: '유소년 보기',
+          effect: '1군에 올릴 만한 유망주를 살펴요',
+          page: 'training',
+          tab: 'academy',
+        },
+      ];
     case 'fatigue': {
       const current = lineupSummary(startingSquad(w, club), w.tactic).fatigue;
       const rest = lineupPreset(w, 'rest');
@@ -356,7 +402,24 @@ export function teamStates(w: World): TeamStateItem[] {
     fit = squad - out;
   const missing = out ? `부상 ${injured} · 정지 ${suspended}` : '';
   const registered = squadRegistration(w);
+  const club = clubOf(w),
+    strength = rating(w, club),
+    field = ownLeagueIds(w).flatMap((id) => {
+      if (id === club.id) return [strength];
+      const other = w.clubs.find((c) => c.id === id);
+      return other ? [rating(w, other)] : [];
+    }),
+    place = strengthPlace(field, strength);
   return [
+    {
+      key: 'strength',
+      label: '팀 전력',
+      value: String(strength),
+      status: `리그 ${place.place}/${place.of}위`,
+      tone: place.tone,
+      // A comparison, not a condition to repair: it never carries advice or its badge.
+      detail: `선발 11명의 평균 능력 ${strength} · 우리 리그 ${place.of}개 클럽 중 ${place.place}번째예요.`,
+    },
     {
       key: 'fatigue',
       label: '피로',

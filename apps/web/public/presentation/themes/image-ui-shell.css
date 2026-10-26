@@ -289,7 +289,7 @@ html[data-theme] {
 
   [data-ui='season-overview'] {
     min-height: 48px;
-    margin: 0;
+    margin: 10px 0 0;
     padding: 0 2px 4px;
     gap: 12px;
   }
@@ -415,11 +415,22 @@ html[data-theme] {
     background-size: 220px;
   }
 
-  [data-home-part='stage'] {
+  [data-home-part='stage'],
+  [data-home-part='season-card'] {
     isolation: isolate;
   }
 
-  [data-home-part='stage']::after {
+  [data-home-part='season-card'] {
+    border: 0;
+    background: none;
+  }
+
+  [data-home-part='season-card'] > [data-home-part='season-meter'] {
+    padding: 6px 14px 12px;
+  }
+
+  [data-home-part='stage']::after,
+  [data-home-part='season-card']::after {
     content: '';
     position: absolute;
     z-index: 3;
@@ -485,7 +496,7 @@ html[data-theme] {
   }
 
   [data-home-part='season-stats'] {
-    margin: 0 6px 6px;
+    margin: 6px 6px 0;
     gap: 0;
     border: 0;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
@@ -498,6 +509,10 @@ html[data-theme] {
     gap: 2px;
     border: 0;
     background: none;
+  }
+
+  [data-home-part='season-stats'] > div:last-of-type {
+    padding-right: 30px;
   }
 
   [data-home-part='season-stats'] > div + div {
@@ -590,6 +605,10 @@ html[data-theme] {
   }
   [data-condition='squad'] {
     --image-icon: var(--image-art-icon-shirt);
+  }
+  [data-condition='strength'] {
+    --image-icon: var(--image-art-icon-training);
+    grid-column: 1 / -1;
   }
 
   [data-condition] > button > span,
@@ -845,6 +864,7 @@ html[data-theme] {
     }
     [data-ui='season-overview'] {
       min-height: 44px;
+      margin-top: 10px;
       padding-bottom: 2px;
       gap: 8px;
     }
@@ -919,7 +939,8 @@ html[data-theme] {
     [data-home-part='season-meter'] progress {
       height: 10px;
     }
-    [data-home-part='stage']::after {
+    [data-home-part='stage']::after,
+    [data-home-part='season-card']::after {
       border-image-width: 8px;
     }
     [data-home-part='scene'] {
@@ -1050,6 +1071,12 @@ html[data-theme] {
       width: 23px;
       height: 23px;
       color: inherit;
+    }
+  }
+
+  @media (max-width: 760px) and (max-height: 760px) {
+    [data-ui='season-overview'] {
+      margin-top: 6px;
     }
   }
 
