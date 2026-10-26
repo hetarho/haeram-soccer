@@ -177,43 +177,53 @@
   letter-spacing: 0.5px;
   line-height: 1.5;
 }
-/* A late step's indicator (→WEB-18) fills the rest of the mode group, one line tall. */
-.lateStep {
+/* Away from home the match-day moment (→WEB-18) plays in the rest of the mode group, one line tall. */
+.momentSlot {
+  position: relative;
   flex: 1;
   min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
   height: 18px;
   overflow: hidden;
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 18px;
 }
-.lateSpinner {
-  flex: none;
+.momentBall {
+  position: absolute;
+  top: 3px;
+  left: 0;
   width: 12px;
   height: 12px;
-  border: 2px solid var(--subtle-fill);
-  border-top-color: var(--accent);
   border-radius: 50%;
-  animation: late-step-spin 900ms linear infinite;
+  background: var(--accent);
+  animation: moment-roll 1200ms ease-in-out infinite alternate;
 }
-.lateCaption {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-@keyframes late-step-spin {
+@keyframes moment-roll {
   to {
+    left: calc(100% - 12px);
     transform: rotate(360deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lateSpinner {
-    animation-duration: 2400ms;
+  .momentBall {
+    animation: none;
   }
+}
+/* The result notice floats above the bar, so nothing in it moves. */
+.resultNotice {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 2;
+  max-width: calc(100% - 2 * var(--row-padding));
+  min-height: 44px;
+  padding: 10px 14px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  border: 1px solid var(--popover-edge);
+  background: var(--hud);
+  color: var(--text);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .modeExplanation > strong {
   font-size: 13px;

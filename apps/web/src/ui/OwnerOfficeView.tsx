@@ -223,6 +223,19 @@ export function OwnerOffice({
         </div>
       </section>
       {settings.mode === 'automatic' && (
+        <section data-surface="panel" className={s.section} aria-label="경기 결과 알림">
+          <label className={s.check}>
+            <input
+              type="checkbox"
+              checked={background.resultNotice}
+              disabled={blocked}
+              onChange={(event) => controller.setBackground({ resultNotice: event.target.checked })}
+            />
+            경기 결과 알림
+          </label>
+        </section>
+      )}
+      {settings.mode === 'automatic' && (
         <section
           data-surface="panel"
           className={s.section}

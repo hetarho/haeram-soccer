@@ -7,6 +7,7 @@ import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
+import { useProgression, type ProgressionController } from '../runtime/progression';
 import { useNavigation } from './state';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
@@ -17,7 +18,16 @@ import { FacilityArt } from './FacilityArt';
 import { PixelIcon } from './PixelIcon';
 import { CashAlarm } from './CashAlarm';
 
-export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
+/** During an own fixture day's match-day moment the card plays it in place of its content (→WEB-11). */
+export function NextMatchCard({
+  w,
+  onPrepare,
+  moment = false,
+}: {
+  w: World;
+  onPrepare: () => void;
+  moment?: boolean;
+}) {
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
@@ -28,7 +38,17 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
     last.home === w.playerClub ? last.score.away : last.score.home,
   ];
   return (
-    <section className={s.fixture} aria-label="다음 경기" data-home-part="fixture">
+    <section
+      className={`${s.fixture} ${moment ? s.momentOn : ''}`}
+      aria-label="다음 경기"
+      data-home-part="fixture"
+    >
+      {/* The content keeps its place, hidden, so the card and the home layout keep their size. */}
+      {moment && (
+        <span className={s.moment} data-testid="next-match-moment" aria-hidden="true">
+          <i className={s.momentBall} />
+        </span>
+      )}
       <div className={s.fixtureInfo}>
         <small>
           NEXT MATCH
@@ -163,12 +183,15 @@ function ClubScene({ w }: { w: World }) {
 export function ClubHub({
   w,
   client,
+  controller,
   journal,
 }: {
   w: World;
   client: GameClient;
+  controller: ProgressionController;
   journal: ReactNode;
 }) {
+  const matchMoment = useProgression(controller, (state) => state.matchMoment);
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
   const [journalOpen, setJournalOpen] = useState(false);
@@ -252,7 +275,11 @@ export function ClubHub({
         </button>
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
-      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
+      <NextMatchCard
+        w={w}
+        onPrepare={() => setPreparing(true)}
+        moment={matchMoment !== undefined}
+      />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {journalOpen && (

@@ -20,17 +20,20 @@ export type Pace = 'x1' | 'x2' | 'x5' | 'x10';
 /** Real milliseconds per game day: x1 is one day a second, x10 one day every 0.1 s. */
 export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 100 };
 /**
- * A step normally advances one day and never waits for saving (→SAVE-8). When a step itself takes
- * longer than the pace allows, the next carries the days that piled up, at most this many, so the
- * calendar keeps the chosen rate.
+ * While the page is shown an own fixture day holds the next day at least this long (→WEB-18): the
+ * match-day moment. It only delays when the next step is sent, never the step or its results.
  */
-export const MAX_STEP_DAYS = 5;
+export const MATCH_DAY_MOMENT_MS = 2000;
+/** How long the 경기 결과 알림 notice stays after the moment. */
+export const RESULT_NOTICE_MS = 4000;
 /** Background play (→WEB-64): how far a page that slept or closed catches up on return. */
 export type AwayLimit = 'off' | 'month' | 'season';
 export interface BackgroundSettings {
   /** Keep the clock running while the tab is hidden. */
   hidden: boolean;
   away: AwayLimit;
+  /** Show the own fixture's score after its match-day moment (경기 결과 알림, →WEB-18). */
+  resultNotice: boolean;
 }
 export const AWAY_LIMITS: Record<AwayLimit, string> = {
   off: '끄기',
@@ -86,10 +89,12 @@ export interface ProgressionState {
   /** A finished run while the owner was away, waiting to be summarized (→WEB-64). */
   away?: ClockMark;
   /**
-   * An automatic step still in flight one pace interval after it began (→WEB-18): `match` when it
-   * settles the day of an own fixture. Unset once the step lands, is cancelled or the clock stops.
+   * The own fixture whose day is showing the match-day moment (→WEB-18), until both its step has
+   * landed and MATCH_DAY_MOMENT_MS has passed, or the clock stops or the tab is hidden.
    */
-  lateStep?: 'match' | 'day';
+  matchMoment?: string;
+  /** The own match record a finished moment announces while 경기 결과 알림 is on. */
+  resultNotice?: { matchId: string };
 }
 const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
 /** Per-browser stops kept before the level decided them; removed once on start. */
@@ -109,9 +114,10 @@ function storedBackground(): BackgroundSettings {
     return {
       hidden: typeof raw.hidden === 'boolean' ? raw.hidden : true,
       away: raw.away in AWAY_LIMITS ? raw.away : 'season',
+      resultNotice: raw.resultNotice === true,
     };
   } catch {
-    return { hidden: true, away: 'season' };
+    return { hidden: true, away: 'season', resultNotice: false };
   }
 }
 function storedClocks(): Record<string, ClockRecord> {
@@ -170,10 +176,13 @@ export class ProgressionController {
   private unsubscribe: () => void;
   private unsubscribeClock: () => void;
   private inFlight = false;
-  /** Shows the late-step indicator if the automatic step in flight outlasts its pace interval. */
-  private lateTimer?: ReturnType<typeof setTimeout>;
-  /** What the command in flight settles, for the indicator's caption. */
-  private stepKind: 'match' | 'day' = 'day';
+  /** The match-day moment's minimum still running; the next step waits for it. */
+  private momentTimer?: ReturnType<typeof setTimeout>;
+  /** The match-day moment's step is still in flight. */
+  private momentStep = false;
+  /** The latest own match record before the moment's step, to tell whether it added one. */
+  private momentBefore?: string;
+  private noticeTimer?: ReturnType<typeof setTimeout>;
   private suspensionSources = new Set<string>();
   private get suspended() {
     return this.suspensionSources.size > 0;
@@ -182,8 +191,8 @@ export class ProgressionController {
   private worldId?: string;
   /** When the last day step was sent; unset while stopped so a restart begins with one day. */
   private stepAt?: number;
-  /** The next step owes the days since stepAt: the last step itself ran late, or time away. */
-  private owing = false;
+  /** The next step plays the time a slept or closed page was away (→WEB-64). */
+  private returning = false;
   private hidden = false;
   private hiddenAt?: number;
   /** Where the club stood when the owner last looked, until the run it started is summarized. */
@@ -214,7 +223,7 @@ export class ProgressionController {
         this.mode = mode;
         this.stop('');
         this.stepAt = undefined;
-        this.owing = false;
+        this.returning = false;
         this.armed = undefined;
         this.seenMark = undefined;
         this.hiddenAt = undefined;
@@ -294,6 +303,8 @@ export class ProgressionController {
     }
     const w = gameStore.getSnapshot().view?.world;
     if (hidden) {
+      // A hidden tab plays no moment: the day already settled stays, nothing is announced.
+      this.clearMoment();
       this.hiddenAt = Date.now();
       if (w && !this.seenMark) this.seenMark = clockMark(w);
       this.writeClock(true);
@@ -320,13 +331,19 @@ export class ProgressionController {
     this.start();
     if (!this.store.getState().running) return;
     this.stepAt = record.at;
-    this.owing = true;
+    this.returning = true;
     this.seenMark = record.mark;
     void this.tick();
   }
   /** The owner read the summary. */
   clearAway() {
     this.store.setState({ away: undefined });
+  }
+  /** The owner opened or dismissed the result notice. */
+  clearResultNotice() {
+    if (this.noticeTimer !== undefined) clearTimeout(this.noticeTimer);
+    this.noticeTimer = undefined;
+    if (this.store.getState().resultNotice) this.store.setState({ resultNotice: undefined });
   }
   /** Publishes the summary of a finished run once the owner is looking again. */
   private summarize() {
@@ -529,7 +546,8 @@ export class ProgressionController {
   stop(reason = '자동 진행을 멈췄습니다.') {
     const was = this.store.getState().running;
     this.resumeAfterEvents = false;
-    this.clearLateStep();
+    this.clearMoment();
+    this.clearResultNotice();
     this.store.setState({ running: false, reason });
     if (this.inFlight) this.client.cancel();
     if (!was) return;
@@ -554,17 +572,16 @@ export class ProgressionController {
     if (this.stepAt === undefined) return { days: 1, catchUp: false };
     const gap = now - this.stepAt,
       days = Math.floor(gap / PACE_MS[progress.pace]);
-    if (gap > AWAY_GAP_MS) {
+    if (gap > AWAY_GAP_MS || this.returning) {
       // The page slept: the time away is played up to the away limit, then the run carries on.
       const limit = { off: 1, month: 30, season: daysInSeason(w.year) }[progress.background.away];
       if (!this.seenMark) this.seenMark = clockMark(w);
       return { days: Math.max(1, Math.min(days, limit)), catchUp: true };
     }
-    // A hidden tab's throttled timer pays every day it owes; a visible one at most a few, and only
-    // after a step that itself ran late: an ordinary step is one day whatever its timer did.
+    // A hidden tab's throttled timer pays every day it owes. A visible step is one day whatever its
+    // timer did: a late step is waited for, so the shown calendar never skips a day (→WEB-18).
     if (this.hidden) return { days: Math.max(1, days), catchUp: true };
-    if (!this.owing) return { days: 1, catchUp: false };
-    return { days: Math.max(1, Math.min(MAX_STEP_DAYS, days)), catchUp: false };
+    return { days: 1, catchUp: false };
   }
   private async tick() {
     const progress = this.store.getState();
@@ -575,6 +592,8 @@ export class ProgressionController {
       return;
     }
     if (this.inFlight || state.processing) return;
+    // The match-day moment holds the next day; the interval simply resumes after it.
+    if (this.momentStep || this.momentTimer !== undefined) return;
     if (
       !state.view ||
       state.readonly ||
@@ -587,14 +606,9 @@ export class ProgressionController {
     let w = state.view.world;
     if (this.eveStop(w)) return;
     const owed = this.owed(w);
-    const stepAt = (this.stepAt = Date.now());
+    this.returning = false;
+    this.stepAt = Date.now();
     this.inFlight = true;
-    // The indicator never touches the step itself: it only shows that the step is still running.
-    this.lateTimer = setTimeout(() => {
-      this.lateTimer = undefined;
-      if (this.inFlight && this.store.getState().running)
-        this.store.setState({ lateStep: this.stepKind });
-    }, PACE_MS[progress.pace]);
     try {
       let debt = owed.days;
       while (debt > 0) {
@@ -602,8 +616,9 @@ export class ProgressionController {
         const days = owed.catchUp ? Math.min(debt, CATCH_UP_STEP_DAYS) : debt;
         const step = command(days, w),
           until = daysUntilNextMatch(w);
-        this.stepKind = until !== undefined && until <= step.days ? 'match' : 'day';
-        if (this.store.getState().lateStep) this.store.setState({ lateStep: this.stepKind });
+        // A visible step that settles an own fixture's day plays the match-day moment.
+        if (!owed.catchUp && !this.hidden && until !== undefined && until <= step.days)
+          this.beginMoment(w);
         const reply = await this.client.command(step, {
           background: true,
           automatic: true,
@@ -644,21 +659,53 @@ export class ProgressionController {
       this.writeClock();
     } finally {
       this.inFlight = false;
-      this.clearLateStep();
-      this.owing = Date.now() - stepAt > PACE_MS[this.store.getState().pace];
+      if (this.momentStep) {
+        this.momentStep = false;
+        if (this.store.getState().running) this.endMoment();
+        else this.clearMoment();
+      }
       // A stop that came while the step ran saved before the step landed; save what it played.
       if (!this.store.getState().running) this.client.saveSoon();
       this.summarize();
     }
   }
-  private clearLateStep() {
-    if (this.lateTimer !== undefined) clearTimeout(this.lateTimer);
-    this.lateTimer = undefined;
-    if (this.store.getState().lateStep) this.store.setState({ lateStep: undefined });
+  private beginMoment(w: World) {
+    this.momentStep = true;
+    this.momentBefore = w.ownMatches.at(-1)?.id;
+    this.momentTimer = setTimeout(() => {
+      this.momentTimer = undefined;
+      this.endMoment();
+    }, MATCH_DAY_MOMENT_MS);
+    this.store.setState({ matchMoment: nextOwnFixture(w)!.id });
+  }
+  /** Ends the moment once both its step and its minimum are over, announcing the result if asked. */
+  private endMoment() {
+    if (this.momentStep || this.momentTimer !== undefined) return;
+    const progress = this.store.getState();
+    if (progress.matchMoment === undefined) return;
+    const latest = gameStore.getSnapshot().view?.world.ownMatches.at(-1)?.id;
+    const notice =
+      progress.running && progress.background.resultNotice && latest && latest !== this.momentBefore
+        ? { matchId: latest }
+        : undefined;
+    this.store.setState({ matchMoment: undefined });
+    if (!notice) return;
+    this.clearResultNotice();
+    this.store.setState({ resultNotice: notice });
+    this.noticeTimer = setTimeout(() => this.clearResultNotice(), RESULT_NOTICE_MS);
+  }
+  /** Ends the moment at once without a notice: the clock stopped or the tab was hidden. */
+  private clearMoment() {
+    if (this.momentTimer !== undefined) clearTimeout(this.momentTimer);
+    this.momentTimer = undefined;
+    this.momentStep = false;
+    if (this.store.getState().matchMoment !== undefined)
+      this.store.setState({ matchMoment: undefined });
   }
   dispose() {
     // Leaving the page keeps the stored clock as it was, so a return can resume it.
-    this.clearLateStep();
+    this.clearMoment();
+    this.clearResultNotice();
     this.store.setState({ running: false, reason: '' });
     if (this.inFlight) this.client.cancel();
     clearInterval(this.timer);

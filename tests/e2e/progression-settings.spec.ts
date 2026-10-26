@@ -74,7 +74,7 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await expect(pace).toHaveAttribute('data-value', 'x2');
   await expect(date).toHaveText('1950년 8월 2일');
   await toggle.click();
-  // A late step carries the day it owes with it (→WEB-18), so a slow runner may skip 8월 3일.
+  // Every visible step is one day (→WEB-18); a step already sent may still land after the stop.
   await expect(date).not.toHaveText('1950년 8월 2일');
   await stop.click();
   // A day step already in flight when the owner stops still lands; read the date once it rests.
@@ -126,7 +126,7 @@ for (const [width, height] of [
   [390, 844],
   [1280, 800],
 ]) {
-  test(`a late own match day shows 경기 진행 중… in place without moving the controls ${width}`, async ({
+  test(`an own match day shows the match-day moment in NEXT MATCH for at least 2 s without moving the controls ${width}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height });
@@ -137,19 +137,20 @@ for (const [width, height] of [
       observations: { matchEve: false },
     });
     const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const late = controls.getByTestId('late-step');
-    await expect(late).toHaveAttribute('data-state', 'off');
+    const slot = controls.getByTestId('match-moment');
+    await expect(slot).toHaveAttribute('data-state', 'off');
     await chooseOption(
       controls.getByRole('combobox', { name: '자동 진행 배속', exact: true }),
       'x10',
     );
     await settle(page);
-    // Play/pause, the pace dropdown, the mode change button and its text never move (→WEB-17).
+    // Play/pause, the pace dropdown, the mode change button, its text and the card never move.
     const pinned = [
       '[data-progress-mode]',
       '[data-testid="progression-mode"]',
       '[aria-label="자동 진행 배속"]',
       '[data-ui="season-transport"] [role="group"] > button',
+      '[data-home-part="fixture"]',
     ];
     const boxes = () =>
       page.evaluate(
@@ -163,39 +164,48 @@ for (const [width, height] of [
     const before = await boxes();
     const transport = (await controls.boundingBox())!;
     await controls.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    // The own match takes the engine far longer than 0.1 s; catch the caption on any frame.
+    // Catch the moment's first frame, then time it until it ends.
     const seen = await page.waitForFunction(
       (selectors) => {
-        const slot = document.querySelector('[data-testid="late-step"]');
-        if (!slot?.textContent?.includes('경기 진행 중…')) return undefined;
+        const moment = document.querySelector('[data-testid="next-match-moment"]');
+        if (!moment) return undefined;
         return {
-          round: document.querySelector('[data-testid="game-round"]')?.textContent,
+          at: performance.now(),
           boxes: selectors.map((selector) => {
             const r = document.querySelector(selector)!.getBoundingClientRect();
             return [r.x, r.y, r.width, r.height].map(Math.round);
           }),
           transport: document.querySelector('[data-ui="season-transport"]')!.getBoundingClientRect()
             .height,
-          hidden: slot.querySelector('i')?.getAttribute('aria-hidden'),
-          live: !!slot.closest('[aria-live]'),
+          hidden: moment.getAttribute('aria-hidden'),
+          live: !!moment.closest('[aria-live]'),
+          text: moment.textContent,
+          // On home the card plays it; the bottom slot stays empty.
+          slot: document.querySelector('[data-testid="match-moment"]')?.getAttribute('data-state'),
         };
       },
       pinned,
       { polling: 'raf', timeout: 20_000 },
     );
     const moment = (await seen.jsonValue())!;
-    // Shown while the match is still being played: no result has landed yet.
-    expect(moment.round).toBe('0');
     expect(moment.boxes).toEqual(before);
     expect(Math.round(moment.transport)).toBe(Math.round(transport.height));
     expect(moment.hidden).toBe('true');
     expect(moment.live).toBe(false);
-    // Once the match day lands its caption goes; stopping clears any later step's indicator.
+    expect(moment.text).toBe('');
+    expect(moment.slot).toBe('off');
+    const ended = await page.waitForFunction(
+      () => (document.querySelector('[data-testid="next-match-moment"]') ? 0 : performance.now()),
+      undefined,
+      { polling: 'raf', timeout: 20_000 },
+    );
+    // At least 2 s (→WEB-18), less one frame either side of the watch.
+    expect((await ended.jsonValue()) - moment.at).toBeGreaterThanOrEqual(1950);
     await expect(page.getByTestId('game-round')).toHaveText('1');
-    await expect(late).not.toContainText('경기 진행 중…');
     await controls.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
-    await expect(late).toHaveAttribute('data-state', 'off');
-    await expect(late).toHaveText('');
+    await expect(page.getByTestId('next-match-moment')).toHaveCount(0);
+    await expect(slot).toHaveAttribute('data-state', 'off');
+    await expect(slot).toBeEmpty();
     expect(await boxes()).toEqual(before);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });

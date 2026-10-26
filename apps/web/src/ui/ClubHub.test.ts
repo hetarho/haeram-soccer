@@ -82,6 +82,24 @@ describe('contextual home match access', () => {
     expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>전술·선발 준비<\/button>/);
   });
 
+  it('plays the match-day moment in place of its content while the store holds one', () => {
+    const markup = renderToStaticMarkup(
+      createElement(NextMatchCard, { w: world(), onPrepare: vi.fn(), moment: true }),
+    );
+    const moment = markup.match(/<span[^>]*data-testid="next-match-moment"[^>]*>.*?<\/span>/)?.[0];
+    expect(moment).toContain('aria-hidden="true"');
+    expect(moment).toMatch(/<i class="[^"]*"><\/i>/);
+    expect(moment).not.toContain('A Very Long Opponent Athletic Club');
+    // The content stays laid out under the moment, unseen, so the card keeps its size.
+    expect(markup).toMatch(/<section class="[^"]*momentOn[^"]*"/);
+    expect(markup).toContain('전술·선발 준비');
+    const idle = renderToStaticMarkup(
+      createElement(NextMatchCard, { w: world(), onPrepare: vi.fn() }),
+    );
+    expect(idle).not.toContain('next-match-moment');
+    expect(idle).not.toContain('momentOn');
+  });
+
   it('keeps unfinished observation out of the upcoming-match card', () => {
     gameStore.setState({ playback: { record: { id: 'live' } } as ClientState['playback'] });
     const markup = renderToStaticMarkup(

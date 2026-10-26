@@ -3,7 +3,7 @@ import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
-import { memo, useEffect, useRef } from 'react';
+import { lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { useUnfinishedPlayback } from '../runtime/matchView';
 import {
@@ -16,7 +16,13 @@ import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
+import { Dialog } from './Dialog';
 import p from './ProgressControls.module.css';
+
+// The result notice's report loads only when opened, outside the main chunk (→ARCH-28).
+const MatchReport = lazy(() =>
+  import('./MatchReport').then((module) => ({ default: module.MatchReport })),
+);
 
 const PACES: [Pace, string, string][] = [
   ['x1', 'x1', '1초에 하루'],
@@ -66,12 +72,16 @@ export const ProgressOverview = memo(function ProgressOverview({
 export const ProgressControls = memo(function ProgressControls({
   client,
   controller,
+  homeVisible = false,
 }: {
   client: GameClient;
   controller: ProgressionController;
+  /** Home's NEXT MATCH card is on screen and shows the match-day moment itself. */
+  homeVisible?: boolean;
 }) {
   const state = useGameState((state) => state);
-  const { running, pace, lateStep } = useProgression(controller, (state) => state);
+  const { running, pace, matchMoment, resultNotice } = useProgression(controller, (state) => state);
+  const [report, setReport] = useState<string>();
   // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
   // click landing just after that was aimed at the old label, so it must not start the clock.
   const userStop = useRef(false);
@@ -137,6 +147,10 @@ export const ProgressControls = memo(function ProgressControls({
   );
   // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
+  const moment = !manual && matchMoment !== undefined && !homeVisible;
+  const noticed = resultNotice && w.ownMatches.find((m) => m.id === resultNotice.matchId);
+  const opened = report !== undefined ? w.ownMatches.find((m) => m.id === report) : undefined;
+  const name = (id: string) => w.clubs.find((club) => club.id === id)?.name ?? id;
   return (
     <section className={p.controls} data-ui="season-transport" aria-label="시즌 진행">
       <div className={p.modeGroup}>
@@ -149,20 +163,37 @@ export const ProgressControls = memo(function ProgressControls({
         >
           {manual ? 'MANUAL' : 'AUTO'}
         </span>
-        {/* Reserved slot: a late step's indicator appears here without moving the controls. */}
+        {/* Reserved slot: away from home the match-day moment plays here without moving anything. */}
         {!manual && (
-          <span className={p.lateStep} data-testid="late-step" data-state={lateStep ?? 'off'}>
-            {lateStep && (
-              <>
-                <i className={p.lateSpinner} aria-hidden="true" />
-                <span className={p.lateCaption}>
-                  {lateStep === 'match' ? '경기 진행 중…' : '진행 중…'}
-                </span>
-              </>
-            )}
+          <span
+            className={p.momentSlot}
+            data-testid="match-moment"
+            data-state={moment ? 'on' : 'off'}
+            aria-hidden="true"
+          >
+            {moment && <i className={p.momentBall} />}
           </span>
         )}
       </div>
+      {noticed && (
+        <button
+          className={p.resultNotice}
+          data-testid="result-notice"
+          onClick={() => {
+            setReport(noticed.id);
+            controller.clearResultNotice();
+          }}
+        >
+          {name(noticed.home)} {noticed.score.home}–{noticed.score.away} {name(noticed.away)}
+        </button>
+      )}
+      {opened && (
+        <Dialog label="경기 분석" onClose={() => setReport(undefined)} wide>
+          <Suspense fallback={<p role="status">경기 기록을 펼치는 중…</p>}>
+            <MatchReport record={opened} w={w} />
+          </Suspense>
+        </Dialog>
+      )}
       <i
         className={p.progress}
         role="progressbar"

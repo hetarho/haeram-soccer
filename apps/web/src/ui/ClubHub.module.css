@@ -146,6 +146,43 @@
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface);
 }
+/* The match-day moment (→WEB-18) covers the card; its content stays laid out but unseen. */
+.fixture.momentOn {
+  position: relative;
+}
+.momentOn > .fixtureInfo,
+.momentOn > .fixtureActions {
+  visibility: hidden;
+}
+.moment {
+  position: absolute;
+  inset: var(--panel-padding);
+  overflow: hidden;
+}
+.momentBall {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--subtle-fill);
+  animation: moment-roll 1200ms ease-in-out infinite alternate;
+}
+@keyframes moment-roll {
+  to {
+    left: calc(100% - 18px);
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .momentBall {
+    left: calc(50% - 9px);
+    animation: none;
+  }
+}
 .fixtureActions {
   flex: none;
   margin-left: auto;

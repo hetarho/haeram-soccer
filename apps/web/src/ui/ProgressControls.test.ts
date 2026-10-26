@@ -79,36 +79,63 @@ describe('unified bottom progression controls', () => {
     },
   );
 
-  it.each([
-    ['match', '경기 진행 중…'],
-    ['day', '진행 중…'],
-  ] as const)(
-    'renders a %s late step in its reserved slot without a live region',
-    (lateStep, caption) => {
-      gameStore.getState().view!.world.settings!.mode = 'automatic';
-      const late = {
-        store: createStore(() => ({ running: true, pace: 'x10', reason: '', lateStep })),
-      } as unknown as ProgressionController;
-      const markup = renderToStaticMarkup(
-        createElement(ProgressControls, { client, controller: late }),
-      );
-      const slot = markup.match(/<span[^>]*data-testid="late-step"[^>]*>(.*?)<\/span><\/div>/)?.[0];
-      expect(slot).toContain(`data-state="${lateStep}"`);
-      expect(slot).toContain(`>${caption}<`);
-      expect(slot).toMatch(/<i[^>]*aria-hidden="true"/);
-      expect(slot).not.toContain('aria-live');
-      // Off, the slot stays reserved and empty; manual mode has none.
-      const idle = renderToStaticMarkup(createElement(ProgressControls, { client, controller }));
-      expect(idle).toMatch(/data-testid="late-step"[^>]*data-state="off"[^>]*><\/span>/);
-      expect(idle).not.toContain('진행 중…');
-      gameStore.getState().view!.world.settings!.mode = 'manual';
-      const manual = renderToStaticMarkup(
-        createElement(ProgressControls, { client, controller: late }),
-      );
-      expect(manual).not.toContain('late-step');
-      expect(manual).not.toContain('진행 중…');
-    },
-  );
+  it('plays the match-day moment in its reserved slot only while home is not on screen', () => {
+    gameStore.getState().view!.world.settings!.mode = 'automatic';
+    const moment = {
+      store: createStore(() => ({ running: true, pace: 'x10', reason: '', matchMoment: 'f1' })),
+    } as unknown as ProgressionController;
+    const slot = (markup: string) =>
+      markup.match(/<span[^>]*data-testid="match-moment"[^>]*>(.*?)<\/span><\/div>/)?.[0];
+    const away = slot(
+      renderToStaticMarkup(createElement(ProgressControls, { client, controller: moment })),
+    );
+    expect(away).toContain('data-state="on"');
+    expect(away).toContain('aria-hidden="true"');
+    expect(away).toMatch(/<i class="[^"]*"><\/i>/);
+    expect(away).not.toContain('aria-live');
+    // On home the NEXT MATCH card plays it; the slot stays reserved and empty, as when idle.
+    for (const markup of [
+      renderToStaticMarkup(
+        createElement(ProgressControls, { client, controller: moment, homeVisible: true }),
+      ),
+      renderToStaticMarkup(createElement(ProgressControls, { client, controller })),
+    ])
+      expect(markup).toMatch(/data-testid="match-moment"[^>]*data-state="off"[^>]*><\/span>/);
+    gameStore.getState().view!.world.settings!.mode = 'manual';
+    const manual = renderToStaticMarkup(
+      createElement(ProgressControls, { client, controller: moment }),
+    );
+    expect(manual).not.toContain('match-moment');
+  });
+
+  it('shows the result notice with both clubs and the score while the store holds one', () => {
+    const w = gameStore.getState().view!.world;
+    w.settings!.mode = 'automatic';
+    w.clubs = [
+      { id: 'own', name: 'Clock Club', country: 'ENG', tier: 0 },
+      { id: 'opp', name: 'Rival Town', country: 'ENG', tier: 0 },
+    ] as World['clubs'];
+    w.ownMatches = [
+      { id: 'm1', home: 'opp', away: 'own', score: { home: 1, away: 3 } },
+    ] as World['ownMatches'];
+    const noticed = {
+      store: createStore(() => ({
+        running: true,
+        pace: 'x1',
+        reason: '',
+        resultNotice: { matchId: 'm1' },
+      })),
+    } as unknown as ProgressionController;
+    const markup = renderToStaticMarkup(
+      createElement(ProgressControls, { client, controller: noticed }),
+    );
+    expect(markup).toMatch(
+      /<button[^>]*data-testid="result-notice"[^>]*>Rival Town 1–3 Clock Club</,
+    );
+    expect(
+      renderToStaticMarkup(createElement(ProgressControls, { client, controller })),
+    ).not.toContain('result-notice');
+  });
 
   it('keeps date and round metadata free of mode controls', () => {
     const markup = renderToStaticMarkup(createElement(ProgressOverview, { compact: true }));

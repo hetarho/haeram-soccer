@@ -20,7 +20,7 @@ vi.mock('./FacilityArt', () => ({
   FacilityArt: ({ kind }: { kind: string }) => createElement('img', { 'data-facility-art': kind }),
 }));
 const controller = {
-  store: createStore(() => ({ background: { hidden: true, away: 'season' } })),
+  store: createStore(() => ({ background: { hidden: true, away: 'season', resultNotice: false } })),
 } as unknown as ProgressionController;
 const render = () =>
   renderToStaticMarkup(createElement(OwnerOffice, { client: {} as GameClient, controller }));
@@ -68,6 +68,9 @@ describe('owner office page', () => {
     expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 위임/);
     expect(markup).not.toContain('role="dialog"');
     expect(markup).not.toContain('>적용</button>');
+    // The result notice preference sits on its own, above the 자리를 비운 동안 section.
+    expect(markup).toMatch(/<input type="checkbox"[^>]*\/>경기 결과 알림/);
+    expect(markup.indexOf('경기 결과 알림')).toBeLessThan(markup.indexOf('자리를 비운 동안'));
   });
   it('allows manual with match eve off and hides only background controls', () => {
     const settings = gameStore.getState().view!.world.settings!;
@@ -79,6 +82,7 @@ describe('owner office page', () => {
     expect(markup).toContain('aria-label="이적시장 개장 보고"');
     expect(markup).toContain('aria-label="보고·위임 설정"');
     expect(markup).not.toContain('aria-label="자동 모드의 백그라운드 진행"');
+    expect(markup).not.toContain('경기 결과 알림');
     expect(markup).not.toContain('경기 이벤트가 필요');
     expect(markup).not.toContain('모달');
     expect(markup).not.toContain('멈추기');
