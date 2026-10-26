@@ -7,7 +7,7 @@ describe('tactical roster tradeoffs', () => {
   // The grid engine's tactics are not balanced yet: press beats every other tactic at equal
   // strength (STATE inbox 261019 suggest T216 MATCH-8), so the cases preferring another tactic
   // wait for that tuning. T278 measured the same on the candidate model (press 66–79% at home
-  // against counter and balanced, artifacts/benchmarks/CALIBRATION.md) and leaves them skipped. T321 and T324
+  // against counter and balanced, artifacts/benchmarks/calibration-results.json) and leaves them skipped. T321 and T324
   // narrowed it on the candidate model but press still beats counter there (MATCH-29 verdicts in
   // artifacts/benchmarks/detailed-model-calibration.json), and these cases play the pre-feature model
   // (`DISABLED_RELEASE`, whatever the switch), so they stay skipped until the candidate holds

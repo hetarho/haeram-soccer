@@ -63,15 +63,12 @@ The shared read keeps q12's facts bit for bit and brings its cost from 1.30× to
   not reach a runner a high press already pins in his own third.
 - (b) late box runs (b05–b30) bring MF goals back to 27–29% (b15 28.6%, the base's level) with the
   curve 3.0–3.7, but leave press's points 0.35–0.46.
-- No (a)/(b) setting moves press's points inside; the next lever (c) lets runs in behind a high line
-  start from the own third (`coordination.highLine.room`, 2020e999), screened as h30/h40/h50 and
-  combined with l08b as c40.
-- (c) alone is not monotonic (h30 0.42, h40 0.30, h50 0.46), so room 40 needs checking for noise.
+- No (a)/(b) setting moved press's points inside. Setting (c), `coordination.highLine.room` at
+  2020e999, was screened as h30/h40/h50 and combined with l08b as c40.
+- (c) alone is not monotonic (h30 0.42, h40 0.30, h50 0.46); the screen does not resolve that noise.
   c40 is the best so far: press's points 0.265 [0.134, 0.396] (unresolved, no longer outside), every
   press gap unresolved rather than outside, the curve 2.38 (≤ 2.5), offsides 1.75 and goals 2.84 in
-  band. But MF goals stay 24.2% (outside) and MATCH-30 falls 7 → 5. Next: c40 with late pull 3
-  (b30's MF goals) and room 35/45 around 40, then validate the best on two fresh rounds against T373's
-  football, or take the exit.
+  band. MF goals stay 24.2% (outside) and MATCH-30 falls 7 → 5.
 - c40p3 (late pull 3) brings MF goals back to 28.0% (unresolved) and goals 2.63, but press's points
   return outside (0.351) and the curve rises to 4.60: the late runs that score for the midfielders
   also feed press. With 2¾ h of the timebox left, room 35/45 is not screened (room alone was not

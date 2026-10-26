@@ -28,9 +28,10 @@ Current product rules and architecture are maintained in [spec/ssot/](spec/ssot/
 The [Korean project narrative](spec/NARRATIVE.md) provides an overview; [spec/STATE.md](spec/STATE.md)
 records current work, and completed task files retain implementation history.
 
-[artifacts/](artifacts/README.md) holds retained design concepts, screenshots, benchmark outputs
-and verification evidence. It is not another specification. Disposable logs, browser profiles
-and caches belong in ignored `.tmp/`. Editable artwork and deployed resources remain under
+[artifacts/](artifacts/README.md) holds benchmark measurements and reproduction tools. Unimplemented
+visual concepts may also be retained there; product plans and rules belong in `spec/`. Applied UI
+captures, disposable logs, browser profiles and caches belong in ignored `.tmp/`.
+Editable artwork and deployed resources remain under
 `apps/web/design/` and `apps/web/public/`.
 
 Verification commands and their task, batch and CI scopes follow ARCH-22/23/30:

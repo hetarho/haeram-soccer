@@ -1,0 +1,62 @@
+{
+  "kind": "historical benchmark measurements",
+  "sourceDocument": {
+    "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+    "pathAtSnapshot": "artifacts/benchmarks/finance-calibration.md",
+    "sha256AtSnapshot": "d8f3b3dfb90ddc8fd37419286d903d079a93229ca66bbef2dd2ade77d7ea41b3"
+  },
+  "interpretation": "Tables retain historical run labels and comparison bands. They do not define current behavior or acceptance criteria; those are maintained in spec/ssot/. The document snapshot is provenance, not the execution commit of every recorded run. Consult each historicalContext and the original run artifacts for source, units, sample size and environment. Results from different runs are not a controlled performance comparison.",
+  "tables": [
+    {
+      "tableAtSnapshot": 1,
+      "sourceLines": [
+        23,
+        35
+      ],
+      "historicalContext": [
+        "Historical economy calibration",
+        "측정 결과 (2026-10-14, 규칙 1.22.0, 단장과 감독 요청)"
+      ],
+      "sourceColumns": [
+        1,
+        3,
+        4
+      ],
+      "markdown": "| 목표 | 측정 |  |\n| --- | ---: | --- |\n| 인건비 / 매출, 처음 50시즌 | 41.3% | 범위 아래(1.21에서 41.4%): 트레이딩 머신 커리어 29–48%, 기본 커리어 평균 약 45% |\n| 영업 이익(매각 전) / 매출, 처음 50시즌 | +1.3% | 범위 안(1.21에서 +2.4%) |\n| (옆) 선수 매각 / 매출 | 16.3% |  |\n| (옆) 시설 투자 전 영업 이익 / 매출 | +22.3% |  |\n| (옆) 매각 포함 순이익 / 매출 | +17.6% |  |\n| 2000년대 1부 대회 / 상업 / 경기일 수입 | 45.4% / 32.0% / 22.6% | 범위 안 |\n| 1950년대 경기일 수입 / 매출 | 83.2% | 범위 안 |\n| 시설 세 부문 ÷ 1부 시즌 평균 순이익(시설 투자 전) | 91.4시즌 | 범위 안 |\n| 1부 / 2부 / 3부 / 아마추어 평균 관중(자리 잡은 클럽) | 34,416 / 13,874 / 5,347 / 972 | 범위 안(기준 클럽 자신의 2·3부는 아래) |\n| 1부 능력 80 / 60 시장 연봉, 2부 / 1부 선수단 연봉 | 7.37배, 40.0% | 범위 안 |\n| 파산 (기준 클럽) | 1 / 40 | 범위 밖: ESP 기본 방향 시드 4, 1971년 |"
+    },
+    {
+      "tableAtSnapshot": 2,
+      "sourceLines": [
+        44,
+        62
+      ],
+      "historicalContext": [
+        "Historical economy calibration",
+        "이전 측정 (2026-10-14, 규칙 1.21.0, 방향 계획 전체)"
+      ],
+      "sourceColumns": [
+        1,
+        3,
+        4
+      ],
+      "markdown": "| 목표 | 측정 |  |\n| --- | ---: | --- |\n| 인건비 / 매출, 처음 50시즌 | 41.4% | 범위 아래(이전 44.8%): 트레이딩 머신 커리어가 25–48%, 기본 커리어는 평균 약 44% |\n| 영업 이익(매각 전) / 매출, 처음 50시즌 | +2.4% | 범위 안 |\n| (옆) 선수 매각 / 매출 | 15.3% |  |\n| (옆) 시설 투자 전 영업 이익 / 매출 | +22.5% |  |\n| (옆) 매각 포함 순이익 / 매출 | +17.7% |  |\n| 2000년대 1부 대회 수입 / 매출 | 45.4% | 범위 안 |\n| 2000년대 1부 상업 수입 / 매출 | 31.7% | 범위 안 |\n| 2000년대 1부 경기일 수입 / 매출 | 22.9% | 범위 안 |\n| 1950년대 경기일 수입 / 매출 | 84.8% | 범위 안 |\n| 시설 세 부문(1,530,450 축구 지수 단위, 단계마다 일정 배수인 비용) ÷ 1부 시즌 평균 순이익(시설 투자 전) | 40.4시즌(261015, 16개 커리어; 예전 비용 4,045,150 단위로는 94.1시즌) | 범위 안 |\n| 1부 평균 관중 (자리 잡은 클럽 / 기준 클럽 3시즌째 이상) | 34,421 / 23,920 | 범위 안 |\n| 2부 평균 관중 | 13,875 / 6,419 | 범위 안(기준 클럽 자신은 아래) |\n| 3부 평균 관중 | 5,282 / 2,651 | 범위 안(기준 클럽 자신은 아래) |\n| 아마추어 평균 관중 | 972 / 906 | 범위 안 |\n| 1부 능력 80 / 60 시장 연봉 | 7.37배 | 범위 안 |\n| 2부 / 1부 같은 능력의 선수단 연봉 | 40.0% | 범위 안 |\n| 파산 (기준 클럽) | 0 / 40 | 범위 안 |"
+    }
+  ],
+  "commandsAtSnapshot": [
+    "pnpm exec tsx scripts/calibrate-economy.ts\npnpm exec tsx scripts/calibrate-economy.ts --quick\nnode --import tsx scripts/calibrate-economy.ts --countries ENG --builds default --modes greedy --seeds 2 --log --out eng.json\nnode --import tsx scripts/calibrate-economy.ts --in eng.json,ger.json"
+  ],
+  "observationsAtSnapshot": [
+    {
+      "sourceLine": 38,
+      "text": "- 승격 303번: 선수단 연봉이 조항으로 평균 +11.2%, 강등 185번: 평균 −25.5%."
+    },
+    {
+      "sourceLine": 69,
+      "text": "인건비 44.8%, 영업 이익 +3.5%(매각 13.2%, 시설 투자 전 +22.6%, 순이익 +16.7%), 2000년대 43.6/32.9/23.5%, 1950년대 경기일 88.5%, 사다리 93.9시즌, 파산 0/40."
+    },
+    {
+      "sourceLine": 71,
+      "text": "- 승격 251번: 선수단 연봉이 조항으로 평균 +9.2%(p10–p90 +4.2~+14.6%), 계약의 40%에 조항. 강등 131번: 평균 −27.2%(−37.3~−16.7%), 계약의 68%에 조항."
+    }
+  ]
+}

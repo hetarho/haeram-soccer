@@ -1,0 +1,207 @@
+{
+  "kind": "historical benchmark measurements",
+  "sourceDocument": {
+    "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+    "pathAtSnapshot": "artifacts/benchmarks/development-feedback-baseline-2026-10-26.md",
+    "sha256AtSnapshot": "e7054cb43616902042c346d7bed4b6eef23aab1f3ca7a344e136a543e1c7f47d"
+  },
+  "interpretation": "Tables retain historical run labels and comparison bands. They do not define current behavior or acceptance criteria; those are maintained in spec/ssot/. The document snapshot is provenance, not the execution commit of every recorded run. Consult each historicalContext and the original run artifacts for source, units, sample size and environment. Results from different runs are not a controlled performance comparison.",
+  "tables": [
+    {
+      "tableAtSnapshot": 1,
+      "sourceLines": [
+        23,
+        30
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Retained workflow sample"
+      ],
+      "markdown": "| Retained metric | Count / value | Meaning |\n| --- | --- | --- |\n| Integrated-unit elapsed median | 105.264 min; n=15 | Claim creation → recorded integration completion; includes implementation, checks, review and waiting |\n| Retained task-check median | 125.339 s; n=15 | Latest retained successful command per integrated unit; not all historical retries |\n| Full integration gate median | 1075.000 s (17.917 min); n=13 | Install + unit/contract/catalog/build + Chromium |\n| Full integration gate total | 13991.299 s (233.188 min) | Sum of 13 recorded command durations, not one task’s time or claimed avoidable waste |\n| Full integration gate range | 1008.747–1215.310 s | Same gate category, different source trees/workloads |\n| Fast integration gate median | 30.077 s; n=2 | T444/T445: install + type/lint/format; full gate moved to group completion |"
+    },
+    {
+      "tableAtSnapshot": 2,
+      "sourceLines": [
+        38,
+        54
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Retained workflow sample",
+        "Per-unit intervals"
+      ],
+      "markdown": "| Unit | Claimed KST | Claim→submit (min) | Task check (s) | Submit→complete (min) | Final gate (s) | Total (min) | Gate |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| T415 | 10-24 19:04:39 | 10.460 | 88.677 | 20.556 | 1027.704 | 31.016 | full + Chromium |\n| T421, T422 | 10-24 19:04:40 | 126.540 | 31.051 | 45.784 | 1215.310 | 172.324 | full + Chromium |\n| T416 | 10-24 19:35:42 | 92.744 | 51.189 | 19.858 | 1011.522 | 112.602 | full + Chromium |\n| T417 | 10-24 19:35:44 | 12.045 | 58.671 | 20.378 | 1059.563 | 32.423 | full + Chromium |\n| T418 | 10-24 19:35:46 | 33.441 | 56.604 | 22.432 | 1013.005 | 55.873 | full + Chromium |\n| T419 | 10-24 19:47:48 | 23.272 | 73.643 | 42.116 | 1008.747 | 65.388 | full + Chromium |\n| T420 | 10-24 21:28:21 | 117.109 | 125.339 | 25.717 | 1074.647 | 142.826 | full + Chromium |\n| T426 | 10-24 23:51:13 | 151.773 | 411.476 | 31.282 | 1092.825 | 183.055 | full + Chromium |\n| T436 | 10-25 01:13:30 | 14.101 | 172.914 | 19.011 | 1137.546 | 33.112 | full + Chromium |\n| T431 | 10-25 02:54:23 | 22.864 | 235.111 | 55.315 | 1114.280 | 78.180 | full + Chromium |\n| T441 | 10-25 03:17:15 | 105.974 | 146.485 | 26.269 | 1081.561 | 132.243 | full + Chromium |\n| T442 | 10-25 05:29:32 | 79.392 | 148.912 | 24.831 | 1079.589 | 104.223 | full + Chromium |\n| T443 | 10-25 07:13:48 | 117.191 | 31.562 | 27.676 | 1075.000 | 144.867 | full + Chromium |\n| T444 | 10-25 09:38:43 | 104.225 | 154.034 | 8.144 | 30.613 | 112.368 | fast only |\n| T445 | 10-25 11:31:05 | 96.745 | 152.471 | 8.518 | 29.541 | 105.264 | fast only |"
+    },
+    {
+      "tableAtSnapshot": 3,
+      "sourceLines": [
+        66,
+        72
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Git checkpoint intervals"
+      ],
+      "markdown": "| Observed window | Start commit | Start KST | End commit | End KST | Elapsed (min) |\n| --- | --- | --- | --- | --- | --- |\n| T426: planning → integration candidate | `90a2078a` | 10-24 22:24:28 | `60072b02` | 10-25 02:36:03 | 251.583 |\n| T437: WIP → integration candidate | `c3651c5b` | 10-25 15:20:54 | `7daa6f77` | 10-25 15:25:17 | 4.383 |\n| T457 (then T450): task creation → done note | `4a8c03dc` | 10-25 21:06:53 | `ba6e2a75` | 10-26 00:02:44 | 175.850 |\n| T286: resumed branch → result note | `7abef41f` | 10-26 00:04:21 | `8a92cf7e` | 10-26 05:30:07 | 325.767 |\n| T458: creation note → last observed fix | `8830010a` | 10-26 05:58:04 | `605e985f` | 10-26 09:12:04 | 194.000 |"
+    },
+    {
+      "tableAtSnapshot": 4,
+      "sourceLines": [
+        84,
+        90
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Existing simulation and storage timings"
+      ],
+      "markdown": "| Existing run | Artifact elapsed (s) | Artifact elapsed (min) | Source |\n| --- | --- | --- | --- |\n| T286 baseline runner, pre-change comparison source | 2235.121 | 37.252 | [baseline-9f69553-100.json](t286/baseline-9f69553-100.json) |\n| T286 candidate before T457; noisy, budget failure | 4483.053 | 74.718 | [candidate-100-f5fc5c09.json](t286/candidate-100-f5fc5c09.json) |\n| T286 first post-T457 candidate; noisy | 3444.644 | 57.411 | [candidate-100-cb64026c-1.json](t286/candidate-100-cb64026c-1.json) |\n| T286 final candidate; quiet release evidence | 3186.089 | 53.101 | [candidate-100.json](t286/candidate-100.json) |\n| T286 final storage benchmark; sum of phase timers | 5004.310 | 83.405 | [T286-full-model-storage.json](T286-full-model-storage.json) |"
+    },
+    {
+      "tableAtSnapshot": 5,
+      "sourceLines": [
+        98,
+        109
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Existing simulation and storage timings",
+        "Final storage benchmark phase breakdown"
+      ],
+      "markdown": "| Phase | Recorded internal elapsed (s) | Minutes |\n| --- | --- | --- |\n| retained | 53.980 | 0.900 |\n| activation | 128.475 | 2.141 |\n| baseline-1 | 642.103 | 10.702 |\n| baseline-2 | 716.342 | 11.939 |\n| baseline-checkpoints | 575.906 | 9.598 |\n| active-management-1 | 611.072 | 10.185 |\n| active-management-2 | 727.747 | 12.129 |\n| active-management-checkpoints | 597.073 | 9.951 |\n| era-1 | 453.047 | 7.551 |\n| era-2 | 498.565 | 8.309 |"
+    },
+    {
+      "tableAtSnapshot": 6,
+      "sourceLines": [
+        115,
+        119
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Existing simulation and storage timings",
+        "Existing parity measurement"
+      ],
+      "markdown": "| Measurement | Recorded duration | Source field |\n| --- | --- | --- |\n| T401 part B | 3636.5 s | provenance.parts[0].elapsedSeconds |\n| T401 part T | 4040.8 s | provenance.parts[1].elapsedSeconds |\n| T401 combined parts | 7677.3 s (127.955 min) | speed.elapsedSeconds |"
+    },
+    {
+      "tableAtSnapshot": 7,
+      "sourceLines": [
+        127,
+        134
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "A previous optimization already has before/after evidence"
+      ],
+      "markdown": "| Metric | Historical before | Historical after | Calculated change |\n| --- | --- | --- | --- |\n| 80-season median engine time | 18,840 ms | 14,206 ms | 24.60% less time |\n| 80-season p90 engine time | 22,899 ms | 15,204 ms | 33.60% less time |\n| 80-season maximum engine time | 26,045 ms | 16,933 ms | 34.99% less time |\n| 80-season command elapsed | 1490.992 s | 1107.187 s | 25.74% less time |\n| Seasons over 15 s | 65 / 80 | 13 / 80 | Counts, not an independent gate verdict |\n| NPC fixture median | 0.744812 ms | 0.681417 ms | 8.51% less time |"
+    },
+    {
+      "tableAtSnapshot": 8,
+      "sourceLines": [
+        142,
+        147
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "A previous optimization already has before/after evidence",
+        "Retained late-season profile"
+      ],
+      "markdown": "| Function | Inclusive sampled time (ms) | Share of profile |\n| --- | --- | --- |\n| simulateSeason src/index.ts | 14662 | 93.0% |\n| simulateAggregate aggregate/engine.ts | 8409 | 53.3% |\n| playGrid grid/engine.ts | 4793 | 30.4% |\n| attributePlayerFacts aggregate/players.ts | 4045 | 25.6% |"
+    },
+    {
+      "tableAtSnapshot": 9,
+      "sourceLines": [
+        153,
+        159
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Existing CI/report observations"
+      ],
+      "markdown": "| Observation | Recorded value | Evidence and limit |\n| --- | --- | --- |\n| Chromium CI job before/after model release | 21.4 → 32.7 min | Run IDs 40214850068 → 40243569140; rounded report values, workload/source changed |\n| Local Chromium journey run, T435 integrated | 274 passed; 15.7 min | Report associates this with group gate 4b8c42af; do not call this entire gate duration |\n| Local unit stage, T458 integration | 2,141 passed + 4 skipped; 6.6 min | Report at 9e54c848; stage-specific, rounded |\n| Local Chromium stage, T458 integration | 274 passed; 15.8 min | Same report; stage-specific, rounded |\n| Changed-file checks, T435 | 226 files; 1,787 passed + 4 skipped | Count only; exact duration not retained in that report |"
+    },
+    {
+      "tableAtSnapshot": 10,
+      "sourceLines": [
+        167,
+        177
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Test-suite coverage and latest retained duration records"
+      ],
+      "markdown": "| Scope | Latest relevant retained duration | Execution/source | Qualification |\n| --- | --- | --- | --- |\n| Complete unit suite | About 6.6 min (396 s) | Oct 26 report, integration candidate `9e54c848`; 2,141 passed + 4 skipped | Rounded report value on the M1 Max reference environment; includes integration-style cases currently classified as unit |\n| Standalone integration suite | Not separately recorded | No `test:integration` script/project in the snapshot | Host/storage/progression integration cases currently run inside `test:unit`; `test:contract` is a different scope |\n| Contract suite | Wrapper 32.941 s; Vitest 31.60 s | Local retained check recorded Oct 24 02:54:42.662 KST, tree `16ac4b99`; 3 files / 39 passed | Older source and environment than the Oct 26 M1 Max report; not a current same-machine timing |\n| Complete Chromium E2E suite | About 15.8 min (948 s) | Same Oct 26 report and candidate `9e54c848`; 274 passed | One browser only, not all Playwright projects |\n| Chromium CI job | About 32.7 min | Run `40243569140`, Oct 26 report | CI job/report scope; includes different machine/load/setup/retry conditions; not local E2E time |\n| Firefox CI job | About 29.6 min | Same report; `season-flow:135` failed before the later fix | Not a complete successful all-browser baseline |\n| Local unit + contract + catalog/build + Chromium batch | 17 min 55 s median; n=13 | Oct 24–25 archived work attempts above, before the final released-model runs | Historical gate median, not the latest `9e54c848` gate and not three-browser `verify` |\n| All-browser E2E, older successful full run | About 19.2 min | Oct 17, T179, 545 passed + 4 skipped | Older engine/test scope; cannot stand in for the current three-browser total |\n| Current complete `pnpm run verify` | Not found | No completed current-source one-command duration in the inspected records | Do not substitute a partial/failing run, an older run or a sum across machines |"
+    },
+    {
+      "tableAtSnapshot": 11,
+      "sourceLines": [
+        187,
+        190
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Test-suite coverage and latest retained duration records",
+        "Additional retained raw-log evidence"
+      ],
+      "markdown": "| Command | Recorded timestamp KST | Wrapper duration | Test-runner duration | Result / source identity |\n| --- | --- | --- | --- | --- |\n| `pnpm run test:unit` | 2026-10-24 02:54:09.666 | 453.304 s | 451.83 s | 265 files; 1,967 passed + 4 skipped; tree `16ac4b99e72ec25bec89e755f3acea03609e3c21` |\n| `pnpm run test:contract` | 2026-10-24 02:54:42.662 | 32.941 s | 31.60 s | 3 files; 39 passed; same tree |"
+    },
+    {
+      "tableAtSnapshot": 13,
+      "sourceLines": [
+        232,
+        249
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Provenance and recalculation"
+      ],
+      "markdown": "| Versioned source | SHA-256 |\n| --- | --- |\n| `spec/work/v9n4-release.json` | `9490a4e4556ab226f7e7267c8e747abbdcff9051a8ad449d5be1801388695f82` |\n| `docs/benchmarks/t450/throughput.json` | `bd09e9ada241b05f6ebc3cd59ff4f65d077b830ef481dd8dd09683bf4a7cc613` |\n| `docs/benchmarks/t450/profile-after.json` | `3f03c9f35157201e8f7a9b3e0233622c9db94b7f4f50dfe37034772f06140c21` |\n| `docs/benchmarks/match-parity.json` | `435df0583e9f22aabe4c84e275fc61da3597f88aaa4fa26efed05ba1398459b4` |\n| `docs/benchmarks/t286/baseline-9f69553-100.json` | `f967bc97d45c8f363d2c2123f17fed0a2331cdb52b6ff452af2085e26b6d43ee` |\n| `docs/benchmarks/t286/candidate-100-f5fc5c09.json` | `7a096d04c7738bd7ed00fe53715933a333fe8ded06fe050287b8d805920d8959` |\n| `docs/benchmarks/t286/candidate-100-cb64026c-1.json` | `ac2239d00776df0558803633e877e55d9434c374985f00c2214726f870b30635` |\n| `docs/benchmarks/t286/candidate-100.json` | `9395975ed1cc10d8ca3ec896889ae76950608a02f88cc3df3dba6dde36582701` |\n| `docs/benchmarks/T286-full-model-storage.json` | `863108bacaaae9ec161ad72327755de365c868a47d7e26883b53bff2ad2c3f56` |\n| `spec/reports/261026-k5n2.md` | `453db9cb35f5788a290d2039bb5494b2d92417183f85384c48f6a589a93ab5cd` |\n| `spec/tasks/T286.full-model-activation-and-release-gates.md` | `10ab9839f21a20dc7913f018554a15f6f754da644abbbf3e31a5777e5d8cb347` |\n| `scripts/benchmark.ts` | `f6f0ba1bf5f282aede989a492ffd095b4bd75d65109671fcd674d9126567ef0e` |\n| `tests/e2e/manager-history.spec.ts` | `710d1167e5e3a137aac1e8654c32a77412b544f8267ca5ab1b215a931fe833a0` |\n| `spec/tasks/done/T437.recalibrate-after-carry.md` | `353205f2a52e66f1d9053535b9fd0a07c74d5fca1035b30686fb2bcdcc6a0f63` |\n| `spec/tasks/done/T420.release-on-unit-tier.md` | `574e0579b1ede97362e5e15511001198c9e22423db4935d9160d947f00192e5e` |\n| `docs/benchmarks/T179-rules3-integration.json` | `60dbb7160b3e401151592cbfd5d72b6cb0b6866bd80a9f1ee496fde45535d323` |"
+    },
+    {
+      "tableAtSnapshot": 14,
+      "sourceLines": [
+        253,
+        269
+      ],
+      "historicalContext": [
+        "Development feedback baseline — 2026-10-26",
+        "Provenance and recalculation",
+        "Unit-to-commit identities"
+      ],
+      "markdown": "| Unit | Attempt ID | Verified code commit | Integration candidate commit | Recorded completion KST |\n| --- | --- | --- | --- | --- |\n| T415 | `db179536-4a9f-4d6c-9eaa-d9c18b2af865` | `91d2f6c0` | `2737e84a` | 10-24 19:35:40 |\n| T421, T422 | `3a125fec-eb81-49f4-8796-14688f5ff1d1` | `75c3e1b8` | `879f0432` | 10-24 21:57:00 |\n| T416 | `cb8f4011-c362-4baa-9208-b06e471ca337` | `638407bb` | `18db8f59` | 10-24 21:28:18 |\n| T417 | `138003fd-55f5-4585-989a-d711c6916372` | `ce152a9b` | `fada6e6d` | 10-24 20:08:10 |\n| T418 | `3cbc46d9-86be-4097-9a47-ef920fe9b0b2` | `e04a04aa` | `e2f0dddc` | 10-24 20:31:38 |\n| T419 | `12007006-d7e0-4fdc-8b46-31b557432d56` | `f3307678` | `58e259bd` | 10-24 20:53:11 |\n| T420 | `bf1b0cf3-5b54-4080-be87-14a2f54141b8` | `1b6b9b57` | `2f8d95af` | 10-24 23:51:10 |\n| T426 | `c5718a8f-acf7-488c-a840-7c23a953237d` | `1abaa250` | `60072b02` | 10-25 02:54:16 |\n| T436 | `b44f488f-718a-42a6-825f-c1c9b2c21c21` | `352063a0` | `1e060b3b` | 10-25 01:46:36 |\n| T431 | `c50d2e45-b255-4c43-9091-8f4c2729a66c` | `43a38481` | `8ac4426b` | 10-25 04:12:33 |\n| T441 | `3ef6ccf6-e038-44fe-acd0-020b94749c2d` | `e117822d` | `8e67ed0b` | 10-25 05:29:29 |\n| T442 | `f083e042-f29b-4190-813d-97d111a384fb` | `12c873be` | `09621a66` | 10-25 07:13:45 |\n| T443 | `63ff57c1-3a73-48e0-a086-bdab973a7532` | `c9e2bb77` | `02d6355a` | 10-25 09:38:40 |\n| T444 | `68434180-9531-4e3c-9d35-152266d150ed` | `07e71542` | `9c16eb1a` | 10-25 11:31:05 |\n| T445 | `800de184-ec09-48a8-9ac4-a7efb3ae7b45` | `d546ef57` | `a7135c1f` | 10-25 13:16:21 |"
+    }
+  ],
+  "observationsAtSnapshot": [
+    {
+      "sourceLine": 13,
+      "text": "- **Artifact duration:** an existing runner’s `elapsedMs`/`elapsedSeconds`; its timer scope can differ from shell duration. Structured artifacts take precedence over rounded report prose."
+    },
+    {
+      "sourceLine": 14,
+      "text": "- **Report value:** copied from an existing human-written result/report, with its rounding and uncertainty preserved. CI timings below were not fetched again."
+    },
+    {
+      "sourceLine": 15,
+      "text": "- **Structural snapshot:** dependency counts preserved from the preceding read-only review at the same commit. These counts are not runtime measurements."
+    },
+    {
+      "sourceLine": 16,
+      "text": "- Missing cold/warm cache information, failed attempts, exact active-model time and queue subdivisions are **unknown**, never assumed zero. Source files were read with `git show <snapshot>:<path>`, so concurrent uncommitted changes are excluded."
+    },
+    {
+      "sourceLine": 17,
+      "text": "- The collection snapshot identifies which version of the historical records was read. It does not mean every benchmark executed on that commit; retain each artifact's own execution source and environment."
+    },
+    {
+      "sourceLine": 32,
+      "text": "The full and fast gate cohorts execute different checks on different tasks. Their difference is **not** an apples-to-apples speedup, a measured removal of waste, or proof that full verification can be dropped. Task-check duration is contained in claim→submit; final-gate duration is contained in submit→completion. Do not sum a column with its containing interval."
+    },
+    {
+      "sourceLine": 36,
+      "text": "Time values are calculated from retained timestamps; displayed clock times omit milliseconds. “Claim→submit” includes preparation, implementation, rework and checks. “Submit→complete” includes review, queueing, integration and its final gate."
+    },
+    {
+      "sourceLine": 56,
+      "text": "Units overlap in time. Adding all task totals would double-count parallel work and would not yield elapsed project time. The latest retained review/check arrays may omit earlier attempts; this table is not a complete retry-cost ledger."
+    }
+  ]
+}

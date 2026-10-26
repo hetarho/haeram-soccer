@@ -681,13 +681,13 @@ const report = {
     : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
-      source: 'artifacts/benchmarks/CALIBRATION.md T224',
+      source: 'artifacts/benchmarks/calibration-results.json T224',
       machine: 'Intel Xeon Silver 4214, Node v24.12.0',
       secondsPerSeason: { baselineWorld: 8.43 },
       contextOnly: true,
     },
     {
-      source: 'artifacts/benchmarks/CALIBRATION.md T232 century benchmark',
+      source: 'artifacts/benchmarks/calibration-results.json T232 century benchmark',
       machine: 'Apple M1 Max, Node 26.8.1',
       secondsPerSeason: { baseline: 8.46, 'active-management': 8.24 },
       contextOnly: true,

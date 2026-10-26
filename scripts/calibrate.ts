@@ -1,5 +1,5 @@
 /**
- * Match-outcome calibration harness (MATCH-2, MATCH-22, artifacts/benchmarks/CALIBRATION.md).
+ * Match-outcome calibration harness (MATCH-2, MATCH-22, artifacts/benchmarks/calibration-results.json).
  *
  * Simulates thousands of fixtures per strength-gap bucket on both engine paths (the grid engine
  * and the team-level summary) and whole 20-club double round robins, and prints them next to

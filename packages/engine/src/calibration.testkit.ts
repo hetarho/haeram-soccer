@@ -4,7 +4,7 @@ import { playGrid } from './grid/engine';
 import { buildGridSetup } from './grid/setup';
 import { createWorld, rating, simulateMatch } from './index';
 
-// Coarse guards on the calibrated strength curve (artifacts/benchmarks/CALIBRATION.md, scripts/calibrate.ts):
+// Coarse guards on the calibrated strength curve (artifacts/benchmarks/calibration-results.json, scripts/calibrate.ts):
 // one rating point ≈ 16 Elo, draws and upsets as in long-run European top-flight football.
 // The guard world never activates the model, whatever the switch: the summary and grid samples
 // play the model a world carries, so they guard the pre-feature figures recorded with them. On the

@@ -11,7 +11,7 @@ const server = process.env.THEME_CAPTURE_ORIGIN
       server: { host: '127.0.0.1', port: 19501, strictPort: true },
     });
 await server?.listen();
-await mkdir('artifacts/print-sticker-themes', { recursive: true });
+await mkdir('.tmp/theme-captures', { recursive: true });
 const browser = await chromium.launch();
 const errors = [];
 const page = await browser.newPage({
@@ -58,7 +58,7 @@ try {
     })) {
       await page.setViewportSize(viewport);
       await page.waitForTimeout(250);
-      await page.screenshot({ path: `artifacts/print-sticker-themes/${theme}-${device}.png` });
+      await page.screenshot({ path: `.tmp/theme-captures/${theme}-${device}.png` });
       const geometry = await page.evaluate(() => ({
         width: innerWidth,
         document: document.documentElement.scrollWidth,
@@ -119,12 +119,12 @@ try {
     await training.evaluate((image) => image.decode());
     if (!(await training.getAttribute('src')).includes(`/art/${theme}/`))
       throw new Error(`Training artwork did not change with the theme: ${theme}`);
-    await page.screenshot({ path: `artifacts/print-sticker-themes/${theme}-training.png` });
+    await page.screenshot({ path: `.tmp/theme-captures/${theme}-training.png` });
     await page.locator('aside').getByRole('button', { name: '클럽 홈', exact: true }).click();
   }
   if (errors.length) throw new Error(errors.join('\n'));
   await writeFile(
-    'artifacts/print-sticker-themes/checks.json',
+    '.tmp/theme-captures/checks.json',
     JSON.stringify(
       { results, errors, themeReload: true, unchangedDate: true, unchangedManifest: true },
       null,

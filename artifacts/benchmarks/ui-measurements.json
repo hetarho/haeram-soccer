@@ -1,0 +1,2058 @@
+{
+  "kind": "historical UI measurements",
+  "interpretation": "Recorded values from separate historical UI runs, with their original document snapshot. These are observations, not current theme rules or verification thresholds.",
+  "runs": [
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/improvement/t027-font-proof/geometry.json",
+        "sha256AtSnapshot": "023b839693fcba6b6aeab42cf01c8110550842829d74193cbd72ab0cc9c178e0"
+      },
+      "measurements": {
+        "geometry": [
+          {
+            "engine": "chromium",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/chromium-360x740.png",
+            "width": 360,
+            "height": 740,
+            "viewport": [
+              360,
+              740
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 34.78125,
+                "lineHeight": "17.4px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 16.796875,
+                "lineHeight": "16.8px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 33.59375,
+                "lineHeight": "16.8px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 228.71875,
+                "width": 328,
+                "height": 48,
+                "bottom": 276.71875
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 304.90625,
+                "width": 328,
+                "height": 48,
+                "bottom": 352.90625
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 382.09375,
+                "width": 105.328125,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 127.328125,
+                "y": 382.09375,
+                "width": 105.328125,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 238.65625,
+                "y": 382.09375,
+                "width": 105.34375,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 447.078125,
+                "width": 328,
+                "height": 44,
+                "bottom": 491.078125
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 526.265625,
+                "width": 302,
+                "height": 48,
+                "bottom": 574.265625
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 608.453125,
+                "width": 302,
+                "height": 48,
+                "bottom": 656.453125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 558.859375,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.859375
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 116.375,
+                "y": 618.859375,
+                "width": 127.234375,
+                "height": 44,
+                "bottom": 662.859375
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732
+              }
+            ]
+          },
+          {
+            "engine": "chromium",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/chromium-390x844.png",
+            "width": 390,
+            "height": 844,
+            "viewport": [
+              390,
+              844
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 41.59375,
+                "lineHeight": "20.8px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 19.1875,
+                "lineHeight": "19.2px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 36,
+                "lineHeight": "18px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 278.640625,
+                "width": 358,
+                "height": 48,
+                "bottom": 326.640625
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 365.4375,
+                "width": 358,
+                "height": 48,
+                "bottom": 413.4375
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 453.234375,
+                "width": 115.328125,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 137.328125,
+                "y": 453.234375,
+                "width": 115.328125,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 258.65625,
+                "y": 453.234375,
+                "width": 115.34375,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 539.21875,
+                "width": 358,
+                "height": 44,
+                "bottom": 583.21875
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 623.015625,
+                "width": 332,
+                "height": 48,
+                "bottom": 671.015625
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 709.8125,
+                "width": 332,
+                "height": 48,
+                "bottom": 757.8125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 670.015625,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.015625
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 131.375,
+                "y": 736.015625,
+                "width": 127.234375,
+                "height": 44,
+                "bottom": 780.015625
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836
+              }
+            ]
+          },
+          {
+            "engine": "firefox",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/firefox-360x740.png",
+            "width": 360,
+            "height": 740,
+            "viewport": [
+              360,
+              740
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 34.80000305175781,
+                "lineHeight": "17.4px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 16.79998779296875,
+                "lineHeight": "16.8px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 33.59999084472656,
+                "lineHeight": "16.8px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 228.75,
+                "width": 328,
+                "height": 48,
+                "bottom": 276.75
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 304.95001220703125,
+                "width": 328,
+                "height": 48,
+                "bottom": 352.95001220703125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 382.1499938964844,
+                "width": 105.33332824707031,
+                "height": 59,
+                "bottom": 441.1499938964844
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 127.33332824707031,
+                "y": 382.1499938964844,
+                "width": 105.33334350585938,
+                "height": 59,
+                "bottom": 441.1499938964844
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 238.6666717529297,
+                "y": 382.1499938964844,
+                "width": 105.33332824707031,
+                "height": 59,
+                "bottom": 441.1499938964844
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 447.1499938964844,
+                "width": 328,
+                "height": 44,
+                "bottom": 491.1499938964844
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 526.3499755859375,
+                "width": 302,
+                "height": 48,
+                "bottom": 574.3499755859375
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 608.5499877929688,
+                "width": 302,
+                "height": 48,
+                "bottom": 656.5499877929688
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 558.9500122070312,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.9500122070312
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 116.38333129882812,
+                "y": 618.9500122070312,
+                "width": 127.23333740234375,
+                "height": 44,
+                "bottom": 662.9500122070312
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732
+              }
+            ]
+          },
+          {
+            "engine": "firefox",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/firefox-390x844.png",
+            "width": 390,
+            "height": 844,
+            "viewport": [
+              390,
+              844
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 41.600006103515625,
+                "lineHeight": "20.8px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 19.199996948242188,
+                "lineHeight": "19.2px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 36,
+                "lineHeight": "18px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 278.6499938964844,
+                "width": 358,
+                "height": 48,
+                "bottom": 326.6499938964844
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 365.45001220703125,
+                "width": 358,
+                "height": 48,
+                "bottom": 413.45001220703125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 453.25,
+                "width": 115.33332824707031,
+                "height": 74,
+                "bottom": 527.25
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 137.3333282470703,
+                "y": 453.25,
+                "width": 115.33334350585938,
+                "height": 74,
+                "bottom": 527.25
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 258.66668701171875,
+                "y": 453.25,
+                "width": 115.33332824707031,
+                "height": 74,
+                "bottom": 527.25
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 539.25,
+                "width": 358,
+                "height": 44,
+                "bottom": 583.25
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 623.0499877929688,
+                "width": 332,
+                "height": 48,
+                "bottom": 671.0499877929688
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 709.8499755859375,
+                "width": 332,
+                "height": 48,
+                "bottom": 757.8499755859375
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 670.0499877929688,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.0499877929688
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 131.38333129882812,
+                "y": 736.0499877929688,
+                "width": 127.23333740234375,
+                "height": 44,
+                "bottom": 780.0499877929688
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836
+              }
+            ]
+          },
+          {
+            "engine": "webkit",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/webkit-360x740.png",
+            "width": 360,
+            "height": 740,
+            "viewport": [
+              360,
+              740
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 34.78125,
+                "lineHeight": "17.400002px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 16.796875,
+                "lineHeight": "16.799999px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 33.59375,
+                "lineHeight": "16.799999px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 228.71875,
+                "width": 328,
+                "height": 48,
+                "bottom": 276.71875
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 304.90625,
+                "width": 328,
+                "height": 48,
+                "bottom": 352.90625
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 382.09375,
+                "width": 105.328125,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 127.328125,
+                "y": 382.09375,
+                "width": 105.328125,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 238.65625,
+                "y": 382.09375,
+                "width": 105.328125,
+                "height": 58.984375,
+                "bottom": 441.078125
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 447.078125,
+                "width": 328,
+                "height": 44,
+                "bottom": 491.078125
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 526.265625,
+                "width": 302,
+                "height": 48,
+                "bottom": 574.265625
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 608.453125,
+                "width": 302,
+                "height": 48,
+                "bottom": 656.453125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 558.859375,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.859375
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 116.375,
+                "y": 618.859375,
+                "width": 127.234375,
+                "height": 44,
+                "bottom": 662.859375
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732
+              }
+            ]
+          },
+          {
+            "engine": "webkit",
+            "path": "/Users/ihaelam/project/haeram-soccer/.tmp/improvement/t027-font-proof/webkit-390x844.png",
+            "width": 390,
+            "height": 844,
+            "viewport": [
+              390,
+              844
+            ],
+            "scroll": [
+              0,
+              0
+            ],
+            "notes": [
+              {
+                "height": 41.59375,
+                "lineHeight": "20.800001px",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              {
+                "height": 19.1875,
+                "lineHeight": "19.200001px",
+                "text": "추천 · 운영비 2배"
+              },
+              {
+                "height": 36,
+                "lineHeight": "18px",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            ],
+            "targets": [
+              {
+                "tag": "INPUT",
+                "label": "클럽 이름",
+                "x": 16,
+                "y": 278.640625,
+                "width": 358,
+                "height": 48,
+                "bottom": 326.640625
+              },
+              {
+                "tag": "SELECT",
+                "label": "창단 국가",
+                "x": 16,
+                "y": 365.4375,
+                "width": 358,
+                "height": 48,
+                "bottom": 413.4375
+              },
+              {
+                "tag": "BUTTON",
+                "label": "넉넉한 출발추천 · 운영비 2배",
+                "x": 16,
+                "y": 453.234375,
+                "width": 115.328125,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "BUTTON",
+                "label": "표준 출발운영비 1배",
+                "x": 137.328125,
+                "y": 453.234375,
+                "width": 115.328125,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "BUTTON",
+                "label": "작은 출발운영비 0.5배",
+                "x": 258.65625,
+                "y": 453.234375,
+                "width": 115.328125,
+                "height": 73.984375,
+                "bottom": 527.21875
+              },
+              {
+                "tag": "SUMMARY",
+                "label": "고급 설정",
+                "x": 16,
+                "y": 539.21875,
+                "width": 358,
+                "height": 44,
+                "bottom": 583.21875
+              },
+              {
+                "tag": "INPUT",
+                "label": "클럽 색상",
+                "x": 29,
+                "y": 623.015625,
+                "width": 332,
+                "height": 48,
+                "bottom": 671.015625
+              },
+              {
+                "tag": "INPUT",
+                "label": "세계 생성 시드",
+                "x": 29,
+                "y": 709.8125,
+                "width": 332,
+                "height": 48,
+                "bottom": 757.8125
+              },
+              {
+                "tag": "BUTTON",
+                "label": "클럽 창단 →",
+                "x": 16,
+                "y": 670.015625,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.015625
+              },
+              {
+                "tag": "LABEL",
+                "label": "기록 파일 가져오기",
+                "x": 131.375,
+                "y": 736.015625,
+                "width": 127.234375,
+                "height": 44,
+                "bottom": 780.015625
+              },
+              {
+                "tag": "FOOTER",
+                "label": "HAERAM FOOTBALL ARCHIVES · 가상의 클럽, 당신의 역사.로그인 없이 시작하세요",
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/improvement/t027-font-proof/independent-font-proof.json",
+        "sha256AtSnapshot": "f946abc0f22c905008d0eac35a5383a380d1fbf0e91f798cd7b4aeccbae137de"
+      },
+      "measurements": {
+        "measurements": [
+          {
+            "browser": "chromium",
+            "viewport": {
+              "width": 360,
+              "height": 740
+            },
+            "document": {
+              "height": 740,
+              "width": 360,
+              "viewportWidth": 360,
+              "viewportHeight": 740,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 360,
+                "height": 740,
+                "bottom": 740,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 328,
+                "height": 560.859375,
+                "bottom": 612.859375,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 558.859375,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.859375,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 618.859375,
+                "width": 328,
+                "height": 44,
+                "bottom": 662.859375,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 125.75,
+                "width": 328,
+                "height": 34.78125,
+                "bottom": 160.53125,
+                "fontSize": "12px",
+                "lineHeight": "17.4px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 22,
+                "y": 414.28125,
+                "width": 93.328125,
+                "height": 16.796875,
+                "bottom": 431.078125,
+                "fontSize": "12px",
+                "lineHeight": "16.8px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 519.265625,
+                "width": 328,
+                "height": 33.59375,
+                "bottom": 552.859375,
+                "fontSize": "12px",
+                "lineHeight": "16.8px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          },
+          {
+            "browser": "chromium",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "height": 844,
+              "width": 390,
+              "viewportWidth": 390,
+              "viewportHeight": 844,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844,
+                "bottom": 844,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 358,
+                "height": 678.015625,
+                "bottom": 730.015625,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 670.015625,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.015625,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 736.015625,
+                "width": 358,
+                "height": 44,
+                "bottom": 780.015625,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 134.25,
+                "width": 358,
+                "height": 41.59375,
+                "bottom": 175.84375,
+                "fontSize": "13px",
+                "lineHeight": "20.8px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 24,
+                "y": 494.03125,
+                "width": 99.328125,
+                "height": 19.1875,
+                "bottom": 513.21875,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 622.015625,
+                "width": 358,
+                "height": 36,
+                "bottom": 658.015625,
+                "fontSize": "12px",
+                "lineHeight": "18px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          },
+          {
+            "browser": "firefox",
+            "viewport": {
+              "width": 360,
+              "height": 740
+            },
+            "document": {
+              "height": 740,
+              "width": 360,
+              "viewportWidth": 360,
+              "viewportHeight": 740,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 360,
+                "height": 740,
+                "bottom": 740,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 328,
+                "height": 560.9500122070312,
+                "bottom": 612.9500122070312,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 558.9500122070312,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.9500122070312,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 618.9500122070312,
+                "width": 328,
+                "height": 44,
+                "bottom": 662.9500122070312,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 125.75,
+                "width": 328,
+                "height": 34.80000305175781,
+                "bottom": 160.5500030517578,
+                "fontSize": "12px",
+                "lineHeight": "17.4px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 22,
+                "y": 414.3500061035156,
+                "width": 93.33332824707031,
+                "height": 16.79998779296875,
+                "bottom": 431.1499938964844,
+                "fontSize": "12px",
+                "lineHeight": "16.8px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 519.3499755859375,
+                "width": 328,
+                "height": 33.59999084472656,
+                "bottom": 552.9499664306641,
+                "fontSize": "12px",
+                "lineHeight": "16.8px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          },
+          {
+            "browser": "firefox",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "height": 844,
+              "width": 390,
+              "viewportWidth": 390,
+              "viewportHeight": 844,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844,
+                "bottom": 844,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 358,
+                "height": 678.0499877929688,
+                "bottom": 730.0499877929688,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 670.0499877929688,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.0499877929688,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 736.0499877929688,
+                "width": 358,
+                "height": 44,
+                "bottom": 780.0499877929688,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 134.25,
+                "width": 358,
+                "height": 41.600006103515625,
+                "bottom": 175.85000610351562,
+                "fontSize": "13px",
+                "lineHeight": "20.8px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 24,
+                "y": 494.04998779296875,
+                "width": 99.33332824707031,
+                "height": 19.199996948242188,
+                "bottom": 513.2499847412109,
+                "fontSize": "12px",
+                "lineHeight": "19.2px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 622.0499877929688,
+                "width": 358,
+                "height": 36,
+                "bottom": 658.0499877929688,
+                "fontSize": "12px",
+                "lineHeight": "18px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          },
+          {
+            "browser": "webkit",
+            "viewport": {
+              "width": 360,
+              "height": 740
+            },
+            "document": {
+              "height": 740,
+              "width": 360,
+              "viewportWidth": 360,
+              "viewportHeight": 740,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 360,
+                "height": 740,
+                "bottom": 740,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 328,
+                "height": 560.859375,
+                "bottom": 612.859375,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 558.859375,
+                "width": 328,
+                "height": 48,
+                "bottom": 606.859375,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 618.859375,
+                "width": 328,
+                "height": 44,
+                "bottom": 662.859375,
+                "fontSize": "12px",
+                "lineHeight": "19.200001px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 699,
+                "width": 328,
+                "height": 33,
+                "bottom": 732,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 125.75,
+                "width": 328,
+                "height": 34.78125,
+                "bottom": 160.53125,
+                "fontSize": "12px",
+                "lineHeight": "17.400002px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 22,
+                "y": 414.28125,
+                "width": 93.328125,
+                "height": 16.796875,
+                "bottom": 431.078125,
+                "fontSize": "12px",
+                "lineHeight": "16.799999px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 519.265625,
+                "width": 328,
+                "height": 33.59375,
+                "bottom": 552.859375,
+                "fontSize": "12px",
+                "lineHeight": "16.799999px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          },
+          {
+            "browser": "webkit",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "document": {
+              "height": 844,
+              "width": 390,
+              "viewportWidth": 390,
+              "viewportHeight": 844,
+              "scrollY": 0
+            },
+            "rows": {
+              "main": {
+                "x": 0,
+                "y": 0,
+                "width": 390,
+                "height": 844,
+                "bottom": 844,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "flex",
+                "text": "Haeram Football\n1901 · A NEW BEGINNING\nHAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, "
+              },
+              "founding": {
+                "x": 16,
+                "y": 52,
+                "width": 358,
+                "height": 678.015625,
+                "bottom": 730.015625,
+                "fontSize": "15px",
+                "lineHeight": "24px",
+                "display": "block",
+                "text": "HAERAM · CLUB SIM\n작은 클럽의, 큰 내일.\n\n선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요.\n\n01\n준비\n→\n02\n경기\n→"
+              },
+              "cta": {
+                "x": 16,
+                "y": 670.015625,
+                "width": 358,
+                "height": 48,
+                "bottom": 718.015625,
+                "fontSize": "16px",
+                "lineHeight": "25.6px",
+                "display": "block",
+                "text": "클럽 창단 →"
+              },
+              "import": {
+                "x": 16,
+                "y": 736.015625,
+                "width": 358,
+                "height": 44,
+                "bottom": 780.015625,
+                "fontSize": "12px",
+                "lineHeight": "19.200001px",
+                "display": "flex",
+                "text": "기록 파일 가져오기"
+              },
+              "footer": {
+                "x": 16,
+                "y": 803,
+                "width": 358,
+                "height": 33,
+                "bottom": 836,
+                "fontSize": "10px",
+                "lineHeight": "16px",
+                "display": "grid",
+                "text": "로그인 없이 시작하세요"
+              },
+              "intro": {
+                "x": 16,
+                "y": 134.25,
+                "width": 358,
+                "height": 41.59375,
+                "bottom": 175.84375,
+                "fontSize": "13px",
+                "lineHeight": "20.800001px",
+                "display": "block",
+                "text": "선수와 구장을 키우고, 나만의 빌드로 더 높은 무대에 도전해요."
+              },
+              "capitalNote": {
+                "x": 24,
+                "y": 494.03125,
+                "width": 99.328125,
+                "height": 19.1875,
+                "bottom": 513.21875,
+                "fontSize": "12px",
+                "lineHeight": "19.200001px",
+                "display": "block",
+                "text": "추천 · 운영비 2배"
+              },
+              "originNote": {
+                "x": 16,
+                "y": 622.015625,
+                "width": 358,
+                "height": 36,
+                "bottom": 658.015625,
+                "fontSize": "12px",
+                "lineHeight": "18px",
+                "display": "block",
+                "text": "계정 없이 이 브라우저에 저장돼요. 기록을 파일로 보관할 수 있어요."
+              }
+            },
+            "passed": true
+          }
+        ],
+        "oldBuildDocHeight360": 794,
+        "currentEntrySha256": "317f06a9d4725193516940735c85971c3258c1481db062e81c6e5561ea926892",
+        "date": "2026-10-07T23:13:33.944Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/cohesive-art/verification.json",
+        "sha256AtSnapshot": "1d2ecbbf68206860cb2bd3d1f4e9e0dd7e9bbde3fb62c6698fff19c974ad1b2f"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 249713
+        },
+        "checkedAt": "2026-10-15T07:20:32.713Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/era-scenes/verification.json",
+        "sha256AtSnapshot": "75f78c65fdfaf693e8f5330bef57f03cd0fd570850349255bef6e291eadd3027"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 250087,
+          "files": [
+            {
+              "file": "/assets/index-DUwX2Hx0.js",
+              "gzipBytes": 140597
+            },
+            {
+              "file": "/assets/rolldown-runtime-hePW80VL.js",
+              "gzipBytes": 428
+            },
+            {
+              "file": "/assets/Dialog-C5gpCPey.js",
+              "gzipBytes": 65055
+            },
+            {
+              "file": "/assets/profile-EGuMHbza.js",
+              "gzipBytes": 1478
+            },
+            {
+              "file": "/assets/league-CeNizeIm.js",
+              "gzipBytes": 5117
+            },
+            {
+              "file": "/assets/slots-C248-Sae.js",
+              "gzipBytes": 3006
+            },
+            {
+              "file": "/assets/state-BWejw2tp.js",
+              "gzipBytes": 1662
+            },
+            {
+              "file": "/assets/Glossary-O-9JXi8s.js",
+              "gzipBytes": 5800
+            },
+            {
+              "file": "/assets/Dialog-BbqDokwb.css",
+              "gzipBytes": 10584
+            },
+            {
+              "file": "/assets/league-2liMRO71.css",
+              "gzipBytes": 156
+            },
+            {
+              "file": "/assets/Glossary-YltZYkJS.css",
+              "gzipBytes": 1775
+            },
+            {
+              "file": "/assets/index-J-s6Iw_x.css",
+              "gzipBytes": 14429
+            }
+          ]
+        },
+        "checkedAt": "2026-10-15T08:53:18.993Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/grass-green/verification.json",
+        "sha256AtSnapshot": "b8945366d7f45c049d8ac4bd3707f5074ff3599cc22040d27c1d0a3dad0a4388"
+      },
+      "measurements": {
+        "contrast": {
+          "palette": {
+            "fill": "#2e713d",
+            "onAccent": "#f6fff1",
+            "accent": "#4b9656",
+            "emphasis": "#a1cf9b",
+            "surface": "#202627",
+            "background": "#111415"
+          },
+          "buttonTextContrast": 5.78,
+          "emphasisTextContrast": 8.71,
+          "activeIndicatorContrast": 5.11
+        },
+        "entrySize": {
+          "entryGzipBytes": 250961
+        },
+        "checkedAt": "2026-10-15T07:02:32.808Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/illustrated-stadium/verification.json",
+        "sha256AtSnapshot": "45101b84dee9de1fb512c5f09180f727eeb26eaf540b144facb25f3c608ee80e"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 249698
+        },
+        "checkedAt": "2026-10-15T07:06:58.356Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/indie-art/verification.json",
+        "sha256AtSnapshot": "600ba8495deef0cc40f8eafbdee7c9651b33edaf28a9ebf00dc3d2f61eb71825"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 250943,
+          "files": [
+            {
+              "file": "/assets/index-CXdsTJUg.js",
+              "gzipBytes": 142292
+            },
+            {
+              "file": "/assets/rolldown-runtime-hePW80VL.js",
+              "gzipBytes": 428
+            },
+            {
+              "file": "/assets/Dialog-DxZs_mXp.js",
+              "gzipBytes": 64215
+            },
+            {
+              "file": "/assets/profile-lHvQyq83.js",
+              "gzipBytes": 1479
+            },
+            {
+              "file": "/assets/league-DeVB3K3J.js",
+              "gzipBytes": 5115
+            },
+            {
+              "file": "/assets/slots-DAUmywwn.js",
+              "gzipBytes": 3010
+            },
+            {
+              "file": "/assets/state-DS30qhzA.js",
+              "gzipBytes": 1662
+            },
+            {
+              "file": "/assets/Glossary-CpwvGMa7.js",
+              "gzipBytes": 5807
+            },
+            {
+              "file": "/assets/Dialog-BIvsuvdb.css",
+              "gzipBytes": 10637
+            },
+            {
+              "file": "/assets/league-2liMRO71.css",
+              "gzipBytes": 156
+            },
+            {
+              "file": "/assets/Glossary-YltZYkJS.css",
+              "gzipBytes": 1775
+            },
+            {
+              "file": "/assets/index-Llv6NNH4.css",
+              "gzipBytes": 14367
+            }
+          ],
+          "fontFiles": [
+            {
+              "file": "apps/web/public/fonts/galmuri11-bold.woff2",
+              "bytes": 166632
+            },
+            {
+              "file": "apps/web/public/fonts/galmuri11.woff2",
+              "bytes": 504736
+            },
+            {
+              "file": "apps/web/public/fonts/monogram-extended.ttf",
+              "bytes": 55372
+            }
+          ],
+          "note": "Font and image file bytes are recorded separately from the entry JS/CSS budget."
+        },
+        "checkedAt": "2026-10-15T06:58:21.470Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/pixel-icons/verification.json",
+        "sha256AtSnapshot": "a08ff3ca95061db8bb66e4c4149b16d9dbb569f61b1f8a19543530419b624922"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 249635,
+          "files": [
+            {
+              "file": "/assets/index-DIE0gIzd.js",
+              "gzipBytes": 140251
+            },
+            {
+              "file": "/assets/rolldown-runtime-hePW80VL.js",
+              "gzipBytes": 428
+            },
+            {
+              "file": "/assets/Dialog-C5gpCPey.js",
+              "gzipBytes": 65055
+            },
+            {
+              "file": "/assets/profile-EGuMHbza.js",
+              "gzipBytes": 1478
+            },
+            {
+              "file": "/assets/league-CeNizeIm.js",
+              "gzipBytes": 5117
+            },
+            {
+              "file": "/assets/slots-C248-Sae.js",
+              "gzipBytes": 3006
+            },
+            {
+              "file": "/assets/state-BWejw2tp.js",
+              "gzipBytes": 1662
+            },
+            {
+              "file": "/assets/Glossary-O-9JXi8s.js",
+              "gzipBytes": 5800
+            },
+            {
+              "file": "/assets/Dialog-BbqDokwb.css",
+              "gzipBytes": 10584
+            },
+            {
+              "file": "/assets/league-2liMRO71.css",
+              "gzipBytes": 156
+            },
+            {
+              "file": "/assets/Glossary-YltZYkJS.css",
+              "gzipBytes": 1775
+            },
+            {
+              "file": "/assets/index-BWyW90f-.css",
+              "gzipBytes": 14323
+            }
+          ]
+        },
+        "checkedAt": "2026-10-15T07:28:45.577Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/subdued-art/verification.json",
+        "sha256AtSnapshot": "051c14f2c34a1c44a37a81d1b07919c4e310c7b30b1a3f34f38f9c991f24fa4f"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 249886,
+          "files": [
+            {
+              "file": "/assets/index-BscFLQLR.js",
+              "gzipBytes": 140434
+            },
+            {
+              "file": "/assets/rolldown-runtime-hePW80VL.js",
+              "gzipBytes": 428
+            },
+            {
+              "file": "/assets/Dialog-C5gpCPey.js",
+              "gzipBytes": 65055
+            },
+            {
+              "file": "/assets/profile-EGuMHbza.js",
+              "gzipBytes": 1478
+            },
+            {
+              "file": "/assets/league-CeNizeIm.js",
+              "gzipBytes": 5117
+            },
+            {
+              "file": "/assets/slots-C248-Sae.js",
+              "gzipBytes": 3006
+            },
+            {
+              "file": "/assets/state-BWejw2tp.js",
+              "gzipBytes": 1662
+            },
+            {
+              "file": "/assets/Glossary-O-9JXi8s.js",
+              "gzipBytes": 5800
+            },
+            {
+              "file": "/assets/Dialog-BbqDokwb.css",
+              "gzipBytes": 10584
+            },
+            {
+              "file": "/assets/league-2liMRO71.css",
+              "gzipBytes": 156
+            },
+            {
+              "file": "/assets/Glossary-YltZYkJS.css",
+              "gzipBytes": 1775
+            },
+            {
+              "file": "/assets/index-BlsmMY68.css",
+              "gzipBytes": 14391
+            }
+          ]
+        },
+        "checkedAt": "2026-10-15T08:33:07.096Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/night-broadcast/verification.json",
+        "sha256AtSnapshot": "ecb96962e7a57c6fdaa88477cae3355041117c9762a64beb26d7ca5c6d412a06"
+      },
+      "measurements": {
+        "entrySize": {
+          "gzipBytes": 250224,
+          "files": [
+            {
+              "file": "/assets/index-kos5S0oQ.js",
+              "gzipBytes": 141860
+            },
+            {
+              "file": "/assets/rolldown-runtime-hePW80VL.js",
+              "gzipBytes": 428
+            },
+            {
+              "file": "/assets/Dialog-DtiSdVh8.js",
+              "gzipBytes": 64214
+            },
+            {
+              "file": "/assets/profile--olix8eN.js",
+              "gzipBytes": 1478
+            },
+            {
+              "file": "/assets/league-H74TuyQ0.js",
+              "gzipBytes": 5114
+            },
+            {
+              "file": "/assets/slots-C8qO3t72.js",
+              "gzipBytes": 3008
+            },
+            {
+              "file": "/assets/state-EYT8afZe.js",
+              "gzipBytes": 1662
+            },
+            {
+              "file": "/assets/Glossary-DiI306Zn.js",
+              "gzipBytes": 5807
+            },
+            {
+              "file": "/assets/Dialog-BNZltJE1.css",
+              "gzipBytes": 10578
+            },
+            {
+              "file": "/assets/league-2liMRO71.css",
+              "gzipBytes": 156
+            },
+            {
+              "file": "/assets/Glossary-YltZYkJS.css",
+              "gzipBytes": 1775
+            },
+            {
+              "file": "/assets/index-grZx0ao_.css",
+              "gzipBytes": 14144
+            }
+          ],
+          "fontBytes": 560324,
+          "fontNote": "Font bytes reported separately from the entry JS/CSS budget."
+        },
+        "checkedAt": "2026-10-15T06:16:52.926Z"
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/print-sticker-themes/checks.json",
+        "sha256AtSnapshot": "5aaa92fd26df5797ac10eea5a1a68cce046e47b7d1c52d1bd9550f6eb3d95c69"
+      },
+      "measurements": {
+        "results": [
+          {
+            "theme": "matchday-print",
+            "device": "desktop",
+            "geometry": {
+              "width": 1380,
+              "document": 1380,
+              "view": 1150,
+              "client": 1150
+            },
+            "contrast": [
+              {
+                "label": "클럽 홈",
+                "ratio": 6.027234002690868
+              },
+              {
+                "label": "전술·선발 준비",
+                "ratio": 6.172270262483687
+              },
+              {
+                "label": "피로",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "상쾌",
+                "ratio": 6.675206560921626
+              },
+              {
+                "label": "분위기",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "좋음",
+                "ratio": 6.675206560921626
+              },
+              {
+                "label": "감독 입지",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "안정",
+                "ratio": 6.840717491419276
+              },
+              {
+                "label": "선수단",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "여유",
+                "ratio": 6.675206560921626
+              }
+            ]
+          },
+          {
+            "theme": "matchday-print",
+            "device": "mobile",
+            "geometry": {
+              "width": 390,
+              "document": 390,
+              "view": 390,
+              "client": 390
+            },
+            "contrast": [
+              {
+                "label": "전술·선발 준비",
+                "ratio": 6.172270262483687
+              },
+              {
+                "label": "피로",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "상쾌",
+                "ratio": 6.675206560921626
+              },
+              {
+                "label": "분위기",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "좋음",
+                "ratio": 6.675206560921626
+              },
+              {
+                "label": "감독 입지",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "안정",
+                "ratio": 6.840717491419276
+              },
+              {
+                "label": "선수단",
+                "ratio": 6.3560466478661235
+              },
+              {
+                "label": "여유",
+                "ratio": 6.675206560921626
+              }
+            ]
+          },
+          {
+            "theme": "sticker-club",
+            "device": "desktop",
+            "geometry": {
+              "width": 1380,
+              "document": 1380,
+              "view": 1150,
+              "client": 1150
+            },
+            "contrast": [
+              {
+                "label": "클럽 홈",
+                "ratio": 11.276572743531885
+              },
+              {
+                "label": "전술·선발 준비",
+                "ratio": 5.1087504326971205
+              },
+              {
+                "label": "피로",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "상쾌",
+                "ratio": 6.814959470300071
+              },
+              {
+                "label": "분위기",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "좋음",
+                "ratio": 6.814959470300071
+              },
+              {
+                "label": "감독 입지",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "안정",
+                "ratio": 7.06059694102899
+              },
+              {
+                "label": "선수단",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "여유",
+                "ratio": 6.814959470300071
+              }
+            ]
+          },
+          {
+            "theme": "sticker-club",
+            "device": "mobile",
+            "geometry": {
+              "width": 390,
+              "document": 390,
+              "view": 390,
+              "client": 390
+            },
+            "contrast": [
+              {
+                "label": "전술·선발 준비",
+                "ratio": 5.1087504326971205
+              },
+              {
+                "label": "피로",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "상쾌",
+                "ratio": 6.814959470300071
+              },
+              {
+                "label": "분위기",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "좋음",
+                "ratio": 6.814959470300071
+              },
+              {
+                "label": "감독 입지",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "안정",
+                "ratio": 7.06059694102899
+              },
+              {
+                "label": "선수단",
+                "ratio": 6.502330013438264
+              },
+              {
+                "label": "여유",
+                "ratio": 6.814959470300071
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sourceDocument": {
+        "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+        "pathAtSnapshot": "artifacts/print-sticker-themes/verification.json",
+        "sha256AtSnapshot": "b02d3ad80684aa76e9a26f18322efb55553a75c27d88bd372ffcbdce150ce76b"
+      },
+      "measurements": {
+        "minMeasuredHomeTextContrast": 5.1087504326971205
+      }
+    }
+  ]
+}

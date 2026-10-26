@@ -1,6 +1,6 @@
 import { measurementIdentity } from './lib/measurement-identity';
 /**
- * Grid-engine distribution check (MATCH-23, T215, artifacts/benchmarks/CALIBRATION.md) and the candidate model's
+ * Grid-engine distribution check (MATCH-23, T215, artifacts/benchmarks/calibration-results.json) and the candidate model's
  * calibration report (T278, MATCH-28, spec/ssot/MATCH.md).
  *
  * Band check: grid matches between equal-strength top-tier sides of ENG/ESP/GER/ITA (ratings within

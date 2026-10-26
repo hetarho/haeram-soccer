@@ -1,19 +1,28 @@
 # Working artifacts
 
-Store retained design concepts, screenshots, benchmark outputs, calibration observations and
-verification evidence here. Product rules and architecture live in `spec/ssot/`; implementation
-contracts live in the source modules they describe. This directory is not another specification.
+Retain benchmark measurements and tools needed to reproduce them here. Unimplemented visual
+concepts may be kept in `concepts/` when available; no such concepts are currently retained.
+Product plans, behavior, target bands and architecture are maintained in `spec/`, with current
+rules in `spec/ssot/`.
 
-- `benchmarks/`: measurements, reference observations and tools needed to reproduce them.
-- `verification/` and `iterations/`: historical check results and completed improvement cycles.
-- `improvement/` and `owner-workflows/`: captured UI and workflow evidence.
-- `night-broadcast/` and `print-sticker-themes/`: visual experiments, comparisons and checks.
+- `benchmarks/`: raw run outputs, profiles, statistical observations and reproduction tools.
+- `benchmarks/*-results*.json`: measured tables extracted from former mixed-purpose reports,
+  with the source document's commit, checksum, line ranges and historical run labels.
+- `benchmarks/football-observations.json`: source observations; current definitions and target
+  bands are in `spec/ssot/MATCH.md`.
+- `benchmarks/ui-measurements.json`: historical bundle, contrast and geometry measurements.
 
-Keep raw measurements and their source/command/environment provenance unchanged. Old reports and
-completed task histories may name `docs/`: those are paths at the recorded commit. Use that commit
-when reproducing historical evidence; paths alone do not make old tools compatible with current
-code. Newly run tooling writes to `artifacts/`.
+Historical run settings and comparison bands describe those runs; they do not prescribe current
+behavior. The extraction snapshot identifies the source document, not every benchmark's execution
+commit. Preserve each run's source, command, units, sample size, environment and uncertainty when
+interpreting results. Measurements from different sources or cache conditions do not establish a
+controlled speedup. Keep original machine-readable outputs unchanged.
 
-Disposable logs, browser profiles, caches and unselected trials belong in ignored `.tmp/`.
-Keep editable artwork needed by the application in `apps/web/design/` and deployed resources in
-`apps/web/public/`; moving review evidence does not move those source or runtime assets.
+Old run records and completed task histories may name deleted reports or former `docs/` paths.
+Use their recorded commit to inspect those historical inputs. Reproduction tools may also require
+that version of the code. Current tooling writes retained measurements under `benchmarks/`.
+
+Applied UI screenshots, completed verification narratives, throwaway captures, browser profiles,
+caches and disposable logs belong in ignored `.tmp/`. For example, the theme capture script writes
+to `.tmp/theme-captures/`. Editable application artwork stays in `apps/web/design/`, and deployed
+resources stay in `apps/web/public/`.

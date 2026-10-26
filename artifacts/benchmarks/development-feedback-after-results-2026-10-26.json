@@ -1,0 +1,69 @@
+{
+  "kind": "historical benchmark measurements",
+  "sourceDocument": {
+    "documentSnapshotCommit": "448e78eb0f6c2df0749fe40cb721773e996302ba",
+    "pathAtSnapshot": "artifacts/benchmarks/development-feedback-after-2026-10-26.md",
+    "sha256AtSnapshot": "ed07d17bcb134fa8d90e2d10801a1fd036ff26370a5001616bf79c691bae0e67"
+  },
+  "interpretation": "Tables retain historical run labels and comparison bands. They do not define current behavior or acceptance criteria; those are maintained in spec/ssot/. The document snapshot is provenance, not the execution commit of every recorded run. Consult each historicalContext and the original run artifacts for source, units, sample size and environment. Results from different runs are not a controlled performance comparison.",
+  "tables": [
+    {
+      "tableAtSnapshot": 1,
+      "sourceLines": [
+        14,
+        20
+      ],
+      "historicalContext": [
+        "Development feedback cleanup — 2026-10-26",
+        "Static comparison"
+      ],
+      "markdown": "| Static runtime dependency measure | Before | After T461 |\n| --- | ---: | ---: |\n| Largest engine strongly connected component | 80 modules | 58 modules |\n| Grid execution transitive closure | 124 files | 37 files |\n| Save packing/unpacking transitive closure | 139 files | 31 files |\n| Test files reaching grid/shape.ts | 222 / 280 | 217 / 285 |\n| Web test files reaching grid/shape.ts | 60 | 56 |"
+    },
+    {
+      "tableAtSnapshot": 3,
+      "sourceLines": [
+        47,
+        58
+      ],
+      "historicalContext": [
+        "Development feedback cleanup — 2026-10-26",
+        "Verification evidence"
+      ],
+      "markdown": "| Normal verification stage | Wall time | Result |\n| --- | ---: | --- |\n| `typecheck` | 33.003 s | passed |\n| `lint` | 17.079 s | passed |\n| `format:check` | 28.561 s | passed |\n| `test:unit` | 85.253 s | passed |\n| `test:integration` | 952.140 s | passed |\n| `test:contract` | 68.859 s | passed |\n| `validate:catalogs` | 1.080 s | passed |\n| `validate:presentation` | 1.394 s | passed |\n| `build` | 5.838 s | passed |\n| `test:e2e` | 1.365 s | blocked before browser cases: port 4173 occupied |"
+    },
+    {
+      "tableAtSnapshot": 4,
+      "sourceLines": [
+        84,
+        94
+      ],
+      "historicalContext": [
+        "Development feedback cleanup — 2026-10-26",
+        "Remote CI hand-off"
+      ],
+      "markdown": "| CI job | Wall time including setup | Result at observation |\n| --- | ---: | --- |\n| unit | 97.0 s | success |\n| e2e (webkit 1/2) | pending s | in_progress |\n| integration (3/3) | 719.0 s | success |\n| integration (2/3) | 236.0 s | success |\n| checks | 126.0 s | success |\n| e2e (firefox 1/1) | 2116.0 s | failure |\n| e2e (webkit 2/2) | 2007.0 s | success |\n| integration (1/3) | 711.0 s | success |\n| e2e (chromium 1/1) | 1445.0 s | success |"
+    }
+  ],
+  "observationsAtSnapshot": [
+    {
+      "sourceLine": 7,
+      "text": "- Before: `ebc514f49087bd6da24f6eeef8c60bc7e6a25eb3`, immediately after the other session stopped and T432 landed."
+    },
+    {
+      "sourceLine": 8,
+      "text": "- Implementation: T459 `032a2b09`, T460 `cdcfff6d`, T461 `eab7e101`, T462 `8c6aedbf`. Classification/cache-retention correction: `a02624a3`; contract-aware guard correction: `87c07561`. Documentation closing commits are separate."
+    },
+    {
+      "sourceLine": 9,
+      "text": "- The earlier audit snapshot `2e61d6e9` predates T432 and counted 79 modules in its largest cycle. The matched comparison here uses **80**, measured on `ebc514f4` with the same parser used on the after tree."
+    },
+    {
+      "sourceLine": 66,
+      "text": "Vitest coverage: 140 unit files / 1,020 passing cases; 143 integration files / 1,147 passing cases and 4 existing pending cases; 3 contract files / 39 passing cases. No cases were removed to obtain these results."
+    },
+    {
+      "sourceLine": 76,
+      "text": "The old historical batch rows and the new normal run differ in hardware, source, release state, cache warmth and test classification. They cannot establish a percentage runtime speedup. Old `test:unit` mixed unit and integration coverage; compare the new unit-plus-integration scope when assessing overall cost. No controlled cold/warm before/after pair was run, and no exact portion of a past four-hour task is attributed to these changes."
+    }
+  ]
+}
