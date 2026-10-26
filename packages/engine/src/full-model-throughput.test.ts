@@ -121,11 +121,14 @@ const facts = (w: World) => ({
  * revision 2 (160 observed fixtures against revision 1: goals 2.46 → 2.72, xG 2.48 → 2.66 a match)
  * changed the candidate rounds only; c0af3afdd552ff60 before. T433's 규율, 압박 성향 and 예측력
  * in revision 2's movement (20 observed fixtures, indicative: goals 2.95 → 2.70, xG 2.74 → 2.50 a
- * match) changed the candidate rounds only; ea80c6051b01dc56 before.
+ * match) changed the candidate rounds only; ea80c6051b01dc56 before. T466's match-model revision 3
+ * (a club nobody owns adds its named manager's context, (ability − 50)/4 with morale at the neutral
+ * 60, in place of a flat 4) changed both, label and football; 35f59be3046fd689 and
+ * 165c65e37c8f073c before.
  */
 const BEFORE = {
-  aggregateRecords: '35f59be3046fd689',
-  candidateRounds: '165c65e37c8f073c',
+  aggregateRecords: '3e9e6c0090653c92',
+  candidateRounds: 'ee38cbfee07ad841',
 };
 
 describe('complete-result throughput (T285)', () => {

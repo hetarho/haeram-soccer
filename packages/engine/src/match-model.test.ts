@@ -5,9 +5,10 @@ import {
   MATCH_MODEL_REVISION,
   MATCH_MODEL_REVISIONS,
   type FullMatchRecord,
+  type MatchModelRevision,
 } from '../../contracts/src/match-model';
 import { canonical } from '../../contracts/src/index';
-import type { MatchRecord, World } from '../../contracts/src/types';
+import type { Fixture, MatchRecord, World } from '../../contracts/src/types';
 import { upgradeWorldRules } from '../../contracts/src/versions';
 import {
   declaredRelease,
@@ -25,8 +26,14 @@ import {
   validateFullMatchRecord,
   type MatchModelRelease,
 } from './match-model';
+import { buildGridSetup } from './grid/setup';
+import { clubManager } from './managerMarket';
+import { matchForm, prepareMatch } from './match';
+import { effectiveGap } from './match-rules';
 import { trackingBoundary } from './npc-stats';
+import { HOST_MATH, PORTABLE_MATH } from './portable-math';
 import { zeroMetrics } from './primitives';
+import { findClub, ratingOf } from './world';
 
 /** A synthetic 1–0: eleven lines a side, a scorer, his creator and one passer for the away side. */
 function fullRecord(): FullMatchRecord {
@@ -133,8 +140,8 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
       return validateFullMatchRecord(r);
     };
     expect(missing((r) => delete (r as MatchRecord).model)).toEqual(['model revision missing']);
-    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-3' as never))).toEqual([
-      'unknown model revision continuous-aggregate-3',
+    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-4' as never))).toEqual([
+      'unknown model revision continuous-aggregate-4',
     ]);
     expect(missing((r) => delete (r as MatchRecord).incidents)).toEqual(['incident list missing']);
     expect(missing((r) => delete (r as MatchRecord).xg)).toEqual(['team xG missing']);
@@ -329,6 +336,7 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
   };
   const [first, second] = MATCH_MODEL_REVISIONS;
   const REVISION_1: MatchModelRelease = { revision: first, enabled: true };
+  const REVISION_2: MatchModelRelease = { revision: second, enabled: true };
   /** A career two rounds into revision 1, as one released before T435 saved it. */
   const onRevision1 = () => structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_1));
   const withoutModel = ({ matchModel: _m, npcSeason: _s, ...rest }: World) => (
@@ -347,14 +355,14 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
     expect(w.matchModel!.revision).toBe(first);
     expect(w.npcSeason!.model).toBe(first);
     const before = structuredClone(w);
-    expect(activateMatchModel(w, ENABLED_RELEASE)).toBe(true);
+    expect(activateMatchModel(w, REVISION_2)).toBe(true);
     // Only the revision moves: its activation, tracking boundary and coverage stay.
     expect(w.matchModel).toEqual({ ...before.matchModel!, revision: second });
     expect(w.npcSeason).toEqual({ ...before.npcSeason!, model: second });
     expect(canonical(withoutModel(w))).toBe(canonical(withoutModel(before)));
     // Once there it stays, and an earlier release never moves it back.
     const upgraded = canonical(w);
-    expect(activateMatchModel(w, ENABLED_RELEASE)).toBe(false);
+    expect(activateMatchModel(w, REVISION_2)).toBe(false);
     expect(activateMatchModel(w, REVISION_1)).toBe(false);
     expect(canonical(w)).toBe(upgraded);
   });
@@ -364,7 +372,7 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
     const settled = structuredClone(w.ownMatches);
     expect(settled.length).toBeGreaterThan(0);
     expect(settled.every((m) => m.model === first)).toBe(true);
-    activateMatchModel(w, ENABLED_RELEASE);
+    activateMatchModel(w, REVISION_2);
     const before = counted(w);
     for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
     // Archived records are what a replay draws (→WEB-32): every settled one is as it was.
@@ -380,7 +388,7 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
     const kept = onRevision1(),
       upgraded = onRevision1();
     const settled = kept.ownMatches.length;
-    activateMatchModel(upgraded, ENABLED_RELEASE);
+    activateMatchModel(upgraded, REVISION_2);
     for (const w of [kept, upgraded]) for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
     // T432 moves revision 2's players (until then both revisions played the same football).
     const own = (w: World) =>
@@ -388,5 +396,112 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
     expect(own(upgraded)).not.toBe(own(kept));
     expect(upgraded.ownMatches.at(-1)!.model).toBe(second);
     expect(kept.ownMatches.at(-1)!.model).toBe(first);
+  });
+});
+
+describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
+  const founding = {
+    country: 'ENG' as const,
+    name: 'Symmetry Athletic',
+    color: '#224466',
+    seed: 'match-model-3',
+    level: 'normal' as const,
+  };
+  const [first, second, third] = MATCH_MODEL_REVISIONS;
+  const REVISION_2: MatchModelRelease = { revision: second, enabled: true };
+  const w = createWorld(founding);
+  const ability = (club: string) => clubManager(w, findClub(w, club)).ability;
+  const nobodys = w.fixtures.filter(
+    (f) =>
+      f.home !== w.playerClub && f.away !== w.playerClub && ability(f.home) !== ability(f.away),
+  );
+  const own = w.fixtures.find((f) => f.home === w.playerClub)!;
+  // The pre-feature model is a world with none recorded.
+  const { matchModel: _model, ...unmodelled } = w;
+  void _model;
+  const prepared = (f: Fixture, model?: MatchModelRevision) =>
+    model === undefined
+      ? prepareMatch(unmodelled as World, f, HOST_MATH)
+      : prepareMatch(w, f, HOST_MATH, model);
+  // The gap before diminishing returns, from what each side brings beyond its XI.
+  const sides = (f: Fixture, context: [number, number]) => {
+    const p = prepared(f, first),
+      form = matchForm(w, f);
+    const rating = [
+      ratingOf(w, findClub(w, f.home), p.squads[0]),
+      ratingOf(w, findClub(w, f.away), p.squads[1]),
+    ];
+    return {
+      gap: effectiveGap(rating[0] + 3 + context[0] - rating[1] - context[1]) + form[0] - form[1],
+      sum: rating[0] + rating[1] + 3 + context[0] + context[1] + form[0] + form[1],
+    };
+  };
+  const read = (p: { strength: number[] }) => ({
+    gap: p.strength[0] - p.strength[1],
+    sum: p.strength[0] + p.strength[1],
+  });
+
+  it('revision 3 gives a club nobody owns its manager’s context', () => {
+    expect(nobodys.length).toBeGreaterThan(0);
+    for (const f of nobodys.slice(0, 5)) {
+      const manager = [(ability(f.home) - 50) / 4, (ability(f.away) - 50) / 4] as [number, number];
+      const flat = read(prepared(f, second)),
+        symmetric = read(prepared(f, third));
+      // The raw gap moves by the ability difference / 4; morale at the neutral 60 adds nothing.
+      const expected = sides(f, manager);
+      expect(symmetric.gap).toBeCloseTo(expected.gap, 9);
+      expect(symmetric.sum).toBeCloseTo(expected.sum, 9);
+      expect(symmetric.sum - flat.sum).toBeCloseTo(manager[0] + manager[1] - 8, 9);
+      expect(symmetric.gap).not.toBeCloseTo(flat.gap, 6);
+    }
+    // The grid setup reads the same context as the aggregate's prepared match.
+    const f = nobodys[0]!;
+    const setup = buildGridSetup(w, f, { observe: false, recordPlayers: true, model: third });
+    expect(setup.shift).toEqual(prepareMatch(w, f, PORTABLE_MATH, third).shift);
+    expect(setup.shift).not.toEqual(prepareMatch(w, f, PORTABLE_MATH, second).shift);
+    // The own club's terms are the same on every revision: only its opponent's term moves.
+    const away = (ability(own.away) - 50) / 4;
+    const owned = [undefined, first, second, third].map((model) => read(prepared(own, model)));
+    expect(owned[1]).toEqual(owned[0]);
+    expect(owned[2]).toEqual(owned[0]);
+    expect(owned[3]!.sum - owned[2]!.sum).toBeCloseTo(away - 4, 9);
+    // The manager who plays is the one the market shows, derived without a stored draw: reading
+    // him leaves the world, its market and every stream as they were (→STAFF-17).
+    const fresh = createWorld(founding);
+    const untouched = canonical(fresh);
+    for (const f of nobodys.slice(0, 5)) prepareMatch(fresh, f, HOST_MATH, third);
+    expect(canonical(fresh)).toBe(untouched);
+    expect(fresh.managerMarket).toBeUndefined();
+  });
+
+  it('revisions 1 and 2 keep the flat 4', () => {
+    for (const f of [...nobodys.slice(0, 5), own]) {
+      const strengths = [undefined, first, second].map((model) => prepared(f, model).strength);
+      expect(strengths[1]).toEqual(strengths[0]);
+      expect(strengths[2]).toEqual(strengths[0]);
+      if (f === own) continue;
+      const expected = sides(f, [4, 4]);
+      expect(read({ strength: strengths[0]! }).gap).toBeCloseTo(expected.gap, 9);
+      expect(read({ strength: strengths[0]! }).sum).toBeCloseTo(expected.sum, 9);
+    }
+  });
+
+  it('a revision-2 world moves to revision 3 at the safe boundary', () => {
+    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_2));
+    const settled = structuredClone(career.ownMatches);
+    expect(settled.length).toBeGreaterThan(0);
+    expect(settled.every((m) => m.model === second)).toBe(true);
+    const before = structuredClone(career);
+    expect(activateMatchModel(career, ENABLED_RELEASE)).toBe(true);
+    // Only the revision moves: its activation, tracking boundary and coverage stay.
+    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: third });
+    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: third });
+    expect(activateMatchModel(career, REVISION_2)).toBe(false);
+    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
+    // Settled records keep revision 2; only the fixtures played since take revision 3.
+    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
+    const added = career.ownMatches.slice(settled.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === third)).toBe(true);
   });
 });

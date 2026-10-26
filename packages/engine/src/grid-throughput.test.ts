@@ -87,8 +87,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene, for
  * T444's deliveries into the zones, for T445's shots through the bodies in front of goal and
  * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
- * for T447's box zone depths, for T432's freedom on revision 2 and for T433's tendencies in
- * revision 2's movement, the first tie of each kind; T432's were 1/5, 36/3 and 3/0,
+ * for T447's box zone depths, for T432's freedom on revision 2, for T433's tendencies in
+ * revision 2's movement and for T466's revision 3, the first tie of each kind; T433's were 3/0,
+ * 3/1 and 0/4 (revision 2's, `REVISION_2_CASES`), T432's were 1/5, 36/3 and 3/0,
  * T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
  * 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19,
@@ -98,9 +99,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 3, shootout: 0 },
-  1995: { extraTime: 3, shootout: 1 },
-  2024: { extraTime: 0, shootout: 4 },
+  1975: { extraTime: 9, shootout: 2 },
+  1995: { extraTime: 7, shootout: 5 },
+  2024: { extraTime: 4, shootout: 3 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -272,8 +273,48 @@ interface CandidateDigests {
  * 679b7a94b32ab318 and positions 1975 03a625c0b9561fac, b2f4246a1339c5ad, 1995 62151697c1d9bb1d,
  * 23b65c5afb831dac, 2024 8a93907fff1ddb60, d8d442978a90c486. Revision 1's and the pre-feature
  * facts did not move.
+ * T466's match-model revision 3 (the own club's opponent, a club nobody owns, adds its named
+ * manager's context, (ability − 50)/4 with morale at the neutral 60, in place of a flat 4) moved
+ * every value and the knockout ties (rescanned above); before it, the values now revision 2's
+ * (`REVISION_2`). Revision 1's and the pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: '72876a33da257df1',
+      extraTime: '086a1810c411e442',
+      shootout: 'b1ed4b997d8479e7',
+    },
+    positions: { observed: '10ad6b49f08d73dc', shootout: '35f00b617b2f4839' },
+  },
+  1995: {
+    facts: {
+      league: 'fb3d3e85d084c617',
+      extraTime: '696fbe7ef4736ce9',
+      shootout: '0f3bc5b875ddb3c7',
+    },
+    positions: { observed: 'de62286ac131c1d6', shootout: '3f1734fb59d796bd' },
+  },
+  2024: {
+    facts: {
+      league: 'd2be53d1757cb9df',
+      extraTime: '22a1209ed63b73c5',
+      shootout: '324328c61352294c',
+    },
+    positions: { observed: '9c5ff17e9b20f6c8', shootout: '2e32d3618014ec18' },
+  },
+};
+
+/**
+ * Revision 2's knockout ties and digests (T466): T433's values, the football revision 2 plays
+ * before revision 3's context. They never move again (→SAVE-23).
+ */
+const REVISION_2_CASES = {
+  1975: { extraTime: 3, shootout: 0 },
+  1995: { extraTime: 3, shootout: 1 },
+  2024: { extraTime: 0, shootout: 4 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_2: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
       league: 'a137966f0f7f3010',
@@ -374,23 +415,28 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revision 1 plays as it did before revision 2 moved (→SAVE-23): its matches replay under it.
-      const first = (id: string, opts: Parameters<typeof play>[2] = {}) =>
-        play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[0] });
-      const r1 = REVISION_1_CASES[year];
-      const r1Pens = first(`knockout-${year}-${r1.shootout}`, { decide: LEVEL, observe: true });
-      const r1League = first(`league-${year}`, { observe: true });
-      expect(
-        {
+      // Revisions 1 and 2 play as they did before later revisions moved (→SAVE-23): their matches
+      // replay under them.
+      const earlier = (revision: 0 | 1, cases: { extraTime: number; shootout: number }) => {
+        const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
+          play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[revision] });
+        const pens = on(`knockout-${year}-${cases.shootout}`, { decide: LEVEL, observe: true });
+        const league = on(`league-${year}`, { observe: true });
+        return {
           facts: {
-            league: factsOf(r1League),
-            extraTime: factsOf(first(`knockout-${year}-${r1.extraTime}`, { decide: LEVEL })),
-            shootout: factsOf(r1Pens),
+            league: factsOf(league),
+            extraTime: factsOf(on(`knockout-${year}-${cases.extraTime}`, { decide: LEVEL })),
+            shootout: factsOf(pens),
           },
-          positions: { observed: positionsOf(r1League), shootout: positionsOf(r1Pens) },
-        },
-        `${year} revision-1 digests`,
-      ).toEqual(REVISION_1[year]);
+          positions: { observed: positionsOf(league), shootout: positionsOf(pens) },
+        };
+      };
+      expect(earlier(0, REVISION_1_CASES[year]), `${year} revision-1 digests`).toEqual(
+        REVISION_1[year],
+      );
+      expect(earlier(1, REVISION_2_CASES[year]), `${year} revision-2 digests`).toEqual(
+        REVISION_2[year],
+      );
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)
         console.log(`no ${HOST} pre-feature digest for ${year}; this host gives ${factsOf(old)}`);

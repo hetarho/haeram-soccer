@@ -326,7 +326,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T466 | Symmetric match context as match-model revision 3 | MATCH STAFF SAVE ARCH | - | todo |
 | T467 | Read the own club's outcome curve on revision 3 | MATCH ARCH | T466 | todo |
 
 ## work
@@ -342,7 +341,7 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- T466 (symmetric match context, match-model revision 3) then T467 (explore 20 m, the own club's curve on revision 3); ideation own-club-match-edge converted (choice C, MATCH r32)
+- T467 (explore 20 m, the own club's curve on revision 3) next; T466 done (revision 3 symmetric context): the schema contract, web host/persistence/packing/protocol integration tests (now naming `continuous-aggregate-4` as the future revision) and browser specs run in the host batch; ideation own-club-match-edge converted (choice C, MATCH r32)
 - T465 done (late-step indicator); its e2e journey (progression-settings "a late own match day shows 경기 진행 중…" at 360/390/1280) runs in the host batch. Performance steps (a)/(c) wait for the owner's x10 read (inbox suggest)
 - T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch.
 - T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
@@ -350,6 +349,7 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 T466 done (q7m3): match-model revision 3: a club nobody owns adds its named manager's (ability − 50)/4, morale neutral, in prepareMatch for both paths; revisions 1/2 and pre-feature keep the flat 4; revision 2 digests kept and asserted, revision 3 grid/full-model digests and knockout ties re-recorded; future-revision tests name -4
 - 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
 - 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too
 - 261026 T465 done (q7m3): an automatic step still in flight one pace interval after it began sets ProgressionState.lateStep; the transport's reserved slot shows a decorative spinner with 경기 진행 중… / 진행 중… until it lands or the clock stops; steps and catch-up unchanged, e2e left to the host batch
@@ -369,4 +369,3 @@
 - 261026 T433 done (q7m3): revision 2's 규율 (drift and disorder ×1 ± 0.5), 압박 성향 (press reach and choice ×1 ± 0.3) and 예측력 (reads a kicked ball in 위치선정's place, ± 0.3 s) kept at the starting scales; 20 observed fixtures, indicative: goals 2.95 → 2.70, xG 2.74 → 2.50 a match, every record valid; revision 2 digests re-recorded, revision 1 and pre-feature unchanged; committed beside a concurrent doc-review session's docs → artifacts edits, which stay unstaged
 - 261026 ideation save-storage-and-fast-pace start + recorded (owner): active checkpoint to IndexedDB, then x10 with a "경기 진행 중…" match-day indicator; after the current football tasks
 - 261026 doc-review ARCH KIT MATCH PLAYER SAVE WEB start; owner requested docs-to-artifacts cleanup and source consistency audit.
-- 261026 re-scope (q7m3, owner): T433, T434, T410 each within 20 m as gameplay reads (10 seasons, a handful of fixtures); pilot-size parity deferred

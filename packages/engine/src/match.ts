@@ -39,7 +39,12 @@ import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { injuryChance } from './careers';
 import { HOST_MATH, type MatchMath } from './portable-math';
-import { activeMatchModel } from '../../contracts/src/match-model';
+import {
+  activeMatchModel,
+  matchModelNumber,
+  type MatchModelRevision,
+} from '../../contracts/src/match-model';
+import { clubManager } from './managerMarket';
 import { simulateAggregate } from './aggregate/engine';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
@@ -261,9 +266,15 @@ export interface Prepared extends MatchSetup {
 
 /**
  * `math` is the match's table: the candidate grid passes the portable one, so its day's form and
- * gap (every skill's shift) are the same on every host (→ARCH-9, T358).
+ * gap (every skill's shift) are the same on every host (→ARCH-9, T358). `model` is the revision
+ * the fixture plays: the world's active model unless a grid setup names another.
  */
-export function prepareMatch(w: World, f: Fixture, math: MatchMath = HOST_MATH): Prepared {
+export function prepareMatch(
+  w: World,
+  f: Fixture,
+  math: MatchMath = HOST_MATH,
+  model: MatchModelRevision | undefined = activeMatchModel(w),
+): Prepared {
   const home = findClub(w, f.home),
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
@@ -280,8 +291,18 @@ export function prepareMatch(w: World, f: Fixture, math: MatchMath = HOST_MATH):
     moraleStrength(w) +
     style!.strength +
     (side === 0 ? buildEffects(w).homeStrength : 0);
+  // From revision 3 a club nobody owns adds its named manager on the own club's formula, its
+  // morale at the neutral 60 adding nothing; earlier revisions and the pre-feature model keep a
+  // flat 4 (→MATCH-2, T466). Styles stay the own club's (→STAFF-14).
+  const symmetric = model !== undefined && matchModelNumber(model) >= 3;
+  const sideContext = (side: 0 | 1) =>
+    side === ownSide
+      ? ownStrength(side)
+      : symmetric
+        ? (clubManager(w, teams[side]).ability - 50) / 4
+        : 4;
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
-  const context = [3 + (ownSide === 0 ? ownStrength(0) : 4), ownSide === 1 ? ownStrength(1) : 4];
+  const context = [3 + sideContext(0), sideContext(1)];
   const form = matchForm(w, f, math);
   // The XIs just chosen are the ones `rating` would choose again (T450).
   const base = [

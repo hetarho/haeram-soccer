@@ -223,7 +223,7 @@ export function buildGridSetup(
 ): GridSetup {
   const model = opts.model ?? activeMatchModel(w);
   // The candidate's form and gap on the portable table, as `GridState.math` binds it (T358).
-  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH);
+  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH, model);
   const { ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);

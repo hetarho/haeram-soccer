@@ -113,8 +113,8 @@ it('carries supported match-model metadata and refuses a future one, changing no
   expect(activated).toEqual(before);
 
   for (const future of [
-    world({ matchModel: { ...matchModel, revision: 'continuous-aggregate-3' } }),
-    world({ ownMatches: [{ id: 'f:1', model: 'continuous-aggregate-3' }] }),
+    world({ matchModel: { ...matchModel, revision: 'continuous-aggregate-4' } }),
+    world({ ownMatches: [{ id: 'f:1', model: 'continuous-aggregate-4' }] }),
   ]) {
     const unchanged = structuredClone(future);
     let error: unknown;

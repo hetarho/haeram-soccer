@@ -35,7 +35,8 @@ type Rng = () => number;
  * The candidate model's named streams for one fixture: `<seed>:<revision>:aggregate:<family>
  * [:<period>]:<fixture>`. Each call restarts the named sequence, so neither the order of other
  * draws nor any observation or query moves it (→ARCH-5). Revision 2 changes only the detailed
- * engine's movement (T431–T433), so the aggregate path keeps revision 1's streams.
+ * engine's movement (T431–T433) and revision 3 only the prepared context of a club nobody owns
+ * (T466), so the aggregate path keeps revision 1's streams.
  */
 export function aggregateStreams(
   seed: string,
