@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T01:46Z | development-feedback |
+| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T01:46Z | T460 |
 
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
@@ -309,9 +309,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T459 | Dependency-scoped fixture caching and prepared browser worlds | ARCH | - | todo |
-| T460 | Separate fast unit and integration verification | ARCH | T459 | todo |
-| T461 | Isolate match rules and fixture reconstruction | ARCH | T459 | todo |
+| T460 | Separate fast unit and integration verification | ARCH | T460 | todo |
+| T461 | Isolate match rules and fixture reconstruction | ARCH | T460 | todo |
 | T462 | Reusable measurement identities and feedback comparison | ARCH | T459 T460 T461 | todo |
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
@@ -338,6 +337,7 @@
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass
 - 261026 ARCH r21 + T459–T462 (f6d2): adopted feedback-cost review; preserve coverage and baseline, isolate caches/test tiers/engine leaves/measurement reuse; other start-vibe session stopped by owner
 - 261026 development-feedback start (f6d2): owner stopped the other session and adopted the architectural audit; preserve historical measurements, implement the complete feedback-cost cleanup, run one final verification, no new century benchmark
 - 261026 review-code development-feedback-261026 complete — 79-module engine cycle, 222/280 dependency-affected tests, fixture/benchmark invalidation and integration-tier hand-offs; no findings adopted
@@ -357,4 +357,3 @@
 - 261026 T450 done (r8m2): NEXT MATCH follows home conditions in DOM/grid order; task checks pass. T446–T450 publication batch starts before the owner-authorized commit/push.
 - 261026 create-task freshness (r8m2): WEB r153 changes home order only; inactive todo T286/T434 base WEB@152→153, contracts unchanged.
 - 261026 create-task T450 + implement-task start (r8m2): move the home fixture below conditions, then verify and publish the full UI batch.
-- 261026 update-ssot WEB r153 (r8m2): NEXT MATCH follows team-state tiles on every viewport; owner authorizes committing and pushing the accumulated UI changes.
