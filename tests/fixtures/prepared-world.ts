@@ -9,7 +9,7 @@ export interface PreparedWorld {
   format: 1;
   synthetic: true;
   name: string;
-  source: { commit: string; computation: string };
+  source: { commit: string; dirty: boolean; computation: string };
   sha256: string;
   gzip: string;
 }

@@ -20,7 +20,7 @@ it('rejects altered and schema-invalid prepared data', () => {
     format: 1,
     synthetic: true,
     name: 'invalid',
-    source: { commit: 'test', computation: 'test' },
+    source: { commit: 'test', dirty: false, computation: 'test' },
     sha256: 'changed',
     gzip: gzipSync('{}').toString('base64'),
   };

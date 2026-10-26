@@ -117,7 +117,7 @@ export function fingerprintFiles(root: string, files: readonly string[]) {
     .update(ts.version);
   for (const file of [...new Set(files)].sort())
     hash.update(relative(root, file)).update('\0').update(readFileSync(file));
-  return { algorithm: 'sha256', sha256: hash.digest('hex'), files: new Set(files).size };
+  return { algorithm: 'sha256' as const, sha256: hash.digest('hex'), files: new Set(files).size };
 }
 
 export function computationFingerprint(

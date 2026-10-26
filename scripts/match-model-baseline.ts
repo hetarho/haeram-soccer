@@ -1,3 +1,4 @@
+import { measurementIdentity } from './lib/measurement-identity';
 /**
  * Match-model baseline measurement (→ARCH-31, MATCH-28, docs/MATCH-MODEL-CONTRACT.md).
  *
@@ -186,6 +187,7 @@ function sourceFingerprint() {
 const versionOf = (name: string) =>
   JSON.parse(readFileSync(`node_modules/${name}/package.json`, 'utf8')).version as string;
 const source = sourceFingerprint();
+const computation = measurementIdentity('scripts/match-model-baseline.ts');
 const core = CORPUS_CONFIG.conditions[0]!;
 const provenance: Provenance = {
   date: new Date().toISOString(),
@@ -195,6 +197,7 @@ const provenance: Provenance = {
       encoding: 'utf8',
     }).trim(),
     fingerprint: source,
+    computationFingerprint: computation,
   },
   toolchain: {
     node: process.version,
@@ -614,7 +617,7 @@ const candidateParity = candidateFn
 const pilotSizing = conditionValidationSize(pilotNeeds(reference, core));
 
 // ---- Report -----------------------------------------------------------------------------------------
-if (sourceFingerprint().sha256 !== source.sha256)
+if (measurementIdentity('scripts/match-model-baseline.ts').sha256 !== computation.sha256)
   throw new Error('Source changed during the measurement; rerun after edits settle');
 const components = [...timings.values()];
 const performanceReport = buildPerformanceReport({ components, provisional: !releaseRun });

@@ -118,3 +118,4 @@ jobs:
             playwright-report
             test-results
             .tmp/release-storage-failure-metrics.json
+            .tmp/verification/e2e-results.json

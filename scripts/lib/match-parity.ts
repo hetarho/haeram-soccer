@@ -3600,6 +3600,14 @@ export interface Provenance {
     gitDirty: boolean;
     /** Content hash of the tracked and untracked files under `scope` (git pathspecs). */
     fingerprint: { algorithm: 'sha256'; sha256: string; files: number; scope: readonly string[] };
+    /** Actual runtime inputs, retained separately from full provenance. */
+    computationFingerprint?: {
+      algorithm: 'sha256';
+      sha256: string;
+      files: number;
+      entry: string;
+      scope: string;
+    };
   };
   toolchain: Readonly<Record<string, string>>;
   machine: {

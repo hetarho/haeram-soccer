@@ -355,4 +355,3 @@
 - 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.
 - 261026 publication fix (r8m2): the first Chromium batch found configureResponsibilities still reading mode from the removed metadata/button aria-label; stop that run and read the separate progression-mode status. Unit 2131 + 4 skips, contracts 39, catalogs/resources/build already passed and are reused.
 - 261026 T450 done (r8m2): NEXT MATCH follows home conditions in DOM/grid order; task checks pass. T446–T450 publication batch starts before the owner-authorized commit/push.
-- 261026 create-task freshness (r8m2): WEB r153 changes home order only; inactive todo T286/T434 base WEB@152→153, contracts unchanged.

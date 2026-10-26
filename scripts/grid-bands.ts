@@ -1,3 +1,4 @@
+import { measurementIdentity } from './lib/measurement-identity';
 /**
  * Grid-engine distribution check (MATCH-23, T215, docs/CALIBRATION.md) and the candidate model's
  * calibration report (T278, MATCH-28, docs/MATCH-MODEL-CONTRACT.md).
@@ -788,6 +789,7 @@ async function runReport() {
   const jobs = reportJobs();
   const workers = Math.max(1, Math.min(option('jobs', cpus().length - 2), jobs.length));
   const source = sourceFingerprint();
+  const computation = measurementIdentity('scripts/grid-bands.ts');
   const started = performance.now();
   const queue = [...jobs];
   const done: Summary[] = [];
@@ -815,7 +817,7 @@ async function runReport() {
       child.kill();
     }),
   );
-  if (sourceFingerprint().sha256 !== source.sha256)
+  if (measurementIdentity('scripts/grid-bands.ts').sha256 !== computation.sha256)
     throw new Error('Source changed during the measurement; rerun after edits settle');
   const order = new Map(CORPUS_CONFIG.conditions.map((c, i) => [c.id, i]));
   done.sort((a, b) => order.get(a.condition)! - order.get(b.condition)!);
@@ -847,6 +849,7 @@ async function runReport() {
         encoding: 'utf8',
       }).trim(),
       fingerprint: { ...source, scope: SOURCE_SCOPE },
+      computationFingerprint: computation,
       node: process.version,
       machine: {
         platform: platform(),

@@ -22,10 +22,11 @@
     "validate:presentation": "tsx scripts/validate-presentation.ts",
     "test:e2e": "PREVIEW_BUILD=1 playwright test",
     "benchmark": "tsx scripts/benchmark.ts",
-    "verify": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:integration && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run build && pnpm run test:e2e",
+    "verify": "node scripts/verify.mjs",
     "benchmark:browser": "node scripts/first-play.mjs",
     "test:integration": "vitest run --project integration",
-    "test:integration:release-on": "vitest run --config vitest.release-on.config.ts --project integration"
+    "test:integration:release-on": "vitest run --config vitest.release-on.config.ts --project integration",
+    "verify:batch": "node scripts/verify.mjs --batch"
   },
   "dependencies": {
     "brotli": "2.1.0",

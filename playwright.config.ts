@@ -7,7 +7,10 @@ export default defineConfig({
   workers: 3,
   // On CI each failing journey also becomes a check annotation, readable on the run page
   // without the job log.
-  reporter: process.env.CI ? [['github'], ['dot']] : 'list',
+  reporter: [
+    ...(process.env.CI ? ([['github'], ['dot']] as const) : ([['list']] as const)),
+    ['json', { outputFile: '.tmp/verification/e2e-results.json' }],
+  ],
   use: { baseURL, trace: 'retain-on-failure' },
   webServer: {
     command: process.env.PREVIEW_BUILD ? 'pnpm run preview' : `pnpm run dev --port ${port}`,

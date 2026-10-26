@@ -1,3 +1,4 @@
+import { measurementIdentity } from './lib/measurement-identity';
 /**
  * Aggregate-path measurement (→MATCH-22/26/28/29, docs/MATCH-MODEL-CONTRACT.md, T284): the
  * candidate aggregate adapter's samples through the shared registry (scripts/lib/match-parity.ts),
@@ -987,31 +988,12 @@ const SOURCE_SCOPE = [
   // The season runner's `withCandidateModel`.
   'tests/fixtures/worlds.ts',
 ];
-/**
- * The source the detailed reference depends on: the fingerprint scope without the aggregate path,
- * tests and this runner (an edit to `referenceCondition` needs a fresh cache directory).
- */
+/** Full runner included: reference-procedure edits invalidate automatically. */
 let gridSource: string | undefined;
 function gridFingerprint() {
-  if (gridSource) return gridSource;
-  const files = execFileSync(
-    'git',
-    ['ls-files', '--cached', '--others', '--exclude-standard', '--', ...SOURCE_SCOPE],
-    { encoding: 'utf8' },
-  )
-    .split('\n')
-    .filter(
-      (file) =>
-        file &&
-        existsSync(file) &&
-        !file.startsWith('packages/engine/src/aggregate/') &&
-        file !== 'scripts/match-parity.ts' &&
-        !/\.test\.tsx?$/.test(file),
-    )
-    .sort();
-  const hash = createHash('sha256');
-  for (const file of files) hash.update(file).update('\0').update(readFileSync(file));
-  return (gridSource = hash.digest('hex'));
+  return (gridSource ??= measurementIdentity('scripts/match-parity.ts', process.cwd(), {
+    referenceOnly: true,
+  }).sha256);
 }
 function sourceFingerprint() {
   const files = execFileSync(
@@ -1110,6 +1092,7 @@ async function runReport() {
   const jobs = reportJobs();
   const workers = Math.max(1, Math.min(option('jobs', 4), jobs.length + option('seasons', 0)));
   const source = sourceFingerprint();
+  const computation = measurementIdentity('scripts/match-parity.ts');
   const started = performance.now();
   // Reference jobs are the slow ones: start them first.
   const seasonCount = option('seasons', 0);
@@ -1196,7 +1179,7 @@ async function runReport() {
       child.kill();
     }),
   );
-  if (sourceFingerprint().sha256 !== source.sha256)
+  if (measurementIdentity('scripts/match-parity.ts').sha256 !== computation.sha256)
     throw new Error('Source changed during the measurement; rerun after edits settle');
   writeArtifact(true);
 
@@ -1270,6 +1253,7 @@ async function runReport() {
           encoding: 'utf8',
         }).trim(),
         fingerprint: { ...source, scope: SOURCE_SCOPE },
+        computationFingerprint: computation,
         node: process.version,
         machine: {
           platform: platform(),

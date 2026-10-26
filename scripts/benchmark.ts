@@ -1,3 +1,4 @@
+import { measurementIdentity } from './lib/measurement-identity';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -57,7 +58,7 @@ import { DISABLED_RELEASE } from '../tests/fixtures/releases';
  * The storage benchmark in phases (T308): `pnpm run benchmark` runs every phase in one process,
  * `pnpm run benchmark --phase <name>` runs one, so a session whose commands stop after ten minutes
  * runs the same benchmark command by command. A phase keeps its results and the worlds a later
- * phase measures under `.tmp/benchmark/<source fingerprint>/`, so phases of different sources
+ * phase measures under `.tmp/benchmark/<computation and execution identity>/`, so phases with different computation dependencies or execution environments
  * never mix, and `report` assembles them and fails unless every phase ran on this source.
  * `--smoke` runs two seasons a profile into a directory of its own and writes no report.
  * T286: the century profiles found with the release switch as it stands (`createWorld`'s default),
@@ -161,7 +162,18 @@ function sourceFingerprint() {
   return { algorithm: 'sha256', sha256: hash.digest('hex'), files: paths.length };
 }
 const source = sourceFingerprint();
-const state = join('.tmp', 'benchmark', source.sha256.slice(0, 16) + (smoke ? '-smoke' : ''));
+const computation = measurementIdentity('scripts/benchmark.ts');
+const execution = {
+  node: process.version,
+  platform: platform(),
+  arch: arch(),
+  cpu: cpus()[0]?.model,
+  logicalCpus: cpus().length,
+};
+const reuseKey = createHash('sha256')
+  .update(JSON.stringify([computation, execution, smoke]))
+  .digest('hex');
+const state = join('.tmp', 'benchmark', reuseKey.slice(0, 16));
 mkdirSync(state, { recursive: true });
 const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
 let current: Phase = 'retained';
@@ -253,7 +265,12 @@ async function measure(w: World, label: string) {
     writeFileSync(
       '.tmp/release-storage-failure-metrics.json',
       JSON.stringify(
-        { ...result, streams: streamSizes(JSON.parse(worldCanonical)), sourceFingerprint: source },
+        {
+          ...result,
+          streams: streamSizes(JSON.parse(worldCanonical)),
+          sourceFingerprint: source,
+          computationFingerprint: computation,
+        },
         null,
         2,
       ) + '\n',
@@ -308,11 +325,23 @@ interface PhaseResult<T = unknown> {
   peakObservedHeapBytes: number;
   worst: { label: string; checkpointBytes: number };
   data: T;
+  provenance: {
+    gitHead: string;
+    sourceFingerprint: typeof source;
+    computationFingerprint: typeof computation;
+    execution: typeof execution;
+  };
 }
 function loadPhase<T>(phase: Phase): PhaseResult<T> {
   const file = join(state, `${phase}.json`);
   if (!existsSync(file)) throw new Error(`Run --phase ${phase} on this source first`);
-  return JSON.parse(readFileSync(file, 'utf8')) as PhaseResult<T>;
+  const result = JSON.parse(readFileSync(file, 'utf8')) as PhaseResult<T>;
+  if (
+    result.provenance?.computationFingerprint.sha256 !== computation.sha256 ||
+    JSON.stringify(result.provenance.execution) !== JSON.stringify(execution)
+  )
+    throw new Error(`Incompatible cached phase ${phase}`);
+  return result;
 }
 
 const profileWorld = (variant: Variant) =>
@@ -963,11 +992,17 @@ function report() {
     currentHeadVerified: !gitDirty,
     verifiedSource: gitDirty ? 'uncommitted working tree' : 'committed HEAD',
     sourceFingerprint: source,
+    computationFingerprint: computation,
     run: {
       mode: named
         ? 'phased: one `pnpm run benchmark --phase <name>` command per phase'
         : 'one process',
-      phases: all.map(({ phase, date, elapsedMs }) => ({ phase, date, elapsedMs })),
+      phases: all.map(({ phase, date, elapsedMs, provenance }) => ({
+        phase,
+        date,
+        elapsedMs,
+        provenance,
+      })),
     },
     engine: era.engine,
     catalog: era.catalog,
@@ -1043,7 +1078,7 @@ for (const phase of named ? [named as Phase] : PHASES) {
   worst = { label: '', checkpointBytes: 0 };
   const started = performance.now();
   const data = await run(phase);
-  if (sourceFingerprint().sha256 !== source.sha256)
+  if (measurementIdentity('scripts/benchmark.ts').sha256 !== computation.sha256)
     throw new Error('Source changed during storage verification; rerun after edits settle');
   if (phase === 'report') continue;
   const result: PhaseResult = {
@@ -1054,6 +1089,12 @@ for (const phase of named ? [named as Phase] : PHASES) {
     peakObservedHeapBytes,
     worst,
     data,
+    provenance: {
+      gitHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+      sourceFingerprint: source,
+      computationFingerprint: computation,
+      execution,
+    },
   };
   writeFileSync(join(state, `${phase}.json`), JSON.stringify(result, null, 2) + '\n');
   console.error(`${phase}: done in ${Math.round(result.elapsedMs / 1000)} s`);

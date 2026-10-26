@@ -13,6 +13,7 @@ import { computationFingerprint, sourceGraph } from './lib/source-graph';
 
 if (!process.argv.includes('--write')) throw new Error('Regeneration requires --write');
 const source = {
+  dirty: !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
   commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   computation: computationFingerprint(
     sourceGraph(process.cwd()),
