@@ -350,6 +350,7 @@
 
 ## log
 - 261026 T467 done (q7m3): own-edge-probe buckets by prepared gap against outcomeTarget on revision 3; founding detailed 1.52 v 2.15 (aggregate 2.33), top tier on the curve (1.53 / 1.56 v 1.46); about 90% of T434's −0.9 remains at tier 4; title race unchanged beside T410; lever suggested (grid tier dependence)
+- 261026 fix CI manual progression start: WebKit retains aria-hidden exit copies after the match completed; scope the report assertion to the live dialog and await next-event readiness before checking the manual stop.
 - 261026 T466 done (q7m3): match-model revision 3: a club nobody owns adds its named manager's (ability − 50)/4, morale neutral, in prepareMatch for both paths; revisions 1/2 and pre-feature keep the flat 4; revision 2 digests kept and asserted, revision 3 grid/full-model digests and knockout ties re-recorded; future-revision tests name -4
 - 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
 - 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too
