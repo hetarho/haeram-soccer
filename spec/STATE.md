@@ -11,6 +11,7 @@
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
 ## inbox
+- 261026 parked ideation/match-day-progress ideation/calibration-pass: the owner is shaping both in a live ideation session; autopilot must not convert, plan or implement them until the owner marks them ready
 - 261026 suggest ideation/own-club-match-edge T467 MATCH-2 MATCH-22: for the owner's calibration pass — on revision 3 the lever is the detailed engine's tier dependence: at the founding (1960 tier 4, XI 41 v 30, prepared gap +12.2) the grid gives the own club 1.52 points a match against MATCH-2's 2.15 and stays flat (1.43–1.64 from gap +5 to +20, draws 33–40%, 1.8 goals a match) while its aggregate gives 2.33 and the league's other fixtures hold the curve (1.39 v 1.38, 4,200 matches); at the top tier (ENG 1부 median club, XI 83 v 83, gap +1.2) both paths sit on the curve (1.53 / 1.56 v 1.46, ±0.14), so about 90% of T434's −0.9 remains only at the low tier → first separate the level from the founded squad's own inputs by playing the founding league's other fixtures on the detailed engine at the same gaps, then tune the grid's gap response at low levels (alt: the grid's own-side inputs, if those fixtures hold the curve | the aggregate's strength scale, which the reference does not support) — indicative, 10 seeds; the title race showed no widening (champions 2.29, lead 6, beside T410's 2.32, 6)
 - 261026 decided ideation/own-club-match-edge MATCH-2 T466 T467: which of A/B/C/D after T434's figures (left open for the owner since 261025) → C: a club nobody owns adds its named manager's ability on the own club's formula ((ability − 50)/4, STAFF-17's manager whose level follows the club's strength ±8) with morale at the neutral 60, as match-model revision 3 (T466); then T467 reads the own club's curve against MATCH-2's on revision 3 at the founding and a top-tier club (20 m), the tuning joining the owner's calibration pass; manager styles stay own-only, because T434 found both causes still move results and either alone leaves a gap the owner cannot see (alt: B alone | A alone | D, show the edge | morale from the last five results, new state per club | flat 4 kept and the own club's terms removed, which makes hiring a manager pointless) — managers follow club strength, so strength gaps between clubs nobody owns grow about a quarter; T467 reads the title-race effect beside T410's
 - 261026 decided MATCH-13 MATCH-30 T327: MATCH-13 specified 40 m and own 60% while both paths count from MATCH-14's nearest band edges (35 m; two-thirds), as T327 recommended → the definition states the band-edge zones and MATCH-30 keeps the Opta bands with the offset beside them, because the cell-level aggregate cannot read metres inside a band and exact parity matters more than the 35–40 m strip (alt: exact metres on the grid only, a parity gap by construction | re-derive both bands from SB16 events under the band-edge zones, a data task with no published league table to check it)
@@ -294,6 +295,8 @@
 | own-club-match-edge | converted@261026 |
 | match-viewing-pace-and-freedom | converted@261025 |
 | save-storage-and-fast-pace | converted@261026 |
+| match-day-progress | open@261026 |
+| calibration-pass | open@261026 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -344,6 +347,7 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (T410's completed task record and STATE inbox) wait for the owner's calibration pass
 
 ## log
+- 261026 ideation match-day-progress + calibration-pass start (owner): match day a ≥ 2 s beat at every pace, no visible catch-up; no own-club edge, judged by measurement; T410 follow-ups explained
 - 261026 T468 done: shared production NPC context with measurements, including pre-form gaps; current-revision upgrade and three seeded scenario fixtures refreshed, assertions retained. Typecheck/lint/format, 556 changed unit cases and build passed; full main batch and CI follow.
 - 261026 T468 start: main batch found four revision-dependent fixture assumptions and one measurement adapter retaining the flat NPC context; preserve rules and historical evidence, repair before the authorized main push.
 - 261026 doc-review artifacts tidied (SSOT revs unchanged): removed applied UI packs and duplicate planning prose; retained original raw benchmarks plus 99 measured tables and 12 UI measurement runs with snapshot provenance; current references and disposable capture paths updated. Typecheck, lint, format, source equivalence and spec lint passed; main batch in progress.
