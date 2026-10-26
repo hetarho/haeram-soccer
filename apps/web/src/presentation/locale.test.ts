@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { validateLocalePack, type LocalePack } from './contracts';
+import { getMessageParameters, validateLocalePack, type LocalePack } from './contracts';
 import { validateRegistry } from './registry';
 import { createLoadedLocale, createLocaleFormatters, createTranslator } from './locale';
 
@@ -27,6 +27,74 @@ describe('locale messages', () => {
       expect(pack.id).toBe(entry.id);
     }
     expect(koreanEntry).toMatchObject({ id: korean.id, label: '한국어', direction: 'ltr' });
+  });
+
+  it('ships complete translations and plural forms without fallback or unresolved parameters', () => {
+    const baselineEntry = registry.entries.find((entry) => entry.id === registry.defaultId)!;
+    const baseline = validateLocalePack(readResource(baselineEntry.resource));
+    const counts = [0, 1, 2, 3, 11, 100, 1_000_000, 1.5];
+    for (const entry of registry.entries) {
+      const pack = validateLocalePack(readResource(entry.resource), baseline);
+      expect(Object.keys(pack.messages).sort(), entry.id).toEqual(
+        Object.keys(baseline.messages).sort(),
+      );
+      const onDiagnostic = vi.fn();
+      const { t } = createLoadedLocale(registry, pack, baseline, { onDiagnostic });
+      for (const [id, message] of Object.entries(pack.messages)) {
+        const parameters = Object.fromEntries(
+          getMessageParameters(message).map((name) => [name, `sample-${name}`]),
+        );
+        if (typeof message !== 'string') {
+          expect(Object.keys(message.forms).sort(), `${entry.id}/${id}`).toEqual(
+            new Intl.PluralRules(entry.id).resolvedOptions().pluralCategories.sort(),
+          );
+        }
+        for (const count of counts) {
+          const rendered = t(id, { ...parameters, count });
+          expect(rendered, `${entry.id}/${id}`).not.toMatch(/\{[A-Za-z_][A-Za-z0-9_]*\}/);
+          if (entry.id !== baseline.id) expect(rendered).not.toMatch(/[가-힣]/);
+        }
+      }
+      expect(onDiagnostic, entry.id).not.toHaveBeenCalled();
+    }
+  });
+
+  it.each([
+    ['en-GB', 'English', 'Settings', 'ltr'],
+    ['es-ES', 'Español', 'Ajustes', 'ltr'],
+    ['pt-BR', 'Português (Brasil)', 'Configurações', 'ltr'],
+    ['fr-FR', 'Français', 'Paramètres', 'ltr'],
+    ['de-DE', 'Deutsch', 'Einstellungen', 'ltr'],
+    ['it-IT', 'Italiano', 'Impostazioni', 'ltr'],
+    ['nl-NL', 'Nederlands', 'Instellingen', 'ltr'],
+    ['tr-TR', 'Türkçe', 'Ayarlar', 'ltr'],
+    ['ar-SA', 'العربية', 'الإعدادات', 'rtl'],
+    ['ja-JP', '日本語', '設定', 'ltr'],
+    ['id-ID', 'Bahasa Indonesia', 'Pengaturan', 'ltr'],
+  ])('offers %s with its native name and translated settings', (id, label, menu, direction) => {
+    const entry = registry.entries.find((entry) => entry.id === id)!;
+    const pack = validateLocalePack(readResource(entry.resource), korean);
+    const locale = createLoadedLocale(registry, pack, korean);
+    expect([locale.label, locale.direction, locale.t('shell.menu')]).toEqual([
+      label,
+      direction,
+      menu,
+    ]);
+  });
+
+  it('uses the shipped English and Arabic save-time grammar', () => {
+    const english = createTranslator(validateLocalePack(readResource('en-GB.json')), korean);
+    expect(english('save.secondsAgo', { count: 1 })).toBe('Saved 1 second ago');
+    expect(english('save.secondsAgo', { count: 2 })).toBe('Saved 2 seconds ago');
+    const arabic = createTranslator(validateLocalePack(readResource('ar-SA.json')), korean);
+    expect([0, 1, 2, 3, 11, 100].map((count) => arabic('save.secondsAgo', { count }))).toEqual([
+      'تم الحفظ قبل 0 ثانية',
+      'تم الحفظ قبل ثانية واحدة',
+      'تم الحفظ قبل ثانيتين',
+      'تم الحفظ قبل 3 ثوانٍ',
+      'تم الحفظ قبل 11 ثانية',
+      'تم الحفظ قبل 100 ثانية',
+    ]);
   });
 
   it('preserves current Korean shell copy', () => {

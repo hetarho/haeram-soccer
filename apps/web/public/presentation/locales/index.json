@@ -7,6 +7,72 @@
       "label": "한국어",
       "resource": "ko-KR.json",
       "direction": "ltr"
+    },
+    {
+      "id": "en-GB",
+      "label": "English",
+      "resource": "en-GB.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "es-ES",
+      "label": "Español",
+      "resource": "es-ES.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "pt-BR",
+      "label": "Português (Brasil)",
+      "resource": "pt-BR.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "fr-FR",
+      "label": "Français",
+      "resource": "fr-FR.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "de-DE",
+      "label": "Deutsch",
+      "resource": "de-DE.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "it-IT",
+      "label": "Italiano",
+      "resource": "it-IT.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "nl-NL",
+      "label": "Nederlands",
+      "resource": "nl-NL.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "tr-TR",
+      "label": "Türkçe",
+      "resource": "tr-TR.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "ar-SA",
+      "label": "العربية",
+      "resource": "ar-SA.json",
+      "direction": "rtl"
+    },
+    {
+      "id": "ja-JP",
+      "label": "日本語",
+      "resource": "ja-JP.json",
+      "direction": "ltr"
+    },
+    {
+      "id": "id-ID",
+      "label": "Bahasa Indonesia",
+      "resource": "id-ID.json",
+      "direction": "ltr"
     }
   ]
 }
