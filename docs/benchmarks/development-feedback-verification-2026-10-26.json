@@ -2285,5 +2285,7 @@
   "seedParity": [
     "before [ 2, 7, 10, 45, 56 ] 58b3591052b4274f6d797ab243a18d304acf8457a1a2697f142d8d90e56eb503",
     "after [ 2, 7, 10, 45, 56 ] 58b3591052b4274f6d797ab243a18d304acf8457a1a2697f142d8d90e56eb503"
-  ]
+  ],
+  "scope": "Local batch and targeted corrections; remote CI is separate and not fully passing",
+  "remoteCiEvidence": "development-feedback-ci-2026-10-26.json"
 }

@@ -10,11 +10,6 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T03:09Z | - |
-
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
@@ -328,12 +323,13 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- f6d2 completed the adopted development-feedback cleanup T459–T462; final main-push CI is recorded in reports/261026-f6d2. The owner restarts the stopped session afterward; existing football tasks retain their scope.
+- f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
 - 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
 - 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
@@ -353,4 +349,3 @@
 - 261026 fix home milestone journey (r8m2): classify the founding/three-export/full-match/reload case as slow, preserving all assertions. CI 40211951722 passed checks/unit/Chromium/WebKit; Firefox had 271 passes, 2 skips and one 30 s journey timeout whose first trace completed its assertions. Type/lint/format/build/spec checks and all three Firefox viewport cases now pass; reuse the unchanged application's previous batch successes.
 - 261026 T451 done + T446–T451 publication verified (r8m2): unit 2131 + 4 existing skips, contracts 39, catalogs/resources/build and Chromium 274 covered (269 first run + five corrected-driver reruns). Owner-authorized commit/push follows.
 - 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.
-- 261026 publication fix (r8m2): the first Chromium batch found configureResponsibilities still reading mode from the removed metadata/button aria-label; stop that run and read the separate progression-mode status. Unit 2131 + 4 skips, contracts 39, catalogs/resources/build already passed and are reused.

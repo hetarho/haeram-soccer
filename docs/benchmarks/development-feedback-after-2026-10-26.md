@@ -76,3 +76,23 @@ Focused pre-batch checks: T459 cache/prepared-world checks (12 tests), T460 part
 The old historical batch rows and the new normal run differ in hardware, source, release state, cache warmth and test classification. They cannot establish a percentage runtime speedup. Old `test:unit` mixed unit and integration coverage; compare the new unit-plus-integration scope when assessing overall cost. No controlled cold/warm before/after pair was run, and no exact portion of a past four-hour task is attributed to these changes.
 
 A future blog comparison can use the retained historical task intervals, matched static counts, unchanged deterministic digests, and normal verification stage records independently. A later representative cold/warm study is optional follow-up; it is not hidden inside routine task validation.
+
+## Remote CI hand-off
+
+[Run 40262705063](https://github.com/hetarho/haeram-soccer/actions/runs/40262705063) checks pushed commit `5ad12ec1`. CI is **not fully green**: checks, unit, all three integration shards, Chromium and WebKit 2/2 succeeded; Firefox failed, and WebKit 1/2 was still running when this hand-off was recorded. The Firefox failures are business:266 (a modal intercepts watch.ts:16), season-flow:135 (30 s timeout), and stable-controls-and-pacing:209 (30 s timeout). Evidence and exact job snapshots are retained in [CI evidence](development-feedback-ci-2026-10-26.json) and handed to the existing T458 owner. These journey bodies were not changed by the cleanup; no definitive causal attribution is made. No next start-vibe task was claimed.
+
+| CI job | Wall time including setup | Result at observation |
+| --- | ---: | --- |
+| unit | 97.0 s | success |
+| e2e (webkit 1/2) | pending s | in_progress |
+| integration (3/3) | 719.0 s | success |
+| integration (2/3) | 236.0 s | success |
+| checks | 126.0 s | success |
+| e2e (firefox 1/1) | 2116.0 s | failure |
+| e2e (webkit 2/2) | 2007.0 s | success |
+| integration (1/3) | 711.0 s | success |
+| e2e (chromium 1/1) | 1445.0 s | success |
+
+Job times overlap and are not summed. They are not interchangeable with local command timings.
+
+The default CI watcher also revealed a tooling issue outside this game repository: `haeram-spec-creator/src/vibe-ci.mjs` public-HTML handling expects `data-job-status` attributes that are absent from the current GitHub job HTML. With no GitHub CLI/token available here it cannot reliably recognize completion. The owned local watcher was replaced by an exact-commit visible-status observer; public job summaries and failure annotations supplied the hand-off. No remote CI job was cancelled or rerun. This tool compatibility issue is recorded for follow-up, rather than claiming that waiting for its default one-hour timeout is useful validation.

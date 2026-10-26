@@ -1,0 +1,405 @@
+{
+  "kind": "CI observation; not a passing gate",
+  "sourceCommit": "5ad12ec17b75282c6d9992028d1061aa58ae1552",
+  "runUrl": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063",
+  "recordedAt": "2026-10-26T03:52:40Z",
+  "jobsSnapshotAt": "2026-10-26T03:49:33.027070+00:00",
+  "outcome": "failure observed in Firefox; run still in progress",
+  "ok": false,
+  "jobs": [
+    {
+      "id": 121378295523,
+      "name": "unit",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:11:38Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295523",
+      "elapsedSeconds": 97.0
+    },
+    {
+      "id": 121378295656,
+      "name": "e2e (webkit 1/2)",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": null,
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295656"
+    },
+    {
+      "id": 121378295669,
+      "name": "integration (3/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:22:00Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295669",
+      "elapsedSeconds": 719.0
+    },
+    {
+      "id": 121378295716,
+      "name": "integration (2/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:13:57Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295716",
+      "elapsedSeconds": 236.0
+    },
+    {
+      "id": 121378295767,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:12:07Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295767",
+      "elapsedSeconds": 126.0
+    },
+    {
+      "id": 121378295794,
+      "name": "e2e (firefox 1/1)",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:45:17Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295794",
+      "elapsedSeconds": 2116.0
+    },
+    {
+      "id": 121378295840,
+      "name": "e2e (webkit 2/2)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:43:28Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295840",
+      "elapsedSeconds": 2007.0
+    },
+    {
+      "id": 121378295853,
+      "name": "integration (1/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:21:52Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295853",
+      "elapsedSeconds": 711.0
+    },
+    {
+      "id": 121378295870,
+      "name": "e2e (chromium 1/1)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-26T03:10:01Z",
+      "completed_at": "2026-10-26T03:34:06Z",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063/job/121378295870",
+      "elapsedSeconds": 1445.0
+    }
+  ],
+  "failures": [
+    {
+      "path": ".github",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/.github",
+      "start_line": 269,
+      "start_column": null,
+      "end_line": 269,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "",
+      "message": "Process completed with exit code 1.",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/stable-controls-and-pacing.spec.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/stable-controls-and-pacing.spec.ts",
+      "start_line": 309,
+      "start_column": 45,
+      "end_line": 309,
+      "end_column": 45,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x",
+      "message": "  3) [firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x, one minute per 12 s at 1x, and provides five replay speeds \n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n    Error: locator.inputValue: Test timeout of 30000ms exceeded.\n    Call log:\n      - waiting for getByRole('slider', { name: '경기 시간', exact: true })\n\n\n      307 |   await speeds.getByRole('radio', { name: '16×', exact: true }).click();\n      308 |   await expect\n    > 309 |     .poll(async () => Number(await timeline.inputValue()))\n          |                                             ^\n      310 |     .toBeGreaterThan(Number(sought));\n      311 | });\n      312 |\n        at /home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/stable-controls-and-pacing.spec.ts:309:45\n        at /home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/stable-controls-and-pacing.spec.ts:308:3",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/stable-controls-and-pacing.spec.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/stable-controls-and-pacing.spec.ts",
+      "start_line": 0,
+      "start_column": null,
+      "end_line": 0,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x",
+      "message": "  3) [firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x, one minute per 12 s at 1x, and provides five replay speeds \n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n    Test timeout of 30000ms exceeded.",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/stable-controls-and-pacing.spec.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/stable-controls-and-pacing.spec.ts",
+      "start_line": 310,
+      "start_column": 6,
+      "end_line": 310,
+      "end_column": 6,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x",
+      "message": "  3) [firefox] › tests/e2e/stable-controls-and-pacing.spec.ts:209:1 › opens at 2x, one minute per 12 s at 1x, and provides five replay speeds \n    Error: expect(received).toBeGreaterThan(expected)\n\n    Expected: > 0\n    Received:   0\n\n    Call Log:\n    - Test timeout of 30000ms exceeded\n\n      308 |   await expect\n      309 |     .poll(async () => Number(await timeline.inputValue()))\n    > 310 |     .toBeGreaterThan(Number(sought));\n          |      ^\n      311 | });\n      312 |\n      313 | test('draws a set-piece preparation in about 1.5 s with the players travelling', async ({\n        at /home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/stable-controls-and-pacing.spec.ts:310:6",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/season-flow.spec.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/season-flow.spec.ts",
+      "start_line": 0,
+      "start_column": null,
+      "end_line": 0,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/season-flow.spec.ts:135:1 › shows independent player decisions and post-match league context",
+      "message": "  2) [firefox] › tests/e2e/season-flow.spec.ts:135:1 › shows independent player decisions and post-match league context \n    Test timeout of 30000ms exceeded.",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/watch.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/watch.ts",
+      "start_line": 16,
+      "start_column": 89,
+      "end_line": 16,
+      "end_column": 89,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/business.spec.ts:266:1 › drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds",
+      "message": "  1) [firefox] › tests/e2e/business.spec.ts:266:1 › drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds \n    Error: locator.click: Test timeout of 90000ms exceeded.\n    Call log:\n      - waiting for getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true })\n        - locator resolved to <button aria-label=\"클럽 홈\" aria-current=\"page\" data-ui=\"navigation\" class=\"_homeTab_1xpuk_2082\">…</button>\n      - attempting click action\n        - waiting for element to be visible, enabled and stable\n        - element is visible, enabled and stable\n        - scrolling into view if needed\n        - done scrolling\n        - performing click action\n        - <div class=\"_actions_15efe_76\">…</div> from <div class=\"_modalBackdrop_1xpuk_786 \">…</div> subtree intercepts pointer events\n      - retrying click action\n        - waiting for element to be visible, enabled and stable\n        - element is visible, enabled and stable\n        - scrolling into view if needed\n        - done scrolling\n        - <div class=\"_actions_15efe_76\">…</div> from <div class=\"_modalBackdrop_1xpuk_786 \">…</div> subtree intercepts pointer events\n      - retrying click action\n        - waiting 20ms\n        2 × waiting for element to be visible, enabled and stable\n          - element is visible, enabled and stable\n          - scrolling into view if needed\n          - done scrolling\n          - <div class=\"_group_15efe_265\" data-testid=\"event-group\">…</div> from <div class=\"_modalBackdrop_1xpuk_786 \">…</div> subtree intercepts pointer events\n        - retrying click action\n          - waiting 100ms\n        140 × waiting for element to be visible, enabled and stable\n            - element is visible, enabled and stable\n            - scrolling into view if needed\n            - done scrolling\n            - <div class=\"_group_15efe_265\" data-testid=\"event-group\">…</div> from <div class=\"_modalBackdrop_1xpuk_786 \">…</div> subtree intercepts pointer events\n          - retrying click action\n            - waiting 500ms\n        - waiting for element to be visible, enabled and stable\n\n\n       at watch.ts:16\n\n      14 |   if (await resume.isVisible()) return resume;\n      15 |   await dismissMatchReport(page);\n    > 16 |   await page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true }).click();\n         |                                                                                         ^\n      17 |   await configureResponsibilities(page, { observations: { matchEve: true } });\n      18 |   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });\n      19 |   if (await pace.isVisible()) await chooseOption(pace, 'x10');\n        at openWatchAction (/home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/watch.ts:16:89)\n        at watchNext (/home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/watch.ts:48:10)\n        at playNext (/home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/business.spec.ts:62:3)\n        at /home/runner/work/haeram-soccer/haeram-soccer/tests/e2e/business.spec.ts:293:5",
+      "raw_details": ""
+    },
+    {
+      "path": "tests/e2e/business.spec.ts",
+      "blob_href": "https://github.com/hetarho/haeram-soccer/blob/5ad12ec17b75282c6d9992028d1061aa58ae1552/tests/e2e/business.spec.ts",
+      "start_line": 0,
+      "start_column": null,
+      "end_line": 0,
+      "end_column": null,
+      "annotation_level": "failure",
+      "title": "[firefox] › tests/e2e/business.spec.ts:266:1 › drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds",
+      "message": "  1) [firefox] › tests/e2e/business.spec.ts:266:1 › drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds \n    Test timeout of 90000ms exceeded.",
+      "raw_details": ""
+    }
+  ],
+  "observation": {
+    "kind": "github-public-run-summary",
+    "commit": "5ad12ec17b75282c6d9992028d1061aa58ae1552",
+    "runUrl": "https://github.com/hetarho/haeram-soccer/actions/runs/40262705063",
+    "status": "In progress",
+    "ok": false,
+    "elapsedObserverMs": 1581435,
+    "history": [
+      {
+        "at": "2026-10-26T03:25:54Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:26:55Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:27:56Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:28:57Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:29:58Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:30:58Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:31:59Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:33:00Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:34:01Z",
+        "status": "In progress",
+        "matrices": [
+          "0/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:35:01Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:36:03Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:37:03Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:38:04Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:39:05Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:40:06Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:41:06Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:42:07Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:43:08Z",
+        "status": "In progress",
+        "matrices": [
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:44:08Z",
+        "status": "In progress",
+        "matrices": [
+          "2/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:45:09Z",
+        "status": "In progress",
+        "matrices": [
+          "2/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:46:10Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:47:11Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:48:12Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:49:13Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:50:14Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:51:15Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      },
+      {
+        "at": "2026-10-26T03:52:15Z",
+        "status": "In progress",
+        "matrices": [
+          "3/4 jobs completed",
+          "3 jobs completed"
+        ]
+      }
+    ],
+    "note": "CLI public HTML adapter expected data-job-status attributes absent from the current GitHub HTML. Read the exact commit and visible run Status instead. No rerun or CI cancellation."
+  },
+  "handoff": "T458: Firefox business:266 modal intercept in watch.ts:16; season-flow:135 30 s timeout; stable-controls-and-pacing:209 30 s timeout. WebKit 1/2 remains in progress in this snapshot. No next task started."
+}
