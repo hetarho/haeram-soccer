@@ -1,5 +1,5 @@
 # IDEATION dead-balls-and-finishing
-> st:ready@261027 | Dead balls that rush, settle and restart; sensible free-kick takers; forwards who shoot when the goal is open; corners that leave players back.
+> st:converted@261027 | Dead balls that rush, settle and restart; sensible free-kick takers; forwards who shoot when the goal is open; corners that leave players back.
 
 ## vision
 - Problem (owner, 261027, watching own matches on the live full model): when the ball goes out or a player is injured, everyone suddenly crawls instead of hurrying to their places, pausing and restarting; a forward walks back to his own end to take a free kick; players in front of goal pass to each other or fail to shoot into an open goal; at a corner almost every player gathers at the box.
@@ -51,9 +51,9 @@
 - not: changing recorded dead time or ball in play; owner control of takers, shooting or corner numbers; a per-match manager shooting instruction; manager-dependent corner numbers.
 
 ## domains
-- [o] WEB: WEB-32 dead-ball presentation for every stoppage, tied to the chosen speed, a still beat per kind, captions for injuries and substitutions
-- [o] MATCH: MATCH-12 players hurry to their places and wait during dead time instead of a straight-line glide; MATCH-18 free-kick taker by place and corner numbers by default and late score; MATCH-16 shot choice from the chance, bent by position, role, the manager's school and tactic, and traits; MATCH-23/28 recalibration
+- [o] WEB: WEB-32 dead-ball presentation for every stoppage, tied to the chosen speed, a still beat per kind, captions for injuries and substitutions (WEB-32) →WEB
+- [o] MATCH: MATCH-12 players hurry to their places and wait during dead time instead of a straight-line glide; MATCH-18 free-kick taker by place and corner numbers by default and late score; MATCH-16 shot choice from the chance, bent by position, role, the manager's school and tactic, and traits; MATCH-23/28 recalibration (MATCH-12, MATCH-16, MATCH-18, MATCH-23) →MATCH
 - [x] STAFF: no change ← STAFF-14's existing shot bend already carries the manager's shooting habit, and only the owner's club carries it, as today
 
 ## open
-- Exact per-kind still beats and the rush factor above 2× are presentation numbers the owner reviews in play.
+- -

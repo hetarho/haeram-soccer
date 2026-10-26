@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r155 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r156 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -121,9 +121,17 @@
 - WEB-31 [o] Background automatic progression keeps preparation controls stable across day calculations, with calendar-wide edit protection under →WEB-97.
   - Preparation remains inspectable during automatic play and initializes from the settled current roster without pausing the clock. Its local previews remain separate from applying changes.
   - Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming). Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers.
-- WEB-32 [o] Match presentation opens at 2x; 1x is exactly 12 real seconds per 60 match seconds of running playback (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the set-piece preparation and the goal-feedback hold (→WEB-94) are explicit presentation transitions. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar. ← 1x is for close reading (about 13–14 minutes a match), 2x for ordinary watching (about 7)
-  - Set-piece preparation: before the kick of a corner, free kick or goal kick, the dead interval in which the ball is placed and the players walk to their places is drawn in about 1.5 real seconds at every speed, or at the running speed when that is shorter; the kick and delivery play at the selected speed. ← the owner's time belongs where the football is, while the players still visibly travel instead of appearing in place
-  - Throw-ins, kick-offs, penalties, cards, injuries, substitutions and the ball's retrieval before other restarts keep the running speed.
+- WEB-32 [o] Match presentation opens at 2x; 1x is exactly 12 real seconds per 60 match seconds of running playback (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the dead-ball beat and the goal-feedback hold (→WEB-94) are explicit presentation transitions. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar. ← 1x is for close reading (about 13–14 minutes a match), 2x for ordinary watching (about 7)
+  - Dead-ball beat: every stoppage — throw-in, goal kick, corner, free kick (an offside's included), kick-off after a goal, penalty and drop ball, with the cards, injuries and substitutions recorded in it — is drawn from the moment the ball goes dead as a rush, a still beat and the restart. In the rush the ball is brought back and the players travel to their places at least twice the running rate, faster when needed so the rush lasts at most 1.5 real seconds at 1x; then they stand still for the kind's beat; then the kick and delivery play at the selected speed. ← a crawl at a dead ball reads as a bug, and the owner's time belongs where the football is
+  - The rush and the beat scale with the selected speed (half as long at 2x), and a stoppage is never drawn slower than running speed. Starting beats at 1x, reviewed by the owner in play:
+    | stoppage | still beat at 1x |
+    |---|---|
+    | throw-in | 0.4 s |
+    | goal kick | 0.6 s |
+    | kick-off after a goal (after →WEB-94's hold) | 0.8 s |
+    | corner, free kick, drop ball | 1.0 s |
+    | penalty | 1.5 s |
+    | a card, injury or substitution in the stoppage | 2.0 s, with a short caption naming it and the player |
   - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
 
@@ -521,6 +529,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r156 261027 WEB-32✎ set-piece preparation (corner, free kick, goal kick) in ~1.5 real s at every speed, other stoppages at running speed→every stoppage a dead-ball beat: rush at ≥ 2× the running rate (≤ 1.5 s at 1x), a still beat per kind (0.4–2.0 s at 1x, captions for cards, injuries, substitutions), both scaled with speed
 - r155 261026 WEB-18✎ a visible late step carried up to 5 owed days→visible steps one day, owed days only for hidden/away time; late-step indicator after one pace interval (경기 진행 중… / 진행 중…)→a ≥ 2 s animation-only match-day moment on own fixture days (NEXT MATCH card, bottom controls elsewhere) and an optional 경기 결과 알림 notice, off by default; WEB-11✎ +NEXT MATCH shows the moment; WEB-64✎ +no moment while hidden or away; WEB-79✎ background preferences→automatic preferences incl. 경기 결과 알림
 - r154 261026 WEB-18✎ a late automatic step showed the unchanged calendar→a progress indicator after one pace interval (경기 진행 중… on own fixture days, else 진행 중…), no results shown, step and owed days unchanged
 - r153 261026 WEB-11✎ NEXT MATCH before season progress/stadium/team state→after team state in visual and reading order
