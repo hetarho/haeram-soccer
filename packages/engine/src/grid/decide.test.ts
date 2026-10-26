@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type PlayTrait } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { actionWeight } from '../match';
@@ -448,11 +452,12 @@ describe('grid decisions', () => {
     };
     const K = DECISION_CONFIG;
     // In front of the box only the shot weight differs between the models: the forwards' weight
-    // he takes and the candidate's volume scale against the midfield line's and the shared scale
-    // (T321, T324).
+    // he takes and the candidate's volume scale (revision 4's, T481) against the midfield line's
+    // and the shared scale (T321, T324).
+    const R4 = K.candidate.revision4;
     expect(K.candidate.shotPosition.AM).toBe('FW');
     expect(ratio(true) / ratio(false)).toBeCloseTo(
-      (K.candidate.shotLine.FW * K.candidate.shotScale) / (K.shotLine.MF * K.shotScale),
+      (R4.shotLine.FW * R4.shotScale) / (K.shotLine.MF * K.shotScale),
       9,
     );
   });
@@ -469,10 +474,10 @@ describe('grid decisions', () => {
       return mix.shot / mix.pass;
     };
     const beyond = 105 - at[0] - K.longShot.from;
+    // Revision 4's lines (T481).
+    const R4 = K.candidate.revision4;
     expect(ratio(true) / ratio(false)).toBeCloseTo(
-      (K.candidate.shotLine.FW *
-        K.candidate.shotScale *
-        Math.exp(-beyond / K.candidate.longShotScale)) /
+      (R4.shotLine.FW * R4.shotScale * Math.exp(-beyond / K.candidate.longShotScale)) /
         (K.shotLine.FW * K.shotScale * Math.exp(-beyond / K.longShot.scale)),
       9,
     );
@@ -1052,5 +1057,74 @@ describe('grid decisions', () => {
       until: 605,
     };
     expect(scoreOf(RWB)).toBeCloseTo(plainLevel, 9);
+  });
+});
+
+describe('revision 4 shot choice (T481, →MATCH-16)', () => {
+  const [, , third, fourth] = MATCH_MODEL_REVISIONS;
+  // 3-5-2: a cover defender, a box-to-box midfielder and a target man (shot ×1.1): no role here
+  // lowers the shot weight.
+  const CB = 3;
+  /** The action mix of a neutral carrier (no traits, every attribute 60) alone at `at` on `model`. */
+  const mixOn = (
+    slot: number,
+    at: Point,
+    model: MatchModelRevision,
+    tactics?: [Tactic, Tactic],
+  ) => {
+    const sc = scene(slot, at, tactics);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.me.player.traits = [];
+    setSkills(sc.s, slot, Object.fromEntries(ATTRIBUTES.map((a) => [a, 60])));
+    return actionMix(sc.s, 0, slot, sc.tags());
+  };
+
+  it('revision 4: in the same unpressured clear chance a forward shoots at least as often as a midfielder and a midfielder as a defender in every attacking cell', () => {
+    let shooting = 0;
+    for (let band = 4; band <= 7; band++)
+      for (let lane = 0; lane <= 4; lane++) {
+        const at = centre(band, lane);
+        const [fw, mf, df] = [ST, CM, CB].map((slot) => mixOn(slot, at, fourth).shot);
+        expect(fw, `band ${band} lane ${lane}`).toBeGreaterThanOrEqual(mf! - 1e-12);
+        expect(mf, `band ${band} lane ${lane}`).toBeGreaterThanOrEqual(df! - 1e-12);
+        if (df! > 0) shooting++;
+      }
+    expect(shooting).toBeGreaterThan(10);
+    // Revision 3 inverted it: a forward in the central box shot a fraction of a midfielder's share.
+    expect(mixOn(ST, centre(6, 2), third).shot).toBeLessThan(
+      mixOn(CM, centre(6, 2), third).shot / 5,
+    );
+  });
+
+  it('revision 4: a playmaker role shoots less than a box-to-box midfielder in the same chance', () => {
+    // 4-3-3: the mezzala (6) and the deep-lying playmaker (7) differ only in that.
+    const tactics: [Tactic, Tactic] = ['possession', 'balanced'];
+    const at = centre(6, 2);
+    const [mezzala, playmaker] = [6, 7].map((slot) => mixOn(slot, at, fourth, tactics));
+    expect(playmaker!.shot).toBeLessThan(mezzala!.shot);
+    // Against revision 3, the playmaker's shot weight alone moves, by `playmakerShot`.
+    const [m3, p3] = [6, 7].map((slot) => mixOn(slot, at, third, tactics));
+    const odds = (m: typeof mezzala) => m!.shot / m!.pass;
+    expect(odds(playmaker) / odds(mezzala) / (odds(p3) / odds(m3))).toBeCloseTo(
+      DECISION_CONFIG.candidate.revision4.playmakerShot,
+      9,
+    );
+  });
+
+  it('revision 3 keeps the old line weights', () => {
+    const C = DECISION_CONFIG.candidate;
+    for (const [slot, line] of [
+      [ST, 'FW'],
+      [CM, 'MF'],
+      [CB, 'DF'],
+    ] as const) {
+      const [old, now] = [third, fourth].map((model) => mixOn(slot, centre(6, 2), model));
+      // Only the shot weight differs, by exactly the lines' weights and scales.
+      expect(old!.carry / old!.pass).toBeCloseTo(now!.carry / now!.pass, 12);
+      expect(old!.shot / old!.pass / (now!.shot / now!.pass)).toBeCloseTo(
+        (C.shotLine[line] * C.shotScale) / (C.revision4.shotLine[line] * C.revision4.shotScale),
+        9,
+      );
+    }
   });
 });

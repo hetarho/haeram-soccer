@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   frameTimeIssues,
   MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
   NEUTRAL_FRAME_PACE,
+  type MatchModelRevision,
 } from '../../../contracts/src/match-model';
 import type { MatchFrame, MatchMotionSample } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -30,7 +32,13 @@ const w = createWorld(
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
-const setupFor = (id: string, observe = true, candidate = false, decide?: DecideRule) =>
+/** `candidate` plays the current revision, or the one it names. */
+const setupFor = (
+  id: string,
+  observe = true,
+  candidate: boolean | MatchModelRevision = false,
+  decide?: DecideRule,
+) =>
   buildGridSetup(
     w,
     { ...w.fixtures[0]!, id, home: home!.id, away: away!.id },
@@ -38,11 +46,15 @@ const setupFor = (id: string, observe = true, candidate = false, decide?: Decide
       observe,
       recordPlayers: true,
       tactics: ['press', 'possession'],
-      ...(candidate ? { model: MATCH_MODEL_REVISION } : {}),
+      ...(candidate ? { model: candidate === true ? MATCH_MODEL_REVISION : candidate } : {}),
       ...(decide ? { decide } : {}),
     },
   );
-const watch = (id: string, candidate = false, decide?: DecideRule) => {
+const watch = (
+  id: string,
+  candidate: boolean | MatchModelRevision = false,
+  decide?: DecideRule,
+) => {
   const setup = setupFor(id, true, candidate, decide);
   const result = playGrid(setup);
   return { setup, result, frames: buildFrames(result, setup, w.seed) };
@@ -393,9 +405,9 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // Revision 4's corners (T480): this fixture is level after 90 minutes, so the timing
+    // Revision 4's shot choice (T481): this fixture is level after 90 minutes, so the timing
     // assertions below cover both extra-time periods too.
-    const extraTimeId = 'candidate-et-1';
+    const extraTimeId = 'candidate-et-4';
     for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', extraTimeId]) {
       const extraTime = id === extraTimeId;
       const { result, frames } =
@@ -622,6 +634,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     if (!m) matches.set(id, (m = watch(id, true)));
     return m;
   };
+  /** Revision 3's observed match `id` (T481): its corners take today's numbers. */
+  const match3 = (id: string) => watch(id, MATCH_MODEL_REVISIONS[2]);
   /**
    * Enough observed matches for both attacking directions, both corner touchlines and a
    * delivered free kick by each side.
@@ -794,9 +808,13 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     // mark and an urgent press (T371: its restart and finishing settings left no scene match with
     // an urgent mark at a kick).
     const more = Array.from({ length: 40 }, (_, i) => `set-piece-${i + 4}`);
-    for (const id of [...SCENES, ...more]) {
+    // Revision 4 marks every attacker who goes up for a corner (T480), so a runner nobody marks at a
+    // kick, which an urgent mark answers, is rare there; revision 3's same fixtures still give one,
+    // and playback draws every revision alike.
+    const earlier = more.map((id) => `${id}@3`);
+    for (const id of [...SCENES, ...more, ...earlier]) {
       if (SCENES.indexOf(id) < 0 && kinds.includes('mark') && kinds.includes('press')) break;
-      const played = match(id);
+      const played = id.endsWith('@3') ? match3(id.slice(0, -2)) : match(id);
       const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
       for (const { e, next, prepared, since, window } of deliveries(played)) {
         const att = e.side;

@@ -1,5 +1,5 @@
 /** What the player on the ball does and where he plays it: the real-data mix of his cell, bent by role, traits, tactic, tags, score and head (→MATCH-8, MATCH-16). */
-import type { Position } from '../../../contracts/src/player';
+import type { Position, RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match-weights';
@@ -21,6 +21,7 @@ import {
 } from './pitch';
 import { reachOnPath } from './lanes';
 import { chanceXg, shotBlockers, unblocked } from './resolve';
+import { modelAtLeast } from './rules';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
@@ -152,6 +153,24 @@ export const DECISION_CONFIG = {
      * 13.6 a team, goals 3.09 → 2.75 a match (calibration round 74, core 600 matches).
      */
     shotScale: 0.37,
+    /**
+     * Revision 4 (T481, →MATCH-16), in place of `shotLine` and `shotScale` (which revisions 1–3
+     * keep): the lines' shot weights in the order a forward ≥ a midfielder ≥ a defender, since the
+     * lines' shares of goals come from where they get the ball, never from suppressing a line's
+     * shot choice (FW 0.3, MF 22.5, DF 4.5 left an unmarked striker shooting 5–8% of his central
+     * box chances against a midfielder's 86%). The playmaker roles look a little more for the pass.
+     */
+    revision4: {
+      shotLine: { GK: 0, DF: 0.5, MF: 0.8, FW: 1 },
+      shotScale: 0.25,
+      playmakerShot: 0.85,
+      playmakers: [
+        'regista',
+        'deepLyingPlaymaker',
+        'trequartista',
+        'widePlaymaker',
+      ] as readonly RoleId[],
+    },
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
@@ -370,11 +389,12 @@ export function actionMix(
     (candidate ? C.candidate.crossScale : C.crossScale);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
+  // Revision 4 (T481): the lines in the order forward ≥ midfielder ≥ defender.
+  const r4 = candidate && modelAtLeast(s.setup, 4) ? C.candidate.revision4 : undefined;
+  const shotLine = C.candidate.shotPosition[slot.position] ?? line;
   mix.shot *=
-    (candidate
-      ? C.candidate.shotLine[C.candidate.shotPosition[slot.position] ?? line]
-      : C.shotLine[line]) *
-    (candidate ? C.candidate.shotScale : C.shotScale) *
+    (r4 ? r4.shotLine[shotLine] : candidate ? C.candidate.shotLine[shotLine] : C.shotLine[line]) *
+    (r4 ? r4.shotScale : candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     s.math.exp(
       -Math.max(0, goalDistance(c, s.math) - C.longShot.from) /
@@ -382,6 +402,7 @@ export function actionMix(
     );
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
+  if (r4?.playmakers.includes(slot.role)) mix.shot *= r4.playmakerShot;
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');
   mix.cross *= actionWeight(slot.role, traits, 'cross');
   mix.cutBack *= actionWeight(slot.role, traits, 'cross');

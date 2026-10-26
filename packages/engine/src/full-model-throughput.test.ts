@@ -127,11 +127,13 @@ const facts = (w: World) => ({
  * 165c65e37c8f073c before. T479's match-model revision 4 (a free kick played as a pass goes to
  * the nearest suitable player) changed both, label and football; 3e9e6c0090653c92 and
  * ee38cbfee07ad841 before. T480's corner numbers on revision 4 (drawn per corner, set by the late
- * score) changed the candidate rounds only; 5a538fb4c95a42f1 before.
+ * score) changed the candidate rounds only; 5a538fb4c95a42f1 before. T481's shot choice on
+ * revision 4 (lines FW 1, MF 0.8, DF 0.5 at scale 0.25) changed the candidate rounds only;
+ * f63576f95ac36c4c before.
  */
 const BEFORE = {
   aggregateRecords: 'aa876ab8eda9f1c2',
-  candidateRounds: 'f63576f95ac36c4c',
+  candidateRounds: '2837deaef4826be0',
 };
 
 describe('complete-result throughput (T285)', () => {
