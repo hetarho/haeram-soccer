@@ -3,6 +3,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { dismissMatchReport } from './events';
+import { aroundOffice } from './office';
 /** Marked synthetic career uses the ordinary portable checkpoint/worker boundary. */
 export function secondCareerFixture() {
   const w = createWorld({
@@ -84,19 +85,24 @@ export async function qualifiedCoachFixture(kind: 'internal' | 'club') {
   return { w, player, person };
 }
 
-/** Inspect only the normal download; no private browser mutation or debug bridge. */
+/**
+ * Inspect only the normal download; no private browser mutation or debug bridge. The menu is
+ * outside the office, so an export from inside steps out and back (→WEB-39).
+ */
 export async function exportedCareer(page: Page) {
   const { readFile } = await import('node:fs/promises');
   const { decode } = await import('../../apps/web/src/adapters/persistence');
   await dismissMatchReport(page);
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '설정', exact: true });
-  const event = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const file = await event;
-  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  return (await decode(await readFile((await file.path())!, 'utf8'))).world;
+  return aroundOffice(page, async () => {
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
+    const event = page.waitForEvent('download');
+    await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+    const file = await event;
+    await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+    return (await decode(await readFile((await file.path())!, 'utf8'))).world;
+  });
 }
 
 /** Synthetic accepted agreement is made by the same real commands used by the UI. */

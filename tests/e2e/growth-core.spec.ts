@@ -5,6 +5,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
+import { enterOffice, leaveOffice } from './office';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
@@ -53,10 +54,9 @@ for (const viewport of [
     await expect(state).not.toContainText('선수 19명');
     await expectTouchSize(button);
     await expectHomeBounds(page);
-    const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await menu.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await enterOffice(page);
     await expect(alert).toHaveCount(0);
-    await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await leaveOffice(page);
     // Clicking the badge uses the existing full-size tile button.
     await warning.click();
     const remedies = page.getByRole('dialog', { name: '선수단 채우기', exact: true });

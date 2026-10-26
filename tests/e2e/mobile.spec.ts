@@ -16,7 +16,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
   // Seven tabs, staff included and the market inside the squad page, each a 44 px touch target.
-  await expect(nav.getByRole('button')).toHaveCount(7);
+  await expect(nav.getByRole('button')).toHaveCount(6);
   const metrics = await nav.getByRole('button').evaluateAll((buttons) =>
     buttons.map((button) => {
       const rect = button.getBoundingClientRect();
@@ -34,9 +34,10 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(moreBounds!.y).toBeGreaterThanOrEqual(0);
   await expect(more).toBeEnabled();
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
-  await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
+  // The office hides the menu, so a long tabbed page stands in for it (→WEB-39).
+  await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
   const scroller = page.getByTestId('view-scroller');
-  await expect(page.getByTestId('strategy-board')).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '훈련·육성 보기', exact: true })).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));
   const before = await scroller.evaluate((element) => element.scrollTop);
   expect(before).toBeGreaterThan(0);

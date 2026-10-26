@@ -10,6 +10,7 @@ import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { configureResponsibilities, matchReport } from './events';
+import { leaveOffice } from './office';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -148,6 +149,8 @@ for (const authority of ['direct', 'delegated'] as const) {
         .getByRole('group', { name: '경기 전날 보고', exact: true })
         .getByRole('button', { name: '보고받기', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
+    // The office hides the calendar; back outside, no day has passed.
+    await leaveOffice(page);
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });
 }

@@ -1117,8 +1117,8 @@ function EconomicContext({ state }: { state: ClientState }) {
   );
 }
 /**
- * 방향 (→WEB-39). A tab asked for while it shows lands in the address and reopens the tab bar on
- * it; from elsewhere the address already carries it.
+ * The owner office (→WEB-39). A view asked for while it shows lands in the address and reopens
+ * the office on it; from elsewhere the address already carries it.
  */
 function Business({ state, client, controller }: Props & { controller: ProgressionController }) {
   const request = useBusinessView((view) => view.request);
@@ -1127,7 +1127,8 @@ function Business({ state, client, controller }: Props & { controller: Progressi
     if (!request) return;
     useBusinessView.getState().take();
     const url = new URL(location.href);
-    url.searchParams.set('view', request);
+    if (request === 'lobby') url.searchParams.delete('view');
+    else url.searchParams.set('view', request);
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
     setOpened((count) => count + 1);
   }, [request]);

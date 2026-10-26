@@ -4,6 +4,7 @@ import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsi
 import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
+import { leaveOffice } from './office';
 async function foundQuiet(page: Page) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -245,7 +246,7 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
     background.getByRole('combobox', { name: '자리 비운 동안 진행 한도' }),
   ).toHaveAttribute('data-value', 'season');
   await background.getByLabel('부재 중에도 업무 계속').uncheck();
-  await page.getByRole('navigation').getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await leaveOffice(page);
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await setHidden(true);
   // A day already being played when the tab hid still lands; after it the clock stays still.
@@ -451,8 +452,9 @@ for (const width of [390, 1280]) {
     w.settings!.mode = 'manual';
     w.settings!.observations = { matchEve: true, windowOpen: true };
     await importResponsibilityCareer(page, w);
-    const office = await openOffice(page);
+    // The office hides the calendar, so its date is read before entering (→WEB-39).
     const date = await page.getByTestId('game-date').innerText();
+    const office = await openOffice(page);
     const bulk = office.getByRole('group', { name: '전체 보고·위임 설정', exact: true });
     const rows = office.getByRole('region', { name: '보고·위임 설정', exact: true });
     const allDelegated = bulk.getByRole('button', { name: '전체 위임', exact: true });
@@ -510,6 +512,9 @@ for (const width of [390, 1280]) {
       'aria-pressed',
       'true',
     );
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    // Outside the office the mode and the calendar stand as they were.
+    await leaveOffice(page);
     await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
       'MANUAL',
     );
@@ -519,10 +524,11 @@ for (const width of [390, 1280]) {
         .getByRole('button', { name: '진행 방식 변경', exact: true }),
     ).toBeVisible();
     await expect(page.getByTestId('game-date')).toHaveText(date);
-    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
+    await openOffice(page);
     await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
+    await leaveOffice(page);
     await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
       'MANUAL',
     );
@@ -560,11 +566,9 @@ for (const width of [390, 1280]) {
     );
     const toast = page.getByTestId('action-outcome');
     await expect(toast).toHaveText('설정을 적용했어요');
+    // The office has no bottom controls: the toast sits at the bottom of the screen (→WEB-36/39).
     const box = (await toast.boundingBox())!;
-    const transport = (await page
-      .getByRole('region', { name: '시즌 진행', exact: true })
-      .boundingBox())!;
-    expect(box.y + box.height).toBeLessThanOrEqual(transport.y);
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     await expect(toast).toHaveCount(0, { timeout: 6000 });
     await choice.getByRole('button', { name: '보고받기', exact: true }).click();
     const direct = page.getByRole('dialog', { name: '보고받겠습니다.', exact: true });
@@ -594,6 +598,7 @@ test('manual can keep match eve disabled and stop at the next result', async ({ 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(office).toBeVisible();
+  await leaveOffice(page);
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
     'MANUAL',
   );

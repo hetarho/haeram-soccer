@@ -7,6 +7,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
+import { leaveOffice, officeTitle, openOfficeArea } from './office';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -17,8 +18,9 @@ async function found(page: Page) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+/** 구단주 사무실 › 운영 방침, entered from home (→WEB-39). */
 async function openOperations(page: Page) {
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
+  await openOfficeArea(page, '운영 방침');
   await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
 }
 
@@ -76,6 +78,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
+  await leaveOffice(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
@@ -132,6 +135,7 @@ test('retains an unapplied academy investment through a detour and discards it e
   ).toHaveAttribute('aria-checked', 'true');
   await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
   await expect(draft).toHaveCount(0);
+  await leaveOffice(page);
   await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
   await openOperations(page);
   await expect(draft).toHaveCount(0);
@@ -144,6 +148,7 @@ test('a different game never inherits the first career policy draft', async ({ p
   await youth.getByRole('button', { name: /아카데미 아이들을/ }).click();
   await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
+  await leaveOffice(page);
   await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
     .getByRole('dialog', { name: '설정' })
@@ -222,11 +227,9 @@ test('recruitment needs open on demand and academy operations open their exact w
   await page.getByRole('tab', { name: '유소년', exact: true }).click();
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
-  await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await page.getByRole('button', { name: '← 돌아가기 · 유소년', exact: true }).click();
+  // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
+  await expect(officeTitle(page)).toHaveText('시설');
+  await leaveOffice(page);
   await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

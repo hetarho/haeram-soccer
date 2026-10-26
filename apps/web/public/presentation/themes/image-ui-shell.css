@@ -354,6 +354,20 @@ html[data-theme] {
     gap: 18px;
   }
 
+  /* The office lobby's desks wear the team-state tile frame: pressable game tiles (→WEB-39). */
+  [data-office-area] {
+    border: 9px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+  }
+
+  [data-office-area] small {
+    color: var(--image-muted);
+  }
+
   /* Home's door to the owner office wears the selected tile frame so it reads as an action. */
   [data-home-part='office'] {
     min-height: 84px;

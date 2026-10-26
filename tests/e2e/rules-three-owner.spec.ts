@@ -7,10 +7,11 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
+import { leaveOffice, openOfficeArea } from './office';
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+/** 구단주 사무실 › 운영 방침, entered from home (→WEB-39). */
 async function operations(page: Page) {
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
-  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
+  await openOfficeArea(page, '운영 방침');
   await expect(page.getByTestId('strategy-board')).toBeVisible();
 }
 
@@ -36,6 +37,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   const finance = page.getByRole('region', { name: '재정', exact: true });
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
+  await leaveOffice(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);

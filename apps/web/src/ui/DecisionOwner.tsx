@@ -41,10 +41,10 @@ export function DecisionOwner({
         <button
           type="button"
           className={s.level}
-          aria-label={`${name} · ${on ? '위임' : '보고받기'} · 구단주 사무실 열기`}
+          aria-label={`${name} · ${on ? '위임' : '보고받기'} · 결재 라인 열기`}
           onClick={openOwnerOffice}
         >
-          구단주 사무실
+          결재 라인
           <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>

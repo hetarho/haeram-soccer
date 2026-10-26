@@ -67,6 +67,7 @@ import {
 } from './club-identity-helpers';
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { officeBar } from './office';
 
 /**
  * KIT-9/12/15, WEB-86/87, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played in
@@ -444,8 +445,9 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(retried);
   await page.reload();
-  // A reload restores the view it left, so the loaded game shows as the season HUD, not home.
-  await expect(page.getByRole('region', { name: /^시즌 진행/ })).toBeVisible();
+  // A reload restores the view it left: the office's design area, not home.
+  await expect(officeBar(page)).toBeVisible();
+  await expect(page).toHaveURL(/\/direction\?view=identity$/);
   expect(ownClub(await savedWorld(page)).identity).toEqual(retried);
 });
 

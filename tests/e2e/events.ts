@@ -1,6 +1,6 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
-import { enterOffice, leaveOffice, officeBar } from './office';
+import { LOBBY, leaveOffice, officeBar, officeLobby, officeTitle, openOfficeArea } from './office';
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -32,28 +32,18 @@ export async function openOffice(page: Page) {
     new URL(page.url()).pathname === '/direction' &&
     (await page.getByTestId('owner-office').isVisible());
   if (!open) {
-    // The office has no menu entry: it opens from home's entrance (→WEB-39).
+    // The office has no menu entry: it opens from home's entrance, then its 결재 라인 card (→WEB-39).
     for (let attempt = 0; ; attempt++) {
       try {
-        await enterOffice(page, { timeout: 2000 });
+        await openOfficeArea(page, '결재 라인', { timeout: 2000 });
         break;
       } catch (error) {
         if (attempt >= 3) throw error;
-        // A running clock can reach a match eve after the dismissal above, and the eve's backdrop
-        // takes the click (CI Firefox 40243569140, season-flow on the released model).
-        await dismissMatchReport(page);
-      }
-    }
-    const tab = page.getByRole('tab', { name: '구단주 사무실', exact: true });
-    for (let attempt = 0; ; attempt++) {
-      try {
-        await tab.click({ timeout: 2000 });
-        break;
-      } catch (error) {
-        if (attempt >= 3) throw error;
-        // A decision's outcome toast can cover the tab until it hides: CI 39952590526 waited
-        // 7.5 s there and ran recovery out of time. An event card may cover the toast's own
+        // A running clock can reach a match eve before the office stops it, and the eve's
+        // backdrop takes the click (CI Firefox 40243569140). A decision's outcome toast can cover
+        // a card until it hides (CI 39952590526), and an event card may cover the toast's own
         // close button in turn, so that click is bounded too.
+        await dismissMatchReport(page);
         await page
           .getByTestId('action-outcome')
           .getByRole('button', { name: /^(확인|알림 닫기)$/ })
@@ -103,15 +93,13 @@ export async function configureResponsibilities(
     .getByRole('navigation')
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
-  // Inside the office there is no menu: return to the office tab that was open instead.
+  // Inside the office there is no menu: return to the office area that was open instead.
   const inOffice = await officeBar(page).isVisible();
   const returnLabel =
     !inOffice && (await nav.count())
       ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
-  const businessTab = inOffice
-    ? await page.getByRole('tab', { selected: true }).first().innerText()
-    : undefined;
+  const officeArea = inOffice ? (await officeTitle(page).innerText()).trim() : undefined;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -198,7 +186,8 @@ export async function configureResponsibilities(
       await dismissSettingsToast(page);
     }
   }
-  if (businessTab) await page.getByRole('tab', { name: businessTab, exact: true }).click();
+  if (officeArea === LOBBY) await officeLobby(page);
+  else if (officeArea) await openOfficeArea(page, officeArea);
   else {
     await leaveOffice(page);
     if (returnLabel)

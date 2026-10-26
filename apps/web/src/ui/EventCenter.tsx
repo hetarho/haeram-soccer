@@ -217,7 +217,7 @@ const EventCard = memo(function EventCard({
     return (
       <MatchReportCard w={w} fixture={eve} ref={cardExit}>
         <button data-ui="link" type="button" className={s.stops} onClick={openOwnerOffice}>
-          구단주 사무실
+          결재 라인
         </button>
         <div className={s.actions}>
           <button

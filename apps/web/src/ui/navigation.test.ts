@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
 import { afterApply, clubDesignState, type ClubDesignDraft } from './ClubDesignView';
 import { reduceIdentityDraft } from './clubIdentityDraft';
-import { BUSINESS_TABS, businessTab, routeOf } from './state';
+import { BUSINESS_TABS, officeAddress, officeView, routeOf } from './state';
 import { useTaskMemory } from './taskMemory';
 
 describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
@@ -61,24 +61,19 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
   });
 
-  it('routeOf opens 방향 at /direction and every older /business address on its tab', () => {
-    expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'strategy' });
-    for (const view of ['build', 'finance', 'sponsor'])
+  it('routeOf opens the office lobby at /direction and every area by its ?view= (→WEB-39)', () => {
+    expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'lobby' });
+    for (const view of ['strategy', 'build', 'finance', 'sponsor', 'identity', 'office'])
       expect(routeOf('/direction', `?view=${view}`)).toEqual({ page: 'business', view });
-    // The first tab keeps no ?view=; an unknown view opens the first tab.
-    expect(routeOf('/direction', '?view=strategy')).toEqual({
-      page: 'business',
-      view: 'strategy',
-      address: '/direction',
-    });
+    // An unknown view opens the lobby.
     expect(routeOf('/direction', '?view=campaigns')).toEqual({
       page: 'business',
-      view: 'strategy',
+      view: 'lobby',
       address: '/direction',
     });
     for (const [search, view, address] of [
-      ['', 'strategy', '/direction'],
-      ['?view=strategy', 'strategy', '/direction'],
+      ['', 'lobby', '/direction'],
+      ['?view=strategy', 'strategy', '/direction?view=strategy'],
       ['?view=build', 'build', '/direction?view=build'],
       ['?view=finance', 'finance', '/direction?view=finance'],
       ['?view=sponsor', 'sponsor', '/direction?view=sponsor'],
@@ -90,17 +85,19 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
       expect(routeOf('/business', search)).toEqual({ page: 'business', view, address });
   });
 
-  it('구단 디자인 and 구단주 사무실 have stable 방향 tabs at /direction?view=identity (→WEB-39)', () => {
+  it('names the six office areas in lobby order, with 결재 라인 for reports and delegation', () => {
     expect(BUSINESS_TABS.map(([id, label]) => `${id}:${label}`)).toEqual([
       'strategy:운영 방침',
       'build:시설',
       'finance:재정',
       'sponsor:후원',
       'identity:구단 디자인',
-      'office:구단주 사무실',
+      'office:결재 라인',
     ]);
-    expect(businessTab('identity')).toBe('identity');
-    expect(routeOf('/direction', '?view=identity')).toEqual({ page: 'business', view: 'identity' });
+    expect(officeView('identity')).toBe('identity');
+    expect(officeView(null)).toBe('lobby');
+    expect(officeAddress('lobby')).toBe('/direction');
+    expect(officeAddress('office')).toBe('/direction?view=office');
     expect(routeOf('/business', '?view=identity')).toEqual({
       page: 'business',
       view: 'identity',

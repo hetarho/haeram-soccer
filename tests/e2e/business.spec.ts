@@ -21,17 +21,27 @@ import { compactMoney, number } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow, settle } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
+import {
+  aroundOffice,
+  enterOffice,
+  LOBBY,
+  officeTitle,
+  openOfficeArea,
+  outsideOffice,
+} from './office';
 
-async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '설정' });
-  const downloading = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const file = await downloading;
-  const raw = await readFile((await file.path())!, 'utf8');
-  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
-}
+/** The export lives in the settings menu, outside the office: step out and back (→WEB-39). */
+const exportWorld = (page: Page): Promise<World> =>
+  aroundOffice(page, async () => {
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정' });
+    const downloading = page.waitForEvent('download');
+    await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+    const file = await downloading;
+    const raw = await readFile((await file.path())!, 'utf8');
+    await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+    return (await decode(raw)).world;
+  });
 
 async function found(page: Page, seed: string) {
   await page.goto('/');
@@ -42,17 +52,11 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** 방향 opens on the direction board; `tab` picks 증축, 자금 or 후원 (→WEB-39). */
-async function openBusiness(page: Page, tab?: string) {
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
-    .click();
-  await expect(page.getByRole('tablist', { name: '구단 운영 보기' })).toBeVisible();
-  await page.getByRole('tab', { name: tab ?? '운영 방침', exact: true }).click();
-}
+/** The owner office's area `area`, 운영 방침 unless named, from home's entrance (→WEB-39). */
+const openBusiness = (page: Page, area = '운영 방침') => openOfficeArea(page, area);
 
 async function playNext(page: Page) {
+  await outsideOffice(page);
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '클럽 홈', exact: true })
@@ -64,41 +68,37 @@ async function playNext(page: Page) {
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 }
 
-test('older operations addresses open their tab', async ({ page }) => {
+test('older operations addresses open their office area', async ({ page }) => {
   // Founds a club, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'direction-addresses');
-  await openBusiness(page);
+  await enterOffice(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  // 방향 is the first page tab and keeps no ?view= (→WEB-39, →WEB-69); there is no 캠페인 tab.
-  await expect(page.getByRole('tab', { name: '운영 방침', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  // The office opens on its lobby and keeps no ?view= there (→WEB-39); there is no 캠페인 area.
+  await expect(officeTitle(page)).toHaveText(LOBBY);
   await expect(page).toHaveURL(/\/direction$/);
-  await expect(page.getByRole('tab', { name: '캠페인', exact: true })).toHaveCount(0);
-  // Every older /business address opens its tab under /direction.
-  for (const [asked, tab, now] of [
-    ['/business', '운영 방침', /\/direction$/],
+  await expect(
+    page.getByTestId('office-lobby').getByRole('button', { name: '캠페인', exact: true }),
+  ).toHaveCount(0);
+  // Every older /business address opens its area under /direction.
+  for (const [asked, area, now] of [
+    ['/business', LOBBY, /\/direction$/],
     ['/business?view=facility', '시설', /\/direction\?view=build$/],
     ['/business?view=marketing', '재정', /\/direction\?view=finance$/],
-    ['/business?view=strategy', '운영 방침', /\/direction$/],
+    ['/business?view=strategy', '운영 방침', /\/direction\?view=strategy$/],
     ['/business?view=build', '시설', /\/direction\?view=build$/],
     ['/business?view=finance', '재정', /\/direction\?view=finance$/],
     ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
     ['/direction?view=build', '시설', /\/direction\?view=build$/],
   ] as const) {
     await page.goto(asked);
-    await expect(page.getByRole('tab', { name: tab, exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(officeTitle(page)).toHaveText(area);
     await expect(page).toHaveURL(now);
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   // Campaigns are no more (→ECON-7): 자금 shows none to start.
-  await page.getByRole('tab', { name: '재정', exact: true }).click();
+  await openBusiness(page, '재정');
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
@@ -118,10 +118,6 @@ for (const viewport of [
     // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
     const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
     await openBusiness(page, '시설');
-    await expect(page.getByRole('tab', { name: '시설', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
     // Three parts built separately (→ECON-32): the stadium's ladder, the training ground and the
     // academy facilities.
     await expect(page.getByTestId('facility-stadium')).toContainText('동네 구장');
@@ -129,15 +125,12 @@ for (const viewport of [
     await expect(page.getByTestId('facility-training')).toContainText('0/5단계');
     await expect(page.getByTestId('facility-academy')).toContainText('0/5단계');
     const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
-    // Scrolling must bring the CTA clear of the nav.
+    // Scrolling must bring the CTA fully on screen; the office has no tab bar (→WEB-39).
     await review.evaluate((element) => element.scrollIntoView({ block: 'center' }));
     await settle(page);
     const reviewBounds = await review.boundingBox();
-    const menuBounds = await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .boundingBox();
     expect(reviewBounds!.height).toBeGreaterThanOrEqual(44);
-    expect(reviewBounds!.y + reviewBounds!.height).toBeLessThanOrEqual(menuBounds!.y);
+    expect(reviewBounds!.y + reviewBounds!.height).toBeLessThanOrEqual(viewport.height);
     await review.click();
     const dialog = page.getByRole('dialog', { name: '경기장 공사 확인' });
     await expect(dialog).toContainText('증축 · 관중석 증축');
@@ -170,7 +163,7 @@ for (const viewport of [
     await expect(
       page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
     ).toBeDisabled();
-    await page.getByRole('tab', { name: '재정', exact: true }).click();
+    await openBusiness(page, '재정');
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -186,9 +179,8 @@ test('pays sponsor installments only for league games after the actual contract'
   const before = await exportWorld(page);
   // A 1950 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
-  await openBusiness(page);
-  await page.getByRole('tab', { name: '후원', exact: true }).click();
-  await expect(page.getByRole('tabpanel', { name: '후원', exact: true })).toContainText(
+  await openBusiness(page, '후원');
+  await expect(page.getByRole('region', { name: '후원', exact: true }).first()).toContainText(
     '계약 이후 경기만 지급하며',
   );
   await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');

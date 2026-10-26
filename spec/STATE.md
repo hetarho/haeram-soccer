@@ -14,8 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| o7h4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T16:16Z | 2026-10-26T16:16Z | T491 |
-
+| o7h4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T16:16Z | 2026-10-26T16:16Z | - |
 ## inbox
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
 - 261027 decided WEB-10: the tab bar once 구단 leaves it → six tabs 리그·컵·기록 | 홈 | 선수단·훈련, left side unchanged and home kept raised though no longer centred (alt: move 기록 right of home | merge 리그 and 컵 to keep home centred)
@@ -358,8 +357,6 @@
 | T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
 | T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
 | T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
-| T491 | Focused owner office entered from home, with the clock stopped inside | WEB | T490 | doing@261027.o7h4 |
-| T492 | Office lobby with six area cards, full-screen areas and 결재 라인 | WEB | T491 | todo |
 | T493 | Records season sub-screen with a navigator bar, player totals up to 100 | WEB | - | todo |
 
 ## work
@@ -377,11 +374,12 @@
 
 ## next
 - implement-task T477, then T478 T479 T480 T481 T482 in order; autopilot k2d7 runs the final batch gate and pushes main once.
-- autopilot o7h4 on work/o7h4: implement-task T491, then T492 T493; final batch gate and one push to main.
+- autopilot o7h4 on work/o7h4: implement-task T493; final batch gate and one push to main.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
 - 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
 - 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
 - 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
@@ -401,4 +399,3 @@
 - 261026 T473 T475 integrated
 - 261026 T474 integrated
 - 261026 T476 integrated
-- 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved

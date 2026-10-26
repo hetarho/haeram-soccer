@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
+import { leaveOffice, openOfficeArea } from './office';
 
 test('applies a preset at once, changes it again at once, and saves its own strategy', async ({
   page,
@@ -8,14 +9,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
-    .click();
-  await expect(page.getByRole('tab', { name: '운영 방침', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  await openOfficeArea(page, '운영 방침');
   const board = page.getByTestId('strategy-board');
   await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
   // The owner reads a strategy, never a "build" (빌드업 is the football phase of play).
@@ -231,19 +225,18 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ]) {
-  test(`keeps draft review compact with notifications in the HUD at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps draft review compact in the focused office at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    const nav = page.getByRole('navigation', {
-      name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',
-    });
     const launcher = page.getByTestId('communications-button');
     await expect(launcher).toBeVisible();
-    await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await openOfficeArea(page, '운영 방침');
+    // The focused office keeps only its bar: no notifications launcher or tab bar (→WEB-39).
+    await expect(launcher).toHaveCount(0);
     const board = page.getByTestId('strategy-board');
     await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
     const preset = board.getByRole('button', { name: /유스 순혈주의/ });
@@ -253,7 +246,6 @@ for (const viewport of [
     const body = draft.locator('#strategy-draft-body');
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
     await expect(body).toBeHidden();
-    await expect(launcher).toBeVisible();
     await expect(draft.getByRole('button', { name: '적용', exact: true })).toBeInViewport();
     await settle(page);
     const bounds = (await draft.boundingBox())!;
@@ -261,18 +253,11 @@ for (const viewport of [
     expect(bounds.height).toBeLessThan(viewport.height * 0.22);
     expect(view.y + view.height - bounds.y - bounds.height).toBeGreaterThanOrEqual(-1);
     expect(view.y + view.height - bounds.y - bounds.height).toBeLessThanOrEqual(2);
-    if (viewport.width < 760)
-      expect(bounds.y + bounds.height).toBeLessThanOrEqual((await nav.boundingBox())!.y);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
     await page.screenshot({
       path: test.info().outputPath(`draft-collapsed-${viewport.width}.png`),
     });
 
-    // The clock's notification entry stays reachable while a policy draft is open.
-    await launcher.click();
-    await page
-      .getByRole('dialog', { name: '알림·뉴스', exact: true })
-      .getByRole('button', { name: '닫기', exact: true })
-      .click();
     await fold.click();
     await expect(body).toBeVisible();
     expect(await body.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(
@@ -284,22 +269,19 @@ for (const viewport of [
     await page.screenshot({ path: test.info().outputPath(`draft-expanded-${viewport.width}.png`) });
     await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
     await expect(draft).toHaveCount(0);
-    await expect(launcher).toBeVisible();
     await preset.click();
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
 
-    await page.getByRole('tab', { name: '시설', exact: true }).click();
-    await expect(launcher).toBeVisible();
-    await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
+    await openOfficeArea(page, '시설');
+    await openOfficeArea(page, '운영 방침');
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
+    // Out of the office the launcher is back; the unapplied draft waits for the owner's return.
+    await leaveOffice(page);
     await expect(launcher).toBeVisible();
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
-    await expect(launcher).toBeVisible();
-    await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await openOfficeArea(page, '운영 방침');
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
-    await expect(launcher).toBeVisible();
     await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
