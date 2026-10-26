@@ -339,7 +339,6 @@
 | T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
 | T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
 | T475 | Separate view delta publication from the world writer | ARCH | T473 | todo |
-| T476 | Remove the theme adapter dependency on React motion | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -352,12 +351,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
+| module-1026 | 3 | 4 | 1 | 3 | 2 | 1 | 0 | 2026-10-26T13:25:18.950Z | [history](work/module-1026.json) |
 
 ## next
-- Run module-1026 in parallel autopilot: worker-reads (T473 then T475), T474 facilities, and T476 motion.
-- The owner renewed the work after the previous 21:00 KST stopping memo; finish the remaining tasks, verify once, then publish main. Parked product ideations stay parked.
+- inspect work board for remaining tasks
 
 ## log
+- 261026 T476 integrated
 - 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
@@ -377,4 +377,3 @@
 - 261026 doc-review artifacts tidied (SSOT revs unchanged): removed applied UI packs and duplicate planning prose; retained original raw benchmarks plus 99 measured tables and 12 UI measurement runs with snapshot provenance; current references and disposable capture paths updated. Typecheck, lint, format, source equivalence and spec lint passed; main batch in progress.
 - 261026 doc-review artifacts start: retain unimplemented concepts and benchmark measurements; remove duplicate planning and applied UI evidence.
 - 261026 T467 done (q7m3): own-edge-probe buckets by prepared gap against outcomeTarget on revision 3; founding detailed 1.52 v 2.15 (aggregate 2.33), top tier on the curve (1.53 / 1.56 v 1.46); about 90% of T434's −0.9 remains at tier 4; title race unchanged beside T410; lever suggested (grid tier dependence)
-- 261026 fix CI manual progression start: WebKit retains aria-hidden exit copies after the match completed; scope the report assertion to the live dialog and await next-event readiness before checking the manual stop.

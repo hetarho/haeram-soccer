@@ -108,6 +108,26 @@ describe('progressive theme cascade', () => {
     },
   );
 
+  it.each(['unavailable', 'throwing'] as const)(
+    'animates when the motion preference query is %s',
+    async (query) => {
+      const b = browser();
+      vi.stubGlobal(
+        'matchMedia',
+        query === 'unavailable'
+          ? undefined
+          : () => {
+              throw new Error('media queries unavailable');
+            },
+      );
+      const update = vi.fn();
+      await createBrowserThemeTransition(b.document as unknown as Document).run(update);
+      expect(b.startViewTransition).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenCalledTimes(1);
+      b.finished.resolve();
+    },
+  );
+
   it('falls back once and cleans up when snapshot startup throws', async () => {
     const b = browser();
     b.startViewTransition.mockImplementation(() => {

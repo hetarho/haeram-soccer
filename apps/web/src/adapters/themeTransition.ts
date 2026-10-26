@@ -1,4 +1,4 @@
-import { reducedMotion } from '../ui/motion';
+import { reducedMotion } from './motionPreference';
 
 export interface ThemeTransitionPort {
   run(update: () => void): Promise<void>;

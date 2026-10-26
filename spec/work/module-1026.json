@@ -1,0 +1,949 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-26T13:25:18.950Z",
+  "sourceCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+  "group": {
+    "id": "module-1026",
+    "branch": "work/module-1026",
+    "status": "active",
+    "createdAt": "2026-10-26T13:15:49.005Z",
+    "limits": {
+      "workers": 3,
+      "reviewers": 1,
+      "maxPending": 4
+    },
+    "review": "risky",
+    "runner": {
+      "id": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-26T13:18:21.617Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 4,
+    "completed": 1,
+    "remaining": 3,
+    "running": 2,
+    "review": 1,
+    "blocked": 0,
+    "unassigned": 0
+  },
+  "tasks": [
+    {
+      "id": "T473",
+      "title": "Move shared read models below Worker and UI consumers",
+      "dep": [
+        "T471"
+      ],
+      "lane": "worker-reads",
+      "status": "doing"
+    },
+    {
+      "id": "T474",
+      "title": "Separate completed facility facts from construction commands",
+      "dep": [
+        "T471"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "T475",
+      "title": "Separate view delta publication from the world writer",
+      "dep": [
+        "T473"
+      ],
+      "lane": "worker-reads",
+      "status": "doing"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "group": "module-1026",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "lane": "worker-reads",
+      "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-1",
+      "contributors": [
+        "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-1"
+      ],
+      "status": "doing",
+      "createdAt": "2026-10-26T13:18:21.904Z",
+      "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+      "dispatch": {
+        "id": "c6782351-50db-408b-bcd1-81f478a8f56a",
+        "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "running",
+        "startedAt": "2026-10-26T13:18:23.209Z"
+      }
+    },
+    {
+      "id": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "group": "module-1026",
+      "taskId": "T474",
+      "tasks": [
+        "T474"
+      ],
+      "lane": null,
+      "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-2",
+      "contributors": [
+        "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-2"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-26T13:18:23.637Z",
+      "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+      "verifiedCommit": "b59d2940465b74028af401eeffbc649a489e7978",
+      "submittedBase": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+      "submissionId": "58b1ae36-abc7-4949-8f66-e57a72ed04c7",
+      "submittedAt": "2026-10-26T13:25:16.730Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "394 changed lines (limit 300)",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 394,
+        "files": 6
+      },
+      "dispatch": {
+        "id": "b4ad234e-1d16-440d-8a9b-38b3098920a0",
+        "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-26T13:18:24.448Z",
+        "finishedAt": "2026-10-26T13:25:16.759Z",
+        "error": null,
+        "summary": "T474 is done. Facility artwork no longer depends on construction code. The new packages/engine/src/facility-model.ts holds the facility ladders, limits and completed-state reads, moved over unchanged, and it has no runtime imports. facilities.ts imports and re-exports these by name and keeps only construction: WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep, nextWork, startFacilityWork and progressFacilityWorks. apps/web/src/presentation/facilityImages.ts now imports facility-model.ts instead of facilities.ts.\n\nNew tests:\n- scripts/lib/facility-architecture.test.ts checks that the artwork code reaches only facilityImages.ts, presentation/contracts.ts and facility-model.ts, and never facilities, world, season, calendar, events or quotes. It also checks that facility-model.ts imports nothing and that facilities.ts builds on it.\n- facility-model.test.ts uses minimal data to pin the stage limits, a new club's defaults, stadium capacity during expansion and rebuild works, training bases, academy terms, costs, upkeep and built units, and that the re-exports are the same functions.\n- facilityImages.test.ts checks stage tops and that construction targets are ignored.\n\nChecks run and passed: pnpm install, typecheck, lint, format:check, git diff --check, and the affected unit tests (`pnpm exec vitest run --project unit --changed a3b0cdd2`: 73 files, 562 tests). These included the existing facility-parts, facilityScene, theme, validate-presentation and outcome tests. `pnpm run build` also passed.\n\nNot run:\n- Spec lint: the sandbox denied the CLI command.\n- The final batch is left to the coordinator: test:unit, test:integration, test:contract, validate:catalogs, build and the Chromium journeys. It covers the integration-tier finance, goals, investment, business, academy, training and coach-training tests, plus tests/e2e/facility-art.spec.ts.\n\nOther modules that read facility values still import facilities.ts; they keep working through the re-exports. All edits are inside the task's touches plus the task file's acceptance and result. Nothing was committed."
+      },
+      "steps": [
+        {
+          "taskId": "T474",
+          "commit": "b59d2940465b74028af401eeffbc649a489e7978",
+          "at": "2026-10-26T13:25:16.676Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-26T13:24:10.128Z",
+              "finishedAt": "2026-10-26T13:25:16.349Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-26T13:24:10.128Z",
+          "finishedAt": "2026-10-26T13:25:16.349Z"
+        }
+      ]
+    },
+    {
+      "id": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "group": "module-1026",
+      "taskId": "T476",
+      "tasks": [
+        "T476"
+      ],
+      "lane": null,
+      "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-3",
+      "contributors": [
+        "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-3"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-26T13:18:24.863Z",
+      "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+      "verifiedCommit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+      "submittedBase": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+      "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
+      "submittedAt": "2026-10-26T13:22:45.113Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 117,
+        "files": 6
+      },
+      "dispatch": {
+        "id": "491623e3-9b07-4258-9968-a64eeb34b9a6",
+        "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-26T13:22:46.796Z",
+        "finishedAt": "2026-10-26T13:25:17.402Z",
+        "error": null,
+        "summary": "T476 (d0c9e731 vs a3b0cdd2) meets all four acceptance items. The reduced-motion query now lives only in apps/web/src/adapters/motionPreference.ts, with the old body moved over unchanged: it reads the browser on each call and returns false when the query is missing or throws. themeTransition.ts imports it directly. ui/motion.ts imports it and re-exports it under the same name, so CupHistory, AnimatedMoney, Dialog and play/exit/usePresence need no changes. No test mocks or spies on the ui/motion export, so the re-export is safe. The theme adapter no longer depends on ui/ or React. This follows ARCH-4 (adapters come before UI) and ARCH-32 (theme transition is a progressive browser adapter). The new guard, scripts/lib/motion-architecture.test.ts, uses the existing sourceGraph/dependencies/runtimeImports helpers, matches the process.cwd() pattern in architecture.test.ts (which is unchanged), and is picked up by the unit project through the scripts/**/*.test.ts glob. motionPreference.test.ts covers a matching query, a non-matching query, missing and throwing matchMedia, the exact query string, and reading only when called (a fresh module for each case). In themeTransition.test.ts every existing skip/commit/cancel/timing case is unchanged, and two new cases check that the transition still animates when matchMedia is missing or throws. The only risk reason given was 'autopilot decisions awaiting the owner'. I found no new design, timing, capability or product decision in the diff. The one open item (Pitch.tsx) is recorded under limits as a follow-up, not decided. Worker evidence: the targeted unit files (28 tests), unit --changed against the base (82 tests), typecheck, lint, format:check and build all passed. Spec lint was not run because the CLI was denied. The full unit, integration, contract and chromium runs are left to the coordinator's final gate."
+      },
+      "review": {
+        "id": "e28c6118-d690-46ca-bbc0-1a25985ef548",
+        "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T476 (d0c9e731 vs a3b0cdd2) meets all four acceptance items. The reduced-motion query now lives only in apps/web/src/adapters/motionPreference.ts, with the old body moved over unchanged: it reads the browser on each call and returns false when the query is missing or throws. themeTransition.ts imports it directly. ui/motion.ts imports it and re-exports it under the same name, so CupHistory, AnimatedMoney, Dialog and play/exit/usePresence need no changes. No test mocks or spies on the ui/motion export, so the re-export is safe. The theme adapter no longer depends on ui/ or React. This follows ARCH-4 (adapters come before UI) and ARCH-32 (theme transition is a progressive browser adapter). The new guard, scripts/lib/motion-architecture.test.ts, uses the existing sourceGraph/dependencies/runtimeImports helpers, matches the process.cwd() pattern in architecture.test.ts (which is unchanged), and is picked up by the unit project through the scripts/**/*.test.ts glob. motionPreference.test.ts covers a matching query, a non-matching query, missing and throwing matchMedia, the exact query string, and reading only when called (a fresh module for each case). In themeTransition.test.ts every existing skip/commit/cancel/timing case is unchanged, and two new cases check that the transition still animates when matchMedia is missing or throws. The only risk reason given was 'autopilot decisions awaiting the owner'. I found no new design, timing, capability or product decision in the diff. The one open item (Pitch.tsx) is recorded under limits as a follow-up, not decided. Worker evidence: the targeted unit files (28 tests), unit --changed against the base (82 tests), typecheck, lint, format:check and build all passed. Spec lint was not run because the CLI was denied. The full unit, integration, contract and chromium runs are left to the coordinator's final gate.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/Pitch.tsx:299",
+            "message": "T476 follow-up: Pitch.tsx still calls window.matchMedia('(prefers-reduced-motion: reduce)') directly, without the try/catch fallback, so the query is not fully owned by one module. The new string guard in scripts/lib/motion-architecture.test.ts only checks ui/motion.ts and themeTransition.ts. This file is outside T476's touches and acceptance scope, and the worker already listed it under limits. A planning follow-up could switch it to reducedMotion() and widen the guard. That would change behavior when matchMedia is missing (it would no longer throw), so the follow-up should state that as intended."
+          }
+        ],
+        "commit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+        "baseCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+        "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
+        "createdAt": "2026-10-26T13:22:45.421Z",
+        "finishedAt": "2026-10-26T13:25:17.380Z"
+      },
+      "steps": [
+        {
+          "taskId": "T476",
+          "commit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+          "at": "2026-10-26T13:22:45.062Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-26T13:22:00.578Z",
+              "finishedAt": "2026-10-26T13:22:44.751Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-26T13:22:00.578Z",
+          "finishedAt": "2026-10-26T13:22:44.751Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1313,
+      "at": "2026-10-26T13:15:49.024Z",
+      "type": "group",
+      "group": "module-1026",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "module-1026",
+        "branch": "work/module-1026",
+        "status": "preparing",
+        "createdAt": "2026-10-26T13:15:49.005Z",
+        "limits": {
+          "workers": 3,
+          "reviewers": 1,
+          "maxPending": 4
+        },
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 1314,
+      "at": "2026-10-26T13:15:49.072Z",
+      "type": "group",
+      "group": "module-1026",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1315,
+      "at": "2026-10-26T13:18:21.633Z",
+      "type": "group",
+      "group": "module-1026",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-26T13:18:21.617Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1316,
+      "at": "2026-10-26T13:18:21.904Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "c4df5ad0-bd07-4145-abca-117180ad4649",
+        "group": "module-1026",
+        "taskId": "T473",
+        "tasks": [
+          "T473",
+          "T475"
+        ],
+        "lane": "worker-reads",
+        "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-1",
+        "contributors": [
+          "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-26T13:18:21.904Z",
+        "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf"
+      }
+    },
+    {
+      "sequence": 1317,
+      "at": "2026-10-26T13:18:22.721Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1318,
+      "at": "2026-10-26T13:18:23.209Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6782351-50db-408b-bcd1-81f478a8f56a",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:18:23.209Z"
+        }
+      }
+    },
+    {
+      "sequence": 1319,
+      "at": "2026-10-26T13:18:23.401Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "c4df5ad0-bd07-4145-abca-117180ad4649",
+      "taskId": "T473",
+      "tasks": [
+        "T473",
+        "T475"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c6782351-50db-408b-bcd1-81f478a8f56a",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:18:23.209Z"
+        }
+      }
+    },
+    {
+      "sequence": 1320,
+      "at": "2026-10-26T13:18:23.637Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+        "group": "module-1026",
+        "taskId": "T474",
+        "tasks": [
+          "T474"
+        ],
+        "lane": null,
+        "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-2",
+        "contributors": [
+          "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-26T13:18:23.637Z",
+        "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf"
+      }
+    },
+    {
+      "sequence": 1321,
+      "at": "2026-10-26T13:18:24.250Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1322,
+      "at": "2026-10-26T13:18:24.448Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4ad234e-1d16-440d-8a9b-38b3098920a0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:18:24.448Z"
+        }
+      }
+    },
+    {
+      "sequence": 1323,
+      "at": "2026-10-26T13:18:24.644Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b4ad234e-1d16-440d-8a9b-38b3098920a0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:18:24.448Z"
+        }
+      }
+    },
+    {
+      "sequence": 1324,
+      "at": "2026-10-26T13:18:24.863Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "a3eb0210-0175-4430-821c-22363ded0f3a",
+        "group": "module-1026",
+        "taskId": "T476",
+        "tasks": [
+          "T476"
+        ],
+        "lane": null,
+        "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-3",
+        "contributors": [
+          "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-26T13:18:24.863Z",
+        "startCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf"
+      }
+    },
+    {
+      "sequence": 1325,
+      "at": "2026-10-26T13:18:25.474Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1326,
+      "at": "2026-10-26T13:18:25.927Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "cc52c9d3-5f91-437a-b871-5fdcd6b1bac0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:18:25.927Z"
+        }
+      }
+    },
+    {
+      "sequence": 1327,
+      "at": "2026-10-26T13:18:26.108Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "cc52c9d3-5f91-437a-b871-5fdcd6b1bac0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:18:25.927Z"
+        }
+      }
+    },
+    {
+      "sequence": 1328,
+      "at": "2026-10-26T13:21:59.721Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1329,
+      "at": "2026-10-26T13:22:00.262Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1330,
+      "at": "2026-10-26T13:22:00.312Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1331,
+      "at": "2026-10-26T13:22:45.113Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+        "submittedBase": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+        "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
+        "submittedAt": "2026-10-26T13:22:45.113Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 117,
+          "files": 6
+        },
+        "steps": [
+          {
+            "taskId": "T476",
+            "commit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+            "at": "2026-10-26T13:22:45.062Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-26T13:22:00.578Z",
+                "finishedAt": "2026-10-26T13:22:44.751Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-26T13:22:00.578Z",
+            "finishedAt": "2026-10-26T13:22:44.751Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1332,
+      "at": "2026-10-26T13:22:45.140Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "cc52c9d3-5f91-437a-b871-5fdcd6b1bac0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-26T13:18:25.927Z",
+          "finishedAt": "2026-10-26T13:22:45.140Z",
+          "error": null,
+          "summary": "T476 완료: 테마 전환 어댑터가 더 이상 React UI 모듈에 의존하지 않습니다.\n\n- 새 모듈 `apps/web/src/adapters/motionPreference.ts`가 `(prefers-reduced-motion: reduce)` 조회를 맡습니다. `reducedMotion()` 본문은 이전 `ui/motion`의 것과 똑같습니다. 호출할 때마다 전역 `matchMedia`를 읽고, 없거나 예외가 나면 false를 돌려줍니다.\n- `themeTransition.ts`는 이 모듈을 직접 가져옵니다. `ui/motion.ts`는 같은 함수를 같은 이름으로 다시 내보내므로 CupHistory, AnimatedMoney, Dialog와 play/exit/usePresence/fadeOutOnRemove는 import를 바꿀 필요가 없습니다.\n- 테마 전환 어댑터의 런타임 의존은 이제 `themeTransition`과 `motionPreference` 두 파일뿐이고, `ui/` 파일도 react import도 없습니다. 애니메이션 시간(620ms), 스타일, 커밋/취소 로직은 바꾸지 않았습니다.\n\n테스트:\n- `motionPreference.test.ts`: 일치, 불일치, `matchMedia` 없음, 예외 발생의 네 경우와 정확한 쿼리 문자열, 그리고 import만으로는 브라우저를 읽지 않음을 확인합니다.\n- `themeTransition.test.ts`: 기존 케이스는 그대로 두고, `matchMedia`가 없거나 예외를 내도 애니메이션이 실행되는 두 케이스를 추가했습니다.\n- `scripts/lib/motion-architecture.test.ts`: 기존 source-graph 유틸로 위 의존 경계를 지킵니다. 공용 `architecture.test.ts`는 손대지 않았습니다. 옛 import를 잠시 되돌려 이 검사가 실제로 실패하는 것을 확인한 뒤 원래대로 돌려놓았습니다.\n\n실행해서 통과한 검사: `pnpm install --frozen-lockfile --prefer-offline`, 영향받는 단위 테스트 5파일 28개, `vitest --project unit --changed a3b0cdd2` 13파일 82개, `typecheck`, `lint`, `format:check`, `build`, `git diff --check`. 새 검사 파일은 처음 `format:check`에서 걸려 prettier로 정리한 뒤 통과했습니다. 태스크 파일의 acceptance 네 항목을 [v]로 표시하고 result를 기록했습니다.\n\n실행하지 않은 것:\n- spec lint: 지정된 CLI 명령이 이 세션에서 거부되어 돌리지 못했습니다.\n- 전체 unit/integration/contract 테스트, `validate:catalogs`, Chromium 브라우저 여정(테마 전환·프레젠테이션 설정 포함)은 호스트의 최종 관문으로 넘겼습니다.\n\n남은 점: `apps/web/src/ui/Pitch.tsx:299`가 아직 같은 쿼리를 직접 호출합니다. 이 태스크의 수정 범위와 acceptance 밖이라 그대로 두었고, 나중에 이 어댑터를 쓰도록 바꿀 수 있습니다.\n\n커밋, push, 제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1333,
+      "at": "2026-10-26T13:22:45.421Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e28c6118-d690-46ca-bbc0-1a25985ef548",
+          "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+          "status": "reviewing",
+          "commit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+          "baseCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+          "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
+          "createdAt": "2026-10-26T13:22:45.421Z"
+        }
+      }
+    },
+    {
+      "sequence": 1334,
+      "at": "2026-10-26T13:22:46.797Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "491623e3-9b07-4258-9968-a64eeb34b9a6",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-26T13:22:46.796Z"
+        }
+      }
+    },
+    {
+      "sequence": 1335,
+      "at": "2026-10-26T13:22:46.833Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "491623e3-9b07-4258-9968-a64eeb34b9a6",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-26T13:22:46.796Z"
+        }
+      }
+    },
+    {
+      "sequence": 1336,
+      "at": "2026-10-26T13:24:09.374Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1337,
+      "at": "2026-10-26T13:24:09.846Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1338,
+      "at": "2026-10-26T13:24:09.891Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1339,
+      "at": "2026-10-26T13:25:16.730Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "b59d2940465b74028af401eeffbc649a489e7978",
+        "submittedBase": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+        "submissionId": "58b1ae36-abc7-4949-8f66-e57a72ed04c7",
+        "submittedAt": "2026-10-26T13:25:16.730Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "394 changed lines (limit 300)",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 394,
+          "files": 6
+        },
+        "steps": [
+          {
+            "taskId": "T474",
+            "commit": "b59d2940465b74028af401eeffbc649a489e7978",
+            "at": "2026-10-26T13:25:16.676Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-26T13:24:10.128Z",
+                "finishedAt": "2026-10-26T13:25:16.349Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-26T13:24:10.128Z",
+            "finishedAt": "2026-10-26T13:25:16.349Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1340,
+      "at": "2026-10-26T13:25:16.759Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "0da1548e-9165-4fad-ae1b-76d17bb1632b",
+      "taskId": "T474",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "b4ad234e-1d16-440d-8a9b-38b3098920a0",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-26T13:18:24.448Z",
+          "finishedAt": "2026-10-26T13:25:16.759Z",
+          "error": null,
+          "summary": "T474 is done. Facility artwork no longer depends on construction code. The new packages/engine/src/facility-model.ts holds the facility ladders, limits and completed-state reads, moved over unchanged, and it has no runtime imports. facilities.ts imports and re-exports these by name and keeps only construction: WORK_INFO, FACILITY_PART_LABEL, workDays, facilityWork, facilityUpkeep, nextWork, startFacilityWork and progressFacilityWorks. apps/web/src/presentation/facilityImages.ts now imports facility-model.ts instead of facilities.ts.\n\nNew tests:\n- scripts/lib/facility-architecture.test.ts checks that the artwork code reaches only facilityImages.ts, presentation/contracts.ts and facility-model.ts, and never facilities, world, season, calendar, events or quotes. It also checks that facility-model.ts imports nothing and that facilities.ts builds on it.\n- facility-model.test.ts uses minimal data to pin the stage limits, a new club's defaults, stadium capacity during expansion and rebuild works, training bases, academy terms, costs, upkeep and built units, and that the re-exports are the same functions.\n- facilityImages.test.ts checks stage tops and that construction targets are ignored.\n\nChecks run and passed: pnpm install, typecheck, lint, format:check, git diff --check, and the affected unit tests (`pnpm exec vitest run --project unit --changed a3b0cdd2`: 73 files, 562 tests). These included the existing facility-parts, facilityScene, theme, validate-presentation and outcome tests. `pnpm run build` also passed.\n\nNot run:\n- Spec lint: the sandbox denied the CLI command.\n- The final batch is left to the coordinator: test:unit, test:integration, test:contract, validate:catalogs, build and the Chromium journeys. It covers the integration-tier finance, goals, investment, business, academy, training and coach-training tests, plus tests/e2e/facility-art.spec.ts.\n\nOther modules that read facility values still import facilities.ts; they keep working through the re-exports. All edits are inside the task's touches plus the task file's acceptance and result. Nothing was committed."
+        }
+      }
+    },
+    {
+      "sequence": 1341,
+      "at": "2026-10-26T13:25:17.380Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e28c6118-d690-46ca-bbc0-1a25985ef548",
+          "owner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T476 (d0c9e731 vs a3b0cdd2) meets all four acceptance items. The reduced-motion query now lives only in apps/web/src/adapters/motionPreference.ts, with the old body moved over unchanged: it reads the browser on each call and returns false when the query is missing or throws. themeTransition.ts imports it directly. ui/motion.ts imports it and re-exports it under the same name, so CupHistory, AnimatedMoney, Dialog and play/exit/usePresence need no changes. No test mocks or spies on the ui/motion export, so the re-export is safe. The theme adapter no longer depends on ui/ or React. This follows ARCH-4 (adapters come before UI) and ARCH-32 (theme transition is a progressive browser adapter). The new guard, scripts/lib/motion-architecture.test.ts, uses the existing sourceGraph/dependencies/runtimeImports helpers, matches the process.cwd() pattern in architecture.test.ts (which is unchanged), and is picked up by the unit project through the scripts/**/*.test.ts glob. motionPreference.test.ts covers a matching query, a non-matching query, missing and throwing matchMedia, the exact query string, and reading only when called (a fresh module for each case). In themeTransition.test.ts every existing skip/commit/cancel/timing case is unchanged, and two new cases check that the transition still animates when matchMedia is missing or throws. The only risk reason given was 'autopilot decisions awaiting the owner'. I found no new design, timing, capability or product decision in the diff. The one open item (Pitch.tsx) is recorded under limits as a follow-up, not decided. Worker evidence: the targeted unit files (28 tests), unit --changed against the base (82 tests), typecheck, lint, format:check and build all passed. Spec lint was not run because the CLI was denied. The full unit, integration, contract and chromium runs are left to the coordinator's final gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/Pitch.tsx:299",
+              "message": "T476 follow-up: Pitch.tsx still calls window.matchMedia('(prefers-reduced-motion: reduce)') directly, without the try/catch fallback, so the query is not fully owned by one module. The new string guard in scripts/lib/motion-architecture.test.ts only checks ui/motion.ts and themeTransition.ts. This file is outside T476's touches and acceptance scope, and the worker already listed it under limits. A planning follow-up could switch it to reducedMotion() and widen the guard. That would change behavior when matchMedia is missing (it would no longer throw), so the follow-up should state that as intended."
+            }
+          ],
+          "commit": "d0c9e731fa54203beef39081d5cb9fdfd26fe8e2",
+          "baseCommit": "a3b0cdd288db9074b39815c2a389b1aadf95dfdf",
+          "submissionId": "1208bd0a-9063-43f1-9400-28a59d26e570",
+          "createdAt": "2026-10-26T13:22:45.421Z",
+          "finishedAt": "2026-10-26T13:25:17.380Z"
+        }
+      }
+    },
+    {
+      "sequence": 1342,
+      "at": "2026-10-26T13:25:17.402Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "491623e3-9b07-4258-9968-a64eeb34b9a6",
+          "runner": "da7acc5c-d64a-464b-b7bf-a0e3b9baa3ae",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-26T13:22:46.796Z",
+          "finishedAt": "2026-10-26T13:25:17.402Z",
+          "error": null,
+          "summary": "T476 (d0c9e731 vs a3b0cdd2) meets all four acceptance items. The reduced-motion query now lives only in apps/web/src/adapters/motionPreference.ts, with the old body moved over unchanged: it reads the browser on each call and returns false when the query is missing or throws. themeTransition.ts imports it directly. ui/motion.ts imports it and re-exports it under the same name, so CupHistory, AnimatedMoney, Dialog and play/exit/usePresence need no changes. No test mocks or spies on the ui/motion export, so the re-export is safe. The theme adapter no longer depends on ui/ or React. This follows ARCH-4 (adapters come before UI) and ARCH-32 (theme transition is a progressive browser adapter). The new guard, scripts/lib/motion-architecture.test.ts, uses the existing sourceGraph/dependencies/runtimeImports helpers, matches the process.cwd() pattern in architecture.test.ts (which is unchanged), and is picked up by the unit project through the scripts/**/*.test.ts glob. motionPreference.test.ts covers a matching query, a non-matching query, missing and throwing matchMedia, the exact query string, and reading only when called (a fresh module for each case). In themeTransition.test.ts every existing skip/commit/cancel/timing case is unchanged, and two new cases check that the transition still animates when matchMedia is missing or throws. The only risk reason given was 'autopilot decisions awaiting the owner'. I found no new design, timing, capability or product decision in the diff. The one open item (Pitch.tsx) is recorded under limits as a follow-up, not decided. Worker evidence: the targeted unit files (28 tests), unit --changed against the base (82 tests), typecheck, lint, format:check and build all passed. Spec lint was not run because the CLI was denied. The full unit, integration, contract and chromium runs are left to the coordinator's final gate."
+        }
+      }
+    },
+    {
+      "sequence": 1343,
+      "at": "2026-10-26T13:25:17.463Z",
+      "type": "attempt",
+      "group": "module-1026",
+      "attemptId": "a3eb0210-0175-4430-821c-22363ded0f3a",
+      "taskId": "T476",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

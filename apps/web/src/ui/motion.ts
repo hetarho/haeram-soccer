@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { reducedMotion } from '../adapters/motionPreference';
+
+export { reducedMotion };
 
 /** Shared easing for every interface transition: quick start, soft landing. */
 export const EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
 export const EASE_IN = 'cubic-bezier(0.4, 0, 1, 1)';
-
-export function reducedMotion() {
-  try {
-    return matchMedia('(prefers-reduced-motion: reduce)').matches;
-  } catch {
-    return false;
-  }
-}
 
 /** Browser-native animation; skipped under reduced motion so states land immediately. */
 export function play(
