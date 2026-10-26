@@ -15,6 +15,7 @@ import {
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/ui/presentationClock';
 import { expectCompressedPreparation, longPreparation } from './preparation';
+import { leaveOffice, openOfficeArea } from './office';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('surveys every management destination during uninterrupted calendar play', async ({
@@ -71,29 +72,23 @@ test('surveys every management destination during uninterrupted calendar play', 
   for (const action of await training.getByRole('button', { name: /제안 ·|강행 ·/ }).all())
     await expect(action).toBeDisabled();
   await training.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
-  for (const name of ['운영 방침', '시설', '재정', '후원', '구단 디자인', '구단주 사무실']) {
-    await page.getByRole('tab', { name, exact: true }).click();
-    await continues();
-    if (name === '재정') {
-      await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
-      await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeDisabled();
-    }
-    if (name === '구단주 사무실') {
-      const office = page.getByTestId('owner-office');
-      for (const button of await office.getByRole('button').all())
-        await expect(button).toBeDisabled();
-    }
-    if (name === '구단 디자인') {
-      await page.getByLabel('홈 색 코드', { exact: true }).fill('#ABCDEF');
-      await expect(page.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
-    }
-  }
-  await stop.click();
+  // The owner office is the one place that stops the clock: its work is management change, which
+  // a running calendar locks, and it hides the stop control (→WEB-97/98).
+  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await continues();
+  await openOfficeArea(page, '결재 라인');
   const office = page.getByTestId('owner-office');
   await expect(office.getByRole('button', { name: '전체 보고받기', exact: true })).toBeEnabled();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  await openOfficeArea(page, '재정');
+  await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
+  await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeEnabled();
+  await openOfficeArea(page, '구단 디자인');
+  await page.getByLabel('홈 색 코드', { exact: true }).fill('#ABCDEF');
   await expect(page.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
+  // Leaving restarts the clock the office stopped.
+  await leaveOffice(page);
+  await continues();
+  await stop.click();
 });
 
 test('keeps browsing available and management edits locked over real automatic ticks', async ({

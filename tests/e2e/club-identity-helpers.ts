@@ -7,6 +7,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
+import { aroundOffice, openOfficeArea, outsideOffice } from './office';
 
 /**
  * Browser helpers shared by the club-identity journeys (→KIT, →SAVE-3/20/21/22). Evidence is what
@@ -33,31 +34,35 @@ export { gameHud as hud } from './layout';
 /** SVG crest parts painted in `fill`, exactly as stored. */
 export const crestFill = (scope: Locator, fill: string) => scope.locator(`[fill="${fill}"]`);
 
+/** The settings menu lives in the HUD, which the office hides (→WEB-39). */
 async function openMenu(page: Page) {
   await page.getByRole('button', { name: '설정', exact: true }).click();
   return page.getByRole('dialog', { name: '설정', exact: true });
 }
 const closeMenu = (menu: Locator) =>
   menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-/** The file 기록 내보내기 downloads from the HUD menu, as text. */
-export async function exportRaw(page: Page) {
-  const menu = await openMenu(page);
-  const downloading = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const raw = await readFile((await (await downloading).path())!, 'utf8');
-  await closeMenu(menu);
-  return raw;
-}
+/** The file 기록 내보내기 downloads from the HUD menu, as text; mid-edit in the office too. */
+export const exportRaw = (page: Page) =>
+  aroundOffice(page, async () => {
+    const menu = await openMenu(page);
+    const downloading = page.waitForEvent('download');
+    await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+    const raw = await readFile((await (await downloading).path())!, 'utf8');
+    await closeMenu(menu);
+    return raw;
+  });
 export const exportWorld = async (page: Page): Promise<World> =>
   (await decode(await exportRaw(page))).world;
 /** 저장 재시도 from the HUD menu, after a failed checkpoint. */
-export async function retrySave(page: Page) {
-  const menu = await openMenu(page);
-  await menu.getByRole('button', { name: '저장 재시도', exact: true }).click();
-  await closeMenu(menu);
-}
+export const retrySave = (page: Page) =>
+  aroundOffice(page, async () => {
+    const menu = await openMenu(page);
+    await menu.getByRole('button', { name: '저장 재시도', exact: true }).click();
+    await closeMenu(menu);
+  });
 /** The 알림·뉴스 dialog opened from the HUD menu (→WEB-51/66). */
 export async function openNotices(page: Page) {
+  await outsideOffice(page);
   const menu = await openMenu(page);
   await menu.getByRole('button', { name: '알림·뉴스', exact: true }).click();
   const inbox = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
@@ -286,6 +291,7 @@ export async function foundHere(
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
 }
 export async function openSlots(page: Page) {
+  await outsideOffice(page);
   const menu = await openMenu(page);
   await menu.getByRole('button', { name: '게임 슬롯', exact: true }).click();
   await expect(page.getByTestId('game-slots')).toBeVisible();
@@ -334,10 +340,9 @@ export async function designInEditor(editor: Locator, design: ClubIdentity, pres
   }
 }
 
-/** 구단 운영 › 구단 디자인 from the tab bar, once its lazily loaded editor is there (→WEB-39). */
+/** 구단주 사무실 › 구단 디자인 from home, once its lazily loaded editor is there (→WEB-39). */
 export async function openDesign(page: Page) {
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  await openOfficeArea(page, '구단 디자인');
   await expect(page).toHaveURL(/\/direction\?view=identity$/);
   const view = page.getByRole('region', { name: '구단 디자인', exact: true });
   await expect(view.getByRole('group', { name: '색상', exact: true })).toBeVisible();
@@ -360,8 +365,18 @@ export async function applyDesign(page: Page, view: Locator) {
 export const hubPreparation = (page: Page) =>
   page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true });
 /** Opens preparation and unfolds its shirt selector (→WEB-88). */
-export async function openKit(page: Page, opener: Locator = hubPreparation(page)) {
-  await opener.click();
+export async function openKit(page: Page, opener?: Locator) {
+  // Home's preparation is outside the office, back home from wherever it was entered.
+  if (!opener) {
+    await outsideOffice(page);
+    if (!(await page.getByTestId('club-hub').isVisible()))
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: '클럽 홈', exact: true })
+        .first()
+        .click();
+  }
+  await (opener ?? hubPreparation(page)).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
   const kit = dialog.getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
@@ -393,6 +408,7 @@ export async function watchToWhistle(page: Page) {
 }
 /** The records-room replay of this season's first listed own match (→WEB-54). */
 export async function openRecordedMatch(page: Page) {
+  await outsideOffice(page);
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
   await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
   await page.getByRole('table', { name: '시즌별 기록' }).getByRole('button').first().click();

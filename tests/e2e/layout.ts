@@ -78,7 +78,7 @@ export async function expectHomeBounds(page: Page) {
   expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
 }
 
-/** The complete stadium panorama retains its native ratio above the season-statistics strip. */
+/** The complete stadium panorama retains its native ratio, framed alone below the season card. */
 export async function expectHomeSceneRatio(page: Page) {
   const artwork = page.locator('[data-home-part="scene"] [data-facility-art="stadium"]');
   const image = artwork.locator('img');
@@ -91,7 +91,7 @@ export async function expectHomeSceneRatio(page: Page) {
     const img = node.querySelector('img')!;
     const picture = img.getBoundingClientRect();
     const stage = node.closest('[data-home-part="stage"]')!;
-    const strip = stage.querySelector('[data-home-part="season-stats"]')!.getBoundingClientRect();
+    const card = document.querySelector('[data-home-part="season-card"]')!.getBoundingClientRect();
     return {
       width: bounds.width,
       height: bounds.height,
@@ -99,16 +99,18 @@ export async function expectHomeSceneRatio(page: Page) {
       imageRatio: picture.width / picture.height,
       nativeRatio: img.naturalWidth / img.naturalHeight,
       artworkBottom: bounds.bottom,
-      statisticsTop: strip.top,
-      statisticsHeight: strip.height,
-      cardHeight: stage.getBoundingClientRect().height,
+      seasonCardBottom: card.bottom,
+      stageTop: stage.getBoundingClientRect().top,
+      stageHeight: stage.getBoundingClientRect().height,
+      statsInside: !!stage.querySelector('[data-home-part="season-stats"]'),
     };
   });
   expect(geometry.ratio).toBeCloseTo(3, 2);
   expect(geometry.imageRatio).toBeCloseTo(geometry.nativeRatio, 2);
-  expect(geometry.statisticsTop).toBeGreaterThanOrEqual(geometry.artworkBottom - 1);
-  expect(geometry.statisticsTop - geometry.artworkBottom).toBeLessThanOrEqual(8);
-  expect(geometry.cardHeight - geometry.height - geometry.statisticsHeight).toBeLessThanOrEqual(24);
+  // The season figures sit in their own card above the scene, never on it (→WEB-11).
+  expect(geometry.statsInside).toBe(false);
+  expect(geometry.stageTop).toBeGreaterThanOrEqual(geometry.seasonCardBottom);
+  expect(geometry.stageHeight - geometry.height).toBeLessThanOrEqual(24);
   return geometry;
 }
 

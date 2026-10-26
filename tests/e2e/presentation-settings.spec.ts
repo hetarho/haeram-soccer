@@ -16,6 +16,7 @@ import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
 import { textContrast } from './contrast';
+import { leaveOffice, openOfficeArea } from './office';
 import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
@@ -644,16 +645,14 @@ test('unseen routed locale and theme change actual resources while game facts, d
   const world = (await decode(raw)).world;
   const date = await page.getByTestId('calendar').innerText();
   const sent = await commands(page);
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
-    .click();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  await openOfficeArea(page, '구단 디자인');
   const design = page.getByRole('region', { name: '구단 디자인', exact: true });
   const colour = design.getByLabel('홈 색 코드', { exact: true });
   await colour.fill('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
   const address = page.url();
+  // Settings live outside the focused office (→WEB-39); the unapplied design waits there.
+  await leaveOffice(page);
   await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);
   await expect(page.locator('html')).toHaveAttribute('lang', fixture.locale.id);
@@ -662,13 +661,15 @@ test('unseen routed locale and theme change actual resources while game facts, d
   await chooseOption(page.getByTestId('presentation-theme'), fixture.theme.id);
   await expect.poll(() => background(page)).toBe(FIXTURE_BACKGROUND);
   await closeSettings(page);
+  await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
+  await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
+  await openOfficeArea(page, '구단 디자인');
   expect(page.url()).toBe(address);
   await expect(colour).toHaveValue('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
-  await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
-  await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
   expect(await commands(page)).toBe(sent);
   expect(await committedRaw(page)).toBe(raw);
+  await leaveOffice(page);
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: 'Resource-only club home', exact: true })

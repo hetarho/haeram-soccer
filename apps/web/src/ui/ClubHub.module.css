@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'stage' 'state' 'fixture';
+  grid-template-areas: 'header' 'stage' 'office' 'state' 'fixture';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -549,6 +549,17 @@ button.resources:active:not(:disabled) {
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+/* A state without advice explains itself without the warning edge. */
+.remedyDetail {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid var(--line);
+  background: var(--surface-grain, none) var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
 .remedies {
   list-style: none;
   margin: 0;
@@ -635,34 +646,102 @@ button.resources:active:not(:disabled) {
   min-height: 0;
   max-height: none;
 }
-.hub .stage > .resources.resources {
-  position: relative;
-  inset: auto;
-  height: auto;
-  min-height: 0;
-  z-index: 1;
-  width: auto;
-  gap: 0;
-  border-top: 1px solid var(--line);
-}
 .hub .scene .stageLabel {
   bottom: 8px;
 }
-.stage > .resources > div {
-  padding: 7px 14px;
+/* The season card: round, rank and record over the season-progress rule (→WEB-11). */
+.seasonCard {
+  grid-area: header;
+  position: relative;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-deep);
 }
-.stage > .resources .more {
-  top: auto;
-  bottom: 4px;
+.seasonCard > .resources {
+  width: auto;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+.seasonCard > .resources > div {
+  padding: 7px 14px;
+}
+.seasonCard > .resources > div:last-of-type {
+  padding-right: 28px;
+  border-right: 0;
+}
+.seasonCard > .resources .more {
+  top: 50%;
   right: 6px;
+  transform: translateY(-50%);
+}
+.seasonCard > .seasonMeter {
+  padding: 8px 14px 10px;
+}
+/* The owner office's entrance: a pressable door with the office art (→WEB-11). */
+.office {
+  grid-area: office;
+  display: grid;
+  grid-template-columns: minmax(96px, 34%) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+.office:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.officeArt {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: calc(var(--card-radius) / 2);
+}
+.officeText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.officeText b {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.officeText small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  word-break: keep-all;
+  font-family: var(--display);
+}
+.officeEnter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--accent-text);
+  font-family: var(--display);
+}
+/* Strength leads team state on a row of its own (→WEB-44). */
+.state li[data-condition='strength'] {
+  grid-column: 1 / -1;
 }
 @media (max-width: 760px) {
-  .stage > .resources > div > small {
-    display: none;
+  .seasonCard > .resources > div {
+    padding: 6px 10px;
   }
-  .stage > .resources b {
-    font-size: 18px;
+  .seasonCard > .resources b {
+    font-size: 20px;
   }
   .fixtureInfo h3 {
     margin: 2px 0;
@@ -723,13 +802,6 @@ button.resources:active:not(:disabled) {
   font-family: var(--display);
 }
 
-.seasonOverview {
-  grid-area: header;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  min-width: 0;
-}
 .seasonMeter {
   display: grid;
   gap: 6px;
@@ -768,16 +840,7 @@ button.resources:active:not(:disabled) {
 .seasonMeter progress::-moz-progress-bar {
   background: var(--surface-grain, none) var(--accent);
 }
-.seasonOverview > button {
-  min-height: 44px;
-  padding: 6px 9px;
-  font-size: 12px;
-  white-space: nowrap;
-}
 @media (max-width: 760px) {
-  .seasonOverview {
-    gap: 12px;
-  }
   .sceneCaption {
     inset: 8px 9px auto;
   }
@@ -785,5 +848,22 @@ button.resources:active:not(:disabled) {
   .badge {
     font-size: 12px;
     font-family: var(--display);
+  }
+}
+/* Wide screens pair the office entrance with the season card so home stays on one screen (→WEB-11). */
+@media (min-width: 1100px) {
+  .hub {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    grid-template-areas: 'header office' 'stage stage' 'state state' 'fixture fixture';
+  }
+  .office {
+    align-self: stretch;
+  }
+  /* Strength takes its place in the one row of five conditions. */
+  .state ul {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .state li[data-condition='strength'] {
+    grid-column: auto;
   }
 }

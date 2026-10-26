@@ -349,9 +349,18 @@ html[data-theme] {
     box-shadow: none;
   }
 
-  [data-ui='toolbar'] {
+  [data-ui='toolbar'],
+  [data-ui='record-navigator'] {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: var(--image-material-size, 512px);
+  }
+
+  [data-ui='record-navigator'] {
+    border-bottom: 0;
+    background:
+      var(--image-art-rule-dark) center bottom / calc(100% - 24px) 2px no-repeat,
+      var(--image-canvas-material) 0 0 / var(--image-material-size, 512px) repeat
+        var(--image-canvas);
   }
 
   [data-ui='choices'] {

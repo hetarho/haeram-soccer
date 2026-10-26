@@ -47,17 +47,9 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // The match view has no tab: it opens only from a watch action. The owner's three levers sit
-  // right of home: 사람 (players, market and staff), 훈련 and 방향.
-  const tabs = [
-    '리그',
-    '컵 대회',
-    '클럽 기록실',
-    '클럽 홈',
-    '선수단·스태프',
-    '훈련·육성',
-    '구단 운영',
-  ];
+  // The match view has no tab: it opens only from a watch action. The owner's squad levers sit
+  // right of home: 사람 (players, market and staff) and 훈련; the office opens from home.
+  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단·스태프', '훈련·육성'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -82,8 +74,8 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await menuButton.click();
   const allMenu = page.getByRole('dialog', { name: '설정' });
   await expect(allMenu).toBeVisible();
-  // Tab destinations live in the tab bar; the menu lists none of them.
-  for (const label of ['선수단·스태프', '훈련·육성', '구단 운영'])
+  // Tab destinations live in the tab bar and the office behind home; the menu lists none of them.
+  for (const label of ['선수단·스태프', '훈련·육성', '구단 운영', '구단주 사무실'])
     await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);

@@ -1,15 +1,15 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { rating, tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/world';
 import { nextOwnFixture, currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
-import { orderIds, ownLeagueIds } from './league';
+import { orderIds, ownDivisionRound, ownLeagueIds } from './league';
 import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
 import { useProgression, type ProgressionController } from '../runtime/progression';
-import { useNavigation } from './state';
+import { openOfficeLobby, useNavigation } from './state';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -182,6 +182,119 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
+/** The office's six areas, named on its entrance (→WEB-11/39). */
+const OFFICE_AREAS = '운영 방침 · 시설 · 재정 · 후원 · 구단 디자인 · 결재 라인';
+/** Home's door to the owner office, where every club lever is (→WEB-11, WEB-39). */
+export function OfficeEntrance({ w }: { w: World }) {
+  return (
+    <button
+      type="button"
+      className={s.office}
+      data-home-part="office"
+      aria-label="구단주 사무실"
+      aria-describedby="hub-office-areas"
+      onClick={(event) => {
+        event.currentTarget.focus();
+        openOfficeLobby();
+      }}
+    >
+      <FacilityArt kind="manager" world={w} className={s.officeArt} />
+      <span className={s.officeText}>
+        <b>구단주 사무실</b>
+        <small id="hub-office-areas">{OFFICE_AREAS}</small>
+      </span>
+      <span className={s.officeEnter} aria-hidden="true">
+        들어가기
+        <PixelIcon name="chevronRight" size={14} />
+      </span>
+    </button>
+  );
+}
+
+/**
+ * Where this season stands (→WEB-11): our division's round, our rank and the record change only
+ * when a round is played, so they read together above the season-progress rule. Only the card
+ * on screen carries the round's test ids; the information row shows the round everywhere else.
+ */
+export function SeasonCard({
+  w,
+  active,
+  onOpen,
+}: {
+  w: World;
+  active: boolean;
+  onOpen: () => void;
+}) {
+  const club = clubOf(w);
+  const table = w.tables[w.playerClub];
+  const ids = orderIds(ownLeagueIds(w), w.tables),
+    played = !!table?.played,
+    rank = ids.indexOf(w.playerClub) + 1;
+  const round = ownDivisionRound(w);
+  const progress = Math.min(
+    100,
+    Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
+  );
+  return (
+    <section className={s.seasonCard} data-home-part="season-card" aria-label="이번 시즌">
+      <button
+        className={s.resources}
+        data-home-part="season-stats"
+        aria-label="시즌 상세"
+        aria-describedby="hub-stats-hint"
+        onClick={(event) => {
+          event.currentTarget.focus();
+          onOpen();
+        }}
+      >
+        <span id="hub-stats-hint" className={s.srOnly}>
+          라운드·리그 순위·시즌 전적과 현재 구단 브리핑을 자세히 봐요
+        </span>
+        <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
+          <span>라운드</span>
+          <b>
+            <span
+              key={round.played}
+              className={s.bump}
+              data-testid={active ? 'game-round' : undefined}
+            >
+              {round.played}
+            </span>
+            <small data-testid={active ? 'game-round-total' : undefined}>/ {round.total}</small>
+          </b>
+          <small>{round.total - round.played}라운드 남음</small>
+        </div>
+        <div>
+          <span>리그 순위</span>
+          <b data-testid="hub-rank">
+            <span key={played ? rank : '-'} className={s.bump}>
+              {played ? rank : '—'}
+            </span>
+            <small>/{ids.length}위</small>
+          </b>
+          <small>{w.lower ? '아마추어 리그' : `${club.tier + 1}부`}</small>
+        </div>
+        <div>
+          <span>시즌 전적</span>
+          <b data-testid="hub-record">
+            <span key={table ? table.played : 0} className={s.bump}>
+              {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
+            </span>
+          </b>
+          <small>승점 {table?.points ?? 0}</small>
+        </div>
+        <PixelIcon name="chevronRight" size={14} className={s.more} />
+      </button>
+      <div className={s.seasonMeter} data-home-part="season-meter">
+        <span>
+          시즌 진행률 <b>{progress}%</b>
+        </span>
+        <progress aria-label="시즌 진행률" value={progress} max={100} />
+      </div>
+    </section>
+  );
+}
+
 export function ClubHub({
   w,
   client,
@@ -204,15 +317,6 @@ export function ClubHub({
       setPreparing(false);
     }
   }, [away, journalOpen, preparing]);
-  const club = clubOf(w);
-  const table = w.tables[w.playerClub];
-  const ids = orderIds(ownLeagueIds(w), w.tables),
-    played = !!w.tables[w.playerClub]?.played,
-    rank = ids.indexOf(w.playerClub) + 1;
-  const progress = Math.min(
-    100,
-    Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
-  );
   return (
     <section
       className={s.hub}
@@ -220,62 +324,12 @@ export function ClubHub({
       data-home-active={!away}
       aria-label="클럽 키우기"
     >
-      <div className={s.seasonOverview}>
-        <div className={s.seasonMeter} data-home-part="season-meter">
-          <span>
-            시즌 진행률 <b>{progress}%</b>
-          </span>
-          <progress aria-label="시즌 진행률" value={progress} max={100} />
-        </div>
-      </div>
-      {/* The season numbers ride the bottom of the club's stage instead of taking a row. */}
+      <SeasonCard w={w} active={!away} onOpen={() => setJournalOpen(true)} />
+      {/* The scene's frame stays its own part; season figures live in the card above. */}
       <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />
-        <button
-          className={s.resources}
-          data-home-part="season-stats"
-          aria-label="시즌 상세"
-          aria-describedby="hub-stats-hint"
-          onClick={(event) => {
-            event.currentTarget.focus();
-            setJournalOpen(true);
-          }}
-        >
-          <span id="hub-stats-hint" className={s.srOnly}>
-            리그 순위·팀 전력·시즌 전적과 현재 구단 브리핑을 자세히 봐요
-          </span>
-          <div>
-            <span>리그 순위</span>
-            <b data-testid="hub-rank">
-              <span key={played ? rank : '-'} className={s.bump}>
-                {played ? rank : '—'}
-              </span>
-              <small>/{ids.length}위</small>
-            </b>
-            <small>{w.lower ? '아마추어 리그' : `${club.tier + 1}부`}</small>
-          </div>
-          <div>
-            <span>팀 전력</span>
-            <b>
-              <span key={rating(w, club)} className={s.bump}>
-                {rating(w, club)}
-              </span>{' '}
-              <small>/ 100</small>
-            </b>
-            <small>선발 평균</small>
-          </div>
-          <div>
-            <span>시즌 전적</span>
-            <b data-testid="hub-record">
-              <span key={table ? table.played : 0} className={s.bump}>
-                {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
-              </span>
-            </b>
-            <small>승점 {table?.points ?? 0}</small>
-          </div>
-          <PixelIcon name="chevronRight" size={14} className={s.more} />
-        </button>
       </div>
+      <OfficeEntrance w={w} />
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
       <NextMatchCard
         w={w}

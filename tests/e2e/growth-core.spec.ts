@@ -5,6 +5,7 @@ import { createWorld } from '../../packages/engine/src/index';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
+import { enterOffice, leaveOffice } from './office';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
@@ -53,10 +54,9 @@ for (const viewport of [
     await expect(state).not.toContainText('선수 19명');
     await expectTouchSize(button);
     await expectHomeBounds(page);
-    const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await menu.getByRole('button', { name: '구단 운영', exact: true }).click();
+    await enterOffice(page);
     await expect(alert).toHaveCount(0);
-    await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await leaveOffice(page);
     // Clicking the badge uses the existing full-size tile button.
     await warning.click();
     const remedies = page.getByRole('dialog', { name: '선수단 채우기', exact: true });
@@ -115,12 +115,13 @@ for (const viewport of [
     }
     await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
     await expect(page.getByTestId('hud-cash')).toBeVisible();
-    await expect(hub.getByText('리그 순위', { exact: true })).toBeVisible();
-    await expect(hub.getByText('팀 전력', { exact: true })).toBeVisible();
-    await expect(hub.getByText('시즌 전적', { exact: true })).toBeVisible();
+    const season = hub.getByRole('button', { name: '시즌 상세', exact: true });
+    for (const figure of ['라운드', '리그 순위', '시즌 전적'])
+      await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
     const state = page.getByRole('region', { name: '팀 상태' });
-    for (const chip of ['피로', '분위기', '감독 입지', '선수단'])
+    // Strength changes with the lineup, fatigue and morale, so it leads team state (→WEB-44).
+    for (const chip of ['팀 전력', '피로', '분위기', '감독 입지', '선수단'])
       await expect(state.getByText(chip, { exact: true })).toBeVisible();
 
     const journalButton = hub.getByRole('button', { name: '시즌 상세', exact: true });

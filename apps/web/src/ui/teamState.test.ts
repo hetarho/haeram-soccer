@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate } from '../../../../packages/engine/src/index';
 import { policyOf } from '../../../../packages/engine/src/policy';
-import { cashState, remedies, runwayText, teamStates, urgentState } from './teamState';
+import type { World } from '../../../../packages/contracts/src/types';
+import { rating } from '../../../../packages/engine/src/world';
+import { ownLeagueIds } from './league';
+import {
+  cashState,
+  remedies,
+  runwayText,
+  STATE_TITLES,
+  strengthPlace,
+  teamStates,
+  urgentState,
+} from './teamState';
 
 const world = () =>
   createWorld({
@@ -16,7 +27,13 @@ describe('team state', () => {
   it('is calm for a new club and keeps cash in the HUD', () => {
     const w = world();
     const states = teamStates(w);
-    expect(states.map((state) => state.key)).toEqual(['fatigue', 'morale', 'manager', 'squad']);
+    expect(states.map((state) => state.key)).toEqual([
+      'strength',
+      'fatigue',
+      'morale',
+      'manager',
+      'squad',
+    ]);
     expect(urgentState(states, cashState(w))).toBeUndefined();
     expect(cashState(w).advice).toBeUndefined();
   });
@@ -217,5 +234,78 @@ describe('registration-aware squad state', () => {
     expect(teamStates(w).find((s) => s.key === 'squad')!.value).toBe('16/25 · 제외 4');
     expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).toContain('21세 이하 제외');
     expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).not.toContain('추정');
+  });
+});
+
+describe('team strength tile', () => {
+  it('reads the starting XI average and its place in our division', () => {
+    const w = world();
+    const strength = teamStates(w)[0];
+    const own = rating(
+      w,
+      w.clubs.find((club) => club.id === w.playerClub)!,
+    );
+    expect(strength).toMatchObject({ key: 'strength', label: '팀 전력', value: String(own) });
+    expect(strength.status).toMatch(new RegExp(`^리그 \\d+/${ownLeagueIds(w).length}위$`));
+    expect(strength.detail).toContain(`평균 능력 ${own}`);
+    // A comparison, not a condition to repair: no advice, so no warning badge.
+    expect(strength.advice).toBeUndefined();
+  });
+});
+
+describe('team strength place (→WEB-44)', () => {
+  it('lets equal ratings share a place', () => {
+    expect(strengthPlace([40, 35, 35, 30], 35)).toMatchObject({ place: 2, of: 4 });
+    expect(strengthPlace([40, 35, 35, 30], 40)).toMatchObject({ place: 1 });
+  });
+
+  it('reads the top third good and the bottom third a warning', () => {
+    const field = (n: number) => Array.from({ length: n }, (_, i) => n - i);
+    // 16 clubs: thirds of six — places 1–6 good, 7–10 ok, 11–16 warning.
+    expect(strengthPlace(field(16), 11).tone).toBe('good');
+    expect(strengthPlace(field(16), 10).tone).toBe('ok');
+    expect(strengthPlace(field(16), 7).tone).toBe('ok');
+    expect(strengthPlace(field(16), 6).tone).toBe('warn');
+    // 20 clubs: thirds of seven.
+    expect(strengthPlace(field(20), 14).tone).toBe('good');
+    expect(strengthPlace(field(20), 13).tone).toBe('ok');
+    expect(strengthPlace(field(20), 7).tone).toBe('warn');
+    // 24 clubs: thirds of eight.
+    expect(strengthPlace(field(24), 17).tone).toBe('good');
+    expect(strengthPlace(field(24), 9).tone).toBe('ok');
+    expect(strengthPlace(field(24), 8).tone).toBe('warn');
+  });
+
+  it('never warns a field too small to have a bottom third', () => {
+    expect(strengthPlace([30], 30)).toEqual({ place: 1, of: 1, tone: 'good' });
+    expect(strengthPlace([], 30)).toMatchObject({ place: 1, of: 1 });
+    expect(strengthPlace([40, 30], 30).tone).toBe('ok');
+  });
+});
+
+describe('team strength sheet', () => {
+  const w = {
+    year: 1950,
+    playerClub: 'own',
+    clubs: [{ id: 'own', name: 'Our Club', country: 'ENG' }],
+  } as unknown as World;
+
+  it('offers preparation, the market, first-team training and the academy', () => {
+    expect(STATE_TITLES.strength).toBe('팀 전력 끌어올리기');
+    const choices = remedies(w, 'strength');
+    expect(choices.map((choice) => choice.id)).toEqual([
+      'prepare',
+      'market',
+      'training',
+      'academy',
+    ]);
+    expect(choices[0].prepare).toBe(true);
+    expect(choices.slice(1).map((choice) => [choice.page, choice.tab])).toEqual([
+      ['people', 'market'],
+      ['training', 'training'],
+      ['training', 'academy'],
+    ]);
+    // Navigation only: nothing here costs or commands.
+    expect(choices.every((choice) => !choice.command && !choice.cost)).toBe(true);
   });
 });

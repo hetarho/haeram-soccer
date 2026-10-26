@@ -10,9 +10,11 @@ import type { ClubIdentity } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
+import { aroundOffice, leaveOffice, openOfficeArea, outsideOffice } from './office';
+import { savedWorld } from './club-identity-helpers';
 
 /**
- * KIT-9/10/12, WEB-39/71/74/86, SAVE-20: 구단 운영 › 구단 디자인 keeps a per-career draft until an
+ * KIT-9/10/12, WEB-39/71/74/86, SAVE-20: 구단주 사무실 › 구단 디자인 keeps a per-career draft until an
  * explicit 되돌리기 or a successful 적용, and 적용 is one club-identity command. Evidence is the
  * exported checkpoint, decoded, and the commands the page actually sends its engine worker.
  */
@@ -57,16 +59,18 @@ async function watchIdentityCommands(page: Page) {
 }
 const commands = (page: Page) => page.evaluate(() => (window as ProbeWindow).identityProbe.sent);
 
-async function exportRaw(page: Page) {
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '설정' });
-  const downloading = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const file = await downloading;
-  const raw = await readFile((await file.path())!, 'utf8');
-  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return raw;
-}
+/** The settings menu is outside the office: an export mid-edit steps out and back (→WEB-39). */
+const exportRaw = (page: Page) =>
+  aroundOffice(page, async () => {
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정' });
+    const downloading = page.waitForEvent('download');
+    await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+    const file = await downloading;
+    const raw = await readFile((await file.path())!, 'utf8');
+    await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
+    return raw;
+  });
 const exportWorld = async (page: Page): Promise<World> =>
   (await decode(await exportRaw(page))).world;
 const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
@@ -90,6 +94,7 @@ async function foundHere(page: Page, seed: string, name: string) {
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function openSlots(page: Page) {
+  await outsideOffice(page);
   await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
     .getByRole('dialog', { name: '설정' })
@@ -103,10 +108,9 @@ async function designView(page: Page) {
   await expect(view.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   return view;
 }
-/** 구단 운영 › 구단 디자인 from the tab bar (→WEB-39). */
+/** 구단주 사무실 › 구단 디자인 from home's entrance (→WEB-39). */
 async function openDesign(page: Page) {
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  await openOfficeArea(page, '구단 디자인');
   await expect(page).toHaveURL(/\/direction\?view=identity$/);
   return designView(page);
 }
@@ -158,8 +162,11 @@ test('three named colours link shirts and crest, and each apply reaches every cr
   expect(reused.kits.home).toEqual(palette.kits.home);
   expect(reused.kits.away).toEqual(palette.kits.away);
 
-  // KIT-12/WEB-49: the current crest follows at once wherever the club is named.
+  // KIT-12/WEB-49: the current crest follows at once wherever the club is named, the office bar
+  // first, then the HUD outside it.
   const hud = gameHud(page);
+  await expect(crestFill(hud, '#E0218A')).not.toHaveCount(0);
+  await leaveOffice(page);
   await expect(crestFill(hud, '#E0218A')).not.toHaveCount(0);
   await nav(page).getByRole('button', { name: '리그', exact: true }).click();
   const own = page
@@ -215,9 +222,13 @@ test('되돌리기 restores the entry design and a failed apply keeps the draft 
   expect(await commands(page)).toBe(1);
   await expect(main).toHaveValue('#E0218A');
   await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
+  expect(ownClub(await savedWorld(page)).identity).toEqual(before);
+  // The export steps out of the office and back (→WEB-39): the notice closes, the draft stays.
   expect(await ownIdentity(page)).toEqual(before);
-  // Retry applies the kept draft.
-  await failure.getByRole('button', { name: '다시 적용', exact: true }).click();
+  await expect(main).toHaveValue('#E0218A');
+  await expect(bar(view).getByRole('status')).toHaveText('적용 전 초안');
+  // Applying again commits the kept draft.
+  await applyButton(view).click();
   await expect(bar(view).getByRole('status')).toHaveText('적용된 디자인');
   await expect(view.getByRole('alert')).toHaveCount(0);
   expect(await commands(page)).toBe(2);
@@ -253,38 +264,38 @@ test('navigation detours and passing days keep the draft beside the policy draft
     await expect(current.getByRole('alert')).toHaveCount(0);
     await expect(applyButton(current)).toBeEnabled();
   };
-  // Another 구단 운영 tab and back.
-  await page.getByRole('tab', { name: '시설', exact: true }).click();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  // Another office area and back.
+  await openOfficeArea(page, '시설');
+  await openOfficeArea(page, '구단 디자인');
   view = await designView(page);
   await expectDraft(view);
-  // Another page and back: 구단 운영 returns to the tab it was left on (→WEB-74).
+  // Another page and back: a fresh entry opens the lobby, and the design still waits (→WEB-74).
+  await leaveOffice(page);
   await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(page).toHaveURL(/\/people/);
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
-  await expect(page.getByRole('tab', { name: '구단 디자인', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  await openOfficeArea(page, '구단 디자인');
   view = await designView(page);
   await expectDraft(view);
   // Ordinary days advance the revision under an unchanged design: the draft stands and is not
-  // stale. The editor itself neither starts nor stops the clock.
+  // stale. The clock runs outside the office, which stops it while open (→WEB-98).
+  await leaveOffice(page);
   const date = page.getByTestId('game-date');
   const today = await date.innerText();
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expect(date).not.toHaveText(today, { timeout: 20000 });
   const running = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   if (await running.count()) await running.click();
+  await openOfficeArea(page, '구단 디자인');
+  view = await designView(page);
   await expectDraft(view);
   // A policy-board draft is a separate department draft (→WEB-60/77).
-  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
+  await openOfficeArea(page, '운영 방침');
   await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
   const finance = page.getByRole('region', { name: '재정', exact: true });
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
+  await openOfficeArea(page, '구단 디자인');
   view = await designView(page);
   await expectDraft(view);
   await applyButton(view).click();
@@ -292,7 +303,7 @@ test('navigation detours and passing days keep the draft beside the policy draft
   expect(await commands(page)).toBe(1);
   expect(await ownIdentity(page)).toEqual(drafted);
   // Applying the design left the policy draft unapplied and in place.
-  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
+  await openOfficeArea(page, '운영 방침');
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
 });
 
@@ -379,7 +390,7 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
     .click();
   const hud = gameHud(page);
   await expect(crestFill(hud, '#123456')).not.toHaveCount(0);
-  await nav(page).getByRole('button', { name: '구단 운영', exact: true }).click();
+  await openOfficeArea(page, '구단 디자인');
   const stale = await designView(page);
   await expect(stale.getByRole('alert')).toContainText('적용된 구단 디자인이 바뀌었어요');
   await expect(colourCode(stale, '홈 색 코드')).toHaveValue('#E0218A');

@@ -67,6 +67,7 @@ import {
 } from './club-identity-helpers';
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { officeBar } from './office';
 
 /**
  * KIT-9/12/15, WEB-86/87, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played in
@@ -419,12 +420,16 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await expect(designStatus(view)).toHaveText('적용 전 초안');
   await expect(field).toHaveValue('#E76F51');
   expect(await checkpointStorage(page)).toEqual(before);
+  expect(ownClub(await savedWorld(page)).identity).toEqual(committed);
+  // The export steps out of the office and back (→WEB-39): the notice closes, the draft stays.
   expect(ownClub(await exportWorld(page)).identity).toEqual(committed);
+  await expect(field).toHaveValue('#E76F51');
+  await expect(designStatus(view)).toHaveText('적용 전 초안');
 
   // Applied, but its checkpoint cannot be written: the committed save stays loadable and the
   // applied design remains exportable from memory until a retry commits it (→SAVE-3/8).
   await failWrites(page, true);
-  await failure.getByRole('button', { name: '다시 적용', exact: true }).click();
+  await applyButton(view).click();
   await expect(designStatus(view)).toHaveText('적용된 디자인');
   const outcome = page.getByTestId('action-outcome');
   await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
@@ -444,8 +449,9 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(retried);
   await page.reload();
-  // A reload restores the view it left, so the loaded game shows as the season HUD, not home.
-  await expect(page.getByRole('region', { name: /^시즌 진행/ })).toBeVisible();
+  // A reload restores the view it left: the office's design area, not home.
+  await expect(officeBar(page)).toBeVisible();
+  await expect(page).toHaveURL(/\/direction\?view=identity$/);
   expect(ownClub(await savedWorld(page)).identity).toEqual(retried);
 });
 

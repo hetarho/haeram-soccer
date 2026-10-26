@@ -1,15 +1,25 @@
 import type { ProgressionController } from '../runtime/progression';
-import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useTaskMemory } from './taskMemory';
 import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
-import { PageTabs, TabPanel } from './PageTabs';
-import { BUSINESS_TABS, businessTab, type BusinessView } from './state';
+import {
+  BUSINESS_TABS,
+  leaveOffice,
+  officeAddress,
+  officeView,
+  type BusinessView,
+  type OfficeView,
+} from './state';
+import { OfficeBar } from './OfficeBar';
+import { OfficeLobby } from './OfficeLobby';
 import s from './App.module.css';
 
 /**
- * 방향 as one page-tab bar (→WEB-39, →WEB-69): the direction board first (→WEB-60), then
- * building, money with any campaign started before rules 1.19, and sponsors.
+ * The owner office (→WEB-39): a lobby of six areas, each opening full-screen under the office bar
+ * — the direction board (→WEB-60), building, money with any campaign started before rules 1.19,
+ * sponsors, the club design and 결재 라인.
  */
 /** The direction board and its composer load on first visit, outside the entry (→ARCH-28). */
 const StrategyBoard = lazy(() =>
@@ -19,6 +29,11 @@ const StrategyBoard = lazy(() =>
 const OwnerOffice = lazy(() =>
   import('./OwnerOfficeView').then((module) => ({ default: module.OwnerOffice })),
 );
+
+const LOBBY_SCROLL = '/direction';
+/** Set on ← 사무실 so the lobby that history brings back stands where it was left. */
+let backToLobby = false;
+const scroller = () => document.querySelector<HTMLElement>('[data-testid="view-scroller"]');
 
 export function OperationsView({
   state,
@@ -32,37 +47,59 @@ export function OperationsView({
   legacy: ReactNode;
 }) {
   const w = state.view!.world;
-  const [tab, setTab] = useState<BusinessView>(() =>
-    businessTab(new URLSearchParams(location.search).get('view')),
+  const [view, setView] = useState<OfficeView>(() =>
+    officeView(new URLSearchParams(location.search).get('view')),
   );
+  // An area opened from the lobby returns there through history, so browser back agrees.
+  const fromLobby = useRef(false);
   useEffect(() => {
-    if (tab !== 'office') return;
-    const reveal = () =>
-      document
-        .getElementById('operations-tab-office')
-        ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    const frame = requestAnimationFrame(reveal);
-    window.addEventListener('resize', reveal);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', reveal);
-    };
-  }, [tab]);
+    if (view !== 'lobby' || !backToLobby) return;
+    backToLobby = false;
+    const top = useTaskMemory.getState().scrolls[LOBBY_SCROLL] ?? 0;
+    requestAnimationFrame(() => scroller()?.scrollTo({ top }));
+  }, [view]);
+  const openArea = (next: BusinessView) => {
+    useTaskMemory.setState((memory) => ({
+      scrolls: { ...memory.scrolls, [LOBBY_SCROLL]: scroller()?.scrollTop ?? 0 },
+    }));
+    fromLobby.current = true;
+    history.pushState(null, '', officeAddress(next));
+    setView(next);
+    requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
+  };
+  const toLobby = () => {
+    if (fromLobby.current) {
+      backToLobby = true;
+      history.back();
+      return;
+    }
+    history.replaceState(null, '', officeAddress('lobby'));
+    setView('lobby');
+    requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
+  };
+  const area = BUSINESS_TABS.find(([id]) => id === view);
+  if (!area)
+    return (
+      <>
+        <OfficeBar
+          back={{ label: '나가기', onClick: leaveOffice }}
+          title="구단주 사무실"
+          client={client}
+        />
+        <OfficeLobby w={w} sponsors={state.view!.sponsors} onOpen={openArea} />
+      </>
+    );
+  const [id, label] = area;
   return (
     <>
-      <PageTabs
-        tabs={BUSINESS_TABS}
-        value={tab}
-        onChange={setTab}
-        label="구단 운영 보기"
-        idPrefix="operations"
-      />
-      <TabPanel idPrefix="operations" value={tab}>
-        {tab === 'office' ? (
+      <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} client={client} />
+      {/* The bar names the area; its own panels carry their regions. */}
+      <div data-office-view={id}>
+        {id === 'office' ? (
           <Suspense fallback={null}>
             <OwnerOffice key={w.id} client={client} controller={controller} />
           </Suspense>
-        ) : tab === 'strategy' ? (
+        ) : id === 'strategy' ? (
           <Suspense
             fallback={
               <div className={s.loading} role="status">
@@ -72,7 +109,7 @@ export function OperationsView({
           >
             <StrategyBoard w={w} client={client} />
           </Suspense>
-        ) : tab === 'finance' ? (
+        ) : id === 'finance' ? (
           <>
             <FinanceOutlook w={w} />
             <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
@@ -81,9 +118,9 @@ export function OperationsView({
             )}
           </>
         ) : (
-          <BusinessWorkbench state={state} client={client} part={tab} legacy={legacy} />
+          <BusinessWorkbench state={state} client={client} part={id} legacy={legacy} />
         )}
-      </TabPanel>
+      </div>
     </>
   );
 }

@@ -267,9 +267,25 @@
   gap: 8px;
   padding: 10px;
 }
-.group > h2 {
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.groupHead > h2 {
   font-size: 14px;
   margin: 0;
+}
+.groupHead .groupOffice {
+  flex: none;
+  min-height: 44px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 .group .card {
   position: static;

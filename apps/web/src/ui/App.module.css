@@ -1929,6 +1929,45 @@
 .recordsNav .seasonTabs {
   margin-bottom: 0;
 }
+/* A season of ours is a sub-screen: its navigator bar takes the tabs' place (→WEB-54). */
+.recordNavigator {
+  position: sticky;
+  top: -2px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  margin: 0 calc(var(--gutter) * -1) 8px;
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-grain, none) var(--hud);
+}
+.recordNavigator > h3 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.navigatorBack.navigatorBack {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  width: auto;
+  min-height: 44px;
+  padding: 0 8px 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--accent-text);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
 /* A records view's own choices sit together above it: season arrows, filters and segments. */
 .recordControls {
   display: grid;
@@ -2185,12 +2224,20 @@
 .startLayout .footer {
   margin-top: auto;
 }
+/* The owner office takes the whole screen: no sidebar, HUD or tab bar (→WEB-39). */
+.officeLayout {
+  grid-template-columns: minmax(0, 1fr);
+}
+.officeLayout .scroller {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
 @media (max-width: 760px) {
   .main {
     height: calc(100dvh - var(--mobile-nav-clearance));
     padding: 0 var(--gutter);
   }
-  .startLayout .main {
+  .startLayout .main,
+  .officeLayout .main {
     height: 100dvh;
   }
   /* Breathing room before the fixed mobile navigation. */

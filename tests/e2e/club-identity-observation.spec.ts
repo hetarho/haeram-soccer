@@ -17,6 +17,7 @@ import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { savedWorld, watchToWhistle } from './club-identity-helpers';
 import { openWatchAction } from './watch';
+import { leaveOffice, openOfficeArea } from './office';
 
 /**
  * KIT-8/12, WEB-49/50, SAVE-22: the live pitch Canvas draws the shirts and keeper colours the match
@@ -259,14 +260,10 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   await page.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   expect(await markers(page, STRIPES)).toBeGreaterThanOrEqual(3);
-  // The owner recolours the home shirt in 구단 운영 › 구단 디자인 and applies it (→KIT-9).
+  // The owner recolours the home shirt in 구단주 사무실 › 구단 디자인 and applies it (→KIT-9).
   const edited = '#ff6d00';
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
-    .click();
-  await page.getByRole('tab', { name: '구단 디자인', exact: true }).click();
-  // The editor loads lazily with the tab (T251).
+  await openOfficeArea(page, '구단 디자인');
+  // The editor loads lazily with the area (T251).
   const design = page.getByRole('region', { name: '구단 디자인', exact: true });
   await expect(design.getByRole('group', { name: '색상', exact: true })).toBeVisible();
   await design
@@ -285,6 +282,7 @@ test('a design applied while the match is paused mid-match leaves its recorded s
     .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
     .toBe(edited);
   // The unfinished match report resumes the same playback and its recorded kit (→WEB-50/83).
+  await leaveOffice(page);
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: '클럽 홈', exact: true })

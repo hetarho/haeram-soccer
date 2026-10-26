@@ -16,10 +16,11 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
-- 261027 decided T482 MATCH-23 MATCH-16: explore exit with goals by line outside (FW 81 / MF 12 / DF 7%) → kept the revision-4 source that holds FW ≥ MF ≥ DF and 25/37 rows, recorded the next lever (midfield positions and support around the box) instead of retuning line weights (alt: keep tuning past the timebox | suggest an update-ssot on MATCH-23's band, not warranted while a football lever remains)
-- 261027 suggest T482 ideation/calibration-pass: forwards take 10 of 12.5 shots a team and 141 → 107 decisions in front of the box against midfielders' ~23; a midfield-positioning pass (where midfielders are when the ball reaches the final third) is the lever for goals by line, set-piece and headed shares
-- 261027 parked -: `vibe loop` refuses this checkout while older work groups (refactor-261019, identity, full-model, presentation-261021, history-activation, v9n4-release and others) are listed as active; the owner decides whether to close or clean them
-- 261027 decided T477 T478 T479 T480 T481 T482: how to run the implementation once `vibe loop` refused → the autopilot session implements the tasks itself, one at a time, with the batch gate before the single main push (alt: `work run`, which needs the old work spaces cleaned first)
+- 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
+- 261027 decided WEB-10: the tab bar once 구단 leaves it → six tabs 리그·컵·기록 | 홈 | 선수단·훈련, left side unchanged and home kept raised though no longer centred (alt: move 기록 right of home | merge 리그 and 컵 to keep home centred)
+- 261027 decided WEB-98 WEB-39: the clock in a focused office that hides the stop control → entering stops automatic play, leaving restarts it only if entering stopped it (alt: keep running with every change locked | stop and stay stopped)
+- 261027 decided WEB-11 WEB-18 WEB-44: where round, rank, record and strength go → season card on home with round·rank·record over the progress rule (home's information row keeps league and date), strength as the first team-state tile ranked within our division (alt: put rank and record into the information row | keep the round in both places)
+- 261027 decided WEB-54: how "full screen" the season review gets → records tabs give way to a top navigator bar with back and the season's name; HUD, information row and tab bar stay (alt: hide all chrome like the office)
 - 261027 decided T479 T480 T481 T482 SAVE-23: how to ship engine football changes after activation → as match-model revision 4, every change gated by `modelAtLeast(s.setup, 4)` so revisions 1–3 keep their football and a queued playback replays as settled (alt: change revision 3 in place | presentation-only now, engine later)
 - 261027 decided T477 T478 MATCH-12 WEB-32: how the clock learns a stoppage’s rush and beat → frames carry explicit `stoppages` {kind, dead, settled, kick} from the engine’s dead-time samples (alt: the web infers settling from motion samples, fragile at minute ends)
 - 261027 decided T481 MATCH-16 PLAYER-5: playmaker roles looking more for the pass → a revision-4 shot factor 0.85 for regista, deep-lying playmaker, trequartista and wide playmaker inside decide.ts, starting line weights DF 0.5 / MF 0.8 / FW 1 (alt: edit `ROLE_ACTION`, which would change revisions 1–3 and the aggregate path)
@@ -302,6 +303,10 @@
 - 261026 decided ideation/save-storage-and-fast-pace WEB-18: what the indicator shows → a looping animation with 경기 진행 중… on own fixture days, else 진행 중…, no score or results (alt: the own score or other results as they settle) — results settle at the end of the step, so streaming them needs engine changes
 - 261026 decided ideation/save-storage-and-fast-pace: which result-identical x10 performance steps come with the indicator, and does x10 promise 10 days a second? → the indicator ships alone; (a) parallel aggregate workers and (c) detailed-engine repeated-work cuts wait for the owner's x10 read with the indicator, (b) run-ahead buffer dropped; x10 stays nominal one day per 0.1 s with no throughput promise; the season-archive split stays out of this work (alt: plan (a)+(c) now as MATCH/ARCH tasks | promise 10 days a second) — the owner said a halt with a visible reason does not bother him, and (a)/(c) carry worker-topology and result-identity risk; ideation converted
 - 261026 suggest ideation/save-storage-and-fast-pace: after T465, try x10 for a season; if the indicator still feels long, plan (c) the detailed engine's repeated-work cuts then (a) parallel aggregate workers, both result-identical
+- 261027 decided T482 MATCH-23 MATCH-16: explore exit with goals by line outside (FW 81 / MF 12 / DF 7%) → kept the revision-4 source that holds FW ≥ MF ≥ DF and 25/37 rows, recorded the next lever (midfield positions and support around the box) instead of retuning line weights (alt: keep tuning past the timebox | suggest an update-ssot on MATCH-23's band, not warranted while a football lever remains)
+- 261027 suggest T482 ideation/calibration-pass: forwards take 10 of 12.5 shots a team and 141 → 107 decisions in front of the box against midfielders' ~23; a midfield-positioning pass (where midfielders are when the ball reaches the final third) is the lever for goals by line, set-piece and headed shares
+- 261027 parked -: `vibe loop` refuses this checkout while older work groups (refactor-261019, identity, full-model, presentation-261021, history-activation, v9n4-release and others) are listed as active; the owner decides whether to close or clean them
+- 261027 decided T477 T478 T479 T480 T481 T482: how to run the implementation once `vibe loop` refused → the autopilot session implements the tasks itself, one at a time, with the batch gate before the single main push (alt: `work run`, which needs the old work spaces cleaned first)
 
 ## ideation
 | id | st |
@@ -326,7 +331,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 157 | 157 | - | 0 |
+| WEB | 158 | 158 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -365,18 +370,20 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
+- o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
+- k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
 
 ## log
-- 261027 k2d7 batch gate passed on 92c81b24 (clean worktree): typecheck/lint/format, unit 1145, integration 1158 + 4 skips, contract 39, catalogs, presentation, build, Chromium 299; the first run failed one goal-cue journey whose fixture lost a goal under revision 4 (fixed in 92c81b24)
-- 261027 T482 done: revision 4 recalibrated (shot quality, pass gain 0.3, scale 0.28, deliveries 0.7, fouls ×1.5): 600 matches 25/37 rows, goals 2.86, shots 11.3, unmarked striker takes goal-area chances 61–65%; goals by line still FW 81% (follow-up suggested)
-- 261027 T481 done: revision 4 shot weights FW 1 / MF 0.8 / DF 0.5 at 0.25, playmakers ×0.85; 600 matches shots 13.6, goals 3.13, FW goals 81.5% (T482 to recalibrate)
-- 261027 T480 done: revision 4 corners keep 2–3 back near halfway and 1–2 up, drawn and set by the late score, keeper up in added time one behind; attackers within 25 m 9+ in 36% → 2% of corners
-- 261027 T479 done: match-model revision 4; a free kick played as a pass goes to the nearest suitable player (own third: forwards 59% → 0%, walk 34 → 4 m); digests re-recorded, revision 3 kept as REVISION_3
-- 261027 T478 done: every stoppage drawn as a rush (≥ 2× running, ≤ 1.5 s at 1x) and a still beat per kind scaled with speed, captions for cards, injuries and substitutions; e2e specs updated for the batch
-- 261027 T477 done: observed restarts trace the walk-in and frames list stoppages; drawn dead-time speed 3.3–4.5 m per match second (was 0.10–0.78), facts unchanged, positions digests re-recorded
+- 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
+- 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
+- 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
+- 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
+- 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
+- 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
+- 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
+- 261027 update-ssot WEB start (autopilot o7h4)
 - 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved
 - 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks
 - 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
@@ -387,6 +394,5 @@
 - 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
 - 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
 - 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
-- 261026 T469 pushed to main 35f48eef: the batch caught the moment span breaking the themes' NEXT MATCH first-child rule at 1280 (fixed in 35f48eef), then passed on the whole tree; main CI 40319410126 green. Two concurrent batches had timed out integration tests (long-career; calendar ENG/ESP) under host load; they pass on a quiet host
-- 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
-- 261026 T473 T475 integrated
+- 261027 k2d7 batch gate passed on 92c81b24 (clean worktree): typecheck/lint/format, unit 1145, integration 1158 + 4 skips, contract 39, catalogs, presentation, build, Chromium 299; the first run failed one goal-cue journey whose fixture lost a goal under revision 4 (fixed in 92c81b24)
+- 261027 T482 done: revision 4 recalibrated (shot quality, pass gain 0.3, scale 0.28, deliveries 0.7, fouls ×1.5): 600 matches 25/37 rows, goals 2.86, shots 11.3, unmarked striker takes goal-area chances 61–65%; goals by line still FW 81% (follow-up suggested)

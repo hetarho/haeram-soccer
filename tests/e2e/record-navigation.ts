@@ -1,7 +1,19 @@
 import { expect, type Page } from '@playwright/test';
 
+/**
+ * The records tabs, stepping back out of a season sub-screen a return restored (→WEB-54/74):
+ * its navigator bar stands where the tabs were.
+ */
+export async function showRecordTabs(page: Page) {
+  const tabs = page.getByRole('tablist', { name: '기록실 보기' });
+  const navigator = page.getByRole('navigation', { name: '시즌 기록 이동', exact: true });
+  await expect(tabs.or(navigator)).toBeVisible();
+  if (await navigator.isVisible()) await navigator.getByRole('button').click();
+  await expect(tabs).toBeVisible();
+}
 /** Enter the current club season through the user-facing season list. */
 export async function openCurrentClubSeason(page: Page) {
+  await showRecordTabs(page);
   await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
   await page.getByRole('table', { name: '시즌별 기록' }).getByRole('button').first().click();
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
@@ -14,6 +26,7 @@ export async function openSeasonReview(page: Page) {
 /** The records room's 감독 이력 list (→WEB-92), once its first page is shown. */
 export async function openManagerHistory(page: Page) {
   await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await showRecordTabs(page);
   await page.getByRole('tab', { name: '감독 이력', exact: true }).click();
   const list = managerHistoryList(page);
   await expect(list.getByRole('article').first()).toBeVisible();

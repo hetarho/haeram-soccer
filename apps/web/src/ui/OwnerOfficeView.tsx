@@ -21,6 +21,7 @@ import {
   type OfficeChange,
   type OfficeProposal,
 } from './officeChanges';
+import { delegationCounts } from './officeSummary';
 import s from './OwnerOffice.module.css';
 const DETAILS: Record<ResponsibilityKey, string> = {
   manager: '감독 선임·재계약',
@@ -149,10 +150,7 @@ export function OwnerOffice({
       ? proposal.change.responsibilities?.[keys[0]] === 'delegated'
       : observations.length > 0 && proposal.change.observations?.[observations[0][0]] === false);
   const title = delegated ? '위임하겠습니다.' : '보고받겠습니다.';
-  const delegatedCount =
-    RESPONSIBILITY_KEYS.filter((key) => settings.responsibilities[key] === 'delegated').length +
-    OBSERVATIONS.filter(([key]) => !settings.observations[key]).length;
-  const totalCount = RESPONSIBILITY_KEYS.length + OBSERVATIONS.length;
+  const { delegated: delegatedCount, total: totalCount } = delegationCounts(w);
   return (
     <div className={s.office} data-testid="owner-office">
       <div

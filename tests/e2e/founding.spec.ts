@@ -7,6 +7,7 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { createWorld, operatingCost } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { settle, viewGeometry } from './layout';
+import { enterOffice, openOfficeArea } from './office';
 
 async function completeFoundingGeometry(page: Page) {
   const view = await viewGeometry(page);
@@ -263,10 +264,12 @@ test('founds with a preset as its direction', async ({ page }) => {
   expect(w.build).toEqual({ youth: 'elite', culture: 'meritocracy' });
   expect(w.policy).toMatchObject({ academy: 4, recruitment: 1 });
   expect(w.direction).toMatchObject({ debut: 'early', coaches: 'elite' });
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영', exact: true })
-    .click();
+  // The office lobby names the applied direction on its 운영 방침 card (→WEB-39).
+  await enterOffice(page);
+  await expect(page.getByTestId('office-lobby').locator('#office-fact-strategy')).toHaveText(
+    '유스 명가',
+  );
+  await openOfficeArea(page, '운영 방침');
   await expect(page.getByTestId('current-strategy')).toHaveText('유스 명가');
 });
 

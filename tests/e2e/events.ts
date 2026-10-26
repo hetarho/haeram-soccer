@@ -1,5 +1,6 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
+import { inOffice, LOBBY, officeLobby, officeTitle, openOfficeArea, outsideOffice } from './office';
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -31,30 +32,18 @@ export async function openOffice(page: Page) {
     new URL(page.url()).pathname === '/direction' &&
     (await page.getByTestId('owner-office').isVisible());
   if (!open) {
-    const office = page
-      .getByRole('navigation')
-      .getByRole('button', { name: '구단 운영', exact: true });
+    // The office has no menu entry: it opens from home's entrance, then its 결재 라인 card (→WEB-39).
     for (let attempt = 0; ; attempt++) {
       try {
-        await office.click({ timeout: 2000 });
+        await openOfficeArea(page, '결재 라인', { timeout: 2000 });
         break;
       } catch (error) {
         if (attempt >= 3) throw error;
-        // A running clock can reach a match eve after the dismissal above, and the eve's backdrop
-        // takes the click (CI Firefox 40243569140, season-flow on the released model).
-        await dismissMatchReport(page);
-      }
-    }
-    const tab = page.getByRole('tab', { name: '구단주 사무실', exact: true });
-    for (let attempt = 0; ; attempt++) {
-      try {
-        await tab.click({ timeout: 2000 });
-        break;
-      } catch (error) {
-        if (attempt >= 3) throw error;
-        // A decision's outcome toast can cover the tab until it hides: CI 39952590526 waited
-        // 7.5 s there and ran recovery out of time. An event card may cover the toast's own
+        // A running clock can reach a match eve before the office stops it, and the eve's
+        // backdrop takes the click (CI Firefox 40243569140). A decision's outcome toast can cover
+        // a card until it hides (CI 39952590526), and an event card may cover the toast's own
         // close button in turn, so that click is bounded too.
+        await dismissMatchReport(page);
         await page
           .getByTestId('action-outcome')
           .getByRole('button', { name: /^(확인|알림 닫기)$/ })
@@ -68,8 +57,12 @@ export async function openOffice(page: Page) {
 }
 export async function dismissSettingsToast(page: Page) {
   const toast = page.getByTestId('action-outcome');
-  if (await toast.isVisible())
-    await toast.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+  if (!(await toast.isVisible())) return;
+  // Home's open event group can sit over the toast; it then clears itself after a few seconds.
+  await toast
+    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
+    .click({ timeout: 3000 })
+    .catch(() => expect(toast).toHaveCount(0, { timeout: 10000 }));
 }
 async function confirmAuthority(page: Page, label: string, value: 'direct' | 'delegated') {
   const choice = page
@@ -104,13 +97,13 @@ export async function configureResponsibilities(
     .getByRole('navigation')
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
-  const returnLabel = (await nav.count())
-    ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
-    : undefined;
-  const businessTab =
-    returnLabel === '구단 운영'
-      ? await page.getByRole('tab', { selected: true }).first().innerText()
+  // Inside the office there is no menu: return to the office area that was open instead.
+  const wasInOffice = await inOffice(page);
+  const returnLabel =
+    !wasInOffice && (await nav.count())
+      ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
+  const officeArea = wasInOffice ? (await officeTitle(page).innerText()).trim() : undefined;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -124,8 +117,9 @@ export async function configureResponsibilities(
       if (attempt >= 3) throw error;
     }
   }
-  const office = await openOffice(page);
   const entries = Object.entries(options.responsibilities ?? {});
+  // The office opens only for changes to make there; a mode change alone stays outside it.
+  const office = entries.length ? await openOffice(page) : undefined;
   // The bulk control is safe when all nine fields are explicitly requested. Otherwise preserve
   // unspecified report choices by changing only individual business responsibilities.
   const bulkValue =
@@ -135,7 +129,7 @@ export async function configureResponsibilities(
     options.observations?.windowOpen !== undefined
       ? entries[0][1]
       : undefined;
-  if (bulkValue) {
+  if (bulkValue && office) {
     const choice = office.getByRole('button', {
       name: bulkValue === 'delegated' ? '전체 위임' : '전체 보고받기',
       exact: true,
@@ -159,6 +153,8 @@ export async function configureResponsibilities(
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
   }
+  // The mode switch lives in the bottom controls, which the office hides (→WEB-39/96).
+  if (options.mode) await outsideOffice(page);
   if (options.mode) {
     const mode = page.getByTestId('progression-mode');
     const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
@@ -181,8 +177,10 @@ export async function configureResponsibilities(
     }
   }
   // Explicit report choices are applied after the mode-entry default.
-  for (const [key, value] of Object.entries(options.observations ?? {})) {
-    const choice = office
+  const observations = Object.entries(options.observations ?? {});
+  const reports = observations.length ? await openOffice(page) : office;
+  for (const [key, value] of observations) {
+    const choice = reports!
       .getByRole('group', {
         name: key === 'matchEve' ? '경기 전날 보고' : '이적시장 개장 보고',
         exact: true,
@@ -195,12 +193,16 @@ export async function configureResponsibilities(
       await dismissSettingsToast(page);
     }
   }
-  if (businessTab) await page.getByRole('tab', { name: businessTab, exact: true }).click();
-  else if (returnLabel)
-    await page
-      .getByRole('navigation')
-      .getByRole('button', { name: returnLabel, exact: true })
-      .click();
+  if (officeArea === LOBBY) await officeLobby(page);
+  else if (officeArea) await openOfficeArea(page, officeArea);
+  else {
+    await outsideOffice(page);
+    if (returnLabel)
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: returnLabel, exact: true })
+        .click();
+  }
 }
 export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
   const responsibilities: Partial<Record<ResponsibilityKey, 'direct' | 'delegated'>> = {};

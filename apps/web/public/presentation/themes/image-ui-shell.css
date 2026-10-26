@@ -213,6 +213,20 @@ html[data-theme] {
     background-repeat: no-repeat;
   }
 
+  /* The office bar wears the HUD's rule over the canvas, opaque above scrolling content. */
+  [data-ui='office-bar'] {
+    border: 0;
+    background:
+      var(--image-art-rule-dark) center bottom / calc(100% - 24px) 3px no-repeat,
+      var(--image-canvas-material) 0 0 / var(--image-material-size, 512px) repeat
+        var(--image-canvas);
+  }
+
+  [data-ui='office-bar'] h2 {
+    color: var(--image-ink-color);
+    font-weight: 800;
+  }
+
   [data-ui='game-shell'] > main > header > button:first-child {
     border: 0;
     width: 44px;
@@ -289,7 +303,7 @@ html[data-theme] {
 
   [data-ui='season-overview'] {
     min-height: 48px;
-    margin: 0;
+    margin: 10px 0 0;
     padding: 0 2px 4px;
     gap: 12px;
   }
@@ -338,6 +352,40 @@ html[data-theme] {
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     gap: 18px;
+  }
+
+  /* The office lobby's desks wear the team-state tile frame: pressable game tiles (→WEB-39). */
+  [data-office-area] {
+    border: 9px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+  }
+
+  [data-office-area] small {
+    color: var(--image-muted);
+  }
+
+  /* Home's door to the owner office wears the selected tile frame so it reads as an action. */
+  [data-home-part='office'] {
+    min-height: 84px;
+    padding: 6px 12px 6px 6px;
+    border: 8px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+  }
+
+  [data-home-part='office'] small {
+    color: var(--image-muted);
+  }
+
+  [data-home-part='office'] > span:last-child {
+    color: var(--image-ink-color);
   }
 
   [data-home-part='fixture'] > div:first-child > small {
@@ -415,11 +463,22 @@ html[data-theme] {
     background-size: 220px;
   }
 
-  [data-home-part='stage'] {
+  [data-home-part='stage'],
+  [data-home-part='season-card'] {
     isolation: isolate;
   }
 
-  [data-home-part='stage']::after {
+  [data-home-part='season-card'] {
+    border: 0;
+    background: none;
+  }
+
+  [data-home-part='season-card'] > [data-home-part='season-meter'] {
+    padding: 6px 14px 12px;
+  }
+
+  [data-home-part='stage']::after,
+  [data-home-part='season-card']::after {
     content: '';
     position: absolute;
     z-index: 3;
@@ -485,7 +544,7 @@ html[data-theme] {
   }
 
   [data-home-part='season-stats'] {
-    margin: 0 6px 6px;
+    margin: 6px 6px 0;
     gap: 0;
     border: 0;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
@@ -498,6 +557,10 @@ html[data-theme] {
     gap: 2px;
     border: 0;
     background: none;
+  }
+
+  [data-home-part='season-stats'] > div:last-of-type {
+    padding-right: 30px;
   }
 
   [data-home-part='season-stats'] > div + div {
@@ -590,6 +653,10 @@ html[data-theme] {
   }
   [data-condition='squad'] {
     --image-icon: var(--image-art-icon-shirt);
+  }
+  [data-condition='strength'] {
+    --image-icon: var(--image-art-icon-training);
+    grid-column: 1 / -1;
   }
 
   [data-condition] > button > span,
@@ -737,6 +804,16 @@ html[data-theme] {
     visibility: hidden;
   }
 
+  /* Wide home reads all five conditions in one row (→WEB-11/44). */
+  @media (min-width: 1100px) {
+    [data-home-part='conditions'] {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    [data-condition='strength'] {
+      grid-column: auto;
+    }
+  }
+
   @media (min-width: 761px) and (max-width: 1190px) {
     [data-ui='game-shell']:has(> [data-ui='sidebar']) {
       grid-template-columns: 220px minmax(0, 1fr);
@@ -845,6 +922,7 @@ html[data-theme] {
     }
     [data-ui='season-overview'] {
       min-height: 44px;
+      margin-top: 10px;
       padding-bottom: 2px;
       gap: 8px;
     }
@@ -919,7 +997,8 @@ html[data-theme] {
     [data-home-part='season-meter'] progress {
       height: 10px;
     }
-    [data-home-part='stage']::after {
+    [data-home-part='stage']::after,
+    [data-home-part='season-card']::after {
       border-image-width: 8px;
     }
     [data-home-part='scene'] {
@@ -1050,6 +1129,16 @@ html[data-theme] {
       width: 23px;
       height: 23px;
       color: inherit;
+    }
+  }
+
+  /* Short phones keep the gap below the HUD and still show seven standings rows (→WEB-10). */
+  @media (max-width: 760px) and (max-height: 760px) {
+    [data-ui='season-overview'] {
+      margin-top: 4px;
+    }
+    [data-testid='view-scroller'] {
+      padding-top: 2px;
     }
   }
 

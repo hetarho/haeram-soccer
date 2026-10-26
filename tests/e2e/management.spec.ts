@@ -6,6 +6,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { horizontalOverflow } from './layout';
 import { openSaveMenu } from './save-menu';
+import { leaveOffice, openOfficeArea } from './office';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
   // Simulates a full season with staff, academy and market days; slow CI browsers need longer.
   test.slow();
@@ -32,15 +33,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
   await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
-  await page.getByRole('button', { name: '구단 운영', exact: true }).click();
-  await page.getByRole('tab', { name: '후원', exact: true }).click();
+  await openOfficeArea(page, '후원');
   // A 1950 club has only the local slot open; signing it replaces the offers with the contract.
   const localSponsor = page.getByTestId('sponsor-slot-local');
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
   // Campaigns are no more: the owner spends on the town or abroad through the board's rows.
-  await page.getByRole('tab', { name: '운영 방침', exact: true }).click();
+  await openOfficeArea(page, '운영 방침');
   const global = page.getByRole('region', { name: '글로벌', exact: true });
   await global.locator('button[aria-controls^="board-area-body-"]').click();
   await global.getByRole('radio', { name: '해외 마케팅 해외 홍보', exact: true }).click();
@@ -49,6 +49,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
   // The market is a tab of 사람.
+  await leaveOffice(page);
   await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await peopleTab('이적시장').click();
   await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');

@@ -170,23 +170,52 @@ export function RecordsRoom({ state, client }: Props) {
     if (next === 'seasons') setYear(undefined);
     recordScroll(0);
   };
+  const returnToList = () => {
+    leaveManagerSeason(w.id);
+    setYear(undefined);
+    history.pushState(null, '', '/history');
+    recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
+  };
+  // A season is a sub-screen of the records: a navigator bar replaces the tabs (→WEB-54).
+  const seasonOpen = tab === 'seasons' && year !== undefined;
+  const backLabel = managers.opened
+    ? `← 감독 이력${openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}`
+    : '← 시즌별 기록';
   return (
     <>
       <h2 className={s.srOnly}>클럽 기록실</h2>
-      <div className={s.recordsNav} data-ui="toolbar">
-        <TabList
-          tabs={RECORD_TABS}
-          value={tab}
-          onChange={selectTab}
-          label="기록실 보기"
-          idPrefix="records"
-        />
-      </div>
+      {seasonOpen ? (
+        <nav className={s.recordNavigator} aria-label="시즌 기록 이동" data-ui="record-navigator">
+          <button
+            data-ui="link"
+            className={s.navigatorBack}
+            type="button"
+            aria-label={backLabel}
+            onClick={managers.opened ? returnToManagers : returnToList}
+          >
+            <PixelIcon name="chevronLeft" size={16} />
+            {managers.opened ? '감독 이력' : '시즌별 기록'}
+          </button>
+          <h3>
+            {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
+          </h3>
+        </nav>
+      ) : (
+        <div className={s.recordsNav} data-ui="toolbar">
+          <TabList
+            tabs={RECORD_TABS}
+            value={tab}
+            onChange={selectTab}
+            label="기록실 보기"
+            idPrefix="records"
+          />
+        </div>
+      )}
       <div
-        id="records-panel"
         className={s.recordStack}
-        role="tabpanel"
-        aria-labelledby={`records-tab-${tab}`}
+        {...(seasonOpen
+          ? { role: 'region', 'aria-label': '구단 시즌 기록' }
+          : { id: 'records-panel', role: 'tabpanel', 'aria-labelledby': `records-tab-${tab}` })}
       >
         {tab === 'seasons' ? (
           year === undefined ? (
@@ -195,31 +224,6 @@ export function RecordsRoom({ state, client }: Props) {
             <>
               <div className={s.recordControls}>
                 <div className={s.recordLinks}>
-                  {managers.opened && (
-                    <button
-                      data-ui="link"
-                      className={s.textButton}
-                      type="button"
-                      onClick={returnToManagers}
-                    >
-                      ← 감독 이력으로
-                      {openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}
-                    </button>
-                  )}
-                  <button
-                    data-ui="link"
-                    className={s.textButton}
-                    type="button"
-                    aria-label="← 시즌 목록으로"
-                    onClick={() => {
-                      leaveManagerSeason(w.id);
-                      setYear(undefined);
-                      history.pushState(null, '', '/history');
-                      recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
-                    }}
-                  >
-                    ← 시즌 목록
-                  </button>
                   <button
                     data-ui="link"
                     className={s.textButton}
@@ -239,9 +243,6 @@ export function RecordsRoom({ state, client }: Props) {
                     컵 대회 기록
                   </button>
                 </div>
-                <h3>
-                  {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
-                </h3>
               </div>
               <SeasonRecords
                 key={year}

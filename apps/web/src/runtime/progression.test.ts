@@ -116,6 +116,36 @@ describe('the global progression clock', () => {
     expect(controller.store.getState().running).toBe(false);
   });
 
+  it('stops for the owner office and resumes on leaving only the clock it stopped (→WEB-98)', () => {
+    const s = setup();
+    controller = s.controller;
+    controller.start();
+    controller.enterOffice();
+    expect(controller.store.getState().running).toBe(false);
+    // Stopping saves the automatic progress as any stop does.
+    expect(s.saveSoon).toHaveBeenCalled();
+    controller.leaveOffice();
+    expect(controller.store.getState().running).toBe(true);
+    // A second leave without an entry starts nothing.
+    controller.pause();
+    controller.leaveOffice();
+    expect(controller.store.getState().running).toBe(false);
+    // A clock already stopped stays stopped across a visit.
+    controller.enterOffice();
+    controller.leaveOffice();
+    expect(controller.store.getState().running).toBe(false);
+  });
+  it('leaves a manual clock alone in the owner office', () => {
+    const world = structuredClone(w);
+    world.settings!.mode = 'manual';
+    const s = setup(undefined, world);
+    controller = s.controller;
+    controller.enterOffice();
+    controller.leaveOffice();
+    expect(controller.store.getState().running).toBe(false);
+    expect(s.command).not.toHaveBeenCalled();
+  });
+
   it('cancels an in-flight auto request on stop and never leaves a running timer after disposal', async () => {
     const s = setup();
     controller = s.controller;

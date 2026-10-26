@@ -16,6 +16,7 @@ import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
+import { leaveOffice } from './office';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -392,8 +393,8 @@ test('the market ends with who answers offers and names the recruitment level, o
   await marketInfo(page);
   await expect(owner).toContainText('위임');
 
-  // The local ownership link opens the shared explicit-apply screen.
-  await owner.getByRole('button', { name: /구단주 사무실 열기$/ }).click();
+  // The local ownership link opens the office's shared explicit-apply screen, 결재 라인.
+  await owner.getByRole('button', { name: /결재 라인 열기$/ }).click();
   const office = page.getByTestId('owner-office');
   for (const name of ['선수 매각', '선수 영입'])
     await expect(
@@ -401,10 +402,9 @@ test('the market ends with who answers offers and names the recruitment level, o
         .getByRole('group', { name, exact: true })
         .getByRole('button', { name: '위임', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
-  await page
-    .getByRole('navigation')
-    .getByRole('button', { name: '선수단·스태프', exact: true })
-    .click();
+  // 나가기 returns to the market the link left (→WEB-39/74).
+  await leaveOffice(page);
+  await expect(page).toHaveURL(/\/people\?view=market$/);
   await marketInfo(page);
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).

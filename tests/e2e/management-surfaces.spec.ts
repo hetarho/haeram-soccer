@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
 import { textContrast } from './contrast';
+import { leaveOffice, openOfficeArea } from './office';
 
 async function navigate(page: Page, name: string) {
   await page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
@@ -82,14 +83,10 @@ for (const themeId of ['standard', 'pixel']) {
       .getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true })
       .getByRole('button', { name: '수동 모드로 변경', exact: true })
       .click();
-    await navigate(page, '구단 운영');
-    await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
+    await openOfficeArea(page, '결재 라인');
     const office = page.getByTestId('owner-office');
-    await expect(
-      page
-        .getByRole('region', { name: '시즌 진행', exact: true })
-        .getByRole('button', { name: '진행 방식 변경', exact: true }),
-    ).toBeVisible();
+    // The focused office has neither the bottom controls nor a mode control of its own (→WEB-39/96).
+    await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
     await expect(office.getByRole('group', { name: '진행 모드', exact: true })).toHaveCount(0);
 
     for (const width of [360, 390, 760, 1380]) {
@@ -117,6 +114,7 @@ for (const themeId of ['standard', 'pixel']) {
       ).toBe(true);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
+      await leaveOffice(page);
       await navigate(page, '클럽 홈');
       await expectHomeBounds(page);
       const fixture = page.getByRole('region', { name: '다음 경기', exact: true });
@@ -214,8 +212,7 @@ for (const themeId of ['standard', 'pixel']) {
       await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
       await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-      await navigate(page, '구단 운영');
-      await page.getByRole('tab', { name: '구단주 사무실', exact: true }).click();
+      await openOfficeArea(page, '결재 라인');
     }
   });
 }

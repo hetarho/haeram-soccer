@@ -270,11 +270,11 @@ test('a new game goes into another slot, both careers survive switching and back
   await page.reload();
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
-  await page.getByRole('button', { name: '구단 운영', exact: true }).click();
-  await expect(page).toHaveURL(/\/direction$/);
+  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await expect(page).toHaveURL(/\/leagues/);
   // The URL updates before the deferred page commits. Wait for the intended departure page
   // before scrolling to its footer, which moves when that page replaces the previous one.
-  await expect(page.getByRole('tablist', { name: '구단 운영 보기', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: '순위표', exact: true })).toBeVisible();
   await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 2' })).toContainText('진행 중');
   await slotScreen

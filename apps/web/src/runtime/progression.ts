@@ -170,6 +170,8 @@ export class ProgressionController {
   private passedMatch?: string;
   /** Watching stopped a running clock (or answered a match eve); leaving the match resumes it. */
   private resumeAfterWatch = false;
+  /** Entering the owner office stopped a running clock; leaving the office resumes it (→WEB-98). */
+  private resumeAfterOffice = false;
   /** An event stopped a running clock; deciding the last one waiting plays on (→WEB-42). */
   private resumeAfterEvents = false;
   private timer: ReturnType<typeof setInterval>;
@@ -229,6 +231,7 @@ export class ProgressionController {
         this.hiddenAt = undefined;
         this.resumeAfterWatch = false;
         this.resumeAfterEvents = false;
+        this.resumeAfterOffice = false;
         this.passedMatch = undefined;
         this.store.setState({ matchEve: undefined, away: undefined });
         this.writeClock(true);
@@ -237,6 +240,7 @@ export class ProgressionController {
         // The world leaving play records its clock stopped: parked games never progress.
         this.stop('');
         this.worldId = id;
+        this.resumeAfterOffice = false;
         this.seenMark = undefined;
         this.store.setState({ away: undefined });
         // A clock this world left running resumes once the game is on screen (→WEB-64).
@@ -500,6 +504,21 @@ export class ProgressionController {
     } finally {
       this.inFlight = false;
     }
+  }
+  /**
+   * The owner sat down in the office: a running automatic clock stops as the owner's own stop,
+   * since office work is locked while the calendar runs (→WEB-97/98).
+   */
+  enterOffice() {
+    if (this.mode !== 'automatic' || !this.store.getState().running) return;
+    this.pause();
+    this.resumeAfterOffice = true;
+  }
+  /** Leaving the office starts the clock again only when entering stopped it. */
+  leaveOffice() {
+    if (!this.resumeAfterOffice) return;
+    this.resumeAfterOffice = false;
+    this.start();
   }
   /** The owner's own stop: nothing resumes it until the owner starts it again. */
   pause() {

@@ -25,6 +25,14 @@ export type LeaderBoard = (typeof LEADER_BOARDS)[number];
 const onBoard = (board: LeaderBoard, p: Player) =>
   p.career[board.index] > 0 && (!('position' in board) || p.position === board.position);
 
+/** 선수 통산 shows ten at a time, up to a hundred players on a board (→WEB-54). */
+export const LEADER_PAGE = 10;
+export const LEADER_LIMIT = 100;
+/** How many rows 더 보기 shows next: ten more, never past the board's end or the limit. */
+export function nextLeaderCount(shown: number, total: number) {
+  return Math.min(shown + LEADER_PAGE, total, LEADER_LIMIT);
+}
+
 /** A board's top `limit`; equal records list the lower player ID first, as in the record book. */
 export function clubLeaders(players: readonly Player[], board: LeaderBoard, limit = 10) {
   return players
