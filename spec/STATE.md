@@ -333,6 +333,7 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433 and T434 done, T410 next
 
 ## log
+- 261026 fix playback test: T433 settles candidate-et-0 in 90 minutes; use candidate-et-1 (2–2 at 90) to retain the four-period last-action assertions. The concurrent 10-season checkpoint timeout passes unchanged in an isolated retry.
 - 261026 T434 done (q7m3): own-club edge probe on the released model, 1960 쉬움 10-season career, 30 fixtures × 10 seeds, indicative: detailed 1.09 / aggregate 1.99 / neutral 1.46 / 2.44 points a match (261023: 2.51 / 1.70 / 2.06 / 1.35); engine gap reversed (~−0.9), context ~0.4; ideation recommends C
 - 261026 doc-review ARCH KIT MATCH PLAYER SAVE WEB tidied (rev unchanged); docs→artifacts, 17 obsolete prose documents and 2 one-off editing utilities removed; retained evidence unchanged, consumers migrated; code discrepancies in next. Checks: typecheck/lint/format and 65 focused tests passed; full spec lint fails on concurrently completed T433 still in tasks/ rather than tasks/done/ (no SSOT structural errors).
 - 261026 T433 done (q7m3): revision 2's 규율 (drift and disorder ×1 ± 0.5), 압박 성향 (press reach and choice ×1 ± 0.3) and 예측력 (reads a kicked ball in 위치선정's place, ± 0.3 s) kept at the starting scales; 20 observed fixtures, indicative: goals 2.95 → 2.70, xG 2.74 → 2.50 a match, every record valid; revision 2 digests re-recorded, revision 1 and pre-feature unchanged; committed beside a concurrent doc-review session's docs → artifacts edits, which stay unstaged
@@ -352,4 +353,3 @@
 - 261026 development-feedback start (f6d2): owner stopped the other session and adopted the architectural audit; preserve historical measurements, implement the complete feedback-cost cleanup, run one final verification, no new century benchmark
 - 261026 review-code development-feedback-261026 complete — 79-module engine cycle, 222/280 dependency-affected tests, fixture/benchmark invalidation and integration-tier hand-offs; no findings adopted
 - 261026 review-code development-feedback-261026 start — inspect dependency reach, test tiers, fixture invalidation and simulation costs; application changes remain owned by the existing sessions
-- 261026 T432 done (p7r3): revision 2's freedom, disorder and swaps (drift 60, loosen 0.4, reform 6, threshold 0.35); goals 2.46 → 2.72, a full-back in the far half 47 → 91% of matches; revision 1 and pre-feature digests unchanged
