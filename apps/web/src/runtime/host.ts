@@ -55,6 +55,7 @@ import {
   type Request,
   type Reply,
   type View,
+  type ViewPatch,
 } from './protocol';
 import { clubRecords } from './clubRecords';
 import { headToHead } from './headToHead';
@@ -243,6 +244,42 @@ function partText(value: unknown) {
   } catch {
     return undefined;
   }
+}
+/**
+ * A changed view part this large is sent as the changes inside it (→ARCH-6), down to `depth`
+ * container levels, unless that patch is over `maxShare` of the part: an own match day changes
+ * three fields of every club, not 400 KB of them.
+ */
+export const VIEW_PATCH = { minChars: 8192, depth: 2, maxShare: 0.8 } as const;
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+/**
+ * The changes from `before` (the base's published JSON, parsed) to `now`, undefined when equal;
+ * leaves compare as `partText` does.
+ */
+function viewPatch(before: unknown, now: unknown, depth: number): ViewPatch | undefined {
+  if (depth > 0 && Array.isArray(before) && Array.isArray(now)) {
+    const changed: [number, ViewPatch][] = [];
+    now.forEach((item, index) => {
+      const sub = index < before.length ? viewPatch(before[index], item, depth - 1) : { v: item };
+      if (sub) changed.push([index, sub]);
+    });
+    return changed.length || before.length !== now.length
+      ? { a: changed, n: now.length }
+      : undefined;
+  }
+  if (depth > 0 && isRecord(before) && isRecord(now)) {
+    const changed: Record<string, ViewPatch> = {};
+    let any = false;
+    for (const [key, value] of Object.entries(now)) {
+      const sub = viewPatch(before[key], value, depth - 1);
+      if (sub) [changed[key], any] = [sub, true];
+    }
+    const removed = Object.keys(before).filter((key) => !(key in now) || now[key] === undefined);
+    if (!any && !removed.length) return undefined;
+    return removed.length ? { o: changed, d: removed } : { o: changed };
+  }
+  return partText(before) === partText(now) ? undefined : { v: now };
 }
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
@@ -438,15 +475,36 @@ export class Host {
     if (base === undefined || !previous) return { view, viewSeq: seq };
     const parts: Record<string, unknown> = {},
       worldParts: Record<string, unknown> = {},
+      patches: Record<string, ViewPatch> = {},
       dropped: string[] = [];
     for (const [key, text] of texts) {
-      if (text !== undefined && previous.texts.get(key) === text) continue;
-      if (key.startsWith('world.'))
-        worldParts[key.slice(6)] = world[key.slice(6) as keyof typeof world];
-      else parts[key] = rest[key as keyof typeof rest];
+      const before = previous.texts.get(key);
+      if (text !== undefined && before === text) continue;
+      const value = key.startsWith('world.')
+        ? world[key.slice(6) as keyof typeof world]
+        : rest[key as keyof typeof rest];
+      // Compared with the base's text, never with live objects a later step mutates.
+      if (text !== undefined && before !== undefined && text.length >= VIEW_PATCH.minChars) {
+        const patch = viewPatch(JSON.parse(before), value, VIEW_PATCH.depth);
+        if (patch && (partText(patch)?.length ?? Infinity) <= text.length * VIEW_PATCH.maxShare) {
+          patches[key] = patch;
+          continue;
+        }
+      }
+      if (key.startsWith('world.')) worldParts[key.slice(6)] = value;
+      else parts[key] = value;
     }
     for (const key of previous.texts.keys()) if (!texts.has(key)) dropped.push(key);
-    return { viewSeq: seq, viewDelta: { base, parts, world: worldParts, dropped } };
+    return {
+      viewSeq: seq,
+      viewDelta: {
+        base,
+        parts,
+        world: worldParts,
+        dropped,
+        ...(Object.keys(patches).length ? { patches } : {}),
+      },
+    };
   }
   /**
    * Read-only requests, validated like commands but answered from the live world without a

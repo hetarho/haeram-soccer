@@ -329,6 +329,45 @@ export interface ViewDelta {
   world: Partial<ProjectedWorld>;
   /** Removed keys; projected world keys are named `world.<key>`. */
   dropped: string[];
+  /** Large changed parts as the changes inside them, keyed as `dropped` names them. */
+  patches?: Record<string, ViewPatch>;
+}
+/**
+ * The changes inside one view part: a whole value, an object's changed keys and removed keys, or
+ * an array's changed indices with its new length.
+ */
+export type ViewPatch =
+  | { v: unknown }
+  | { o: Record<string, ViewPatch>; d?: string[] }
+  | { a: [number, ViewPatch][]; n: number };
+/** `base` with `patch` applied; objects off the changed paths keep their identity. */
+export function applyViewPatch(base: unknown, patch: ViewPatch): unknown {
+  if ('v' in patch) return patch.v;
+  if ('o' in patch) {
+    const out = { ...(base as Record<string, unknown>) };
+    for (const [key, sub] of Object.entries(patch.o)) out[key] = applyViewPatch(out[key], sub);
+    for (const key of patch.d ?? []) delete out[key];
+    return out;
+  }
+  const out = (base as unknown[]).slice(0, patch.n);
+  for (const [index, sub] of patch.a) out[index] = applyViewPatch(out[index], sub);
+  return out;
+}
+/** The whole view a delta describes, rebuilt on the base view it names. */
+export function applyViewDelta(base: View, delta: ViewDelta): View {
+  const view = { ...base, ...delta.parts, world: { ...base.world, ...delta.world } } as View;
+  for (const key of delta.dropped)
+    if (key.startsWith('world.')) delete (view.world as Record<string, unknown>)[key.slice(6)];
+    else delete (view as unknown as Record<string, unknown>)[key];
+  for (const [key, patch] of Object.entries(delta.patches ?? {}))
+    if (key.startsWith('world.')) {
+      const part = key.slice(6) as keyof ProjectedWorld;
+      (view.world as Record<string, unknown>)[part] = applyViewPatch(base.world[part], patch);
+    } else {
+      const part = key as keyof Omit<View, 'world'>;
+      (view as unknown as Record<string, unknown>)[part] = applyViewPatch(base[part], patch);
+    }
+  return view;
 }
 /** What a metadata-only inspection reports: identity, revision and any persisted match model. */
 export type WorldMetadata = Pick<World, 'id' | 'revision' | 'matchModel'>;

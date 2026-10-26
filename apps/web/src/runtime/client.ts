@@ -11,7 +11,14 @@ import {
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
-import { PUBLISHED_VIEWS, type Body, type CodecResult, type Reply, type View } from './protocol';
+import {
+  applyViewDelta,
+  PUBLISHED_VIEWS,
+  type Body,
+  type CodecResult,
+  type Reply,
+  type View,
+} from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
@@ -348,11 +355,7 @@ export class GameClient {
     const delta = r.viewDelta,
       base = delta && this.views.get(delta.base);
     if (!delta || !base) return undefined;
-    const view = { ...base, ...delta.parts, world: { ...base.world, ...delta.world } } as View;
-    for (const key of delta.dropped)
-      if (key.startsWith('world.')) delete (view.world as Record<string, unknown>)[key.slice(6)];
-      else delete (view as unknown as Record<string, unknown>)[key];
-    return view;
+    return applyViewDelta(base, delta);
   }
   private requestId() {
     return `${this.session.slice(0, 8)}:${++this.serial}`;

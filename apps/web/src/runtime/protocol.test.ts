@@ -6,7 +6,7 @@ import { DIRECTION_INFO, DIRECTION_KEYS } from '../../../../packages/engine/src/
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { World } from '../../../../packages/contracts/src/types';
 import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
-import { requestSchema, worldMetadataOf } from './protocol';
+import { applyViewPatch, requestSchema, worldMetadataOf } from './protocol';
 
 const request = (body: unknown) => ({
   protocol: 1,
@@ -195,4 +195,33 @@ it('validates the two combined playing-coach command boundaries', () => {
       }),
     ).success,
   ).toBe(false);
+});
+
+describe('view patches (→ARCH-6)', () => {
+  it('a patch of an id-keyed array changes only the changed fields', () => {
+    const base = [
+      { id: 'a', elo: 1500, name: 'A' },
+      { id: 'b', elo: 1400, name: 'B' },
+    ];
+    const next = applyViewPatch(base, {
+      a: [[1, { o: { elo: { v: 1410 } } }]],
+      n: 2,
+    }) as typeof base;
+    expect(next).toEqual([base[0], { id: 'b', elo: 1410, name: 'B' }]);
+    expect(base[1]!.elo).toBe(1400);
+  });
+  it('an appended array entry and a removed object key round-trip', () => {
+    const base = { year: 1950, out: [1, 2], yellows: { p1: 1, p2: 2 } };
+    const next = applyViewPatch(base, {
+      o: { out: { a: [[2, { v: 3 }]], n: 3 }, yellows: { o: { p3: { v: 1 } }, d: ['p1'] } },
+    });
+    expect(next).toEqual({ year: 1950, out: [1, 2, 3], yellows: { p2: 2, p3: 1 } });
+  });
+  it('unchanged sub-objects keep their identity', () => {
+    const base = { kept: { x: 1 }, changed: { y: 1 } };
+    const next = applyViewPatch(base, { o: { changed: { o: { y: { v: 2 } } } } }) as typeof base;
+    expect(next.kept).toBe(base.kept);
+    expect(next).not.toBe(base);
+    expect(next.changed).toEqual({ y: 2 });
+  });
 });

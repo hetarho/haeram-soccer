@@ -1,9 +1,13 @@
-import { legacySettings } from '../../../../packages/engine/src/responsibilities';
+import {
+  legacySettings,
+  RESPONSIBILITY_KEYS,
+  settingsOf,
+} from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
 import { describe, it, expect, vi } from 'vitest';
-import { Host } from './host';
+import { Host, VIEW_PATCH } from './host';
 import { build } from './codec';
-import type { CodecJob, View } from './protocol';
+import { applyViewDelta, type CodecJob, type View } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -20,7 +24,7 @@ import {
   identityOf,
   MATCH_MODEL_RELEASE,
 } from '../../../../packages/engine/src/index';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { GameSettings, World } from '../../../../packages/contracts/src/types';
 import {
   MATCH_MODEL_REVISION,
   MATCH_MODEL_REVISIONS,
@@ -205,11 +209,7 @@ describe('worker command protocol', () => {
     expect(delta.world.calendar?.day).toBe(1);
     expect(delta.world).not.toHaveProperty('history');
     expect(delta.world).not.toHaveProperty('clubs');
-    const { world, ...rest } = founded.view!;
-    const rebuilt = { ...rest, ...delta.parts, world: { ...world, ...delta.world } };
-    for (const key of delta.dropped)
-      if (key.startsWith('world.')) delete (rebuilt.world as Record<string, unknown>)[key.slice(6)];
-      else delete (rebuilt as Record<string, unknown>)[key];
+    const rebuilt = applyViewDelta(structuredClone(founded.view!), structuredClone(delta));
     // Rebuilt on its base, the delta is the whole view the host would publish now.
     const whole = (h as unknown as { view(): View }).view();
     expect(canonical(rebuilt)).toBe(canonical(structuredClone(whole)));
@@ -220,6 +220,49 @@ describe('worker command protocol', () => {
     });
     expect(stale.view).toBeDefined();
     expect(stale.viewDelta).toBeUndefined();
+  });
+  it("sends an own match day's clubs and discipline as patches that rebuild the same view (→ARCH-6)", async () => {
+    const h = new Host();
+    const founded = await h.handle(req('create', -1, { type: 'found', input }));
+    // Every business is delegated, so no decision stops the days before our first match.
+    h.world!.settings = {
+      ...settingsOf(h.world!),
+      responsibilities: Object.fromEntries(
+        RESPONSIBILITY_KEYS.map((key) => [key, 'delegated']),
+      ) as GameSettings['responsibilities'],
+    };
+    // The client holds structured clones, as the worker's messages give it.
+    let held = structuredClone(founded.view!),
+      seq = founded.viewSeq;
+    for (let day = 0; day < 40; day++) {
+      const matches = h.world!.ownMatches.length;
+      const reply = await h.handle({
+        ...req(`day-${day}`, h.world!.revision, {
+          type: 'command',
+          command: { type: 'advance-days', days: 1 },
+        }),
+        viewBase: seq,
+      });
+      expect(reply.ok, reply.error).toBe(true);
+      const delta = structuredClone(reply.viewDelta!);
+      const rebuilt = applyViewDelta(held, delta);
+      const whole = (h as unknown as { view(): View }).view();
+      expect(canonical(rebuilt)).toBe(canonical(structuredClone(whole)));
+      [held, seq] = [rebuilt, reply.viewSeq];
+      // The first match day creates the season's discipline; the second only changes it.
+      if (h.world!.ownMatches.length === matches || h.world!.ownMatches.length < 2) continue;
+      for (const key of ['world.clubs', 'world.discipline']) {
+        const patch = delta.patches?.[key];
+        expect(patch, key).toBeDefined();
+        const value = whole.world[key.slice(6) as 'clubs' | 'discipline'];
+        expect(JSON.stringify(patch).length).toBeLessThanOrEqual(
+          JSON.stringify(value).length * VIEW_PATCH.maxShare,
+        );
+      }
+      expect(delta.world).not.toHaveProperty('clubs');
+      return;
+    }
+    throw new Error('no second own match in 40 days');
   });
   it('blocks automatic progression before applying days when a critical alert is pending', async () => {
     const h = new Host();

@@ -349,6 +349,7 @@
 
 ## log
 - 261026 fix e2e (q7m3): revision 3 moved three seeded scenes: mobile goal cue plays goal-feedback-0 (2′ home), the continuity journey searches ten seeds (full-model-continuity-4), manager-history imports its prepared career upgraded as the writer holds it; Chromium 21/21 on 863bfa4c + fix; batch integration timeouts (calendar ×3, long-career) pass alone, 149 s
+- 261026 T470 done (owner): large view parts publish as inner patches; match-day delta 0.6–1 MB → 77–202 KB, rebuilt view unchanged
 - 261026 create-task (owner): T469 match-day moment and no visible catch-up (WEB@155 MATCH@32), documentation only, parked for the owner's go
 - 261026 update-ssot WEB r155 (owner, ideation match-day-progress): WEB-18 visible steps one day with owed days only hidden/away, a ≥ 2 s animation-only match-day moment on own fixture days (NEXT MATCH card, bottom controls elsewhere), optional 경기 결과 알림 off by default; replaces r154's late-step indicator (T465 code)
 - 261026 update-ssot WEB start
