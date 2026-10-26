@@ -129,11 +129,13 @@ const facts = (w: World) => ({
  * ee38cbfee07ad841 before. T480's corner numbers on revision 4 (drawn per corner, set by the late
  * score) changed the candidate rounds only; 5a538fb4c95a42f1 before. T481's shot choice on
  * revision 4 (lines FW 1, MF 0.8, DF 0.5 at scale 0.25) changed the candidate rounds only;
- * f63576f95ac36c4c before.
+ * f63576f95ac36c4c before. T482's recalibration of revision 4 (shot quality, pass gain 0.3, shot
+ * scale 0.28, crossed deliveries 0.7, fouls ×1.5) changed the candidate rounds only;
+ * 2837deaef4826be0 before.
  */
 const BEFORE = {
   aggregateRecords: 'aa876ab8eda9f1c2',
-  candidateRounds: '2837deaef4826be0',
+  candidateRounds: '8ea7fa36b38d041f',
 };
 
 describe('complete-result throughput (T285)', () => {

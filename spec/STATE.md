@@ -16,6 +16,8 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
+- 261027 decided T482 MATCH-23 MATCH-16: explore exit with goals by line outside (FW 81 / MF 12 / DF 7%) → kept the revision-4 source that holds FW ≥ MF ≥ DF and 25/37 rows, recorded the next lever (midfield positions and support around the box) instead of retuning line weights (alt: keep tuning past the timebox | suggest an update-ssot on MATCH-23's band, not warranted while a football lever remains)
+- 261027 suggest T482 ideation/calibration-pass: forwards take 10 of 12.5 shots a team and 141 → 107 decisions in front of the box against midfielders' ~23; a midfield-positioning pass (where midfielders are when the ball reaches the final third) is the lever for goals by line, set-piece and headed shares
 - 261027 parked -: `vibe loop` refuses this checkout while older work groups (refactor-261019, identity, full-model, presentation-261021, history-activation, v9n4-release and others) are listed as active; the owner decides whether to close or clean them
 - 261027 decided T477 T478 T479 T480 T481 T482: how to run the implementation once `vibe loop` refused → the autopilot session implements the tasks itself, one at a time, with the batch gate before the single main push (alt: `work run`, which needs the old work spaces cleaned first)
 - 261027 decided T479 T480 T481 T482 SAVE-23: how to ship engine football changes after activation → as match-model revision 4, every change gated by `modelAtLeast(s.setup, 4)` so revisions 1–3 keep their football and a queued playback replays as settled (alt: change revision 3 in place | presentation-only now, engine later)
@@ -348,7 +350,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -364,11 +365,12 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- implement-task T482 (explore 3 h); autopilot k2d7 runs the final batch gate and pushes main once.
+- k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T482 done: revision 4 recalibrated (shot quality, pass gain 0.3, scale 0.28, deliveries 0.7, fouls ×1.5): 600 matches 25/37 rows, goals 2.86, shots 11.3, unmarked striker takes goal-area chances 61–65%; goals by line still FW 81% (follow-up suggested)
 - 261027 T481 done: revision 4 shot weights FW 1 / MF 0.8 / DF 0.5 at 0.25, playmakers ×0.85; 600 matches shots 13.6, goals 3.13, FW goals 81.5% (T482 to recalibrate)
 - 261027 T480 done: revision 4 corners keep 2–3 back near halfway and 1–2 up, drawn and set by the late score, keeper up in added time one behind; attackers within 25 m 9+ in 36% → 2% of corners
 - 261027 T479 done: match-model revision 4; a free kick played as a pass goes to the nearest suitable player (own third: forwards 59% → 0%, walk 34 → 4 m); digests re-recorded, revision 3 kept as REVISION_3
@@ -388,4 +390,3 @@
 - 261026 T474 integrated
 - 261026 T476 integrated
 - 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
-- 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git

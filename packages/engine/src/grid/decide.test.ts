@@ -34,6 +34,8 @@ import type { Tactic } from '../../../contracts/src/types';
 
 const CM = 7;
 const ST = 9;
+/** Revision 3: the cases that read its numbers (revision 4 has its own, T481, T482). */
+const REVISION_3 = MATCH_MODEL_REVISIONS[2];
 
 /**
  * A side-0 carrier at `at` on the pre-feature path (candidate cases set the setup's model);
@@ -523,7 +525,7 @@ describe('grid decisions', () => {
     const at = centre(4, 2);
     const ratio = (candidate: boolean, where: Point = at) => {
       const sc = scene(CM, where);
-      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
       const mix = actionMix(sc.s, 0, CM, sc.tags());
       return mix.takeOn / mix.pass;
     };
@@ -534,7 +536,7 @@ describe('grid decisions', () => {
     // A teammate running in behind scores the candidate's through-ball pull instead of the shared one.
     const score = (candidate: boolean) => {
       const sc = scene(CM, at);
-      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
       place(sc.s, ST, [70, 34]);
       sc.s.players[0][ST]!.run = { kind: 'behind', until: 610, target: [80, 34] };
       const option = passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!;
@@ -655,7 +657,7 @@ describe('grid decisions', () => {
       Q.power = on ? kept : 0;
       try {
         const sc = scene(ST, at);
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
         const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), minute: 20 });
         return mix.shot / mix.pass;
       } finally {
@@ -665,7 +667,7 @@ describe('grid decisions', () => {
     const factor = (at: Point) => ratio(at, true) / ratio(at, false);
     for (const at of [centre(6, 2), centre(6, 1), centre(7, 2)]) {
       const sc = scene(ST, at);
-      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
       const xg = chanceXg(at, { pressure: sc.tags().pressure, candidate: true }, sc.s.math);
       expect(factor(at)).toBeCloseTo(Math.min(Q.most, (xg / Q.ref) ** Q.power), 9);
       expect(ratio(at, true, false)).toBeCloseTo(ratio(at, false, false), 12);
@@ -719,7 +721,7 @@ describe('grid decisions', () => {
     const firstTouch = (candidate: boolean, carry: number, received: boolean) =>
       withCandidate({ firstTouch: { carry, pressure: 1 } }, () => {
         const sc = scene(CM, centre(3, 2));
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
         if (received) sc.s.received = [0, CM];
         const tags = { ...sc.tags(), orientation: 'facing' as const, pressure: 0 };
         const mix = actionMix(sc.s, 0, CM, tags);
@@ -733,7 +735,7 @@ describe('grid decisions', () => {
     const cutBack = (candidate: boolean, share: number) =>
       withCandidate({ cutBackShare: share }, () => {
         const sc = scene(ST, centre(7, 1));
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
         place(sc.s, 10, [97, 33]);
         place(sc.s, 7, [92, 34]);
         const mix = actionMix(sc.s, 0, ST, sc.tags());
@@ -745,7 +747,7 @@ describe('grid decisions', () => {
     const intoBox = (penalty: number) =>
       withCandidate({ boxCarry: penalty }, () => {
         const sc = scene(CM, [86, 34]);
-        sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
         const r = random('t397-carry');
         let n = 0;
         for (let i = 0; i < 400; i++) {
@@ -759,7 +761,7 @@ describe('grid decisions', () => {
     const forward = (gain: number) =>
       withCandidate({ gain }, () => {
         const sc = scene(CM, centre(4, 2));
-        sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        sc.s.setup = { ...sc.s.setup, model: REVISION_3 };
         place(sc.s, ST, [85, 34]);
         return passOptions(sc.s, 0, CM, sc.tags()).find((o) => o.target === ST)!.score;
       });
@@ -1096,6 +1098,13 @@ describe('revision 4 shot choice (T481, →MATCH-16)', () => {
     );
   });
 
+  it('revision 4: an unmarked forward takes his goal-area chance far more often than on revision 3 (T482)', () => {
+    const at = centre(7, 2);
+    const [now, before] = [fourth, third].map((model) => mixOn(ST, at, model).shot);
+    expect(now).toBeGreaterThan(0.5);
+    expect(now).toBeGreaterThan(2 * before!);
+  });
+
   it('revision 4: a playmaker role shoots less than a box-to-box midfielder in the same chance', () => {
     // 4-3-3: the mezzala (6) and the deep-lying playmaker (7) differ only in that.
     const tactics: [Tactic, Tactic] = ['possession', 'balanced'];
@@ -1118,7 +1127,8 @@ describe('revision 4 shot choice (T481, →MATCH-16)', () => {
       [CM, 'MF'],
       [CB, 'DF'],
     ] as const) {
-      const [old, now] = [third, fourth].map((model) => mixOn(slot, centre(6, 2), model));
+      // In front of the box, where neither revision's chance quality applies.
+      const [old, now] = [third, fourth].map((model) => mixOn(slot, centre(5, 2), model));
       // Only the shot weight differs, by exactly the lines' weights and scales.
       expect(old!.carry / old!.pass).toBeCloseTo(now!.carry / now!.pass, 12);
       expect(old!.shot / old!.pass / (now!.shot / now!.pass)).toBeCloseTo(

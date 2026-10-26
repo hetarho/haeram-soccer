@@ -26,6 +26,7 @@ import {
   type GridPlayer,
   type GridState,
 } from './state';
+import { modelAtLeast } from './rules';
 import { TAG_CONFIG, type Tags } from './tags';
 import type { Decision } from './decide';
 import {
@@ -139,6 +140,10 @@ export const DUEL_CONFIG = {
   candidate: {
     foul: 1.3,
     boxFoul: 0.046,
+    /** Revision 4 (T482), in place of `cross.base`: a set-piece or crossed delivery's base chance. */
+    revision4CrossBase: 0.7,
+    /** Revision 4 (T482), in place of `foul`: how much more often a challenge is a foul. */
+    revision4Foul: 1.5,
     // T398's `crossArriving` (a teammate on a box run counting more aerial-rating points as the
     // cross's target, neutral at 0) is gone: an open-play delivery's runner is drawn among the
     // zones attacked (T444, `BOX_CONFIG.delivery`, `resolveDelivery`).
@@ -204,7 +209,12 @@ export const DUEL_CONFIG = {
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
 const onCandidate = (s: GridState) => s.setup.model !== undefined;
 /** How much more often a challenge is a foul on this fixture's model. */
-const foulScale = (s: GridState) => (onCandidate(s) ? DUEL_CONFIG.candidate.foul : 1);
+const foulScale = (s: GridState) =>
+  !onCandidate(s)
+    ? 1
+    : modelAtLeast(s.setup, 4)
+      ? DUEL_CONFIG.candidate.revision4Foul
+      : DUEL_CONFIG.candidate.foul;
 
 /** Initial values. */
 export const SHOT_CONFIG = {
@@ -866,7 +876,7 @@ function crossChance(s: GridState, side: 0 | 1, idx: number, tags: Pick<Tags, 'p
       (gp) => (sd !== side || gp.idx !== idx) && onPitch(gp) && inBox(attackFrame(side, gp.pos)),
     ).length;
   return clamp(
-    X.base +
+    (modelAtLeast(s.setup, 4) ? DUEL_CONFIG.candidate.revision4CrossBase : X.base) +
       (skill(s, side, idx, 'crossing') - 60) * X.skill -
       Math.max(0, inBoxOf(other(side)) - inBoxOf(side)) * X.crowd -
       (onCandidate(s) ? DUEL_CONFIG.candidate.crossPressure * Math.min(1, tags.pressure) : 0),

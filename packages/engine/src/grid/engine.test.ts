@@ -129,7 +129,8 @@ let looseShots:
 function secondBalls() {
   if (looseShots) return looseShots;
   looseShots = [];
-  for (let n = 0; n < 24; n++) {
+  // 40 fixtures since T482 (24 since T437): revision 4's fewer set-piece shots left one restart rebound.
+  for (let n = 0; n < 40; n++) {
     const { record, trace } = candidate(`t445-rebound-${n}`, true);
     expect(validateFullMatchRecord(record), record.id).toEqual([]);
     const plays = trace!.filter((x) => x.outcome !== 'incident');

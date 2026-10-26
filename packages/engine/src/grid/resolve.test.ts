@@ -866,8 +866,8 @@ describe('grid open-play resolution', () => {
     }
     expect(Math.abs(goals / n - recorded)).toBeLessThan(0.008);
     // The decision reads the same bodies: shots against passes fall with them in his way, through
-    // his temperature, so more for a sharp head (→MATCH-16).
-    const Q = DECISION_CONFIG.candidate.shotQuality;
+    // his temperature, so more for a sharp head (→MATCH-16). The current revision's curve (T482).
+    const Q = DECISION_CONFIG.candidate.revision4.shotQuality;
     const weight = (xg: number) => Math.min(Q.most, (xg / Q.ref) ** Q.power);
     const factor = (decisions: number) => {
       const plain = shotScene(at, []);
