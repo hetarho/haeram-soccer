@@ -37,10 +37,12 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
     await expect(officeBar(page)).toBeVisible();
     return;
   }
-  // The selected tab decides, not what is drawn: a deferred view can still show home.
+  // The selected tab decides, not what is drawn: a deferred view can still show home. The tab is
+  // found by its icon, since a locale pack renames it.
   const home = page
     .getByRole('navigation')
-    .getByRole('button', { name: '클럽 홈', exact: true })
+    .getByRole('button')
+    .filter({ has: page.locator('[data-pixel-icon="home"]') })
     .first();
   if ((await home.getAttribute('aria-current')) !== 'page') await home.click(options);
   const hub = page.getByTestId('club-hub');
