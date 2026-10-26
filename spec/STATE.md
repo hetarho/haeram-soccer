@@ -370,6 +370,7 @@
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 k2d7 batch gate passed on 92c81b24 (clean worktree): typecheck/lint/format, unit 1145, integration 1158 + 4 skips, contract 39, catalogs, presentation, build, Chromium 299; the first run failed one goal-cue journey whose fixture lost a goal under revision 4 (fixed in 92c81b24)
 - 261027 T482 done: revision 4 recalibrated (shot quality, pass gain 0.3, scale 0.28, deliveries 0.7, fouls ×1.5): 600 matches 25/37 rows, goals 2.86, shots 11.3, unmarked striker takes goal-area chances 61–65%; goals by line still FW 81% (follow-up suggested)
 - 261027 T481 done: revision 4 shot weights FW 1 / MF 0.8 / DF 0.5 at 0.25, playmakers ×0.85; 600 matches shots 13.6, goals 3.13, FW goals 81.5% (T482 to recalibrate)
 - 261027 T480 done: revision 4 corners keep 2–3 back near halfway and 1–2 up, drawn and set by the late score, keeper up in added time one behind; attackers within 25 m 9+ in 36% → 2% of corners
@@ -389,4 +390,3 @@
 - 261026 T469 pushed to main 35f48eef: the batch caught the moment span breaking the themes' NEXT MATCH first-child rule at 1280 (fixed in 35f48eef), then passed on the whole tree; main CI 40319410126 green. Two concurrent batches had timed out integration tests (long-career; calendar ENG/ESP) under host load; they pass on a quiet host
 - 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
-- 261026 T474 integrated
