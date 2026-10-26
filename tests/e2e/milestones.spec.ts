@@ -42,8 +42,11 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
-    await delegateSales(page);
+    // Measured on arrival: delegating goes through the owner office, whose entrance near the
+    // bottom of a wide home is scrolled into view to be clicked, and leaving the office restores
+    // that remembered scroll.
     await expectCompactHome(page);
+    await delegateSales(page);
     const nextCard = hub.getByRole('region', { name: '다음 경기', exact: true });
     await expect(nextCard.getByTestId('home-watch')).toHaveCount(0);
     await expect(nextCard.getByRole('button', { name: '전술·선발 준비' })).toBeVisible();
