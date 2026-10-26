@@ -47,6 +47,7 @@ import {
   KIT_LABEL,
   keepScreenshot,
   kitRadio,
+  localCheckpoints,
   newGameIn,
   notice,
   openDesign,
@@ -311,6 +312,8 @@ async function expectAdopted(page: Page, legacy: World, original: string) {
   expect(world.ownMatches.length).toBeGreaterThan(0);
   expect(world.ownMatches.some((match) => 'appearance' in match)).toBe(false);
   expect(await idbGet(page, 'checkpoints', 'previous')).toBe(original);
+  // The seeded slot:a career moved to IndexedDB with that commit (→SAVE-3).
+  expect(await localCheckpoints(page)).toEqual([null, null]);
 }
 
 test('a pre-identity career keeps its crests and facts, gains only shirts on writer activation and says its kits were not recorded', async ({

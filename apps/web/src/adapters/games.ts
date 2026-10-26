@@ -8,7 +8,10 @@ import type { StoragePort } from './repository';
  */
 export const GAMES_KEY = 'haeram-soccor:games';
 export const SLOT_COUNT = 3;
-/** The active checkpoint keys of the game in play (→SAVE-3). */
+/**
+ * The localStorage keys of the game in play (→SAVE-3): its manifest and the slot:a/b checkpoints of
+ * the fallback and earlier layouts. Its IndexedDB copies are the repository's to clear.
+ */
 export const ACTIVE_SAVE_KEYS = [
   'haeram-soccor:manifest',
   'haeram-soccor:slot:a',
@@ -115,8 +118,9 @@ export interface ParkedStore {
 const DB = 'haeram-soccor',
   STORE = 'games';
 /**
- * One request on a store of the shared `haeram-soccor` database: version 2 adds the previous
- * checkpoint store (→SAVE-3) beside parked games, leaving `games` as it was.
+ * One request on a store of the shared `haeram-soccor` database: version 2 adds the checkpoint
+ * store of the game in play, keys active and previous (→SAVE-3), beside parked games, leaving
+ * `games` as it was.
  */
 export function idbRequest<T>(
   name: 'games' | 'checkpoints',
@@ -132,8 +136,16 @@ export function idbRequest<T>(
     open.onerror = () => reject(open.error ?? new Error('게임 보관함을 열지 못했어요.'));
     open.onsuccess = () => {
       const db = open.result;
-      const tx = db.transaction(name, mode);
-      const result = run(tx.objectStore(name));
+      let tx: IDBTransaction, result: IDBRequest<T>;
+      try {
+        tx = db.transaction(name, mode);
+        result = run(tx.objectStore(name));
+      } catch (error) {
+        // A request refused at once (quota, a closing database) rejects like a failed transaction.
+        db.close();
+        reject(error);
+        return;
+      }
       tx.oncomplete = () => {
         db.close();
         resolve(result.result);

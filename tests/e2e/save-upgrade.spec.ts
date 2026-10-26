@@ -81,6 +81,11 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  // The new career's checkpoint is in IndexedDB, none in localStorage (→SAVE-3).
+  expect(
+    JSON.parse((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!).slot,
+  ).toBe(3);
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   expect(JSON.parse(await exportRaw(page)).engine).toBe('4.0.0');

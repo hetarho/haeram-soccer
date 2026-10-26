@@ -848,25 +848,25 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
 
   it('keeps current and previous on failed writes', async () => {
     const port = new Memory();
-    const previous = new MemoryPrevious();
-    const saves = new Saves(port, decode, previous);
+    const previous = new MemoryPrevious(),
+      active = new MemoryPrevious();
+    const open = () => new Saves(port, decode, previous, active);
+    const saves = open();
     const first = await saves.save(unmodelled(1));
     const manifest = port.getItem(MANIFEST);
     const w = modelCareer(unmodelled(2));
     // A failed write of the active copy keeps the committed checkpoint and its verified copy.
-    port.fail = SLOT[0];
+    active.fail = true;
     await expect(saves.save(w)).rejects.toThrow('Quota');
-    expect(port.getItem(SLOT[0])).toBe(first);
+    expect(active.value).toBe(first);
     expect(port.getItem(MANIFEST)).toBe(manifest);
     expect(previous.value).toBe(first);
-    expect(canonical((await new Saves(port, decode, previous).load())!.world)).toBe(
-      canonical(unmodelled(1)),
-    );
+    expect(canonical((await open().load())!.world)).toBe(canonical(unmodelled(1)));
     // The progress in memory still exports and imports whole.
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
-    port.fail = '';
+    active.fail = false;
     const second = await saves.save(w);
-    const reloaded = (await new Saves(port, decode, previous).load())!;
+    const reloaded = (await open().load())!;
     expect(reloaded.envelope).toMatchObject({
       schema: FULL_MODEL_CHECKPOINT_SCHEMA,
       generation: 2,
@@ -877,9 +877,9 @@ describe('checkpoint container 3 (→SAVE-23)', () => {
     // A later failure keeps the container-3 checkpoint committed, now with itself as the copy.
     const later = structuredClone(w);
     later.npcSeason!.competitions[0].clubs[0].matches = 2;
-    port.fail = SLOT[0];
+    active.fail = true;
     await expect(saves.save(later)).rejects.toThrow('Quota');
-    const kept = (await new Saves(port, decode, previous).load())!;
+    const kept = (await open().load())!;
     expect(kept.raw).toBe(second);
     expect(kept.recovered).toBe(false);
     expect(canonical(kept.world)).toBe(canonical(w));
@@ -930,13 +930,15 @@ describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () =>
   });
 });
 
-/** The game in play's previous copy (→SAVE-3), kept in memory. */
+/** One IndexedDB key of the game in play, active or previous (→SAVE-3), kept in memory. */
 class MemoryPrevious implements PreviousStore {
   value: string | null = null;
+  fail = false;
   async read() {
     return this.value;
   }
   async write(raw: string) {
+    if (this.fail) throw new Error('QuotaExceededError');
     this.value = raw;
   }
   async clear() {
@@ -1042,26 +1044,28 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
     'newer data (%s) over a valid previous copy blocks fallback and writes',
     async (name) => {
       const port = new Memory();
-      const previous = new MemoryPrevious();
-      const saves = new Saves(port, decode, previous);
+      const previous = new MemoryPrevious(),
+        active = new MemoryPrevious();
+      const saves = new Saves(port, decode, previous, active);
       await saves.save(world());
       await saves.save(observed(1));
       const older = previous.value;
       expect(older).not.toBeNull();
       const newer = await FUTURE_CHECKPOINTS[name](observed(1), 2, 1);
-      port.data.set(SLOT[0], newer);
+      active.value = newer;
       const before = new Map(port.data);
       for (const manifest of [true, false]) {
         if (!manifest) {
           port.removeItem(MANIFEST);
           before.delete(MANIFEST);
         }
-        const recovery = new Saves(port, decode, previous);
+        const recovery = new Saves(port, decode, previous, active);
         await expect(recovery.load()).rejects.toBeInstanceOf(SaveCompatibilityError);
         expect(recovery.incompatibleBackup).toBe(newer);
+        expect(recovery.recoveryRaw()).toBe(newer);
         await expect(recovery.save(observed(1))).rejects.toBeInstanceOf(SaveCompatibilityError);
         expect(port.data).toEqual(before);
-        expect(previous.value).toBe(older);
+        expect([active.value, previous.value]).toEqual([newer, older]);
       }
     },
   );
@@ -1069,22 +1073,28 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   it('a failed write of the adopted career keeps the original checkpoint loadable as its verified previous copy', async () => {
     const legacy = preIdentityCareer();
     const raw = await containerOneCheckpoint(legacy);
+    // The career is still where an earlier layout left it, in slot:a.
     const port = new Memory();
-    const previous = new MemoryPrevious();
-    const saves = new Saves(port, decode, previous);
-    await saves.commit(raw);
-    const manifest = port.getItem(MANIFEST);
-    port.fail = SLOT[0];
+    const { worldId, generation, parentGeneration } = JSON.parse(raw);
+    port.data.set(SLOT[0], raw);
+    const manifest = JSON.stringify({ slot: 0, worldId, generation, parentGeneration });
+    port.data.set(MANIFEST, manifest);
+    const previous = new MemoryPrevious(),
+      active = new MemoryPrevious();
+    const open = () => new Saves(port, decode, previous, active);
+    const saves = open();
+    await saves.load();
+    active.fail = true;
     await expect(saves.save(adoptedCareer(legacy, ENABLED_RELEASE))).rejects.toThrow('Quota');
     expect(port.getItem(SLOT[0])).toBe(raw);
     expect(port.getItem(MANIFEST)).toBe(manifest);
     expect(previous.value).toBe(raw);
-    expect(canonical((await new Saves(port, decode, previous).load())!.world)).toBe(
-      canonical(legacy),
-    );
-    port.fail = '';
+    expect(canonical((await open().load())!.world)).toBe(canonical(legacy));
+    active.fail = false;
     await saves.save(adoptedCareer(legacy, ENABLED_RELEASE));
-    const reloaded = (await new Saves(port, decode, previous).load())!;
+    // It moved: slot:a goes once the manifest names the IndexedDB generation (→SAVE-3).
+    expect(port.getItem(SLOT[0])).toBeNull();
+    const reloaded = (await open().load())!;
     // The adopted career is tracked from that write on, in its container (→SAVE-24).
     expect(reloaded.envelope).toMatchObject({
       schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA,

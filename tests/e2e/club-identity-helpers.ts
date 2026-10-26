@@ -22,7 +22,8 @@ export const PHONE_VIEWPORTS = [
 export const KIT_LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 /** `SAVE_DATA_UPDATED` of runtime/client.ts, the writer's notice after an adoption is committed. */
 export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
-const ACTIVE = 'haeram-soccor:slot:a';
+const SLOT_A = 'haeram-soccor:slot:a';
+const SLOT_B = 'haeram-soccor:slot:b';
 const MANIFEST = 'haeram-soccor:manifest';
 
 export const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
@@ -68,15 +69,19 @@ export const closeNotices = (inbox: Locator) =>
 export const notice = (inbox: Locator, text: string) =>
   inbox.getByRole('listitem').filter({ hasText: text });
 
-/** The committed checkpoint the manifest names (→SAVE-3), raw. */
-export const committedRaw = (page: Page) =>
-  page.evaluate(
-    ({ active, manifest }) => {
-      const m = JSON.parse(localStorage.getItem(manifest) || 'null');
-      return localStorage.getItem(m?.slot === 1 ? 'haeram-soccor:slot:b' : active);
-    },
-    { active: ACTIVE, manifest: MANIFEST },
-  );
+/**
+ * The committed checkpoint the manifest names (→SAVE-3), raw: IndexedDB `checkpoints/active` for
+ * `slot: 3`, else slot:a/b of a seeded or fallback layout.
+ */
+export async function committedRaw(page: Page) {
+  const manifest = await page.evaluate((key) => localStorage.getItem(key), MANIFEST);
+  return activeOf(page, manifest);
+}
+async function activeOf(page: Page, manifest: string | null) {
+  const slot = (JSON.parse(manifest || 'null') as { slot?: number } | null)?.slot;
+  if (slot === 3) return idbGet(page, 'checkpoints', 'active');
+  return page.evaluate((key) => localStorage.getItem(key), slot === 1 ? SLOT_B : SLOT_A);
+}
 /** The committed world, once the save status says every revision is on disk. */
 export async function savedWorld(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -109,17 +114,48 @@ export const idbGet = (page: Page, store: 'games' | 'checkpoints', key: string) 
       }),
     { store, key },
   );
-/** The game in play's raw checkpoint storage: active slot:a, manifest and IndexedDB previous. */
-export async function checkpointStorage(page: Page) {
-  const [active, manifest] = await page.evaluate(
-    (keys) => keys.map((key) => localStorage.getItem(key)),
-    [ACTIVE, MANIFEST],
-  );
-  return { active, manifest, previous: await idbGet(page, 'checkpoints', 'previous') };
-}
 /**
- * Writes the game in play's checkpoints as the app's writer would have left them, from the static
- * same-origin 404 page so no app instance is running; the caller then opens the game.
+ * The game in play's raw checkpoint storage: the active copy the manifest names (IndexedDB, or
+ * slot:a as seeded before the first commit), the manifest and the IndexedDB previous copy.
+ */
+export async function checkpointStorage(page: Page) {
+  const manifest = await page.evaluate((key) => localStorage.getItem(key), MANIFEST);
+  return {
+    active: await activeOf(page, manifest),
+    manifest,
+    previous: await idbGet(page, 'checkpoints', 'previous'),
+  };
+}
+/** The localStorage checkpoints of the earlier layout, gone once the game moved to IndexedDB. */
+export const localCheckpoints = (page: Page) =>
+  page.evaluate((keys) => keys.map((key) => localStorage.getItem(key)), [SLOT_A, SLOT_B]);
+/** Overwrites one value of the app's IndexedDB store, e.g. to corrupt the active copy. */
+export const idbPut = (page: Page, store: 'games' | 'checkpoints', key: string, value: string) =>
+  page.evaluate(
+    ({ store, key, value }) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('haeram-soccor', 2);
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction(store, 'readwrite');
+          tx.objectStore(store).put(value, key);
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = tx.onabort = () => {
+            db.close();
+            reject(tx.error);
+          };
+        };
+      }),
+    { store, key, value },
+  );
+/**
+ * Writes the game in play's checkpoints as the slot:a layout's writer would have left them (the
+ * app moves them to IndexedDB on its first commit), from the static same-origin 404 page so no
+ * app instance is running; the caller then opens the game.
  */
 export async function seedCheckpoints(
   page: Page,
@@ -152,26 +188,31 @@ export async function seedCheckpoints(
           };
         };
       }),
-    { ...seed, keys: { active: ACTIVE, manifest: MANIFEST } },
+    { ...seed, keys: { active: SLOT_A, manifest: MANIFEST } },
   );
 }
 
 const FAIL_FLAG = 'haeram-test:fail-writes';
 /**
- * Makes this page's localStorage writes of `key` throw a quota error whenever the flag
- * `failWrites` sets is on; the flag lives in sessionStorage, so it holds across navigations.
+ * Makes this page's writes of the active checkpoint, IndexedDB `checkpoints/active` (→SAVE-3),
+ * throw a quota error whenever the flag `failWrites` sets is on; the flag lives in sessionStorage,
+ * so it holds across navigations.
  */
-export async function failableWrites(page: Page, key = ACTIVE) {
+export async function failableWrites(page: Page) {
   await page.addInitScript(
-    ({ key, flag }) => {
-      const setItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = function (this: Storage, name: string, value: string) {
-        if (name === key && sessionStorage.getItem(flag) === '1')
+    ({ flag }) => {
+      const put = IDBObjectStore.prototype.put;
+      IDBObjectStore.prototype.put = function (
+        this: IDBObjectStore,
+        value: unknown,
+        key?: IDBValidKey,
+      ) {
+        if (this.name === 'checkpoints' && key === 'active' && sessionStorage.getItem(flag) === '1')
           throw new DOMException('Synthetic quota failure', 'QuotaExceededError');
-        setItem.call(this, name, value);
+        return put.call(this, value, key);
       };
     },
-    { key, flag: FAIL_FLAG },
+    { flag: FAIL_FLAG },
   );
 }
 export const failWrites = (page: Page, on: boolean) =>

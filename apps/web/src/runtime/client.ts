@@ -1,7 +1,7 @@
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
-import { IndexedDbPreviousStore } from '../adapters/previousStore';
+import { IndexedDbCheckpointKey } from '../adapters/previousStore';
 import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
   CURRENT_ENGINE_VERSION,
@@ -107,6 +107,7 @@ export class GameClient {
     }
   };
   constructor(private notify: (state: ClientState) => void) {
+    const indexed = IndexedDbCheckpointKey.available();
     this.saves = new SaveRepository(
       localStorage,
       async (raw) => {
@@ -116,7 +117,9 @@ export class GameClient {
       },
       // The writer loads with the first save, keeping it out of the entry (→ARCH-28).
       async (...args) => (await import('../adapters/checkpointWriter')).writeCheckpoint(...args),
-      IndexedDbPreviousStore.available() ? new IndexedDbPreviousStore() : undefined,
+      // One availability decision for both IndexedDB keys (→SAVE-3).
+      indexed ? new IndexedDbCheckpointKey('previous') : undefined,
+      indexed ? new IndexedDbCheckpointKey('active') : undefined,
     );
     this.worker.onmessage = (event: MessageEvent<Reply>) => {
       const r = event.data;
@@ -689,19 +692,15 @@ export class GameClient {
     return reply.fullStats;
   }
   private rawBackup() {
-    if (this.saves.incompatibleBackup) return this.saves.incompatibleBackup;
+    return this.saves.recoveryRaw();
+  }
+  /** Whether a game in play is stored, so an import would replace it. */
+  hasStoredGame() {
     try {
-      const m = JSON.parse(localStorage.getItem('haeram-soccor:manifest') || 'null');
-      if (m && (m.slot === 0 || m.slot === 1))
-        return localStorage.getItem(`haeram-soccor:slot:${m.slot ? 'b' : 'a'}`) || undefined;
+      return this.saves.hasStored();
     } catch {
-      /* preserve raw slots for recovery */
+      return false; // unsupported storage is reported by the client
     }
-    return (
-      localStorage.getItem('haeram-soccor:slot:a') ||
-      localStorage.getItem('haeram-soccor:slot:b') ||
-      undefined
-    );
   }
   /**
    * The rules version of an active checkpoint that cannot open because it is an earlier-rules
@@ -772,6 +771,7 @@ export class GameClient {
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = undefined;
       await this.whenSaved();
+      await this.saves.clearActive();
       for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.

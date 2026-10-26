@@ -42,15 +42,24 @@ export type SaveInspector<W extends SaveWorldMetadata = World> = (
   raw: string,
 ) => Promise<{ world: W; envelope: Envelope }>;
 
-/** The recovery predecessor of the game in play (→SAVE-3); `write` reads back what it stored. */
+/**
+ * One IndexedDB checkpoint of the game in play, its active copy or recovery predecessor (→SAVE-3);
+ * `write` reads back what it stored.
+ */
 export interface PreviousStore {
   read(): Promise<string | null>;
   write(raw: string): Promise<void>;
   clear(): Promise<void>;
 }
-/** Checkpoint sources: the two localStorage slots, then the previous store. */
+/** The game in play's IndexedDB keys; both or neither are available. */
+export interface IndexedCheckpoints {
+  active: PreviousStore;
+  previous: PreviousStore;
+}
+/** Checkpoint sources: the two localStorage slots, then the IndexedDB previous and active keys. */
 export const PREVIOUS = 2;
-export type Source = 0 | 1 | typeof PREVIOUS;
+export const ACTIVE = 3;
+export type Source = 0 | 1 | typeof PREVIOUS | typeof ACTIVE;
 /** Writes a validated candidate (checkpointWriter.ts), injected so browsers load it lazily. */
 export type CheckpointWrite = typeof import('./checkpointWriter').writeCheckpoint;
 export interface Lineage {
@@ -60,14 +69,18 @@ export interface Lineage {
 }
 
 /**
- * Browser storage only. Every checkpoint is validated by the injected worker codec. With a previous
- * store the game in play keeps one active copy in slot:a and its predecessor there; without one it
- * alternates slot:a and slot:b while both fit the budget.
+ * Browser storage only. Every checkpoint is validated by the injected worker codec. With IndexedDB
+ * (a previous and an active store) the game in play keeps its active copy and predecessor there,
+ * and a game still in slot:a/b moves on the first commit; without it the game alternates slot:a
+ * and slot:b while both fit the budget.
  */
 export class SaveRepository<W extends SaveWorldMetadata = World> {
   private source: Source | undefined;
-  /** The committed checkpoint when it was recovered from the previous store. */
-  private recoveredRaw?: string;
+  /** The committed checkpoint when it sits in IndexedDB, so parking reads it without waiting. */
+  private indexedRaw?: string;
+  /** The IndexedDB active copy as last read or written, for recovery exports. */
+  private activeRaw?: string;
+  private indexed?: IndexedCheckpoints;
   private generation = 0;
   private incompatible?: SaveCompatibilityError;
   private protectedRaw?: string;
@@ -75,8 +88,11 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     private storage: StoragePort,
     private inspect: SaveInspector<W>,
     private write: CheckpointWrite,
-    private previous?: PreviousStore,
-  ) {}
+    previous?: PreviousStore,
+    active?: PreviousStore,
+  ) {
+    if (previous && active) this.indexed = { previous, active };
+  }
   get generationInfo() {
     return { generation: this.generation + 1, parentGeneration: this.generation };
   }
@@ -89,31 +105,69 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
   /** The committed checkpoint of the game in play, exactly as stored (→SAVE-14 parking). */
   committedRaw() {
     if (this.source === undefined) return null;
-    if (this.source === PREVIOUS) return this.recoveredRaw ?? null;
+    if (this.source === PREVIOUS || this.source === ACTIVE) return this.indexedRaw ?? null;
     return this.storage.getItem(SLOT[this.source]);
+  }
+  /**
+   * The stored checkpoint a recovery export keeps: the protected incompatible one, else the
+   * manifest's source, else any stored copy.
+   */
+  recoveryRaw() {
+    if (this.protectedRaw) return this.protectedRaw;
+    let slot: unknown;
+    try {
+      slot = JSON.parse(this.storage.getItem(MANIFEST) || 'null')?.slot;
+    } catch {
+      /* preserve raw slots for recovery */
+    }
+    if (slot === 0 || slot === 1) return this.storage.getItem(SLOT[slot]) || undefined;
+    if (slot === ACTIVE) return this.activeRaw;
+    return this.storage.getItem(SLOT[0]) || this.storage.getItem(SLOT[1]) || this.activeRaw;
+  }
+  /** Whether a game in play is stored, in localStorage or as the IndexedDB active copy. */
+  hasStored() {
+    return (
+      [MANIFEST, ...SLOT].some((key) => this.storage.getItem(key) !== null) ||
+      this.activeRaw !== undefined
+    );
+  }
+  /** Drops the active copy of a game removed from play; on failure the game stays whole. */
+  async clearActive() {
+    await this.indexed?.active.clear();
+    this.activeRaw = undefined;
   }
   /** Drops the predecessor of a game removed from play. */
   async clearPrevious() {
-    await this.previous?.clear();
+    await this.indexed?.previous.clear();
   }
   async load() {
     const manifest = this.storage.getItem(MANIFEST);
-    // A removed game leaves no manifest or slot; its predecessor is never brought back alone.
-    const sources: Source[] =
-      this.previous && (manifest !== null || SLOT.some((key) => this.storage.getItem(key) !== null))
-        ? [0, 1, PREVIOUS]
-        : [0, 1];
+    const indexed = this.indexed;
     const raws = new Map<Source, string | null>();
     const read = async (source: Source) => {
       if (!raws.has(source))
         raws.set(
           source,
           source === PREVIOUS
-            ? await this.previous!.read().catch(() => null)
-            : this.storage.getItem(SLOT[source]),
+            ? await indexed!.previous.read().catch(() => null)
+            : source === ACTIVE
+              ? await indexed!.active.read().catch(() => null)
+              : this.storage.getItem(SLOT[source]),
         );
+      if (source === ACTIVE) this.activeRaw = raws.get(ACTIVE) ?? undefined;
       return raws.get(source)!;
     };
+    this.activeRaw = undefined;
+    const sources: Source[] = indexed ? [ACTIVE, 0, 1] : [0, 1];
+    // A removed game leaves no manifest, slot or active copy; its predecessor is never brought
+    // back alone.
+    if (
+      indexed &&
+      (manifest !== null ||
+        SLOT.some((key) => this.storage.getItem(key) !== null) ||
+        (await read(ACTIVE)) !== null)
+    )
+      sources.push(PREVIOUS);
     let order = sources;
     let declared: Source | undefined;
     let header: Lineage | undefined;
@@ -121,7 +175,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
       const m = JSON.parse(manifest || 'null');
       if (
         m &&
-        (m.slot === 0 || m.slot === 1) &&
+        (m.slot === 0 || m.slot === 1 || (m.slot === ACTIVE && indexed)) &&
         typeof m.worldId === 'string' &&
         m.worldId.length > 0 &&
         m.worldId.length <= 100 &&
@@ -142,7 +196,10 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
       const generations = new Map<Source, number>();
       for (const source of sources)
         generations.set(source, checkpointGeneration(await read(source)));
-      return [...sources].sort((a, b) => generations.get(b)! - generations.get(a)! || a - b);
+      return [...sources].sort(
+        (a, b) =>
+          generations.get(b)! - generations.get(a)! || sources.indexOf(a) - sources.indexOf(b),
+      );
     };
     if (declared === undefined) order = await recoverOrder();
     const errors: string[] = [];
@@ -193,13 +250,14 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     this.incompatible = undefined;
     this.protectedRaw = undefined;
     this.source = undefined;
-    this.recoveredRaw = undefined;
+    this.indexedRaw = undefined;
     this.generation = 0;
     return null;
   }
   private adopt(source: Source, raw: string) {
     this.source = source;
-    this.recoveredRaw = source === PREVIOUS ? raw : undefined;
+    this.indexedRaw = source === PREVIOUS || source === ACTIVE ? raw : undefined;
+    if (source === ACTIVE) this.activeRaw = raw;
   }
   /**
    * Keeps the committed checkpoint as the verified previous copy, writes the candidate and reads it
@@ -218,7 +276,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     };
     const source = await this.write(
       this.storage,
-      this.previous,
+      this.indexed,
       this.source,
       this.committedRaw(),
       raw,

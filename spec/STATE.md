@@ -320,7 +320,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T464 | Active checkpoint in IndexedDB | SAVE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -335,12 +334,13 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- implement-task T464 (active checkpoint in IndexedDB, SAVE r54 / ARCH r22); then the next planning slice of ideation save-storage-and-fast-pace: settle the x10 indicator questions and update-ssot WEB (WEB-18 automatic play) → create-task
+- T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch. Next: the planning slice of ideation save-storage-and-fast-pace: settle the x10 indicator questions and update-ssot WEB (WEB-18 automatic play) → create-task
 - T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 T464 done (q7m3): the game in play's active checkpoint is IndexedDB checkpoints/active beside previous, manifest `slot: 3`; a slot:a/b game moves on the writer's first commit; no-IndexedDB fallback unchanged; e2e helpers read the manifest's source, specs left to the host batch
 - 261026 create-task (q7m3): T464 active checkpoint in IndexedDB with the localStorage move and the unchanged fallback (SAVE@54 ARCH@22)
 - 261026 update-ssot SAVE r54 ARCH r22 (q7m3, ideation save-storage-and-fast-pace step 1): SAVE-3 active checkpoint in IndexedDB beside previous, localStorage game moves on the first commit; SAVE-4 caps per store, localStorage total for settings and the fallback; ARCH-11/ARCH-14/constraints IndexedDB primary store
 - 261026 fix goal-cue browser fixture: revision 2 leaves goal-feedback-221 with only two goals; goal-feedback-5 gives an early home goal and three goals across both sides. Read the opening goal time from recorded facts, keeping normal-speed, repeat-cue, possession and three-viewport assertions.
@@ -360,4 +360,3 @@
 - 261026 T458 Firefox CI fixes (q7m3): business:266 eve race in openWatchAction's home click (retry, return the eve's watch), season-flow:135 and stable-controls-and-pacing:209 `test.slow()`; fast checks and build pass, Firefox/Chromium specs left to the host gate
 - 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
 - 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately
-- 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next

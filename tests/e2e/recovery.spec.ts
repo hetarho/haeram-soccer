@@ -7,6 +7,7 @@ import { currentDay } from '../../packages/engine/src/calendar';
 import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { openSaveMenu } from './save-menu';
+import { committedRaw, idbGet, idbPut } from './club-identity-helpers';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
@@ -68,27 +69,10 @@ test('recovers prior checkpoint after active corruption without clearing another
   await found(page);
   const first = await advanceRound(page);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
-  const previousRaw = await page.evaluate(async () => {
-    localStorage.setItem('another-app:keep', 'present');
-    // The committed predecessor is kept in IndexedDB (→SAVE-3); the active copy is slot:a.
-    const previous = await new Promise<string>((resolve, reject) => {
-      const open = indexedDB.open('haeram-soccor');
-      open.onerror = () => reject(open.error);
-      open.onsuccess = () => {
-        const get = open.result
-          .transaction('checkpoints', 'readonly')
-          .objectStore('checkpoints')
-          .get('previous');
-        get.onsuccess = () => {
-          open.result.close();
-          resolve(get.result as string);
-        };
-        get.onerror = () => reject(get.error);
-      };
-    });
-    localStorage.setItem('haeram-soccor:slot:a', 'corrupt');
-    return previous;
-  });
+  await page.evaluate(() => localStorage.setItem('another-app:keep', 'present'));
+  // The active copy and its committed predecessor are kept in IndexedDB (→SAVE-3).
+  const previousRaw = (await idbGet(page, 'checkpoints', 'previous'))!;
+  await idbPut(page, 'checkpoints', 'active', 'corrupt');
   const previous = (await decode(previousRaw)).world;
   await page.reload();
   // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
@@ -192,11 +176,10 @@ test('quota failure preserves disk save, exports actual memory progress and retr
 });
 test('unsupported import leaves the current world and manifest intact', async ({ page }) => {
   await found(page);
-  const data = await page.evaluate(() => {
-    const m = localStorage.getItem('haeram-soccor:manifest')!;
-    const raw = localStorage.getItem('haeram-soccor:slot:a')!;
-    return { manifest: m, raw };
-  });
+  const data = {
+    manifest: (await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!,
+    raw: (await committedRaw(page))!,
+  };
   const future = { ...JSON.parse(data.raw), schema: 99 };
   await (
     await openSaveMenu(page)

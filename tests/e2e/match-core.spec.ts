@@ -15,15 +15,12 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { expectViewFits, settle } from './layout';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
-import { openRecordedMatch } from './club-identity-helpers';
+import { committedRaw, openRecordedMatch } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 
 async function savedRaw(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  return page.evaluate(() => {
-    const manifest = JSON.parse(localStorage.getItem('haeram-soccor:manifest')!);
-    return localStorage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!;
-  });
+  return (await committedRaw(page))!;
 }
 
 async function expectCompactMatch(page: Page, viewport: { width: number; height: number }) {

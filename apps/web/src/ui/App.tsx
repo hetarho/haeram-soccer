@@ -1109,17 +1109,8 @@ export function App() {
     setLocalError('');
     const raw = await file.text();
     if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-    let stored = false;
-    try {
-      stored = !!(
-        localStorage.getItem('haeram-soccor:manifest') ||
-        localStorage.getItem('haeram-soccor:slot:a') ||
-        localStorage.getItem('haeram-soccor:slot:b')
-      );
-    } catch {
-      /* unsupported storage is reported by the client */
-    }
-    if (w || stored) {
+    // The stored game in play counts its IndexedDB active copy (→SAVE-3).
+    if (w || client?.hasStoredGame()) {
       setMoreOpen(false);
       setPendingImport(raw);
     } else await client?.importFile(raw);

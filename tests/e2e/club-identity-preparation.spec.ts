@@ -1,5 +1,4 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { decode } from '../../apps/web/src/adapters/persistence';
 import { competitionLabel } from '../../apps/web/src/ui/format';
 import { canonical } from '../../packages/contracts/src/index';
 import { KIT_ROLES, type KitRole } from '../../packages/contracts/src/identity';
@@ -14,6 +13,7 @@ import {
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { ALL_DELEGATED } from './events';
+import { savedWorld } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { watchNext } from './watch';
 
@@ -46,15 +46,6 @@ function chosenAppearance(w: World, fixture: Fixture, role: KitRole) {
   return appearanceForFixture(chosen, fixture);
 }
 
-/** The committed checkpoint's world, once every revision is on disk. */
-async function savedWorld(page: Page) {
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  const raw = await page.evaluate(() => {
-    const manifest = JSON.parse(localStorage.getItem('haeram-soccor:manifest')!);
-    return localStorage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!;
-  });
-  return (await decode(raw)).world;
-}
 const recorded = async (page: Page, id: string) =>
   (await savedWorld(page)).ownMatches.find((match) => match.id === id)?.appearance;
 

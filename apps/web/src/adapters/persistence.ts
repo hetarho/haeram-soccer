@@ -210,8 +210,13 @@ export async function checkpoint(w: World, generation = 1, parentGeneration = 0)
 }
 /** Public codec API retained; browser clients inject their worker into lean SaveRepository. */
 export class Saves extends SaveRepository {
-  constructor(storage: StoragePort, inspect: SaveInspector = decode, previous?: PreviousStore) {
-    super(storage, inspect, writeCheckpoint, previous);
+  constructor(
+    storage: StoragePort,
+    inspect: SaveInspector = decode,
+    previous?: PreviousStore,
+    active?: PreviousStore,
+  ) {
+    super(storage, inspect, writeCheckpoint, previous, active);
   }
   async save(w: World) {
     const info = this.generationInfo;
