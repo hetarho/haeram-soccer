@@ -346,7 +346,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T483 | Football-audience language packs | WEB ARCH | - | doing@261027.l8p2 |
 | T477 | Players hurry to their places and wait during dead time | MATCH WEB | - | todo |
 | T478 | Dead-ball beat on the presentation clock | WEB MATCH | T477 | todo |
 | T479 | Match-model revision 4 and free-kick takers by place | MATCH SAVE | - | todo |
@@ -373,6 +372,7 @@
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved
 - 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks
 - 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
 - 261027 create-task WEB MATCH start
@@ -392,4 +392,3 @@
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
 - 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
-- 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
