@@ -172,7 +172,9 @@ function goalWorld() {
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    seed: 'goal-feedback-5',
+    // On match-model revision 3 goal-feedback-0's first match opens 2′ home, then 59′ and 67′ away
+    // (goal-feedback-5's first goal moved to 28′ with the named-manager context).
+    seed: 'goal-feedback-0',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';

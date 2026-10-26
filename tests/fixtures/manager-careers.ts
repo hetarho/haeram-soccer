@@ -71,6 +71,9 @@ export interface ManagerJourneyCareer {
 /** A validated prepared career; UI changes do not rebuild its two seasons. */
 export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
   const w = preparedWorld('manager-journey');
+  // Prepared on an earlier match-model revision: the build's writer moves it to the released one
+  // at load (→SAVE-23, Host.adoptModel), so the journey imports and compares the world as held.
+  if (activateMatchModel(w, MATCH_MODEL_RELEASE)) w.revision++;
   const { pages, views } = await managerHistoryRead(w);
   const tenures = tenureViews(views),
     facts = w.managerHistory!.tenures;

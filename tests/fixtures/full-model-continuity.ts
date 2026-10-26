@@ -28,7 +28,12 @@ import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
  * result is real football; every responsibility is delegated so nothing holds the watch.
  */
 export const ROUNDS_BEFORE = 3;
-const SEEDS = ['full-model-continuity', 'full-model-continuity-2', 'full-model-continuity-3'];
+// Ten candidates: on match-model revision 3 none of the first three next matches holds both
+// scenes, and a later football change can starve a short list again.
+const SEEDS = [
+  'full-model-continuity',
+  ...Array.from({ length: 9 }, (_, n) => `full-model-continuity-${n + 2}`),
+];
 /** The speed the journey plays the match out at: the fastest offered (→WEB-32). */
 export const FAST_SPEED = WATCH_SPEEDS.at(-1)!;
 /** Real ms one running minute lasts at `FAST_SPEED`. */
