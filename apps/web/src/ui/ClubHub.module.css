@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'stage' 'state' 'fixture';
+  grid-template-areas: 'header' 'stage' 'office' 'state' 'fixture';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -679,6 +679,58 @@ button.resources:active:not(:disabled) {
 }
 .seasonCard > .seasonMeter {
   padding: 8px 14px 10px;
+}
+/* The owner office's entrance: a pressable door with the office art (→WEB-11). */
+.office {
+  grid-area: office;
+  display: grid;
+  grid-template-columns: minmax(96px, 34%) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+.office:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.officeArt {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: calc(var(--card-radius) / 2);
+}
+.officeText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.officeText b {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.officeText small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  word-break: keep-all;
+  font-family: var(--display);
+}
+.officeEnter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--accent-text);
+  font-family: var(--display);
 }
 /* Strength leads team state on a row of its own (→WEB-44). */
 .state li[data-condition='strength'] {

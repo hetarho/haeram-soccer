@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| o7h4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T16:16Z | 2026-10-26T16:16Z | - |
+| o7h4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T16:16Z | 2026-10-26T16:16Z | T491 |
 
 ## inbox
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
@@ -358,7 +358,7 @@
 | T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
 | T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
 | T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
-| T491 | Focused owner office entered from home, with the clock stopped inside | WEB | T490 | todo |
+| T491 | Focused owner office entered from home, with the clock stopped inside | WEB | T490 | doing@261027.o7h4 |
 | T492 | Office lobby with six area cards, full-screen areas and 결재 라인 | WEB | T491 | todo |
 | T493 | Records season sub-screen with a navigator bar, player totals up to 100 | WEB | - | todo |
 

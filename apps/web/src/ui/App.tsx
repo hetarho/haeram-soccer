@@ -21,13 +21,15 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { openPeople, useNavigation, type Page } from './state';
+import { NAV, TABS } from './navigationTabs';
+import { HudCash } from './HudCash';
 import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { PlayerPreparationHost } from './PlayerPreparationHost';
 import { TaskReturn } from './TaskReturn';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
-import { compactMoney, competitionLabel, money, number, percent, seasonName } from './format';
+import { competitionLabel, number, percent, seasonName } from './format';
 import { Money } from './Money';
 import { ProgressControls, ProgressOverview } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
@@ -51,10 +53,8 @@ import {
 import s from './App.module.css';
 import { Dialog } from './Dialog';
 import { ActionOutcome } from './ActionOutcome';
-import { AnimatedMoney } from './AnimatedMoney';
 import { play } from './motion';
 import { EventCenter, CommunicationsCenter, CommunicationsButton } from './EventCenter';
-import { RemedySheet } from './RemedySheet';
 import { GlossaryHost } from './Glossary';
 import { useGlossary } from './metricGlossary';
 import { useNewsSheet } from './NewsFeed';
@@ -62,7 +62,6 @@ import { CelebrationHost } from './Celebration';
 const CupsView = lazy(() => import('./CupsView').then((module) => ({ default: module.CupsView })));
 import { TeamSheetHost } from './TeamSheet';
 import { PlayerSheetHost } from './PlayerSheet';
-import { cashState } from './teamState';
 import { MANAGER_GONE } from '../../../../packages/engine/src/ops-staff';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
@@ -336,30 +335,6 @@ function ClubJournal({ state }: { state: ClientState }) {
     </>
   );
 }
-/** The match view has no menu entry: it opens only from a watch action (→WEB-40). */
-const NAV: [Page, string][] = [
-  ['dashboard', 'navigation.dashboard'],
-  ['league', 'navigation.league'],
-  ['europe', 'navigation.europe'],
-  ['history', 'navigation.history'],
-  ['people', 'navigation.people'],
-  ['training', 'navigation.training'],
-  ['business', 'navigation.business'],
-];
-/**
- * Home sits in the raised centre; competition destinations fan out to the left and the owner's
- * three levers to the right: 사람 (who joins and stays), 훈련 (how players develop) and 방향 (where
- * the club is going and how it earns and spends, →WEB-10). The transfer market and the staff are tabs of 사람.
- */
-const TABS: [Page, string, string, Page[]][] = [
-  ['league', 'navigation.short.league', 'navigation.league', ['league']],
-  ['europe', 'navigation.short.europe', 'navigation.europe', ['europe']],
-  ['history', 'navigation.short.history', 'navigation.history', ['history']],
-  ['dashboard', 'navigation.short.dashboard', 'navigation.dashboard', ['dashboard']],
-  ['people', 'navigation.short.people', 'navigation.people', ['people']],
-  ['training', 'navigation.short.training', 'navigation.training', ['training']],
-  ['business', 'navigation.short.business', 'navigation.business', ['business']],
-];
 const selectContentWorld = worldSelector([
   'year',
   'round',
@@ -526,48 +501,6 @@ const ConnectedRich = memo(function ConnectedRich({
     </Suspense>
   );
 });
-/**
- * Cash is the one resource every decision spends, so it stays pinned to the top right; tapping it
- * shows how long it lasts and the ways to raise or save money (→WEB-44).
- */
-function HudCash({ client }: { client?: GameClient }) {
-  const { t } = useLocale();
-  const w = useGameState((state) => state.view?.world);
-  const [open, setOpen] = useState(false);
-  if (!w) return null;
-  const own = w.clubs.find((club) => club.id === w.playerClub)!;
-  const state = cashState(w);
-  const exact = money(w.cash, own.country, w.year);
-  return (
-    <>
-      <button
-        className={`${s.hudCash} ${BigInt(w.cash) < 0n ? s.hudCashNegative : state.tone === 'warn' || state.tone === 'bad' ? s.hudCashWarn : ''}`}
-        data-testid="hud-cash"
-        title={exact}
-        aria-label={t('shell.cashDetails', { amount: exact, status: state.status })}
-        disabled={!client}
-        onClick={(event) => {
-          event.currentTarget.focus();
-          setOpen(true);
-        }}
-      >
-        <span>
-          <small>{t('shell.cash')}</small>
-          {/* The money notation on every viewport (→WEB-67); the exact amount is the title. */}
-          <AnimatedMoney
-            value={w.cash}
-            format={(value) => compactMoney(value, own.country, w.year)}
-            upClass={s.cashUp}
-            downClass={s.cashDown}
-          />
-        </span>
-      </button>
-      {open && client && (
-        <RemedySheet w={w} client={client} state="cash" onClose={() => setOpen(false)} />
-      )}
-    </>
-  );
-}
 const GameHud = memo(function GameHud({
   onMenu,
   playing,
@@ -1011,6 +944,13 @@ export function App() {
     if (playing && worldId && !progressionBlocked) controller?.resumeAway();
   }, [playing, worldId, controller, progressionBlocked]);
   useTabTitle(controller);
+  // Entering the owner office stops a running clock; leaving restores it (→WEB-98).
+  const inOffice = playing && page === 'business';
+  useEffect(() => {
+    if (!inOffice || !controller) return;
+    controller.enterOffice();
+    return () => controller.leaveOffice();
+  }, [inOffice, controller]);
   // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
   const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
   const launched = useRef(false);
@@ -1129,41 +1069,48 @@ export function App() {
     } else await client?.importFile(raw);
   };
   const menuDisabled = !playing;
+  // The owner office is a focused place: no HUD, calendar, controls or menus (→WEB-39).
+  const office = playing && page === 'business';
   return (
     <div
       data-ui="game-shell"
       data-playing={playing}
       data-page={page}
-      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''}`}
+      data-office={office || undefined}
+      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''} ${office ? s.officeLayout : ''}`}
     >
-      <aside className={s.sidebar} data-ui="sidebar">
-        <div className={s.brand}>
-          <i className={s.brandSignal} aria-hidden="true" />
-          <h1>HAERAM</h1>
-          <span>FOOTBALL MANAGER</span>
-          <small>A CLUB. A CENTURY.</small>
-        </div>
-        <nav className={s.nav} aria-label={t('shell.navigation')}>
-          {NAV.map(([id, label]) => (
-            <button
-              data-ui="navigation"
-              key={id}
-              disabled={menuDisabled}
-              aria-current={page === id ? 'page' : undefined}
-              className={page === id ? s.active : undefined}
-              onClick={() => setPage(id)}
-            >
-              <NavIcon page={id} />
-              {t(label)}
-            </button>
-          ))}
-        </nav>
-        {client && !playing && (
-          <SaveActions client={client} compact onDownload={download} onImport={importFile} />
-        )}
-      </aside>
+      {!office && (
+        <aside className={s.sidebar} data-ui="sidebar">
+          <div className={s.brand}>
+            <i className={s.brandSignal} aria-hidden="true" />
+            <h1>HAERAM</h1>
+            <span>FOOTBALL MANAGER</span>
+            <small>A CLUB. A CENTURY.</small>
+          </div>
+          <nav className={s.nav} aria-label={t('shell.navigation')}>
+            {NAV.map(([id, label]) => (
+              <button
+                data-ui="navigation"
+                key={id}
+                disabled={menuDisabled}
+                aria-current={page === id ? 'page' : undefined}
+                className={page === id ? s.active : undefined}
+                onClick={() => setPage(id)}
+              >
+                <NavIcon page={id} />
+                {t(label)}
+              </button>
+            ))}
+          </nav>
+          {client && !playing && (
+            <SaveActions client={client} compact onDownload={download} onImport={importFile} />
+          )}
+        </aside>
+      )}
       <main className={s.main}>
-        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
+        {screen === 'game' && !office && (
+          <GameHud onMenu={openMenu} playing={playing} client={client} />
+        )}
         {!client && localError && (
           <FeedbackOverlay>
             <div className={s.error} role="alert">
@@ -1180,7 +1127,7 @@ export function App() {
           />
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
-        {client && controller && playing && !w.bankrupt && page !== 'match' && (
+        {client && controller && playing && !w.bankrupt && page !== 'match' && !office && (
           <ProgressOverview compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
@@ -1232,7 +1179,7 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  <TaskReturn />
+                  {!office && <TaskReturn />}
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} controller={controller} />
                   </div>
@@ -1256,7 +1203,7 @@ export function App() {
           )}
           {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
         </div>
-        {client && controller && playing && !w.bankrupt && page !== 'match' && (
+        {client && controller && playing && !w.bankrupt && page !== 'match' && !office && (
           <ProgressControls
             client={client}
             controller={controller}
@@ -1265,22 +1212,24 @@ export function App() {
         )}
       </main>
       {playing && <AccessibleSaveStatus />}
-      <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
-        {TABS.map(([id, label, full, owns]) => (
-          <button
-            data-ui="navigation"
-            key={id}
-            aria-label={t(full)}
-            aria-current={owns.includes(page) ? 'page' : undefined}
-            className={id === 'dashboard' ? s.homeTab : undefined}
-            disabled={menuDisabled}
-            onClick={() => setPage(id)}
-          >
-            <NavIcon page={id} />
-            <span>{t(label)}</span>
-          </button>
-        ))}
-      </nav>
+      {!office && (
+        <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
+          {TABS.map(([id, label, full, owns]) => (
+            <button
+              data-ui="navigation"
+              key={id}
+              aria-label={t(full)}
+              aria-current={owns.includes(page) ? 'page' : undefined}
+              className={id === 'dashboard' ? s.homeTab : undefined}
+              disabled={menuDisabled}
+              onClick={() => setPage(id)}
+            >
+              <NavIcon page={id} />
+              <span>{t(label)}</span>
+            </button>
+          ))}
+        </nav>
+      )}
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
       {client && playing && <CommunicationsCenter key={w.id} client={client} />}

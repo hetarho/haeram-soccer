@@ -213,6 +213,20 @@ html[data-theme] {
     background-repeat: no-repeat;
   }
 
+  /* The office bar wears the HUD's rule over the canvas, opaque above scrolling content. */
+  [data-ui='office-bar'] {
+    border: 0;
+    background:
+      var(--image-art-rule-dark) center bottom / calc(100% - 24px) 3px no-repeat,
+      var(--image-canvas-material) 0 0 / var(--image-material-size, 512px) repeat
+        var(--image-canvas);
+  }
+
+  [data-ui='office-bar'] h2 {
+    color: var(--image-ink-color);
+    font-weight: 800;
+  }
+
   [data-ui='game-shell'] > main > header > button:first-child {
     border: 0;
     width: 44px;
@@ -338,6 +352,26 @@ html[data-theme] {
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     gap: 18px;
+  }
+
+  /* Home's door to the owner office wears the selected tile frame so it reads as an action. */
+  [data-home-part='office'] {
+    min-height: 84px;
+    padding: 6px 12px 6px 6px;
+    border: 8px solid transparent;
+    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
+    border-radius: var(--image-radius, 0px);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+  }
+
+  [data-home-part='office'] small {
+    color: var(--image-muted);
+  }
+
+  [data-home-part='office'] > span:last-child {
+    color: var(--image-ink-color);
   }
 
   [data-home-part='fixture'] > div:first-child > small {

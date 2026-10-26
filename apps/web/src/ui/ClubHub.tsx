@@ -9,7 +9,7 @@ import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
 import { useProgression, type ProgressionController } from '../runtime/progression';
-import { useNavigation } from './state';
+import { openOfficeLobby, useNavigation } from './state';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -182,6 +182,35 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
+/** The office's six areas, named on its entrance (→WEB-11/39). */
+const OFFICE_AREAS = '운영 방침 · 시설 · 재정 · 후원 · 구단 디자인 · 결재 라인';
+/** Home's door to the owner office, where every club lever is (→WEB-11, WEB-39). */
+export function OfficeEntrance({ w }: { w: World }) {
+  return (
+    <button
+      type="button"
+      className={s.office}
+      data-home-part="office"
+      aria-label="구단주 사무실"
+      aria-describedby="hub-office-areas"
+      onClick={(event) => {
+        event.currentTarget.focus();
+        openOfficeLobby();
+      }}
+    >
+      <FacilityArt kind="manager" world={w} className={s.officeArt} />
+      <span className={s.officeText}>
+        <b>구단주 사무실</b>
+        <small id="hub-office-areas">{OFFICE_AREAS}</small>
+      </span>
+      <span className={s.officeEnter} aria-hidden="true">
+        들어가기
+        <PixelIcon name="chevronRight" size={14} />
+      </span>
+    </button>
+  );
+}
+
 /**
  * Where this season stands (→WEB-11): our division's round, our rank and the record change only
  * when a round is played, so they read together above the season-progress rule. Only the card
@@ -300,6 +329,7 @@ export function ClubHub({
       <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />
       </div>
+      <OfficeEntrance w={w} />
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
       <NextMatchCard
         w={w}

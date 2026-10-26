@@ -1,5 +1,6 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Page } from '@playwright/test';
+import { enterOffice, leaveOffice, officeBar } from './office';
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -31,12 +32,10 @@ export async function openOffice(page: Page) {
     new URL(page.url()).pathname === '/direction' &&
     (await page.getByTestId('owner-office').isVisible());
   if (!open) {
-    const office = page
-      .getByRole('navigation')
-      .getByRole('button', { name: '구단 운영', exact: true });
+    // The office has no menu entry: it opens from home's entrance (→WEB-39).
     for (let attempt = 0; ; attempt++) {
       try {
-        await office.click({ timeout: 2000 });
+        await enterOffice(page, { timeout: 2000 });
         break;
       } catch (error) {
         if (attempt >= 3) throw error;
@@ -104,13 +103,15 @@ export async function configureResponsibilities(
     .getByRole('navigation')
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
-  const returnLabel = (await nav.count())
-    ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
-    : undefined;
-  const businessTab =
-    returnLabel === '구단 운영'
-      ? await page.getByRole('tab', { selected: true }).first().innerText()
+  // Inside the office there is no menu: return to the office tab that was open instead.
+  const inOffice = await officeBar(page).isVisible();
+  const returnLabel =
+    !inOffice && (await nav.count())
+      ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
+  const businessTab = inOffice
+    ? await page.getByRole('tab', { selected: true }).first().innerText()
+    : undefined;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -122,6 +123,29 @@ export async function configureResponsibilities(
       break;
     } catch (error) {
       if (attempt >= 3) throw error;
+    }
+  }
+  // The mode switch lives in the bottom controls, which the office hides (→WEB-39/96).
+  if (options.mode && (await officeBar(page).isVisible())) await leaveOffice(page);
+  if (options.mode) {
+    const mode = page.getByTestId('progression-mode');
+    const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
+    if ((await mode.innerText()) !== expected) {
+      await page.getByRole('button', { name: '진행 방식 변경', exact: true }).click();
+      const dialog = page.getByRole('dialog', {
+        name: '게임 진행 방식이 변경됩니다.',
+        exact: true,
+      });
+      if (await dialog.isVisible())
+        await dialog
+          .getByRole('button', {
+            name: options.mode === 'manual' ? '수동 모드로 변경' : '자동 모드로 변경',
+            exact: true,
+          })
+          .click();
+      await expect(mode).toHaveText(expected);
+      await dismissMatchReport(page);
+      await dismissSettingsToast(page);
     }
   }
   const office = await openOffice(page);
@@ -159,27 +183,6 @@ export async function configureResponsibilities(
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
   }
-  if (options.mode) {
-    const mode = page.getByTestId('progression-mode');
-    const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
-    if ((await mode.innerText()) !== expected) {
-      await page.getByRole('button', { name: '진행 방식 변경', exact: true }).click();
-      const dialog = page.getByRole('dialog', {
-        name: '게임 진행 방식이 변경됩니다.',
-        exact: true,
-      });
-      if (await dialog.isVisible())
-        await dialog
-          .getByRole('button', {
-            name: options.mode === 'manual' ? '수동 모드로 변경' : '자동 모드로 변경',
-            exact: true,
-          })
-          .click();
-      await expect(mode).toHaveText(expected);
-      await dismissMatchReport(page);
-      await dismissSettingsToast(page);
-    }
-  }
   // Explicit report choices are applied after the mode-entry default.
   for (const [key, value] of Object.entries(options.observations ?? {})) {
     const choice = office
@@ -196,11 +199,14 @@ export async function configureResponsibilities(
     }
   }
   if (businessTab) await page.getByRole('tab', { name: businessTab, exact: true }).click();
-  else if (returnLabel)
-    await page
-      .getByRole('navigation')
-      .getByRole('button', { name: returnLabel, exact: true })
-      .click();
+  else {
+    await leaveOffice(page);
+    if (returnLabel)
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: returnLabel, exact: true })
+        .click();
+  }
 }
 export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
   const responsibilities: Partial<Record<ResponsibilityKey, 'direct' | 'delegated'>> = {};

@@ -128,6 +128,8 @@ const arrival = typeof location === 'undefined' ? undefined : arrive();
 
 export const useNavigation = create<{
   page: Page;
+  /** The page the owner office was entered from, where 나가기 returns (→WEB-39). */
+  officeFrom?: Page;
   setPage: (page: Page) => void;
   /** Redirects without a history entry (e.g. a match address without a live match). */
   replacePage: (page: Page) => void;
@@ -144,6 +146,13 @@ export const useNavigation = create<{
     set({ page });
   },
 }));
+
+// However the office is reached — a page change, an address, back or a task return — the page
+// before it is where leaving returns.
+useNavigation.subscribe((state, previous) => {
+  if (state.page === 'business' && previous.page !== 'business')
+    useNavigation.setState({ officeFrom: previous.page });
+});
 
 /** A one-shot request a page takes when it opens, or at once while it is showing. */
 export interface OneShot<T> {
@@ -182,6 +191,21 @@ export const useCoachRequest = oneShot<{
   focus?: TrainingFocus | YouthFocus;
   player?: string;
 }>();
+/** Home's entrance to the owner office (→WEB-11/39). */
+export function openOfficeLobby() {
+  openBusiness('strategy');
+}
+/**
+ * 나가기 from the owner office: back to the task that detoured into it, otherwise to the page it
+ * was entered from, home by default.
+ */
+export function leaveOffice() {
+  if (useTaskMemory.getState().returning?.target === 'business') {
+    returnToTask();
+    return;
+  }
+  useNavigation.getState().setPage(useNavigation.getState().officeFrom ?? 'dashboard');
+}
 /** The authoritative responsibility and progression page in club operations. */
 export function openOwnerOffice() {
   beginTaskDetour('business');

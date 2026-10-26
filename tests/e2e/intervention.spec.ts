@@ -3,6 +3,7 @@ import { chooseOption, selectOptions } from './select';
 import { chooseLevel, delegateSales } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
+import { leaveOffice, openOfficeArea } from './office';
 
 test('changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances', async ({
   page,
@@ -71,11 +72,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.reload();
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '구단 운영' })
-    .click();
-  await page.getByRole('tab', { name: '재정', exact: true }).click();
+  await openOfficeArea(page, '재정');
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '돈이 들어오고 나간 이유' })).toBeVisible();
@@ -131,8 +128,7 @@ for (const viewport of [
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
-    await nav.getByRole('button', { name: '구단 운영', exact: true }).click();
-    await page.getByRole('tab', { name: '시설', exact: true }).click();
+    await openOfficeArea(page, '시설');
     const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
     await review.click();
     const plan = page.getByRole('dialog', { name: '경기장 공사 확인' });
@@ -140,6 +136,7 @@ for (const viewport of [
     await page.keyboard.press('Escape');
     await expect(plan).toHaveCount(0);
     await expect(review).toBeFocused();
+    await leaveOffice(page);
     await nav.getByRole('button', { name: '리그', exact: true }).click();
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');

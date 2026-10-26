@@ -5,7 +5,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { NextMatchCard, SeasonCard, TeamState } from './ClubHub';
+import { NextMatchCard, OfficeEntrance, SeasonCard, TeamState } from './ClubHub';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
 
 vi.mock('../runtime/store', async (importOriginal) => {
@@ -16,6 +16,10 @@ vi.mock('../runtime/store', async (importOriginal) => {
       selector(original.gameStore.getState()),
   };
 });
+// Facility art reads the presentation packs; the markup checks need only its slot.
+vi.mock('./FacilityArt', () => ({
+  FacilityArt: ({ kind }: { kind: string }) => createElement('span', { 'data-facility-art': kind }),
+}));
 vi.mock('./teamState', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./teamState')>()),
   teamStates: vi.fn(),
@@ -162,6 +166,17 @@ describe('home season card', () => {
     expect(markup).not.toContain('data-testid="game-round"');
     expect(markup).not.toContain('data-testid="game-round-total"');
     expect(markup).toContain('라운드');
+  });
+});
+
+describe('owner office entrance', () => {
+  it('is one button named for the office that lists its areas (→WEB-11/39)', () => {
+    const markup = renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
+    expect(markup).toMatch(/^<button[^>]*aria-label="구단주 사무실"/);
+    expect(markup).toContain('data-home-part="office"');
+    expect(markup).toContain('aria-describedby="hub-office-areas"');
+    expect(markup).toContain('운영 방침 · 시설 · 재정 · 후원 · 구단 디자인 · 결재 라인');
+    expect(markup).toContain('data-facility-art="manager"');
   });
 });
 

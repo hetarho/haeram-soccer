@@ -4,7 +4,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
 import { PageTabs, TabPanel } from './PageTabs';
-import { BUSINESS_TABS, businessTab, type BusinessView } from './state';
+import { BUSINESS_TABS, businessTab, leaveOffice, type BusinessView } from './state';
+import { OfficeBar } from './OfficeBar';
 import s from './App.module.css';
 
 /**
@@ -50,6 +51,11 @@ export function OperationsView({
   }, [tab]);
   return (
     <>
+      <OfficeBar
+        back={{ label: '나가기', onClick: leaveOffice }}
+        title="구단주 사무실"
+        client={client}
+      />
       <PageTabs
         tabs={BUSINESS_TABS}
         value={tab}
