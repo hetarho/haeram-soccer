@@ -4,7 +4,8 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS } from '../player';
 import { BOX_CONFIG, boxScene, boxSide, boxZones } from './box';
 import { playGrid } from './engine';
-import { DISORDER_CONFIG, FREEDOM_CONFIG, looseness } from './freedom';
+import { planCoordination, pressReach } from './coordination';
+import { DISORDER_CONFIG, FREEDOM_CONFIG, looseness, TENDENCY_MOVEMENT_CONFIG } from './freedom';
 import {
   attackZones,
   carryTo,
@@ -20,12 +21,14 @@ import {
   type EndedIntention,
   type Intention,
 } from './intentions';
+import { GRID_MOVEMENT_CONFIG, readAt } from './movement';
 import type { Point } from './pitch';
 import { MOTION_STATES, buildFrames } from './playback';
 import { buildGridSetup } from './setup';
 import { runPlan, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { random } from '../primitives';
-import { createState, type GridPlayer, type GridState } from './state';
+import { createState, skill, type GridPlayer, type GridState } from './state';
+import type { PlayerTendencies } from './tendencies';
 import type { TraceEntry } from './trace';
 import { gridKit, type Kit } from './testkit';
 
@@ -709,17 +712,19 @@ describe('the box scene’s runs (→MATCH-33, T443)', () => {
   });
 });
 
-/** A tendency row with this freedom and neutral others (T432 reads only the freedom). */
-const tendency = (freedom: number) => ({
+/** A tendency row with this freedom and neutral others unless `rest` names them. */
+const tendency = (freedom: number, rest: Partial<PlayerTendencies> = {}): PlayerTendencies => ({
   freedom,
   discipline: 0.5,
   pressing: 0.5,
   anticipation: 0.5,
+  ...rest,
 });
 /**
  * A revision-2 state of `k` with the per-match tendencies T432 reads: every player free by `base`,
  * side 0's `free` by their own, side 0 holding the ball at `ball` with nobody of side 1 near it.
- * `none` leaves the tendencies out, the freedom-less places to compare with.
+ * `none` leaves the tendencies out, the freedom-less places to compare with; `rows` sets each
+ * side's other tendencies by roster index (T433).
  */
 function freeLab(
   k: Kit,
@@ -727,6 +732,10 @@ function freeLab(
   free: Record<number, number> = {},
   base = 0.1,
   none = false,
+  rows: [
+    Record<number, Partial<PlayerTendencies>>?,
+    Record<number, Partial<PlayerTendencies>>?,
+  ] = [],
 ): GridState {
   const s = createState({
     ...k.setup,
@@ -735,9 +744,9 @@ function freeLab(
       ? {}
       : {
           tendencies: [
-            k.setup.rosters[0].map((_, i) => tendency(free[i] ?? base)),
-            k.setup.rosters[1].map(() => tendency(base)),
-          ] as [ReturnType<typeof tendency>[], ReturnType<typeof tendency>[]],
+            k.setup.rosters[0].map((_, i) => tendency(free[i] ?? base, rows[0]?.[i])),
+            k.setup.rosters[1].map((_, i) => tendency(base, rows[1]?.[i])),
+          ] as [PlayerTendencies[], PlayerTendencies[]],
         }),
   });
   s.possession = 0;
@@ -843,5 +852,78 @@ describe('freedom in movement (→MATCH-17, STAFF-46, T432)', () => {
     plain.lastLoss = { side: 1, at: plain.elapsed };
     plain.players[0][7]!.pos = [20, 60];
     expect(targetOf(plain, 0, 7)).toEqual(shapePlace(plain, 0, 7));
+  });
+});
+
+describe('규율, 압박 성향 and 예측력 in movement (→MATCH-17, PLAYER-26, T433)', () => {
+  const counter = gridKit(['counter', 'balanced'], 'intention-lab', DISABLED_RELEASE);
+  const TM = TENDENCY_MOVEMENT_CONFIG;
+
+  it('a disciplined player keeps closer to his slot than an undisciplined one of equal freedom', () => {
+    // The free left-back (counter's 1) overlaps with the ball on his flank in the other half.
+    const ball: Point = [80, 8];
+    const plain = freeLab(counter, ball, {}, 0.1, true);
+    // Freedom 0.3, so the undisciplined one's overlap stays on the pitch.
+    const at = (discipline: number) =>
+      freeLab(counter, ball, { 1: 0.3 }, 0.1, false, [{ 1: { discipline } }]);
+    const drift = (s: GridState) => shapePlace(s, 0, 1)[0] - shapePlace(plain, 0, 1)[0];
+    const D = 0.3 * FREEDOM_CONFIG.overlap * FREEDOM_CONFIG.drift;
+    expect(drift(at(1))).toBeCloseTo(D * (1 - TM.discipline));
+    expect(drift(at(0))).toBeCloseTo(D * (1 + TM.discipline));
+    expect(drift(at(0.5))).toBeCloseTo(D);
+    // The shape's disorder after a turnover takes him less far from his place too.
+    const loose = (discipline: number) => {
+      const s = freeLab(counter, [60, 34], {}, 0.1, false, [{ 7: { discipline } }]);
+      s.players[0][7]!.pos = [20, 60];
+      s.lastLoss = { side: 1, at: s.elapsed };
+      const place = shapePlace(s, 0, 7);
+      return (targetOf(s, 0, 7)[0] - place[0]) / (20 - place[0]);
+    };
+    expect(loose(1)).toBeCloseTo(DISORDER_CONFIG.loosen * (1 - TM.discipline));
+    expect(loose(0)).toBeCloseTo(DISORDER_CONFIG.loosen * (1 + TM.discipline));
+  });
+
+  it('a high 압박 성향 presses more often in the same situation', () => {
+    // One of side 1 stands just beyond his side's press reach of the carrier, the rest far off.
+    const at = (pressing: number) => {
+      const s = freeLab(counter, [60, 34], {}, 0.1, false, [{}, { 6: { pressing } }]);
+      const reach = pressReach(s, 1);
+      s.players[1][6]!.pos = [60 + reach * 1.15, 34];
+      return planCoordination(s, false).jobs.some(
+        (j) => j.side === 1 && j.idx === 6 && j.intention.kind === 'press',
+      );
+    };
+    expect(at(0.5)).toBe(false);
+    expect(at(1)).toBe(true);
+    expect(at(0)).toBe(false);
+    // Before revision 2 nobody's reach moves.
+    const plain = freeLab(counter, [60, 34], {}, 0.1, true);
+    plain.players[1][6]!.pos = [60 + pressReach(plain, 1) * 1.15, 34];
+    expect(planCoordination(plain, false).jobs.some((j) => j.side === 1 && j.idx === 6)).toBe(
+      false,
+    );
+  });
+
+  it('high 예측력 reacts earlier to the same through ball', () => {
+    // A ball side 0 kicks 0.8 s into the action: a defender of side 1 turns to it at `readAt`.
+    const kick = 0.8;
+    const read = (anticipation: number) => {
+      const s = freeLab(counter, [60, 34], {}, 0.1, false, [{}, { 3: { anticipation } }]);
+      return readAt(s, s.players[1][3]!, 0, kick);
+    };
+    expect(read(0.9)).toBeLessThan(read(0.3));
+    expect(read(0.3)).toBeLessThan(read(0.1));
+    expect(read(0.9)).toBe(0);
+    // Never after the kick, and a teammate of the kicker reads it at the kick.
+    expect(read(0)).toBe(kick);
+    const s = freeLab(counter, [60, 34]);
+    expect(readAt(s, s.players[0][9]!, 0, kick)).toBe(kick);
+    // Before revision 2 his 위치선정 times it as before.
+    const plain = freeLab(counter, [60, 34], {}, 0.1, true);
+    const gp = plain.players[1][3]!;
+    const positioning = Math.min(99, Math.max(1, skill(plain, 1, 3, 'positioning'))) / 99;
+    expect(readAt(plain, gp, 0, kick)).toBeCloseTo(
+      Math.max(0, kick * (1 - GRID_MOVEMENT_CONFIG.read * positioning)),
+    );
   });
 });

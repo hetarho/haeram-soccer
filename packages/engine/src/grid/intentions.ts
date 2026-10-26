@@ -27,6 +27,7 @@ import {
   screenPoint,
   type CoordinationPlan,
 } from './coordination';
+import { pressScale } from './freedom';
 import { attackFrame, PITCH, toEngine } from './pitch';
 import { intentionTarget, offsideLine, secondBallOver, speedOf, type SetPieceScene } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
@@ -430,7 +431,9 @@ function verdict(
     case 'press':
       if (!foe || !isOwner(s, foe)) return 'moved';
       if (i.priority === 'danger') return danger ? undefined : 'cleared';
-      return gap(gp.pos, foe.pos) > C.pressLose * pressReach(s, gp.side)
+      // His own reach by his 압박 성향 on revision 2 (T433).
+      return gap(gp.pos, foe.pos) >
+        C.pressLose * pressReach(s, gp.side) * pressScale(s, gp.side, gp.idx)
         ? 'unreachable'
         : undefined;
     case 'mark':

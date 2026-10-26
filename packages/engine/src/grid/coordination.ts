@@ -28,6 +28,7 @@ import {
   type BoxScene,
 } from './box';
 import { CHANGES_CONFIG } from './changes';
+import { pressScale } from './freedom';
 import { dangerousOption, nearbyThreat, SHADOW_CONFIG, threatGain } from './lanes';
 import { attackFrame, clamp, laneOf, PITCH, toEngine } from './pitch';
 import {
@@ -290,7 +291,8 @@ function defend(
   // Each man's place in the shape, read once: planning changes nothing it reads (T450).
   const places: ([number, number] | undefined)[] = [];
   const place = (gp: GridPlayer) => (places[gp.idx] ??= shapePlace(s, side, gp.idx, cache));
-  // Press: the carrier's nearest men, their distance shortened by a pressing role, traits and fresh legs.
+  // Press: the carrier's nearest men, their distance shortened by a pressing role, traits, fresh
+  // legs and on revision 2 his 압박 성향, which also stretches or shortens his own reach (T433).
   const reach = pressReach(s, side);
   const pressing = players.filter(
     (gp) => gp.intention?.kind === 'press' && gp.intention.opponent === carrier.idx,
@@ -302,7 +304,8 @@ function defend(
     .filter((gp) => !pressing.includes(gp))
     .map((gp) => {
       const d = gap(gp.pos, carrier.pos);
-      return { gp, d, cost: d / (weight(s, gp, 'press') * fresh(s, gp)) };
+      const keen = pressScale(s, side, gp.idx);
+      return { gp, d, keen, cost: d / (weight(s, gp, 'press') * fresh(s, gp) * keen) };
     })
     .sort((a, b) => a.cost - b.cost || byId(a.gp, b.gp));
   // The cover shadow (T442, →MATCH-32): a tactical presser within the press reach keeps the
@@ -333,7 +336,7 @@ function defend(
     const urgent = danger && all.length === 0;
     const priority = urgent ? 'danger' : 'tactical';
     if (!free(c.gp, priority)) continue;
-    if (!urgent && c.d > reach) continue;
+    if (!urgent && c.d > reach * c.keen) continue;
     const shadow = shadowFor(c.d);
     if (shadow !== undefined) shadowed.add(shadow);
     assign(

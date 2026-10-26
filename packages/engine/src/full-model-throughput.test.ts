@@ -119,11 +119,13 @@ const facts = (w: World) => ({
  * (match-model.test.ts "revision 2 plays exactly as revision 1"): both digests moved by that label
  * only; 940dadab556327b9 and 2eef0890977e3b38 before. T432's freedom, disorder and swaps on
  * revision 2 (160 observed fixtures against revision 1: goals 2.46 → 2.72, xG 2.48 → 2.66 a match)
- * changed the candidate rounds only; c0af3afdd552ff60 before.
+ * changed the candidate rounds only; c0af3afdd552ff60 before. T433's 규율, 압박 성향 and 예측력
+ * in revision 2's movement (20 observed fixtures, indicative: goals 2.95 → 2.70, xG 2.74 → 2.50 a
+ * match) changed the candidate rounds only; ea80c6051b01dc56 before.
  */
 const BEFORE = {
   aggregateRecords: '35f59be3046fd689',
-  candidateRounds: 'ea80c6051b01dc56',
+  candidateRounds: '165c65e37c8f073c',
 };
 
 describe('complete-result throughput (T285)', () => {

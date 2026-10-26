@@ -7,6 +7,7 @@
  * (→ARCH-9, T358): the same paths on every host.
  */
 import { cos, hypot, sin } from '../portable-math';
+import { anticipationRead } from './freedom';
 import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
 import {
   attackFrame,
@@ -411,10 +412,13 @@ function cellBounds(cell: number): [number, number, number, number] {
 /**
  * When an off-ball player turns from where he was heading to a ball kicked `kick` seconds into the
  * action by `attacking`: a teammate at the kick, a defender up to `read` of the wind-up earlier by
- * his 위치선정.
+ * his 위치선정, on revision 2 by his 예측력 instead (`anticipationRead`, T433: 위치선정 sets where
+ * he stands, 예측력 when he reacts, →PLAYER-26).
  */
 export function readAt(s: GridState, gp: GridPlayer, attacking: 0 | 1, kick: number): number {
   if (gp.side === attacking) return kick;
+  const read = anticipationRead(s, gp.side, gp.idx, kick, GRID_MOVEMENT_CONFIG.read);
+  if (read !== undefined) return read;
   const positioning = clamp(skill(s, gp.side, gp.idx, 'positioning'), 1, 99) / 99;
   return Math.max(0, kick * (1 - GRID_MOVEMENT_CONFIG.read * positioning));
 }

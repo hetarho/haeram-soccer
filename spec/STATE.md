@@ -10,6 +10,11 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| q7m3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T04:46Z | 2026-10-26T04:46Z | - |
+
 ## inbox
 - 261026 decided T458 T286 ARCH-30: (owner, 261026: "CI only before the push to main when the work is done") T458 and T286 closed only on a main push and its CI, which a loop unit cannot make, so T434 and T410 behind T286 could not start → each closes on its own local evidence (T458: the three Firefox journeys on local Firefox; T286: the batch on 2ab7207c and main CI 40262705063 Chromium/WebKit), and the full batch plus CI run once at the end of the work around its single main push; a failure there becomes a fix task (alt: push and wait for CI after T458, which spends a CI run and idles the loop)
 - 261026 decided T433 T434 T410 MATCH-28: (owner, 261026: "1~2만건씩 돌리지 말고 게임성을 확인하는 걸로 전면 개편, 남은 task 개당 20분 안에, 100시즌 말고 10시즌") the remaining explore tasks ran 3–4 h each, mostly resolving-size simulation → each has a 20 m timebox: T433 reads 5 observed fixtures per tactic with at most one adjustment round, T434 probes a 10-season 쉬움 career with 10 seeds, T410 becomes a 10-season gameplay read beside MATCH-2/MATCH-23 bands, all marked indicative; MATCH-28 stays as written (small samples are reported, never a pass) and the pilot-size parity re-read is deferred to the calibration pass the owner orders later (alt: keep T401-size parity, about 6 h; drop the measurements entirely)
@@ -308,7 +313,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T410 | Gameplay read of the released model over ten seasons | MATCH ARCH | T286 T433 | todo |
-| T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
 ## work
@@ -331,6 +335,7 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433 and T434 now, T410 after T433
 
 ## log
+- 261026 T433 done (q7m3): revision 2's 규율 (drift and disorder ×1 ± 0.5), 압박 성향 (press reach and choice ×1 ± 0.3) and 예측력 (reads a kicked ball in 위치선정's place, ± 0.3 s) kept at the starting scales; 20 observed fixtures, indicative: goals 2.95 → 2.70, xG 2.74 → 2.50 a match, every record valid; revision 2 digests re-recorded, revision 1 and pre-feature unchanged; committed beside a concurrent doc-review session's docs → artifacts edits, which stay unstaged
 - 261026 ideation save-storage-and-fast-pace start + recorded (owner): active checkpoint to IndexedDB, then x10 with a "경기 진행 중…" match-day indicator; after the current football tasks
 - 261026 re-scope (q7m3, owner): T433, T434, T410 each within 20 m as gameplay reads (10 seasons, a handful of fixtures); pilot-size parity deferred
 - 261026 T286 done (q7m3): released model evidence = batch on 2ab7207c + main CI 40262705063 Chromium/WebKit; final batch and CI at the end of the work

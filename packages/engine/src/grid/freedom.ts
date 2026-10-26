@@ -79,7 +79,21 @@ export const SWAP_CONFIG = {
   chance: 0.5,
 } as const;
 
+/**
+ * How the other three tendencies act in movement (→MATCH-17, PLAYER-26, T433), each about its
+ * neutral 0.5, so an average player moves as T432 measured: 규율 scales how far freedom and
+ * disorder take him (`discipline` the share it takes off at 1 and adds at 0), 압박 성향 his press
+ * reach and how readily he is chosen to press (±`pressing`), 예측력 when he reacts to a kicked
+ * ball (`read` of its wind-up like 위치선정 before it, then ±`reaction` s).
+ */
+export const TENDENCY_MOVEMENT_CONFIG = {
+  discipline: 0.5,
+  pressing: 0.3,
+  reaction: 0.3,
+} as const;
+
 const FC = FREEDOM_CONFIG;
+const TM = TENDENCY_MOVEMENT_CONFIG;
 const CENTRE = PITCH.width / 2;
 
 /** One side's plan at one moment: per roster index the slot whose job he plays and his offset from its place. */
@@ -173,6 +187,47 @@ export interface FreedomState {
 /** The freedom his manager gives `idx` of `side` (→STAFF-46), 0 without revision 2's tendencies. */
 export function freedomOf(s: GridState, side: 0 | 1, idx: number): number {
   return s.setup.tendencies?.[side][idx]?.freedom ?? 0;
+}
+
+/** His tendencies on revision 2 (`GridState.freedom` present), else undefined. */
+const tendenciesOf = (s: GridState, side: 0 | 1, idx: number) =>
+  s.freedom ? s.setup.tendencies?.[side][idx] : undefined;
+
+/**
+ * How much of his freedom's drift and the shape's disorder `idx` of `side` takes by his 규율
+ * (→PLAYER-26): 1 for a neutral player and before revision 2, `1 − discipline` at 규율 1.
+ */
+export function disciplineScale(s: GridState, side: 0 | 1, idx: number): number {
+  const t = tendenciesOf(s, side, idx);
+  return t ? 1 + 2 * TM.discipline * (0.5 - t.discipline) : 1;
+}
+
+/**
+ * His press reach and pressing readiness as a factor by his 압박 성향 (→PLAYER-26): 1 for a
+ * neutral player and before revision 2, `1 ± pressing` at the ends.
+ */
+export function pressScale(s: GridState, side: 0 | 1, idx: number): number {
+  const t = tendenciesOf(s, side, idx);
+  return t ? 1 + 2 * TM.pressing * (t.pressing - 0.5) : 1;
+}
+
+/**
+ * When an opponent of the kicker reads a ball kicked `kick` seconds into the action by his 예측력
+ * (→PLAYER-26, MATCH-31), or undefined before revision 2 (then 위치선정 times it, `readAt`): up to
+ * `read` times his 예측력 of the wind-up earlier, then `reaction` s earlier or later about the
+ * neutral reader, never before the action starts or after the kick.
+ */
+export function anticipationRead(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  kick: number,
+  read: number,
+): number | undefined {
+  const t = tendenciesOf(s, side, idx);
+  if (!t) return undefined;
+  const at = kick * (1 - read * t.anticipation) + 2 * TM.reaction * (0.5 - t.anticipation);
+  return Math.min(kick, Math.max(0, at));
 }
 
 /**
@@ -300,7 +355,7 @@ function move(
   const ballWide = (situation & 2) !== 0;
   const ballLeft = (situation & 1) !== 0;
   const { dx, dy } = plan;
-  const drift = (idx: number) => FC.drift * freedomOf(s, side, idx);
+  const drift = (idx: number) => FC.drift * freedomOf(s, side, idx) * disciplineScale(s, side, idx);
   const sameFlank = (k: number) => ballWide && (l.inward[k] === 1) === ballLeft;
   const build = (situation & 8) !== 0,
     attack = (situation & 4) !== 0;

@@ -7,7 +7,7 @@ import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match-weights';
 import type { MatchMath } from '../portable-math';
 import { boxBackLine, boxGuardTarget, boxMarkPoint, defendingBox } from './box';
-import { freedomPlan, looseness } from './freedom';
+import { disciplineScale, freedomPlan, looseness } from './freedom';
 import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, skill, slotOf } from './state';
@@ -289,8 +289,9 @@ export function targetOf(
   if (gp.intention) return intentionTarget(s, gp);
   if (gp.run && gp.run.until > s.elapsed && lineOfSlot(s, gp) !== 'GK') return [...gp.run.target];
   const place = shapePlace(s, side, idx, cache);
-  // A loose shape (revision 2, T432): an outfielder keeps part of his distance from his place.
-  const k = gp.slot > 0 ? looseness(s, side) : 0;
+  // A loose shape (revision 2, T432): an outfielder keeps part of his distance from his place, less
+  // the more disciplined he is (T433).
+  const k = gp.slot > 0 ? looseness(s, side) * disciplineScale(s, side, idx) : 0;
   return k ? [place[0] + (gp.pos[0] - place[0]) * k, place[1] + (gp.pos[1] - place[1]) * k] : place;
 }
 
