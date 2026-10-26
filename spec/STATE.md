@@ -10,7 +10,13 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| m6p4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T13:15Z | 2026-10-26T13:15Z | - |
+
 ## inbox
+- 261026 decided T473 T474 T475 T476 ARCH-30: the owner requested all remaining tasks in parallel autopilot after the earlier deadline → finish the four refactors in three disjoint units, keep T473 and T475 in worker-reads, and use separate facility/motion architecture test files (alt: serialize every task through architecture.test.ts); preserve acceptance scope and run one final batch before the configured main push
 - 261026 decided T471 T472 T473 T474 T475 T476 ARCH-30: the implementation sandbox makes .git read-only → host owns task finalization and commits after checking acceptance and verification logs; fresh implementation sessions edit source and task acceptance/result only, run isolated task checks directly, and return work to the host (alt: park all implementation | change sandbox permissions); existing sandbox and verification scope stay intact
 - 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
 - 261026 parked ideation/club-history-reboot ideation/save-storage-and-fast-pace ideation/set-piece-defence-and-goal-feedback ideation/match-day-progress ideation/difficulty-and-adaptation ideation/match-engine-rebuild ideation/own-club-match-edge ideation/club-identity-and-kits ideation/match-viewing-pace-and-freedom ideation/match-continuity-and-performance ideation/manager-achievements ideation/expert-proposal-review ideation/navigation-and-records ideation/club-direction: legacy converted documents restored to ready because 0.7.6 lint found unresolved questions or nonconforming completion mappings; preserve their historical content and do not plan or implement product changes from them during the owner-authorized module-boundary refactor; audit coverage separately
@@ -348,10 +354,11 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- implement-task T473; remaining module-boundary refactor: T473 T474 T475 T476.
-- Preserve the owner deadline: 21:00 KST on 261026. Verified main publication only; retain unfinished work and exact next steps remotely before stopping. Parked product ideations stay parked.
+- Run module-1026 in parallel autopilot: worker-reads (T473 then T475), T474 facilities, and T476 motion.
+- The owner renewed the work after the previous 21:00 KST stopping memo; finish the remaining tasks, verify once, then publish main. Parked product ideations stay parked.
 
 ## log
+- 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
