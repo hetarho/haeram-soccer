@@ -352,9 +352,11 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- inspect work board for remaining tasks
+- T473 T474 T475 T476 are complete; no implementation task remains.
+- module-1026 passed the final ARCH-30 gate on 5afd5956; finish main publication and CI. Parked product ideations remain parked.
 
 ## log
+- 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
 - 261026 T474 integrated
 - 261026 T476 integrated
@@ -374,4 +376,3 @@
 - 261026 ideation match-day-progress + calibration-pass start (owner): match day a ≥ 2 s beat at every pace, no visible catch-up; no own-club edge, judged by measurement; T410 follow-ups explained
 - 261026 T468 done: shared production NPC context with measurements, including pre-form gaps; current-revision upgrade and three seeded scenario fixtures refreshed, assertions retained. Typecheck/lint/format, 556 changed unit cases and build passed; full main batch and CI follow.
 - 261026 T468 start: main batch found four revision-dependent fixture assumptions and one measurement adapter retaining the flat NPC context; preserve rules and historical evidence, repair before the authorized main push.
-- 261026 doc-review artifacts tidied (SSOT revs unchanged): removed applied UI packs and duplicate planning prose; retained original raw benchmarks plus 99 measured tables and 12 UI measurement runs with snapshot provenance; current references and disposable capture paths updated. Typecheck, lint, format, source equivalence and spec lint passed; main batch in progress.
