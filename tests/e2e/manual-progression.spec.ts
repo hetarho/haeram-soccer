@@ -9,7 +9,7 @@ import {
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
-import { configureResponsibilities } from './events';
+import { configureResponsibilities, matchReport } from './events';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -77,14 +77,17 @@ for (const width of [1280, 390]) {
       )),
     );
     expect(dates.every((date) => date === seasonDate(expected))).toBe(true);
-    const group = page.getByTestId('event-group');
+    // Exit animations retain inert copies; only the live report owns a pending match eve.
+    const group = matchReport(page).getByTestId('event-group');
     await expect(group).toContainText('내일 경기');
     await group.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
     await expect(group).toHaveCount(0);
+    const nextEvent = page.getByRole('button', { name: '다음 이벤트', exact: true });
+    await expect(nextEvent).toBeEnabled();
     const date = await page.getByTestId('game-date').innerText();
     await page.waitForTimeout(1200);
     await expect(page.getByTestId('game-date')).toHaveText(date);
-    await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeEnabled();
+    await expect(nextEvent).toBeEnabled();
     await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toHaveCount(0);
   });
 
