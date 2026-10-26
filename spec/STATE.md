@@ -326,7 +326,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 156 | 156 | - | 0 |
+| WEB | 157 | 157 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -376,6 +376,8 @@
 - 261027 T479 done: match-model revision 4; a free kick played as a pass goes to the nearest suitable player (own third: forwards 59% → 0%, walk 34 → 4 m); digests re-recorded, revision 3 kept as REVISION_3
 - 261027 T478 done: every stoppage drawn as a rush (≥ 2× running, ≤ 1.5 s at 1x) and a still beat per kind scaled with speed, captions for cards, injuries and substitutions; e2e specs updated for the batch
 - 261027 T477 done: observed restarts trace the walk-in and frames list stoppages; drawn dead-time speed 3.3–4.5 m per match second (was 0.10–0.78), facts unchanged, positions digests re-recorded
+- 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved
+- 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks
 - 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
 - 261027 create-task WEB MATCH start
 - 261027 ideation dead-balls-and-finishing converted
@@ -388,5 +390,3 @@
 - 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
 - 261026 T474 integrated
-- 261026 T476 integrated
-- 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved

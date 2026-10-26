@@ -4,6 +4,12 @@ A Korean, account-free football club growing game. Found a fictional club in 195
 squad, observe matches and preserve the club's history. Gameplay and saves run locally in the
 browser; no API keys, database or login are required.
 
+The language picker offers Korean (default), English, Spanish, Brazilian Portuguese, French,
+German, Italian, Dutch, Turkish, Arabic, Japanese and Indonesian. These packs translate the
+shared navigation, save and slot tools, display settings, facility descriptions and extracted
+match cues. Detailed gameplay text still includes Korean; previously saved prose stays in its
+original language. Language preferences persist in the browser independently of game saves.
+
 Use the Node version in [.node-version](.node-version) and the pnpm version pinned by
 `packageManager` in [package.json](package.json).
 
