@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r153 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r154 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default and initially sole locale (→WEB-90); Supabase and Flutter are deferred.
@@ -66,6 +66,9 @@
   - The match theatre has no season-progression transport; its presentation speed follows →WEB-32.
   - notifications/news (→WEB-51) lives in the HUD beside cash, separating global communication from progression controls; its counts and touch target remain readable without overlapping content.
   - automatic mode keeps play/pause and one pace dropdown showing the selected x1/x2/x5/x10 value: one day per 1/0.5/0.2/0.1 seconds. The dropdown options explain each pace. Steps never wait for saving (→SAVE-8); a late step carries days owed, at most 5 per step, and stopped time is never owed.
+  - an automatic step still in flight one pace interval after it began shows a progress indicator in the transport, at every pace, until the step lands: a looping animation with the caption 경기 진행 중… when the step settles the day of an own fixture, else 진행 중…. ← a halt the owner can see a reason for reads as the match being played, not a frozen calendar; x10's own match day takes about 0.9 s against its 0.1 s interval
+    - it shows no score, result or other settled fact; it occupies reserved space so the controls never shift, and stops showing when the clock stops or the step is cancelled.
+    - it never pauses, delays, shortens or changes the step, its results or the owed-day rule above; x10 keeps its nominal one day per 0.1 s without a throughput promise.
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Use a text action with a trailing progression icon, readable vertical padding and space above and below the button inside the transport bar; preserve the full touch target (→WEB-17). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait. Unfinished observation takes precedence under →WEB-83.
   - the manual move still settles intervening days in order (→LEAGUE-11), retains their facts and stops at the first configured event. Its presentation never bypasses pending owner decisions, critical blockers or save/worker errors.
@@ -514,6 +517,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r154 261026 WEB-18✎ a late automatic step showed the unchanged calendar→a progress indicator after one pace interval (경기 진행 중… on own fixture days, else 진행 중…), no results shown, step and owed days unchanged
 - r153 261026 WEB-11✎ NEXT MATCH before season progress/stadium/team state→after team state in visual and reading order
 - r152 261026 WEB-96✎ mode text before quiet change action→primary change action then fixed-width mode text; WEB-83✎ manual dismissed-match reopen notification→no persistent match launcher, next-event reopens it
 - r151 261026 WEB-10✎ visible tagline/save/price footer→no visible footer; WEB-18✎ mode in metadata and transport guidance→mode text, switch and actions grouped below; WEB-96✎ home-only AUTO/MANUAL button beside date→all management views, separate mode text and 진행 방식 변경 in bottom controls

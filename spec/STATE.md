@@ -275,6 +275,11 @@
 - 261026 decided ideation/save-storage-and-fast-pace SAVE-3: keep the IndexedDB-unavailable fallback? → keep localStorage slot:a/b with its budget and failure protection unchanged (alt: refuse saving without IndexedDB) — the code exists and a browser without IndexedDB could otherwise not save at all
 - 261026 decided SAVE-3 T464: how the active copy sits beside previous in IndexedDB → keys active and previous with SAVE-3's copy-then-write order and a `slot: 3` manifest; a localStorage game moves on the writer's first commit and its keys go after the manifest (alt: alternate two IndexedDB keys with no copy, which halves the writes but changes the recovery predecessor's meaning | one transaction for both keys, left as a later optimization) — smallest change to the verified commit path and load rules, and the existing slot:a e2e seeds keep working as the migration case
 - 261026 decided ideation/save-storage-and-fast-pace: one planning slice for the whole ideation or per step? → this slice is step (1), SAVE r54 / ARCH r22 / T464; the x10 indicator questions (which paces, catch-up, what it shows) stay open for the next slice into WEB (alt: settle all now, which would plan WEB work the owner ordered after the move)
+- 261026 decided ideation/save-storage-and-fast-pace WEB-18 T465: which paces show the match-day indicator? → every pace, once an automatic step is still in flight one pace interval after it began (alt: x10 only | a fixed delay such as 0.3 s) — one rule covers x5 and slow devices without a pace list
+- 261026 decided ideation/save-storage-and-fast-pace WEB-18: after the indicator, catch up or resume at the normal pace? → keep today's catch-up, a late step carries the owed days up to 5 ending on news and own-match days (alt: resume at the normal pace from the match day) — resuming would cut x10 from about 7.8 to about 4.7 days a second
+- 261026 decided ideation/save-storage-and-fast-pace WEB-18: what the indicator shows → a looping animation with 경기 진행 중… on own fixture days, else 진행 중…, no score or results (alt: the own score or other results as they settle) — results settle at the end of the step, so streaming them needs engine changes
+- 261026 decided ideation/save-storage-and-fast-pace: which result-identical x10 performance steps come with the indicator, and does x10 promise 10 days a second? → the indicator ships alone; (a) parallel aggregate workers and (c) detailed-engine repeated-work cuts wait for the owner's x10 read with the indicator, (b) run-ahead buffer dropped; x10 stays nominal one day per 0.1 s with no throughput promise; the season-archive split stays out of this work (alt: plan (a)+(c) now as MATCH/ARCH tasks | promise 10 days a second) — the owner said a halt with a visible reason does not bother him, and (a)/(c) carry worker-topology and result-identity risk; ideation converted
+- 261026 suggest ideation/save-storage-and-fast-pace: after T465, try x10 for a season; if the indicator still feels long, plan (c) the detailed engine's repeated-work cuts then (a) parallel aggregate workers, both result-identical
 
 ## ideation
 | id | st |
@@ -291,13 +296,13 @@
 | set-piece-defence-and-goal-feedback | converted@261022 |
 | own-club-match-edge | open@261023 |
 | match-viewing-pace-and-freedom | converted@261025 |
-| save-storage-and-fast-pace | open@261026 |
+| save-storage-and-fast-pace | converted@261026 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 153 | 153 | - | 0 |
+| WEB | 154 | 154 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -320,6 +325,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T465 | Late automatic step progress indicator | WEB MATCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -334,12 +340,15 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch. Next: the planning slice of ideation save-storage-and-fast-pace: settle the x10 indicator questions and update-ssot WEB (WEB-18 automatic play) → create-task
+- T465 todo (WEB r154, ideation save-storage-and-fast-pace converted): implement the late-step progress indicator next; its e2e check runs in the host batch. Performance steps (a)/(c) wait for the owner's x10 read (inbox suggest)
+- T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch.
 - T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 create-task (q7m3): T465 late automatic step progress indicator (WEB@154 MATCH@31)
+- 261026 update-ssot WEB r154 (q7m3, ideation save-storage-and-fast-pace step 2, converted): WEB-18 a step still in flight one pace interval after it began shows 경기 진행 중… / 진행 중… in the transport, no results, step and catch-up unchanged
 - 261026 T464 done (q7m3): the game in play's active checkpoint is IndexedDB checkpoints/active beside previous, manifest `slot: 3`; a slot:a/b game moves on the writer's first commit; no-IndexedDB fallback unchanged; e2e helpers read the manifest's source, specs left to the host batch
 - 261026 create-task (q7m3): T464 active checkpoint in IndexedDB with the localStorage move and the unchanged fallback (SAVE@54 ARCH@22)
 - 261026 update-ssot SAVE r54 ARCH r22 (q7m3, ideation save-storage-and-fast-pace step 1): SAVE-3 active checkpoint in IndexedDB beside previous, localStorage game moves on the first commit; SAVE-4 caps per store, localStorage total for settings and the fallback; ARCH-11/ARCH-14/constraints IndexedDB primary store
@@ -358,5 +367,3 @@
 - 261026 T286 done (q7m3): released model evidence = batch on 2ab7207c + main CI 40262705063 Chromium/WebKit; final batch and CI at the end of the work
 - 261026 T458 done (q7m3, 2b8b0b12): Firefox business, season-flow, stable-controls-and-pacing 15/15 on local Firefox (2.0 m)
 - 261026 T458 Firefox CI fixes (q7m3): business:266 eve race in openWatchAction's home click (retry, return the eve's watch), season-flow:135 and stable-controls-and-pacing:209 `test.slow()`; fast checks and build pass, Firefox/Chromium specs left to the host gate
-- 261026 q7m3 takes over T458 from stopped k5n2 (owner restart after the f6d2 cleanup): fix CI 40262705063 Firefox business:266, season-flow:135, stable-controls-and-pacing:209 first, then T286, T433, T434, T410 by autopilot loop
-- 261026 f6d2 hand-off: cleanup pushed 5ad12ec1; local batch resolved, CI Firefox three journey failures handed to existing T458; WebKit 1/2 pending; owner resumes start-vibe separately

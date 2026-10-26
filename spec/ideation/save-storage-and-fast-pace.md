@@ -1,5 +1,5 @@
 # IDEATION save-storage-and-fast-pace
-> st:open@261026 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
+> st:converted@261026 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
 
 ## vision
 - Problem (owner, 261026, on the deployed build at x10): the calendar runs 1, 2, 3 … 6 quickly, then halts for about a second, then runs on. The halt is every own league match day. Separately, the game in play's checkpoint is capped at 3 MiB only because it lives in localStorage (about 5 MiB per origin), and writing it blocks the main thread.
@@ -20,11 +20,14 @@
   - Checked 261026: IndexedDB writes are asynchronous and can be cut short when a tab closes, but today's checkpoint is already built asynchronously in the codec worker; the IndexedDB code exists (`apps/web/src/adapters/previousStore.ts`, `games.ts`); eviction and Safari's 7-day rule treat localStorage and IndexedDB alike; localStorage's own costs (the 5 MiB origin allowance behind the 3 MiB cap, synchronous main-thread writes) are the ones the game hits.
 - [o] (1) keeps the 3 MiB per-checkpoint cap and the 8 / 32 MiB import limits; the 3.5 MiB total covers only localStorage ← a century checkpoint measures about 2.5 MB, and the cap keeps every checkpoint exportable under the import cap and loadable on the fallback; raise it when a profile needs it (autopilot 261026)
 - [o] (1) keeps the IndexedDB-unavailable fallback on localStorage slot:a/b as it is ← the code and its failure protection exist; without it a browser lacking IndexedDB could not save at all (autopilot 261026)
-- [?] Later, split the checkpoint into the current season (rewritten by every save) and a per-season archive written once at the season close (both in IndexedDB) ← past seasons are about 70% of a century checkpoint (about 20 KB a season, ~1.8 MB of ~2.5 MB) and never change, so autosaves would stop recompressing them; more work than (1) alone
+- [o] Not in this work (autopilot 261026, a later candidate when autosave cost shows in a profile): split the checkpoint into the current season (rewritten by every save) and a per-season archive written once at the season close (both in IndexedDB) ← past seasons are about 70% of a century checkpoint (about 20 KB a season, ~1.8 MB of ~2.5 MB) and never change, so autosaves would stop recompressing them; more work than (1) alone
 - [x] Keep the current season in localStorage and only the archive in IndexedDB (the owner's first idea) ← keeps the main-thread write and adds a second store to keep consistent, for no gain over keeping both in IndexedDB
 - [o] (2) At x10 a match day shows a "경기 진행 중…" animation (a loading indicator) while it is computed, instead of a frozen calendar ← owner 261026: a halt the owner expects and can see a reason for does not bother him
-- [?] Which x10 performance steps still come with the indicator. Recommendation: (a) compute the day's other fixtures in parallel helper workers (each fixture has its own seeded streams, so results stay identical), and (c) cut the detailed engine's repeated work (a target read ~80 times an action, the speculative intention update `readsOf` ~15% of the match, allocations), both result-identical, to shorten the indicator and lift throughput toward x10; (b) the run-ahead buffer is probably unnecessary once the halt is shown as a match day
-- [?] Whether x10 still promises 10 days a second: with the indicator a week at x10 takes about 0.6 s of ordinary days plus the match day's computation (~0.9 s today), so x10 runs at about 7.8 days a second unless (a)/(c) land
+- [o] (2) The indicator ships alone; the result-identical performance steps (a) parallel helper workers for the day's other fixtures and (c) cutting the detailed engine's repeated work (a target read ~80 times an action, the speculative intention update `readsOf` ~15% of the match, allocations) wait for the owner's read of x10 with the indicator; (b) the run-ahead buffer is dropped ← the owner said a halt he can see a reason for does not bother him, and (a)/(c) cost worker topology and engine work with a result-identity risk (autopilot 261026)
+- [o] x10 keeps its nominal one day per 0.1 s with no throughput promise; a slow day shows the indicator and the late step catches up as today (about 7.8 days a second measured) (autopilot 261026)
+- [o] The indicator shows at every pace once a step is still in flight one pace interval after it began, not only at x10 ← one rule covers x5 and slow devices without a pace list (autopilot 261026)
+- [o] After the indicator the clock keeps today's catch-up: a late step carries the owed days, at most 5, ending on news and own-match days ← keeps throughput; resuming at the normal pace would cut x10 to about 4.7 days a second (autopilot 261026)
+- [o] The indicator is a looping animation with the caption 경기 진행 중… on own fixture days, else 진행 중…; no scores or results ← results settle at the end of the step, so streaming them needs engine changes outside v1 (autopilot 261026)
 
 ## shape
 - flow: (1) IndexedDB move → (2) x10: match-day indicator, then the chosen result-identical performance steps
@@ -33,9 +36,7 @@
 ## domains
 - SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3
 - ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11
-- WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected
+- WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected →WEB-18
 
 ## open
-- Which paces show the indicator: only x10, or any pace where a match day takes longer than one day's interval?
-- After the indicator, does the clock catch up the owed days (today up to 5 days at once), or resume at the normal pace from the match day?
-- What the indicator shows: only an animation and caption, or also the own match's score or other results as they settle?
+- Season-archive split and performance steps (a)/(c): revisit when a profile or the owner's x10 read asks for them
