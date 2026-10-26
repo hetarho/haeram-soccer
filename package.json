@@ -15,15 +15,17 @@
     "lint": "eslint apps packages scripts tests --no-warn-ignored",
     "format": "prettier --write apps packages scripts tests *.json *.ts *.mjs .github",
     "format:check": "prettier --check apps packages scripts tests *.json *.ts *.mjs .github",
-    "test:unit": "vitest run --exclude '**/*.contract.test.ts'",
-    "test:unit:release-on": "vitest run --config vitest.release-on.config.ts --exclude '**/*.contract.test.ts'",
-    "test:contract": "vitest run .contract.test.ts",
+    "test:unit": "vitest run --project unit",
+    "test:unit:release-on": "vitest run --config vitest.release-on.config.ts --project unit",
+    "test:contract": "vitest run --project contract",
     "validate:catalogs": "tsx scripts/validate-catalogs.ts",
     "validate:presentation": "tsx scripts/validate-presentation.ts",
     "test:e2e": "PREVIEW_BUILD=1 playwright test",
     "benchmark": "tsx scripts/benchmark.ts",
-    "verify": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run build && pnpm run test:e2e",
-    "benchmark:browser": "node scripts/first-play.mjs"
+    "verify": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:integration && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run build && pnpm run test:e2e",
+    "benchmark:browser": "node scripts/first-play.mjs",
+    "test:integration": "vitest run --project integration",
+    "test:integration:release-on": "vitest run --config vitest.release-on.config.ts --project integration"
   },
   "dependencies": {
     "brotli": "2.1.0",

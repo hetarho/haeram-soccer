@@ -12,7 +12,7 @@ concurrency:
   # main keeps a started run so every code push to main gets a result while parallel sessions push;
   # GitHub still replaces older pending runs with the newest one.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-# The checks, the unit test shards and each browser's journeys run as parallel jobs: the run takes
+# The checks, fast units, integration shards and each browser's journeys run as parallel jobs: the run takes
 # as long as its slowest job instead of the sum of every step. The benchmarks run on demand in
 # benchmark.yml.
 jobs:
@@ -35,7 +35,24 @@ jobs:
       - run: pnpm run build
 
   unit:
-    name: unit (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/unit-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-results
+          path: .tmp/unit-results.json
+
+  integration:
+    name: integration (${{ matrix.shard }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -57,9 +74,15 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: node_modules/.cache/haeram-worlds
-          key: haeram-worlds-${{ matrix.slug }}-${{ github.sha }}
-          restore-keys: haeram-worlds-${{ matrix.slug }}-
-      - run: pnpm run test:unit --shard=${{ matrix.shard }}
+          key: haeram-worlds-integration-${{ matrix.slug }}-${{ github.sha }}
+          restore-keys: haeram-worlds-integration-${{ matrix.slug }}-
+      - run: pnpm run test:integration --shard=${{ matrix.shard }} --reporter=default --reporter=json --outputFile=.tmp/integration-results.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-results-${{ matrix.slug }}
+          path: .tmp/integration-results.json
 
   e2e:
     name: e2e (${{ matrix.browser }} ${{ matrix.shard }})
